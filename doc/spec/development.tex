@@ -1,14 +1,32 @@
 % ==============================================================================
-%  $RCSfile: development.tex,v $, $Revision: 1.1 $
-%  $Date: 2003/02/13 03:18:19 $
-%  $Author: schulzgt $
+%  $RCSfile: development.tex,v $, $Revision: 1.2 $
+%  $Date: 2003/02/19 18:25:25 $
+%  $Author: schwiemn $
 %
 %  Description:
 %
 % ==============================================================================
 
 \section {Compiler und Bibliotheken}
-Das System soll in der Sprache Ada95 mit GNAT 3.14 entwickelt werden, wobei GTK/ADA 1.2.12 als grafische
-GUI-Bibliothek eingesetzte werden soll. Das System baut auf der vom Kunden bereit gestellten IML-Graph-Bibliothek auf 
-und soll des weiteren zur Unterstützung der Wartbarkeit möglichst auch die vom Kunden zur Verfügung gestellten 
+Das System soll in der Sprache Ada95 mit GNAT 3.14 entwickelt werden, 
+wobei GTK/ADA 1.2.12 als grafische
+GUI-Bibliothek eingesetzte werden soll. 
+Das System baut auf der vom Kunden bereit gestellten IML-Graph-Bibliothek auf 
+und soll des weiteren zur Unterstützung der Wartbarkeit möglichst auch die 
+vom Kunden zur Verfügung gestellten 
 Datenstrukturen (wie z.B. Hashtables aus Bauhaus/reuse/src) nutzen.
+
+  \subsection {Lizenzrechtliches zu den Paketen des Kunden}
+  Folgendes gilt nicht für die IML-Graph-Bibliothek.\\
+  Die vom Kunden zur Verfügung gestellten Datenstrukturen 
+  werden den Entwicklern von GIANT ohne lizenzrechtliche Bedingungen 
+  überlassen. Die Nutzungsrechte der Enwtickler am Produkt GIANT werden 
+  durch Einsatz dieser Datenstrukturen in keinster Weise berührt.
+ 
+
+
+\section {Einlesen und Schreiben von XML Dateien}
+Auf XML-Dateien soll mittels des DOM (Document Object Model) Parsers
+aus XML/Ada 0.7.1 zugegriffen werden. XML/Ada 0.7.1 unterliegt lizenzrechtlich der \gq{GNAT Modified GNU Public
+License} (GMGPL).\\
+Als Alternative ist der XML-Parser aus GTK/Ada vorgesehen -- Paket Glib.XML.
