@@ -1,11 +1,10 @@
 % =============================================================================
-%  $RCSfile: gsl.tex,v $
-%  $Date: 2003/04/18 02:54:53 $
+%  $RCSfile: gsl.tex,v $ $Revision: 1.2 $
+%  $Date: 2003/04/22 01:08:35 $
 %  $Author: keulsn $
 %
-%  Description: Spezifikation der GSL
+%  Description: Spezifikation der GIANT Scripting Language
 %
-%  Last-Ispelled-Revision: 1.1
 %
 % =============================================================================
 
@@ -33,6 +32,9 @@
 \usepackage{../spec}
 
 \usepackage{ebnf}
+
+\usepackage{verbatim}
+\usepackage{shortvrb}
 
 \usepackage{makeidx}
 \makeindex
@@ -74,7 +76,7 @@ Studienprojekt A -- IML Browser\\
 
 %\input{history}
 
-%===============================================================================
+%==============================================================================
 %
 % Inhaltsverzeichnis
 %
@@ -92,12 +94,49 @@ Studienprojekt A -- IML Browser\\
 %%%% Tokens
 \token{\tokbegincomment}{//}
 \token{\tokclosebracket}{)}
+\token{\tokcurlyclose}{\}}
+\token{\tokcurlyopen}{\{}
 \token{\tokcomma}{,}
 \token{\tokdot}{.}
 \token{\tokopenbracket}{(}
-\token{\tokscript}{script}
+\token{\toknull}{null}
+\token{\tokfalse}{false}
+\token{\tokplus}{+}
+\token{\tokselection}{selection}
+\token{\toksubgraph}{subgraph}
+\token{\toktick}{'}
+\token{\toktrue}{true}
+\token{\tokquote}{''}
+\token{\tokunderscore}{\_}
 
-In diesem Kapitel wird die GIANT Scripting Language (GSL) sowie
+\nonterminal{\nidentifier}{identifier}
+\nonterminal{\nchar}{char}
+\nonterminal{\ndigit}{digit}
+\nonterminal{\nliteral}{literal}
+\nonterminal{\nbooleanliteral}{boolean\_literal}
+\nonterminal{\nintliteral}{int\_literal}
+\nonterminal{\nstringliteral}{string\_literal}
+\nonterminal{\nstringchar}{direct\_char}
+\nonterminal{\neverychar}{every\_char}
+\nonterminal{\nnullliteral}{null\_literal}
+\nonterminal{\nexpression}{expression}
+\nonterminal{\ninspection}{inspection}
+\nonterminal{\nvisiblevar}{visible\_var}
+\nonterminal{\nglobalvar}{global\_var}
+\nonterminal{\nsubgraph}{subgraph}
+\nonterminal{\nselection}{selection}
+\nonterminal{\nreference}{reference}
+\nonterminal{\nvisibleref}{visible\_ref}
+\nonterminal{\nvarcreation}{var\_creation}
+\nonterminal{\nglobalref}{gloabl\_ref}
+\nonterminal{\nscriptdecl}{script\_decl}
+\nonterminal{\nlist}{list}
+\nonterminal{\nscriptactivation}{script\_activation}
+
+
+
+
+In diesem Dokument wird die GIANT Scripting Language (GSL) sowie
 Interpreter zur Ausführung von GSL Scripts spezifiziert.
 GSL ist eine Skriptsprache für das Software-System GIANT. Mit Hilfe von
 GSL können Anfragen an die IML-Bibliothek gestellt werden und auf den
@@ -132,7 +171,7 @@ String, der den Typ eindeutig identifiziert.
 
 Jeder IML-Knoten verfügt über eine endliche Folge von Attributen.
 Diese Folge definiert eine endliche Anzahl einzelner Attribute,
-die der IML-Knoten besitzt sowie eine Reihenfolge dieser Attribute.
+die der IML-Knoten besitzt, sowie eine Reihenfolge dieser Attribute.
 Weder die Folge von Attributen noch die in der Folge enthaltenen
 Attribute eines IML-Knoten können sich während der Laufzeit von
 GIANT verändern.
@@ -177,6 +216,7 @@ Jedes Attribut eines IML-Knoten gehört genau einer der folgenden Klassen an:
 
 
 \subsection{IML-Graphen}
+\hyphenation{kanten-annotierter}
 
 Die IML-Daten jeder IML-Graph Datei definieren einen zugehörigen IML-Graph.
 Sprechweise: Die IML-Daten liegen dem IML-Graph zugrunde.
@@ -186,7 +226,7 @@ Vorschrift:
 
 \begin{enumerate}
 \item
-Ein IML-Graph besitzt als Knotenmenge die Menge aller IML-Knoten des
+Ein IML-Graph besitzt als Knotenmenge die Menge aller IML-Knoten der
 zugrunde liegenden IML-Daten. Der IML-Graph besitzt keine
 weiteren Knoten.
 \item
@@ -199,21 +239,22 @@ genau dann, wenn eine der folgenden Bedingungen erfüllt ist:
    \begin{enumerate}
    \item $v$ besitzt ein Genutztes Verweis-Attribut, das auf $w$ verweist.
          \begin{enumerate}
-         \item $e$ besitzt als Annotation den Attribut-Namen $s$ des
+         \item Dann besitzt $e$ als Annotation den Attribut-Namen $s$ des
          Genutzten Verweis-Attributs.
          \item Das Paar $(v, s)$ heißt Typ der IML-Kante $e$
          \end{enumerate}
    \item $v$ besitzt ein Verweisfolgen-Attribut $f$. Ein genutzter Verweis
          aus $f$ verweist auf $w$.
          \begin{enumerate}
-         \item $e$ besitzt als Annotation den Attribut-Namen $s$ von $f$ sowie
+         \item dann besitzt $e$ als Annotation den Attribut-Namen $s$ von
+         $f$ sowie
          die Nummer innerhalb der Folge $f$ des genutzten Verweises auf $w$.
          \item Das Paar $(v, s)$ heißt Typ der IML-Kante $e$.
          \end{enumerate}
    \item $v$ besitzt ein Verweismengen-Attribut $m$. Ein genutzter Verweis
          aus $m$ verweist auf $w$.
          \begin{enumerate}
-         \item $e$ besitzt als Annotation den Attribut-Namen $s$ von $m$.
+         \item dann besitzt $e$ als Annotation den Attribut-Namen $s$ von $m$.
          \item Das Paar $(v, s)$ heißt Typ der IML-Kante $e$.
          \end{enumerate}
    \end{enumerate}
@@ -225,42 +266,59 @@ außer den in Punkt \ref{edge_spec} genannten.
 
 \section{GSL Interpreter}
 
-Ein GSL Interpreter ist ein System, das GSL Scripts ausführt, gemäß
+Ein GSL Interpreter ist ein System, das GSL Ausdrücke auswertet, gemäß
 der Sprachdefinition in Kapitel \ref{gsl_spec}. Jeder GSL
 Interpreter muss die vordefinierte Sprachumgebung nach Kapitel
 \ref{predef_env} unterstützen.
 
+\subsection{Start einer Auswertung}
+\label{interpreter_start}
+
+Beim Start des GSL Interpreters wertet dieser zunächst den Ausdruck aus,
+der in der Datei \gq{standard.gsl} gespeichert ist. Dieser Ausdruck
+initialisiert die Sprachumgebung, die in Kapitel \ref{standard} beschrieben
+wird.
+
+Danach ist der GSL Interpreter bereit und ihm kann ein beliebiger GSL Ausdruck
+zur Auswertung übergeben werden. In GIANT kann dies geschehen, indem der
+Ausdruck als Kommandozeilenparameter angegeben wird oder indem ein Ausdruck
+in das dafür vorgesehene Anzeigefenster eingegeben wird.
+
+Dieser Ausdruck kann dann gespeicherte GSL Scripts aufrufen und mit GIANT
+kommunizieren.
+
 \subsection{Kontext des Interpreters}
 
-Der GSL Interpreter kann im Kontext eines Anzeigefensters ausgeführt
-werden. Ist dies der Fall, so können die ausgeführten GSL Scripts
+Der GSL Interpreter kann im Kontext eines GIANT-Anzeigefensters ausgeführt
+werden. Ist dies der Fall, so können die ausgewerteten GSL Ausdrücke
 Aktionen in diesem Anzeigefenster durchführen.
 
 Wird der GSL Interpreter nicht im Kontext eines Anzeigefensters ausgeführt,
-so kann in einem ausgeführten Script keine Aktion in einem Anzeigefenster
-durchgeführt werden.
+so können die GSL Ausdrücke keine Aktion in einem Anzeigefenster
+auslösen.
 
 Ein GSL Script kann den Interpreter dazu veranlassen in den Kontext eines
 bestimmten Anzeigefensters zu wechseln.
 
-
 \subsection{Verhalten im Fehlerfall}
 
 \subsubsection{Syntaxfehler}
+\label{syntax_error}
 
-Der GSL Interpreter muss ein GSL Script zurückweisen, falls eine
-Forderung der Sprachdefinition von diesem GSL Script verletzt
+Der GSL Interpreter muss einen Ausdruck zurückweisen, falls eine
+Forderung der Sprachdefinition durch diesen Ausdruck verletzt
 wird. In diesem Fall muss der Interpreter dem Benutzer eine Fehlermeldung
 anzeigen, die folgende Anforderungen erfüllt:
 \begin{enumerate}
-\item Der Benutzer wird informiert, dass der Text des Scripts fehlerhaft ist.
+\item Der Benutzer wird informiert, dass der Text des Ausdrucks fehlerhaft ist.
 \item Dem Benutzer wird die Art des Fehlers präzise erläutert.
-\item Dem Benutzer wird angezeigt an welcher Stelle in welchem Script der
-Fehler erkannt oder verursacht wurde.
+\item Dem Benutzer wird angezeigt an welcher Stelle im Quelltext
+der Fehler erkannt oder verursacht wurde.
 \end{enumerate}
-Andernfalls startet der GSL Interpreter die Ausführung des GSL Scripts.
+Andernfalls startet der GSL Interpreter die Auswertung des GSL Ausdrucks.
 
 \subsubsection{Laufzeitfehler}
+\label{run_time_error}
 
 Der GSL Interpreter muss die Ausführung sofort
 stoppen, sobald ein Laufzeitfehler auftritt. Dies kann nur dann
@@ -274,11 +332,12 @@ ein Laufzeitfehler auftreten wird.
 Der GSL Interpreter muss dem Benutzer unverzüglich eine
 Meldung anzeigen, die folgende Anforderungen erfüllt:
 \begin{enumerate}
-\item Der Benutzer muss informiert werden, dass ein Fehler aufgetreten ist.
+\item Der Benutzer muss informiert werden, dass ein Fehler aufgetreten ist
+bzw.\ auftreten wird.
 \item Dem Benutzer muss präzise und für ihn leicht verständlich erläutert
-werden, welcher Fehler aufgetreten ist.
+werden, welcher Fehler aufgetreten ist bzw.\ auftreten wird.
 \item Dem Benutzer kann eine Möglichkeit aufgezeigt werden, wie er den
-Fehler beseitigen kann um eine fehlerfreie Ausführung des selben GSL Scripts zu
+Fehler beseitigen kann um eine fehlerfreie Ausführung des selben Ausdrucks zu
 ermöglichen.
 \end{enumerate}
 
@@ -288,46 +347,790 @@ muss dem Benutzer anzeigen, welche Aktionen bereits durchgeführt wurden,
 bevor der Fehler passierte. Anhand dieser Information soll es dem Benutzer
 möglich sein, die Aktionen manuell rückgängig zu machen.
 
+\section{Konzepte}
 
-\section{Syntax}
-\section{Semantik}
-\label{gsl_spec}
+Der Entwurf von GSL legt das größte Gewicht auf eine einfache Erweiterbarkeit
+der Ausdrucksmächtigkeit der Sprache. Durch Hinzufügen von zusätzlichen
+vordefinierten Scripts können der Sprache neue Fähigkeiten hinzugefügt werden
+ohne dabei Änderungen an der Syntax vornehmen zu müssen. Diesem wichtigsten
+Ziel wurden Aspekte wie eine intuitiv erfassbare Syntax untergeordnet.
+
+\subsection{Werte und Typen}
+\label{types}
+
+\newcommand\typename[2]{\newcommand{#1}{{\sf #2}\xspace}}
+\typename{\tnodeid}{Node\_Id}
+\typename{\tedgeid}{Edge\_Id}
+\typename{\tnodeset}{Node\_Set}
+\typename{\tedgeset}{Edge\_Set}
+\typename{\tobjectset}{Object\_Set}
+\typename{\tstring}{String}
+\typename{\tboolean}{Boolean}
+\typename{\tnatural}{Natural}
+\typename{\tlist}{List}
+\typename{\tvarreference}{Var\_Reference}
+\typename{\tscriptreference}{Script\_Reference}
+
+GSL verarbeitet Werte verschiedener Typen. Nachfolgend wird eine Liste aller
+Typen sowie der Werte angegeben, die ein Ausdruck des entsprechenden Typs
+annehmen kann:
+\begin{description}
+\item[\tnodeid] Verweis auf einen einzelnen Knoten.
+\item[\tedgeid] Verweis auf eine einzelne Kante.
+\item[\tnodeset] Endliche Menge von Werten des Typs \tnodeid.
+\item[\tedgeset] Endliche Menge von Werten des Typs \tedgeid.
+\item[\tobjectset] Endliche Menge von Werten der Typen \tnodeid und \tedgeid.
+\item[\tstring] Endliche Folge von Zeichen.
+\item[\tboolean] Der Wahrheitswerte \tokfalse und \toktrue
+\item[\tnatural] Natürliche Zahl, innerhalb eines bestimmten Bereichs, der
+von der Reflektion vorgegeben wird.
+\item[\tlist] Endliche Folge von Werten. Jeder dieser Werte ist ein Wert
+eines beliebigen Typs aus dieser Aufzählung oder \toknull.
+\item[\tvarreference] Zugriffspfad auf ein Objekt.
+\item[\tscriptreference] Aktivierungsinformation für ein bestimmtes Script.
+\end{description}
+
+Zusätzlich gibt es noch einen besonderen Typ, der keinen Namen besitzt.
+Dieser anonyme Typ umfasst genau einen Wert, nämlich den Wert \toknull.
+
+\subsection{Ausdrücke}
+
+Die Ausführung von GSL geschieht ausschließlich durch das Auswerten von
+Ausdrücken. Die Auswertung eines Ausdrucks hat als Ergebnis stets genau
+einen bestimmten Wert und kann Nebeneffekte haben. Nebeneffekte sind
+Veränderungen an den Werten von Objekten oder die Durchführung von Aktionen.
+
+Der Typ eines Ergebnis steht im Allgemeinen erst fest, nachdem ein Ausdruck
+ausgewertet wurde. Die Auswertung eines Ausdrucks kann fehlschlagen, falls
+ein Laufzeitfehler auftritt. In diesem Fall stoppt die Auswertung sofort.
+
+\subsection{Variablen und Objekte}
+\label{variables}
+
+Um während der Auswertung von Ausdrücken bestimmte Werte zur späteren
+Wiederverwendung zu speichern werden \emph{Objekte} verwendet. Der Zugriff
+auf ein Objekt erfolgt durch eine Variable.
+
+In \emph{Aktivierungsumgebungen} werden Variablen an Objekte gebunden.
+
+\label{variable_inspection}
+Variablen können \emph{inspiziert} werden. Das Ergebnis einer
+Variableninspektion ist der Wert des Objekts, an das die Variable gebunden
+ist.
+
+\label{variable_reference}
+Eine \emph{Referenz} einer Variable kann genommen werden.
+Diese Referenz ist ein
+Zugriffspfad auf das Objekt an das die Variable gebunden ist. Der
+Zugriffspfad wird benötigt, um den Wert des Objekts zu verändern.
+
+Eine Variable kann entweder sichtbar oder unsichtbar sein. Siehe hierzu
+Kapitel \ref{visibility}.
+
+Objekte sind nicht an einen bestimmten Typ gebunden, sondern haben zu jedem
+Zeitpunkt genau einen Wert eines der möglichen Typen aus \ref{types}.
+
+\subsection{Aktivierungsumgebungen}
+\newcommand{\bottomenv}{\ensuremath{Standard}\xspace}
+\newcommand{\newenv}{\ensuremath{A_{neu}}\xspace}
+\newcommand{\oldenv}{\ensuremath{A_{alt}}\xspace}
+
+\subsubsection{Standard-Aktivierungsumgebung}
+
+\label{bottom_env}
+Eine Aktivierungsumgebung bindet Variablen an Objekte. Beim Start des GSL
+Interpreters existiert eine erste Aktivierungsumgebung \bottomenv. Jeder
+IML-Teilgraph in GIANT und, falls der GSL Interpreter im Kontext eines
+Anzeigefensters ausgeführt wird, auch jede Selektion dieses Anzeigefensters
+ist in GSL ein Objekt. In \bottomenv werden besondere Variablen an
+diese Objekte gebunden. Der Name jeder solchen Variable trägt das Präfix
+\toksubgraph für IML-Teilgraphen bzw.\ \tokselection für Selektionen.
+Nach dem Präfix folgt der Name, der in GIANT vergeben wurde
+(siehe \ref{global_inspection}).
+
+Die erste Aktivierungsumgebung ist anfangs \emph{aktuell}.
+Dann wird der Ausdruck
+aus der Datei \gq{standard.gsl} ausgewertet. Dieser Ausdruck kann z.B.\ neue
+Objekte erzeugen und in \bottomenv Variablen an diese Objekte binden. Auf
+diese Weise wird die Sprachumgebung erstellt, die in Kapitel
+\ref{standard} beschrieben wird.
+
+\subsubsection{Vererbung von Aktivierungsumgebungen}
+
+Wann immer der GSL Interpreter die Auswertung eines benutzerdefinierten
+GSL Ausdrucks startet (\ref{interpreter_start}), wird eine neue
+Aktivierungsumgebung \newenv wird erzeugt. \newenv \emph{beerbt} dabei
+\bottomenv. \newenv wird aktuell bevor die Auswertung des benutzerdefinierten
+Ausdrucks beginnt. Nachdem die Auswertung abgeschlossen ist, wird \newenv
+zerstört und \bottomenv wird wieder aktuell.
+
+Falls während der Auswertung eines Ausdrucks die Aktivierung eines Scripts
+erfolgt, so wird eine neue Aktivierungsumgebung für die Auswertung
+dieses Scripts erzeugt. Diese neue Aktivierungsumgebung \newenv beerbt eine
+bestimmte Aktivierungsumgebung \oldenv, die durch die Aktivierungsinformation
+bestimmt wird (siehe \ref{script_activation}). \newenv wird aktuell.
+Nachdem die Auswertung des Script beendet ist wird \newenv zerstört und \oldenv
+wird wieder aktuell.
+
+Während ein Script ausgewertet wird können weitere Scripts aktiviert werden.
+Deshalb können mehrere Aktivierungsumgebungen gleichzeitig existieren. Auf
+diesen Aktivierungsumgebungen existiert eine Vererbungsbeziehung die durch
+eine partielle Ordnung beschrieben $\le$ werden kann:
+\begin{enumerate}
+\item Für zwei Aktivierungsumgebungen $A_1, A_2$ gilt: $($ falls $A_2$ beerbt
+$A_1 ) \Rightarrow A_1 \le A_2$
+\item Für jede Aktivierungsumgebung $A$ gilt: $A \le A$
+\item Für zwei Aktivierungsumgebung $A_1, A_2$ gilt:
+$A_1 \le A_2 \wedge A_2 \le A_1 \Rightarrow A_1 = A_2$
+\item Für drei Aktivierungsumgebungen $A_1, A_2, A_3$ gilt:
+$A_1 \le A_2 \wedge A_2 \le A_3 \Rightarrow A_1 \le A_3$
+\end{enumerate}
+
+\textbf{Anmerkung} Weil nach Start des GSL Interpreters eine erste
+Aktivierungsumgebung \bottomenv erzeugt wird, aufgrund der beschriebenen
+Vererbung und aufgrund der Transitivität
+von $\le$ gilt für jede Aktivierungsumgebung $A$:
+$\bottomenv \le A$.
+
+\subsubsection{Sichtbarkeit}
+\label{visibility}
+
+Annahme: Die Aktivierungsumgebung \newenv beerbt die Aktivierungsumgebung
+\oldenv. Dann bindet \newenv mindestens alle Variablen, die
+auch \oldenv bindet. In \newenv können zusätzlich
+\begin{enumerate}
+\item weitere Variablen gebunden werden, die in \oldenv nicht gebunden
+sind.
+\item Variablen, die in \oldenv gebunden sind, an andere Objekte
+gebunden werden (überladen).
+\end{enumerate}
+
+Eine Variable $v$ heißt \emph{lokal} in \newenv, falls sie eine der
+folgenden Bedingungen erfüllt:
+\begin{enumerate}
+\item Es existiert keine Aktivierungsumgebung \oldenv, die von \newenv
+beerbt wird oder
+\item \newenv beerbt \oldenv. $v$ ist in \oldenv an ein Objekt $o_1$
+gebunden ist und $v$ ist in \newenv an ein Objekt $o_2$ mit $o_1 \neq o_2$
+gebunden oder
+\item \newenv beerbt \oldenv. $v$ ist in \oldenv nicht gebunden und in
+$v$ ist in \newenv gebunden an irgendein Objekt.
+\end{enumerate}
+
+Jede Variable, die in \newenv an irgend ein Objekt gebunden ist, heißt
+\emph{sichtbar} in \newenv.
+
+Jede Variable, die in \newenv sichtbar ist, aber nicht lokal in \newenv ist,
+heißt \emph{global} in \newenv.
+
+\subsection{Aktivierung von Scripts}
+\label{script_activation}
+
+Ein Script ist ein Paar aus
+\begin{description}
+\item[Parameterliste] einer (möglicherweise leeren) Liste von Ausdrücken,
+deren Ergebnis Zugriffspfade auf Objekte sein müssen.
+\item[Rumpf] einem Ausdruck.
+\end{description}
+
+\subsubsection{Ablauf}
+\label{activation_process}
+
+Ein Script $S$ kann \emph{aktiviert} werden. Wenn $S$ aktiviert wird, dann
+wird eine neue Aktivierungsumgebung \newenv erzeugt. Es werden die Argumente
+des Aufrufs an die Parameter von $S$ übergeben. Der Rumpf von $S$ wird
+ausgewertet. Das Ergebnis der Auswertung von $S$ ist das Ergebnis der
+Auswertung des Rumpfs von $S$. Für eine genaue Beschreibung siehe
+\ref{script_activation}.
+
+\subsubsection{Vorraussetzung}
+
+Ein Script $S$ wird aktiviert durch Auswertung eines Ausdrucks, der aus einem
+Wert des Typs \tscriptreference besteht. Dieser Wert wird als
+Aktivierungsinformation bezeichet.
+
+Die Aktivierungsinformation bestimmt
+\begin{enumerate}
+\item Welches Script ausgeführt wird (Quelltext-Position von $S$ oder eine
+gleichwertige Darstellung).
+\item Welche Aktivierungsumgebung von der neuen Aktivierungsumgebung dieser
+Aktivierung beerbt wird. \label{allowed_environments}
+\end{enumerate}
+
+Das zu aktivierende Skript $S$ kann sich auf eine in $S$ globale Variable
+$v$ beziehen (diese Variable inspizieren, oder ihre Referenz nehmen).
+Es soll sichergestellt werden, dass die neue Aktivierungsumgebung \newenv nur
+solche Aktivierungsumgebungen \oldenv beerben kann, so dass die Variable $v$
+in \oldenv genau die Bedeutung hat, die der Autor von $S$ erwartet.
+Dies stellt Punkt \ref{allowed_environments} der vorangehenden Aufzählung
+sicher. \oldenv ist \emph{nicht} die aktuelle Aktivierungsumgebung, sondern
+die Aktivierungsumgebung, die zum Zeitpunkt der Auswertung der
+Script-Deklaration \ref{script_decl} aktuell war.
+
+\subsubsection{Parameterübergabe}
+\label{parameter_passing}
+
+In dem Ausdruck dessen Auswertung die Aktivierung veranlasst wird eine
+Liste von Argumenten $L_e = (e_1, ..., e_n)$ angegeben mit
+$n \in {0, 1, 2, ...}$ und $\forall 1 \le i \le n: (e_i$ ist ein Ausdruck$)$.
+Bevor die Aktivierung beginnt wird
+$L_e$ ausgewertet und hat als Ergebnis den Wert $L_a = (a_1, ..., a_n)$.
+
+Nachdem die Aktivierung begonnen hat, wird
+die Parameterliste ausgewertet (siehe Abschnitt \ref{script_activation}).
+Das Ergebnis dieser Auswertung muss ein Wert $L_p$ vom Typ
+Liste sein. Es muss gelten $L_p = (p_1, ..., p_n)$ mit
+$\forall 1 \le i \le n: ( p_i$ ist ein Zugriffspfad auf ein Objekt$)$.
+Andernfalls führt die Auswertung zu einem Laufzeitfehler.
+
+Dann wird für alle $i$ jedem Objekt das durch den Zugriffspfad $p_i$ erreicht
+wird der Wert $a_i$ zugewiesen. In GSL formuliert wird der Ausdruck
+\MakeShortVerb{\!}
+!(assign (!$p_1$!, !$a_1$!), ..., assign (!$p_n$!, !$a_n$!))!
+ausgewertet und sein Ergebnis verworfen (Hinweis: Dieser Ausdruck ist kein
+korrekter GSL-Ausdruck, sondern dient nur der intuitiven Erläuterung).
+
+Danach ist die Parameterübergabe abgeschlossen und der Rumpf des Scripts wird
+ausgewertet.
+
+\MakeShortVerb{\!}
+\textbf{Programmierrichtlinie} Für die Parameter $p_i$ sollte jeweils eine
+neue lokale Variable erzeugt werden, z.B. durch \gq{!+name!}.
+\DeleteShortVerb{\!}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{GSL vordefinierte Sprachumgebung}
+\section{Syntax und Semantik}
+\label{gsl_spec}
+
+\subsection{Notation}
+
+Die Syntax von GSL wird als kontextfreie Grammatik geschrieben.
+\begin{enumerate}
+\item Nichtterminale werden in einer serifenlosen Schrift dargestellt
+(z.B. \nidentifier).
+\item Terminalsymbole werden fett gedruckt (z.B. \toknull).
+\item Eine Regel wird geschrieben als 
+\begin{EBNF}
+\item[{\sl linke Seite}] {\sl rechte Seite}
+\end{EBNF}
+wobei auf der linken Seite genau ein Nichtterminal steht, das bei Anwendung
+der Regel durch die rechte Seite ersetzt werden darf.
+\item Alternativen werden angegeben als
+{\sl erste Möglichkeit} | {\sl zweite Möglichkeit}
+\item Optionale Teile werden angegeben in $[$ {\sl optional} $]$
+\item Die Klammern $\langle$ {\sl Inhalt} $\rangle$ werden verwendet um ihren
+Inhalt zusammenzufassen.
+\item Ein Teil kann gar nicht, einmal oder beliebig oft expandiert werden,
+wenn er von einem * gefolgt wird.
+\end{enumerate}
+
+Die Beschreibung der Bedeutung von GSL erfolgt in einer Aufzählung, die
+unter der Regel steht, die sie erläutert. In der Beschreibung werden
+die Nichtterminale aus der rechten Seite der erläuterten als Platzhalter
+für ihre Ableitung (also den Terminalstring zu dem sie im Programmtext
+erweitert sind) verwendet.
+
+\subsection{Schlüsselwörter und lexikalische Elemente}
+\label{tokens}
+
+\MakeShortVerb{\!}
+\begin{tabular}{l l l l}
+\tokopenbracket & \tokclosebracket & \tokcurlyopen  & \tokcurlyclose \\
+\tokbegincomment & \tokquote & \tokcomma & \tokdot \\
+\toktick & \tokplus & \tokunderscore & !\!\\
+
+\tokfalse & \toktrue & \toknull & \\
+\tokselection & \toksubgraph & &
+\end{tabular}
+\DeleteShortVerb{\!}
+
+Es wird zwischen Groß- und Kleinschreibung unterschieden.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Kommentare}
+
+In GSL-Dateien können Kommentare eingegeben werden, die auf die Semantik
+des Programms keinen Einfluss haben. Ein Kommentar beginnt mit \tokbegincomment
+und endet am Ende der Zeile. Alle Zeichen dazwischen gehören zu dem Kommentar.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{White Space}
+
+Leerzeichen, Tabulatoren, Zeilenumbrüche und Kommentare werden als Trennzeichen
+verwendet. Zwischen Schlüsselwörtern, den in \ref{tokens} aufgeführten
+Zeichen und \nidentifier dürfen beliebig viele Trennzeichen geschrieben werden.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Identifier}
+
+\begin{EBNF}
+\item[\nidentifier] \nchar $\langle$ \nchar | \ndigit | \tokunderscore
+ $\rangle$*
+\end{EBNF}
+
+\begin{enumerate}
+\item Der Text eines \nidentifier darf nicht gleich sein wie ein
+GSL-Schlüsselwort (siehe \ref{tokens}).
+\item Die Groß- und Kleinschreibung eines \nidentifier wird
+unterschieden (Beispiel: \gq{Name} $\neq$ \gq{name}).
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Literale}
+
+\begin{EBNF}
+\item[\nliteral] \nbooleanliteral | \nintliteral | \nstringliteral
+                 | \nnullliteral
+\end{EBNF}
+
+\begin{enumerate}
+\item Ein \nliteral hat einen bestimmten Typ, und einen Wert dieses
+Typs.
+\item Typ und Wert eines \nliteral stehen bereits zum Übersetzungszeitpunkt
+fest. (siehe entsprechendes Nichtterminal der rechten Seite).
+\end{enumerate}
+
+\subsubsection{Boolean-Literal}
+
+\begin{EBNF}
+\item[\nbooleanliteral] \tokfalse | \toktrue
+\end{EBNF}
+
+\begin{enumerate}
+\item Ein \nbooleanliteral ist vom Typ \tboolean.
+\item Der Wert ist \tokfalse, falls die rechte Seite \tokfalse gewählt wurde.
+\item Der Wert ist \toktrue, falls die rechte Seite \toktrue gewählt wurde.
+\end{enumerate}
+
+\subsubsection{Integer-Literal}
+
+\begin{EBNF}
+\item[\nintliteral] \ndigit \ndigit{}*
+\end{EBNF}
+
+\begin{enumerate}
+\item Ein \nintliteral ist vom Typ \tnatural.
+\item Der Wert ist die Interpretation des Texts im Zehnersystem.
+\end{enumerate}
+
+\subsubsection{String-Literal}
+
+\MakeShortVerb{\!}
+\begin{EBNF}
+\item[\nstringliteral] \tokquote $\langle$ !\!\tokquote |
+                       !\\! | !\!n | !\!t |
+                       \nstringchar $\rangle$*
+                       \tokquote
+\end{EBNF}
+
+Dabei steht \nstringchar für jedes Zeichen des (implementationsabhängigen)
+Zeichensatzes außer den Zeichen !\! und \tokquote.
+
+\begin{enumerate}
+\item Ein \nstringliteral ist vom Typ \tstring.
+\item Der Wert ist die ersetzte Folge von Zeichen zwischen den \tokquote.
+\item Die Zeichenfolge !\!\tokquote wird dabei ersetzt durch
+ein einfaches \tokquote.
+\item !\\! wird ersetzt durch das Zeichen !\!.
+\item !\!n wird ersetzt durch das Zeichen Zeilenumbruch.
+\item !\!t wird ersetzt durch ein Tabulatorzeichen.
+\end{enumerate}
+\DeleteShortVerb{\!}
+
+\subsubsection{Null-Literal}
+
+\begin{EBNF}
+\item[\nnullliteral] \toknull
+\end{EBNF}
+
+\begin{enumerate}
+\item Der Typ eines \nnullliteral ist der anonyme Typ. Dieser Typ hat keinen
+Namen.
+\item Der Wert ist \toknull.
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Ausdrücke}
+
+\begin{EBNF}
+\item[\nexpression] \nliteral | \ninspection | \nreference | \nscriptdecl
+                    | \nlist | \nscriptactivation
+\end{EBNF}
+
+\begin{enumerate}
+\item \nexpression können zur Laufzeit \emph{ausgewertet} werden.
+\item Während der Auswertung kann ein Laufzeitfehler auftreten. In diesem
+Fall stoppt die Auswertung (siehe \ref{run_time_error}).
+\item Um eine \nexpression auszuwerten wird die entsprechende rechte Seite
+ausgewertet. Näheres dazu ist der Beschreibung der rechten Seite zu entnehmen.
+\item Die Auswertung einer \nexpression kann \emph{Seiteneffekte} haben.
+Die Seiteneffekte hängen von der gewählten rechten Seite ab.
+\item Die Auswertung einer \nexpression hat, falls kein Laufzeitfehler
+aufgetreten ist ein Ergebnis. Ergebnis ist stets ein Wert eines bestimmten
+Typs. Das Ergebnis ist identisch mit dem Ergebnis der Auswertung der rechten
+Seite für die rechten Seiten \nliteral, \ninspection, \nreference,
+\nscriptdecl, \nscriptactivation.
+\item Wurde die rechte Seite \nlist gewählt und sei $L = (w_1, ..., w_n)$ mit
+$n \in {0, 1, 2, ...}$ das Ergebnis der Auswertung der \nlist. Das Ergebnis
+der Auswertung der \nexpression ist entweder der letzte Listen-Eintrag $w_n$
+falls $n > 0$ oder \toknull falls $n = 0$
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Inspektion}
+
+\begin{EBNF}
+\item[\ninspection] \nvisiblevar | \nglobalvar
+\end{EBNF}
+
+\begin{enumerate}
+\item Eine \ninspection inspiziert den Wert des Objekts, das an die
+zu inspizierende Variable gebunden ist (siehe \ref{variable_inspection}).
+\item Die verschiedenen rechten Seiten werden verwendet um Variablen zu
+unterscheiden, die in verschiedenen Aktivierungsumgebungen gebunden sind.
+\item Das Ergebnis der \ninspection ist identisch mit dem Ergebnis der
+gewählten rechten Seite.
+\end{enumerate}
+
+\begin{EBNF}
+\item[\nvisiblevar] \nidentifier
+\end{EBNF}
+
+\begin{enumerate}
+\item Inspiziert das Objekt, das in der aktuellen Aktivierungsumgebung
+an die sichtbare Variable mit Name
+\nidentifier gebunden ist (siehe \ref{visibility}).
+\item Falls keine sichtbare Variable dieses Namens existiert, dann ist
+die Auswertung ein Laufzeitfehler. Andernfalls ist die Inspektion
+erfolgreich.
+\item Falls die Inspektion erfolgreich ist, so ist das Ergebnis der Wert
+des Objekts an den die Variable gebunden ist.
+\end{enumerate}
+
+\label{global_inspection}
+\begin{EBNF}
+\item[\nglobalvar] $\langle$ \toksubgraph | \tokselection
+                   $\rangle$ \tokdot \nidentifier
+\end{EBNF}
+
+\begin{enumerate}
+\item Falls \toksubgraph angegeben ist:
+  \begin{enumerate}
+  \item Diese Inspektion ist eine Schnittstelle zu GIANT.
+  \item \nidentifier 
+  \item Falls in GIANT ein IML-Teilgraph $T$ mit Namen \nidentifier existiert,
+  dann ist das Ergebnis dieser Inspektion ein Wert $M$ vom Typ \tobjectset.
+  $M$ enthält alle Graph-Knoten aus $T$ und alle Graph-Kanten aus $T$ und
+  nichts sonst.
+  \item Falls in GIANT $T$ nicht existiert, so ist die Auswertung dieser
+  Inspektion ein Laufzeitfehler.
+  \item Formal erfolgt eine Inspektion der Variable mit Namen
+  \toksubgraph.\nidentifier. Diese Variable ist, falls $T$ existiert, in der
+  Aktivierungsumgebung \bottomenv gebunden.
+  \end{enumerate}
+\item Falls \tokselection angegeben ist:
+  \begin{enumerate}
+  \item Diese Inspektion ist eine Schnittstelle zu GIANT.
+  \item Falls der GSL Interpreter im Kontext eines Anzeigefensters ausgeführt
+  wird und in diesem Anzeigefenster eine Selektion $S$ mit Namen \nidentifier
+  existiert, dann ist das Ergebnis dieser Inspektion ein Wert $M$ vom Typ
+  \tobjectset.
+  $M$ enthält alle Fenster-Knoten aus $S$ und alle Fenster-Kanten aus $S$
+  und nichts sonst.
+  \item Falls der GSL Interpreter nicht im Kontext eines Anzeigefensters
+  ausgeführt wird, so ist die Auswertung dieser Inspektion ein Laufzeitfehler.
+  \item Falls der GSL Interpreter im Kontext eines Anzeigefensters ausgeführt
+  wird und in diesem Anzeigefenster keine Selektion mit Namen \nidentifier
+  existiert, so ist die Auswertung dieser Inspektion ein Laufzeitfehler.
+  \item Formal erfolgt eine Inspektion der Variable mit Namen
+  \tokselection.\nidentifier. Diese Variable ist, falls $T$ existiert, in der
+  Aktivierungsumgebung \bottomenv gebunden.
+  \end{enumerate}
+\end{enumerate}
+
+
+%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Referenz}
+
+\begin{EBNF}
+\item[\nreference] \nvisibleref | \nvarcreation | \nglobalref
+\end{EBNF}
+
+\begin{enumerate}
+\item Eine \nreference nimmt die Referenz einer Variable (siehe
+\ref{variable_reference}). Die verschiedenen rechten Seiten werden
+verwendet um Variablen zu unterscheiden, die in verschiedenen
+Aktivierungsumgebungen gebunden sind.
+\item Das Ergebnis der \nreference ist identisch mit dem Ergebnis der
+gewählten rechten Seite.
+\end{enumerate}
+
+\begin{EBNF}
+\item[\nvisibleref] \toktick \nidentifier
+\end{EBNF}
+
+\begin{enumerate}
+\item Nimmt die Referenz der sichtbaren Variable mit Name
+\nidentifier (siehe \ref{visibility}).
+\item Falls keine sichtbare Variable dieses Namens existiert, so führt die
+Auswertung zu einem Laufzeitfehler. Andernfalls ist die Auswertung
+erfolgreich.
+\item Falls die Auswertung erfolgreich ist, so ist das Ergebnis ein
+Zugriffspfad auf das Objekt an das die Variable gebunden ist.
+\end{enumerate}
+
+\begin{EBNF}
+\item[\nvarcreation] \tokplus \nidentifier
+\end{EBNF}
+
+\begin{enumerate}
+\item Bindet in der aktuellen Aktivierungsumgebung (siehe \ref{current_env})
+die Variable mit Namen \nidentifier an ein neues Objekt.
+\item Falls in der aktuellen Aktivierungsumgebung bereits eine Variable
+mit diesem Namen gebunden war, so führt die Auswertung zu einem Laufzeitfehler.
+Andernfalls ist die Auswertung erfolgreich.
+\item Das neue Objekt hat den Wert \toknull.
+\end{enumerate}
+
+\begin{EBNF}
+\item[\nglobalref] \toksharp $[$ $\langle$ \tokglobal | \toksubgraph 
+                                           | \tokselection $\rangle$
+                              \tokdot $]$ \nidentifier
+\end{EBNF}
+
+\begin{enumerate}
+\item Falls \tokglobal angegeben ist, oder falls der optionale Teil
+nicht angegeben ist:
+  \begin{enumerate}
+  \item Nimmt die Referenz der Variable mit Name \nidentifier, die in der
+  ersten Aktivierungsumgebung (siehe \ref{bottom_env}) gebunden ist.
+  \item Falls in der ersten Aktivierungsumgebung keine Variable dieses
+  Namens gebunden ist, dann wird ein neues Objekt $o$ erzeugt und in der
+  ersten Aktivierungsumgebung wird eine neue Variable mit Name \nidentifier
+  an $o$ gebunden. $o$ hat den Wert \toknull.
+  \item Ergebnis ist ein Zugriffspfad auf das Objekt, an das die Variable
+  mit Name \nidentifier in der ersten Aktivierungsumgebung gebunden ist.
+  \end{enumerate}
+\item Falls \toksubgraph angegeben ist:
+  \begin{enumerate}
+  \item Diese Zugriffspfadbestimmung ist eine Schnittstelle zu GIANT.
+  \item Falls in GIANT kein IML-Teilgraph mit Name \nidentifier existiert, dann
+  erzeugt GIANT diesen IML-Teilgraph. Er enthält keine Graph-Knoten und keine
+  Graph-Kanten.
+  \item Das Ergebnis ist ein Zugriffspfad auf den IML-Teilgraph mit Name
+  \nidentifier.
+  \end{enumerate}
+\item Falls \tokselection angegeben ist:
+  \begin{enumerate}
+  \item Diese Zugriffspfadbestimmung ist eine Schnittstelle zu GIANT.
+  \item Falls der GSL Interpreter nicht im Kontext eines Anzeigefensters
+  ausgeführt wird, so führt die Auswertung dieser Zugriffspfagbestimmung zu
+  einem Laufzeitfehler. Andernfalls ist die Auswertung erfolgreich.
+  \item Ist die Auswertung erfolgreich und existiert im Anzeigefenster keine
+  Selektion mit Name \nidentifier, so erzeugt GIANT im Anzeigefenster diese
+  Selektion. Sie enthält keine Fenster-Knoten und keine Fenster-Kanten.
+  \item Ist die Auswertung erfolgreich, so ist das Ergebnis ein Zugriffspfad
+  auf die Selektion mit Name \nidentifier in dem Anzeigefenter, in dessen
+  Kontext der GSL Interpreter ausgeführt wird.
+  \end{enumerate}
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Scriptdeklaration}
+\label{script_decl}
+
+\begin{EBNF}
+\item[\nscriptdecl] \tokcurlyopen \nlist \tokcomma \nexpression \tokcurlyclose
+\end{EBNF}
+
+\begin{enumerate}
+\item Eine \nscriptdecl deklariert ein neues Script $S$.
+\item Ergebnis ist eine Aktivierungsinformation $I$ (siehe
+\ref{activation_precond}) vom Typ \tscriptreference für $S$.
+\item Die zulässige Aktivierungsumgebung in $I$ ist die aktuelle
+Aktivierungsumgebung
+\item Die \nlist heißt Parameterliste von $S$ (vgl. \ref{script_activation}).
+\item Die \nexpression heißt Rumpf von $S$ (vgl. \ref{script_activation}).
+\end{enumerate}
+
+\textbf[Hinweis] Falls $I$ an ein Objekt $o$ zugewiesen wird, so kann die
+zulässige Aktivierungsumgebung des Werts von $o$ verschieden sein von der
+zulässigen Aktivierungsumgebung von $I$. Nähere Informationen dazu sind
+in der Beschreibung der Zuweisung zu finden.
+
+%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Liste}
+
+\begin{EBNF}
+\item[\nlist] \tokopenbracket $[$ \nexpression $\langle$ \tokcomma \nexpression
+              $\rangle$* $]$ \tokclosebracket
+\end{EBNF}
+
+\begin{enumerate}
+\item Eine \nlist kann ausgewertet werden und hat als Ergebnis einen Wert
+vom Typ \tlist.
+\item Zur Auswertung einer \nlist werden der Reihe nach von links nach rechts
+alle \nexpression ausgewertet, falls überhaupt welche angegeben sind.
+\item Die Auswertung führt zu einem Laufzeitfehler, falls die Auswertung einer
+der \nexpression zu einem Laufzeitfehler führt. Andernfalls ist die Auswertung
+erfolgreich.
+\item Falls die Auswertung erfolgreich ist, so ist das Ergebnis eine
+\tlist, die die Ergebnisse aller \nexpression in
+ihrer korrekten Reihenfolge und sonst nicht enthält.
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Scriptaktivierung}
+\label{script_activation}
+
+\begin{EBNF}
+\item[\nscriptactivation] \nexpression \nlist
+\end{EBNF}
+
+\begin{enumerate}
+\item Der Wert $I$ der \nexpression muss vom Typ \tscriptreference sein.
+Andernfalls führt die Auswertung zu einem Laufzeitfehler. $I$ enthält einen
+Zugriffspfad auf das Skript $S$.
+\item Es wird der in Kapitel \ref{activation_process} beschriebene Ablauf
+durchgeführt:
+  \begin{enumerate}
+  \item Die \nlist wird ausgewertet.
+  \item Es wird eine neue Aktivierungsumgebung $A$ erzeugt. $A$ beerbt die
+  größte untere Schranke der aktuellen Aktivierungsumgebung und der zulässigen
+  Aktivierungsumgebung von $I$.
+  \item $A$ wird aktuelle Aktivierungsumgebung.
+  \item Die Parameterliste $P$ von $S$ wird ausgewertet. Falls einer der Werte
+  in $P$ nicht vom Typ \tvarreference ist, so ist dies ein Laufzeitfehler.
+  \item $P$ muss genauso viele Werte enthalten wie \nlist, andernfalls ist
+  dies ein Laufzeitfehler.
+  \item Den \tvarreference in $P$ werden die Werte in \nlist zugewiesen
+  (genaue Beschreibung siehe \ref{parameter_passing}).
+  \item Die \nexpression wird ausgewertet.
+  \item $A$ wird zerstört. Alle Objekte, die von lokalen Variablen in $A$
+  gebunden wurden dürfen zerstört werden.
+  \item Die Aktivierungsumgebung, die zuvor aktuell war wird wieder aktuell.
+  \nexpression.
+  \item Falls kein Laufzeitfehler aufgetreten ist, so ist das Ergebnis der
+  Auswertung das Ergebnis der Auswertung der \nexpression.
+  \end{enumerate}
+\end{enumerate}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Vordefinierte Sprachumgebung}
 \label{predef_env}
 
-\begin{verbatim}
-Create_Window
-  (Window_Name : string;
-   Layout_Algo : string;
-   Content     : subgraph) is
-// ... implementation defined ...
-\end{verbatim}
+\newenvironment{scriptdef}[1]
+{%begin
+  \begin{tabular}{|p{0.25\textwidth}p{0.25\textwidth}p{0.5\textwidth}|} %p{3cm} p{3cm} p{7cm} |}
+  \multicolumn{3}{l}{\textbf{{\large #1}}} \\
+  \hline
+}
+{%end
+  \hline
+  \end{tabular}
+}
 
-\begin{verbatim}
-Insert_Into_Window
-  (Window_Name : string;
-   Layout_Algo : string;
-   New_Content : subgraph) is
-// ... implementation defined ...
-\end{verbatim}
+\newcommand{\sparam}[3]{#1 & #2 & #3 \\}
+\newcommand{\sresult}[2]{\hline \textbf{Ergebnis} & #1 & #2 \\}
+\newcommand{\saction}[1]{\hline \multicolumn{3}{|p{\textwidth}|}{#1} \\}
 
-\begin{verbatim}
-Set_Selection
-  (Window_Name    : string;
-   Selection_Name : string;
-   Value          : selection) is
-// ... implementation definded ...
-\end{verbatim}
 
-\begin{verbatim}
-Set_Subgraph
-  (Subgraph_Name : string;
-   Value         : subgraph) is
-// ... implementation defined ...
-\end{verbatim}
+In diesem Kapitel werden Scripts beschrieben, die in GSL standardmäßig zur
+Verfügung stehen. Dabei wird folgende Form verwendet:
+
+\begin{scriptdef}{Variablenname}
+\sparam{Param\_Name}{Typ}{Beschreibung des Parameters. In der Spalte \gq{Typ}
+werden alle möglichen Typen aufgelistet, die zulässig sind. Falls ein Wert
+eines anderen Typs übergeben wird, so soll ein Laufzeitfehler auftreten.}
+\sparam{Second\_Name}{Typ}{Die Parameter werden in der Reihenfolge
+aufgelistet, in der die entsprechenden Argumente angegeben werden müssen.}
+\sresult{Typ}{Beschreibung des Ergebnis, in der Spalte \gq{Typ} wird eine
+Zusicherung angegeben. Das Ergebnis muss ein Wert dieses Typs sein.}
+\saction{Beschreibung der Funktion und des genauen Ablaufs des Scripts.
+Der Variablenname ist der Name einer Variable, die eine \tscriptreference auf
+das beschriebene Script enthält.}
+\end{scriptdef}
+
+
+\subsection{Elementare Scripts}
+
+\begin{scriptdef}{assign}
+\sparam{lhs}{\tvarreference}{Zugriffspfad auf eine sichtbare Variable}
+\sparam{rhs}{jeder Typ}{Zuzuweisender Wert eines beliebigen Typs. Es gibt
+jedoch gewisse Einschränkungen (siehe Beschreibung)}
+\sresult{}{\toknull}
+\saction{Das Objekt, das durch lhs referenziert wird, ändert seinen Wert
+zu rhs. Ein Laufzeitfehler tritt auf, falls
+das Objekt, das durch lhs referenziert wird, in der aktuellen
+Aktivierungsumgebung durch eine globale Variable gebunden ist und rhs einen
+Wert eines der Typen 
+  \begin{enumerate}
+  \item \tscriptreference
+  \item \tvarreference
+  \end{enumerate}
+hat.}
+\end{scriptdef}
+
+\begin{scriptdef}{if}
+\sparam{condition}{\tboolean oder \tscriptreference}{Ein Wert vom Typ
+\tboolean oder die Aktivierungsinformation für ein parameterloses Script,
+dessen Ergebnis
+ein Wert vom Typ \tboolean ist.}
+\sparam{true\_branch}{jeder Typ}{Falls der Typ \tscriptreference ist, so muss
+true\_branch die Aktivierunginformation für ein parameterloses Script sein,
+dessen Ergebnis beliebigen Typs sein darf.}
+\sparam{false\_branch}{jeder Typ}{Falls der Typ \tscriptreference ist, so muss
+false\_branch die Aktivierunginformation für ein parameterloses Script sein,
+dessen Ergebnis beliebigen Typs sein darf.}
+\sresult{von Argumenten abhängig}{Siehe Beschreibung}
+\saction{Falls condition eine Aktivierungsinformation ist, so wird das
+entsprechende Script ohne Argumente aktiviert. Es gibt einen Wert $b$ vom Typ
+\tboolean zurück. Falls condition vom Typ \tboolean ist, so ist
+$b = $condition.
+
+Falls $b$ erfüllt ist, so ist $c = $ true\_branch, andernfalls
+$c = $ false\_branch.
+
+Falls $c$ eine Aktivierungsinformation ist, so wird das referenzierte
+Script ohne Argumente aktiviert. Ergebnis des Scripts if ist das Ergebnis
+von $c$. Falls $c$ keine Aktivierungsinformation ist, so ist das Ergebnis
+des Scripts if der Wert von $c$.}
+\end{scriptdef}
+
+\subsection{Interaktion mit GIANT}
+
+In diesem Kapitel werden alle Aktionen definiert, die mit GSL ausgelöst werden
+können.
+
+
+\begin{scriptdef}{Create\_Window}
+\sparam{Window\_Name}{\tstring}{Der Name des zu erzeugenden Anzeigefensters.}
+\sresult{\tboolean}{\toktrue falls das Anzeigefenster erzeugt wurde,
+\tokfalse sonst.}
+\saction{Erzeugt ein neues Anzeigefenster mit Name Window\_Name in GIANT, falls
+ein solches noch nicht existiert.}
+\end{scriptdef}
+
+\begin{scriptdef}{Insert\_Into\_Window}
+\sparam{Window\_Name}{\tstring}{}
+\sparam{Layout\_Algo}{\tstring}{}
+\sparam{Add\_Content}{\tstring}{}
+\sresult{}{\toknull}
+\saction{Bildet die größte Teilmenge $G$ von Content, so dass jede IML-Kante
+in $G$ zu genau zwei IML-Knoten in $G$ inzident ist und $G$ alle IML-Knoten
+aus Content enthält.
+Wendet den Layoutalgorithmus Layout\_Algo auf Content an. Fügt das Resultat
+in das Anzeigefenster mit Name Window\_Name ein.}
+\end{scriptdef}
+
+
+\subsection{Häufig verwendete Scripts}
+
+Die hier definierten Scripts bilden eine Umgebung, die das Schreiben von
+benutzerdefinierten Scripts vereinfachen soll. Jedes hier vorgestellte Script
+ist redundant.
 
 
 
