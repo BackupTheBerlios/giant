@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.97 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.98 $
 --  $Author: squig $
---  $Date: 2003/09/21 22:48:32 $
+--  $Date: 2003/09/23 13:23:17 $
 --
 
 with Ada.Strings.Unbounded;
@@ -1298,7 +1298,11 @@ package body Giant.Controller is
          Iterator := String_Lists.MakeListIter (List);
          while String_Lists.More (Iterator) loop
             String_Lists.Next (Iterator, Window_Name);
-            Highlight_Subgraph (To_String (Window_Name));
+            if (Projects.Is_Vis_Window_Memory_Loaded
+                (Current_Project, To_String (Window_Name))) then
+
+               Highlight_Subgraph (To_String (Window_Name));
+            end if;
          end loop;
          String_Lists.Destroy (List);
          Gui_Manager.Update_Subgraph (Name);
