@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.21 $
+--  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.22 $
 --  $Author: koppor $
---  $Date: 2003/10/02 10:30:18 $
+--  $Date: 2003/10/06 14:33:29 $
 --
 
 with Ada.Exceptions;
@@ -248,8 +248,6 @@ package body Giant.Layout_Factory is
                           (Graph_Lib.Selections.Get_All_Nodes
                            (Selection_To_Layout), Node) then
                            Predecessor_Found := True;
-
-                           Logger.Debug ("Looking at " & Graph_Lib.Node_Id_Image (Node));
 
                            Current_Node := Node;
 
