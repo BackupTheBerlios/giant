@@ -1,5 +1,6 @@
 include ../Makefile.incl
 
-view: spec.ps
+view: full
 	gv spec.ps
 
+full: spec.ind spec.ps
