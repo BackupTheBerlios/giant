@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.14 $
+-- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.15 $
 -- $Author: schwiemn $
--- $Date: 2003/07/01 21:42:55 $
+-- $Date: 2003/07/02 11:31:19 $
 --
 -- -----
 -- This package holds the functionality needed to access and handle
@@ -124,8 +124,8 @@ package Giant.Config_Settings is
         
        -- You may enter a sequence of paths separated by the OS' 
        -- path separator for environment variables
-       (To_UStr ("GSL.Include"),
-        To_UStr ("./"), null),        
+       (To_UStr ("GSL.Include_Paths"),
+        To_UStr ("."), null),        
                 
        (To_UStr ("Main_Window.Height"),
         To_UStr ("400"),

@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.13 $
+-- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.14 $
 -- $Author: schwiemn $
--- $Date: 2003/07/01 21:42:55 $
+-- $Date: 2003/07/02 11:31:19 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Strings.Fixed;
@@ -197,7 +197,7 @@ package body Giant.Config_Settings is
               (File_Management.Get_Absolute_Path_To_Directory_From_Relative
                (GNAT.Directory_Operations.Get_Current_Dir,
                 DOM.Core.Elements.Get_Attribute
-                (A_Setting_Node, "absolute_path_root")));
+                (A_Setting_Node, "root_directory")));
          exception
             when File_Management.Directory_Does_Not_Exist_Exception =>
                Config_Data.Abs_Path_Root :=
