@@ -1,9 +1,10 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.7 $
-%  $Date: 2003/02/17 08:34:03 $
-%  $Author: schwiemn $
+%  $RCSfile: gui.tex,v $, $Revision: 1.8 $
+%  $Date: 2003/02/18 12:36:18 $
+%  $Author: birdy $
 %
-%  Description:
+%  Description: Bis zu Revision 1.6 sind UseCase-artige Beschreibungen enthalten,
+%  die für UseCases nützlich sein könnten. 
 %
 % ==============================================================================
 
@@ -21,580 +22,282 @@ immer von links nach rechts oder von oben nach unten beschrieben.
 Sofern nicht anders angegeben, sind alle Ausgaben immer linksbündig
 formatiert.
 
-
 \section {Main Window}
-
-  \subsection {Kopfzeile}
-  KURZE Beschreibung aller Inofrmationen, die in der Kopfzeile dargestellt werden.
- 
-  
-  \subsection {Menüleiste}
-  Beschreibung des Hauptmenüs. Weiter Gliedern
-
-    \subsubsection {Menü-Datei}
-    Aufzählung aller einzelnen Menüeinträge im Menü Datei.  
-
-      \begin{itemize}
-
-         \item Projekt laden
-  
-
-      \end{itemize}
-
-    \subsubsection {Info}      
-
-       \begin{itemize}
-
-          \item Menüeintrag
-  
-
-        \end{itemize}
-     
-
-  \subsection {Statuszeile}
-
-
-  \subsection {Window List}
-  GANZ KURZE BESCHREIBUNG
-   
-   
-    \subsubsection {Inhalt}
-   
-
-    
-    \subsubsection {PopUp Menü Window list}
-    
-    \begin{itemize}
-      
-      \item Show Window
-
-      \item WEITERE
-    
-
-    \end{itemize}
-
-
-  \subsection {Zugehörige Dialoge}
-  KURZE Beschreibung aller DIALOGE die NUR!!!! vom HAUPTFENSTER AUS erreichbar sind.
-
-
-\section {Anzeigefenster}
-
-  \subsection {Minimap}
-
-
-
-\section {Anfrage-Dialog}
-
-\section {Fehlermelde-Dialog}
-
-
-
-
-
-\subsection{Das Hauptmenü}   
-Kill-Button, der automatisch alle 
-
-\subsection{Popup-Menüs}
-
-\subsection{Hauptfenster}
 
 Im Hauptfenster (MAIN\_WINDOW), das es nur einmal gleichzeitig
 gibt, werden vorhandene Anzeigefenster und vorhandene
 IML-Teilgraphen angezeigt. Über Popup-Menues können Teilgraphen
 und Anzeigefenster manipuliert werden.
 
-In der Kopfzeile des Hauptfensters steht GIANT : (Name der IML-Datei)
-oder GIANT : <Keine IML-Datei geladen>.
-Das Fenster hat eine Pulldown-Menüleiste ** (Menüs).
-
 Im Fenster befinden sich zwei Listen, zuoberst WINDOW\_LIST (2 Spalten),
-darunter eine dazugehörige Buttonleiste und
-wiederum darunter SUBGRAPH\_LIST (4 Spalten) mit dazugehöriger Buttonleiste.
-
-WINDOW\_LIST hat die Spalten WINDOW\_NAME und WINDOW\_OPEN. In WINDOW\_NAME
-wird der Name der Anzeigefenster dargestellt, in WINDOW\_OPEN befindet
-sich entweder ein Strich-Symbol (Fenster nicht geöffnet) oder ein Häkchensymbol
-(Fenster geöffnet). 
-
-SUBGRAPH\_LIST hat die Spalten Subgraph Name (SUBGRAPH\_NAME),
-Nodes (SUBGRAPH\_NODES), Edges (SUBGRAPH\_EDGES) und Highlight Color
-(SUBGRAPH\_HIGHLIGHT\_COL).
-
-In Subgraph Name stehen die (benutzerdefinierten) Namen der existierenden
-Subgraphen, in Nodes die Anzahl der Knoten des Subgraphen,
-in Edges die Anzahl der Kanten und in Highlight Color ein Kästchen mit der Farbe,
-die verwendet wird, wenn dieser Subgraph markiert wird.
-
-
-
-\subsection{Buttons von WINDOW\_LIST}
-
-Die Buttonleiste von WINDOW\_LIST hat folgende Buttons:
-
-\subsubsection{Fenster öffnen}
-
-Fenster öffnen (dabei ist immer das Fenster gemeint dessen Eintrag
-in der Liste markiert ist), öffnet das betreffende Fenster
-auf dem Bildschirm. Ist es schon offen, so wird es in den Vordergund
-gebracht.
-
-\subsubsection{Fenster schließen}
-
-Fenster schließen (dabei ist immer das Fenster gemeint dessen Eintrag
-in der Liste markiert ist), schließt das betreffende Fenster
-auf dem Bildschirm. Ist es schon geschlossen, so passiert nichts.
-
-\subsubsection{Fenster löschen}
-
-Fenster löschen (dabei ist immer das Fenster gemeint dessen Eintrag
-in der Liste markiert ist), löscht nach einer Sicherheitsabfrage
-Fenster <Name> wirklich löschen? das Fenster aus dem Speicher.
-
-\subsubsection{Neues Fenster}
-
-Es wird ein neues leeres Fenster erstellt, ein Dialog
-NEW\_WINDOW\_NAME mit dem Text Fenstername eingeben und zwei
-Buttons Erstellen (NEW\_WINDOW\_CREATE) und Abbruch
-(NEW\_WINDOW\_CANCEL) erscheint, in dem der Fenstername eingegeben
-werden kann.
-Bei leerem, schon vorhandenem oder ungültigem Fensternamen 
-werden entsprechend drei verschiedene Fehlermeldungen Fenstername
-leer bzw. vorhanden bzw. ungültig ausgegeben, NEW\_WINDOW\_NAME
-bleibt offen.
-Beim Klicken auf Abbruch wird NEW\_WINDOW\_NAME geschlossen.
-
-\subsubsection{IML-Teilgraph einfügen}
-
-Mit diesem Button kann ein IML-Teilgraph in ein Fenster
-eingefügt werden. Dabei sind der IML-Teilgraph in der unteren
-Liste anzuwählen und das Fenster in der oberen Liste.
-Es erfolgt eine Sicherheitsabfrage INSERT\_WINDOW\_GRAPH in
-einem Fenster Wirklich Teilgraph <Teilgraph> in Fenster
-<Fenster> einfügen?.
-Bei Klicken von ja wird eingefügt, bei Klicken von nein passiert
-nichts.
-
-\subsubsection{Fenster exportieren}
-
-Das in WINDOW\_LIST selektierte Fenster wird in einem
-GIANT-Internen Dateiformat in eine Datei exportiert.
-Es erscheint ein Dateiauswahlfenster, in dem der Dateiname
-angegeben werden kann.
-Falls die angegeben Datei schon existiert, erscheint eine
-Sicherheitsabfrage Datei <Name> wirklich überschreiben?,
-und nur bei Ja wird die Datei überschrieben, bei
-Nein passiert nichts.
-
-\subsubsection{Fenster importieren}
-
-Es erscheint ein Dateiauswahlfenster, in dem der Dateiname
-angegeben werden kann.
-Die angegebene Datei wird gelesen und das darin
-gespeicherte Fenster in WINDOW\_LIST eingefügt.
-
-
-% ------------------------------
-
-\subsection{Buttons von SUBGRAPH\_LIST}
-
-Die Menüleiste von SUBGRAPH\_LIST hat folgende Buttons:
-
-\subsubsection{hervorheben}
-
-Graphische Hervorhebung des in SUBGRAPH\_LIST angewählten
-Teilgraphen in allen Fenstern mit der unter SUBGRAPH\_COL
-festgelegten Farbe.
-
-\subsubsection{Hervorhebungsfarbe ändern}
-
-Änderung der Farbe, mit der der Subgraph hervorgehoben
-wird, wenn die Funktion hervorheben benutzt wird.
-Beit Betätigung dieses Buttons erscheint ein GTK
-Color chooser, mit dem der Nutzer die Hervorhebungsfarbe
-des Subgraphen einstellen kann.
-Nach Bestätigung der Farbe im Color chooser mit OK
-ändert sich die Farbe des Farbkästchens des betreffenden
-Subgraphen in der Spalte Highlight Color von SUBGRAPH\_LIST.
-Bei Betätigung von Cancel ändert sich die Farbe nicht.
-
-\subsubsection{hervorheben aufheben}
-
-Graphische Hervorhebung des in SUBGRAPH\_LIST angewählten
-Teilgraphen in allen Fenstern aufheben
-
-\subsubsection{Teilgraph kopieren}
-
-Diese Funktion kopiert den in SUBGRAPH\_LIST selektierten Teilgraphen.
-
-Ein Fenster SUBGRAPH\_COPY mit einem Textfeld
-SUBGRAPH\_COPY\_NEWNAME und dem Text
-Bitte Name der Kopie eingeben erscheint,
-der Teilgraph wird bei Klick auf Ja kopiert und
-erscheint unter dem Namen in SUBGRAPH\_COPY\_NEWNAME in der Liste.
-Bei Klick auf Abbruch passiert nichts.
-Im Falle eines schon vorhandenen, leeren oder ungültigen
-Namens wird eine Fehlermeldung ausgegeben,
-das SUBGRAPH\_COPY Fenster bleibt aber offen.
-
-\subsubsection{Teilgraph umbenennen}
-
-Diese Funktion benennt den in SUBGRAPH\_LIST selektierten
-Teilgraphen um.
-
-Ein Fenster SUBGRAPH\_RENAME mit einem Textfeld
-SUBGRAPH\_RENAME\_NEWNAME und dem Text
-Bitte neuen Namen für Graph <Altername> eingeben erscheint,
-der Teilgraph wird bei Klick auf Ja kopiert und
-erscheint unter dem Namen in SUBGRAPH\_RENAME\_NEWNAME in der Liste.
-Bei Klick auf Abbruch passiert nichts.
-Im Falle eines schon vorhandenen, leeren oder ungültigen
-Namens wird eine Fehlermeldung ausgegeben,
-das SUBGRAPH\_RENAME Fenster bleibt aber offen.
-
-\subsubsection{Teilgraph löschen}
-
-Diese Funktion löscht den in SUBGRAPH\_LIST selektierten
-Teilgraphen.
-Ein Fenster Teilgraph <Graphname> wirklich löschen?
-erscheint, bei Klick auf Ja wird der Graph aus der
-Liste entfernt. Bei Klick auf Nein passiert nichts.
-
-\subsubsection{Teilgraphen vereinigen}
-
-Diese Funktion fügt dem in SUBGRAPH\_LIST selektierten
-Teilgraphen einen weiteren der Teilgraphen in SUBGRAPH\_LIST
-hinzu, bildet also die Vereinigungsmenge beider
-Graphen.
-
-Bei Klick auf den Button Teilgraphen vereinigen erscheint ein
-Fenster SUBGRAPH\_UNION\_WINDOW , in dem sich der Text
-Teilgraph <Teilgraph> vereinigen mit und eine Combobox
-mit allen Subgraphen in SUBGRAPH\_LIST ohne den Subgraphen,
-der bei Auslösung des Buttons selektiert war, befindet.
-In ein Feld Name des neuen Teilgraphen (SUBGRAPH\_UNION\_NAME)
-kann der Name des neuen Teilgraphen eingetragen werden.
-Über zwei Buttons OK und Cancel kann die Funktion
-ausgelöst oder abgebrochen werden.
-Beim Klick auf OK wird der in der Combobox ausgewählte Teilgraph
-mit dem Teilgraphen in der Liste vereinigt und ein neuer
-Teilgraph, der die Vereinigung der beiden Teilgraphen ist,
-erstellt und der Liste SUBGRAPH\_LIST hinzugefügt.
-Falls SUBGRAPH\_UNION\_NAME leer ist oder einen schon vorhandenen
-oder ungültigen Namen enthält, wird eine entsprechende
-Fehlermeldung ausgegeben.
-
-\subsubsection{Teilgraphen Differenz}
-
-Diese Funktion bildet die Differenzmenge des in SUBGRAPH\_LIST
-selektierten Teilgraphen mit einem weiteren der Teilgraphen
-in SUBGRAPH\_LIST.
-
-Bei Klick auf den Button Teilgraphen Differenz erscheint ein
-Fenster SUBGRAPH\_DIFF\_WINDOW , in dem sich der Text
-Teilgraph Differenz <Teilgraph> und: und eine Combobox
-mit allen Subgraphen in SUBGRAPH\_LIST ohne den Subgraphen,
-der bei Auslösung des Buttons selektiert war, befindet.
-In ein Feld Name des neuen Teilgraphen (SUBGRAPH\_DIFF\_NAME)
-kann der Name des neuen Teilgraphen eingetragen werden.
-Über zwei Buttons OK und Cancel kann die Funktion
-ausgelöst oder abgebrochen werden.
-Beim Klick auf OK wird die Differenzmenge beider Teilgraphen
-gebildet, ein neuer Teilgraph mit Namen SUBGRAPH\_DIFF\_NAME
-erstellt und der Liste hinzugefügt.
-Falls SUBGRAPH\_DIFF\_NAME leer ist oder einen schon vorhandenen
-oder ungültigen Namen enthält, wird eine entsprechende
-Fehlermeldung ausgegeben.
-
-
-\subsubsection{Teilgraphen Schnitt}
-
-Diese Funktion bildet die Schnittmenge des in SUBGRAPH\_LIST
-selektierten Teilgraphen mit einem weiteren der Teilgraphen
-in SUBGRAPH\_LIST.
-
-Bei Klick auf den Button Teilgraphen Differenz erscheint ein
-Fenster SUBGRAPH\_INTERSECTION\_WINDOW , in dem sich der Text
-Teilgraph Schnittmenge <Teilgraph> und: und eine Combobox
-mit allen Subgraphen in SUBGRAPH\_LIST ohne den Subgraphen,
-der bei Auslösung des Buttons selektiert war, befindet.
-In ein Feld Name des neuen Teilgraphen (SUBGRAPH\_INTERSECTION\_NAME)
-kann der Name des neuen Teilgraphen eingetragen werden.
-Über zwei Buttons OK und Cancel kann die Funktion
-ausgelöst oder abgebrochen werden.
-Beim Klick auf OK wird die Schnittmenge beider Teilgraphen
-gebildet, ein neuer Teilgraph mit Namen SUBGRAPH\_INTERSECTION\_NAME
-erstellt und der Liste hinzugefügt.
-Falls SUBGRAPH\_INTERSECTION\_NAME leer ist oder einen schon vorhandenen
-oder ungültigen Namen enthält, wird eine entsprechende
-Fehlermeldung ausgegeben.
-
-\subsubsection{Teilgraphen exportieren}
-
-Mit dieser Funktion kann ein Teilgraph als Datei gespeichert werden.
-
-Bei Klick auf den Button Teilgraphen exportieren wird ein Dateifenster
-geöffnet, in dem ein Dateiname mit Pfad festgelegt werden kann, unter
-dem der in SUBGRAPH\_LIST selektierte Teilgraph gespeichert wird.
-Falls die Datei schon existiert, erscheint ein Dialog
-Datei existiert schon - überschreiben? Ja / Nein.
-Bei Klick auf Nein wird der Dialog geschlossen und nichts passiert,
-bei Klick auf Ja wird die vorhandene Datei mit dem neuen Teilgraph
-überschrieben. Der Teilgraph wird inklusive seinem Namen (aus
-SUBGRAPH\_LIST) abgespeichert.
-
-\subsubsection{Teilgraphen importieren}
-
-Bei Klick auf den Button Teilgraphen importieren wird ein Dateifenster
-geöffnet, in dem ein Dateiname mit Pfad festgelegt werden kann, unter
-dem der in SUBGRAPH\_LIST selektierte Teilgraph gespeichert wird.
-Falls der Name des Teilgraphen schon in der Liste existiert, erscheint
-ein Fenster SUBGRAPH\_IMPORT\_DUPNAME Name des Teilgraphen <Name>
-Existiert schon, bitte Ersatznamen angeben und OK klicken, oder Abbruch
-klicken, um nicht zu laden.
-Im Fenster SUBGRAPH\_IMPORT\_DUPNAME ist ein Textfeld SUBGRAPH\_IMPORT\_NEWNAME,
-in dem ein Ersatzname angegeben werden kann. Bei Klick auf OK
-wird der Teilgraph unter dem Namen SUBGRAPH\_IMPORT\_NEWNAME importiert,
-bei Abbruch passiert nichts und das Fenster wird geschlossen.
-Sollte auch SUBGRAPH\_IMPORT\_NEWNAME schon existieren, so wird
-ein zusätzliches fehlerfenster Fenster Dieser Name existiert schon angezeigt.
-
-
-\subsection{Anzeigefenster}
-
-In Anzeigefenstern (DISPLAY\_WINDOW) werden Graphen visualisiert,
-im grossen quadratischen rechten Teil (VIS\_PANE) des Fensters.
-Im linken Viertel des Fensters, der Toolbar (DISPLAY\_WINDOW\_TOOLBAR)
-befinden sich untereinander die MiniMap (MINIMAP), Pinliste (PIN\_LIST)
-mit darunterliegenden Buttons, und Selektionsliste (SELECTION\_LIST),
-die Zoom-Kontrolle, die Stilauswahl-Combobox (STYLE\_COMBO) und
-ein Button zum Ausblenden der Toolbar (TOOLBAR\_HIDE).
-
-\subsubsection{MiniMap}
-
-In der MiniMap wird der gesamte IML-Teilgraph, der im Fenster
-visualisiert ist, durch einen grauen Kasten repräsentiert.
-Dabei repräsentiert der graue Kasten die Ausdehnung des gesamten
-Graphen inklusive der z.Z. nicht im Fenster sichtbaren Bereiche.
-Der im Fenster sichtbare Bereich wird in der MiniMap durch einen
-Rahmen angezeigt. Je nach Zoomstufe ist der sichtbare Bereich
-größer oder kleiner.
-Durch Klicks in die Minimap kann die linke obere Ecke des
-sichtbaren Bereiches versetzt werden, der in VIS\_PANE angezeigte
-Bereich wird dann entsprechend angepaßt.
-
-\subsubsection{Pins}
-
-In der Pinliste (PIN\_LIST) können Pins festgelegt werden.
-Unter der Pinliste befinden sich drei Buttons:
-Neuer Pin (PIN\_NEW), Zu Pin springen (PIN\_JUMP),
-Pin löschen (PIN\_DELETE).
-Dazu ist auf den untersten Eintrag, <NEUER PIN>, zu klicken.
-Daraufhin geht ein Fenster PIN\_NAME mit dem Text
-Pinname eingeben und einem Texteingabefeld, in den der Pinname
-eingegeben werden kann, auf. Zwei Buttons, beschriftet
-mit Knoten für Pin auswählen (PIN\_NEW\_OK) und
-Abbruch (PIN\_NEW\_CANCEL), werden zum Bestätigen oder Abbrechen
-verwendet.
-Nach dem Klick auf PIN\_NEW\_OK verwandelt sich der Mauszeiger
-in ein Fadenkreuz, und es kann ein Knoten ausgewählt werden.
-Zu diesem Knoten kann man durch Klicken von PIN\_JUMP
-zurückspringen, er ist dann relativ gesehen an derselben
-Stelle des Fensters wie bei seiner Erstellung.
-Bei PIN\_DELETE wird nach einer Sicherheitsabfrage
-der Pin aus der Liste gelöscht.
-
-
-
-\subsubsection{Selektionen}
-
-
-
-\subsubsection{Zoom-Kontrolle}
-
-Die Zoom-Kontrolle ist eine Combobox mit einigen vorgefertigten
-Zoomstufen in Prozent, es können auch eigene Zoomstufen in
-Prozent eingetragen werden.
-Durch Klicken des Buttons Display wird die jeweilige Zoomstufe
-eingestellt.
-Klicken der Buttons Zoom+ und Zoom- wirkt wie Erhöhung/Verminderung
-der Zoom-Prozentzahl um 5 mit anschließendem Klicken von Display.
-
-\subsubsection{Stilauswahl-Combobox}
-
-
-
-\subsection{Knoten-Informationsfenster}
-
-In Knoten-Informationsfenstern (NODE\_INFO) können nähere Informationen
-zu Knoten angezeigt werden.
-Es kann beliebig viele Knoten-Informationsfenster geben, jedoch maximal
-eines pro Knoten.
-
-Zuoberst im Fenster wird die Knotentyp und Knoten-ID dargestellt
-(TYPE und ID), Format: "Knoten: TYPE, ID: ID) darunter befinden sich
-(jeweils untereinander) drei getrennt scrollbare Listen:
-
-Die Liste ATTRIBUTES enthält alle Attribute des Knotens, hat zwei Spalten
-ATTRIBUTE und VALUE, in denen für jedes Attribut der Attributname und
-der Wert des Attributes angezeigt werden.
-
-Die Liste SUCCESSOR\_EDGES hat eine Zeile für jede vom Knoten abgehende
-Kante mit drei Spalten: EDGE\_TYPE, NODE\_TYPE, NODE\_ID, in denen
-der Typ der abgehenden Kante, der Typ des Knotens, zu dem sie führt und
-die ID des Knotens, zu dem sie führt, dargestellt werden.
-
-Die Liste PREDECESSOR\_NODES hat eine Zeile für jede am Knoten ankommende
-Kante mit drei Spalten: EDGE\_TYPE, NODE\_TYPE, NODE\_ID, in denen
-der Typ der ankommenden Kante, der Typ des Knotens, von dem sie kommt und
-die ID des Knotens, von dem sie kommt, dargestellt werden.
-
-Unter den drei Listen befinden sich nebeneinander mittig zwei Buttons
-CLOSE und PICK.
-Der CLOSE-Button schliesst durch Mausklick das Informationsfenster,
-das Informationsfenster kann auch durch Druecken von ** geschlossen
-werden.
-Mit dem PICK-Button kann man einen anderen Knoten auswählen, dessen
-Information das Knoten-Informationsfenster nun anzeigen soll.
-Durch Klick auf den PICK-Button verwandelt sich der Mauscursor,
-wenn möglich, in ein Fadenkreuz, es kann dann durch Klick in eines
-der Graphenfenster auf deinen Knoten dieser Knoten für die Anzeige
-ausgewählt werden.
-
-\subsection{Fenster für Minimap} %Falls in extra Fenster
-
-\subsection{Anfrage Dialog}
+und darunter SUBGRAPH\_LIST (4 Spalten).
+
+
+  \subsection {Kopfzeile}
+  In der Kopfzeile wird dargestellt \gq{GIANT <Version> : <IML-Graph-Name>}
+ 
+  \subsection {Menüleiste (Main Window)}
+  In der Menüleiste befinden sich folgende Einträge:
+
+    \subsubsection {Untermenü Datei (Main Window)}
+    Im Untermenü Datei des Hauptfensters befinden sich folgende Einträge.  
+
+      \begin{itemize}
+         \item Projekt laden
+         \item Projekt speichern
+         \item neues Projekt
+         \item GIANT verlassen
+      \end{itemize}
+
+    \subsubsection {Untermenü Info (Main Window)}      
+       \begin{itemize}
+          \item Über GIANT
+        \end{itemize}
+     
+
+  \subsection {Statuszeile}
+
+    In der Statuszeile befindet sich die Information:
+    Projektname: x , Fenster: x , IML-Knoten: x, IML-Kanten: x
+
+  \subsection {Window List}
+  
+  Im Fenster befindet sich zuoberst eine Liste WINDOW\_LIST.
+   
+    \subsubsection {Inhalt Window List}
+   
+      WINDOW\_LIST hat die Spalten WINDOW\_NAME und WINDOW\_OPEN. In WINDOW\_NAME
+      wird der Name der Anzeigefenster dargestellt, in WINDOW\_OPEN befindet
+      sich entweder ein Strich-Symbol (Fenster nicht geöffnet) oder ein Häkchensymbol
+      (Fenster geöffnet). 
+    
+    \subsubsection {PopUp Menü Window list}
+    
+        Beim Rechtsklick auf WINDOW\_LIST öffnet sich ein Popup-Menü mit folgenden Menüpunkten:
+
+        \begin{enumerate}
+          \item Fenster öffnen
+          \item Fenster schließen
+          \item Fenster löschen
+          \item Neues Fenster
+          \item IML-Teilgraph einfügen
+          \item Fenster exportieren
+          \item Fenster importieren
+          \end{enumerate}
+    
+  \subsection {Subgraph List}
+    
+    Under der WINDOW\_LIST im Fenster befindet sich eine Liste SUBGRAPH\_LIST.
+   
+    \subsubsection {Inhalt Subgraph List} 
+    
+      SUBGRAPH\_LIST hat die Spalten Subgraph Name (SUBGRAPH\_NAME),
+      Nodes (SUBGRAPH\_NODES), Edges (SUBGRAPH\_EDGES) und Highlight Color
+      (SUBGRAPH\_HIGHLIGHT\_COL).
+    
+      In Subgraph Name stehen die (benutzerdefinierten) Namen der existierenden
+      Subgraphen, in Nodes die Anzahl der Knoten des Subgraphen,
+      in Edges die Anzahl der Kanten und in Highlight Color ein Kästchen mit der Farbe,
+      die verwendet wird, wenn dieser Subgraph markiert wird.
+
+    
+    \subsubsection {PopUp Menü Subgraph List}
+        
+      Beim Rechtsklick auf SUBGRAPH\_LIST öffnet sich ein Popup-Menü mit folgenden Menüpunkten:
+
+        \begin{enumerate}
+          \item hervorheben (zum Hervorheben eines Teilgraphen in allen Fenstern mit Farbe SUBGRAPH\_COL)
+          \item Hervorhebungsfarbe ändern
+          \item hervorheben aufheben
+          \item Teilgraph kopieren
+          \item Teilgraph umbenennen
+          \item Teilgraph löschen
+          \item Teilgraphen Mengenoperation (Vereinigung/Differenz/Schnitt)
+          \item Teilgraphen exportieren
+          \item Teilgraphen importieren
+        \end{enumerate}   
+        
+    
+  \subsection {Zugehörige Dialoge}
+  
+  >>>>>>>>>>>>KURZE Beschreibung aller DIALOGE die NUR!!!! vom HAUPTFENSTER AUS erreichbar sind.
+
+
+\section {Anzeigefenster}
+
+  Im Programm kann es kein, eines oder mehrere Anzeigefenster geben.
+  
+  Ein Anzeigefenster besteht aus folgenden Elementen:
+
+  \subsection {Minimap}
+
+    In der MiniMap wird der gesamte IML-Teilgraph, der im Fenster
+    visualisiert ist, durch einen grauen Kasten repräsentiert.
+    Dabei repräsentiert der graue Kasten die Ausdehnung des gesamten
+    Graphen inklusive der z.Z. nicht im Fenster sichtbaren Bereiche.
+    Der im Fenster sichtbare Bereich wird in der MiniMap durch einen
+    Rahmen angezeigt. Je nach Zoomstufe ist der sichtbare Bereich
+    größer oder kleiner.
+    Durch Klicks in die Minimap kann die linke obere Ecke des
+    sichtbaren Bereiches versetzt werden, der in VIS\_PANE angezeigte
+    Bereich wird dann entsprechend angepaßt.
+
+\section{Anzeigefenster}
+
+  In Anzeigefenstern (DISPLAY\_WINDOW) werden Graphen visualisiert,
+  sie erscheinen im grossen quadratischen rechten Teil (VIS\_PANE) des Fensters.
+  Im linken Viertel des Fensters, der Toolbar (DISPLAY\_WINDOW\_TOOLBAR)
+  befinden sich untereinander die MiniMap (MINIMAP), Pinliste (PIN\_LIST)
+  mit darunterliegenden Buttons, und Selektionsliste (SELECTION\_LIST),
+  die Zoom-Kontrolle, die Stilauswahl-Combobox (STYLE\_COMBO) und
+  ein Button zum Ausblenden der Toolbar (TOOLBAR\_HIDE).
+
+  \subsection{Visualisierung der Knoten}
+
+    In der VIS\_PANE werden die Knoten und Kanten angezeigt. Wenn sich der
+    Mauszeiger über der VIS\_PANE befindet, verwandelt er sich in ein
+    Fadenkreuz.
+
+  \subsection{Pins}
+
+    In der Pinliste (PIN\_LIST) können Pins festgelegt werden.
+    Auf der Pinliste sind folgende Menüpunkte eines Popup-Menüs aktivierbar:
+    
+    \begin{enumerate}
+      \item Neuer Pin (PIN\_NEW)
+      \item Zu Pin springen (PIN\_JUMP),
+      \item Pin löschen (PIN\_DELETE).
+    \end{enumerate}
+
+  \subsection{Selektionen}
+
+    In der Selektionsauswahlliste (SELECTION\_LIST) sind folgende Menüpunkte
+    eines Popup-Menüs aktivierbar:
+    \begin{enumerate}
+      \item Neue Selektion
+      \item Zur Selektion hinzufügen
+      \item hervorheben (zum Hervorheben einer Selektion in der Farbe SELECTION\_COL)
+      \item Hervorhebungsfarbe ändern
+      \item hervorheben aufheben
+      \item Selektion kopieren
+      \item Selektion umbenennen
+      \item Selektion löschen
+      \item Selektion Mengenoperation (Vereinigung/Differenz/Schnitt)
+      \item Selektion exportieren
+      \item Selektion importieren
+    \end{enumerate}    
+
+
+  \subsection{Zoom-Kontrolle}
+
+    Die Zoom-Kontrolle besteht aus folgenden Elementen:
+    
+  \begin{enumerate}
+      \item ComboBox ZOOM\_CONTROL mit vorgefertigten Werten und Eingabemöglichkeit
+      \item Button \gq{Display} (ZOOM\_DISPLAY)
+      \item Button \gq{Zoom+} (ZOOM\_PLUS)
+      \item Button \gq{Zoom-} (ZOOM\_MINUS)
+    \end{enumerate}    
+     
+  \subsection{Stilauswahl-Combobox}
+
+    In der Stilauswahl-Combobox (STYLE\_CHOOSER) kann ein Anzeigestil
+    festgelegt werden.
+
+  \subsection{Ein- und Ausklappbutton}
+
+    Durch Klick auf den Ein- und Ausklappbutton (VIS\_PANE\_BUTTON) kann die VIS\_PANE
+    ein- und ausgeblendet werden.
+
+\section{Knoten-Informationsfenster}
+
+    In Knoten-Informationsfenstern (NODE\_INFO) können nähere Informationen
+    zu Knoten angezeigt werden.
+    Es kann beliebig viele Knoten-Informationsfenster geben, jedoch maximal
+    eines pro Knoten.
+
+    Zuoberst im Fenster wird die Knotentyp und Knoten-ID dargestellt
+    (TYPE und ID), Format: "Knoten: TYPE, ID: ID) darunter befinden sich
+    (jeweils untereinander) drei getrennt scrollbare Listen,
+    ATTRIBUTES, SUCCESSOR\_NODES, PREDECESSOR\_NODES.
+    
+    Unter den drei Listen befinden sich nebeneinander mittig zwei Buttons
+    CLOSE und PICK (zum Auswählen eines anderen Knotens zur Anzeige).
+    
+    \subsection{Liste ATTRIBUTES}
+
+      Die Liste ATTRIBUTES enthält alle Attribute des Knotens, hat zwei Spalten:
+    
+      \begin{enumerate}
+        \item ATTRIBUTE (Attributname)
+        \item VALUE (Wert des Attributs)
+      \end{enumerate}
+    
+    \subsection{Liste SUCCESSOR\_NODES}
+    
+      Die Liste SUCCESSOR\_EDGES hat eine Zeile für jede vom Knoten abgehende
+      Kante mit drei Spalten (Typ der abgehenden Kante, Typ des Knotens,
+      zu dem sie führt, ID des Knotens, zu dem sie führt) :
+    
+    \begin{enumerate}
+      \item EDGE\_TYPE
+      \item NODE\_TYPE
+      \item NODE\_ID
+    \end{enumerate}    
+
+    \subsection{Liste PREDECESSOR\_NODES}
+      
+      Die Liste PREDECESSOR\_EDGES hat eine Zeile für jede vom Knoten abgehende
+      Kante mit drei Spalten (Typ der ankommenden Kante, Typ des Knotens,
+      von dem sie kommt, ID des Knotens, von dem sie kommt) :
+
+      \begin{enumerate}
+        \item EDGE\_TYPE
+        \item NODE\_TYPE
+        \item NODE\_ID
+      \end{enumerate}
+
+\section{Anfrage Dialog}
 
 Der Anfragedialog QUERY hat zuoberst ein Textfeld QUERY\_TEXT,
 in dem der Text der Anfrage eingegeben werden kann.
-Durch Klicken auf die darunterliegenden Listen kann
-Text in QUERY\_TEXT eingefügt werden.
 
-Der unter QUERY\_TEXT liegende Teil des Fensters
-ist im Wesentlichen dreigeteilt.
-Er besitzt vier nebeneinanderliegende scrollbare Listen,
-NODE\_CLASS\_LIST , EDGE\_CLASS\_LIST , ATTRIB\_LIST,
-SUBGRAPH\_LIST
-genannt Knotenklassenliste, Kantenklassenliste,
-Attributliste und Teilgraphenliste.
+Unter QUERY\_TEXT befinden sich folgende Elemente:
 
-Über den ersten drei Listen von links nach rechts befinden
-sich drei Eingabefelder, genannt NODE\_WILDCARD , EDGE\_WILDCARD,
-ATTRIB\_WILDCARD. Neben diesen Feldern befindet sich jeweils ein
-Button
-Show.
+      \begin{enumerate}
+        \item Button QUERY\_START
+        \item Button QUERY\_CANCEL
+        \item Button QUERY\_LOAD
+        \item Button QUERY\_SAVE
+      \end{enumerate}
 
-Ueber der Kantenklassen-Liste und der Knotenklassenliste befindet
-sich zusätzlich je ein Eingabefeld  nur Knotentyp (EDGE\_NODETYPE
-und ATTRIB\_NODETYPE), sowie je ein danebenliegender Button 
-Aus Knotenklassenliste uebernehmen (EDGE\_USE\_NODETYPE
-und ATTRIB\_USE\_NODETYPE).
-
-Unter den Listen befinden sich Buttons Anfrage Starten
-(QUERY\_START), Abbruch (QUERY\_CANCEL), Anfrage laden
-(QUERY\_LOAD), Anfrage speichern (QUERY\_SAVE),
-eine Combobox beschriftet mit letzte 5 Anfragen (QUERY\_LATEST)
-und neben dieser ein Button Laden (LOAD\_QUERY\_LATEST).
-
-Der Nutzer kann nun in der Knotenklassenliste
-links eine Knotenklasse durch einfachklicks
-auswaehlen, die Darstellung kann durch einen
-Eintrag im NODE\_WILDCARD-Feld auf zur Wildcard
-passende Knotenklassennamen eingeschränkt werden.
-Die Liste wird nach Klicken von Show anhand der
-Wildcards neu aufgebaut.
-
-In der Kantenklassenliste werden alle Kantenklassen
-dargestellt, die Liste kann durch das EDGE\_WILDCARD
-Feld anhand der Kantennamen eingeschraenkt werden.
-Die Liste wird nach Klicken von Show anhand der
-Wildcards neu aufgebaut.
-In EDGE\_NODETYPE kann festgelegt werden, dass nur
-Kanten, die als vom eingegebenen Knotentyp
-abgehend existieren, angezeigt werden, hier sind
-keine Wildcards möglich.
-Durch einfaches Klicken auf den Button Aus Knotenklassenliste
-uebernehmen kann der in der linken Liste
-ausgewählte Knotenname in das Feld EDGE\_NODETYPE
-uebernommen werden.
-
-In der Attributliste werden alle Attribute
-dargestellt, die Liste kann durch das ATTRIB\_WILDCARD
-Feld anhand der Attributsnamen eingeschraenkt werden.
-Die Liste wird nach Klicken von Show anhand der
-Wildcards neu aufgebaut.
-In ATTRIB\_NODETYPE kann festgelegt werden, dass nur
-Attribute, die als vom eingegebenen Knotentyp
-abgehend existieren, angezeigt werden, hier sind
-keine Wildcards möglich.
-Durch einfaches Klicken auf den Button Aus Knotenklassenliste
-uebernehmen kann der in der linken Liste
-ausgewählte Knotenname in das Feld ATTRIB\_NODETYPE
-uebernommen werden.
-
-In der Teilgraphenliste befinden sich alle z.Z. definierten
-Teilgraphen, sowie zuoberst ein Eintrag IML-Graph,
-welcher für den gesamten IML-Graphen steht.
-
-Wenn auf Listenelemente doppelt geklickt wird, wird
-der Name des betreffenden Listenelementes
-am Ende des Textes im Anfragefenster angehängt.
-
-Die Anfrage wird durch Eintippen des Textes per
-Tastatur in QUERY\_TEXT formuliert, wobei
-die drei Listen als Eingabehilfe verwendet
-werden koennen.
-Die Anfrage wird durch QUERY\_START gestartet,
-durch QUERY\_CANCEL wird das Fenster nach
-einer positiven Sicherheitsabfrage Wollen Sie wirklich
-das Anfragefenster ohne Speichern schliessen?
-geschlossen.
-Durch QUERY\_LOAD erhaelt man ein GTK-Dateiauswahlfenster
-zum Laden einer gespeicherten Anfrage, beim Klick
-auf QUERY\_SAVE geht ein GTK-Dateiauswahlfenster
-auf, in dem der Name der zu speichernden Anfrage
-festgelegt werden kann.
-Mittels QUERY\_LATEST und LOAD\_QUERY\_LATEST kann
-ggf. schneller auf die letzten 5 Anfragen
-zugegriffen werden.
-Vor jedem Laden einer Anfrage wird eine
-Sicherheitsabfrage Alte Anfrage nicht gespeichert - Wollen
-Sie wirklich eine neue Anfrage laden? gestellt,
-wenn QUERY\_TEXT nicht leer ist.
-
-Nach dem Klick auf QUERY\_START wird das Anfragefenster geschlossen,
-und die Anfrage ausgeführt. 
-Vor Start der Anfrage öffnet sich ein Fenster Anfrage in Bearbeitung,
-QUERY\_RUNNING.
-In diesem Fenster wird der Text Anfrage läuft und eine Progressbar,
-QUERY\_PROGRESS sowie ein Cancel-Button QUERY\_CANCEL angezeigt.
-Die Progressbar zeigt den ungefähren Verlauf der Berechnung an,
-mit QUERY\_CANCEL kann die Berechnung abgebrochen werden.
-
+>>>>>>>>>>>>> WIRD DER FOLGENDE TEXT BENOETIGT?
 Nach Beendigung der Berechnung erscheint ein Fenster QUERY\_RESULT,
-in dem Anfrage beendet. Gefundene Knoten: QUERY\_FOUND\_NODES ,
-Gefundene Kanten: QUERY\_FOUND\_EDGES steht. Darunter befindet sich
+in dem \gq{Anfrage beendet. Gefundene Knoten: QUERY\_FOUND\_NODES ,
+Gefundene Kanten: QUERY\_FOUND\_EDGES} steht. Darunter befindet sich
 der Text übernehmen als IML-Teilgraph und eine Combo-Box IML\_SUBGRAPHS,
 in der die bisher geladenen IML-Teilgraphen und eine Eingabemöglichkeit
 für einen neuen Namen sind.
 Darunter befinden sich zwei Buttons: Anfrage verwerfen und Anfrage
 übernehmen (QUERY\_USE , QUERY\_DISCARD) zum Verwerfen oder
-übernehmen als IML-Teilgraph. Bei Klick auf QUERY\_DISCARD wird
-das Fenster geschlossen und die Anfrageergebnisse verworfen.
+übernehmen als IML-Teilgraph. 
 
-Wurde in der Combo-Box im Falle der Betätigung von QUERY\_USE
-ein schon existierender Teilgraph gewählt, so erscheint eine
-Sicherheitsabfrage QUERY\_OVERWRITE in einem Fenster:
-Teilgraph (Name) überschreiben? JA / NEIN.
-Bei NEIN wird das QUERY\_OVERWRITE Fenster wieder geschlossen,
-bei JA werden QUERY\_OVERWRITE und QUERY\_RESULT geschlossen
-und der bisherige Teilgraph mit dem neuen Ergebnis überschrieben.
+\section{Allgemeiner Texteingabedialog}
 
-\subsection{Allgemeiner Texteingabedialog}
-Für Namen (Pins, Selektionen, Anzeigfenster ...)
+Ein allgemeiner Texteingabedialog ist ein Fenster DIALOG\_WINDOW mit dem
+Titel \gq{GIANT Dialog}. Im Fenster ist ein einzeiliges Textfeld TEXT\_FIELD
+mit einem Prompt-Text TEXT\_LABEL davor, zwei Buttons OK\_BUTTON und CANCEL\_BUTTON
+mit den Beschriftungen OK\_LABEL und CANCEL\_LABEL.
+Defaultmäßig sind die Buttons mit \gq{OK} und \gq{Cancel} beschriftet.
 
 \section{Dateneingabe}
 Beschreibung von verschiedenen Textfeldtypen etc. zur Eingabe von Daten.
 
 \section{Ausgabe von Fehlermeldungen}
-\subsection{Allgemeiner Fehlerdialog}
+
+Ein allgemeiner Fehlerdialog ist ein Fenster ERROR\_WINDOW mit dem
+Titel \gq{GIANT Error}. Im Fenster ist
+ein Fehlertext Text ERROR\_LABEL und ein Button OK\_BUTTON mit der
+Beschriftung OK\_LABEL.
+Defaultmäßig ist der Button mit \gq{OK} beschriftet.
+
