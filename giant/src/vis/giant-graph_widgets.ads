@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.8 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.9 $
 --  $Author: keulsn $
---  $Date: 2003/06/25 13:42:50 $
+--  $Date: 2003/06/26 19:58:14 $
 --
 ------------------------------------------------------------------------------
 --
@@ -62,6 +62,7 @@
 with Ada.Streams;
 
 with Gdk.Color;
+with Gdk.Cursor;
 with Gdk.Pixmap;
 with Gtk.Widget;
 
@@ -151,6 +152,46 @@ package Giant.Graph_Widgets is
    procedure Write_Graph_Widget
      (Stream : in     Bauhaus_IO.Out_Stream_Type;
       Widget : access Graph_Widget_Record);
+
+
+   -------------------
+   -- Configuration --
+   -------------------
+
+   --  Here are the configuration subprograms available for graph widgets.
+   --  Note that the greatest part of the configuration is obtained
+   --  directly from the packages 'Giant.Config.*'.
+   --  See 'Giant.Graph_Widgets.Settings' for more configuration.
+
+   ----------------------------------------------------------------------------
+   --  Sets the cursor used inside the graph widget during the time when
+   --  the graph widget is not in action mode and is not waiting for a lock
+   --  to be released.
+   --
+   --  If this subprogram is never called, then the cursor for
+   --  'Gdk.Types.Arrow' will be used.
+   --
+   --  Parameters:
+   --    Widget - The graph widget
+   --    Cursor - The cursor
+   procedure Set_Default_Cursor
+     (Widget : access Graph_Widget_Record'Class;
+      Cursor : in     Gdk.Cursor.Gdk_Cursor);
+
+   ----------------------------------------------------------------------------
+   --  Sets the cursor used inside the graph widget during the time when
+   --  the graph widget is waiting for a lock to be released or when
+   --  the graph widget is performing heavy calculations.
+   --
+   --  If this subprogram is never called, then the cursor for
+   --  'Gdk.Types.Clock' will be used.
+   --
+   --  Parameters:
+   --    Widget - The graph widget
+   --    Cursor - The cursor
+   procedure Set_Waiting_Cursor
+     (Widget : access Graph_Widget_Record'Class;
+      Cursor : in     Gdk.Cursor.Gdk_Cursor);
 
 
    --------------------------------------------
@@ -284,22 +325,43 @@ package Giant.Graph_Widgets is
      (Widget : access Graph_Widget_Record'Class);
 
 
-   ----------------
-   -- Crosshairs --
-   ----------------
+   -----------------
+   -- Action Mode --
+   -----------------
 
    ----------------------------------------------------------------------------
-   --  Enables or disables the crosshair mode. During this mode the mouse
-   --  cursor is a crosshair. See general documentation on Graph_Widget
-   --  for details
+   --  Enables action mode and sets cursor. During action mode the user can
+   --  only move the visual area inside the graph widget an click onto the
+   --  graph widget. After each such click the graph widget emits a signal.
+   --  See Giant.Graph_Widgets.Notifications for details.
    --
    --  Parameters:
    --    Widget - The graph widget
-   --    Enable - True if crosshair mode should be enabled, Fals if crosshair
-   --             mode should be disabled
-   procedure Set_Crosshair_Mode
+   --    Cursor - The cursor to be displayed during action mode
+   procedure Start_Action_Mode
      (Widget : access Graph_Widget_Record'Class;
-      Enable : in     Boolean);
+      Cursor : in     Gdk.Cursor.Gdk_Cursor);
+
+   ----------------------------------------------------------------------------
+   --  If the graph widget is in action mode, then cancels action mode and
+   --  sets the cursor back to the graph widget's default cursor or to the
+   --  waiting cursor. Does nothing otherwise.
+   --
+   --  Parameters:
+   --    Widget - The graph widget
+   procedure Cancel_Action_Mode
+     (Widget : access Graph_Widget_Record'Class);
+
+   ----------------------------------------------------------------------------
+   --  Checks if the graph widget is in action mode.
+   --
+   --  Parameters:
+   --    Widget - The graph widget
+   --  Returns:
+   --    True if the graph widget is in action mode, False otherwise.
+   function Is_Action_Mode_Active
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean;
 
 
    ------------

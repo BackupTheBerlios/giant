@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.5 $
 --  $Author: keulsn $
---  $Date: 2003/06/25 13:42:50 $
+--  $Date: 2003/06/26 19:58:14 $
 --
 ------------------------------------------------------------------------------
 
@@ -82,6 +82,25 @@ package body Giant.Graph_Widgets is
    end Write_Graph_Widget;
 
 
+   -------------------
+   -- Configuration --
+   -------------------
+
+   procedure Set_Default_Cursor
+     (Widget : access Graph_Widget_Record'Class;
+      Cursor : in     Gdk.Cursor.Gdk_Cursor) is
+   begin
+      raise Unimplemented;
+   end Set_Default_Cursor;
+
+   procedure Set_Waiting_Cursor
+     (Widget : access Graph_Widget_Record'Class;
+      Cursor : in     Gdk.Cursor.Gdk_Cursor) is
+   begin
+      raise Unimplemented;
+   end Set_Waiting_Cursor;
+
+
    --------------------------------------------
    -- Insertion, Deletion of Edges and Nodes --
    --------------------------------------------
@@ -134,16 +153,30 @@ package body Giant.Graph_Widgets is
    end Clear;
 
 
-   ----------------
-   -- Crosshairs --
-   ----------------
+   -----------------
+   -- Action Mode --
+   -----------------
 
-   procedure Set_Crosshair_Mode
+   procedure Start_Action_Mode
      (Widget : access Graph_Widget_Record'Class;
-      Enable : in     Boolean) is
+      Cursor : in     Gdk.Cursor.Gdk_Cursor) is
    begin
       raise Unimplemented;
-   end Set_Crosshair_Mode;
+   end Start_Action_Mode;
+
+   procedure Cancel_Action_Mode
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      raise Unimplemented;
+   end Cancel_Action_Mode;
+
+   function Is_Action_Mode_Active
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean is
+   begin
+      raise Unimplemented;
+      return False;
+   end Is_Action_Mode_Active;
 
 
    ------------
