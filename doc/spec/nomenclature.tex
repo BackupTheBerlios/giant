@@ -1,11 +1,11 @@
 \begin{nomenclature}
 
-\term{Anzeigefenster}{Visualisation Window}{
+\term{Anzeigefenster}{View Window}{
 Ein Fenster in dem ein Teilgraph des IML-Graphen nach bestimmten Kriterien 
 visualisiert ist. Jedem Anzeigefenster ist ein Anzeigeinhalt zugeordnet.
 }
 
-\term{Anzeigeinhalt}{Visualisation Data Content}{
+\term{Anzeigeinhalt}{Window Content}{
 Eine \gq{virtuelle} Oberfläche auf der die Objekte des visualisierten Teilgraphen
 (also Fenster-Knoten und Fenster-Kanten) angeordnet sind, 
 d.h. räumliche Layoutinformation zu allen Objekten des 
@@ -14,19 +14,29 @@ bestimmter Teil des Anzeigeinhaltes sichtbar - der sichtbare Anzeigeinhalt.
 Die Größe des Anzeigeinhaltes ist theoretisch unbegrenzt. 
 }
 
-\term{Sichtbarer Anzeigeinhalt}{Visualisation Focus}{
+\term{Sichtbarer Anzeigeinhalt}{Visible Window Content}{
 Der Bereich des Anzeigeinhaltes eines Anzeigefensters, der zur Zeit sichtbar 
 dargestellt wird.
 }
 
 \term{IML-Graph}{IML Graph}{
 Der IML-Graph, wie er von der Bauhaus Reengineering GmbH gestetellt wird.
-Auf diesen Graphen wird nur über das sogenannte Reflection-Model zugegriffen.
+Auf diesen Graphen wird über das sogenannte Reflection Model zugegriffen.
+}
+
+\term{Reflektion}{Reflection Model}{
+Die Schnittstelle zum Zugriff auf den IML-Graphen
 }
 
 \term{IML-Teilgraph}{IML Subgraph}{
 Eine Menge über Knoten und Kanten des IML-Graphen, die so gestaltet ist,
 dass sie einen Teilgraphen des IML-Graphen darstellt.
+}
+
+\term{Anfrage}{Query}{
+Eine Anfrage beschreibt einen Vorgang, bei dem über geeignete Kriterien
+Konten und Kanten aus dem IML-Graphen oder aus IML-Teilgraphen ausgewählt
+werden.
 }
 
 \term{Selektion}{Selection}{
@@ -35,11 +45,11 @@ IML-Graphen innerhalb eines Anzeigefensters.
 }
 
 \term{IML-Knoten}{IML Node}{
-Ein Knoten des Bauhaus IML-Graphen.
+Ein Knoten des IML-Graphen.
 }
 
 \term{IML-Kante}{IML Edge}{
-Eine Kante des Bauhaus IML-Graphen.
+Eine Kante des IML-Graphen.
 }
 
 \term{Graph-Knoten}{Graph Node}{
