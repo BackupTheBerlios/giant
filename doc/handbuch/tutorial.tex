@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: tutorial.tex,v $, $Revision: 1.1 $
-%  $Date: 2003/09/20 12:23:04 $
+%  $RCSfile: tutorial.tex,v $, $Revision: 1.2 $
+%  $Date: 2003/09/20 13:36:09 $
 %  $Author: birdy $
 %
 %  Description: Tutorial
@@ -201,4 +201,84 @@ aber gelöscht wurde.
 Nun erstellen wir nochmals eine Selektion mit dem Namen °neu2°,
 wählen diesmal °Delete with Content° aus.
 GIANT hat nun die Knoten nebst ihrer Kanten aus dem Graph gelöscht.\\
+
+Nun zu einer Mengenoperation:
+Auf der Selektion °Neu° in (3) wählen wir nun °Set Operation° aus.
+Es erscheint der Set Operation Dialog. Wir wählen (siehe Bild) \\
+
+°Left Source = Entire_Graph°\\
+°Operation = Difference°\\
+°Right Source = Neu°\\
+°Target = Differenzmenge°\\
+aus.
+
+\begin{figure}[h!]
+   \centering
+   \includegraphics[scale=.5]{tutorial/06-set-operation
+   \caption{Set Operation Dialog für Mengenoperationen}
+\end{figure}
+
+Nun bildet GIANT die Differenz zwischen den beiden Mengen °Entire_Graph°
+(also dem Gesamtgraphen) und der Menge °Neu°, die neue Menge heisst
+°Differenzmenge°. Man kann sehen, wie sich die Kantenzahlen
+unterscheiden.\\
+Nun wählen wir auf °Differenzmenge° den Menüpunkt °Set Active° aus.
+Diese Menge ist nun die aktive Selektion. 
+Wir können nun sehen, daß alle Knoten im Graphen, die zur Menge
+gehören, markiert sind. Mit gedrückter Shift-Taste können wir nun
+z.B. Knoten zur Selektion hinzufügen oder aus ihr entfernen.
+
+Nachdem wir einige Knoten ausgewählt haben, wählen wir wieder die
+°Default° Selektion als Aktiv an.\\
+
+Unsere Sekektion °Differenzmenge° mit ihren ausgewählten Knoten
+fügen wir nun als eigenständigen Subgraphen in GIANT ein, dies
+passiert durch Auswählen von °Insert as Subgraph° in ihrem
+Kontextmenü. Wie wir sehen, erscheint sie nun im Hauptfenster
+in der Subgraph-Liste.\\
+
+\section {Verschieben von Knoten, Platz schaffen}
+
+Wir können mit der linken Maustaste durch Drag&Drop Knoten
+verschieben. Es kann vorkommen, daß Knoten aufeinander liegen,
+sie können dann damit auseinandergeschoben werden.\\
+
+Durch Klick mit der rechten Maustaste auf einen freien 
+
+\section{Mehrere Fenster}
+
+Durch Auswählen von °Window - New° erschaffen wir ein neues leeres
+Fenster. Dieses wird in der Fensterliste im Hauptfenster angezeigt.
+Das Fenster heisstr °Unknown°, wir ändern seinen Namen durch
+Anwählen von °Rename° auf im dazugehörigen Popup-Menü in der
+Liste auf °Testfenster°.\\
+Wir schließen nun unser eingangs erstelltes Fenster °Entire_Graph_Window°
+durch Klick auf den Close-Button rechts oben und speichern es bei der
+erscheinenden Sicherheitsabfrage.
+Mittels °Open° in seinem Popup-Menü können wir es bei Bedarf wieder öffnen.\\
+
+\begin{figure}[h!]
+   \centering
+   \includegraphics[scale=.5]{tutorial/07-main-window}
+   \caption{Hauptfenster}
+\end{figure}
+
+Nun wollen wir unseren Teilgraphen in das neue Testfenster einfügen.
+Dazu wählen wir im Hauptfenster auf dem erstellten Subgraphen im
+Popup-Menü °Insert as Selection°. GIANT fordert uns auf, in den leeren
+Anzeigeinhalt des Fensters zu klicken, dort wird der Subgraph als Selektion
+eingefügt.\\
+
+Wir öffnen nun wieder unser erstes Fenster °Entire_Graph_Window°durch
+Auswählen von °Open° auf seinem Popup-Menü.\\
+
+Wir wählen im Kontextmenü des Subgraphen im Hauptfenster aus\\
+°Highlight - Color 2° und können sehen, daß unsere
+Selektion in beiden Fenstern hervorgehoben wurde. Mittels
+°Unhighlight in alle Windows° läßt sich die Markierung rückgängig
+machen.\\
+
+Wir schließen und speichern das °Testfenster°.
+
+\sections{Layouts}
 
