@@ -7,7 +7,7 @@
 
 \begin{document}
 
-\sf
+\fontfamily{cmss}\selectfont
 
 % title page
 \thispagestyle{empty}
@@ -26,14 +26,51 @@
 \newpage
 
 % toc
-\setcounter{tocdepth}{1}
+%\setcounter{tocdepth}{1}
 \tableofcontents
 
 % content
-\chapter{Einleitung}
-\section{Abschnitt}
+\chapter{Chapter}
 
 Hier ist der Text.
+
+\section{Section}
+
+\subsection{Subsection}
+
+\subsubsection{Subsubsection}
+
+\paragraph{Paragraph} Hier ist noch mehr Text.
+
+
+% sample usecase
+
+\begin{uc}[Label]{Use-Case}
+
+  \begin{actors}
+    \actor{Benutzer}
+  \end{actors}
+
+  \begin{precond}
+    \cond Bedingung
+  \end{precond}
+
+  \begin{proc}
+    \step[Schritt] Schritt
+    \begin{subproc}
+      \step[Unter Schritt] Unter Schritt
+    \end{subproc}
+  \end{proc}
+
+  \begin{aproc}
+    \astep{Schritt} Alternativer Schritt
+  \end{aproc}
+
+  \begin{postcond}
+    \cond Bedingung
+  \end{postcond}
+  
+\end{uc}
 
 % appendix
 \appendix

@@ -13,8 +13,9 @@
 {\begin{itemize}}
 {\end{itemize}}
 
+% Begriff
 %
-% Parameter
+%  Parameter
 %
 %   1 Name
 %   2 Erklaerung
@@ -28,8 +29,13 @@
 % Use-Cases                                                                   %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% neuer UseCase
-% bsp: \uc{usecasename}
+% Use-Case
+%
+%  Parameter
+%
+%   1 label
+%   2 name
+%
 \newenvironment{uc}[2][]
 {\clearpage\section{#2}\ifx#1\undefined\else\label{#1}\fi}
 {}
@@ -52,7 +58,7 @@
 {\end{enumerate}}
 
 % Unterpunkte fuer Ablauf
-\newenvironment{subprocedure}
+\newenvironment{subproc}
 {\begin{enumerate}
     \setlength{\itemsep}{0ex plus 0.2ex}     
     \renewcommand{\labelenumii}{\arabic{enumi}.\alph{enumii}}}
@@ -62,7 +68,7 @@
 
 % Alternativer Ablauf
 \newenvironment{aproc}
-{\subsection{Alternative Abl\"aufe}\begin{itemize}}
+{\subsection{Alternative Abläufe}\begin{itemize}}
 {\end{itemize}}
 
 \newcommand{\astep}[1]{\item Bei Punkt \ref{#1}:\\}
