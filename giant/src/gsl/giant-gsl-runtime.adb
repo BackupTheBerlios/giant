@@ -21,8 +21,8 @@
 -- First Author: Gerrit Schulz
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
--- $Author: keulsn $
--- $Date: 2003/10/05 20:49:10 $
+-- $Author: koppor $
+-- $Date: 2003/10/06 17:19:16 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -33,6 +33,8 @@ with GNAT.Regpat;
 
 with Giant.Controller;
 
+with Giant.Config;
+with Giant.Config.Class_Sets;
 with Giant.Graph_Lib;
 use type Giant.Graph_Lib.Edge_Id;
 use type Giant.Graph_Lib.Node_Id;
@@ -1352,6 +1354,8 @@ package body Giant.Gsl.Runtime is
       Id     : Node_Class_Id;
       Ids    : Node_Class_Id_Set;
       Result : Gsl_Boolean;
+
+      Edge_Set : Config.Class_Sets.Class_Set_Access;
    begin
       if Get_List_Size (Parameter) /= 2 then
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
@@ -1359,18 +1363,40 @@ package body Giant.Gsl.Runtime is
       end if;
       Obj   := Get_Value_At (Parameter, 1);
       Class := Get_Value_At (Parameter, 2);
-      if Is_Gsl_Node_Id (Obj) and Is_Gsl_String (Class) then
-         Ids := Get_Predecessors (Get_Node_Class_Id
-           (Get_Value (Gsl_Node_Id (Obj))), True);
-         Id := Convert_Node_Class_Name_To_Id (Get_Value (Gsl_String (Class)));
-         Result := Create_Gsl_Boolean
-           (Node_Class_Id_Sets.Is_Member (Ids, Id));
-         Node_Class_Id_Sets.Destroy (Ids);
-         return Gsl_Type (Result);
+      if Is_Gsl_String (Class) then
+         if Is_Gsl_Node_Id (Obj) then
+            Ids := Get_Predecessors (Get_Node_Class_Id
+                                     (Get_Value (Gsl_Node_Id (Obj))), True);
+            Id := Convert_Node_Class_Name_To_Id (Get_Value (Gsl_String (Class)));
+            Result := Create_Gsl_Boolean
+              (Node_Class_Id_Sets.Is_Member (Ids, Id));
+            Node_Class_Id_Sets.Destroy (Ids);
+            return Gsl_Type (Result);
+         elsif Is_Gsl_Edge_Id (Obj) then
+            if not Config.Class_Sets.Does_Class_Set_Exist
+              (Get_Value (Gsl_String (Class))) then
+               Ada.Exceptions.Raise_Exception
+                 (Gsl_Runtime_Error'Identity,
+                  "Script 'instance_of': Class-Set """ & Get_Value (Gsl_String (Class)) &
+                  """ not found .");
+            end if;
+            Edge_Set := Config.Class_Sets.Get_Class_Set_Access
+              (Get_Value (Gsl_String (Class)));
 
+            Result := Create_Gsl_Boolean
+              (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
+               (Edge_Set, Get_Edge_Class_Id (Get_Value (Gsl_Edge_Id (Obj)))));
+
+            return Gsl_Type (Result);
+         else
+            Ada.Exceptions.Raise_Exception
+              (Gsl_Runtime_Error'Identity,
+               "Script 'instance_of': Gsl_Node_Id and Gsl_String expected.");
+         end if;
       else
-         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
-           "Script 'instance_of': Gsl_Node_Id and Gsl_String expected.");
+         Ada.Exceptions.Raise_Exception
+           (Gsl_Runtime_Error'Identity,
+            "Script 'instance_of': Gsl_Node_Id and Gsl_String expected.");
       end if;
    end Runtime_Instance_Of;
 
