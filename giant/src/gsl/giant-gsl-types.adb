@@ -20,9 +20,9 @@
 --
 -- First Author: Gerrit Schulz
 --
--- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.13 $
+-- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.14 $
 -- $Author: schulzgt $
--- $Date: 2003/07/24 14:29:37 $
+-- $Date: 2003/07/31 09:12:46 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Tags;
@@ -87,11 +87,11 @@ package body Giant.Gsl.Types is
       return Boolean is
    begin
       if Var = Gsl_Null then
-         return false;
+         return False;
       elsif Var'Tag = Gsl_Node_Id_Record'Tag then
-         return true;
+         return True;
       else
-         return false;
+         return False;
       end if;
    end Is_Gsl_Node_Id;
 
@@ -171,11 +171,11 @@ package body Giant.Gsl.Types is
       return Boolean is
    begin
       if Var = Gsl_Null then
-         return false;
+         return False;
       elsif Var'Tag = Gsl_Edge_Id_Record'Tag then
-         return true;
+         return True;
       else
-         return false;
+         return False;
       end if;
    end Is_Gsl_Edge_Id;
 
@@ -245,11 +245,11 @@ package body Giant.Gsl.Types is
       return Boolean is
    begin
       if Var = Gsl_Null then
-         return false;
+         return False;
       elsif Var'Tag = Gsl_Node_Set_Record'Tag then
-         return true;
+         return True;
       else
-         return false;
+         return False;
       end if;
    end Is_Gsl_Node_Set;
 
@@ -319,11 +319,11 @@ package body Giant.Gsl.Types is
       return Boolean is
    begin
       if Var = Gsl_Null then
-         return false;
+         return False;
       elsif Var'Tag = Gsl_Edge_Set_Record'Tag then
-         return true;
+         return True;
       else
-         return false;
+         return False;
       end if;
    end Is_Gsl_Edge_Set;
 
@@ -393,11 +393,11 @@ package body Giant.Gsl.Types is
       return Boolean is
    begin
       if Var = Gsl_Null then
-         return false;
+         return False;
       elsif Var'Tag = Gsl_String_Record'Tag then
-         return true;
+         return True;
       else
-         return false;
+         return False;
       end if;
    end Is_Gsl_String;
 
@@ -465,11 +465,11 @@ package body Giant.Gsl.Types is
       return Boolean is
    begin
       if Var = Gsl_Null then
-         return false;
+         return False;
       elsif Var'Tag = Gsl_Boolean_Record'Tag then
-         return true;
+         return True;
       else
-         return false;
+         return False;
       end if;
    end Is_Gsl_Boolean;
 
@@ -546,11 +546,11 @@ package body Giant.Gsl.Types is
       return Boolean is
    begin
       if Var = Gsl_Null then
-         return false;
+         return False;
       elsif Var'Tag = Gsl_Natural_Record'Tag then
-         return true;
+         return True;
       else
-         return false;
+         return False;
       end if;
    end Is_Gsl_Natural;
 
@@ -620,11 +620,11 @@ package body Giant.Gsl.Types is
       return Boolean is
    begin
       if Var = Gsl_Null then
-         return false;
+         return False;
       elsif Var'Tag = Gsl_List_Record'Tag then
-         return true;
+         return True;
       else
-         return false;
+         return False;
       end if;
    end Is_Gsl_List;
 
@@ -710,11 +710,11 @@ package body Giant.Gsl.Types is
       return Boolean is
    begin
       if Var = Gsl_Null then
-         return false;
+         return False;
       elsif Var'Tag = Gsl_Var_Reference_Record'Tag then
          return Get_Ref_Type (Gsl_Var_Reference (Var)) = Gsl.Types.Var;
       else
-         return false;
+         return False;
       end if;
    end Is_Gsl_Var_Reference;
 
@@ -725,11 +725,11 @@ package body Giant.Gsl.Types is
       return Boolean is
    begin
       if Var = Gsl_Null then
-         return false;
+         return False;
       elsif Var'Tag = Gsl_Var_Reference_Record'Tag then
          return Get_Ref_Type (Gsl_Var_Reference (Var)) /= Gsl.Types.Var;
       else
-         return false;
+         return False;
       end if;
    end Is_Gsl_Global_Reference;
 
@@ -817,11 +817,11 @@ package body Giant.Gsl.Types is
       return Boolean is
    begin
       if Var = Gsl_Null then
-         return false;
+         return False;
       elsif Var'Tag = Gsl_Script_Reference_Record'Tag then
-         return true;
+         return True;
       else
-         return false;
+         return False;
       end if;
    end Is_Gsl_Script_Reference;
 
@@ -914,18 +914,20 @@ package body Giant.Gsl.Types is
       return Boolean is
    begin
       if Var = Gsl_Null then
-         return false;
+         return False;
       elsif Is_Gsl_List (Var) then
          if Get_List_Size (Gsl_List (Var)) = 2 then
             if Is_Gsl_Node_Set (Get_Value_At (Gsl_List (Var), 1)) and
                Is_Gsl_Edge_Set (Get_Value_At (Gsl_List (Var), 2)) then
-               return true;
+               return True;
             else
-               return false;
+               return False;
             end if;
          else
-            return false;
+            return False;
          end if;
+      else
+         return False;
       end if;
    end Is_Gsl_Object_Set;
 	   
