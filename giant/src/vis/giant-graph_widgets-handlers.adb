@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-handlers.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_widgets-handlers.adb,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/07/09 20:07:54 $
+--  $Date: 2003/07/10 16:05:51 $
 --
 ------------------------------------------------------------------------------
 
@@ -229,6 +229,9 @@ package body Giant.Graph_Widgets.Handlers is
    --  Global Variable containing all Signals, never gets destroyed.
    Signal_Array : constant Gtkada.Types.Chars_Ptr_Array :=
      Set_Scroll_Adjustments_Signal +
+     Background_Popup_Event +
+     Edge_Popup_Event +
+     Node_Popup_Event +
      Action_Mode_Button_Press_Event +
      Logical_Area_Changed_Signal +
      Visible_Area_Changed_Signal;
@@ -236,12 +239,18 @@ package body Giant.Graph_Widgets.Handlers is
    Signal_Parameters : constant Gtk.Object.Signal_Parameter_Types :=
      (--  Set_Scroll_Adjustments_Signal
       1 => (1 => Gtk.Gtk_Type_Object, 2 => Gtk.Gtk_Type_Object),
-      --  Action_Mode_Button_Press_Event
+      --  Background_Popup_Event
       2 => (1 => Gtk.Gtk_Type_Pointer, 2 => Gtk.Gtk_Type_None),
-      --  Logical_Area_Changed_Signal
+      --  Edge_Popup_Event
       3 => (1 => Gtk.Gtk_Type_Pointer, 2 => Gtk.Gtk_Type_None),
+      --  Node_Popup_Event
+      4 => (1 => Gtk.Gtk_Type_Pointer, 2 => Gtk.Gtk_Type_None),
+      --  Action_Mode_Button_Press_Event
+      5 => (1 => Gtk.Gtk_Type_Pointer, 2 => Gtk.Gtk_Type_None),
+      --  Logical_Area_Changed_Signal
+      6 => (1 => Gtk.Gtk_Type_Pointer, 2 => Gtk.Gtk_Type_None),
       --  Visible_Area_Changed_Signal
-      4 => (1 => Gtk.Gtk_Type_Pointer, 2 => Gtk.Gtk_Type_None));
+      7 => (1 => Gtk.Gtk_Type_Pointer, 2 => Gtk.Gtk_Type_None));
 
    function Get_Signal_Array
      return Gtkada.Types.Chars_Ptr_Array is

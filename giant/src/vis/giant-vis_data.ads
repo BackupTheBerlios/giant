@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.19 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.20 $
 --  $Author: keulsn $
---  $Date: 2003/07/10 00:16:54 $
+--  $Date: 2003/07/10 16:05:51 $
 --
 ------------------------------------------------------------------------------
 --
@@ -143,7 +143,7 @@ package Giant.Vis_Data is
    type Layer_Clipping_Type is
       record
          Height : Layer_Type;
-         Action : Layer_Clipping_Change_Type;
+--           Action : Layer_Clipping_Change_Type;
          Area   : Vis.Absolute.Rectangle_2d;
       end record;
 
@@ -655,6 +655,54 @@ package Giant.Vis_Data is
      (Manager : in out Region_Manager;
       Area    : in     Vis.Absolute.Rectangle_2d);
 
+
+   ----------------------------------------------------------------------------
+   --  Command used to organize a buffer refresh for the content af a region
+   --  manager. Refresh must be done in the order:
+   --  1. Background
+   --  2. Edges
+   --  3. Nodes
+   --  (4. Unchanged space)
+   --
+   --  Fields:
+   --    Reset         - The rectangles are areas to be reset to background
+   --                    color. If a rectangle is drawn, then clipping on
+   --                    that rectangle is opened for edge and node drawing.
+   --    Edge_Clipping - Clipping of a specified rectangle opens before any
+   --                    edge in the same layer is drawn.
+   --    Edges         - All edges to be drawn in correct (bottom-to-top)
+   --                    order. Only drawing inside open clipping area is
+   --                    needed. Other drawing must be avoided or removed
+   --                    later.
+   --    Node_Clipping - Same as Edge_Clipping, but for nodes. Note that
+   --                    all rectangles opened by Reset or by Edge_Clipping
+   --                    are open as well
+   --    Nodes         - Same as Edges for nodes
+   --    Unchanged     - All rectangles where clipping remained closed. The
+   --                    previous content should remain here unchanged.
+   --  Note:
+   --    * NO rectangle may be contained in more than one "list" of
+   --      Reset, Edge_Clipping, Node_Clipping, Unchanged
+   --    * The desired area must be covered entirely by the rectangles in
+   --      Reset, Edge_Clipping, Node_Clipping, Unchanged
+   type Refresh_Command_Type is
+      record
+         Reset          : Rectangle_2d_Lists.List;
+         Edge_Clipping  : Clipping_Queue_Access;
+         Edges          : Edge_Update_Iterators.Merger_Access;
+         Node_Clipping  : Clipping_Queue_Access;
+         Nodes          : Node_Update_Iterators.Merger_Access;
+         Unchanged      : Rectangle_2d_Lists.List;
+      end record;
+
+   procedure Start_Refresh_Operation
+     (Manager         : in out Region_Manager;
+      Refresh_Area    : in     Vis.Absolute.Rectangle_2d;
+      Command         :    out Refresh_Command_Type;
+      Refresh_Pending : in     Boolean);
+
+   procedure End_Refresh_Operation
+     (Command         : in out Refresh_Command_Type);
 
    ----------------------------------------------------------------------------
    --  Determines how to refresh the visual representation. Receives as input

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.18 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.19 $
 --  $Author: keulsn $
---  $Date: 2003/07/10 00:16:54 $
+--  $Date: 2003/07/10 16:05:51 $
 --
 ------------------------------------------------------------------------------
 
@@ -609,7 +609,7 @@ package body Giant.Vis_Data is
       Region.Extent := Extent;
       Region.Polluted_Edge := null;
       Region.Polluted_Node := null;
-      Region.Background_Polluted := False;
+      Region.Background_Polluted := True;
       Region.Edges := Vis_Edge_Sets.Empty_Set;
       Region.Nodes := Vis_Node_Sets.Empty_Set;
       return Region;
@@ -1392,6 +1392,130 @@ package body Giant.Vis_Data is
       end loop;
    end Pollute_Area;
 
+   procedure Start_Refresh_Operation
+     (Manager         : in out Region_Manager;
+      Refresh_Area    : in     Vis.Absolute.Rectangle_2d;
+      Command         :    out Refresh_Command_Type;
+      Refresh_Pending : in     Boolean) is
+
+      procedure Add_Region
+        (Region : in     Region_Id) is
+
+         First_Edge      : Vis_Data.Vis_Edge_Id;
+         First_Node      : Vis_Data.Vis_Node_Id;
+         Clipping_Opened : Boolean := False;
+         Edge_Iterator   : Vis_Edge_Sets.Iterator :=
+           Get_Polluted_Edges (Region);
+         Node_Iterator   : Vis_Node_Sets.Iterator :=
+           Get_Polluted_Nodes (Region);
+      begin
+         if Is_Background_Polluted (Region) then
+            --  Background must be refreshed
+            Rectangle_2d_Lists.Attach
+              (Get_Region_Extent (Region),
+               Command.Reset);
+            Clipping_Opened := True;
+         end if;
+
+         if Vis_Edge_Sets.More (Edge_Iterator) then
+            if not Clipping_Opened then
+               --  Clipping not opened by background --> must open now
+               First_Edge := Vis_Edge_Sets.Current (Edge_Iterator);
+               Clipping_Queues.Insert
+                 (Queue => Command.Edge_Clipping.all,
+                  Item  => new Layer_Clipping_Type'
+                             (Height => Get_Layer (First_Edge),
+                              Area   => Get_Region_Extent (Region)));
+               Clipping_Opened := True;
+            end if;
+
+            Edge_Update_Iterators.Add_Iterator
+              (Merger   => Command.Edges.all,
+               Iterator => Edge_Iterator);
+         else
+            Vis_Edge_Sets.Destroy (Edge_Iterator);
+         end if;
+
+         if Vis_Node_Sets.More (Node_Iterator) then
+            if not Clipping_Opened then
+               --  Clipping not opened by lower item --> must open now
+               First_Node := Vis_Node_Sets.Current (Node_Iterator);
+               Clipping_Queues.Insert
+                 (Queue => Command.Node_Clipping.all,
+                  Item  => new Layer_Clipping_Type'
+                             (Height => Get_Layer (First_Node),
+                              Area   => Get_Region_Extent (Region)));
+               Clipping_Opened := True;
+            end if;
+
+            Node_Update_Iterators.Add_Iterator
+              (Merger   => Command.Nodes.all,
+               Iterator => Node_Iterator);
+         else
+            Vis_Node_Sets.Destroy (Node_Iterator);
+         end if;
+
+         if not Clipping_Opened then
+            --  No clipping has opened --> area unchanged
+            Rectangle_2d_Lists.Attach
+              (Get_Region_Extent (Region),
+               Command.Unchanged);
+         end if;
+
+         if Refresh_Pending then
+            Remove_All_Pollution (Region);
+         end if;
+      end Add_Region;
+
+      Iterator     : Position_Iterator;
+      Position     : Region_Position;
+      Region       : Region_Id;
+      Pool         : Position_Pool := Create_Position_Pool_From_Area
+        (Manager, Refresh_Area);
+      Region_Count : Natural := Get_Position_Pool_Size (Pool);
+   begin
+      Command :=
+        (Reset         => Rectangle_2d_Lists.Create,
+         Edge_Clipping => new Clipping_Queues.Queue_Type (Region_Count),
+         Edges         => new Edge_Update_Iterators.Merger_Type (Region_Count),
+         Node_Clipping => new Clipping_Queues.Queue_Type (Region_Count),
+         Nodes         => new Node_Update_Iterators.Merger_Type (Region_Count),
+         Unchanged     => Rectangle_2d_Lists.Create);
+
+      Make_Position_Iterator (Pool, Iterator);
+      while Has_More (Iterator) loop
+         Position := Get_Current (Iterator);
+         Next (Iterator);
+         Region := Get_Region_If_Exists (Manager, Position);
+         if Region /= null then
+            Add_Region (Region);
+         else
+            --  'Positions' without 'Region_Id's will be refreshed by default
+            Rectangle_2d_Lists.Attach
+              (Get_Region_Extent (Manager, Position),
+               Command.Reset);
+         end if;
+      end loop;
+      if Refresh_Pending then
+         --  Clear refresh flag for 'Position's without 'Region_Id's
+         Manager.Empty_Background_Polluted := False;
+      end if;
+      Edge_Update_Iterators.Start_Iteration (Command.Edges.all);
+      Node_Update_Iterators.Start_Iteration (Command.Nodes.all);
+   end Start_Refresh_Operation;
+
+   procedure End_Refresh_Operation
+     (Command         : in out Refresh_Command_Type) is
+   begin
+      Rectangle_2d_Lists.Destroy (Command.Reset);
+      Destroy_Clipping_Queue (Command.Edge_Clipping);
+      Edge_Update_Iterators.Destroy (Command.Edges);
+      Destroy_Clipping_Queue (Command.Node_Clipping);
+      Node_Update_Iterators.Destroy (Command.Nodes);
+      Rectangle_2d_Lists.Destroy (Command.Unchanged);
+   end End_Refresh_Operation;
+
+
    procedure Start_Refresh_Background
      (Manager         : in out Region_Manager;
       Display_Area    : in     Vis.Absolute.Rectangle_2d;
@@ -1473,7 +1597,6 @@ package body Giant.Vis_Data is
                  (Queue => Clipping.all,
                   Item  => new Layer_Clipping_Type'
                                 (Height => Get_Layer (First_Edge),
-                                 Action => Add,
                                  Area   => Get_Region_Extent (Region)));
 
                Edge_Update_Iterators.Add_Iterator
@@ -1543,7 +1666,6 @@ package body Giant.Vis_Data is
                  (Queue => Clipping.all,
                   Item  => new Layer_Clipping_Type'
                                 (Height => Get_Layer (First_Node),
-                                 Action => Add,
                                  Area   => Get_Region_Extent (Region)));
 
                Node_Update_Iterators.Add_Iterator

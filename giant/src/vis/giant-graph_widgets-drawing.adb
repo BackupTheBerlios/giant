@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.11 $
 --  $Author: keulsn $
---  $Date: 2003/07/10 00:16:54 $
+--  $Date: 2003/07/10 16:05:51 $
 --
 ------------------------------------------------------------------------------
 
@@ -238,45 +238,45 @@ package body Giant.Graph_Widgets.Drawing is
       end if;
    end Draw_Text;
 
-   procedure Apply_Clipping
-     (Widget   : access Graph_Widget_Record'Class;
-      Clipping : in     Vis_Data.Layer_Clipping_Type;
-      Origin   : in     Vis.Absolute.Vector_2d) is
-   begin
-      case Clipping.Action is
-         when Vis_Data.Add =>
-            Draw_Filled
-              (Drawable  => Widget.Drawing.Clip_Mask,
-               Gc        => Widget.Drawing.Clip_Open,
-               Rectangle => Clipping.Area,
-               Origin    => Origin);
-         when Vis_Data.Delete =>
-            Draw_Filled
-              (Drawable  => Widget.Drawing.Clip_Mask,
-               Gc        => Widget.Drawing.Clip_Close,
-               Rectangle => Clipping.Area,
-               Origin    => Origin);
-      end case;
-   end Apply_Clipping;
-   pragma Inline (Apply_Clipping);
+   procedure Copy_Ready_Into_Normal_Buffer
+     (Widget : access Graph_Widget_Record'Class;
+      Area   : in     Vis.Absolute.Rectangle_2d;
+      Origin : in     Vis.Absolute.Vector_2d) is
 
-   procedure Revert_Clipping
-     (Widget   : access Graph_Widget_Record'Class;
-      Clipping : in     Vis_Data.Layer_Clipping_Type;
-      Origin   : in     Vis.Absolute.Vector_2d) is
+      X : Glib.Gint;
+      Y : Glib.Gint;
    begin
-      case Clipping.Action is
-         when Vis_Data.Add =>
-            Draw_Filled
-              (Drawable  => Widget.Drawing.Clip_Mask,
-               Gc        => Widget.Drawing.Clip_Close,
-               Rectangle => Clipping.Area,
-               Origin    => Origin);
-         when Vis_Data.Delete =>
-            null;
-      end case;
-   end Revert_Clipping;
-   pragma Inline (Revert_Clipping);
+      Vis.To_Gdk (Get_Top_Left (Area) + Origin, X, Y);
+      Gdk.Drawable.Copy_Area
+        (Dest     => Widget.Drawing.Buffer,
+         GC       => Widget.Drawing.Background,
+         X        => X,
+         Y        => Y,
+         Source   => Widget.Drawing.Ready_Buffer,
+         Source_X => X,
+         Source_Y => Y,
+         Width    => Glib.Gint (Get_Width (Area)),
+         Height   => Glib.Gint (Get_Height (Area)));
+   end Copy_Ready_Into_Normal_Buffer;
+   pragma Inline (Copy_Ready_Into_Normal_Buffer);
+
+--     procedure Revert_Clipping
+--       (Widget   : access Graph_Widget_Record'Class;
+--        Clipping : in     Vis_Data.Layer_Clipping_Type;
+--        Origin   : in     Vis.Absolute.Vector_2d) is
+--     begin
+--        case Clipping.Action is
+--           when Vis_Data.Add =>
+--              Draw_Filled
+--                (Drawable  => Widget.Drawing.Clip_Mask,
+--                 Gc        => Widget.Drawing.Clip_Close,
+--                 Rectangle => Clipping.Area,
+--                 Origin    => Origin);
+--           when Vis_Data.Delete =>
+--              null;
+--        end case;
+--     end Revert_Clipping;
+--     pragma Inline (Revert_Clipping);
 
    --  NOTE: Must be synced with 'Draw_Edge'
    procedure Update_Edge_Size
@@ -860,73 +860,52 @@ package body Giant.Graph_Widgets.Drawing is
    end Draw_Node;
 
    procedure Update_Buffer_Edges
-     (Widget : access Graph_Widget_Record'Class) is
+     (Widget   : access Graph_Widget_Record'Class;
+      Clipping : in     Vis_Data.Clipping_Queue_Access;
+      Edges    : in     Vis_Data.Edge_Update_Iterators.Merger_Access) is
 
       package Clipping_Queues renames Vis_Data.Clipping_Queues;
       package Iterators renames Vis_Data.Edge_Update_Iterators;
 
-      Clipping         : Vis_Data.Clipping_Queue_Access;
-      Edges            : Iterators.Merger_Access;
       Current_Clipping : Vis_Data.Layer_Clipping_Access;
       Current_Edge     : Vis_Data.Vis_Edge_Id;
       Current_Layer    : Vis_Data.Layer_Type;
       Origin           : Vis.Absolute.Vector_2d :=
         Get_Top_Left (Widget.Drawing.Buffer_Area);
    begin
-      Vis_Data.Start_Edge_Refresh
-        (Manager         => Widget.Manager,
-         Display_Area    => Widget.Drawing.Buffer_Area,
-         Clipping        => Clipping,
-         Edges           => Edges,
-         Refresh_Pending => True);
+      while Iterators.Has_More (Edges) loop
+         Current_Edge := Iterators.Get_Current (Edges);
+         Current_Layer := Vis_Data.Get_Layer (Current_Edge);
 
-      declare
-         Clip_Array : Layer_Clipping_Array
-           (1 .. Clipping_Queues.Get_Size (Clipping.all));
-         Clip_Count : Integer := Clip_Array'First;
-      begin
-         while Iterators.Has_More (Edges) loop
-            Current_Edge := Iterators.Get_Current (Edges);
-            Current_Layer := Vis_Data.Get_Layer (Current_Edge);
-
-            loop
-               --  open/close clip mask according to 'Current_Layer'
-               exit when Clipping_Queues.Is_Empty (Clipping.all);
-               Current_Clipping := Clipping_Queues.Get_Head (Clipping.all);
-               exit when Vis_Data.Is_Below
-                 (Current_Layer, Current_Clipping.Height);
-               Apply_Clipping (Widget, Current_Clipping.all, Origin);
-               Clipping_Queues.Remove_Head (Clipping.all);
-               --  memorize 'Current_Clipping' to close the clip mask when done
-               Clip_Array (Clip_Count) := Current_Clipping;
-               Clip_Count := Clip_Count + 1;
-            end loop;
-
-            Draw_Edge
-              (Widget, Widget.Drawing.Buffer, Current_Edge, Origin);
-
-            Iterators.Forward (Edges);
+         loop
+            --  open/close clip mask according to 'Current_Layer'
+            exit when Clipping_Queues.Is_Empty (Clipping.all);
+            Current_Clipping := Clipping_Queues.Get_Head (Clipping.all);
+            exit when Vis_Data.Is_Below
+              (Current_Layer, Current_Clipping.Height);
+            Copy_Ready_Into_Normal_Buffer
+              (Widget => Widget,
+               Area   => Current_Clipping.Area,
+               Origin => Origin);
+            Clipping_Queues.Remove_Head (Clipping.all);
          end loop;
 
-         --  close clip mask
-         while Clip_Count > Clip_Array'First loop
-            Clip_Count := Clip_Count - 1;
-            Revert_Clipping (Widget, Clip_Array (Clip_Count).all, Origin);
-            Vis_Data.Free (Clip_Array (Clip_Count));
-         end loop;
-      end;
+         Draw_Edge
+           (Widget, Widget.Drawing.Buffer, Current_Edge, Origin);
 
-      Vis_Data.End_Edge_Refresh (Clipping, Edges);
+         Iterators.Forward (Edges);
+      end loop;
+
    end Update_Buffer_Edges;
 
    procedure Update_Buffer_Nodes
-     (Widget : access Graph_Widget_Record'Class) is
+     (Widget   : access Graph_Widget_Record'Class;
+      Clipping : in     Vis_Data.Clipping_Queue_Access;
+      Nodes    : in     Vis_Data.Node_Update_Iterators.Merger_Access) is
 
       package Clipping_Queues renames Vis_Data.Clipping_Queues;
       package Iterators renames Vis_Data.Node_Update_Iterators;
 
-      Clipping         : Vis_Data.Clipping_Queue_Access;
-      Nodes            : Iterators.Merger_Access;
       Current_Clipping : Vis_Data.Layer_Clipping_Access;
       Current_Node     : Vis_Data.Vis_Node_Id;
       Current_Layer    : Vis_Data.Layer_Type;
@@ -935,81 +914,51 @@ package body Giant.Graph_Widgets.Drawing is
    begin
       Drawing_Logger.Debug
         ("Update_Buffer_Nodes, Origin = " & Vis.Absolute.Image (Origin));
-      Vis_Data.Start_Node_Refresh
-        (Manager         => Widget.Manager,
-         Display_Area    => Widget.Drawing.Buffer_Area,
-         Clipping        => Clipping,
-         Nodes           => Nodes,
-         Refresh_Pending => True);
 
-      declare
-         Clip_Array : Layer_Clipping_Array
-           (1 .. Clipping_Queues.Get_Size (Clipping.all));
-         Clip_Count : Integer := Clip_Array'First;
-      begin
-         while Iterators.Has_More (Nodes) loop
-            Current_Node := Iterators.Get_Current (Nodes);
-            Current_Layer := Vis_Data.Get_Layer (Current_Node);
+      while Iterators.Has_More (Nodes) loop
+         Current_Node := Iterators.Get_Current (Nodes);
+         Current_Layer := Vis_Data.Get_Layer (Current_Node);
 
-            loop
-               --  open/close clip mask according to 'Current_Layer'
-               exit when Clipping_Queues.Is_Empty (Clipping.all);
-               Current_Clipping := Clipping_Queues.Get_Head (Clipping.all);
-               exit when Vis_Data.Is_Below
-                 (Current_Layer, Current_Clipping.Height);
-               Drawing_Logger.Debug
-                 ("... Apply_Clipping: " &
-                  Vis.Absolute.Image (Current_Clipping.Area) & ", Origin: " &
-                  Vis.Absolute.Image (Origin));
-               Apply_Clipping (Widget, Current_Clipping.all, Origin);
-               Clipping_Queues.Remove_Head (Clipping.all);
-               --  memorize 'Current_Clipping' to close the clip mask when done
-               Clip_Array (Clip_Count) := Current_Clipping;
-               Clip_Count := Clip_Count + 1;
-            end loop;
-
+         loop
+            --  open/close clip mask according to 'Current_Layer'
+            exit when Clipping_Queues.Is_Empty (Clipping.all);
+            Current_Clipping := Clipping_Queues.Get_Head (Clipping.all);
+            exit when Vis_Data.Is_Below
+              (Current_Layer, Current_Clipping.Height);
             Drawing_Logger.Debug
-              ("... Draw_Node: " &
-               Vis.Absolute.Image (Vis_Data.Get_Extent (Current_Node)));
-            Draw_Node
-              (Widget, Widget.Drawing.Buffer, Current_Node, Origin);
-
-            Iterators.Forward (Nodes);
+              ("... open clipping: " &
+               Vis.Absolute.Image (Current_Clipping.Area) & ", Origin: " &
+               Vis.Absolute.Image (Origin));
+            Copy_Ready_Into_Normal_Buffer
+              (Widget => Widget,
+               Area   => Current_Clipping.Area,
+               Origin => Origin);
+            Clipping_Queues.Remove_Head (Clipping.all);
          end loop;
 
-         --  close clip mask
-         while Clip_Count > Clip_Array'First loop
-            Clip_Count := Clip_Count - 1;
-            Drawing_Logger.Debug
-              ("... Revert_Clipping: " &
-               Vis.Absolute.Image (Clip_Array (Clip_Count).Area) &
-               ", Origin: " & Vis.Absolute.Image (Origin));
-            Revert_Clipping (Widget, Clip_Array (Clip_Count).all, Origin);
-            Vis_Data.Free (Clip_Array (Clip_Count));
-         end loop;
-      end;
+         Drawing_Logger.Debug
+           ("... Draw_Node: " &
+            Vis.Absolute.Image (Vis_Data.Get_Extent (Current_Node)));
+         Draw_Node
+           (Widget, Widget.Drawing.Buffer, Current_Node, Origin);
 
-      Vis_Data.End_Node_Refresh (Clipping, Nodes);
+         Iterators.Forward (Nodes);
+      end loop;
       Drawing_Logger.Debug ("... Nodes done.");
    end Update_Buffer_Nodes;
 
 
    procedure Update_Buffer_Background
-     (Widget : access Graph_Widget_Record'Class) is
+     (Widget     : access Graph_Widget_Record'Class;
+      Rectangles : in     Vis_Data.Rectangle_2d_Lists.List) is
 
       package Rect_Lists renames Vis_Data.Rectangle_2d_Lists;
       Area          : Vis.Absolute.Rectangle_2d;
-      Rectangles    : Rect_Lists.List;
       Iterator      : Rect_Lists.ListIter;
       Buffer_Origin : Vis.Absolute.Vector_2d :=
         Get_Top_Left (Widget.Drawing.Buffer_Area);
    begin
       Drawing_Logger.Debug ("Update_Buffer_Background");
-      Vis_Data.Start_Refresh_Background
-        (Manager         => Widget.Manager,
-         Display_Area    => Widget.Drawing.Buffer_Area,
-         Refresh_Area    => Rectangles,
-         Refresh_Pending => True);
 
       Iterator := Rect_Lists.MakeListIter (Rectangles);
       while Rect_Lists.More (Iterator) loop
@@ -1023,20 +972,60 @@ package body Giant.Graph_Widgets.Drawing is
             Origin    => Buffer_Origin);
       end loop;
 
-      Vis_Data.End_Refresh_Background (Rectangles);
       Drawing_Logger.Debug ("... Background done.");
    end Update_Buffer_Background;
+
+   procedure Update_Buffer_Unchanged
+     (Widget     : access Graph_Widget_Record'Class;
+      Rectangles : in     Vis_Data.Rectangle_2d_Lists.List) is
+
+      package Rect_Lists renames Vis_Data.Rectangle_2d_Lists;
+      Area          : Vis.Absolute.Rectangle_2d;
+      Iterator      : Rect_Lists.ListIter;
+      Buffer_Origin : Vis.Absolute.Vector_2d :=
+        Get_Top_Left (Widget.Drawing.Buffer_Area);
+   begin
+      Drawing_Logger.Debug ("Update_Buffer_Unchanged");
+
+      Iterator := Rect_Lists.MakeListIter (Rectangles);
+      while Rect_Lists.More (Iterator) loop
+         Rect_Lists.Next (Iterator, Area);
+         Drawing_Logger.Debug
+           ("... Unchanged rectangle: " & Vis.Absolute.Image (Area));
+         Copy_Ready_Into_Normal_Buffer
+           (Widget => Widget,
+            Area   => Area,
+            Origin => Buffer_Origin);
+      end loop;
+
+      Drawing_Logger.Debug ("... Unchanged done.");
+   end Update_Buffer_Unchanged;
 
 
    ----------------------------------------------------------------------------
    --  Updates the 'Buffer'
    procedure Update_Buffer
      (Widget : access Graph_Widget_Record'Class) is
+
+      Buffer_Copy : Gdk.Pixmap.Gdk_Pixmap;
+      Command     : Vis_Data.Refresh_Command_Type;
    begin
-      Drawing_Logger.Debug ("Update_Buffer");
-      Update_Buffer_Background (Widget);
-      Update_Buffer_Edges (Widget);
-      Update_Buffer_Nodes (Widget);
+      Vis_Data.Start_Refresh_Operation
+        (Manager         => Widget.Manager,
+         Refresh_Area    => Widget.Drawing.Buffer_Area,
+         Command         => Command,
+         Refresh_Pending => True);
+
+      Update_Buffer_Background (Widget, Command.Reset);
+      Update_Buffer_Edges (Widget, Command.Edge_Clipping, Command.Edges);
+      Update_Buffer_Nodes (Widget, Command.Node_Clipping, Command.Nodes);
+      Update_Buffer_Unchanged (Widget, Command.Unchanged);
+
+      Vis_Data.End_Refresh_Operation (Command);
+
+      Buffer_Copy := Widget.Drawing.Buffer;
+      Widget.Drawing.Buffer := Widget.Drawing.Ready_Buffer;
+      Widget.Drawing.Ready_Buffer := Buffer_Copy;
    end Update_Buffer;
 
 
@@ -1051,7 +1040,7 @@ package body Giant.Graph_Widgets.Drawing is
          GC       => Widget.Drawing.Background,
          X        => 0,
          Y        => 0,
-         Source   => Widget.Drawing.Buffer,
+         Source   => Widget.Drawing.Ready_Buffer,
          Source_X => 0,
          Source_Y => 0,
          Width    => Glib.Gint
@@ -1141,21 +1130,13 @@ package body Giant.Graph_Widgets.Drawing is
       Window : Gdk.Window.Gdk_Window := Get_Window (Widget);
    begin
       Gdk.GC.Gdk_New (Widget.Drawing.Node_Border, Window);
---        Gdk.GC.Set_Clip_Mask
---          (Widget.Drawing.Node_Border, Widget.Drawing.Clip_Mask);
       Gdk.GC.Gdk_New (Widget.Drawing.Node_Fill, Window);
---        Gdk.GC.Set_Clip_Mask
---          (Widget.Drawing.Node_Fill, Widget.Drawing.Clip_Mask);
       Gdk.GC.Gdk_New (Widget.Drawing.Node_Text, Window);
---        Gdk.GC.Set_Clip_Mask
---          (Widget.Drawing.Node_Text, Widget.Drawing.Clip_Mask);
       Gdk.GC.Set_Font
         (Widget.Drawing.Node_Text, Settings.Get_Node_Font (Widget));
 
       for I in Vis_Data.Highlight_Type loop
          Gdk.GC.Gdk_New (Widget.Drawing.Node_Light (I), Window);
---           Gdk.GC.Set_Clip_Mask
---             (Widget.Drawing.Node_Light (I), Widget.Drawing.Clip_Mask);
          Gdk.GC.Set_Foreground
            (Widget.Drawing.Node_Light (I),
             Settings.Get_Highlight_Color (Widget, I));
@@ -1205,24 +1186,6 @@ package body Giant.Graph_Widgets.Drawing is
       end loop;
    end Set_Up_Edge_Gcs;
 
-   ----------------------------------------------------------------------------
-   --  Sets up the clipping gcs
-   procedure Set_Up_Clip_Gcs
-     (Widget : access Graph_Widget_Record'Class) is
-
-      Colormap : Gdk.Color.Gdk_Colormap := Get_Colormap (Widget);
-      White    : Gdk.Color.Gdk_Color    := Gdk.Color.White (Colormap);
-      Black    : Gdk.Color.Gdk_Color    := Gdk.Color.Black (Colormap);
-   begin
-      Gdk.GC.Gdk_New (Widget.Drawing.Clip_Open, Widget.Drawing.Clip_Mask);
-      Gdk.GC.Set_Foreground (Widget.Drawing.Clip_Open, White);
---      Gdk.GC.Set_Function (Widget.Drawing.Clip_Open, Gdk.Types.Set);
-
-      Gdk.GC.Gdk_New (Widget.Drawing.Clip_Close, Widget.Drawing.Clip_Mask);
-      Gdk.GC.Set_Foreground (Widget.Drawing.Clip_Close, Black);
-   end Set_Up_Clip_Gcs;
-
-
 
    procedure Set_Up
      (Widget : access Graph_Widget_Record'Class) is
@@ -1253,9 +1216,8 @@ package body Giant.Graph_Widgets.Drawing is
          Window => Window,
          Width  => Width,
          Height => Height);
-      --  Clip mask
-      Gdk.Bitmap.Gdk_New
-        (Bitmap => Widget.Drawing.Clip_Mask,
+      Gdk.Pixmap.Gdk_New
+        (Pixmap => Widget.Drawing.Ready_Buffer,
          Window => Window,
          Width  => Width,
          Height => Height);
@@ -1263,10 +1225,9 @@ package body Giant.Graph_Widgets.Drawing is
       Set_Up_Background_Gc (Widget);
       Set_Up_Edge_Gcs (Widget);
       Set_Up_Node_Gcs (Widget);
-      Set_Up_Clip_Gcs (Widget);
 
-      Clear (Widget.Drawing.Background, Widget.Drawing.Display);
-      Clear (Widget.Drawing.Clip_Close, Widget.Drawing.Clip_Mask);
+--      Clear (Widget.Drawing.Background, Widget.Drawing.Display);
+      Clear (Widget.Drawing.Background, Widget.Drawing.Ready_Buffer);
 
       --  Set Display as background pixmap
       Gdk.Window.Set_Back_Pixmap
@@ -1284,8 +1245,6 @@ package body Giant.Graph_Widgets.Drawing is
       States.Disable_Drawing (Widget);
 
       Gdk.GC.Destroy (Widget.Drawing.Background);
-      Gdk.GC.Destroy (Widget.Drawing.Clip_Open);
-      Gdk.GC.Destroy (Widget.Drawing.Clip_Close);
 
       Gdk.GC.Destroy (Widget.Drawing.Node_Border);
       Gdk.GC.Destroy (Widget.Drawing.Node_Fill);
@@ -1302,7 +1261,7 @@ package body Giant.Graph_Widgets.Drawing is
          Gdk.GC.Destroy (Widget.Drawing.Edge_Light (I));
       end loop;
 
-      Gdk.Bitmap.Unref (Widget.Drawing.Clip_Mask);
+      Gdk.Bitmap.Unref (Widget.Drawing.Ready_Buffer);
       Gdk.Pixmap.Unref (Widget.Drawing.Buffer);
       Gdk.Pixmap.Unref (Widget.Drawing.Display);
    end Shut_Down;

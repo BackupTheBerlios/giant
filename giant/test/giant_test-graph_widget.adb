@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant_test-graph_widget.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant_test-graph_widget.adb,v $, $Revision: 1.8 $
 --  $Author: keulsn $
---  $Date: 2003/07/10 00:16:54 $
+--  $Date: 2003/07/10 16:05:51 $
 --
 ------------------------------------------------------------------------------
 
@@ -127,7 +127,9 @@ begin
       GIANT_VIS_Directory    => "",
       User_Vis_Directory     => "",
       Default_Vis_Style_File =>
-        "resources/vis_styles/only_defaults_giant_vis_style.xml");
+        "resources/vis_styles/" &
+        "only_defaults_giant_vis_style.xml");
+--        "../dist/vis_styles_set_1/vis_style_default.xml");
 
    Giant.Graph_Widgets.Create
      (Widget  => Graph_Widget);

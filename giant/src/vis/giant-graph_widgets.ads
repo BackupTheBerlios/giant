@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.24 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.25 $
 --  $Author: keulsn $
---  $Date: 2003/07/08 19:41:48 $
+--  $Date: 2003/07/10 16:05:51 $
 --
 ------------------------------------------------------------------------------
 --
@@ -1042,23 +1042,21 @@ private                    -- private part --
 
    type Drawing_Type is
       record
-         Buffer      : Gdk.Pixmap.Gdk_Pixmap;
-         Buffer_Area : Vis.Absolute.Rectangle_2d;
-         Clip_Mask   : Gdk.Bitmap.Gdk_Bitmap;
-         Display     : Gdk.Pixmap.Gdk_Pixmap;
+         Buffer       : Gdk.Pixmap.Gdk_Pixmap;
+         Buffer_Area  : Vis.Absolute.Rectangle_2d;
+         Ready_Buffer : Gdk.Pixmap.Gdk_Pixmap;
+         Display      : Gdk.Pixmap.Gdk_Pixmap;
 
-         Background  : Gdk.GC.Gdk_GC;
-         Clip_Open   : Gdk.GC.Gdk_GC;
-         Clip_Close  : Gdk.GC.Gdk_GC;
+         Background   : Gdk.GC.Gdk_GC;
 
-         Node_Border : Gdk.GC.Gdk_GC;
-         Node_Fill   : Gdk.GC.Gdk_GC;
-         Node_Text   : Gdk.GC.Gdk_GC;
-         Node_Light  : Highlight_GCs;
+         Node_Border  : Gdk.GC.Gdk_GC;
+         Node_Fill    : Gdk.GC.Gdk_GC;
+         Node_Text    : Gdk.GC.Gdk_GC;
+         Node_Light   : Highlight_GCs;
 
-         Edge_Line   : Edge_Style_GCs;
-         Edge_Label  : Gdk.GC.Gdk_GC;
-         Edge_Light  : Highlight_GCs;
+         Edge_Line    : Edge_Style_GCs;
+         Edge_Label   : Gdk.GC.Gdk_GC;
+         Edge_Light   : Highlight_GCs;
       end record;
 
 
@@ -1098,6 +1096,10 @@ private                    -- private part --
    --  The one and only graph widget tagged type
    type Graph_Widget_Record is new Gtk.Widget.Gtk_Widget_Record with
       record
+         --  Region manager for the graph widget. May be accessed
+         --  by subpackages.
+         Manager       : Vis_Data.Region_Manager;
+
          --  Must only be used by subpackage Drawing
          Drawing       : Drawing_Type;
          --  Must only be used by subpackage Positioning
@@ -1112,7 +1114,6 @@ private                    -- private part --
          Edge_Layers   : Vis_Data.Layer_Pool;
          Node_Map      : Node_Id_Mappings.Mapping;
          Node_Layers   : Vis_Data.Layer_Pool;
-         Manager       : Vis_Data.Region_Manager;
 
          Locked_Edges  : Vis_Edge_Sets.Set;
          Unsized_Edges : Vis_Edge_Sets.Set;
