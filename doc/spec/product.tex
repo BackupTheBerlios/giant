@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: product.tex,v $, $Revision: 1.9 $
-%  $Date: 2003/02/18 06:45:46 $
+%  $RCSfile: product.tex,v $, $Revision: 1.10 $
+%  $Date: 2003/02/18 12:49:49 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung des Produktes. Übersicht über die Funktionen
@@ -138,6 +138,8 @@ ausgeführt, dies ist aber nicht zwingend nötig.
     wurde.\\
     Die zuvor in den entsprechenden Dialogen getätigten Eingaben des Benutzers
     (die Eingabedaten, die den Fehler verursacht haben) bleiben erhalten.
+    
+  \end {enumerate}
 
   \subsection {Ungültige oder unvollständige Eingaben bei Kommandozeilenaufruf}
   Der Start von GIANT wird abgeborchen. Auf der Kommandozeile wird eine
@@ -171,5 +173,92 @@ ausgeführt, dies ist aber nicht zwingend nötig.
     Daten enthält, so wird das System mit einer entsprechenden Fehlermeldung
     abgeborchen.
   \end {enumerate}
+
+
+
+\section {Grundlegendes Feedbackverhalten}
+
+
+   \subsection{\gq{I am busy Feedback}}
+   Während der der Berechnung durch Layoutalgorithmen und Anfragen 
+   informiert GIANT den Benutzer laufend, dass es gerade mit Berechnungen 
+   beschäftigt ist. Dies kann wie folgt geschehen:
+   \begin {enumerate}
+   
+     \item 
+     
+     
+     \item
+     Anzeige eines Progressbars, der darstellt, welcher Anteil der
+     Gesamtberechnung in Prozent bereits erledigt ist.
+     
+     \item
+     Anzeige eines Progressbars, der über den aktuellen Fortschritt
+     einer Berechnung informiert, ohne dabei den Gesamtaufwand zu 
+     kennen. Dies könnte z.B. durch fortlaufende Ausgabe der Zahl
+     bereits geprüfter IML-Knoten während der Abarbeitung einer
+     Anfrage geschehen.
+     
+     
+    \end {enumerate}
+
+
+
+
+
+
+
+>>>>>>>>>> WOLLEN / SOLLEN WIR SO WAS MACHEN ????
+>>>>>>>>> Eventuell bei der Spez. der ANfrage
+>>>>>>>>> Checken ob machbar
+  \subsection {Ergebnisbericht bei Anfragen}
+  Nach Abarbeitung einer Anfrage wird der Benutzer durch grafische Ausgabe 
+  eines Protokolls über die Ergebnisse der Anfrage unterrichtet.
+  
+  
+  \begin {enumerate}
+  
+    \item
+    Angabe aller erzeugten IML-Teilgraphen (Name und Größe).
+    
+    \item
+    Angabe aller neu geöffneten Anzeigefenster.
+    
+    \item 
+    Angabe aller 
+  
+  
+  \end {enumerate}
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
