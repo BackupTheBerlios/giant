@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.9 $
+--  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.10 $
 --  $Author: koppor $
---  $Date: 2003/06/23 18:14:30 $
+--  $Date: 2003/06/24 18:27:28 $
 --
 ------------------------------------------------------------------------------
 --
@@ -215,18 +215,24 @@ package Giant.Graph_Lib.Subgraphs is
 
    ---------------------------------------------------------------------------
    --  Converts current subgraph to a selection
-   --    having the same name
+   --
+   --  Source is not affected by modifying the result
    function Create_Selection
      (Source   : in Subgraph;
       New_Name : in String)
      return Graph_Lib.Selections.Selection;
 
-private
-   type Subgraph_Record is record
-      Sel : Selections.Selection;
-   end record;
+   ---------------------------------------------------------------------------
+   --  Converts current subgraph to a selection
+   --    having the same name
+   --
+   --  The given subgraph is destroyed - you may not continue to use it
+   function Convert_To_Selection
+     (Source : in Subgraph)
+     return  Graph_Lib.Selections.Selection;
 
-   type Subgraph is access Subgraph_Record;
+private
+   type Subgraph is new Selections.Selection;
 
    ---------------------------------------------------------------------------
    --  removes all edges which have no source or no target
