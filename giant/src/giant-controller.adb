@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.65 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.66 $
 --  $Author: squig $
---  $Date: 2003/07/21 14:02:24 $
+--  $Date: 2003/07/21 15:49:58 $
 --
 
 with Ada.Strings.Unbounded;
@@ -767,11 +767,11 @@ package body Giant.Controller is
       Old_Name    : in String;
       New_Name    : in String)
    is
-      Window : Vis_Windows.Visual_Window_Access
-        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+      Window : constant Vis_Windows.Visual_Window_Access
+        := Get_Window (Window_Name);
    begin
       if (New_Name /= Old_Name) then
-         Vis_Windows.Change_Selection_Name
+          Vis_Windows.Change_Selection_Name
            (Window, Old_Name, New_Name);
          Gui_Manager.Rename_Selection (Window_Name, Old_Name, New_Name);
       end if;

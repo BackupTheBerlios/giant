@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.43 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.44 $
 --  $Author: squig $
---  $Date: 2003/07/21 14:02:24 $
+--  $Date: 2003/07/21 15:49:58 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -1078,13 +1078,8 @@ package body Giant.Graph_Window is
      (Window : access Graph_Window_Record;
       Name   : in     String)
    is
-      Selection : Graph_Lib.Selections.Selection
-        := Controller.Get_Selection (Get_Window_Name (Window), Name);
-      Lock : Graph_Widgets.Lock_Type;
    begin
       Gui_Utils.String_Clists.Add (Window.Selection_List, Name);
-      Graph_Widgets.Insert_Selection (Window.Graph, Selection, Lock);
-      Graph_Widgets.Release_Lock (Window.Graph, Lock);
    end Add_Selection;
 
    procedure Remove_Selection
