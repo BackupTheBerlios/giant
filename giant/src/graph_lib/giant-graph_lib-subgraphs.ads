@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.2 $
---  $Author: schwiemn $
---  $Date: 2003/06/06 17:29:27 $
+--  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.3 $
+--  $Author: koppor $
+--  $Date: 2003/06/10 09:24:52 $
 --
 ------------------------------------------------------------------------------
 --
@@ -33,11 +33,9 @@
 --
 --  no inheriance was used, since this is too oversized
 
---  from Ada
-with Ada.Streams;
-
 --  from Bauhaus
 with Lists;
+with Bauhaus_Io;
 
 --  from GIANT
 with Giant.Valid_Names;
@@ -105,12 +103,12 @@ package Giant.Graph_Lib.Subgraphs is
    --    cp. Barnes p543
    --    Maybe u have to use "for Subgraph'Write use Subgraph_Write"
    procedure Subgraph_Write
-      (Stream            : access Ada.Streams.Root_Stream_Type'Class;
+      (Stream            : in Bauhaus_Io.Out_Stream_Type;
        Subgraph_To_Write : in Subgraph);
 
    --  -----------------------------------------------------------------------
    procedure Subgraph_Read
-      (Stream            : access Ada.Streams.Root_Stream_Type'Class;
+      (Stream            : in Bauhaus_Io.In_Stream_Type;
        Subgraph_To_Read  : in Subgraph);
 
    --  ***********************************************************************
