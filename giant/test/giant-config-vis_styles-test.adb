@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-config-vis_styles-test.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-config-vis_styles-test.adb,v $, $Revision: 1.8 $
 --  $Author: schwiemn $
---  $Date: 2003/07/10 13:22:47 $
+--  $Date: 2003/07/10 14:20:20 $
 --
 with Ada.Strings.Unbounded;
 
@@ -67,7 +67,8 @@ package body Giant.Config.Vis_Styles.Test is
    end Test_Leacks;
    
    ---------------------------------------------------------------------------
-   procedure Test_Init_Test_Set_1
+   -- Only tests dafault vis style
+   procedure Test_Init_Test_Set_Default_1
      (R : in out AUnit.Test_Cases.Test_Case'Class) is
      
      Test_Vis_Style : Giant.Config.Vis_Styles.Visualisation_Style_Access;
@@ -79,17 +80,20 @@ package body Giant.Config.Vis_Styles.Test is
 
         Giant.Config.Vis_Styles.Initialize_Config_Vis_Styles
           ("",
-           "",
-           "",
-           "resources/vis_styles/vis_styles_test_set_1/"
+           "resources/vis_styles/vis_styles_test_set_1/",
+           "resources/vis_styles/vis_styles_test_set_2/",
+           "resources/vis_styles/vis_styles_test_set_default_1/"
            & "test_vis_style_1_default.xml");
       
-         Assert (Giant.Config.Vis_Styles.Get_Number_Of_Known_Vis_Styles = 1,
+         Assert (Giant.Config.Vis_Styles.Get_Number_Of_Known_Vis_Styles = 3,
            "Test whether ammount of loaded vis styles is correct");
             
          Test_Vis_Style := 
            Giant.Config.Vis_Styles.Initialize_Vis_Style_By_Name
              ("test_vis_style_1_default");
+         
+         Assert (Config.Vis_Styles.Get_Default_Vis_Style = Test_Vis_Style,
+           "Check whether Default Vis Style Loaded");
              
          All_Icons := Giant.Config.Vis_Styles.Get_All_Node_Icons;
          
@@ -108,7 +112,7 @@ package body Giant.Config.Vis_Styles.Test is
              (All_Icons.all (Node_Icon_Id)) 
             = File_Management.Get_Absolute_Path_To_File_From_Relative
                ("./", 
-                "resources/vis_styles/vis_styles_test_set_1/"
+                "resources/vis_styles/vis_styles_test_set_default_1/"
                 & "test_node_icon_default_1.xpm"), 
                 "Teste_Icon ""TC_Floating_Point""" );
                 
@@ -121,7 +125,7 @@ package body Giant.Config.Vis_Styles.Test is
              (All_Icons.all (Node_Icon_Id)) 
             = File_Management.Get_Absolute_Path_To_File_From_Relative
                ("./", 
-                "resources/vis_styles/vis_styles_test_set_1/"
+                "resources/vis_styles/vis_styles_test_set_default_1/"
                 & "test_node_icon_blue_1.xpm"), 
                 "Teste_Icon ""HPGNode""" );     
                 
@@ -134,14 +138,14 @@ package body Giant.Config.Vis_Styles.Test is
              (All_Icons.all (Node_Icon_Id)) 
             = File_Management.Get_Absolute_Path_To_File_From_Relative
                ("./", 
-                "resources/vis_styles/vis_styles_test_set_1/"
+                "resources/vis_styles/vis_styles_test_set_default_1/"
                 & "test_node_icon_red_1.xpm"), 
                 "Teste_Icon ""TC_Boolean""" );   
       
                          
          Giant.Config.Vis_Styles.Clear_Config_Vis_Styles;
       end loop;
-   end Test_Init_Test_Set_1;
+   end Test_Init_Test_Set_Default_1;
 
    ---------------------------------------------------------------------------
    function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is
@@ -153,7 +157,8 @@ package body Giant.Config.Vis_Styles.Test is
    begin
       Register_Routine (T, Test_Leacks'Access, "Test_Leacks");
       Register_Routine 
-        (T, Test_Init_Test_Set_1'Access, "Test_Init_Test_Set_1");
+        (T, Test_Init_Test_Set_Default_1'Access, 
+         "Test_Init_Test_Set_Default_1");
    end Register_Tests;
 
    procedure Set_Up (T : in out Test_Case) is
