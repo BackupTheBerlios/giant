@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.30 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.31 $
 --  $Author: koppor $
---  $Date: 2003/07/06 01:56:23 $
+--  $Date: 2003/07/06 03:15:15 $
 --
 --  TBD:
 --    * Write into comment, when the routine may be used
@@ -106,10 +106,9 @@ package Giant.Graph_Lib is
       (Class_Node_Id,
        Class_Node_Id_List,
        Class_Node_Id_Set,
-       --  Class_String,
 
-       --  still don't know how to deal with Enumerator_Field
-       Class_String_List,
+       --  used for IML-Enumerators
+       Class_String,
 
        Class_SLoc,
        Class_Boolean,
@@ -638,15 +637,23 @@ package Giant.Graph_Lib is
       return Node_Id;
 
    ---------------------------------------------------------------------------
+   --  Returns:
+   --    A newly created Node_Id_List
+   --    The caller has to take care for the destroyage that list
+   --
    --  Raises:
    --    Wrong_Attribute_Type
    --      if Get_Node_Attribute_Class_Id(Attribute) /= Class_Node_Id_List
-   function Get_Node_Attribute_Attribute_Node_Id_List_Value
+   function Get_Node_Attribute_Node_Id_List_Value
       (Node      : in     Node_Id;
        Attribute : in     Node_Attribute_Id)
       return Node_Id_List;
 
    ---------------------------------------------------------------------------
+   --  Returns:
+   --    A newly created Node_Id_Set
+   --    The caller has to take care for the destroyage that set
+   --
    --  Raises:
    --    Wrong_Attribute_Type
    --      if Get_Node_Attribute_Class_Id(Attribute) /= Class_Node_Id_Set
@@ -655,24 +662,14 @@ package Giant.Graph_Lib is
        Attribute : in     Node_Attribute_Id)
       return Node_Id_Set;
 
-
    ---------------------------------------------------------------------------
    --  Raises:
    --    Wrong_Attribute_Type
    --      if Get_Node_Attribute_Class_Id(Attribute) /= Class_String
-   --  function Get_Node_Attribute_String_Value
-   --     (Node      : in     Node_Id;
-   --      Attribute : in     Node_Attribute_Id)
-   --     return String;
-
-   ---------------------------------------------------------------------------
-   --  Raises:
-   --    Wrong_Attribute_Type
-   --      if Get_Node_Attribute_Class_Id(Attribute) /= Class_String_List
---   function Get_Node_Attribute_String_Lists_Value
---      (Node      : in     Node_Id;
---       Attribute : in     Node_Attribute_Id)
---      return String_Lists.Lists;
+   function Get_Node_Attribute_String_Value
+     (Node      : in     Node_Id;
+      Attribute : in     Node_Attribute_Id)
+     return String;
 
    ---------------------------------------------------------------------------
    --  SLoc is split up into seperate parts, since GSL doesn't know type
