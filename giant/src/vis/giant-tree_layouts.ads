@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.ads,v $, $Revision: 1.14 $
+--  $RCSfile: giant-tree_layouts.ads,v $, $Revision: 1.15 $
 --  $Author: koppor $
---  $Date: 2003/07/14 19:49:21 $
+--  $Date: 2003/08/25 10:19:13 $
 --
 ------------------------------------------------------------------------------
 --
@@ -50,9 +50,6 @@ with Giant.Graph_Widgets;
 with Giant.Vis;
 
 package Giant.Tree_Layouts is
-
-   ---------------------------------------------------------------------------
-   Root_Node_Not_In_Selection : exception;
 
    ---------------------------------------------------------------------------
    --  Concurrent can't be used, because of the stacks
@@ -108,10 +105,6 @@ package Giant.Tree_Layouts is
    --
    --  Returns:
    --    derived Evolutions-Object to do the layout
-   --
-   --  Raises:
-   --    Root_Node_Not_In_Selection Root_Node is not in
-   --      Selection_To_Layout.Get_All_Nodes
    --
    --  Precondition:
    --    Root_Node is in Selection_To_Layout.Get_All_Nodes
