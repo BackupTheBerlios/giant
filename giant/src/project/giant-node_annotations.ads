@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-node_annotations.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-node_annotations.ads,v $, $Revision: 1.3 $
 --  $Author: schwiemn $
---  $Date: 2003/05/27 19:04:08 $
+--  $Date: 2003/05/30 13:12:01 $
 ------------------------------------------------------------------------------
 --  This package overs the functionality needed to handle node annotations.
 --
@@ -112,6 +112,10 @@ package Giant.Node_Annotations is
    --  Creates an xml-File holding the node annotations, existing files
    --  are ovewritten.
    --
+   --  A Document Type Definition File for the xml-File holding the
+   --  node annoations will also be created in the directory where
+   --  the xml file is located.
+   --
    --  Parameters:
    --    Node_Annotations - The Instance holding the annotations that
    --      should be written into the file.
@@ -124,8 +128,8 @@ package Giant.Node_Annotations is
    --      if now write access is possible for the the passed
    --      file.
    procedure Write_To_File
-     (Node_Annotations : in Node_Annotation_Access;
-      Node_Annotations_File : in String);
+     (Node_Annotations          : in Node_Annotation_Access;
+      Node_Annotations_File     : in String);
 
    ---------------------------------------------------------------------------
    --  Deallocates an Instance of the ADT

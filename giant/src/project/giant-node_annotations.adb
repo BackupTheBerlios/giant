@@ -20,10 +20,12 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-node_annotations.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-node_annotations.adb,v $, $Revision: 1.4 $
 --  $Author: schwiemn $
---  $Date: 2003/05/27 19:04:08 $
+--  $Date: 2003/05/30 13:12:01 $
 --
+with Giant.File_Management;
+
 package body Giant.Node_Annotations is
 
 
@@ -31,6 +33,18 @@ package body Giant.Node_Annotations is
    -- 0.1
    -- Internal subprograms
    ---------------------------------------------------------------------------
+   
+   ---------------------------------------------------------------------------
+   --  Copies the DTD into the directory where the xml file for node
+   --  annotations is located.
+   --
+
+   Copy_DTD_To_Directory        
+     (Node_Annotations_File     : in String;
+      Node_Annotations_DTD_File : in String) is
+            
+   begin
+   
 
 
    ---------------------------------------------------------------------------
@@ -101,12 +115,11 @@ package body Giant.Node_Annotations is
 
          -- check whether the iml node does exist
          -- ignore not existing nodes
-         --         !!!!!!!!!!!!!!!!!!!!!
-         if Graph_Lib.Does_Exist
+         if Graph_Lib.Does_Node_Id_Exist
            (DOM.Core.Elements.Get_Attribute
             (XML_Annotation_Node, "node_id")) then
 
-            A_Node_Id := Graph_Lib.Get_Id
+            A_Node_Id := Graph_Lib.Node_Id_Value
               (DOM.Core.Elements.Get_Attribute
                (XML_Annotation_Node, "node_id"));
 
@@ -115,7 +128,7 @@ package body Giant.Node_Annotations is
               (New_Node_Annotation_Access.Annotations,
                A_Node_Id,
                Ada.Strings.Unbounded.To_Unbounded_String
-               (DOM.Core.Nodes.Node_Value (XML_Annotation_Text_Node)));
+                 (DOM.Core.Nodes.Node_Value (XML_Annotation_Text_Node)));
          end if;
       end loop;
 
@@ -143,8 +156,8 @@ package body Giant.Node_Annotations is
 
    ---------------------------------------------------------------------------
    procedure Write_To_File
-     (Node_Annotations : in Node_Annotation_Access;
-      Node_Annotations_File : in String) is
+     (Node_Annotations          : in Node_Annotation_Access;
+      Node_Annotations_File     : in String) is
 
       The_File : Ada_Text_IO.File_Type;
 
@@ -159,6 +172,10 @@ package body Giant.Node_Annotations is
 
          Ada.Text_IO.Create.
 
+
+
+
+        Copy_DTD_To_Directory
    end Write_To_File;
 
 
