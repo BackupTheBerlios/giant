@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.36 $
-%  $Date: 2003/09/05 19:55:52 $
+%  $RCSfile: config.tex,v $, $Revision: 1.37 $
+%  $Date: 2003/09/05 20:00:13 $
 %  $Author: birdy $
 %
 %  Description:
@@ -14,15 +14,24 @@
 \begin {enumerate}
 
   \item
-  Die konfigurierbaren Einstellungen werden in XML-Dateien vorgenommen.
+  Sämtliche konfigurierbaren Einstellungen werden in XML-Dateien vorgenommen.
+  Für die verschiedenen Dateitypen werden auch
+  Dokumenttyp-Definitionen (DTDs) erstellt.
   
   \item \label{config-allgemeines-punkt2}
   \index{Konfigurationsdatei!globale}
-  Es gibt zwei \gq{globale Konfigurationsdateien}. Ausserdem kann es beliebig 
-  viele weitere XML-Dateien zur Konfiguration geben, diese werden in den
-  folgenden Kapiteln beschrieben.\\
-  Einstellungen aus globalen Konfigurationsdateien können durch \gq{lokale}
-  Dateien überschrieben werden.\\
+  Es gibt genau eine \gq{globale Konfigurationsdatei}. Zudem kann es beliebig 
+  viele weitere XML-Dateien zur Konfiguration der weiter unten beschriebenen 
+  Visualisierungsstile geben.\\
+  Diese Dateien liegen in einem von GIANT fest vorgegebenen Verzeichnis.
+  
+  \item \index{Konfigurationsdatei!benutzerdefinierte}
+  Die unter Punkt \ref{config-allgemeines-punkt2} beschriebenen Dateien zu
+  Konfiguration können vom Benutzer auch in einem separaten 
+  Unterverzeichnis seines Home-Verzeichnisses abgelegt werden. Findet
+  GIANT beim Start ein derartiges Verzeichnis, so werden die
+  Einstellungen aus der dort vorgefundenen Konfigurationsdatei, sowie
+  die dort vorgefundenen Visualisierungsstile geladen.
  
 \end {enumerate}
 
