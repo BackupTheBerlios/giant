@@ -20,11 +20,10 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: framework_test.adb,v $, $Revision: 1.7 $
---  $Author: squig $
---  $Date: 2003/06/18 17:32:02 $
---
-
+--  $RCSfile: framework_test.adb,v $, $Revision: 1.8 $
+--  $Author: schwiemn $
+--  $Date: 2003/06/24 19:10:32 $
+--  
 with AUnit.Test_Suites; use AUnit.Test_Suites;
 with AUnit.Test_Runner;
 
