@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.7 $
-%  $Date: 2003/08/04 10:00:28 $
+%  $RCSfile: config.tex,v $, $Revision: 1.8 $
+%  $Date: 2003/08/04 10:19:41 $
 %  $Author: birdy $
 %
 %  Description:
@@ -372,6 +372,12 @@ Knotenklassennamens:\\
 °  <node_class     node_class_name = "OC_Parameter"/>°\\        
 °  <node_class     node_class_name = "TC_Boolean"/>°\\
 
+Mittels\\
+°<super_node_class super_node_class_name = "T_Node"/>°\\
+können alle Knoten, die im IML-Baum unterhalb des angegebenen
+Knoten liegen, in die Auswahl mit aufgenommen werden.
+Hierdurch kann u.U. das File kurz und übersichtlich gehalten werden.\\
+
 Nun ist der <node\_class\_specific\_setting> Block zuende und
 wird mittels\\
 °</node_class_specific_setting>°\\
@@ -447,6 +453,20 @@ Parameter auch das Zeichen * erlaubt, dies wählt damit alle
 Knotenklassen bzw. Kantennamen, die dieses Attribut besitzen
 bzw. von diesem Knoten ausgehen, aus.
 
+°<super_edge_class°\\
+°     super_start_node_class = "Example3"°\\
+°     attribute_name   = "Example4" />° 
+
+Inkludiert alle Kanten, die von den genannten Knoten ausgehen
+und genanntes Attribut haben.
+Ausserdem werden alle passenden Kanten mit aufgenommen, die
+von allen Knotentypen unterhalb des angegebenen Knotentyps
+im IML-Baum ausgehen.\\
+Dies wäre also dasselbe, wie wenn für jeden Knotentyp unterhalb
+von Example3 im IML-Baum ein einzelner edge\_class-Eintrag
+mit dem angegebenen attribute\_name existieren würde.
+Durch dieses Konstrukt können also ggf. Einträge in der Datei
+gespart werden.
 
 Beispiel 2:
 
