@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.11 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.12 $
 --  $Author: koppor $
---  $Date: 2003/06/12 14:42:19 $
+--  $Date: 2003/06/13 15:32:54 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -657,7 +657,7 @@ package body Giant.Graph_Lib is
 
          --  Precondition:
          --    Size of TargtArray == Length(SourceList)
-         procedure ConvertEdges
+         procedure Convert_Edges
            (SourceList  : in     Load_Nodes.Edge_Lists.List;
             TargetArray :    out Edge_Id_Array) is
 
@@ -665,6 +665,15 @@ package body Giant.Graph_Lib is
             CurEdge  : Load_Nodes.Edge_Access;
 
          begin
+            if TargetArray'Length /=
+              Load_Nodes.Edge_Lists.Length (SourceList) then
+               My_Logger.Debug ("Length not equal" &
+                                Integer'Image (TargetArray'Length) &
+                                " " &
+                                Integer'Image
+                                (Load_Nodes.Edge_Lists.Length (SourceList)));
+            end if;
+
             EdgeIter := Load_Nodes.Edge_Lists.MakeListIter (SourceList);
 
             for I in TargetArray'Range loop
@@ -677,7 +686,7 @@ package body Giant.Graph_Lib is
                TargetArray (I).Attribute_Element_Number :=
                  CurEdge.Attribute_Element_Number;
             end loop;
-         end ConvertEdges;
+         end Convert_Edges;
 
          NodeIter : Load_Nodes.Node_Queues.ListIter;
          CurNode  : Load_Nodes.Node_Access; --  of the temporary structure
@@ -711,12 +720,19 @@ package body Giant.Graph_Lib is
          end loop;
 
          --  Convert edges
+         --  Has to be done in a second loop, because now all nodes exist
          NodeIter := Load_Nodes.Node_Queues.MakeListIter (Queue);
          while Load_Nodes.Node_Queues.More (NodeIter) loop
             Load_Nodes.Node_Queues.Next (NodeIter, CurNode);
 
-            ConvertEdges( CurNode.Edges_In,  NewNode.Incoming_Edges);
-            ConvertEdges( CurNode.Edges_Out, NewNode.Outgoing_Edges);
+            --  Get NewNode belonging to CurNode
+            NewNode :=
+              IML_Node_ID_Hashed_Mappings.Fetch
+              (IML_Node_ID_Mapping,
+               Storables.Get_Node_ID (CurNode.IML_Node));
+
+            Convert_Edges( CurNode.Edges_In,  NewNode.Incoming_Edges);
+            Convert_Edges( CurNode.Edges_Out, NewNode.Outgoing_Edges);
          end loop;
 
       end ConvertTempStructureToUsedStructure;
