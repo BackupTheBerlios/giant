@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-positioning.ads,v $, $Revision: 1.8 $
+--  $RCSfile: giant-graph_widgets-positioning.ads,v $, $Revision: 1.9 $
 --  $Author: keulsn $
---  $Date: 2003/09/22 01:40:13 $
+--  $Date: 2003/11/10 04:03:56 $
 --
 ------------------------------------------------------------------------------
 --
@@ -34,26 +34,21 @@
 --  2. A zoom level is chosen
 --  3. The size of each node and each edge is calculated according to
 --     the current detail level and zoom level. Because this depends
---     strongly on the way drawing is done subprograms for this
+--     strongly on the way drawing is done, subprograms for this
 --     step are found in 'Giant.Graph_Widgets.Drawing'
 --  4. This package is used to calculate the absolute positions of
 --     edges and nodes
 --  5. The edges and nodes are inserted into a region manager
 --  6. The graph widget can be drawn
 --
---  The positioning process takes 5 steps:
+--  The positioning process takes 4 steps:
 --  4.1. Setting the zoom level
 --       use 'Set_Zoom'
 --  4.2. Updating the position of each node according to zoom level
 --       use 'Update_Node_Position'
 --  4.3. Aligning the edges between their source and target nodes
 --       use 'Update_Edge_Position'
---  4.4. Repositioning of edges that dock onto the same port in one node.
---       A node is surrounded by an infinite number of ports. An edge is
---       said to dock onto such a port, if the edge hits that port in
---       a straight line.
---       use 'Adjust_Ports'
---  4.5. Calculating the arrow-head for each edge
+--  4.4. Calculating the arrow-head for each edge
 --       use 'Adjust_Arrow'
 --
 --  If the layout does not need to be optimal, then step 4.4 can be omitted,
@@ -125,12 +120,6 @@ package Giant.Graph_Widgets.Positioning is
    procedure Update_Edge_Position
      (Widget : access Graph_Widget_Record'Class;
       Edge   : in     Vis_Data.Vis_Edge_Id);
-
-   ----------------------------------------------------------------------------
-   --  Shifts edges aside that connect to the same port in 'Node'
-   procedure Adjust_Ports
-     (Widget : access Graph_Widget_Record'Class;
-      Node   : in     Vis_Data.Vis_Node_Id);
 
    ----------------------------------------------------------------------------
    --  Calculates the positions of the lines for the arrow head of 'Edge'

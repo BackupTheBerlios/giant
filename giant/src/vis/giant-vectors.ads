@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.ads,v $, $Revision: 1.13 $
+--  $RCSfile: giant-vectors.ads,v $, $Revision: 1.14 $
 --  $Author: keulsn $
---  $Date: 2003/09/02 04:49:38 $
+--  $Date: 2003/11/10 04:03:56 $
 --
 ------------------------------------------------------------------------------
 
@@ -132,57 +132,68 @@ package Giant.Vectors is
    function "-"
      (Op : in Vector_2d)
      return Vector_2d;
+   pragma Inline ("-");
 
    --  Addition
    function "+"
      (Left  : in Vector_2d;
       Right : in Vector_2d)
      return Vector_2d;
+   pragma Inline ("+");
 
    --  Subtraction
    function "-"
      (Left  : in Vector_2d;
       Right : in Vector_2d)
      return Vector_2d;
+   pragma Inline ("-");
 
    --  Inner product
    function "*"
      (Left  : in Vector_2d;
       Right : in Vector_2d)
      return Field_Type;
+   pragma Inline ("*");
 
    --  Scalar multiplication
    function "*"
      (Left  : in Field_Type;
       Right : in Vector_2d)
      return Vector_2d;
+   pragma Inline ("*");
 
    --  Scalar division
    function "/"
      (Left  : in Vector_2d;
       Right : in Field_Type)
      return Vector_2d;
+   pragma Inline ("/");
 
    function Get_X
      (Vector : in Vector_2d)
      return Coordinate_Type;
+   pragma Inline (Get_X);
 
    function Get_Y
      (Vector : in Vector_2d)
      return Coordinate_Type;
+   pragma Inline (Get_Y);
 
    function Combine_Vector
      (X      : in     Coordinate_Type;
       Y      : in     Coordinate_Type)
      return Vector_2d;
+   pragma Inline (Combine_Vector);
 
    procedure Set_X
      (Vector : in out Vector_2d;
       X      : in     Coordinate_Type);
+   pragma Inline (Set_X);
 
    procedure Set_Y
      (Vector : in out Vector_2d;
       Y      : in     Coordinate_Type);
+   pragma Inline (Set_Y);
 
    function Image
      (Vector : in     Vector_2d)
@@ -225,111 +236,138 @@ package Giant.Vectors is
       X_2 : in     Coordinate_Type;
       Y_2 : in     Coordinate_Type)
      return Rectangle_2d;
+   pragma Inline (Combine_Rectangle);
 
    function Combine_Rectangle
      (Top_Left     : in     Vector_2d;
       Bottom_Right : in     Vector_2d)
      return Rectangle_2d;
+   pragma Inline (Combine_Rectangle);
 
    function Get_Top
      (Rectangle : in     Rectangle_2d)
      return Coordinate_Type;
+   pragma Inline (Get_Top);
 
    function Get_Bottom
      (Rectangle : in     Rectangle_2d)
      return Coordinate_Type;
+   pragma Inline (Get_Bottom);
 
    function Get_Left
      (Rectangle : in     Rectangle_2d)
      return Coordinate_Type;
+   pragma Inline (Get_Left);
 
    function Get_Right
      (Rectangle : in     Rectangle_2d)
      return Coordinate_Type;
+   pragma Inline (Get_Right);
 
    function Get_Top_Left
      (Rectangle : in     Rectangle_2d)
      return Vector_2d;
+   pragma Inline (Get_Top_Left);
 
    function Get_Top_Right
      (Rectangle : in     Rectangle_2d)
      return Vector_2d;
+   pragma Inline (Get_Top_Right);
 
    function Get_Top_Center
      (Rectangle : in     Rectangle_2d)
      return Vector_2d;
+   pragma Inline (Get_Top_Center);
 
    function Get_Bottom_Left
      (Rectangle : in     Rectangle_2d)
      return Vector_2d;
+   pragma Inline (Get_Bottom_Left);
 
    function Get_Bottom_Right
      (Rectangle : in     Rectangle_2d)
      return Vector_2d;
+   pragma Inline (Get_Bottom_Right);
 
    function Get_Bottom_Center
      (Rectangle : in     Rectangle_2d)
      return Vector_2d;
+   pragma Inline (Get_Bottom_Center);
 
    function Get_Center
      (Rectangle : in     Rectangle_2d)
      return Vector_2d;
+   pragma Inline (Get_Center);
 
    function Get_Width
      (Rectangle : in     Rectangle_2d)
      return Coordinate_Type;
+   pragma Inline (Get_Width);
 
    function Get_Height
      (Rectangle : in     Rectangle_2d)
      return Coordinate_Type;
+   pragma Inline (Get_Height);
 
    function Get_Size
      (Rectangle : in     Rectangle_2d)
      return Vector_2d;
+   pragma Inline (Get_Size);
 
    procedure Shrink
      (Rectangle : in out Rectangle_2d;
       Thickness : in     Coordinate_Type);
+   pragma Inline (Shrink);
 
    procedure Enlarge
      (Rectangle : in out Rectangle_2d;
       Thickness : in     Coordinate_Type);
+   pragma Inline (Enlarge);
 
    procedure Set_Top
      (Rectangle : in out Rectangle_2d;
       Top       : in     Coordinate_Type);
+   pragma Inline (Set_Top);
 
    procedure Set_Bottom
      (Rectangle : in out Rectangle_2d;
       Bottom    : in     Coordinate_Type);
+   pragma Inline (Set_Bottom);
 
    procedure Set_Left
      (Rectangle : in out Rectangle_2d;
       Left      : in     Coordinate_Type);
+   pragma Inline (Set_Left);
 
    procedure Set_Right
      (Rectangle : in out Rectangle_2d;
       Right     : in     Coordinate_Type);
+   pragma Inline (Set_Right);
 
    procedure Set_Top_Left
      (Rectangle : in out Rectangle_2d;
       Top_Left  : in     Vector_2d);
+   pragma Inline (Set_Top_Left);
 
    procedure Set_Top_Right
      (Rectangle : in out Rectangle_2d;
       Top_Right : in     Vector_2d);
+   pragma Inline (Set_Top_Right);
 
    procedure Set_Bottom_Left
      (Rectangle   : in out Rectangle_2d;
       Bottom_Left : in     Vector_2d);
+   pragma Inline (Set_Bottom_Left);
 
    procedure Set_Bottom_Right
      (Rectangle    : in out Rectangle_2d;
       Bottom_Right : in     Vector_2d);
+   pragma Inline (Set_Bottom_Right);
 
    procedure Set_Center
      (Rectangle : in out Rectangle_2d;
       Center    : in     Vector_2d);
+   pragma Inline (Set_Center);
 
    --  Precondition:
    --    Get_X (Size) >= Point_Size and Get_Y (Size) >= Point_Size
@@ -340,6 +378,7 @@ package Giant.Vectors is
    procedure Move
      (Rectangle : in out Rectangle_2d;
       Offset    : in     Vector_2d);
+   pragma Inline (Move);
 
    ----------------------------------------------------------------------------
    --  Generic procedure to move a rectangle to a specific point. The point
@@ -372,11 +411,13 @@ package Giant.Vectors is
      (Rectangle : in     Rectangle_2d;
       Point     : in     Vector_2d)
      return Boolean;
+   pragma Inline (Is_Inside);
 
    function Intersects
      (First     : in     Rectangle_2d;
       Second    : in     Rectangle_2d)
      return Boolean;
+   pragma Inline (Intersects);
 
    function "-"
      (Left      : in     Rectangle_2d;

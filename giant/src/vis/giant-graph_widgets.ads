@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.48 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.49 $
 --  $Author: keulsn $
---  $Date: 2003/09/22 01:40:13 $
+--  $Date: 2003/11/10 04:03:56 $
 --
 ------------------------------------------------------------------------------
 --
@@ -1284,12 +1284,9 @@ private                    -- private part --
       Incident :    out Vis_Edge_Sets.Set);
 
    ----------------------------------------------------------------------------
-   --  Inserts all edges in 'Edges' to the region manager. 'Nodes' should
-   --  be a list of all incident nodes to any of the edges.
-   --  Clears and destroys the list 'Nodes'
+   --  Inserts all edges in 'Edges' to the region manager.
    procedure Insert_Incident_Edges
      (Widget   : access Graph_Widget_Record'Class;
-      Nodes    : in out Vis_Node_Lists.List;
       Edges    : in     Vis_Edge_Sets.Set);
 
    ----------------------------------------------------------------------------
@@ -1428,7 +1425,7 @@ private                    -- private part --
    Default_Zoom_Level           : constant := 1.0;
    --  Minimum zoom level for that node size is calculated into the logical
    --  area. For smaller zoom levels only one point is considered per node.
-   Default_Minimum_Precise_Zoom : constant := 10.0;
+   Default_Minimum_Precise_Zoom : constant := 10.0 / 100.0;
    --  Default width of a node displayed at 'Default_Zoom_Level'
    Default_Node_Width           : constant := 150;
 

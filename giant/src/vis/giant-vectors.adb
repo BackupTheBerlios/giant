@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.adb,v $, $Revision: 1.17 $
+--  $RCSfile: giant-vectors.adb,v $, $Revision: 1.18 $
 --  $Author: keulsn $
---  $Date: 2003/09/02 04:49:38 $
+--  $Date: 2003/11/10 04:03:56 $
 --
 ------------------------------------------------------------------------------
 
@@ -82,7 +82,6 @@ package body Giant.Vectors is
    begin
       return (Coord_Negate (Get_X (Op)), Coord_Negate (Get_Y (Op)));
    end "-";
-   pragma Inline ("-");
 
    function "+"
      (Left  : in Vector_2d;
@@ -91,7 +90,6 @@ package body Giant.Vectors is
    begin
       return (Coord_Add (Left.X, Right.X), Coord_Add (Left.Y, Right.Y));
    end "+";
-   pragma Inline ("+");
 
    function "-"
      (Left  : in Vector_2d;
@@ -100,7 +98,6 @@ package body Giant.Vectors is
    begin
       return (Coord_Sub (Left.X, Right.X), Coord_Sub (Left.Y, Right.Y));
    end "-";
-   pragma Inline ("-");
 
    function "*"
      (Left  : in Vector_2d;
@@ -111,7 +108,6 @@ package body Giant.Vectors is
         (Vector_Mult_Coord (Left.X, Right.X),
          Vector_Mult_Coord (Left.Y, Right.Y));
    end "*";
-   pragma Inline ("*");
 
    function "*"
      (Left  : in Field_Type;
@@ -122,7 +118,6 @@ package body Giant.Vectors is
         (Scalar_Mult_Coord (Left, Right.X),
          Scalar_Mult_Coord (Left, Right.Y));
    end "*";
-   pragma Inline ("*");
 
    function "/"
      (Left  : in Vector_2d;
@@ -133,7 +128,6 @@ package body Giant.Vectors is
         (Scalar_Div_Coord (Left.X, Right),
          Scalar_Div_Coord (Left.Y, Right));
    end "/";
-   pragma Inline ("/");
 
    function Get_X
      (Vector : in Vector_2d)
@@ -156,7 +150,6 @@ package body Giant.Vectors is
    begin
       return (X, Y);
    end Combine_Vector;
-   pragma Inline (Combine_Vector);
 
    procedure Set_X
      (Vector : in out Vector_2d;
@@ -164,7 +157,6 @@ package body Giant.Vectors is
    begin
       Vector.X := X;
    end Set_X;
-   pragma Inline (Set_X);
 
    procedure Set_Y
      (Vector : in out Vector_2d;
@@ -172,7 +164,6 @@ package body Giant.Vectors is
    begin
       Vector.Y := Y;
    end Set_Y;
-   pragma Inline (Set_Y);
 
    function Image
      (Vector : in     Vector_2d)
@@ -263,7 +254,6 @@ package body Giant.Vectors is
       end if;
       return Result;
    end Combine_Rectangle;
-   pragma Inline (Combine_Rectangle);
 
    function Combine_Rectangle
      (Top_Left     : in     Vector_2d;
@@ -279,7 +269,6 @@ package body Giant.Vectors is
       pragma Assert (Coord_Less_Equal (Top, Bottom));
       return Combine_Rectangle (Left, Top, Right, Bottom);
    end Combine_Rectangle;
-   pragma Inline (Combine_Rectangle);
 
    function Get_Top
      (Rectangle : in     Rectangle_2d)
@@ -287,7 +276,6 @@ package body Giant.Vectors is
    begin
       return Rectangle.Top;
    end Get_Top;
-   pragma Inline (Get_Top);
 
    function Get_Bottom
      (Rectangle : in     Rectangle_2d)
@@ -295,7 +283,6 @@ package body Giant.Vectors is
    begin
       return Rectangle.Bottom;
    end Get_Bottom;
-   pragma Inline (Get_Bottom);
 
    function Get_Left
      (Rectangle : in     Rectangle_2d)
@@ -303,7 +290,6 @@ package body Giant.Vectors is
    begin
       return Rectangle.Left;
    end Get_Left;
-   pragma Inline (Get_Left);
 
    function Get_Right
      (Rectangle : in     Rectangle_2d)
@@ -311,7 +297,6 @@ package body Giant.Vectors is
    begin
       return Rectangle.Right;
    end Get_Right;
-   pragma Inline (Get_Right);
 
    function Get_Top_Left
      (Rectangle : in     Rectangle_2d)
@@ -319,7 +304,6 @@ package body Giant.Vectors is
    begin
       return Combine_Vector (Get_Left (Rectangle), Get_Top (Rectangle));
    end Get_Top_Left;
-   pragma Inline (Get_Top_Left);
 
    function Get_Top_Right
      (Rectangle : in     Rectangle_2d)
@@ -327,7 +311,6 @@ package body Giant.Vectors is
    begin
       return Combine_Vector (Get_Right (Rectangle), Get_Top (Rectangle));
    end Get_Top_Right;
-   pragma Inline (Get_Top_Right);
 
    function Get_Top_Center
      (Rectangle : in     Rectangle_2d)
@@ -341,7 +324,6 @@ package body Giant.Vectors is
                    To_Field_Type (2))),
          Y => Get_Top (Rectangle));
    end Get_Top_Center;
-   pragma Inline (Get_Top_Center);
 
    function Get_Bottom_Left
      (Rectangle : in     Rectangle_2d)
@@ -349,7 +331,6 @@ package body Giant.Vectors is
    begin
       return Combine_Vector (Get_Left (Rectangle), Get_Bottom (Rectangle));
    end Get_Bottom_Left;
-   pragma Inline (Get_Bottom_Left);
 
    function Get_Bottom_Right
      (Rectangle : in     Rectangle_2d)
@@ -357,7 +338,6 @@ package body Giant.Vectors is
    begin
       return Combine_Vector (Get_Right (Rectangle), Get_Bottom (Rectangle));
    end Get_Bottom_Right;
-   pragma Inline (Get_Bottom_Right);
 
    function Get_Bottom_Center
      (Rectangle : in     Rectangle_2d)
@@ -371,7 +351,6 @@ package body Giant.Vectors is
                    To_Field_Type (2))),
          Y => Get_Bottom (Rectangle));
    end Get_Bottom_Center;
-   pragma Inline (Get_Bottom_Center);
 
    function Get_Center
      (Rectangle : in     Rectangle_2d)
@@ -383,7 +362,6 @@ package body Giant.Vectors is
          Scalar_Div_Coord (Coord_Sub (Get_Height (Rectangle), Point_Size),
                            To_Field_Type (2)));
    end Get_Center;
-   pragma Inline (Get_Center);
 
    function Get_Width
      (Rectangle : in     Rectangle_2d)
@@ -393,7 +371,6 @@ package body Giant.Vectors is
                                    Get_Left (Rectangle)),
                         Point_Size);
    end Get_Width;
-   pragma Inline (Get_Width);
 
    function Get_Height
      (Rectangle : in     Rectangle_2d)
@@ -403,7 +380,6 @@ package body Giant.Vectors is
                                    Get_Top (Rectangle)),
                         Point_Size);
    end Get_Height;
-   pragma Inline (Get_Height);
 
    function Get_Size
      (Rectangle : in     Rectangle_2d)
@@ -411,7 +387,6 @@ package body Giant.Vectors is
    begin
       return Combine_Vector (Get_Width (Rectangle), Get_Height (Rectangle));
    end Get_Size;
-   pragma Inline (Get_Size);
 
    procedure Shrink
      (Rectangle : in out Rectangle_2d;
@@ -430,7 +405,6 @@ package body Giant.Vectors is
         (Rectangle,
          Coord_Add (Get_Right (Rectangle), Coord_Negate (Thickness)));
    end Shrink;
-   pragma Inline (Shrink);
 
    procedure Enlarge
      (Rectangle : in out Rectangle_2d;
@@ -449,7 +423,6 @@ package body Giant.Vectors is
         (Rectangle,
          Coord_Add (Get_Right (Rectangle), Thickness));
    end Enlarge;
-   pragma Inline (Enlarge);
 
    procedure Set_Top
      (Rectangle : in out Rectangle_2d;
@@ -458,7 +431,6 @@ package body Giant.Vectors is
       pragma Assert (Coord_Less_Equal (Top, Get_Bottom (Rectangle)));
       Rectangle.Top := Top;
    end Set_Top;
-   pragma Inline (Set_Top);
 
    procedure Set_Bottom
      (Rectangle : in out Rectangle_2d;
@@ -467,7 +439,6 @@ package body Giant.Vectors is
       pragma Assert (Coord_Less_Equal (Get_Top (Rectangle), Bottom));
       Rectangle.Bottom := Bottom;
    end Set_Bottom;
-   pragma Inline (Set_Bottom);
 
    procedure Set_Left
      (Rectangle : in out Rectangle_2d;
@@ -476,7 +447,6 @@ package body Giant.Vectors is
       pragma Assert (Coord_Less_Equal (Left, Get_Right (Rectangle)));
       Rectangle.Left := Left;
    end Set_Left;
-   pragma Inline (Set_Left);
 
    procedure Set_Right
      (Rectangle : in out Rectangle_2d;
@@ -485,7 +455,6 @@ package body Giant.Vectors is
       pragma Assert (Coord_Less_Equal (Get_Left (Rectangle), Right));
       Rectangle.Right := Right;
    end Set_Right;
-   pragma Inline (Set_Right);
 
    procedure Set_Top_Left
      (Rectangle : in out Rectangle_2d;
@@ -494,7 +463,6 @@ package body Giant.Vectors is
       Set_Left (Rectangle, Get_X (Top_Left));
       Set_Top (Rectangle, Get_Y (Top_Left));
    end Set_Top_Left;
-   pragma Inline (Set_Top_Left);
 
    procedure Set_Top_Right
      (Rectangle : in out Rectangle_2d;
@@ -503,7 +471,6 @@ package body Giant.Vectors is
       Set_Right (Rectangle, Get_X (Top_Right));
       Set_Top (Rectangle, Get_Y (Top_Right));
    end Set_Top_Right;
-   pragma Inline (Set_Top_Right);
 
    procedure Set_Bottom_Left
      (Rectangle   : in out Rectangle_2d;
@@ -512,7 +479,6 @@ package body Giant.Vectors is
       Set_Left (Rectangle, Get_X (Bottom_Left));
       Set_Bottom (Rectangle, Get_Y (Bottom_Left));
    end Set_Bottom_Left;
-   pragma Inline (Set_Bottom_Left);
 
    procedure Set_Bottom_Right
      (Rectangle    : in out Rectangle_2d;
@@ -521,7 +487,6 @@ package body Giant.Vectors is
       Set_Right (Rectangle, Get_X (Bottom_Right));
       Set_Bottom (Rectangle, Get_Y (Bottom_Right));
    end Set_Bottom_Right;
-   pragma Inline (Set_Bottom_Right);
 
    procedure Set_Center
      (Rectangle : in out Rectangle_2d;
@@ -529,7 +494,6 @@ package body Giant.Vectors is
    begin
       Move (Rectangle, Center - Get_Center (Rectangle));
    end Set_Center;
-   pragma Inline (Set_Center);
 
    procedure Set_Size
      (Rectangle : in out Rectangle_2d;
@@ -555,7 +519,6 @@ package body Giant.Vectors is
       Rectangle := Combine_Rectangle
         (Top_Left + Offset, Bottom_Right + Offset);
    end Move;
-   pragma Inline (Move);
 
    procedure Move_To
      (Rectangle : in out Rectangle_2d;
@@ -565,7 +528,6 @@ package body Giant.Vectors is
    begin
       Move (Rectangle, Offset);
    end Move_To;
-   pragma Inline (Move_To);
 
    function Is_Inside
      (Rectangle : in     Rectangle_2d;
@@ -580,7 +542,6 @@ package body Giant.Vectors is
         and then Coord_Less_Equal (X, Get_Right (Rectangle))
         and then Coord_Less_Equal (Y, Get_Bottom (Rectangle));
    end Is_Inside;
-   pragma Inline (Is_Inside);
 
    function Intersects
      (First     : in     Rectangle_2d;
@@ -592,7 +553,6 @@ package body Giant.Vectors is
         and then Coord_Less_Equal (Get_Top (First), Get_Bottom (Second))
         and then Coord_Less_Equal (Get_Top (Second), Get_Bottom (First));
    end Intersects;
-   pragma Inline (Intersects);
 
    function "-"
      (Left  : in     Rectangle_2d;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.34 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.35 $
 --  $Author: keulsn $
---  $Date: 2003/09/22 01:40:13 $
+--  $Date: 2003/11/10 04:03:55 $
 --
 ------------------------------------------------------------------------------
 
@@ -533,6 +533,7 @@ package body Giant.Graph_Widgets.Drawing is
         Settings.Get_Node_Attribute_Count (Widget, Node);
       Font_Height          : Vis.Absolute_Natural :=
         Settings.Get_Node_Font_Height (Widget);
+      Icon_Size            : Vis.Absolute.Vector_2d;
       Icon_Height          : Vis.Absolute_Natural;
       Annotation_Height    : Vis.Absolute_Natural;
       Header_Height        : Vis.Absolute_Natural;
@@ -547,9 +548,12 @@ package body Giant.Graph_Widgets.Drawing is
 
       if Detail_Level >= Average then
          Header_Height := Default_Text_Spacing + Font_Height;
-         Icon_Height := Get_Y (Settings.Get_Node_Icon_Size (Widget, Node));
-         if Icon_Height > Header_Height then
-            Header_Height := Icon_Height;
+         Icon_Size := Settings.Get_Node_Icon_Size (Widget, Node);
+         if Get_X (Icon_Size) <= Settings.Get_Node_Width (Widget) then
+            Icon_Height := Get_Y (Icon_Size);
+            if Icon_Height > Header_Height then
+               Header_Height := Icon_Height;
+            end if;
          end if;
          if Vis_Data.Is_Annotated (Node) then
             Annotation_Height := Get_Y
@@ -837,7 +841,9 @@ package body Giant.Graph_Widgets.Drawing is
          Settings.Get_Node_Icon
            (Widget, Node,
             Icon, Width, Height);
-         Draw_Icon (Icon, Width, Height);
+         if Vis.Absolute_Natural (Width) <= Get_Width (Inner_Rect) then
+            Draw_Icon (Icon, Width, Height);
+         end if;
          if Vis_Data.Is_Annotated (Node) then
             Settings.Get_Annotation_Icon
               (Widget,

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.54 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.55 $
 --  $Author: keulsn $
---  $Date: 2003/09/22 01:40:13 $
+--  $Date: 2003/11/10 04:03:56 $
 --
 ------------------------------------------------------------------------------
 
@@ -1121,6 +1121,7 @@ package body Giant.Graph_Widgets is
       Vis_Node_Lists.Destroy (Node_List);
 
       Switch_Incident_Visible (Widget, Deferred_Nodes, Newly_Appeared);
+      Vis_Node_Lists.Destroy (Deferred_Nodes);
 
       Edge_Set := Vis_Edge_Sets.Copy (Newly_Appeared);
 
@@ -1150,7 +1151,6 @@ package body Giant.Graph_Widgets is
 
       Insert_Incident_Edges
         (Widget => Widget,
-         Nodes  => Deferred_Nodes,
          Edges  => Edge_Set);
       Vis_Edge_Sets.Remove_All (Widget.Unsized_Edges);
       Vis_Edge_Sets.Destroy (Edge_Set);
@@ -1981,6 +1981,12 @@ package body Giant.Graph_Widgets is
       Settings.Set_Zoom (Widget, Actual_Zoom);
       Positioning.Set_Zoom (Widget, Actual_Zoom);
       Set_Location (Widget, Location);
+      --  Recalculation of logic area will be done on release anyway, so might
+      --  as well use it to resize the logic area-estimate and thus update
+      --  mini map and scroll bars
+      Widget.Logic_Area := Vis.Logic.Combine_Rectangle
+        (Top_Left     => Vis.Logic.Zero_2d,
+         Bottom_Right => Vis.Logic.Zero_2d);
       Release_Lock (Widget, Lock);
    end Set_Location_And_Zoom_Level;
 
@@ -2333,8 +2339,9 @@ package body Giant.Graph_Widgets is
          Add_Nodes    => Add_Queue,
          Remove_Nodes => Remove_Queue);
       Switch_Incident_Visible (Widget, Add_Queue, Edges);
+      Vis_Node_Lists.Destroy (Add_Queue);
 
-      Insert_Incident_Edges (Widget, Add_Queue, Edges);
+      Insert_Incident_Edges (Widget, Edges);
       Check_Remove_Incident_Edges (Widget, Remove_Queue);
 
       Callbacks.Edges_Appeared (Widget, Edges);
@@ -2381,7 +2388,6 @@ package body Giant.Graph_Widgets is
 
    procedure Insert_Incident_Edges
      (Widget : access Graph_Widget_Record'Class;
-      Nodes  : in out Vis_Node_Lists.List;
       Edges  : in     Vis_Edge_Sets.Set) is
 
       procedure Size_And_Position_One
@@ -2414,21 +2420,11 @@ package body Giant.Graph_Widgets is
          Object_Sets => Vis_Edge_Sets,
          Action      => Adjust_Arrow_And_Insert_One);
 
-      Node          : Vis_Data.Vis_Node_Id;
       Edge_Set      : Vis_Edge_Sets.Set := Vis_Edge_Sets.Empty_Set;
       Iterator      : Vis_Node_Lists.ListIter;
    begin
       --  Position edges, directly docking
       Size_And_Position_All (Widget, Edges);
-
-      --  Correct positioning to avoid edges lying on top of each other
-      while not Vis_Node_Lists.IsEmpty (Nodes) loop
-         Node := Vis_Node_Lists.FirstValue (Nodes);
-         Vis_Node_Lists.DeleteHead (Nodes);
-
-         Positioning.Adjust_Ports (Widget, Node);
-      end loop;
-      Vis_Node_Lists.Destroy (Nodes);
 
       --  Position arrow heads
       Adjust_Arrow_And_Insert_All (Widget, Edges);

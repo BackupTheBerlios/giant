@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-positioning.adb,v $, $Revision: 1.12 $
+--  $RCSfile: giant-graph_widgets-positioning.adb,v $, $Revision: 1.13 $
 --  $Author: keulsn $
---  $Date: 2003/09/22 01:40:13 $
+--  $Date: 2003/11/10 04:03:56 $
 --
 ------------------------------------------------------------------------------
 
@@ -469,13 +469,6 @@ package body Giant.Graph_Widgets.Positioning is
          Update_Text_Area_Position (Edge);
       end if;
    end Update_Edge_Position;
-
-   procedure Adjust_Ports
-     (Widget : access Graph_Widget_Record'Class;
-      Node   : in     Vis_Data.Vis_Node_Id) is
-   begin
-      null;
-   end Adjust_Ports;
 
    procedure Adjust_Arrow
      (Widget : access Graph_Widget_Record'Class;
