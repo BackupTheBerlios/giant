@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.46 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.47 $
 --  $Author: koppor $
---  $Date: 2003/10/01 22:59:33 $
+--  $Date: 2003/11/06 14:17:04 $
 --
 --  TBD:
 --    * Write into comment, when the routine may be used
@@ -364,6 +364,18 @@ package Giant.Graph_Lib is
    ----------------------
    -- Type conversions --
    ----------------------
+
+   ---------------------------------------------------------------------------
+   --  Returns:
+   --    Edge_Class_Id of given Edge_Class_Tag
+   --  Raises:
+   --    Edge_Class_Does_Not_Exist if given Edge_Class_Tag could not be
+   --    converted to an Edge_Class_Id
+   --  Pre:
+   --    Edge_Class_Name contains "." exactly once
+   function Convert_Edge_Class_Tag_To_Id
+     (Edge_Class_Tag : in String)
+     return Edge_Class_Id;
 
    ---------------------------------------------------------------------------
    --  Returns:

@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.75 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.76 $
 --  $Author: koppor $
---  $Date: 2003/10/01 20:06:21 $
+--  $Date: 2003/11/06 14:17:04 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -157,6 +157,32 @@ package body Giant.Graph_Lib is
    begin
       return IML_Reflection."=" (Left, Right);
    end "=";
+
+   ---------------------------------------------------------------------------
+   function Convert_Edge_Class_Tag_To_Id
+     (Edge_Class_Tag : in String)
+     return Edge_Class_Id
+   is
+      Node_Class : Node_Class_Id;
+      Attribute  : Node_Attribute_Id;
+      Point_Pos  : Natural;
+   begin
+      Point_Pos := Ada.Strings.Fixed.Index
+        (Edge_Class_Tag, ".");
+      declare
+         Node_Class_Name : String := Edge_Class_Tag
+           (Edge_Class_Tag'First..Point_Pos-Edge_Class_Tag'First);
+         Attribute_Name  : String := Edge_Class_Tag
+           (Edge_Class_Tag'First+Point_Pos..Edge_Class_Tag'Last);
+      begin
+         Node_Class := Convert_Node_Class_Name_To_Id
+           (Node_Class_Name);
+         Attribute  := Convert_Node_Attribute_Name_To_Id
+           (Node_Class, Attribute_Name);
+         return Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+           (Node_Class, Attribute);
+      end;
+   end Convert_Edge_Class_Tag_To_Id;
 
    ---------------------------------------------------------------------------
    function Convert_Node_Attribute_Class_Id_To_Name

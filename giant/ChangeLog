@@ -1,3 +1,11 @@
+2003-11-06  Oliver Kopp  <koppor@studi.informatik.uni-stuttgart.de>
+
+	* src/gsl/giant-gsl-runtime.adb: implemented
+
+	* src/graph_lib/giant-graph_lib.ads: Added
+	Convert_Edge_Class_Tag_To_Id needed by gsl-runtime.Type_In
+	Can be tested with generate_subgraph__only_parent_edges.gsl
+
 2003-10-09  Oliver Kopp  <koppor@studi.informatik.uni-stuttgart.de>
 
 	* test/resources/rfg_examp.iml: made with new iml-version

@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
 -- $Author: koppor $
--- $Date: 2003/10/06 23:14:29 $
+-- $Date: 2003/11/06 14:17:05 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -636,7 +636,7 @@ package body Giant.Gsl.Runtime is
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
            "Script 'in_regexp': Expecting 2 parameters.");
       end if;
-      Data:= Get_Value_At (Parameter, 1);
+      Data   := Get_Value_At (Parameter, 1);
       Regexp := Get_Value_At (Parameter, 2);
 
       if Is_Gsl_String (Data) and Is_Gsl_String (Regexp) then
@@ -664,12 +664,64 @@ package body Giant.Gsl.Runtime is
    end Runtime_In_Regexp;
 
    ---------------------------------------------------------------------------
-   -- !!!!!!!!!!!!!!!! IMPLEMENTIEREN !!!!!!!!!!!!!!!!
    function Runtime_Type_In
      (Parameter : Gsl_List)
       return Gsl_Type is
+      IML_Type       : Gsl_Type;
+      Class_Set      : Config.Class_Sets.Class_Set_Access;
+      Class_Set_Name : Gsl_Type;
+
+      Edge_Class     : Graph_Lib.Edge_Class_Id;
+      Node_Class     : Graph_Lib.Node_Class_Id;
    begin
-      return Gsl_Null;
+      if Get_List_Size (Parameter) /= 2 then
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'type_in': Expecting 2 parameters.");
+      end if;
+      IML_Type       := Get_Value_At (Parameter, 1);
+      Class_Set_Name := Get_Value_At (Parameter, 2);
+
+      if Is_Gsl_String (IML_Type) and Is_Gsl_String (Class_Set_Name) then
+         if Config.Class_Sets.Does_Class_Set_Exist
+           (Get_Value (Gsl_String (Class_Set_Name))) then
+            Class_Set := Config.Class_Sets.Get_Class_Set_Access
+              (Get_Value (Gsl_String (Class_Set_Name)));
+
+            declare
+               Name : String := Get_Value (Gsl_String (IML_Type));
+            begin
+               if Graph_Lib.Does_Node_Class_Exist (Name) then
+                  Node_Class := Graph_Lib.Convert_Node_Class_Name_To_Id (Name);
+                  return Gsl_Type
+                    (Create_Gsl_Boolean
+                     (Config.Class_Sets.Is_Node_Class_Element_Of_Class_Set
+                      (Class_Set, Node_Class)));
+               else
+                  begin
+                     Edge_Class := Graph_Lib.Convert_Edge_Class_Tag_To_Id
+                       (Name);
+                  exception
+                     when Graph_Lib.Edge_Class_Does_Not_Exist =>
+                        Ada.Exceptions.Raise_Exception
+                          (Gsl_Runtime_Error'Identity,
+                           "Script 'type_in': Edge_Class not found.");
+                  end;
+                  return Gsl_Type
+                    (Create_Gsl_Boolean
+                     (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
+                      (Class_Set, Edge_Class)));
+               end if;
+            end;
+         else
+            Ada.Exceptions.Raise_Exception
+              (Gsl_Runtime_Error'Identity,
+               "Script 'type_in': Class_Set not found.");
+         end if;
+      else
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'type_in': Gsl_String expected.");
+      end if;
+
    end Runtime_Type_In;
 
 ------------------------------------------------------------------------------
