@@ -4,7 +4,7 @@
 	latex $<
 	latex $<
 	latex $<
-#	while egrep -q '^LaTeX Warning: There were undefined references\.$$'\|'^LaTeX Warning: Label\(s\) may have changed\. Rerun to get cross-references right\.$$' $*.log >/dev/null 2>&1 ; do \
+#	while egrep -q '^LaTeX Warning: Label\(s\) may have changed\. Rerun to get cross-references right\.$$' $*.log >/dev/null 2>&1 ; do \
 #    		latex $< ; \
 #	done
 
