@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.43 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.44 $
 --  $Author: koppor $
---  $Date: 2003/07/05 16:32:49 $
+--  $Date: 2003/07/06 01:57:08 $
 
 --  TBD:
 --    s/Program_Error/somethingofmyown
@@ -39,7 +39,6 @@ with IML_Classes;
 with IML_Graphs;
 with IML.IO;
 with IML_Reflection;
-with IML_Roots;
 with Lists;
 
 --  from Giant
@@ -412,7 +411,7 @@ package body Giant.Graph_Lib is
          type Node_Record is record
             Edges_In      : Edge_Lists.List;
             Edges_Out     : Edge_Lists.List;
-            IML_Node      : Storables.Storable;
+            IML_Node      : IML_Roots.IML_Root;
 
             --  Used at conversion from temporary structure to
             --  graph_lib-internal structure
@@ -430,7 +429,7 @@ package body Giant.Graph_Lib is
          --  they are NOT collected in an internal list
          --  The caller has to handle the destroyage
          function Create_Node
-           (IMLNode : Storables.Storable)
+           (IMLNode : IML_Roots.IML_Root)
            return Node_Access;
 
          --  Destroys the node and all outgoing edges
@@ -464,7 +463,7 @@ package body Giant.Graph_Lib is
          end Create_Edge;
 
          function Create_Node
-           (IMLNode : Storables.Storable)
+           (IMLNode : IML_Roots.IML_Root)
            return Node_Access is
             New_Node : Node_Access := new Node_Record;
          begin
@@ -497,7 +496,7 @@ package body Giant.Graph_Lib is
       --  Hashing for IML_Nodes  --
       -----------------------------
 
-      --  Oriented on vis_test.iml_graph_loader
+      --  Oriented on vis_test.IML_graph_loader
       package IML_Node_Mapper is
          procedure Create;
          procedure Destroy;
@@ -510,46 +509,46 @@ package body Giant.Graph_Lib is
          --    Created': True,  if a mapping was created
          --              False, if a mapping already existed
          procedure Get
-           (Iml_Node : in     Storables.Storable;
+           (IML_Node : in     IML_Roots.IML_Root;
             Node     :    out Load_Nodes.Node_Access;
             Created  :    out Boolean);
       end IML_Node_Mapper;
 
       package body IML_Node_Mapper is
 
-         function Storable_Hash is new Tagged_Ptr_Hash
-           (T     => Storables.Storable_Class,
-            T_Ptr => Storables.Storable);
+         function IML_Roots_Hash is new Tagged_Ptr_Hash
+           (T     => IML_Roots.IML_Root_Class,
+            T_Ptr => IML_Roots.IML_Root);
 
-         package Mapping_Iml_LoadNodes is new Hashed_Mappings
-           (Key_Type   => Storables.Storable,
-            Hash       => Storable_Hash,
+         package Mapping_IML_Load_Nodes is new Hashed_Mappings
+           (Key_Type   => IML_Roots.IML_Root,
+            Hash       => IML_Roots_Hash,
             Value_Type => Load_Nodes.Node_Access);
 
-         Mapping : Mapping_Iml_LoadNodes.Mapping;
+         Mapping : Mapping_IML_Load_Nodes.Mapping;
 
          procedure Create is
          begin
-            Mapping := Mapping_Iml_LoadNodes.Create (19);
+            Mapping := Mapping_IML_Load_Nodes.Create (19);
             -- FIX: breaks when (19) is passed
          end Create;
 
          procedure Destroy is
          begin
-            Mapping_Iml_LoadNodes.Destroy (Mapping);
+            Mapping_IML_Load_Nodes.Destroy (Mapping);
          end Destroy;
 
          procedure Get
-           (Iml_Node : in     Storables.Storable;
+           (IML_Node : in     IML_Roots.IML_Root;
             Node     :    out Load_Nodes.Node_Access;
             Created  :    out Boolean) is
          begin
-            if Mapping_Iml_LoadNodes.Is_Bound (Mapping, Iml_Node) then
-               Node := Mapping_Iml_LoadNodes.Fetch (Mapping, Iml_Node);
+            if Mapping_IML_Load_Nodes.Is_Bound (Mapping, IML_Node) then
+               Node := Mapping_IML_Load_Nodes.Fetch (Mapping, IML_Node);
                Created := False;
             else
-               Node := Load_Nodes.Create_Node (Iml_Node);
-               Mapping_Iml_LoadNodes.Bind (Mapping, Iml_Node, Node);
+               Node := Load_Nodes.Create_Node (IML_Node);
+               Mapping_IML_Load_Nodes.Bind (Mapping, IML_Node, Node);
                Created := True;
             end if;
          end Get;
@@ -565,16 +564,23 @@ package body Giant.Graph_Lib is
 
          procedure Process_Queue is
 
+            ------------------------------------------------------------------
             --  used for getting a much better performance
             --    at Node_Queues.Attach
-            Queue_Tail    : Load_Nodes.Node_Queues.List;
+            Queue_Tail     : Load_Nodes.Node_Queues.List;
 
+            ------------------------------------------------------------------
             --  Does all necessary things, if there's an edge from
             --    a Node to an IML_Node
+            --
+            --  * Checks if target is valid
+            --    if yes:
+            --      * Creates/fetches target node
+            --      * Creates edge
             procedure Process_Edge
-              (Source_Node : in Load_Nodes.Node_Access;
-               Target      : in Storables.Storable;
-               Attribute   : in Node_Attribute_Id;
+              (Source_Node              : in Load_Nodes.Node_Access;
+               Target                   : in Storables.Storable;
+               Attribute                : in Node_Attribute_Id;
                Attribute_Element_Number : in Natural) is
 
                Created     : Boolean;
@@ -585,46 +591,52 @@ package body Giant.Graph_Lib is
             begin
                --  My_Logger.Debug ("Begin: Process_Edge");
 
-               IML_Node_Mapper.Get (Target, Target_Node,  Created);
+               if (Storables."/=" (Target, null)) and then
+                 (Is_IML_Root (Target)) then
+                  IML_Node_Mapper.Get
+                    (IML_Roots.IML_Root (Target), Target_Node, Created);
 
-               --  My_Logger.Debug ("Fetched Target_Node");
+                  --  My_Logger.Debug ("Fetched Target_Node");
 
-               if Created then
-                  New_Queue_Tail := Load_Nodes.Node_Queues.MakeList
-                    (Target_Node);
-                  Load_Nodes.Node_Queues.Attach (Queue_Tail, New_Queue_Tail);
-                  Queue_Tail := New_Queue_Tail;
-                  --  My_Logger.Debug ("Attached Target_Node");
+                  if Created then
+                     New_Queue_Tail := Load_Nodes.Node_Queues.MakeList
+                       (Target_Node);
+                     Load_Nodes.Node_Queues.Attach
+                       (Queue_Tail, New_Queue_Tail);
+                     Queue_Tail := New_Queue_Tail;
+                     --  My_Logger.Debug ("Attached Target_Node");
+                  end if;
+
+                  Load_Nodes.Create_Edge
+                    (Source_Node,
+                     Target_Node,
+                     Attribute,
+                     Attribute_Element_Number);
+
+                  --  My_Logger.Debug ("Edge created");
                end if;
-
-               Load_Nodes.Create_Edge
-                 (Source_Node,
-                  Target_Node,
-                  Attribute,
-                  Attribute_Element_Number);
-
-               --  My_Logger.Debug ("Edge created");
 
                --  My_Logger.Debug ("End: Process_Edge");
             end Process_Edge;
 
             Node  : Load_Nodes.Node_Access;
 
+            ------------------------------------------------------------------
             procedure Process_Attribute
-              (IML_Node  : in Storables.Storable;
+              (IML_Node  : in IML_Roots.IML_Root;
                Attribute : in IML_Reflection.Field_ID) is
-
-               Target : Storables.Storable;
             begin
                --  My_Logger.Debug ("Begin: Process_Attribute");
 
+               --  TBD: rewrite from here to fit to new IML_Root-structure
+
                if Attribute.all in IML_Reflection.Edge_Field'Class then
                   declare
-                     IML_Edge : IML_Reflection.Edge_Field
+                     IML_Edge  : IML_Reflection.Edge_Field
                        := IML_Reflection.Edge_Field (Attribute.all);
+                     Target    : Storables.Storable;
                   begin
-                     Target   := IML_Edge.Get_Target
-                       (IML_Roots.IML_Root (IML_Node));
+                     Target   := IML_Edge.Get_Target (IML_Node);
                      if Storables."/=" (Target, null) then
                         Process_Edge (Node, Target, Attribute, 0);
                         --  else
@@ -701,7 +713,7 @@ package body Giant.Graph_Lib is
                --                     IML_Node_Ids.Image
                --        (Storables.Get_Node_Id (Node.IML_Node)));
 
-               if Node.IML_Node.all in IML_Roots.IML_Root_Class'Class then
+               if Is_IML_Root (Node.IML_Node) then
                   --  we process only nodes below IML_Root and no other
                   --  storables
 
@@ -718,7 +730,7 @@ package body Giant.Graph_Lib is
             end loop;
          end Process_Queue;
 
-         Root_Node : Storables.Storable;
+         Root_Node : IML_Roots.IML_Root;
          Created   : Boolean;
          Node      : Load_Nodes.Node_Access;
 
@@ -727,10 +739,9 @@ package body Giant.Graph_Lib is
 
          Queue := Load_Nodes.Node_Queues.Create;
 
-         Root_Node := Storables.Storable
-           (IML_Graphs.Get_Raw_Graph (IML_Graph));
+         Root_Node := IML_Graphs.Get_Raw_Graph (IML_Graph);
 
-         Iml_Node_Mapper.Get (Root_Node, Node, Created);
+         IML_Node_Mapper.Get (Root_Node, Node, Created);
 
          Load_Nodes.Node_Queues.Attach (Queue, Node);
 
@@ -1005,7 +1016,7 @@ package body Giant.Graph_Lib is
             raise Load_Error;
       end;
 
-      Iml_Node_Mapper.Create;
+      IML_Node_Mapper.Create;
 
       declare
          Queue : Load_Nodes.Node_Queue;
@@ -1015,7 +1026,7 @@ package body Giant.Graph_Lib is
          Destroy_TEmp_Structure (Queue);
       end;
 
-      Iml_Node_Mapper.Destroy;
+      IML_Node_Mapper.Destroy;
    end Load;
 
    ---------------------------------------------------------------------------
@@ -1183,7 +1194,7 @@ package body Giant.Graph_Lib is
    is
       IML_Node_Id : IML_Node_IDs.Node_Id;
    begin
-      IML_Node_Id := Storables.Get_Node_Id (Node.Iml_Node);
+      IML_Node_Id := Storables.Get_Node_Id (Node.IML_Node);
 
       return IML_Node_IDs.Image (IML_Node_Id);
    end Node_Id_Image;
@@ -1474,18 +1485,24 @@ package body Giant.Graph_Lib is
            := IML_Reflection.List_Field (Attribute.all);
          Iter    : IML_Reflection.List_Iterator;
          Target  : Storables.Storable;
-         ResNode : Node_Id;
+         Res_Node : Node_Id;
       begin
          Iter     := IML_List.Make_Iterator (Node.IML_Node);
 
          while IML_Reflection.More (Iter) loop
             IML_Reflection.Next (Iter, Target);
 
-            ResNode := IML_Node_ID_Hashed_Mappings.Fetch
-              (IML_Node_ID_Mapping,
-               Storables.Get_Node_Id (Target) );
+            if (Storables."/=" (Target, null)) and then
+              Is_IML_Root (Target) then
+               Res_Node := IML_Node_ID_Hashed_Mappings.Fetch
+                 (IML_Node_ID_Mapping,
+                  Storables.Get_Node_Id (Target) );
 
-            Node_Id_Lists.Attach (List, ResNode);
+               Node_Id_Lists.Attach (List, Res_Node);
+            else
+               My_Logger.Debug ("No IML_Root @ List_Value");
+            end if;
+
          end loop;
       end;
 
@@ -1571,18 +1588,23 @@ package body Giant.Graph_Lib is
            IML_Reflection.Set_Field (Attribute.all);
          Iter    : IML_Reflection.Set_Iterator;
          Target  : Storables.Storable;
-         ResNode : Node_Id;
+         Res_Node : Node_Id;
       begin
          Iter := IML_Set.Make_Iterator (Node.IML_Node);
 
          while IML_Reflection.More (Iter) loop
             IML_Reflection.Next (Iter, Target);
 
-            ResNode := IML_Node_ID_Hashed_Mappings.Fetch
-              (IML_Node_ID_Mapping,
-               Storables.Get_Node_Id (Target) );
+            if (Storables."/=" (Target, null)) and then
+              Is_IML_Root (Target) then
+               Res_Node := IML_Node_ID_Hashed_Mappings.Fetch
+                 (IML_Node_ID_Mapping,
+                  Storables.Get_Node_Id (Target) );
 
-            Node_Id_Sets.Insert (Set, ResNode);
+               Node_Id_Sets.Insert (Set, Res_Node);
+            else
+               My_Logger.Debug ("No IML_Root @ Set_Value");
+            end if;
          end loop;
       end;
 
@@ -1595,7 +1617,7 @@ package body Giant.Graph_Lib is
       Attribute : in     Node_Attribute_Id)
       return Node_Id
    is
-      ResNode : Node_Id;
+      Res_Node : Node_Id;
    begin
       if Get_Node_Attribute_Class_Id (Attribute) /= Class_Node_Id then
          raise Wrong_Attribute_Type;
@@ -1606,19 +1628,23 @@ package body Giant.Graph_Lib is
             := IML_Reflection.Edge_Field (Attribute.all);
           Target   : Storables.Storable;
        begin
-          Target   := IML_Edge.Get_Target
-            (IML_Roots.IML_Root (Node.IML_Node));
+          Target   := IML_Edge.Get_Target (Node.IML_Node);
           if Storables."/=" (Target, null) then
-             ResNode := IML_Node_ID_Hashed_Mappings.Fetch
-               (IML_Node_ID_Mapping,
-                Storables.Get_Node_Id (Target) );
+             if Is_IML_Root (Target) then
+                Res_Node := IML_Node_ID_Hashed_Mappings.Fetch
+                  (IML_Node_ID_Mapping,
+                   Storables.Get_Node_Id (Target) );
+             else
+                My_Logger.Fatal ("Edge_Field with non-IML_Root-target");
+                raise Node_Does_Not_Exist;
+             end if;
           else
              My_Logger.Fatal ("Edge_Field with null target");
              raise Node_Does_Not_Exist;
           end if;
       end;
 
-      return ResNode;
+      return Res_Node;
    end Get_Node_Attribute_Node_Id_Value;
 
    ----------------------------------------------------------------------------
@@ -1703,7 +1729,7 @@ package body Giant.Graph_Lib is
                  := IML_Reflection.SLoc_Field (Attribute.all);
                SLoc             : SLocs.SLoc;
             begin
-               SLoc := SLoc_StoredInIML.Get_Value (Node.Iml_Node);
+               SLoc := SLoc_StoredInIML.Get_Value (Node.IML_Node);
                return SLocs.Plain_Image (SLoc);
             end;
 
@@ -1738,17 +1764,16 @@ package body Giant.Graph_Lib is
    function Get_Root_Node
       return Node_Id
    is
-      Root_Node : Storables.Storable;
-      ResNode   : Node_Id;
+      Root_Node : IML_Roots.IML_Root;
+      Res_Node   : Node_Id;
    begin
-      Root_Node := Storables.Storable
-        (IML_Graphs.Get_Raw_Graph (IML_Graph));
+      Root_Node := IML_Graphs.Get_Raw_Graph (IML_Graph);
 
-      ResNode := IML_Node_ID_Hashed_Mappings.Fetch
+      Res_Node := IML_Node_ID_Hashed_Mappings.Fetch
         (IML_Node_ID_Mapping,
          Storables.Get_Node_Id (Root_Node) );
 
-      return ResNode;
+      return Res_Node;
    end Get_Root_Node;
 
    ----------------------------------------------------------------------------
@@ -1774,6 +1799,15 @@ package body Giant.Graph_Lib is
    begin
       return IML_Graphs.Hash (IML_Graph);
    end Get_Graph_Hash;
+
+   ---------------------------------------------------------------------------
+   function Is_IML_Root
+     (The_Storable : access Storables.Storable_Class'Class)
+     return Boolean
+   is
+   begin
+      return The_Storable.all in IML_Roots.IML_Root_Class'Class;
+   end Is_IML_Root;
 
    ---------------------------------------------------------------------------
    function Hash_Edge_Class_Id (Key : in Edge_Class_Id) return Integer is
@@ -1814,8 +1848,7 @@ package body Giant.Graph_Lib is
    ---------------------------------------------------------------------------
    function Hash_Node_Id (Key : in Node_Id) return Integer is
    begin
-      return IML_Node_IDs.Hash
-        (Storables.Get_Node_ID (Key.IML_Node));
+      return IML_Node_IDs.Hash (Storables.Get_Node_ID (Key.IML_Node));
    end Hash_Node_Id;
 
    ---------------------------------------------------------------------------
