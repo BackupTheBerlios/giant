@@ -20,37 +20,45 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: framework_test.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-valid_names-test.adb,v $, $Revision: 1.1 $
 --  $Author: squig $
 --  $Date: 2003/06/16 15:41:09 $
 --
 
-with AUnit.Test_Suites; use AUnit.Test_Suites;
-with AUnit.Test_Runner;
+with AUnit.Assertions; use AUnit.Assertions;
+with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
 
-with Giant.Config.Test;
-with Giant.Default_Logger.Test;
-with Giant.File_Management.Test;
-with Giant.Graph_Lib.Test;
-with Giant.Valid_Names.Test;
-with Giant.Vis_Windows.Test;
+with Giant.Valid_Names;
+with Giant.Default_Logger;
 
-procedure Framework_Test is
+package body Giant.Valid_Names.Test is
 
-   function Suite return Access_Test_Suite is
-      Result : Access_Test_Suite := new Test_Suite;
+   procedure Test_Is_Standard_Name (R : in out AUnit.Test_Cases.Test_Case'Class)
+   is
    begin
-      Add_Test (Result, new Giant.Config.Test.Test_Case);
-      Add_Test (Result, new Giant.Default_Logger.Test.Test_Case);
-      Add_Test (Result, new Giant.File_Management.Test.Test_Case);
-      Add_Test (Result, new Giant.Graph_Lib.Test.Test_Case);
-      Add_Test (Result, new Giant.Valid_Names.Test.Test_Case);
-      Add_Test (Result, new Giant.Vis_Windows.Test.Test_Case);
-      return Result;
-   end Suite;
+      Assert (Valid_Names.Is_Standard_Name ("Standard_Name"), "Standard_Name");
+      Assert (not Valid_Names.Is_Standard_Name ("Standard Name"),
+              "Standard Name");
+   end;
 
-   procedure Run is new AUnit.Test_Runner (Suite);
+   function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is
+   begin
+      return new String'("Valid_Names");
+   end Name;
 
-begin
-   Run;
-end Framework_Test;
+   procedure Register_Tests (T : in out Test_Case) is
+   begin
+      Register_Routine (T, Test_Is_Standard_Name'Access, "Is_Standard_Name");
+   end Register_Tests;
+
+   procedure Set_Up (T : in out Test_Case) is
+   begin
+      Default_Logger.Init;
+   end Set_Up;
+
+   procedure Tear_Down (T : in out Test_Case) is
+   begin
+      Default_Logger.Close;
+   end Tear_Down;
+
+end Giant.Valid_Names.Test;
