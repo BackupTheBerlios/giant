@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: selection.tex,v $, $Revision: 1.16 $
-%  $Date: 2003/04/05 12:41:57 $
+%  $RCSfile: selection.tex,v $, $Revision: 1.17 $
+%  $Date: 2003/04/08 13:28:24 $
 %  $Author: squig $
 %
 %  Description: UseCases für die Selektionen
@@ -106,11 +106,11 @@ Anzeigefensters (siehe auch \ref {hervorheben von Knoten und Kanten}).
     Der Benutzer startet den UseCase mit einem Rechtsklick 
     auf die gewünschte Selektion in der
     Selektionsauswahlliste (siehe \ref{Selektionsauswahlliste})
-    und wählt im zugehörigen Popup-Menü den Eintrag
-    \gq{Highlight Selection  Color 1 (2,3)} aus.
+    und wählt im zugehörigen Popup-Menü das Untermenü
+    \gq{Highlight Selection} und dort die gewünschte Farbe aus.
   
     \step[2]
-    GIANT hebt die Selektion mit der entsprechenden Farbe hervor.
+    GIANT hebt die Selektion mit der ausgewählten Farbe hervor.
     
   \end{proc}
 
@@ -296,7 +296,7 @@ unverändert.
     Selektion in der Selektionsauswahlliste \ref{Selektionsauswahlliste}
     und wählt aus dem Popup-Menü den Eintrag \gq{Delete Selection}
     aus. Falls der Benutzer die Standard-Selektion ausgewählt hat ist
-    der Eintrag \gq{Delete Selection} deaktiviert.
+    der Eintrag deaktiviert (siehe \ref{Standard-Selektion}).
       
     \step[2]
     GIANT löscht die entsprechende Selektion.
@@ -476,9 +476,8 @@ Das Vorgehen ist analog zu dem UseCase
     \ref{Selektionsauswahlliste}).
     
     \step[2] 
-    GIANT öffnet den Common\_Set\_Operation\_Dialog 
+    GIANT öffnet den Set-Operation-Dialog 
     (siehe \ref{Common-Set-Operation-Dialog}).
-    
     
     \step[3] 
     Der Benutzer wählt dort die beiden Quell-Selektionen (LEFT\_SOURCE und 

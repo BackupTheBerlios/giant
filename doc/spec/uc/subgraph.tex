@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: subgraph.tex,v $, $Revision: 1.14 $
-%  $Date: 2003/04/06 21:14:56 $
+%  $RCSfile: subgraph.tex,v $, $Revision: 1.15 $
+%  $Date: 2003/04/08 13:28:24 $
 %  $Author: squig $
 %
 %  Description: UseCases für IML-Teilgraphen
@@ -34,16 +34,16 @@ Anzeigefenster (siehe auch \ref {hervorheben von Knoten und Kanten}).
  
   \begin{proc}    
     \step[1]
-    Der Benutzer startet den UseCase über das Popup Menü der 
+    Der Benutzer startet den UseCase über das Popup-Menü der 
     Liste über die IML-Teilgraphen (siehe \ref{GUI Subgraph List})
     durch Rechtsklick auf den gewünschten IML-Teilgraphen.
     In dem Popup Menü (siehe \ref {Popup-Menü Subgraph List})
-    wählt er den Eintrag \gq {Highlight with Color 1 (2,3)}
-    aus.
+    wählt er das Untermenü \gq {Highlight} und dort die gewünschte
+    Farbe aus.
             
     \step[2]
     GIANT hebt den IML-Teilgraphen in allen geöffneten Anzeigefenstern
-    mit der entsprechenden Farbe hervor.
+    mit der ausgewählten Farbe hervor.
     
   \end{proc}
 
@@ -77,10 +77,9 @@ aufgehoben werden.
     Der Benutzer startet den UseCase durch Rechtsklick auf den
     hervorgehobenen IML-Teilgraphen in der Liste über
     die IML-Teilgraphen (siehe \ref{GUI Subgraph List})
-    In dem zugehörigen Popup Menü (siehe \ref{Popup-Menü Subgraph List})
-    wählt er den Eintrag \gq{Unhighlight in all Windows}
+    In dem zugehörigen Popup-Menü (siehe \ref{Popup-Menü Subgraph List})
+    wählt er den Eintrag \gq{Unhighlight In All Windows}
     aus.
-    
 
     \step[2]
     GIANT setzt die Hervorhebung des IML-Teilgraphen zurück.
@@ -262,7 +261,7 @@ davon unberührt.
 \index{IML-Teilgraph!Mengenoperationen}
 
 Ergänzend zu den Möglichkeiten der Anfragesprache 
-(siehe \ref {GIANT Query Skripting Language}) kann der Benutzer
+(siehe Kapitel \ref{GIANT Query Skripting Language}) kann der Benutzer
 die gängigen Mengenoperationen, wie Mengenvereinigung, 
 Schnitt und Differenz, auch direkt über einen Dialog 
 ausführen.
@@ -315,7 +314,7 @@ analog zu dem UseCase \ref{Mengenoperationen auf 2 Selektionen}.
     auswählt.
     
     \step[2] 
-    GIANT öffnet den Common\_Set\_Operation\_Dialog 
+    GIANT öffnet den Set-Operation-Dialog 
     (siehe \ref{Common-Set-Operation-Dialog}).
     
     
