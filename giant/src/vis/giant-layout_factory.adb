@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.12 $
+--  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.13 $
 --  $Author: koppor $
---  $Date: 2003/08/25 10:19:46 $
+--  $Date: 2003/08/31 12:05:29 $
 --
 
 with Ada.Exceptions;
@@ -166,12 +166,120 @@ package body Giant.Layout_Factory is
             return Res;
          end Convert_String_To_Meta_Class_Set;
 
-         Root_Node         : Giant.Graph_Lib.Node_Id;
+         --  needed by Get_Root_Node
          Meta_Class_Set    : Config.Class_Sets.Class_Set_Access;
+
+         ----------------------------------------------------------------------
+         --  Extracts Root_Node_Id out of given string
+         --
+         --  if an empty string is given, the root is searched in the tree
+         --
+         --  Raises:
+         --    Invalid_Format, if root node can't be found
+         function Get_Root_Node
+           (Id : in String)
+           return Graph_Lib.Node_Id
+         is
+            Node            : Graph_Lib.Node_Id;
+
+            Current_Node    : Graph_Lib.Node_Id;
+            Incoming_Edges  : Graph_Lib.Edge_Id_Set;
+
+            Nodes_To_Layout : Graph_Lib.Node_Id_Set;
+            Node_Iterator   : Graph_Lib.Node_Id_Sets.Iterator;
+
+            Current_Edge    : Graph_Lib.Edge_Id;
+            Edge_Iterator   : Graph_Lib.Edge_Id_Sets.Iterator;
+
+            Root_Found      : Boolean;
+         begin
+            if Id'Length = 0 then
+               --  no root was given --> search for root-node in tree
+
+               --  first element of set is starting point for search
+               Node_Iterator := Graph_Lib.Node_Id_Sets.Make_Iterator
+                 (Graph_Lib.Selections.Get_All_Nodes (Selection_To_Layout));
+               if Graph_Lib.Node_Id_Sets.More (Node_Iterator) then
+                  Current_Node := Graph_Lib.Node_Id_Sets.Current
+                    (Node_Iterator);
+               else
+                  --  nothing to layout
+                  Current_Node := Graph_Lib.Invalid_Node_Id;
+               end if;
+               Graph_Lib.Node_Id_Sets.Destroy (Node_Iterator);
+
+               if Graph_Lib."=" (Current_Node, Graph_Lib.Invalid_Node_Id) then
+                  --  there is nothing to layout, cancel finding
+                  --    of root of tree
+                  return Graph_Lib.Invalid_Node_Id;
+               end if;
+
+               loop
+                  Incoming_Edges := Graph_Lib.Get_Incoming_Edges
+                    (Current_Node);
+                  Edge_Iterator := Graph_Lib.Edge_Id_Sets.Make_Iterator
+                    (Incoming_Edges);
+
+                  --  algorithm analogue to
+                  --  Tree_Layouts.Init_Calculation_Part_One
+
+                  --  will be set to false if a predesessor is found
+                  Root_Found := True;
+
+                  while Graph_Lib.Edge_Id_Sets.More (Edge_Iterator) loop
+                     Graph_Lib.Edge_Id_Sets.Next (Edge_Iterator, Current_Edge);
+
+                     if Config.Class_Sets.Is_Empty
+                       (Meta_Class_Set) or else
+                       Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
+                       (Meta_Class_Set,
+                        Graph_Lib.Get_Edge_Class_Id (Current_Edge)) then
+                        Node := Graph_Lib.Get_Target_Node (Current_Edge);
+                        if Config.Class_Sets.Is_Empty (Meta_Class_Set) or else
+                          Config.Class_Sets.Is_Node_Class_Element_Of_Class_Set
+                          (Meta_Class_Set,
+                           Graph_Lib.Get_Node_Class_Id (Node)) then
+                           if Graph_Lib.Node_Id_Sets.Is_Member
+                             (Graph_Lib.Selections.Get_All_Nodes
+                              (Selection_To_Layout), Node) then
+                              --  predecessor found
+                              Current_Node := Node;
+                              Root_Found := False;
+                              exit;
+                           end if;
+                        end if;
+                     end if;
+                  end loop;
+                  Graph_Lib.Edge_Id_Sets.Destroy (Edge_Iterator);
+
+                  Graph_Lib.Edge_Id_Sets.Destroy (Incoming_Edges);
+
+                  exit when Root_Found;
+               end loop;
+
+               --  current node is the root of the tree
+               return Current_Node;
+            else
+               begin
+                  return Graph_Lib.Node_Id_Value (Id);
+               exception
+                  when Graph_Lib.Node_Does_Not_Exist =>
+                     Layout_Evolution := null;
+                     Ada.Exceptions.Raise_Exception (Invalid_Format'Identity,
+                                                     "Invalid root node");
+               end;
+            end if;
+         end Get_Root_Node;
+
+         Root_Node         : Giant.Graph_Lib.Node_Id;
 
          Parameters        : String_Lists.List;
          Parameters_Iter   : String_Lists.ListIter;
          Current_Parameter : Ada.Strings.Unbounded.Unbounded_String;
+
+         --  It is not possible to convert the paramter to a Root_Node-Id,
+         --    because of the automatic searching, where a class-set is needed
+         Root_Node_String  : Ada.Strings.Unbounded.Unbounded_String;
 
       begin
          --  Split parameters
@@ -188,17 +296,21 @@ package body Giant.Layout_Factory is
 
          Parameters_Iter := String_Lists.MakeListIter (Parameters);
 
-         --  Get Root-Id
+         --  Get String for geeting Root-Id
+         --    The getting itself is done later because of the possible
+         --    automatic calculation of the Id
          String_Lists.Next (Parameters_Iter, Current_Parameter);
-         begin
-            Root_Node := Giant.Graph_Lib.Node_Id_Value
-              (Ada.Strings.Unbounded.To_String (Current_Parameter));
-         exception
-            when Graph_Lib.Node_Does_Not_Exist =>
-               Layout_Evolution := null;
-               Ada.Exceptions.Raise_Exception (Invalid_Format'Identity,
-                                               "Invalid root node");
-         end;
+         Root_Node_String := Current_Parameter;
+
+         --  Class_Sets
+         String_Lists.Next (Parameters_Iter, Current_Parameter);
+         Meta_Class_Set := Convert_String_To_Meta_Class_Set
+           (Ada.Strings.Unbounded.To_String (Current_Parameter));
+
+         --  Class_Sets are initialized now,
+         --    the Root-Node can be extracted now
+         Root_Node := Get_Root_Node
+           (Ada.Strings.Unbounded.To_String (Root_Node_String));
 
          --  Assure that Root_Node is in Selection
          if not Graph_Lib.Node_Id_Sets.Is_Member
@@ -210,12 +322,6 @@ package body Giant.Layout_Factory is
             Ada.Exceptions.Raise_Exception (Invalid_Format'Identity,
                                             "Invalid root node");
          end if;
-
-
-         --  Class_sets
-         String_Lists.Next (Parameters_Iter, Current_Parameter);
-         Meta_Class_Set := Convert_String_To_Meta_Class_Set
-           (Ada.Strings.Unbounded.To_String (Current_Parameter));
 
          Layout_Evolution := Giant.Evolutions.Evolution_Class_Access
            (Tree_Layouts.Initialize
