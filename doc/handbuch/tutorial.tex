@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: tutorial.tex,v $, $Revision: 1.4 $
-%  $Date: 2003/09/20 15:20:25 $
+%  $RCSfile: tutorial.tex,v $, $Revision: 1.5 $
+%  $Date: 2003/09/23 19:33:38 $
 %  $Author: birdy $
 %
 %  Description: Tutorial
@@ -13,6 +13,7 @@ In diesem Tutorial gehen wir davon aus, daß sich das Programm GIANT
 im Verzeichnis /projects/tmp/birdy/giant-1.1.0 befindet.
 
 \section{Starten des Programms}
+\index{Starten des Programms}
 
 Das Programm wird mit:\\
 
@@ -58,6 +59,7 @@ rechts unten steht der Name der IML-Datei, °rfg_examp.iml°.\\
 \clearpage
 
 \section{Öffnen eines Fensters}
+\index{Öffnen eines Fensters}
 
 Wir wollen nun ein erstes Graphenfenster öffnen. Das erledigen wir durch
 Auswählen des Menüpunkts °Open Entire Graph° unter °Scripts°.\\
@@ -71,7 +73,7 @@ Nun erscheint ein Graphenfenster.
 \end{figure}
 
 \section{Zoomen}
-
+\index{Zoomen}
 Mittels der Zoomkontrolle (4) können wir die Ansicht im Fenster vergrößern
 oder verkleinern. Dazu können die Buttons °+° und °-° verwendet werden,
 mittels der Combobox voreingestellte werte gesetzt werden oder ein
@@ -83,6 +85,7 @@ diese Kante komplett auf dem Bildschirm sichtbar ist.
 Wir tragen nun wieder 45% als Zoomwert ein und drücken Return.
 
 \section{Scrollen im Fenster}
+\index{Scrollen}
 
 Nun wollen wir den sichtbaren Anzeigeinhalt verschieben. Dies geht
 durch Verschieben des weißen Kästchens in der MiniMap (1) mit der Maus.
@@ -96,6 +99,7 @@ Durch Betätigen der Scrollbars (6) und (7) kann wiederum der sichtbare
 Anzeigeinhalt verschoben werden.
 
 \section{Knoteninformation anzeigen}
+\index{Knoteninformation anzeigen}
 
 Wir suchen nun durch zoomen und scrollen den Knoten mit der Nummer 10,
 welcher sich links Oben im Block der Knoten befindet (es kann auch ein
@@ -116,6 +120,7 @@ nunmehr die Information dieses anderen Knoten angezeigt werden.
 Wir schließen das Nodeinfo-Fenster wieder.
 
 \section{Pin festlegen / ändern / löschen}
+\index{Pins}
 
 Wir wollen uns nun eine Ansicht des Graphen für ein späteres schnelles Wiederfinden
 merken. Dazu scrollen und zoomen wir in eine für uns interessante Position (z.B.
@@ -132,7 +137,7 @@ Falls wir den Knoten später einmal löschen wollen, geht dies mit °Delete°
 im Kontextmenü.
 
 \section{Visualisierungsstile ändern}
-
+\index{Visualisierungsstile ändern}
 Mittels der Visualisierungsstil-Auswahl (4) können wir die Art der Darstellung
 der Knoten ändern. Probeweise ändern wir die Darstellung in der Combobox einmal
 auf °Plain°. Wir können nun einmal im Graph herumzoomen und scrollen, um
@@ -140,6 +145,7 @@ die Unterschiede zu sehen.
 Nun wechseln wir aber wieder zurück zum Default-Stil.
 
 \section{Selektionen bearbeiten und markieren}
+\index{Selektionen!bearbeiten und farbig markieren}
 
 Wir springen nun zu unserem Pin °Interessanter Knoten°, und zoomen und
 scrollen ggf. so, daß wir ca. 8 Knoten bei einer
@@ -150,6 +156,10 @@ in der Matrix) mit der linken Maustaste.\\
 
 Der Knoten wird farbig markiert. Wir können sehen, daß in der Selektionsliste
 (3) in der Zeile °Default° der angewählte Knoten auftaucht.
+Wann immer wir mit der Maus Selektionen manipulieren, so bezieht sich
+diese Änderung auf diejenige Selektion in der Liste, bei der in der
+Spalte °Active° ein °Yes° steht, die aktive Selektion.\\
+
 Mit gedrückter Shift-Taste wählen wir noch zwei andere Knoten aus.
 Nun halten wir die Shift-Taste und ziehen mit gedrückter linker Maustaste
 einen Rahmen über alle bis auf die unteren zwei Knoten.
@@ -196,6 +206,7 @@ alle Knoten und Kanten markiert oder entmarkiert werden.\\
    \clearpage
 \end{figure}
 
+\index{Selektionen!anzoomen}
 Wenn wir nun im Kontextmenü der Selektion °Zoom to Selection° auswählen,
 zoomt und scrollt GIANT so in den Graph hinein, daß alle Knoten der
 Selektion sichtbar sind.\\
@@ -208,6 +219,8 @@ aber gelöscht wurde.
 Nun erstellen wir nochmals eine Selektion mit dem Namen °neu2°,
 wählen diesmal °Delete with Content° aus.
 GIANT hat nun die Knoten nebst ihrer Kanten aus dem Graph gelöscht.\\
+
+\index{Mengenoperation}
 
 Nun zu einer Mengenoperation:
 Auf der Selektion °Neu° in (3) wählen wir nun °Set Operation° aus.
@@ -248,6 +261,7 @@ Kontextmenü. Wie wir sehen, erscheint sie nun im Hauptfenster
 in der Subgraph-Liste.\\
 
 \section {Verschieben von Knoten, Platz schaffen}
+\index{Platz schaffen}
 
 Wir können mit der linken Maustaste durch Drag and Drop Knoten
 verschieben. Es kann vorkommen, daß Knoten aufeinander liegen,
@@ -286,6 +300,8 @@ Mittels °Open° in seinem Popup-Menü können wir es bei Bedarf wieder öffnen.\\
    \caption{Hauptfenster}
 \end{figure}
 
+\index{Teilgraphen!in Fenster einfügen}
+
 Nun wollen wir unseren Teilgraphen in das neue Testfenster einfügen.
 Dazu wählen wir im Hauptfenster auf dem erstellten Subgraphen im
 Popup-Menü °Insert as Selection°. GIANT fordert uns auf, in den leeren
@@ -304,6 +320,7 @@ machen.\\
 Wir schließen und speichern das °Testfenster°.
 
 \section{Layouts}
+\index{Layouts}
 
 Mittels des oben erwähnten °Select All° entmarkieren wir alle Knoten in
 unserem verbleibenden Fenster. Wir sorgen dafür, daß im Fenster ca.
@@ -358,22 +375,15 @@ Layout berücksichtigt werden. Nun ist noch ein Klick an die Position
 des Wurzelknotens im Anzeigefenster nötig, und das Layout wird berechnet
 und angezeigt.
 
-% **** Kein Bild hier, weil Bug - es wird ein Matrixlayout berechnet!
-
 \section{Benachbarte Knoten}
 
 Mittels des Menüpunktes °Scripts - Get Adjacent Nodes° können die
 benachbarten Knoten eines Knotens in eine Knotenmenge eingefügt werden.
-
-% **** Kein Bild, weil GSL Errors.
-
-%\section{Search for Routine}
-%
-%Durch Auswahl von °Scripts - Search for Routine° kann mit Wildcards
-%**** ja was eigentlich?
+Wir führen dies mit einem beliebigen Knoten aus und können dies
+auch anhand der Knotenzahlen überprüfen.
 
 \section{Annotieren}
-
+\index{Annotieren}
 Knoten können durch Klick auf °Annotate° im Knoteninformationsfenster
 (siehe Bild \ref{Node-Info Fenster}) oder durch Auswahl des Punktes
 °Annotate° im Knoten-Popup-Fenster annotiert werden.
@@ -381,7 +391,10 @@ Knoten können durch Klick auf °Annotate° im Knoteninformationsfenster
 Nach der Auswahl von °Annotate° öffnet sich das Knoten-Annotationsfenster
 (siehe Bild \ref{Node Annotation Window}). Hier kann ein Kommentar zum
 Knoten eingefügt werden, der mit gespeichert wird. Durch Delete
-kann der Kommentar wieder gelöscht werden.
+kann der Kommentar wieder gelöscht werden.\\
+Annotationen werden nur dann auf Festplatte gespeichert, wenn wir im
+Hauptmenü °Project - Save° oder °Project - Save As..° auswählen, nicht
+jedoch, wenn nur einzelne Fenster gespeichert werden.
 
 \begin{figure}[h!]
    \centering
@@ -401,3 +414,46 @@ aufmerksam gemacht. (siehe Bild \ref{Node Annotation Window2})
    \label{Node Annotation Window2}
 \end{figure}
 
+\section{Fenster speichern}
+\index{Fenster speichern}
+
+Wir wollen nun alle unsere Änderungen im Fenster speichern. Dazu
+wählen wir im Hauptfenster im Popup-Menü des Fensters °Save° aus,
+das Fenster ist nun gespeichert und erscheint beim nächsten Laden
+der Projektdatei auch in der Liste in genau dem Zustand
+(Knotenpositionen etc.), in dem wir es gespeichert haben.
+Lediglich Annotationen werden nicht gespeichert.
+
+\section{HPG darstellen}
+
+Durch Anwählen von °Scripts - Open HPG° im Menü des Hauptfensters
+von GIANT können wir ein Graphenfenster mit dem hierarchischen Programmgraphen
+öffnen.
+
+\section{Einbinden der GSL in Menüpunkte}
+\index{GSL!Einbinden in Menüpunkte und Kontextmenüs}
+
+Zur Verknüpfung von GSL-Ausdrücken mit Menüpunkten in den
+Popup-Menüs von Knoten bzw. Kanten oder dem Hauptmenü sind folgende
+Schritte nötig:\\
+
+Zuerst erstellen wir die GSL-Datei, welche ggf. den Knoten oder die
+Kante als \gq{Parameter} übergeben bekommt, und speichern diese
+im GIANT-Verzeichnis °shared/gsl° ab.\\
+
+Nötig ist auch der Eintrag des Skriptes in der Config-Datei
+°etc/global-config.xml° im GIANT-Verzeichnis, hierzu muß diese 
+in einen °GSL.° Setting-Knoten eingetragen werden, nähere Informationen
+können wir leicht dem mitgelieferten Config-File oder Abschnitt
+\label{Config-GSL-Context-Scripts} entnehmen, Trennzeichen ist
+der Doppelpunkt (°:°).\\
+Der Eintrag im Menü muß dabei dem Filenamen entsprechen, ggf. ergeben
+sich dadurch auch Leerzeichen im Filenamen.\\
+
+Soll das Skript im Hauptmenü aufrufbar sein, so fügen wir seinen Namen in
+Knoten °GSL.No_Param° ein. Für einen kontextabhängigen
+Aufruf aus einem Fenster (im Popup-Menü auf dem leeren
+Hintergrund des Fensters) ist °GSL.No_Param_Context° richtig,
+und für Knoten- Kanten- Teilgraph- oder Selektionssensitive
+Aufrufe sind °GSL.Node_Id_Param°, °GSL.Edge_Id_Param°, °GSL.Subgraph_Param°
+oder °GSL.Selection_Param° zuständig.

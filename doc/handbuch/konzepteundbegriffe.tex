@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: konzepteundbegriffe.tex,v $, $Revision: 1.8 $
-%  $Date: 2003/09/19 19:50:37 $
+%  $RCSfile: konzepteundbegriffe.tex,v $, $Revision: 1.9 $
+%  $Date: 2003/09/23 19:33:38 $
 %  $Author: birdy $
 %
 %  Description:
@@ -10,6 +10,10 @@
 % ==============================================================================
 
 \section{Begriffe}
+\index{Begriffe}
+
+\index{GSL-Anfrage}
+\index{Query}
 
 Eine GSL-Anfrage (Query) beschreibt einen Vorgang, bei dem
 über geeignete Kriterien IML-Knoten und IML-Kanten aus dem IML-Graphen
@@ -18,9 +22,15 @@ GIANT greift über eine Schnittstelle, das Reflection Model von Bauhaus
 Reengineering, auf den IML-Graphen zu.\\
 
 Die Visualisierung des Graphen erfolgt in Anzeigefenstern.
-
+\index{Teilgraphen}
 Mit GIANT können Teilmengen des IML-Graphen gebildet werden, diese
 heißen IML-Teilgraphen.
+
+\index{Fenster-Knoten}
+\index{Fenster-Kanten}
+
+\index{IML-Kanten}
+\index{IML-Knoten}
 
 In dieser Anleitung weden für Knoten und Kanten des Graphen die Begriffe
 Fenster-Knoten und Fenster-Kante verwendet, wenn diese in einem Anzeigefenster
@@ -28,6 +38,8 @@ sichtbar sind, oder allgemein IML-Knoten bzw. IML-Kante.
 Die Namen Graph-Knoten und Graph-Kante werden verwendet, wenn Knoten bzw.
 Kante Bestandteil eines IML-Teilgraphen sind.
     
+\index{Kantenklasse}
+\index{Edge Class}
 
 Der Begriff Kantenklasse (Edge Class) bezeichnet die Einteilung der
 IML-Kanten des IML-Graphen in verschiedene Klassen, wie sie sich aus der
@@ -39,9 +51,15 @@ welches die IML-Kante beschreibt, festgelegt. Jede vorkommende Kombination aus
 der Knoten-Klasse eines Start-Knotens und dem Namen eines Attributes,
 welches eine Kante beschreibt, ist somit eine eigene Kantenklasse.\\
 
+\index{Knotenklasse}
+\index{Node Class}
+
 Eine Knotenklasse (Node Class) ergibt sich aus der Einteilung der IML-Knoten
 des IML-Graphen in verschiedene Klassen, wie sie sich aus der
 IML-Graph-Bibliothek von Bauhaus ergibt.\\
+
+\index{Klassenmenge}
+\index{Class Set}
 
 \label{Klassenmenge}
 Eine Klassenmenge (Class Set) ist eine durch IML-Dateien festgelegte
@@ -51,10 +69,13 @@ Kantenklassen können gleichzeitig zu mehreren Klassenmengen gehören.\\
 Der Aufbau dieser Klasenmengendateien ist in Kapitel \ref{Config-Klassenmengen}
 beschrieben.
 
+\index{Annotation}
+
 Eine Knoten-Annotationen (Node Annotation ist eine eine textuelle
 Beschreibung zu einem bestimmten Knoten des IML-Graphen, die der Nutzer
 hinzufügen kann.\\
-    
+\index{Layout} 
+
 Die zweidimensionale räumliche Anordnung von
 Fenster-Knoten und Fenster-Kanten innerhalb eines Anzeigefensters
 auf dem sogenannten Anzeigeinhalt wird Layout genannt.\\
@@ -68,7 +89,7 @@ durch Anklicken von Fenster-Knoten oder Fenster-Kanten mit der Maus,
 eine Selektion aufbaut.
   
 
-
+\index{Zoom}
   
 Der Nutzer kann in GIANT-Anzeigefenster zoomen, d.h. die Zoomstufe
 (Zoom Level) jedes Fensters verändern.  Dieser Faktor beschreibt die Größe des
@@ -82,7 +103,7 @@ Anzeigefenster visualisierte Fenster-Knoten oder Fenster-Kanten
 z.B. durch eine farbige Umrahmung von anderen Fenster-Knoten oder
 Fenster-Kanten unterscheidbar gemacht werden.\\
     
-\section{Bezeichnertypen} \label{afa Bezeichnertypen}
+\section{Bezeichnertypen} \label{afa Bezeichnertypen} \index{Bezeichner!erlaubte}
   Folgende Zeichen bzw. Zeichenfolgen werden von GIANT als gültige Bezeichner, z.B. als
   Namen für Fenster, akzeptiert:
 
@@ -158,6 +179,8 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
   Allgemein gilt: Selektiert werden kann mit der Maus durch Klick
   mit der linken Maustaste oder Aufziehen eines Rahmens mittels der
   gedrückten linken Maustaste.
+    
+  \index{Selektieren mit der Maus}  
     
   Falls während des Selektierens mit der Maus (beide Methoden) die Shift-Taste
   auf der Tastatur gedrückt gehalten wird, so werden die markierten
