@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.34 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.35 $
 --  $Author: koppor $
---  $Date: 2003/07/14 17:51:07 $
+--  $Date: 2003/07/14 18:46:27 $
 --
 --  TBD:
 --    * Write into comment, when the routine may be used
@@ -322,6 +322,17 @@ package Giant.Graph_Lib is
    function Does_Node_Class_Exist
       (Node_Class_Name : in String)
       return Boolean;
+
+   ---------------------------------------------------------------------------
+   --  Checks if given Node_Attribute exists at given class
+   --
+   --  Returns:
+   --    True  - if given attribute exists
+   --    False - if it does not exist or if given Class does not exist
+   function Does_Node_Attribute_Exist
+     (Node_Class          : in Node_Class_Id;
+      Node_Attribute_Name : in String)
+     return Boolean;
 
    ---------------------------------------------------------------------------
    --  Checks if given Node_Attribute exists at given class
