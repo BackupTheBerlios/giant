@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.11 $
 --  $Author: keulsn $
---  $Date: 2003/06/09 15:26:23 $
+--  $Date: 2003/06/10 13:34:57 $
 --
 ------------------------------------------------------------------------------
 
@@ -197,12 +197,14 @@ package body Giant.Evolutions is
      (Individual : access Evolution'Class)
      return String is
 
+      type Evolution_Class_Constant_Access is access constant Evolution'Class;
+
       package Ops is new Ptr_Ops
-        (T => Evolution, T_Ptr => Evolution_Class_Access);
+        (T => Evolution, T_Ptr => Evolution_Class_Constant_Access);
 
    begin
       return "Individual"
-        & Ops.Image (Evolution_Class_Access (Individual))
+        & Ops.Image (Evolution_Class_Constant_Access (Individual))
         & " of type " & Ada.Tags.External_Tag (Individual'Tag);
    end Logging_Name;
 
@@ -308,6 +310,9 @@ package body Giant.Evolutions is
          Add_Child_Progress (Parent, Get_Progress_Count (Individual));
          Set_Child (Parent, null);
       end if;
+      --  Force re-Initialize before next start of 'Individual'
+      Set_Next_Action (Individual, Cancel);
+      --  Dispatching call to user-defined subprogram
       Finish (Individual, Canceled);
    end Done;
 
@@ -527,6 +532,7 @@ package body Giant.Evolutions is
          Deepest_Child := Individual;
          while Has_Child (Deepest_Child) loop
             Deepest_Child := Get_Concurrent_Child (Deepest_Child);
+            pragma Assert (Get_Concurrent_Parent (Deepest_Child) /= null);
          end loop;
          if Deepest_Child /= Individual then
             Individual := Deepest_Child;
