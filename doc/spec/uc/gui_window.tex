@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.45 $
-%  $Date: 2003/04/20 18:39:35 $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.46 $
+%  $Date: 2003/04/20 21:40:36 $
 %  $Author: schwiemn $
 %
 %  Description: UseCases für die Fensterfunktionalität der GUI
@@ -756,11 +756,11 @@ sichtbar ist.
 
 % ==============================================================================
 \begin{uc}[Zoomen auf den Anzeigeinhalt]
-{UC: Zoomen auf gesamten Inhalt eines Anzeigefensters}
+{UC: Zoomen auf den gesamten Inhalt eines Anzeigefensters}
 \index{zoomen auf gesamten Anzeigeinhalt}
 Wählt die passende Zoomstufe und scrollt den sichtbaren Anzeigeinhalt so, 
-dass der Anzeigeinhalt vollständig im sichtbaren Anzeigeinhalt
-dargestellt wird.
+dass der Bereich des Anzeigeinhaltes, in dem Fenster-Knoten visualisiert sind,  
+vollständig im sichtbaren Anzeigeinhalt dargestellt wird.
 
   \begin{precond}
     \cond 
@@ -770,9 +770,16 @@ dargestellt wird.
 
   \begin{postsuccess}
 
-    \cond Der sichtbare Anzeigeinhalts wurde
+    \cond Der sichtbare Anzeigeinhalt wurde
     mittels Zoomen und Scrollen so verändert, dass der
-    Anzeigeinhalt vollständig sichtbar ist. Die Detailstufe (siehe
+    Bereich des Anzeigeinhaltes, der Fenster-Knoten enthält, 
+    vollständig im sichtbaren Anzeigeinhalt dargestellt ist. 
+    Der sichtbare Anzeigeinhalt wird also derart verändert,
+    dass er jetzt das gesamte Rechteck, welches alle 
+    Fenster-Knoten des Anzeigeinhaltes umspannt, enthält.
+
+    \cond
+    Die Detailstufe (siehe
     \ref{Visualization Detailstufen}) wurde ggf. automatisch
     angepasst.
     
@@ -796,7 +803,7 @@ dargestellt wird.
 \index{zoomen auf eine Kante}
 
 Wählt die passende Zoomstufe und scrollt den sichtbaren Anzeigeinhalt
-so, dass eine Fenster-Kante mit ihren Start-- und Ziel-Fenster-Knoten komplett
+so, dass eine Fenster-Kante mit ihren Start- und Ziel-Fenster-Knoten komplett
 im sichtbaren Anzeigeinhalt liegt.
 
   \begin{precond}
@@ -809,9 +816,13 @@ im sichtbaren Anzeigeinhalt liegt.
 
   \begin{postsuccess}
     
-    \cond Der sichtbare Anzeigeinhalts wurde mittels Zoomen und
-    Scrollen so verändert, dass die ausgewählte Fenster-Kante und ihre Start-
-    und Ziel-Fenster-Knoten vollständig sichtbar sind. Die Detailstufe
+    \cond Der sichtbare Anzeigeinhalt wurde durch geeignetes Zoomen und
+    Scrollen so verändert, dass die ausgewählte Fenster-Kante samt ihrem Start-
+    und ihrem Ziel-Fenster-Knoten vollständig im sichtbaren Anzeigeinhalt
+    dargestellt ist. 
+
+    \cond
+    Die Detailstufe
     (siehe \ref{Visualization Detailstufen}) wurde ggf. automatisch
     angepasst.
     
@@ -840,13 +851,14 @@ im sichtbaren Anzeigeinhalt liegt.
     eines Anzeigefensters bewegt wird.
        
     \step[3]
-    Der Benutzer klickt mit der linken Maustaste auf die gewünschte Kante
-    im gewünschten Anzeigefenster.
+    Der Benutzer klickt mit der linken Maustaste auf die gewünschte 
+    Fenster-Kante im gewünschten Anzeigefenster.
 
     \step[4]
     GIANT berechnet für das gewünschte Anzeigefenster die Zoomstufe so,
-    dass  die gesamte Fenster-Kante im Anzeigeinhalt sichtbar dargestellt
-    wird.
+    dass die gesamte Fenster-Kante, der Start-Fenster-Knoten der Fenster-Kante
+    und der Ziel-Fenster-Knoten der Fenster-Kante im Anzeigeinhalt sichtbar 
+    dargestellt werden.
       
         
   \end{proc}
@@ -1047,9 +1059,7 @@ Fenster-Kanten schaffen (siehe auch \ref{Auseinanderschieben von
     \gq{Select position in display window}.
     Der Benutzer gibt den Punkt um den herum die Fenster-Knoten (und damit
     automatisch auch die Fenster-Kanten) auseinander geschoben werden
-    sollen über das Fadenkreuz vor (siehe \ref{Fadenkreuzcursor}).
-    Hierbei kann er mit dem Fadenkreuz den aktuellen sichtbaren Anzeigeinhalt
-    auf dem Anzeigefenster nicht verlassen.
+    sollen über den Fadenkreuzcursor vor (siehe \ref{Fadenkreuzcursor}).
      
     \step[3] 
     GIANT zeigt einen Dialog an, in dem der Benutzer auswählt, um welchen 
@@ -1061,7 +1071,7 @@ Fenster-Kanten schaffen (siehe auch \ref{Auseinanderschieben von
     
     \step[5]
     GIANT schiebt die Knoten entsprechend auseinander
-    (siehe auch \ref{Auseinanderschieben von Fenster-Knoten}).
+    (siehe \ref{Auseinanderschieben von Fenster-Knoten}).
     
   \end{proc}
   \begin{aproc}
@@ -1106,7 +1116,7 @@ Mit diesem UseCase kann ein neuer Pin erzeugt werden (siehe auch
     
     Der Benutzer führt einen Rechtsklick auf den Anzeigeinhalt eines
     Anzeigefensters durch und wählt aus dem Popup-Menü 
-    (siehe \ref{Empty Vis Pane Right click}) \gq{New Pin} aus.
+    (siehe \ref{Empty Vis Pane Right click}) den Eintrag \gq{New Pin} aus.
     Der später erstellte Pin verweist dann auf die Stelle im Anzeigeinhalt,
     auf die der Rechtsklick durchgeführt wurde.
  
@@ -1167,7 +1177,7 @@ wieder her (siehe auch \ref{Pins}).
          
     \item Der Benutzer öffnet ein Popup-Menü durch Rechtsklick auf den
       anzuspringenden Pin in der Pinliste (siehe \ref{VIS-PANE-Pins})
-      und wählt \gq{Focus Pin} aus.
+      und wählt den Eintrag \gq{Focus Pin} aus.
         
     \end {enumerate}
     
@@ -1204,7 +1214,7 @@ Löscht einen Pin (siehe auch \ref{Pins}).
   \begin{proc}    
     \step[1]
     Der Benutzer öffnet das  Popup-Menü der Pinliste (siehe \ref{VIS-PANE-Pins})
-    durch Rechtsklick auf den Pin  und wählt \gq{Delete Pin} aus.
+    durch Rechtsklick auf den Pin und wählt den Eintrag \gq{Delete Pin} aus.
      
     \step[2]
     GIANT löscht den Pin.

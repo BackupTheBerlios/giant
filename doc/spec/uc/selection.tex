@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: selection.tex,v $, $Revision: 1.21 $
-%  $Date: 2003/04/18 23:28:10 $
+%  $RCSfile: selection.tex,v $, $Revision: 1.22 $
+%  $Date: 2003/04/20 21:40:36 $
 %  $Author: schwiemn $
 %
 %  Description: UseCases für die Selektionen
@@ -26,9 +26,13 @@ modifiziert werden kann (siehe auch \ref{Aktuelle Selektion vs Selektionen}).
 
   \begin{postsuccess}
     \cond Die vorherige aktuelle Selektion ist nicht mehr aktuell.
-    \cond Die entsprechende Selektion ist nun die aktuelle Selektion und
-          als solche erkennbar angezeigt und hervorgehoben, auch mittels
-          einer Hervorhebung in der Selektionsauswahlliste des Fensters.
+    \cond Die gewählte Selektion ist nun die aktuelle Selektion und
+          als solche in der Selektionsauswahlliste
+          (siehe \ref {Selektionsauswahlliste}) gekennzeichnet.
+    \cond Die Fenster-Knoten und Fenster-Kanten der jetzt 
+          aktuellen Selektion sind entsprechend hervorgehoben (siehe   
+          \ref{Hervorheben von Selektionen und der aktuelle Selektion}).
+
     
   \end{postsuccess}
  
@@ -177,8 +181,8 @@ Mit diesem UseCase können neue, leere Selektionen angelegt werden.
     \cond Eine neue Selektion mit dem vorgegebenen Namen
          ist angelegt und erscheint in der Liste der Selektionen 
          (siehe \ref{Selektionsauswahlliste}).
-    \cond Diese neue Selektion hat keinen Inhalt (selektierte Knoten und
-          Kanten).
+    \cond Diese neue Selektion hat keinen Inhalt (keine selektierten 
+          Fenster-Knoten und Fenster-Kanten).
 
   \end{postsuccess}
 
@@ -195,7 +199,7 @@ Mit diesem UseCase können neue, leere Selektionen angelegt werden.
     
     \step[2] 
     GIANT öffnet den allgemeinen Texteingabedialog 
-    (siehe\ref{DIALOG-WINDOW}).
+    (siehe \ref{DIALOG-WINDOW}).
       
     \step[3] 
     Der Benutzer gibt dort einen zulässigen Namen für die neue Selektion 

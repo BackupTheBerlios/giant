@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: additional.tex,v $, $Revision: 1.18 $
-%  $Date: 2003/04/19 19:49:06 $
-%  $Author: birdy $
+%  $RCSfile: additional.tex,v $, $Revision: 1.19 $
+%  $Date: 2003/04/20 21:40:36 $
+%  $Author: schwiemn $
 %
 %  Description: Sonstige UseCases
 %
@@ -15,7 +15,7 @@
 
 Mittels dieses UseCase können Selektionen innerhalb
 eines Anzeigefensters layoutet werden.
-Die verfügbaren Layoutalgorithmen sind im Kapitel 
+Die verfügbaren Layoutalgorithmen sind in Kapitel 
 \ref{Layoutalgorithmen} beschrieben.
 
 
@@ -65,24 +65,27 @@ Die verfügbaren Layoutalgorithmen sind im Kapitel
 
     \step[4]
     Falls der gewählte Layoutalgorithmus dies unterstützt, kann der
-    Benutzer in diesem Dialog die Klassenmengen, die beim
-    Layout berücksichtigt werden sollen, vorgeben.
+    Benutzer in diesem Dialog die Klassenmengen (siehe Begriffslexikon), 
+    die beim Layout berücksichtigt werden sollen, vorgeben.
+    Bei baumförmigen Layouts kann er auch die ID des gewünschten
+    Wurzelknotens eingeben.
 
     \step[5]
     Der Benutzer bestätigt seine Eingaben mit OK.
     
-    
-    \step[6]
-    GIANT fordert den Anwender über die Statuszeile auf, die Zielposition
-    des Layouts anzugeben (\gq{Please click on desired target position for
-    Layout in Window}). Der Nutzer klickt mit der linken Maustaste auf
-    das Zielgebiet im Fenster.
+    % Eingefügt von Philipp am 19.04.
+    % Martin: Entfernt, da bei diesem UseCase nicht vorgesehen.
 
-    \step[7]
-    GIANT berechnet das Layout und zeigt einen Progress-Dialog 
+    %\step[6]
+    %GIANT fordert den Anwender über die Statuszeile auf, die Zielposition
+    %des Layouts anzugeben (\gq{Please click on desired target position for
+    %Layout in Window}).
+
+    \step[6]
+    GIANT berechnet das Layout und zeigt eine Progressbar 
     (siehe \ref{Progressbar-Modale}) an. 
-    Während der Berechnung des Layouts ist die GUI mit Ausnahme des
-    Progress-Dialogs gesperrt.
+    Während der Berechnung des Layouts ist die GUI mit Ausnahme der
+    Progressbar gesperrt.
          
   \end{proc}
 
@@ -125,7 +128,8 @@ kann der Benutzer beliebig viele Knoten-Informationsfenster
     \step[1]
     Der Benutzer wählt im entsprechenden Anzeigefenster den 
     gewünschten Fenster-Knoten aus und führt einen Rechtsklick
-    auf diesen Fenster-Knoten durch. Im darauf angezeigten Popup-Menü
+    auf diesen Fenster-Knoten durch. Im daraufhin angezeigten 
+    Popup-Menü
     (siehe \ref{Node-Popup-Menü}) wählt der Benutzer dann 
     den Eintrag \gq{Show Node Info Window} aus.
 
@@ -237,7 +241,7 @@ zur Anzeige gebracht werden.
 
     \cond
     Hat der IML-Knoten keine \gq{Source Code Position}, so wird
-    nur die zugehörige Quellcode Datei geöffnet.
+    nur die zugehörige Quellcode-Datei geöffnet.
  
   \end{postsuccess}
 
@@ -255,7 +259,7 @@ zur Anzeige gebracht werden.
     keine zugehörige Quellcode-Datei liefern kann.
 
     \step[2]
-    GIANT öffnet die Quellcode Datei für den IML-Knoten in
+    GIANT öffnet die Quellcode-Datei für den IML-Knoten in
     einem Editor.
     
   \end{proc}

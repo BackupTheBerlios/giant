@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.93 $
-%  $Date: 2003/04/20 18:39:35 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.94 $
+%  $Date: 2003/04/20 21:40:36 $
 %  $Author: schwiemn $
 %
 %  Description: 
@@ -289,15 +289,15 @@ Subgraph List (4 Spalten).
       \item Delete Nodes and Edges of Selection
       \item Selection Set Operation % Changed by Martin
       
-%       \item Set Layout Algorithm For Selection --- deleted by Philipp
+    %  \item Set Layout Algorithm For Selection --- deleted by Philipp
       
     \end{enumerate}    
 
      
   \subsection{Stilauswahl-Combobox}
 
-    In der Stilauswahl-Combobox (\gq{Style Chooser}) kann ein Anzeigestil
-    festgelegt werden.
+    In der Stilauswahl-Combobox (\gq{Style Chooser}) kann ein 
+    Visualisierungsstil ausgewählt werden.
 
   \subsection{Zoom-Kontrolle} \label{GUI Zoom-Kontrolle}  
 
@@ -318,7 +318,7 @@ Subgraph List (4 Spalten).
     \label{Scrolleisten}
     
     Mit den beiden Scrollbars am unteren und rechten Rand des Anzeigefensters
-    kann der sichtbare Anzeigeinhalt des verändert werden.
+    kann der sichtbare Anzeigeinhalt gescrollt werden.
 
 \clearpage
 \section{Knoten-Informationsfenster} \label{Knoten-Informationsfenster}
@@ -330,25 +330,30 @@ Subgraph List (4 Spalten).
     \end{figure}
 
     In Knoten-Informationsfenstern (\gq{Node Info}) können nähere Informationen
-    zu Knoten angezeigt werden.
+    zu Fenster-Knoten angezeigt werden.
     
-    Im Fenster wird die ID und die Klasse des Knotens dargestellt,
-    darunter befinden sich untereinander drei getrennt
-    scrollbare Listen, Attributes, Successor Nodes und
-    Predecessor Nodes.
+    Im Knoten-Informationsfenster wird die ID und die Knotenklasse des 
+    vom Fenster-Knoten repräsentierten IML-Knotens dargestellt,
+    darunter befinden sich untereinander die drei scrollbaren 
+    Listen \gq{Attributes}, \gq{Successor Nodes} und
+    \gq{Predecessor Nodes}.
     
-    Unter den drei Listen befinden sich nebeneinander mittig zwei Buttons
-    Pick und Close. Pick dient zum Auswählen eines anderen Knotens zur
-    Anzeige im Knoten-Informationsfenster mittels des Fadenkreuzcursors.
+    Unter den drei Listen befinden sich nebeneinander zwei Buttons
+    \gq{Pick} und \gq{Close}. 
+    Pick dient zur Auswahl eines anderen Fenster-Knotens 
+    mittels des Fadenkreuzcursors. Die Informationen zu dem ausgewählten
+    Fenster-Knoten werden dann im Knoten-Informationsfenster dargestellt
+    (siehe hierzu auch UseCase 
+    \ref {Details zu Knoten in einem bestehenden Informationsfenster anzeigen}).
     
     \subsection{Liste Attributes}
     
-    Die Liste ATTRIBUTES enthält die Attribute des Knotens und hat
+    Die Liste Attributes enthält die Attribute des Knotens und hat
     zwei Spalten:
     
       \begin{enumerate}
-        \item Name
-        \item Value
+        \item Name  (der Name des Attributes)
+        \item Value (der Attributwert)
       \end{enumerate}
     
     \subsection{Liste Successor Nodes}
@@ -357,19 +362,20 @@ Subgraph List (4 Spalten).
       Kante mit zwei Spalten:
     
     \begin{enumerate}
-      \item ID (ID der abgehenden Kante)
-      \item Class (Klasse des Knotens, zu dem sie führt)
+      \item ID (die ID des Nachfolger-Knotens)
+      \item Class (die Kantenklasse der abgehenden Kante)
     \end{enumerate}    
 
     \subsection{Liste Predecessor Nodes}
       
-      Die Liste Predecessor Nodes hat eine Zeile für jede vom Knoten abgehende
+      Die Liste Predecessor Nodes hat eine Zeile für jede beim Knoten eingehende
       Kante mit zwei Spalten:
 
       \begin{enumerate}
-        \item ID (ID des Knotens, von dem sie kommt)
-        \item Class (Klasse der ankommenden Kante)
+        \item ID (die ID des Vorgänger-Knotens)
+        \item Class (die Kantenklasse der eingehenden Kante)
       \end{enumerate}
+
 \clearpage
 \section{Skriptdialog} \label{GUI Anfragedialog}
 
@@ -380,8 +386,8 @@ Subgraph List (4 Spalten).
        \caption{Skript-Dialog}
     \end{figure}
 
-Der Skriptdialog \gq{Query Dialog} hat zuoberst ein Textfeld Query Text,
-in dem der Text des Skripts eingegeben werden kann.
+Der Skriptdialog \gq{Query Dialog} hat zuoberst ein Textfeld \gq{Query Text},
+in ein GSL Skript eingegeben werden kann.
 
 Unter Query Text befinden sich folgende Buttons:
 
@@ -420,29 +426,30 @@ und \gq{Cancel}.
     \end{figure}
 
 
-Der Set-Operation-Dialog (\ref{Set-Operation-Dialog-Pic}) dient dazu, Mengenoperationen über Selektionen und
+Der Set-Operation-Dialog (\ref{Set-Operation-Dialog-Pic}) dient dazu, Mengenoperationen über 
+Selektionen und
 IML-Teilgraphen durchzuführen.\\
 Die Mengenoperation lässt sich dann wie folgt beschreiben:
-LEFT\_SOURCE <op> RIGHT\_SOURCE =: TARGET \\ \\
+TARGET := LEFT\_SOURCE <op> RIGHT\_SOURCE \\ \\
 
 
 Bestandteile des Dialoges sind:
 \begin {enumerate}
 
  \item LEFT\_SOURCE Combobox\\
- Soll eine Mengenoperation für Selektionen ausgeführt werden, so können hier
- alle Selektionen des entsprechenden Anzeigefensters ausgewählt werden.\\
+ Soll eine Mengenoperation für Selektionen ausgeführt werden, so kann hier eine der
+ Selektionen des entsprechenden Anzeigefensters ausgewählt werden.\\
  Bei einer Mengenoperation über IML-Teilgraphen, werden alle IML-Teilgraphen
- des Projektes angezeigt.
+ des Projektes angezeigt, von denen dann einer ausgewählt werden kann.
  
  \item <OP> Combobox\\
- Mengenoperation, die ausgeführt werden soll: Union, Difference oder Intersection.
+ Mengenoperation, die ausgeführt werden soll; auswählbar sind: Union, Difference oder Intersection.
 
  \item RIGHT\_SOURCE Combobox\\
- Soll eine Mengenoperation für Selektionen ausgeführt werden, so können hier
- alle Selektionen des entsprechenden Anzeigefensters ausgewählt werden.\\
+ Soll eine Mengenoperation für Selektionen ausgeführt werden, so kann hier eine der
+ Selektionen des entsprechenden Anzeigefensters ausgewählt werden.\\
  Bei einer Mengenoperation über IML-Teilgraphen, werden alle IML-Teilgraphen
- des Projektes angezeigt.
+ des Projektes angezeigt, von denen dann einer ausgewählt werden kann..
  
  \item TARGET Textfeld\\
  Name der neuen Selektion oder des neuen IML-Teilgraphen als Ergebnis
@@ -464,12 +471,12 @@ Bestandteile des Dialoges sind:
        \label{Layout-Algorithm-Dialog-Pic}
     \end{figure}
 
-Der Dialog Layoutalgorithmen (\ref{Layout-Algorithm-Dialog-Pic}) bietet folgende Möglichkeiten:
+Der Layoutalgorithmen Dialog (\ref{Layout-Algorithm-Dialog-Pic}) bietet folgende Möglichkeiten:
 
 \begin {enumerate}
  \item Auswahl des Layoutalgorithmuses
  \item Ggf. Anzeige der zu layoutenden Selektion
- \item Ggf. Eigabefeld für ID des Wurzelknotens
+ \item Ggf. Eigabefeld für die ID des Wurzelknotens bei Treelayouts
  \item {Eingabe der zu berücksichtigenden Klassenmengen bei semantischen Layouts
  	Hierbei können mittels der Buttons \gq{>>} und \gq{<<} die 
         verfügbaren
@@ -477,7 +484,7 @@ Der Dialog Layoutalgorithmen (\ref{Layout-Algorithm-Dialog-Pic}) bietet folgende
 	Spalten \gq{Available} und \gq{Use For Layout} 
         hin und her geschoben werden.
 	Nur Klassenmengen, die sich in der \gq{Use For Layout} Spalte befinden,
-	werden berücksichtigt.
+	werden für das Layout berücksichtigt.
         }
  \item OK Button
  \item Cancel Button
@@ -496,12 +503,14 @@ Beschreibung von verschiedenen GUI Elementen zur Eingabe von Daten.
        \caption{Node-Annotation-Dialog}
        \label{Node-Annotation-Dialog-Pic}
     \end{figure}
-    
+  
 Der Knoten-Annotations-Dialog (\ref{Node-Annotation-Dialog-Pic}) besteht aus einem Fenster mit einem
-Label mit der Knoten-ID und einem Textfeld für den Annotationstext.
+Label, welches die ID des Knotens anzeigt, und einem Textfeld für den Annotationstext.
 Mittels der beiden Buttons OK und Cancel können die Änderungen im
 Textfeld übernommen oder verworfen werden.  
-  
+\index{Knoten-Annotationen}
+
+
 %  \clearpage
 \subsection{Platz Schaffen-Dialog}
 \label{Platz Schaffen-Dialog}
@@ -513,9 +522,10 @@ Textfeld übernommen oder verworfen werden.
        \label{Make-Room-Dialog-Pic}
     \end{figure}
 
-Im Dialogfenster Make Room (\ref{Make-Room-Dialog-Pic}) wird in einem Textfeld als Zahl angegeben, um wie viel
-Pixel die Knoten an der vorher markierten Stelle auseinandergeschoben werden sollen.
-Mit dem Button OK kann bestätigt werden, mit Button Cancel abgebrochen werden.
+Im Dialogfenster Make Room (\ref{Make-Room-Dialog-Pic}) wird in einem Textfeld als Zahl 
+eingegeben, um wie viel
+Pixel die Fenster-Knoten an einer vorher markierten Stelle auseinandergeschoben werden sollen.
+Mit dem Button OK kann bestätigt werden, mit dem Button Cancel abgebrochen werden.
 
 \clearpage
 \section{Ausgabe von Fehlermeldungen}
@@ -528,9 +538,11 @@ Mit dem Button OK kann bestätigt werden, mit Button Cancel abgebrochen werden.
        \label{Error-Window-Pic}
     \end{figure}
 
-Ein allgemeiner Fehlerdialog (\ref{Error-Window-Pic}) ist ein Fenster Error Window mit dem
-Titel \gq{Error}. Im Fenster ist ein Fehlertext und ein Button
-mit der standardmäßigen Beschriftung \gq{OK}.
+Ein allgemeiner Fehlerdialog (\ref{Error-Window-Pic}) ist ein Fenster \gq{Error Window}
+mit dem Titel \gq{Error}. Im Fenster befindet sich ein Label zur
+Ausgabe der Fehlermeldung und ein Button mit der standardmäßigen Beschriftung \gq{OK}. 
+Für weitere Informationen zum allgemeinen Fehlerverhalten von GIANT siehe auch
+Abschnitt \ref{afa Fehlerverhalten}.
 
 \section{Sicherheitsabfrage}\label{Sicherheitsabfrage}
 \index{Sicherheitsabfrage}
@@ -542,7 +554,8 @@ mit der standardmäßigen Beschriftung \gq{OK}.
        \label{Confirmation-Window-Pic}
     \end{figure}
     
-Eine allgemeine Sicherheitsabfrage (\ref{Confirmation-Window-Pic}) ist ein Fenster (\gq{Confirmation Window}) mit dem
+Eine allgemeine Sicherheitsabfrage (\ref{Confirmation-Window-Pic}) ist ein Fenster 
+(\gq{Confirmation Window}) mit dem
 Titel \gq{Confirmation}. Im Fenster ist
 ein Fragetext und ein Button mit der standardmäßigen Beschriftung
 Beschriftung \gq{Yes}, sowie ein Button mit der standardmäßigen Beschriftung
@@ -564,13 +577,14 @@ benötigt.
     \end{figure}
 
 Die Auswahl von Dateien (Laden/Speichern) passiert bei GIANT mittels
-des Standard-Filechooser-Dialogs.
+des Standard-Filechooser-Dialogs. Dieser Dialog ist Bestandteil der
+Widget-Bibliothek von GTK.
 
 
 \section{Fadenkreuz-Cursor}
 \label{Fadenkreuzcursor}
         Der Cursor verwandelt sich nach Auswahl bestimmter
-        Funktionen (siehe Beschreibung der UseCases) in ein Fadenkreuz.
+        Funktionen (siehe z.B. UseCase \ref{Platz schaffen}) in ein Fadenkreuz.
         Durch Linksklick auf einen Fenster-Knoten oder eine 
         Fenster-Kante in einem Anzeigefenster  
         wird diese(r) für die jeweilige Funktion ausgewählt. 
@@ -584,6 +598,8 @@ des Standard-Filechooser-Dialogs.
 
 \section{Fortschrittsanzeige}
 \label{GUI-Fortschrittsanzeige}
+\index{Progressbar}
+
 
 \label{Progressbar}
 Es gibt in GIANT zwei Möglichkeiten zur Fortschrittsanzeige während
@@ -601,9 +617,9 @@ busy. Please be patient.} beschriftet.
       \label{Progressbar-Runs-Pic}
      \end{figure}
 
-     Fenster mit Anzeige eines Dialoges mit einem sich bewegenden
-     Inhalts (z.B. ein Progress-Balken), so dass erkennbar ist, dass
-     das System noch arbeitet. (\ref{Progressbar-Runs-Pic})
+     Hierbei handelt es sich um ein Fenster mit einem sich bewegenden bzw. sich ständig 
+     änderndem Inhalt (z.B. ein Progress-Balken), so dass für den Benutzer erkennbar ist, 
+     dass das System noch arbeitet (beispielhafte Grafik siehe \ref{Progressbar-Runs-Pic}).
   
 \clearpage
 \subsection{Progressbar-Modal}
@@ -614,15 +630,16 @@ busy. Please be patient.} beschriftet.
       \caption{Progressbar-Modal}
       \label{Progressbar-Modal-Pic}
      \end{figure}
-     Fenster (\ref{Progressbar-Modal-Pic}) mit Anzeige eines Progressbars, der über den aktuellen Fortschritt
+     Der \gq{Progressbar-Modal} ist ein Fenster (\ref{Progressbar-Modal-Pic}), 
+     dass über den aktuellen Fortschritt
      einer Berechnung informiert, ohne dabei den Gesamtaufwand zu 
-     kennen. Dabei wird kontinuierlich die Anzahl der schon bearbeiteten
+     kennen. Hierzu wird kontinuierlich die Anzahl der schon bearbeiteten
      Datensätze ausgegeben, und, sofern bekannt, die Prozentzahl der schon
      bearbeiteten Datensätze als Text.
      Während dieser Dialog sichtbar ist, ist der Rest der GUI von GIANT
      gesperrt.
-     Im Fenster existiert ein Button \gq{Cancel} \label{Progressbar-Modale-Cancel}, der die momentane
-     Berechnung abbricht.
+     Im Fenster existiert ein Button \gq{Cancel} \label{Progressbar-Modale-Cancel}, 
+     der die momentane Berechnung abbricht.
 
 %%% Local Variables: 
 %%% TeX-master: "spec"

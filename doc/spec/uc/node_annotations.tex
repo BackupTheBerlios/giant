@@ -1,6 +1,6 @@
 % ==============================================================================
 %  $RCSfile: node_annotations.tex,v $
-%  $Date: 2003/04/18 23:28:10 $
+%  $Date: 2003/04/20 21:40:36 $
 %  $Author: schwiemn $
 %
 %  Description: UseCases zum Annotieren von Knoten
@@ -14,7 +14,8 @@
   auch \ref{Project Persistenz von Knoten-Annotationen}).
   
   \begin{precond}
-    \cond Es gibt mindestens ein Anzeigefenster mit Fenster-Knoten.
+    \cond Es gibt mindestens ein Anzeigefenster mit mindestens
+          einem Fenster-Knoten.
   \end{precond}
 
   \begin{postsuccess}
@@ -220,7 +221,7 @@
      Bestätigung auf (siehe \ref{Sicherheitsabfrage}).
     
      \step[3]
-     Der Benutzer bestätigt die Sicherheitsabfrage.
+     Der Benutzer bestätigt die Sicherheitsabfrage mit Yes.
            
      \step[4]
      GIANT löscht alle Knoten-Annotationen für die es keine Fenster-Knoten und
@@ -233,7 +234,7 @@
 
    \begin{aproc}
 
-     \astep{3} Der Benutzer bricht mit Cancel ab.
+     \astep{3} Der Benutzer bricht den UseCase mit No ab.
 
    \end{aproc} 
 \end{uc}
