@@ -1,0 +1,204 @@
+% ==============================================================================
+%  $RCSfile: tutorial.tex,v $, $Revision: 1.1 $
+%  $Date: 2003/09/20 12:23:04 $
+%  $Author: birdy $
+%
+%  Description: Tutorial
+%
+%  Last-Ispelled-Revision:
+%
+% ==============================================================================
+
+In diesem Tutorial gehen wir davon aus, daß sich das Programm GIANT
+im Verzeichnis /projects/tmp/birdy/giant-1.1.0 befindet.
+
+\section{Starten des Programms}
+
+Das Programm wird mit:\\
+
+°cd /projects/tmp/birdy/giant-1.1.0°\\
+°./giant.sh°\\
+
+gestartet.\\
+Wir erstellen mittels
+°mkdir /projects/tmp/birdy/giant-1.1.0/first_example°\\
+gleich ein neues Verzeichnis für unser erstes Projekt.
+
+\section{Erstellen eines neuen Projektes}
+
+Nun erscheint das Hauptfenster. Im Menü °Project° ist zum Erstellen
+eines neuen Projektes der Punkt °New° anzuwählen.
+
+\begin{figure}[h!]
+   \centering
+   \includegraphics[scale=.75]{tutorial/01-a-main-project-menu}
+   \caption{Main-Window}
+\end{figure}
+
+\clearpage
+
+
+GIANT verlangt über den Dateiauswahl-Dialog nach Pfad und Namen
+der neu zu erstellenden Projektdatei. Wir wählen hier\\
+°/projects/tmp/birdy/giant-1.1.0/first_example/first_example°.\\
+Dann fragt GIANT
+durch einen Dateiauswahl-Dialog nach dem IML-Graphen, auf dem das
+Projekt basieren soll. Wir wählen hier\\
+°/projects/tmp/birdy/giant-1.1.0/graphs/rfg_examp.xml°.\\
+
+GIANT meldet nun auf der Statuszeile links unten \gq{Project Initialized},
+rechts unten steht der Name der IML-Datei, °rfg_examp.iml°.\\
+
+\begin{figure}[h!]
+   \centering
+   \includegraphics[scale=.75]{tutorial/02-main-project-loaded}
+   \caption{Main-Window Bild 2}
+\end{figure}
+
+\clearpage
+
+\section{Öffnen eines Fensters}
+
+Wir wollen nun ein erstes Graphenfenster öffnen. Das erledigen wir durch
+Auswählen des Menüpunkts °Open Entire Graph° unter °Scripts°.\\
+
+Nun erscheint ein Graphenfenster.
+
+\begin{figure}[h!]
+   \centering
+   \includegraphics[scale=.5]{tutorial/03-entire-graph-window}
+   \caption{Graphenfenster}
+\end{figure}
+
+\section{Zoomen}
+
+Mittels der Zoomkontrolle (4) können wir die Ansicht im Fenster vergrößern
+oder verkleinern. Dazu können die Buttons °+° und °-° verwendet werden,
+mittels der Combobox voreingestellte werte gesetzt werden oder ein
+Wunschwert per Tastatur eingetragen werden. Wir tragen °45.00° Prozent
+ein (und drücken Return), um einen guten Überblick zu erhalten.\\
+Wir wählen eine beliebige Kante mit der linken Maustaste an und
+wählen °Zoom to Edge°, worauf GIANT so scrollt und zoomt, daß
+diese Kante komplett auf dem Bildschirm sichtbar ist.
+Wir tragen nun wieder 45% als Zoomwert ein und drücken Return.
+
+\section{Scrollen im Fenster}
+
+Nun wollen wir den sichtbaren Anzeigeinhalt verschieben. Dies geht
+durch Verschieben des weißen Kästchens in der MiniMap (1) mit der Maus.
+Wir verschieben das Kästchen ganz in die linke obere Ecke,
+wo wir einige Knoten sehen können.\\
+
+Selbstverständlich kann die Fenstergröße in der von anderen Programmen
+gewohnten Weise verändert werden. Zusätzlich kann die Breite der linken
+Hälfte des Fensters durch ziehen von Element (10) verändert werden.
+Durch Betätigen der Scrollbars (6) und (7) kann wiederum der sichtbare
+Anzeigeinhalt verschoben werden.
+
+\section{Knoteninformation anzeigen}
+
+Wir suchen nun durch zoomen und scrollen den Knoten mit der Nummer 10,
+welcher sich links Oben im Block der Knoten befindet (es kann auch ein
+beliebiger anderer Knoten verwendet werden). Durch Klick
+mit der rechten Maustaste auf den Knoten erscheint ein Popup-Menü, wir
+wählen \gq{Show Info}. Es werden hier einige Informationen zum Knoten
+angezeigt.
+Durch Klicken von \gq{Pick} und Klick auf einen anderen Knoten kann
+nunmehr die Information dieses anderen Knoten angezeigt werden.
+
+\begin{figure}[h!]
+   \centering
+   \includegraphics[scale=.4]{tutorial/04-nodeinfo}
+   \caption{Node-Info Fenster}
+\end{figure}
+
+Wir schließen das Nodeinfo-Fenster wieder.
+
+\section{Pin festlegen / ändern / löschen}
+
+Wir wollen uns nun eine Ansicht des Graphen für ein späteres schnelles Wiederfinden
+merken. Dazu scrollen und zoomen wir in eine für uns interessante Position (z.B.
+auf Knoten 176 rechts oben im Graphen), klicken mit der rechten Maustaste auf
+eine weiße Fläche in der Ansicht und wählen im Menü \gq{New Pin...} an.
+Bei der Frage nach dem Namen des Pins geben wir als Namen z.B. °Kn-176° ein.
+Wenn wir nun in eine andere Position scrollen und zoomen, können wir
+durch Aktivieren von °Show° im Popup-Menü, welches bei Auswahl des Knotennamens
+mit der Rechten Maustaste in der Pinliste (2) erscheint, wieder zu genau
+dieser Ansicht zurückspringen.\\
+Mit °Rename...° kann der Name des Knotens geändert werden. Wir ändern den
+Knotennamen auf °Interessanter_Knoten°.
+Falls wir den Knoten später einmal löschen wollen, geht dies mit °Delete°
+im Kontextmenü.
+
+\section{Visualisierungsstile ändern}
+
+Mittels der Visualisierungsstil-Auswahl (4) können wir die Art der Darstellung
+der Knoten ändern. Probeweise ändern wir die Darstellung in der Combobox einmal
+auf °Plain°. Wir können nun einmal im Graph herumzoomen und scrollen, um
+die Unterschiede zu sehen.
+Nun wechseln wir aber wieder zurück zum Default-Stil.
+
+\section{Selektionen bearbeiten und markieren}
+
+Wir springen nun zu unserem Pin °Interessanter Knoten°, und zoomen und
+scrollen ggf. so, daß wir ca. 8 Knoten bei einer
+Zoomstufe von 70 Prozent auf dem Bildschirm haben.\\
+
+Nun klicken wir auf den Knoten Nr. 176 (rechts oben
+in der Matrix) mit der linken Maustaste.\\
+
+Der Knoten wird farbig markiert. Wir können sehen, daß in der Selektionsliste
+(3) in der Zeile °Default° der angewählte Knoten auftaucht.
+Mit gedrückter Shift-Taste wählen wir noch zwei andere Knoten aus.
+Nun halten wir die Shift-Taste und ziehen mit gedrückter linker Maustaste
+einen Rahmen über alle bis auf die unteren zwei Knoten.
+Wenn wir loslassen, können wir feststellen, daß GIANT den momentanen
+Status (Selektiert oder nicht) aller Knoten im Rahmen umgekehrt hat.\\
+
+Wenn wir einen Rahmen ohne gedrückte Tasten ziehen, werden alle bisherigen
+Knoten in der Default-Selektion entselektiert. Wir ziehen nun einen Rahmen
+über die oberen beiden Knoten. Diesen wollen wir nun die unteren beiden
+Knoten hizufügen. Dies geschieht durch Anklicken dieser beiden Knoten mit
+gedrückter Shift-Taste. Alternativ könnte auch ein Rahmen mit gedrückter
+Shift-Taste gezogen werden.\\
+
+Nun ziehen wir einen Rahmen mit der Maus über alle Knoten im Fenster
+bei gedrückter Ctrl-Taste. Wir können sehen, daß GIANT hier alle
+Knoten im Rahmen markiert, im Gegensatz zur Umkehrung des Selektionsstatus
+bei Verwendung der Shift-Taste.\\
+
+Zu guter Letzt ziehen wir nochmals einen Rahmen ohne gedrückte Tasten über
+die oberen vier Knoten.\\
+
+Das Selektieren von Kanten funktioniert völlig analog zum Selektieren der
+Knoten.\\
+
+Durch den Rahmen haben wir nun eine gewisse Anzahl von Knoten und Kanten
+in der Default-Selektion sichtbar in (3).
+Wir duplizieren nun diese Auswahl durch Auswählen von °Duplicate° im Kontextmenü
+nach Drücken der rechten Maustaste über °Default° in der Selektionsliste (3).
+Als Namen wählen wir °Neu°.\\
+
+Nun wollen wir die Selektion °Neu° farbig markieren. Wir wählen dazu in
+(3) im Kontext-Menü dieser Selektion °Highlight - Color 1° an.
+Wir können nun sehen, daß die Selektion farbig markiert wird.\\
+
+\begin{figure}[h!]
+   \centering
+   \includegraphics[scale=.5]{tutorial/05-selection-color}
+   \caption{Node-Info Fenster}
+\end{figure}
+
+Wenn wir nun im Kontextmenü der Selektion °Zoom to Selection° auswählen,
+zoomt und scrollt GIANT so in den Graph hinein, daß alle Knoten der
+Selektion sichtbar sind.\\
+
+Mit unserem neu erworbenen Wissen erstellen wir nun eine Selektion
+mit der Vierergruppe Knoten unten rechts im Graphen und nennen
+sie °vier°. Nun wählen wir im Kontextmenü dieser Selektion
+°Delete° aus und wir sehen, daß die Knoten noch da sind, die Selektion
+aber gelöscht wurde.
+Nun erstellen wir nochmals eine Selektion mit dem Namen °neu2°,
+wählen diesmal °Delete with Content° aus.
+GIANT hat nun die Knoten nebst ihrer Kanten aus dem Graph gelöscht.\\
+
