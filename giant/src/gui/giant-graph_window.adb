@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.28 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.29 $
 --  $Author: squig $
---  $Date: 2003/07/08 16:07:32 $
+--  $Date: 2003/07/08 21:54:51 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -479,26 +479,6 @@ package body Giant.Graph_Window is
    end On_Zoom_Out_Clicked;
 
    ---------------------------------------------------------------------------
-   --  Graph Widget Callbacks
-   ---------------------------------------------------------------------------
-
-   procedure On_Graph_Action_Mode_Button_Pressed
-     (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
-      Args   : in     Gtk.Arguments.Gtk_Args)
-   is
-      use type Actions.Graph_Window_Action_Access;
-
-      Window : Graph_Window_Access := Graph_Window_Access (Source);
-   begin
-      if (Gui_Manager.Actions.Is_Action_Pending) then
-         Gui_Manager.Actions.Trigger (Window, null, Vis.Logic.Zero_2d);
-      elsif (Window.Local_Action /= null) then
-         Actions.Execute
-           (Window.Local_Action, Window, null, Vis.Logic.Zero_2d);
-      end if;
-   end On_Graph_Action_Mode_Button_Pressed;
-
-   ---------------------------------------------------------------------------
    --  Initializers
    ---------------------------------------------------------------------------
 
@@ -547,57 +527,11 @@ package body Giant.Graph_Window is
         := Initialize_Style (Config.Global_Data.Current_Selection);
    end Initialize_Styles;
 
-   procedure Initialize
+   procedure Initialize_Pin_List_Menu
      (Window : access Graph_Window_Record'Class)
    is
       use Giant.Gui_Utils;
-
-      Submenu : Gtk.Menu.Gtk_Menu;
-      Left_Box : Gtk.Box.Gtk_Vbox;
-      Left_Paned : Gtk.Paned.Gtk_Paned;
-      Vbox : Gtk.Box.Gtk_Vbox;
-      Hbox : Gtk.Box.Gtk_Hbox;
-      Vis_Styles : Gtk.Enums.String_List.Glist;
-      Zoom_Levels : Gtk.Enums.String_List.Glist;
    begin
-      Gtk.Window.Initialize (Window, Gtk.Enums.Window_Toplevel);
-      Update_Title (Window);
-
-      --  horizontal split pane
-      Gtk.Paned.Gtk_New_Hpaned (Window.Split_Pane);
-      Gtk.Paned.Set_Handle_Size (Window.Split_Pane, 8);
-      Gtk.Paned.Set_Gutter_Size (Window.Split_Pane, 12);
-      Add (Window, Window.Split_Pane);
-
-      --  right box: graph widget (needs to be created prior to the minimap)
-      Window.Graph := Vis_Windows.Get_Graph_Widget (Window.Visual_Window);
-      Widget_Callback.Object_Connect
-        (Window.Graph, "action_mode_button_press_event",
-         On_Graph_Action_Mode_Button_Pressed'Access, Window);
-
-      Gtk.Paned.Pack2 (Window.Split_Pane, Add_Scrollbars (Window.Graph),
-                       Resize => True, Shrink => False);
-
-      --  left box
-      Gtk.Box.Gtk_New_Vbox (Left_Box, Homogeneous => False,
-                            Spacing => DEFAULT_SPACING);
-      Gtk.Box.Set_Border_Width (Left_Box, DEFAULT_SPACING);
-      Gtk.Paned.Pack1 (Window.Split_Pane, Left_Box,
-                       Resize => False, Shrink => False);
-
-      --  minimap
-      Mini_Maps.Create (Window.Mini_Map, Window.Graph);
-      Gtk.Box.Pack_Start (Left_Box, Add_Frame (Window.Mini_Map, -"MiniMap"),
-                          Expand => False, Fill => True, Padding => 0);
-
-      --  vertical split pane
-      Gtk.Paned.Gtk_New_Vpaned (Left_Paned);
-      Gtk.Paned.Set_Handle_Size (Left_Paned, 8);
-      Gtk.Paned.Set_Gutter_Size (Left_Paned, 12);
-      Gtk.Box.Pack_Start (Left_Box, Left_Paned,
-                          Expand => True, Fill => True, Padding => 0);
-
-      --  pins list menu
       Gtk.Menu.Gtk_New (Window.Pin_List_Menu);
       Gtk.Menu.Append (Window.Pin_List_Menu,
                        New_Menu_Item (-"Show",
@@ -613,17 +547,15 @@ package body Giant.Graph_Window is
                        New_Menu_Item (-"Delete",
                                       On_Pin_List_Delete'Access,
                                       Window));
+   end Initialize_Pin_List_Menu;
 
-      --  pins
-      Gui_Utils.String_Clists.Create (Window.Pin_List, 1, Update_Pin'Access);
-      Gui_Utils.String_Clists.Connect_Popup_Menu
-        (Window.Pin_List, Window.Pin_List_Menu);
+   procedure Initialize_Selection_List_Menu
+     (Window : access Graph_Window_Record'Class)
+   is
+      use Giant.Gui_Utils;
 
-      Gui_Utils.String_Clists.Set_Column_Title (Window.Pin_List, 0, -"Pin");
-
-      Gtk.Paned.Add1 (Left_Paned, Add_Scrollbars (Window.Pin_List));
-
-      --  selections list menu
+      Submenu : Gtk.Menu.Gtk_Menu;
+   begin
       Gtk.Menu.Gtk_New (Window.Selection_List_Menu);
       Gtk.Menu.Append (Window.Selection_List_Menu,
                        New_Menu_Item (-"Set Active",
@@ -680,6 +612,114 @@ package body Giant.Graph_Window is
                        New_Menu_Item (-"Delete With Content",
                                       On_Selection_List_Delete_With_Content'Access,
                                       Window));
+   end Initialize_Selection_List_Menu;
+
+   procedure Initialize_Background_Menu
+     (Window : access Graph_Window_Record'Class)
+   is
+      use Giant.Gui_Utils;
+   begin
+      Gtk.Menu.Gtk_New (Window.Background_Menu);
+      Gtk.Menu.Append (Window.Background_Menu,
+                       New_Menu_Item (-"Make Room...",
+                                      On_Background_Make_Room'Access, Window));
+      Gtk.Menu.Append (Window.Background_Menu,
+                       New_Menu_Item (-"New Pin",
+                                      On_Background_Create_Pin'Access, Window));
+   end Initialize_Background_Menu;
+
+   procedure Initialize_Edge_Menu
+     (Window : access Graph_Window_Record'Class)
+   is
+      use Giant.Gui_Utils;
+   begin
+      Gtk.Menu.Gtk_New (Window.Edge_Menu);
+      Gtk.Menu.Append (Window.Edge_Menu,
+                       New_Menu_Item (-"Zoom To Edge",
+                                      On_Edge_Zoom'Access, Window));
+   end Initialize_Edge_Menu;
+
+   procedure Initialize_Node_Menu
+     (Window : access Graph_Window_Record'Class)
+   is
+      use Giant.Gui_Utils;
+   begin
+      Gtk.Menu.Gtk_New (Window.Node_Menu);
+      Gtk.Menu.Append (Window.Node_Menu,
+                       New_Menu_Item (-"Show Info...",
+                                      On_Node_Show_Info'Access, Window));
+      Gtk.Menu.Append (Window.Node_Menu,
+                       New_Menu_Item (-"Show Source",
+                                      On_Node_Show_Source'Access, Window));
+      Gtk.Menu.Append (Window.Node_Menu, New_Menu_Separator);
+      Gtk.Menu.Append (Window.Node_Menu,
+                       New_Menu_Item (-"Anotate...",
+                                      On_Node_Show_Source'Access, Window));
+   end Initialize_Node_Menu;
+
+   procedure Initialize
+     (Window : access Graph_Window_Record'Class)
+   is
+      use Giant.Gui_Utils;
+
+      Left_Box : Gtk.Box.Gtk_Vbox;
+      Left_Paned : Gtk.Paned.Gtk_Paned;
+      Vbox : Gtk.Box.Gtk_Vbox;
+      Hbox : Gtk.Box.Gtk_Hbox;
+      Vis_Styles : Gtk.Enums.String_List.Glist;
+      Zoom_Levels : Gtk.Enums.String_List.Glist;
+   begin
+      Gtk.Window.Initialize (Window, Gtk.Enums.Window_Toplevel);
+      Update_Title (Window);
+
+      --  horizontal split pane
+      Gtk.Paned.Gtk_New_Hpaned (Window.Split_Pane);
+      Gtk.Paned.Set_Handle_Size (Window.Split_Pane, 8);
+      Gtk.Paned.Set_Gutter_Size (Window.Split_Pane, 12);
+      Add (Window, Window.Split_Pane);
+
+      --  right box: graph widget (needs to be created prior to the minimap)
+      Window.Graph := Vis_Windows.Get_Graph_Widget (Window.Visual_Window);
+      Widget_Callback.Object_Connect
+        (Window.Graph, "action_mode_button_press_event",
+         On_Graph_Action_Mode_Button_Pressed'Access, Window);
+
+      Gtk.Paned.Pack2 (Window.Split_Pane, Add_Scrollbars (Window.Graph),
+                       Resize => True, Shrink => False);
+
+      --  left box
+      Gtk.Box.Gtk_New_Vbox (Left_Box, Homogeneous => False,
+                            Spacing => DEFAULT_SPACING);
+      Gtk.Box.Set_Border_Width (Left_Box, DEFAULT_SPACING);
+      Gtk.Paned.Pack1 (Window.Split_Pane, Left_Box,
+                       Resize => False, Shrink => False);
+
+      --  minimap
+      Mini_Maps.Create (Window.Mini_Map, Window.Graph);
+      Gtk.Box.Pack_Start (Left_Box, Add_Frame (Window.Mini_Map, -"MiniMap"),
+                          Expand => False, Fill => True, Padding => 0);
+
+      --  vertical split pane
+      Gtk.Paned.Gtk_New_Vpaned (Left_Paned);
+      Gtk.Paned.Set_Handle_Size (Left_Paned, 8);
+      Gtk.Paned.Set_Gutter_Size (Left_Paned, 12);
+      Gtk.Box.Pack_Start (Left_Box, Left_Paned,
+                          Expand => True, Fill => True, Padding => 0);
+
+      --  pins list menu
+      Initialize_Pin_List_Menu (Window);
+
+      --  pins
+      Gui_Utils.String_Clists.Create (Window.Pin_List, 1, Update_Pin'Access);
+      Gui_Utils.String_Clists.Connect_Popup_Menu
+        (Window.Pin_List, Window.Pin_List_Menu);
+
+      Gui_Utils.String_Clists.Set_Column_Title (Window.Pin_List, 0, -"Pin");
+
+      Gtk.Paned.Add1 (Left_Paned, Add_Scrollbars (Window.Pin_List));
+
+      --  selections list menu
+      Initialize_Selection_List_Menu (Window);
 
       --  selections
       Gui_Utils.String_Clists.Create (Window.Selection_List, 3,
@@ -817,6 +857,43 @@ package body Giant.Graph_Window is
    begin
       null;
    end Set_Global_Action_Mode;
+
+   ---------------------------------------------------------------------------
+   --  Local Action Methods
+   ---------------------------------------------------------------------------
+
+   function Is_Local_Action_Pending
+     (Window : access Graph_Window_Record)
+     return Boolean
+   is
+      use type Actions.Graph_Window_Action_Access;
+   begin
+      return (Window.Local_Action /= null);
+   end Is_Local_Action_Pending;
+
+   procedure Cancel_Local_Action
+     (Window : access Graph_Window_Record)
+   is
+      use type Actions.Graph_Window_Action_Access;
+   begin
+      if (Window.Local_Action /= null) then
+         Actions.Cancel (Window.Local_Action);
+         Window.Local_Action := null;
+      end if;
+   end Cancel_Local_Action;
+
+   procedure Trigger_Local_Action
+     (Window   : access Graph_Window.Graph_Window_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event;
+      Location : in     Vis.Logic.Vector_2d)
+   is
+      use type Actions.Graph_Window_Action_Access;
+   begin
+      if (Window.Local_Action /= null) then
+         Actions.Execute (Window.Local_Action, Window, Event, Location);
+         Window.Local_Action := null;
+      end if;
+   end Trigger_Local_Action;
 
    ---------------------------------------------------------------------------
    --  Pin Methods

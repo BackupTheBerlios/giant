@@ -20,19 +20,77 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-graph_window-callbacks.ads,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/07/08 16:07:32 $
+--  $Date: 2003/07/08 21:54:51 $
 --
 ------------------------------------------------------------------------------
 --
 --  Provides callbacks for graph window.
 --
 
+with Gtk.Arguments;
 with Gtk.Widget;
 
+with Giant.Graph_Lib;
+with Giant.Graph_Lib.Selections;
+with Giant.Graph_Widgets;
+with Giant.Graph_Widgets.Notifications;
+
 package Giant.Graph_Window.Callbacks is
-   
+
+   ---------------------------------------------------------------------------
+   --  Background Menu Callbacks
+   ---------------------------------------------------------------------------
+
+   procedure On_Background_Make_Room
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
+
+   procedure On_Background_Create_Pin
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
+
+   ---------------------------------------------------------------------------
+   --  Edge Menu Callbacks
+   ---------------------------------------------------------------------------
+
+   procedure On_Edge_Zoom
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
+   ---------------------------------------------------------------------------
+   --  Graph Widget Callbacks
+   ---------------------------------------------------------------------------
+
+   procedure On_Action_Mode_Button_Press_Event
+     (Source   : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event_Button;
+      Location : in     Vis.Logic.Vector_2d);
+
+   -- FIX: deprecated, use above
+   procedure On_Graph_Action_Mode_Button_Pressed
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Args   : in     Gtk.Arguments.Gtk_Args);
+
+   procedure On_Selection_Changed
+     (Widget     : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Action     : in     Graph_Widgets.Notifications.Selection_Change_Type;
+      Difference : in     Graph_Lib.Selections.Selection);
+
+   ---------------------------------------------------------------------------
+   --  Node Menu Callbacks
+   ---------------------------------------------------------------------------
+
+   procedure On_Node_Show_Info
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
+
+   procedure On_Node_Show_Source
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
+
+   procedure On_Node_Annotate
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
+
+   ---------------------------------------------------------------------------
+   --  Selection Callbacks
+   ---------------------------------------------------------------------------
+
    procedure On_Apply_Layout
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
 

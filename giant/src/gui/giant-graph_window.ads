@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.18 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.19 $
 --  $Author: squig $
---  $Date: 2003/07/08 16:07:32 $
+--  $Date: 2003/07/08 21:54:51 $
 --
 ------------------------------------------------------------------------------
 --
@@ -108,6 +108,22 @@ package Giant.Graph_Window is
       Enable : in     Boolean);
 
    ---------------------------------------------------------------------------
+   --  Local Action
+   ---------------------------------------------------------------------------
+
+   function Is_Local_Action_Pending
+     (Window : access Graph_Window_Record)
+     return Boolean;
+
+   procedure Cancel_Local_Action
+     (Window : access Graph_Window_Record);
+
+   procedure Trigger_Local_Action
+     (Window   : access Graph_Window.Graph_Window_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event;
+      Location : in     Vis.Logic.Vector_2d);
+
+   ---------------------------------------------------------------------------
    --  Pin Methods
    ---------------------------------------------------------------------------
 
@@ -186,6 +202,9 @@ private
 
         Graph : Graph_Widgets.Graph_Widget;
         Mini_Map : Mini_Maps.Mini_Map;
+        Background_Menu : Gtk.Menu.Gtk_Menu;
+        Edge_Menu : Gtk.Menu.Gtk_Menu;
+        Node_Menu : Gtk.Menu.Gtk_Menu;
 
         Is_Modified : Boolean := True;
 
