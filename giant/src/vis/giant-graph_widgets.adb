@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.30 $
---  $Author: keulsn $
---  $Date: 2003/07/15 09:51:58 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.31 $
+--  $Author: koppor $
+--  $Date: 2003/07/15 10:12:52 $
 --
 ------------------------------------------------------------------------------
 
@@ -326,15 +326,15 @@ package body Giant.Graph_Widgets is
             Object : Object_Type)
            return Boolean;
          with procedure Remove_Set
-           (Selection : in out Graph_Lib.Selections.Selection;
-            Set       : in     Object_Sets.Set);
+           (Selection : in Graph_Lib.Selections.Selection;
+            Set       : in Object_Sets.Set);
       procedure Remove_Known
-        (Selection : in out Graph_Lib.Selections.Selection;
-         Set       : in     Object_Sets.Set);
+        (Selection : in Graph_Lib.Selections.Selection;
+         Set       : in Object_Sets.Set);
 
       procedure Remove_Known
-        (Selection : in out Graph_Lib.Selections.Selection;
-         Set       : in     Object_Sets.Set) is
+        (Selection : in Graph_Lib.Selections.Selection;
+         Set       : in Object_Sets.Set) is
 
          Known    : Object_Sets.Set      := Object_Sets.Empty_Set;
          Iterator : Object_Sets.Iterator := Object_Sets.Make_Iterator (Set);
