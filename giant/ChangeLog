@@ -1,4 +1,18 @@
-2003-09-09  Steffen Keul  <keulsn@droste.informatik.uni-stuttgart.de>
+2003-09-09  Steffen Keul  <keulsn@gspc24.informatik.uni-stuttgart.de>
+
+	* src/vis/giant-graph_widgets.ads: removed Gtk.Widget dependency
+
+	* src/vis/giant-graph_widgets.adb: added with Gtk.Widget and
+	pragma Elaborate_All
+
+	* src/vis/giant-mini_maps.ads: removed Gtk.Widget dependency
+
+	* src/vis/giant-mini_maps.adb: added with Gtk.Widget and pragma
+	Elaborate_All
+
+	* src/vis/giant-graph_widgets-states.adb: added with Gtk.Widget
+
+	* src/vis/giant-graph_widgets-callbacks.ads: added with Gtk.Widget
 
 	* src/utils/giant-evolutions.ads: Changed iterative handler from
 	idle signal to blocking implementation using Gtk.Main.Main_Iteration
