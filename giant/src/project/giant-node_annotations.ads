@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-node_annotations.ads,v $, $Revision: 1.9 $
---  $Author: schwiemn $
---  $Date: 2003/06/30 20:33:19 $
+--  $RCSfile: giant-node_annotations.ads,v $, $Revision: 1.10 $
+--  $Author: keulsn $
+--  $Date: 2003/07/07 18:12:32 $
 ------------------------------------------------------------------------------
 --  This package overs the functionality needed to handle node annotations.
 --
@@ -30,7 +30,7 @@
 --  In order to avoid cyclic package dependencies the
 --  functionality of this package is not part of project_management.
 --
-with Ada.Strings.Unbounded; 
+with Ada.Strings.Unbounded;
 
 with Giant.Graph_Lib; -- from GIANT
 
