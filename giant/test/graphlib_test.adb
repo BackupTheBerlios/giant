@@ -20,15 +20,16 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: graphlib_test.adb,v $, $Revision: 1.2 $
+--  $RCSfile: graphlib_test.adb,v $, $Revision: 1.3 $
 --  $Author: koppor $
---  $Date: 2003/06/23 15:26:55 $
+--  $Date: 2003/06/24 19:52:04 $
 --
 
 with AUnit.Test_Suites; use AUnit.Test_Suites;
 with AUnit.Test_Runner;
 
 with Giant.Graph_Lib.Test;
+with Giant.Graph_Lib.Node_Attribute_Filters.Test;
 with Giant.Graph_Lib.Subgraphs.Test;
 with Giant.Default_Logger;
 
@@ -42,6 +43,21 @@ procedure Graphlib_Test is
    end Suite;
 
    procedure Run is new AUnit.Test_Runner (Suite);
+
+   ---------------------------------------------------------------------------
+
+   function Node_Attribute_Filters_Suite return Access_Test_Suite is
+      Result : Access_Test_Suite := new Test_Suite;
+   begin
+      Add_Test (Result,
+                new Giant.Graph_Lib.Node_Attribute_Filters.Test.Test_Case);
+      return Result;
+   end Node_Attribute_Filters_Suite;
+
+   procedure Node_Attribute_Filters_Run is
+      new AUnit.Test_Runner (Node_Attribute_Filters_Suite);
+
+   ---------------------------------------------------------------------------
 
    function Subgraphs_Suite return Access_Test_Suite is
       Result : Access_Test_Suite := new Test_Suite;
@@ -57,6 +73,7 @@ begin
    Giant.Default_Logger.Debug ("Starting Test...");
 
    Run;
+   Node_Attribute_Filters_Run;
    Subgraphs_Run;
 
    Giant.Default_Logger.Close;
