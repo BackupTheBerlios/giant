@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-class_sets.ads,v $, $Revision: 1.5 $
+-- $RCSfile: giant-config-class_sets.ads,v $, $Revision: 1.6 $
 -- $Author: schwiemn $
--- $Date: 2003/07/02 15:45:18 $
+-- $Date: 2003/07/08 11:49:38 $
 --
 -- ----------------
 -- This package provides the functionality needed to handle
@@ -34,6 +34,7 @@
 --
 with String_Lists;     -- from Bauhaus IML "Reuse.src"
 with Hashed_Mappings;  -- from Bauhaus IML "Reuse.src"
+with Lists;            -- from Bauhaus IML "Reuse.src"
 pragma Elaborate_All (Hashed_Mappings);
 
 with Giant.Graph_Lib; -- from GIANT
@@ -42,8 +43,9 @@ package Giant.Config.Class_Sets is
 
    ---------------------------------------------------------------------------
    -- describes a class set
-   type Class_Set_Access is private;
-     
+   type Class_Set_Data is private;
+   type Class_Set_Access is access Class_Set_Data;
+        
    ---------------------------------------------------------------------------
    -- Thrown if an invalid directory is given as paramter.
    Invalid_Class_Set_Directory_Exception : exception;
@@ -199,8 +201,8 @@ package Giant.Config.Class_Sets is
      return Boolean;
 
    ---------------------------------------------------------------------------
-   -- Determines whether an edge class is part of a class
-   -- set.
+   -- Determines whether an edge class is part of a class set.
+   --
    -- Parameters:
    --   Class_Set - A class set.
    --   Edge_Clas - A edge class.
@@ -216,8 +218,7 @@ package Giant.Config.Class_Sets is
      (Class_Set  : in Class_Set_Access;
       Edge_Class : in Graph_Lib.Edge_Class_Id)
      return Boolean;
-     
-          
+               
    ---------------------------------------------------------------------------
    -- F
    -- Meta Class Sets
@@ -240,6 +241,9 @@ package Giant.Config.Class_Sets is
    subtype Meta_Class_Set_Access is Class_Set_Access;
    
    type Class_Set_Array is array (Integer range <>) of Class_Set_Access;
+   
+   package Class_Sets_Lists is new
+     Lists (ItemType => Class_Set_Access);
       
    ---------------------------------------------------------------------------
    -- Builds a meta class set out of a collection of class sets.
@@ -257,6 +261,11 @@ package Giant.Config.Class_Sets is
    --   of the passed Class Sets. You are responsible for the deallocation
    --   of the result.
    function Build (Elements : in Class_Set_Array) 
+     return Meta_Class_Set_Access;
+         
+   ---------------------------------------------------------------------------
+   -- Just a wrapper for "Build" that uses an List as in Parameter.
+   function Build (Elements : in Class_Sets_Lists.List) 
      return Meta_Class_Set_Access;
    
    ---------------------------------------------------------------------------
@@ -290,6 +299,5 @@ private
       Edge_Classes   : Edge_Class_Look_Up_Hashed_Mappings.Mapping;
    end record;
 
-   type Class_Set_Access is access Class_Set_Data;
 
 end Giant.Config.Class_Sets;

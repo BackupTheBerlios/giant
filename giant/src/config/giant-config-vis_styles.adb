@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.15 $
+-- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.16 $
 -- $Author: schwiemn $
--- $Date: 2003/07/03 13:15:38 $
+-- $Date: 2003/07/08 11:49:38 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -1043,10 +1043,6 @@ package body Giant.Config.Vis_Styles is
           (File_Management.Calculate_Name_For_File
             (Default_Vis_Style_File));
 
-      -- FIX
-     Logger.Debug (Ada.Strings.Unbounded.To_String
-        (Global_Default_Vis_Style_Name));
-
       -------------------------------
       -- INITIALIZE internal data strucuture
       Icons_Encoding_Map := Icons_Encoding_Mappings.Create;
@@ -1433,11 +1429,6 @@ package body Giant.Config.Vis_Styles is
          raise Config_Vis_Styles_Not_Initialized_Exception;
          return null;
       end if;
-
-      -- Fix
-     Logger.Debug (Ada.Strings.Unbounded.To_String
-        (Global_Default_Vis_Style_Name));
-
 
       return Initialize_Vis_Style_By_Name
         (Ada.Strings.Unbounded.To_String (Global_Default_Vis_Style_Name));

@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.7 $
+-- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.8 $
 -- $Author: schwiemn $
--- $Date: 2003/07/03 13:15:38 $
+-- $Date: 2003/07/08 11:49:38 $
 --
 with Giant.File_Management;  -- from GIANT
 with Giant.XML_File_Access;  -- from GIANT
@@ -565,6 +565,24 @@ package body Giant.Config.Class_Sets is
       end loop;       
        
       return New_Meta;           
+   end Build;
+      
+   ---------------------------------------------------------------------------
+   function Build (Elements : in Class_Sets_Lists.List) 
+     return Meta_Class_Set_Access is
+     
+      Class_Sets_Array : Class_Set_Array
+        (1..Class_Sets_Lists.Length (Elements));
+      Iter             : Class_Sets_Lists.ListIter;
+   begin
+   
+      Iter := Class_Sets_Lists.MakeListIter (Elements);
+      
+      for I in Class_Sets_Array'Range loop
+        Class_Sets_Lists.Next (Iter, Class_Sets_Array (I));
+      end loop;
+
+      return Build (Class_Sets_Array);
    end Build;
  
    ---------------------------------------------------------------------------  
