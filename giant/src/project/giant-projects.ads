@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.21 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.22 $
 -- $Author: schwiemn $
--- $Date: 2003/06/18 18:07:38 $
+-- $Date: 2003/06/18 18:36:34 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -761,6 +761,11 @@ package Giant.Projects is
    -- Raised if an Subgraph that should be added to the
    -- project already exists.
    Subgraph_Is_Already_Part_Of_Project_Exception : Exception;
+   
+   ---------------------------------------------------------------------------
+   -- Raised on attempt of changing a name to a name that already exists.
+   New_Subgraph_Name_Does_Already_Exist_Exception : Exception;
+   
 
    ---------------------------------------------------------------------------
    -- Determines whether a subgraph with the given name exists.
@@ -824,6 +829,37 @@ package Giant.Projects is
    function Get_All_Subgraphs
      (Project : in Project_Access)
      return String_Lists.List;
+     
+   ---------------------------------------------------------------------------
+   --  Changes the name of a subgraph in a project.
+   --
+   --  If you change the name of a subgraph while it is
+   --  part of a project you have to use this subprogramm.
+   --
+   --  If exists the old management file will be deleted. And a
+   --  new one (with a name corresponding to the new name) will be created
+   --  in the project directory.
+   --
+   -- Parameters:
+   --   Project - The instance of the ADT holding a project.
+   --   Subgraph_Name - The name (unique inside a project) of a
+   --     subgraph of the project.
+   --   Subgraph_Name - The new name for the subgraph named
+   --     "Subgraph_Name".
+   -- Raises:
+   --   Project_Access_Not_Initialized_Exception - Raised if a not
+   --     initialized instance of "Project_Access" is passed as
+   --     parameter.
+   --   Subgraph_Is_Not_Part_Of_Project_Exception - Raised if the
+   --     project "Project" does not hold a subgraph with the name
+   --     "Subgraph_Name".
+   --   New_Subgraph_Name_Does_Already_Exist_Exception
+   --     Raised if there is already a subgraph with the name
+   --     "New_Subgraph_Name". 
+   procedure Change_Subgraph_Name
+     (Project           : in Project_Access;
+      Subgraph_Name     : in String;
+      New_Subgraph_Name : in String);
 
    ---------------------------------------------------------------------------
    -- Adds a subgraph to a project.

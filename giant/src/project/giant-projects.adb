@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.21 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.22 $
 --  $Author: schwiemn $
---  $Date: 2003/06/18 18:07:38 $
+--  $Date: 2003/06/18 18:36:34 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -2019,7 +2019,90 @@ package body Giant.Projects is
        
       return Names_List;
    end Get_All_Subgraphs;
+   
+   ---------------------------------------------------------------------------  
+   procedure Change_Subgraph_Name
+     (Project           : in Project_Access;
+      Subgraph_Name     : in String;
+      New_Subgraph_Name : in String) is
+      
+      A_Subgraph_Data_Element : Subgraph_Data_Element;
+      Was_File_Linked : Boolean := False;   
+         
+      A_Subgraph_File_Name : Ada.Strings.Unbounded.Unbounded_String;
+   begin
+   
+      if (Project = null) then
+         raise Project_Access_Not_Initialized_Exception;
+      end if;
 
+      if not Does_Subgraph_Exist
+        (Project, Subgraph_Name) then
+         raise Subgraph_Is_Not_Part_Of_Project_Exception;
+      end if;    
+      
+      if Does_Vis_Window_Exist
+        (Project, New_Subgraph_Name) then
+         raise New_Subgraph_Name_Does_Already_Exist_Exception;
+      end if; 
+   
+      A_Subgraph_Data_Element := Subgraph_Data_Hashs.Fetch
+        (Project.All_Subgraphs,
+         Ada.Strings.Unbounded.To_Unbounded_String (Subgraph_Name));
+              
+      -- remove old management file if exists
+      ---------------------------------------
+      if A_Subgraph_Data_Element.Is_File_Linked then
+      
+         File_Management.Delete_File
+           (Ada.Strings.Unbounded.To_String
+             (A_Subgraph_Data_Element.Existing_Subgraph_File));
+         A_Subgraph_Data_Element.Is_File_Linked := False;
+         A_Subgraph_Data_Element.Existing_Subgraph_File :=
+           Ada.Strings.Unbounded.Null_Unbounded_String;         
+         Was_File_Linked := True;
+      end if;
+   
+      -- change name of subgraph
+      --------------------------
+      Graph_Lib.Subgraphs.Rename 
+        (A_Subgraph_Data_Element.Subgraph,
+         New_Subgraph_Name);
+        
+      -- create new management file if necessary
+      ------------------------------------------
+      if Was_File_Linked then 
+         A_Subgraph_File_Name :=
+           Create_Name_For_File
+             (Ada.Strings.Unbounded.To_String 
+                (Project.Abs_Project_Directory),
+              Graph_Lib.Subgraphs.Get_Name
+                (A_Subgraph_Data_Element.Subgraph),          
+              Const_Subgraph_File_Ending);     
+         
+           Write_Sub_Graph_Data_To_File
+              (Ada.Strings.Unbounded.To_String 
+                (A_Subgraph_File_Name),
+               A_Subgraph_Data_Element);  
+                  
+            -- change subgraph status
+            A_Subgraph_Data_Element.Is_File_Linked := True;
+            A_Subgraph_Data_Element.Existing_Subgraph_File :=
+              A_Subgraph_File_Name;
+      end if;
+                         
+      -- update hash map and data model
+      ---------------------------------     
+      Subgraph_Data_Hashs.Unbind
+        (Project.All_Subgraphs,
+         Ada.Strings.Unbounded.To_Unbounded_String (Subgraph_Name));
+         
+      Subgraph_Data_Hashs.Bind
+        (Project.All_Subgraphs,
+         Ada.Strings.Unbounded.To_Unbounded_String (New_Subgraph_Name),
+         A_Subgraph_Data_Element);    
+   end Change_Subgraph_Name;
+       
    ---------------------------------------------------------------------------
    procedure Add_Subgraph
      (Project  : in Project_Access;
