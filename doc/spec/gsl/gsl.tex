@@ -1,6 +1,6 @@
 % =============================================================================
-%  $RCSfile: gsl.tex,v $ $Revision: 1.11 $
-%  $Date: 2003/06/24 21:20:50 $
+%  $RCSfile: gsl.tex,v $ $Revision: 1.12 $
+%  $Date: 2003/06/24 21:23:17 $
 %  $Author: keulsn $
 %
 %  Description: Spezifikation der GIANT Scripting Language
@@ -1069,9 +1069,9 @@ Zugriffspfad auf das Skript $S$.
 \item Den \tvarreference in $P$ werden die Werte der Einträge des Werts von
   \nlist zugewiesen
   (genaue Beschreibung siehe \ref{parameter_passing}).
-\item Der \nscriptbody der durch $I$ referenziert wird, wird
- ausgewertet und hat den Wert $R$ als Ergebnis.
-  $R$ darf ein Wert eines beliebigen Typs sein mit den Einschränkungen:
+\item Die \nexpression des durch $I$ referenzierten Scripts wird
+ausgewertet und hat den Wert $R$ als Ergebnis.
+$R$ darf ein Wert eines beliebigen Typs sein mit den Einschränkungen:
     \begin{enumerate}
     \item Ist $R$ vom Typ \tvarreference, dann ist $R$ ein Zugriffspfad
     auf ein Objekt, das in einer Aktivierungsumgebung \oldenv an eine
