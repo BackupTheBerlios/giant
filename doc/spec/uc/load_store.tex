@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: load_store.tex,v $, $Revision: 1.13 $
-%  $Date: 2003/03/31 16:29:39 $
+%  $RCSfile: load_store.tex,v $, $Revision: 1.14 $
+%  $Date: 2003/03/31 22:02:25 $
 %  $Author: squig $
 %
 %  Description: UseCases für Lade- und Speicherfunktionalität
@@ -30,7 +30,7 @@
           ist erstellt und geladen.   
     \cond Eine IML-Datei ist geladen.
     \cond Das angegebene Projektverzeichnis ist gegebenenfalls erstellt 
-          worden (siehe hierzu auch \ref {Project Das Projektverzeichnis}).
+          worden (siehe \ref {Project Das Projektverzeichnis}).
 
     \cond Die Projektdatei (siehe \ref{Project Die Projektdatei})
           liegt im Projektverzeichnis.
@@ -47,13 +47,12 @@
   
   \begin{proc}
     \step[1]
-    Der Benutzer startet den UseCase über das Hauptmenü
-    (\gq{New Project}) \ref{Main-Window-File}
+    Der Benutzer startet den UseCase über das Hauptmenü \gq{New Project}
+    (siehe \ref{Main-Window-File}) 
   
     \step[2] Der Benutzer wählt im Standard-Filechooser-Dialog
-    (\gq{Please Select IML File}) eine IML-Datei aus und
-    bestätigt seine Eingabe mit OK (siehe auch \ref 
-    {Standard-Filechooser-Dialog}).
+    (\gq{Please Select IML File}) eine IML-Datei aus und bestätigt
+    seine Eingabe mit OK (siehe \ref{Standard-Filechooser-Dialog}).
     
     \step[3] Der Benutzer gibt im Standard-Filechooser-Dialog
     den Pfad und Namen der Projektdatei (\gq{Please select Project
@@ -68,11 +67,10 @@
     Existiert in dem Projektverzeichnis bereits eine andere Projektdatei, so 
     erscheint ebenfalls eine Fehlermeldung.\\
     Das Verzeichnis in dem die Projektdatei liegt, wird automatisch zum 
-    Projektverzeichnis (dort landen auch alle Verwaltungsdateien für das 
-    Projekt).
+    Projektverzeichnis.
     
     \step[5] Falls bereits ein Projekt geöffnet ist, erscheint eine 
-    Sicherheitsabfrage (siehe \ref{Sicherheitsabfrage}
+    Sicherheitsabfrage (siehe \ref{Sicherheitsabfrage})
     ob dieses gespeichert werden soll. Lehnt der Benutzer dies ab, gehen
     alle nicht gespeicherten Informationen verloren.\\
     Entscheidet der Benutzer sich für Speichern, so wird
@@ -255,8 +253,7 @@ Speichert alle Informationen zu einem Projekt in eine neue Projektdatei
     Zulässige Namen sind unter Abschnitt \ref{afa Zulaessige Namen}
     spezifiziert. \\
     Das Verzeichnis in dem die Projektdatei liegt, wird automatisch zum 
-    Projektverzeichnis (dort landen auch alle Verwaltungsdateien für das 
-    Projekt). 
+    Projektverzeichnis. 
   
     \step[3]  
     Der Benutzer bestätigt seine Eingabe mit OK.\\

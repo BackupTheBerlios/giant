@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: afa.tex,v $, $Revision: 1.11 $
-%  $Date: 2003/03/31 16:29:39 $
+%  $RCSfile: afa.tex,v $, $Revision: 1.12 $
+%  $Date: 2003/03/31 22:02:25 $
 %  $Author: squig $
 %
 %  Description: Beschreibung allgemeiner funktionaler Anforderungen - UseCase
@@ -24,11 +24,10 @@ wann immer möglich die folgenden Konventionen eingehalten.
   ausgegeben (siehe auch \ref {GUI Ausgabe von Fehlermeldungen}). 
   Ist dies nicht möglich, wird die Fehlermeldung
   über die Kommandozeile ausgegeben.
-
-  \item
-  GIANT verhält sich bezüglich der Fehlerbehandlung konsistent.
-  Das im Folgenden beschriebene Fehlerverhalten gilt daher pauschal für
-  das gesamte System. 
+  
+\item GIANT verhält sich bezüglich der Fehlerbehandlung konsistent.
+  Das im Folgenden beschriebene Fehlerverhalten gilt daher für das
+  gesamte System.
 
   \item
   Abweichungen von diesem Verhalten werden gegebenenfalls an der 
@@ -79,8 +78,7 @@ wann immer möglich die folgenden Konventionen eingehalten.
           dafür vorgesehenen Position gefunden werden, so wird das 
           System mit einer entsprechenden Fehlermeldung beendet.
           In dieser Fehlermeldung werden die nicht gefundenen Dateien
-          und der Pfad an dem von GIANT nach diesen Dateien gesucht wird,
-          angegeben.
+          und der Pfad, der von GIANT durchsucht wurde, angegeben.
           
     \item Das Verhalten bei allen anderen möglichen Fehlern, die im Zusammenhang
           mit dem Zugriff auf Dateien auftreten (fehlende Zugriffsrechte, 
@@ -124,7 +122,7 @@ den aktuellen Systemzustand informiert.
      Inhalt, so dass erkennbar ist, dass das System noch läuft.
      
      \item \index{Progressbar}
-     Anzeige eines Progressbars, der über den aktuellen Fortschritt
+     Anzeige einer Progressbar, der über den aktuellen Fortschritt
      einer Berechnung informiert, ohne dabei den Gesamtaufwand zu 
      kennen.     
      

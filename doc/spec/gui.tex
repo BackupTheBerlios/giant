@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.62 $
-%  $Date: 2003/03/31 16:29:39 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.63 $
+%  $Date: 2003/03/31 22:02:25 $
 %  $Author: squig $
 %
 %  Description: 
@@ -40,23 +40,22 @@ Jeder Eintag (vertikal) heißt MENÜNAME-UNTERMENÜNAME-EINTRAGSNAME
 \end{figure}
 
 Im Hauptfenster (MAIN\_WINDOW), welches es nur einmal gleichzeitig
-gibt, werden vorhandene Anzeigefenster und vorhandene
-IML-Teilgraphen angezeigt. Über Popup-Menüs können IML-Teilgraphen
-und Anzeigefenster manipuliert werden.
-Eine Statuszeile befindet sich ganz oben im Fenster.
+gibt, werden vorhandene Anzeigefenster und vorhandene IML-Teilgraphen
+angezeigt. Über Popup-Menüs können IML-Teilgraphen und Anzeigefenster
+manipuliert werden.
 
-Darunter im Fenster befinden sich zwei Listen, WINDOW\_LIST (2 Spalten),
-und darunter SUBGRAPH\_LIST (4 Spalten).
+Eine Statuszeile befindet sich ganz oben im Fenster. Darunter im
+Fenster befinden sich zwei Listen, WINDOW\_LIST (2 Spalten), und
+SUBGRAPH\_LIST (4 Spalten).
 
 
   \subsection {Kopfzeile}
-  In der Kopfzeile wird dargestellt \gq{GIANT : <Projektname>}
+  In der Kopfzeile wird \gq{GIANT : <Projektname>} dargestellt.
  
   \subsection {Menüleiste (Main Window)}
   In der Menüleiste befinden sich folgende Einträge:
 
     \subsubsection {Untermenü File } \label{Main-Window-File}
-    Im Untermenü File des Hauptfensters befinden sich folgende Einträge.  
       \begin{enumerate}
          \item {New Project} % OK
          \item {Load Project}
@@ -130,11 +129,10 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
         \item Highlight Color (SUBGRAPH\_HIGHLIGHT\_COL).
       \end{enumerate}
     
-      In Subgraph Name stehen die (benutzerdefinierten) Namen der existierenden
-      Subgraphen, in Nodes die Anzahl der Knoten des Subgraphen,
-      in Edges die Anzahl der Kanten und in Highlight Color ein Kästchen 
-      mit der Farbe,
-      die verwendet wird, wenn dieser Subgraph markiert wird.
+      In Subgraph Name stehen die Namen der existierenden Subgraphen,
+      in Nodes die Anzahl der Knoten des Subgraphen, in Edges die
+      Anzahl der Kanten und in Highlight Color ein Kästchen mit der
+      Farbe, die verwendet wird, wenn dieser Subgraph markiert wird.
 
     
     \subsubsection {Popup-Menü Subgraph List}
@@ -159,12 +157,10 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
   
         \begin{enumerate}
                 \label{WINDOW-LIST-NEW-WINDOW}
-                \item WINDOW\_LIST/NEW\_WINDOW
-                        Dieser Dialog ermöglicht, ein neues Fenster anzulegen,
-                        und ist ein allgemeiner Texteingabedialog.
-                        Er hat ein Textfeld mit der Beschriftung 
-                        \gq{Name for New Window},
-                        und Buttons OK und Cancel.
+              \item WINDOW\_LIST/NEW\_WINDOW Dieser Dialog ermöglicht,
+                ein neues Fenster anzulegen, und ist ein allgemeiner
+                Texteingabedialog.  Er hat ein Textfeld mit der
+                Beschriftung \gq{Name}, und Buttons OK und Cancel.
                 \item SUBGRAPH\_LIST        
         \end{enumerate}
 
@@ -191,7 +187,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
   \label{GUI Stilauswahl-Combobox} 
   und  ein Button \gq{Hide} zum Ausblenden der Toolbar (TOOLBAR\_HIDE).
 
- \subsection {Minimap} \label{GUI Minimap}
+ \subsection {MiniMap} \label{GUI Minimap}
 
     In der MiniMap wird der gesamte IML-Teilgraph, der im Fenster
     visualisiert ist, durch einen grauen Kasten repräsentiert.
@@ -279,7 +275,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
       \item Delete Selection % OK
       \item Selection Set Operation (Union/Difference/Intersection) % OK
       
-      \item Set Layout Algorithm for Selection
+      \item Set Layout Algorithm For Selection
       
     \end{enumerate}    
 
@@ -307,8 +303,8 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     Durch Klick auf den Ein- und Ausklappbutton (VIS\_PANE\_BUTTON) kann die VIS\_PANE
     ein- und ausgeblendet werden.
     
-    \subsection{Bildlaufleiste}
-    \label{Scrolleiste}
+    \subsection{Bildlaufleisten}
+    \label{Scrolleisten}
     
     An den beiden Bildlaufleisten (links/rechts und oben/unten) in
     jedem Anzeigefenster kann der im Fenster sichtbare Bereich des
@@ -572,11 +568,11 @@ Jede Progressbar ist mit \gq{Working, please wait.} beschriftet.
      Fenster mit Anzeige eines Progressbars, der über den aktuellen Fortschritt
      einer Berechnung informiert, ohne dabei den Gesamtaufwand zu 
      kennen. Dabei wird kontinuierlich die Anzahl der schon bearbeiteten
-     Datensätze ausgegeben, und, sofern Bekannt, die Prozentzahl der schon
-     Bearbeiteten Datensätze als Text.
+     Datensätze ausgegeben, und, sofern bekannt, die Prozentzahl der schon
+     bearbeiteten Datensätze als Text.
      Während dieser Dialog sichtbar ist, ist der Rest der GUI von GIANT
      gesperrt.
-     Im Fenster existiert ein Button \gq{Cancel Calculation} \label{Progressbar-Modale-Cancel}, der die momentane
+     Im Fenster existiert ein Button \gq{Cancel} \label{Progressbar-Modale-Cancel}, der die momentane
      Berechnung abbricht.
      \begin{figure}[!htbp]
       \centering

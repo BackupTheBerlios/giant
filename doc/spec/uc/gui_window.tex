@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.27 $
-%  $Date: 2003/03/31 21:49:58 $
-%  $Author: schulzgt $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.28 $
+%  $Date: 2003/03/31 22:02:25 $
+%  $Author: squig $
 %
 %  Description: UseCases für die Fensterfunktionalität der GUI
 %
@@ -22,7 +22,7 @@ Projektes anlegen.
 
   \begin{postsuccess}
     \cond 
-    Das neue leere Anzeigefenster ist geöffnet.
+    Das neue, leere Anzeigefenster ist geöffnet.
     
     \cond
     Das neue Anzeigefenster ist Bestandteil des Projektes. Eine
@@ -36,14 +36,13 @@ Projektes anlegen.
   \end{postfail}
   
   \begin{proc}    
-    \step[1]
-    Der Benutzer startet den UseCase über das Popup 
-     Menü \ref{WINDOW-LIST-POPUP}
-    durch Auswahl von \gq{New Window}
+    \step[1] 
+    Der Benutzer startet den UseCase über das Popup Menü
+    \ref{WINDOW-LIST-POPUP} durch Auswahl von \gq{New Window}.
     
     \step[2] 
     GIANT öffnet den allgemeinen Texteingabedialog 
-    \gq{Enter Name for New Window} (siehe \ref{DIALOG-WINDOW}).
+    \gq{Enter Name For New Window} (siehe \ref{DIALOG-WINDOW}).
       
     \step[3] 
     Der Benutzer gibt dort einen zulässigen Namen für das neue Anzeigefenster
@@ -94,14 +93,14 @@ gehen hierbei unwiederbringlich verloren.
   
   \begin{proc}    
     \step[1]
-    Der Benutzer startet den UseCase über das Popup-Menü \ref{WINDOW-LIST-POPUP}
+    Der Benutzer startet den UseCase über das Popup-Menü \ref{WINDOW-LIST-POPUP}.
     
     \step[2] 
     GIANT zeigt die allgemeine Sicherheitsabfrage (siehe 
     \ref{Sicherheitsabfrage})
     und fragt nach, ob das
     Anzeigefenster wirklich gelöscht werden soll.
-    \gq{Do you really want to delete Window xy ?}
+    \gq{Do you really want to delete the selected window?}
       
     \step[3] 
     Der Benutzer bestätigt mit YES.
@@ -151,7 +150,7 @@ Dient zum Öffnen eines Anzeigefensters des Projektes.
     Der Benutzer führt einen Rechtsklick auf ein nicht geöffnetes
     Anzeigefenster in der Liste über die Anzeigefenster
     (siehe \ref{WINDOW-LIST}) durch und wählt im
-    Popup Menü \ref{WINDOW-LIST-POPUP} den entsprechenden Eintag aus.
+    Popup Menü \ref{WINDOW-LIST-POPUP} den entsprechenden Eintrag aus.
    
     \step[2]
     GIANT öffnet das entsprechende Anzeigefenster.
@@ -209,7 +208,7 @@ Abschnitt \ref{Project Persistenz der Projekte} spezifiziert.
     GIANT zeigt die allgemeine Sicherheitsabfrage 
     (siehe \ref{Sicherheitsabfrage}) und fragt nach, ob eventuelle
     Änderungen im Anzeigefenster gespeichert werden sollen oder nicht
-    \gq{Do you want to save changes made to Window xy before closing it?}.
+    \gq{The content has changed. Do you want to save the changes?}.
     
     
     \step[3]
@@ -268,7 +267,7 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
 
   \begin{postfail}
     \cond Hat der Benutzer den UseCase an irgendeinem Punkt abgebrochen,
-    kehrt das System zu dem Zustand zurück, in dem es vor Start des
+    kehrt das System zu dem Zustand zurück, in dem es vor dem Start des
     UseCase war.
   \end{postfail}
   
@@ -282,8 +281,8 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
     
     \step[2] 
     GIANT zeigt in der Statuszeile im Hauptfenster 
-    \gq{Select Position in Display Window
-    for Insertion of IML Subgraph}
+    \gq{Select Position In Display Window
+    For Insertion Of IML Subgraph} an.
     Der Benutzer wählt das entsprechende Anzeigefenster aus und
     gibt über das Fadenkreuz (siehe \ref{Fadenkreuzcursor}) die Position vor, 
     an der die neuen
@@ -294,24 +293,22 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
     GIANT zeigt den Dialog zur Auswahl von Layoutalgorithmen
     (siehe \ref{Layoutalgorithmen-Dialog}).
     
-    \step[4]
-    Der Benutzer wählt einen der vorgegebenen Layoutalgorithmen aus. Bei 
-    semantischen Layouts gibt er über den Layoutalgorithmen Dialog
-    (siehe \ref{Layoutalgorithmen-Dialog}) auch die Kantenklassen vor,
-    die für das Layout berücksichtigt werden sollen (Details
-    zu Layoutalgorithmen siehe Kapitel \ref{Layoutalgorithmen}).
+    \step[4] Der Benutzer wählt einen der vorgegebenen
+    Layoutalgorithmen aus. Bei semantischen Layouts gibt er über den
+    Layoutalgorithmen Dialog (siehe \ref{Layoutalgorithmen-Dialog})
+    auch die Kantenklassen vor, die für das Layout berücksichtigt
+    werden sollen (siehe Kapitel \ref{Layoutalgorithmen} für Details
+    zu Layoutalgorithmen).
            
     \step[5]
     Der Benutzer bestätigt mit OK.
           
-    \step[6] 
-    GIANT berechnet das entsprechende Layout und zeigt derweil einen
-    DIALOG an, über den der Benutzer über den Fortschritt der Berechnung
-    informiert wird (siehe \ref{Progressbar-Modale}).\\
-    Während der Berechnung des Layouts kann das System GIANT nicht bedient
-    werden (die gesamte GUI ist gesperrt). Zugänglich ist nur der
-    Button zum Abbruch des Algorithmus \ref{Progressbar-Modale-Cancel}.
-
+    \step[6] GIANT berechnet das entsprechende Layout und zeigt einen
+    Dialog an, der den Benutzer über den Fortschritt der Berechnung
+    informiert (siehe \ref{Progressbar-Modale}).\\
+    Während der Berechnung des Layouts kann das System GIANT nicht
+    bedient werden. Zugänglich ist nur der Button zum Abbruch des
+    Algorithmus (siehe \ref{Progressbar-Modale-Cancel}).
     
     \step[7]
     Nach Abschluss der Berechnung fügt GIANT die Fenster-Knoten und 
@@ -335,12 +332,11 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
           {UC: Selektion in Anzeigefenster einfügen}
 \index{Selektionen!in Anzeigefenster einfügen}
           
-Mit diesem UseCase kann eine Selektion aus einem Anzeigefenster
-in ein anderes Anzeigefenster unter Beibehaltung des Layouts
-der Quell-Selektion kopiert werden (
-siehe hierzu  \ref{Verhalten beim Einfügen von IML-Teilgraphen 
-und Selektionen in Anzeigefenster} und
-\ref{Einfügen von Selektionen in Anzeigefenster}).  
+Mit diesem UseCase kann eine Selektion aus einem Anzeigefenster in ein
+anderes Anzeigefenster unter Beibehaltung des Layouts kopiert werden
+(siehe \ref{Verhalten beim Einfügen von IML-Teilgraphen und
+  Selektionen in Anzeigefenster} und \ref{Einfügen von Selektionen in
+  Anzeigefenster}).
 
   \begin{precond}
     \cond Ein Projekt mit mindestens zwei geöffneten 
@@ -455,7 +451,7 @@ Fenster-Kanten}).
 
   \begin{postfail}
     \cond Hat der Benutzer den UseCase an irgendeinem Punkt abgebrochen,
-    kehrt das System zu dem Zustand zurück, in dem es vor Start des
+    kehrt das System zu dem Zustand zurück, in dem es vor dem Start des
     UseCase war.
   \end{postfail}
   
