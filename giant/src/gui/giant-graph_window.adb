@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.40 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.41 $
 --  $Author: squig $
---  $Date: 2003/07/18 16:40:08 $
+--  $Date: 2003/07/19 00:14:45 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -279,6 +279,21 @@ package body Giant.Graph_Window is
       end if;
       return True;
    end Validate_Selection_Name;
+
+   procedure On_Selection_List_Create_Subgraph
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
+      Selection_Name : String := Get_Selected_Selection (Window);
+      Subgraph_Name : String
+        := Controller.Get_Unique_Name
+        (Get_Window_Name (Window) & "_" & Get_Selected_Selection (Window));
+   begin
+      Controller.Create_Subgraph_From_Selection
+        (Window_Name    => Get_Window_Name (Window),
+         Selection_Name => Get_Selected_Selection (Window),
+         Subgraph_Name  => Subgraph_Name);
+   end On_Selection_List_Create_Subgraph;
 
    procedure On_Selection_List_Delete
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
@@ -618,6 +633,10 @@ package body Giant.Graph_Window is
       Gtk.Menu.Append (Window.Selection_List_Menu,
                        New_Menu_Item (-"Set Operation...",
                                       On_Selection_List_Set_Operation'Access,
+                                      Window));
+      Gtk.Menu.Append (Window.Selection_List_Menu,
+                       New_Menu_Item (-"Insert As Subgraph",
+                                      On_Selection_List_Create_Subgraph'Access,
                                       Window));
       Gtk.Menu.Append (Window.Selection_List_Menu, New_Menu_Separator);
       Gtk.Menu.Append (Window.Selection_List_Menu,
