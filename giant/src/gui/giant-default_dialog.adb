@@ -20,9 +20,9 @@
 --
 --  First Author: <unkown>
 --
---  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.7 $
 --  $Author: squig $
---  $Date: 2003/06/19 16:38:06 $
+--  $Date: 2003/06/19 19:37:05 $
 --
 
 with Ada.Text_Io; use Ada.Text_Io;
@@ -192,9 +192,6 @@ package body Giant.Default_Dialog is
       --  horizontal separator
       Gtk.Box.Pack_End (Dialog.Center_Box, New_Hseperator, Expand => False,
                         Fill => True, Padding => DEFAULT_SPACING);
-
-      --  activate default button
-      Result := Activate_Default (Dialog);
 
       --  set position
       Set_Position (Dialog, Win_Pos_Mouse);

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.9 $
 --  $Author: squig $
---  $Date: 2003/06/19 16:38:06 $
+--  $Date: 2003/06/19 19:37:05 $
 --
 
 with Ada.Strings.Unbounded;
@@ -46,6 +46,60 @@ package body Giant.Gui_Manager is
    Open_Windows : Graph_Window_Lists.List := Graph_Window_Lists.Create;
 
    ---------------------------------------------------------------------------
+   --  Initialize Helper
+   ---------------------------------------------------------------------------
+
+   ---------------------------------------------------------------------------
+   --  Initializes the main window.
+   procedure Initialize_Project
+   is
+      List : String_Lists.List;
+      Iterator : String_Lists.ListIter;
+      Name : Ada.Strings.Unbounded.Unbounded_String;
+   begin
+      --  add windows
+      List := Projects.Get_All_Visualisation_Window_Names
+        (Controller.Get_Project);
+      Iterator := String_Lists.MakeListIter (List);
+      while String_Lists.More (Iterator) loop
+         String_Lists.Next (Iterator, Name);
+         Add_Window (Ada.Strings.Unbounded.To_String (Name));
+      end loop;
+      String_Lists.Destroy (List);
+
+      --  add subgraphs
+      List := Projects.Get_All_Subgraphs (Controller.Get_Project);
+      Iterator := String_Lists.MakeListIter (List);
+      while String_Lists.More (Iterator) loop
+         String_Lists.Next (Iterator, Name);
+         Add_Subgraph (Ada.Strings.Unbounded.To_String (Name));
+      end loop;
+      String_Lists.Destroy (List);
+   end;
+
+   procedure Initialize_Graph_Window
+     (Window : access Graph_Window.Graph_Window_Record'Class)
+   is
+      Vis_Window : Vis_Windows.Visual_Window_Access
+        := Graph_Window.Get_Vis_Window (Window);
+
+      List : String_Lists.List;
+      Iterator : String_Lists.ListIter;
+      Name : Ada.Strings.Unbounded.Unbounded_String;
+   begin
+      --  add pins
+      List := Vis_Windows.Get_All_Pins (Vis_Window);
+      Iterator := String_Lists.MakeListIter (List);
+      while String_Lists.More (Iterator) loop
+         String_Lists.Next (Iterator, Name);
+         Graph_Window.Add_Pin (Window, Ada.Strings.Unbounded.To_String (Name));
+      end loop;
+      String_Lists.Destroy (List);
+
+      --  add selections
+   end;
+
+   ---------------------------------------------------------------------------
    --  Main Application
    ---------------------------------------------------------------------------
 
@@ -60,23 +114,6 @@ package body Giant.Gui_Manager is
       end if;
       return False;
    end Hide;
-
-   procedure Initialize_Project
-   is
-      List : String_Lists.List;
-      Iterator : String_Lists.ListIter;
-      Name : Ada.Strings.Unbounded.Unbounded_String;
-   begin
-      --  initialize main window data
-      List := Projects.Get_All_Visualisation_Window_Names
-        (Controller.Get_Project);
-      Iterator := String_Lists.MakeListIter (List);
-      while String_Lists.More (Iterator) loop
-         String_Lists.Next (Iterator, Name);
-         Add_Window (Ada.Strings.Unbounded.To_String (Name));
-      end loop;
-      String_Lists.Destroy (List);
-   end;
 
    procedure Show
    is
@@ -252,18 +289,25 @@ package body Giant.Gui_Manager is
 
    procedure Open (Visual_Window : Vis_Windows.Visual_Window_Access)
    is
+      use type Graph_Window.Graph_Window_Access;
+
       Window : Graph_Window.Graph_Window_Access;
    begin
       if (not Gui_Initialized) then
          return;
       end if;
 
-      if (Is_Window_Open (Vis_Windows.Get_Name (Visual_Window))) then
+      Window := Get_Open_Window (Vis_Windows.Get_Name (Visual_Window));
+      if (Window /= Graph_Window.Null_Graph_Window) then
+         --  window is already open, focus
+         Graph_Window.Grab_Focus (Window);
          return;
       end if;
 
       Graph_Window.Create (Window, Visual_Window);
       Graph_Window_Lists.Attach (Open_Windows, Window);
+
+      Initialize_Graph_Window (Window);
 
       Graph_Window.Show_All (Window);
 

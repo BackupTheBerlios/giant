@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.10 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.11 $
 --  $Author: squig $
---  $Date: 2003/06/19 16:38:06 $
+--  $Date: 2003/06/19 19:37:05 $
 --
 ------------------------------------------------------------------------------
 --
@@ -88,6 +88,20 @@ package Giant.Controller is
      return Boolean;
 
    ---------------------------------------------------------------------------
+   --  Selections
+   ---------------------------------------------------------------------------
+
+   procedure Create_Selection
+     (Window_Name : in String;
+      Name        : in String := "Name");
+
+   function Remove_Selection
+     (Window_Name          : in String;
+      Name                 : in String;
+      Ask_For_Confirmation : in Boolean := True)
+     return Boolean;
+
+   ---------------------------------------------------------------------------
    --  Subgraphs
    ---------------------------------------------------------------------------
 
@@ -102,6 +116,21 @@ package Giant.Controller is
    procedure Rename_Subgraph
      (Old_Name : in String;
       New_Name : in String);
+
+   procedure Subgraph_Difference
+     (Left_Name   : in String;
+      Right_Name  : in String;
+      Target_Name : in String);
+
+   procedure Subgraph_Intersection
+     (Left_Name   : in String;
+      Right_Name  : in String;
+      Target_Name : in String);
+
+   procedure Subgraph_Union
+     (Left_Name   : in String;
+      Right_Name  : in String;
+      Target_Name : in String);
 
    ---------------------------------------------------------------------------
    --  Windows

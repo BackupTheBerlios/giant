@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.9 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.10 $
 -- $Author: squig $
--- $Date: 2003/06/19 16:38:06 $
+-- $Date: 2003/06/19 19:37:05 $
 --
 
 with Glib;
@@ -55,6 +55,12 @@ package body Giant.Gui_Utils is
      (Widget : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
    begin
+      --  do not disable tear off items
+      if (Widget.all
+          in Gtk.TearOff_Menu_Item.Gtk_Tearoff_Menu_Item_Record) then
+         return;
+      end if;
+
       Gtk.Widget.Set_Sensitive (Widget, Sensitive);
    end;
 

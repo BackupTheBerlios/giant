@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.15 $
 --  $Author: squig $
---  $Date: 2003/06/19 16:38:06 $
+--  $Date: 2003/06/19 19:37:06 $
 --
 
 with Ada.Strings.Unbounded;
@@ -297,7 +297,7 @@ package body Giant.Main_Window is
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
    begin
-      --Controller.Remove_Window (Get_Selected_Window);
+      --Controller.Remove_Subgraph (Get_Selected_Subgraph);
       null;
    end On_Subgraph_List_Highlight;
 
@@ -306,13 +306,13 @@ package body Giant.Main_Window is
    is
       Removed : Boolean;
    begin
-      Removed := Controller.Remove_Subgraph (Get_Selected_Window);
+      Removed := Controller.Remove_Subgraph (Get_Selected_Subgraph);
    end On_Subgraph_List_Delete;
 
    procedure On_Subgraph_List_Rename
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
-      Old_Name : String := Get_Selected_Window;
+      Old_Name : String := Get_Selected_Subgraph;
    begin
       declare
          New_Name : constant String
@@ -345,7 +345,7 @@ package body Giant.Main_Window is
    end;
 
    ---------------------------------------------------------------------------
-   --  Constructors
+   --  Initializers
    ---------------------------------------------------------------------------
 
    function Initialize_Menu
@@ -481,7 +481,7 @@ package body Giant.Main_Window is
    end Initialize;
 
    ---------------------------------------------------------------------------
-   --  Window Methods
+   --  Public Methods
    ---------------------------------------------------------------------------
 
    procedure Update_Window

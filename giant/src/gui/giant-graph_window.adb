@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.6 $
 --  $Author: squig $
---  $Date: 2003/06/19 16:38:06 $
+--  $Date: 2003/06/19 19:37:05 $
 --
 
 with Glib;
@@ -37,6 +37,20 @@ with Giant.Default_Dialog;
 with Giant.Gui_Utils; use Giant.Gui_Utils;
 
 package body Giant.Graph_Window is
+
+   procedure Update_Pin
+     (List : access String_Clists.Giant_Clist_Record;
+      Row  : in     Glib.Gint;
+      Name : in     String);
+
+   procedure Update_Selection
+     (List : access String_Clists.Giant_Clist_Record;
+      Row  : in     Glib.Gint;
+      Name : in     String);
+
+   ---------------------------------------------------------------------------
+   --  Callbacks
+   ---------------------------------------------------------------------------
 
    function On_Close
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
@@ -59,6 +73,10 @@ package body Giant.Graph_Window is
       null;
    end On_Pick_Edge_Clicked;
 
+   ---------------------------------------------------------------------------
+   --  Pin Menu Callbacks
+   ---------------------------------------------------------------------------
+
    procedure On_Pin_List_Show
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
@@ -66,12 +84,20 @@ package body Giant.Graph_Window is
       null;
    end On_Pin_List_Show;
 
+   ---------------------------------------------------------------------------
+   --  Selection Menu Callbacks
+   ---------------------------------------------------------------------------
+
    procedure On_Selection_List_Show
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
    begin
       null;
    end On_Selection_List_Show;
+
+   ---------------------------------------------------------------------------
+   --  Zoom Callbacks
+   ---------------------------------------------------------------------------
 
    procedure On_Zoom_In_Clicked
      (Source : access Gtk.Button.Gtk_Button_Record'Class)
@@ -86,6 +112,10 @@ package body Giant.Graph_Window is
    begin
       null;
    end On_Zoom_Out_Clicked;
+
+   ---------------------------------------------------------------------------
+   --  Initializers
+   ---------------------------------------------------------------------------
 
    procedure Create
      (Window        :    out Graph_Window_Access;
@@ -136,33 +166,32 @@ package body Giant.Graph_Window is
       Gtk.Box.Pack_Start (Left_Box, Left_Paned,
                           Expand => True, Fill => True, Padding => 0);
 
-      --  pins popup menu
-      Gtk.Menu.Gtk_New (Window.Pin_Popup_Menu);
-      Gtk.Menu.Append (Window.Pin_Popup_Menu,
+      --  pins list menu
+      Gtk.Menu.Gtk_New (Window.Pin_List_Menu);
+      Gtk.Menu.Append (Window.Pin_List_Menu,
                        New_Menu_Item (-"Show", On_Pin_List_Show'Access));
 
       --  pins
-      Gtk.Clist.Gtk_New (Window.Pin_List, 1);
-      Gtk.Clist.Set_Show_Titles (Window.Pin_List, True);
-      Connect_Popup_Menu (Window.Pin_List, Window.Pin_Popup_Menu);
+      String_Clists.Create (Window.Pin_List, 1, Update_Pin'Access);
+      Connect_Popup_Menu (Window.Pin_List, Window.Pin_List_Menu);
 
-      Gtk.Clist.Set_Column_Title (Window.Pin_List, 0, -"Name");
+      String_Clists.Set_Column_Title (Window.Pin_List, 0, -"Name");
 
       Gtk.Paned.Add1 (Left_Paned,
                       Add_Scrollbar_And_Frame (Window.Pin_List, -"Pins"));
 
-      --  selections popup menu
-      Gtk.Menu.Gtk_New (Window.Selection_Popup_Menu);
-      Gtk.Menu.Append (Window.Selection_Popup_Menu,
+      --  selections list menu
+      Gtk.Menu.Gtk_New (Window.Selection_List_Menu);
+      Gtk.Menu.Append (Window.Selection_List_Menu,
                        New_Menu_Item (-"Show", On_Selection_List_Show'Access));
 
       --  selections
-      Gtk.Clist.Gtk_New (Window.Selection_List, 2);
-      Gtk.Clist.Set_Show_Titles (Window.Selection_List, True);
-      Connect_Popup_Menu (Window.Selection_List, Window.Selection_Popup_Menu);
+      String_Clists.Create (Window.Selection_List, 2, Update_Selection'Access);
+      String_Clists.Set_Show_Titles (Window.Selection_List, True);
+      Connect_Popup_Menu (Window.Selection_List, Window.Selection_List_Menu);
 
-      Gtk.Clist.Set_Column_Title (Window.Selection_List, 0, -"Name");
-      Gtk.Clist.Set_Column_Title (Window.Selection_List, 1, -"Color");
+      String_Clists.Set_Column_Title (Window.Selection_List, 0, -"Name");
+      String_Clists.Set_Column_Title (Window.Selection_List, 1, -"Color");
 
       Gtk.Paned.Add2 (Left_Paned,
                       Add_Scrollbar_And_Frame (Window.Selection_List,
@@ -236,6 +265,10 @@ package body Giant.Graph_Window is
          Widget_Return_Callback.To_Marshaller (On_Close'Access));
    end;
 
+   ---------------------------------------------------------------------------
+   --  Public Methods
+   ---------------------------------------------------------------------------
+
    function Close
      (Window : access Graph_Window_Record'Class)
      return Boolean
@@ -274,5 +307,79 @@ package body Giant.Graph_Window is
    begin
       Set_Title (Window, Vis_Windows.Get_Name (Window.Visual_Window));
    end Update_Title;
+
+   ---------------------------------------------------------------------------
+   --  Pin Methods
+   ---------------------------------------------------------------------------
+
+   procedure Update_Pin
+     (List : access String_Clists.Giant_Clist_Record;
+      Row  : in     Glib.Gint;
+      Name : in     String)
+   is
+   begin
+      String_Clists.Set_Text (List, Row, 0, Name);
+   end Update_Pin;
+
+   procedure Add_Pin
+     (Window : access Graph_Window_Record'Class;
+      Name   : in     String)
+   is
+   begin
+      String_Clists.Add (Window.Pin_List, Name);
+   end;
+
+   procedure Remove_Pin
+     (Window : access Graph_Window_Record'Class;
+      Name   : in     String)
+   is
+   begin
+      String_Clists.Remove (Window.Pin_List, Name);
+   end;
+
+   procedure Update_Pin
+     (Window : access Graph_Window_Record'Class;
+      Name   : in     String)
+   is
+   begin
+      String_Clists.Update (Window.Pin_List, Name);
+   end;
+
+   ---------------------------------------------------------------------------
+   --  Selection Methods
+   ---------------------------------------------------------------------------
+
+   procedure Update_Selection
+     (List : access String_Clists.Giant_Clist_Record;
+      Row  : in     Glib.Gint;
+      Name : in     String)
+   is
+   begin
+      String_Clists.Set_Text (List, Row, 0, Name);
+   end Update_Selection;
+
+   procedure Add_Selection
+     (Window : access Graph_Window_Record'Class;
+      Name   : in     String)
+   is
+   begin
+      String_Clists.Add (Window.Selection_List, Name);
+   end;
+
+   procedure Remove_Selection
+     (Window : access Graph_Window_Record'Class;
+      Name   : in     String)
+   is
+   begin
+      String_Clists.Remove (Window.Selection_List, Name);
+   end;
+
+   procedure Update_Selection
+     (Window : access Graph_Window_Record'Class;
+      Name   : in     String)
+   is
+   begin
+      String_Clists.Update (Window.Selection_List, Name);
+   end;
 
 end Giant.Graph_Window;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-set_operation_dialog.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-set_operation_dialog.adb,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/06/19 16:38:06 $
+--  $Date: 2003/06/19 19:37:06 $
 --
 
 with Ada.Strings.Unbounded;
@@ -45,6 +45,34 @@ with Giant.Gui_Utils; use Giant.Gui_Utils;
 package body Giant.Set_Operation_Dialog is
 
    ---------------------------------------------------------------------------
+   --  Helpers
+   ---------------------------------------------------------------------------
+
+   function Get_Left_Source
+     (Dialog : access Set_Operation_Dialog_Record'Class)
+     return String
+   is
+   begin
+      return Gtk.Gentry.Get_Text (Gtk.Combo.Get_Entry (Dialog.Left_Source));
+   end;
+
+   function Get_Right_Source
+     (Dialog : access Set_Operation_Dialog_Record'Class)
+     return String
+   is
+   begin
+      return Gtk.Gentry.Get_Text (Gtk.Combo.Get_Entry (Dialog.Left_Source));
+   end;
+
+   function Get_Target
+     (Dialog : access Set_Operation_Dialog_Record'Class)
+     return String
+   is
+   begin
+      return Gtk.Gentry.Get_Text (Dialog.Target);
+   end;
+
+   ---------------------------------------------------------------------------
    --  Callbacks
    ---------------------------------------------------------------------------
 
@@ -61,8 +89,40 @@ package body Giant.Set_Operation_Dialog is
 
       if (Default_Dialog.Get_Response (Dialog)
           = Default_Dialog.Response_Okay) then
-         -- run the operation
-         null;
+         if (Get_Target (Dialog) = "") then
+            Default_Dialog.Show_Error_Dialog (-"Please provide a name for the target.");
+            return False;
+         end if;
+
+         declare
+            Input : Gtk.Gentry.Gtk_Entry
+              := Gtk.Combo.Get_Entry (Dialog.Operation);
+            Operation : String := Gtk.Gentry.Get_Text (Input);
+         begin
+            if (Operation = -"Difference") then
+               Controller.Subgraph_Difference (Get_Left_Source (Dialog),
+                                               Get_Right_Source (Dialog),
+                                               Get_Target (Dialog));
+            elsif (Operation = -"Intersection") then
+               Controller.Subgraph_Intersection (Get_Left_Source (Dialog),
+                                                 Get_Right_Source (Dialog),
+                                                 Get_Target (Dialog));
+            elsif (Operation = -"Union") then
+               Controller.Subgraph_Union (Get_Left_Source (Dialog),
+                                          Get_Right_Source (Dialog),
+                                          Get_Target (Dialog));
+            else
+               Default_Dialog.Show_Error_Dialog (-"Please select a valid operation.");
+               return False;
+            end if;
+         exception
+            when Projects.Subgraph_Is_Not_Part_Of_Project_Exception =>
+               Default_Dialog.Show_Error_Dialog (-"Please select valid sources.");
+               return False;
+            when Projects.Subgraph_Is_Already_Part_Of_Project_Exception =>
+               Default_Dialog.Show_Error_Dialog (-"The target name is already used. Please try a different name.");
+               return False;
+         end;
       end if;
 
       return True;
@@ -88,7 +148,6 @@ package body Giant.Set_Operation_Dialog is
       Iterator : String_Lists.ListIter;
       Name : Ada.Strings.Unbounded.Unbounded_String;
    begin
-      --  initialize main window data
       Source := Projects.Get_All_Subgraphs (Controller.Get_Project);
       Iterator := String_Lists.MakeListIter (Source);
       while String_Lists.More (Iterator) loop

@@ -21,9 +21,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.11 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.12 $
 --  $Author: squig $
---  $Date: 2003/06/19 16:38:06 $
+--  $Date: 2003/06/19 19:37:05 $
 --
 
 with Ada.Strings.Unbounded;
@@ -39,6 +39,11 @@ with Giant.Vis_Windows;
 package body Giant.Controller is
 
    package Logger is new Giant.Logger("giant.controller");
+
+   type Subgraph_Operation_Type is access function
+     (Left  : in Graph_Lib.Subgraphs.Subgraph;
+      Right : in Graph_Lib.Subgraphs.Subgraph)
+   return Graph_Lib.Subgraphs.Subgraph;
 
    ---------------------------------------------------------------------------
    --  Projects
@@ -187,6 +192,29 @@ package body Giant.Controller is
       Gui_Manager.Show;
    end Show_Gui;
 
+
+   ---------------------------------------------------------------------------
+   --  Selections
+   ---------------------------------------------------------------------------
+
+   procedure Create_Selection
+     (Window_Name : in String;
+      Name        : in String := "Name")
+   is
+   begin
+      null;
+   end Create_Selection;
+
+   function Remove_Selection
+     (Window_Name          : in String;
+      Name                 : in String;
+      Ask_For_Confirmation : in Boolean := True)
+     return Boolean
+   is
+   begin
+      return True;
+   end Remove_Selection;
+
    ---------------------------------------------------------------------------
    --  Subgraphs
    ---------------------------------------------------------------------------
@@ -198,6 +226,8 @@ package body Giant.Controller is
       Unique_Name : String := Get_Unique_Name (Name);
    begin
       Subgraph := Graph_Lib.Subgraphs.Create (Unique_Name);
+      Graph_Lib.Subgraphs.Add_Node_Set (Subgraph, Graph_Lib.Get_All_Nodes);
+
       Projects.Add_Subgraph (Current_Project, Subgraph);
       Gui_Manager.Add_Subgraph (Unique_Name);
    end Create_Subgraph;
@@ -225,6 +255,58 @@ package body Giant.Controller is
 
       Gui_Manager.Rename_Subgraph (Old_Name, New_Name);
    end Rename_Subgraph;
+
+   procedure Subgraph_Operation
+     (Left_Name   : in String;
+      Right_Name  : in String;
+      Target_Name : in String;
+      Operation   : in Subgraph_Operation_Type)
+   is
+      Left : Graph_Lib.Subgraphs.Subgraph;
+      Right : Graph_Lib.Subgraphs.Subgraph;
+      Target : Graph_Lib.Subgraphs.Subgraph;
+   begin
+      Left := Projects.Get_Subgraph (Current_Project, Left_Name);
+      Right := Projects.Get_Subgraph (Current_Project, Right_Name);
+
+      --  operation
+      Target := Operation (Left, Right);
+      Graph_Lib.Subgraphs.Rename (Target, Target_Name);
+
+      --  add to project
+      Projects.Add_Subgraph (Current_Project, Target);
+      Gui_Manager.Add_Subgraph (Target_Name);
+   end;
+
+   procedure Subgraph_Difference
+     (Left_Name   : in String;
+      Right_Name  : in String;
+      Target_Name : in String)
+   is
+   begin
+      Subgraph_Operation (Left_Name, Right_Name, Target_Name,
+                          Graph_Lib.Subgraphs.Symetric_Difference'Access);
+   end;
+
+   procedure Subgraph_Intersection
+     (Left_Name   : in String;
+      Right_Name  : in String;
+      Target_Name : in String)
+   is
+   begin
+      Subgraph_Operation (Left_Name, Right_Name, Target_Name,
+                          Graph_Lib.Subgraphs.Intersection'Access);
+   end;
+
+   procedure Subgraph_Union
+     (Left_Name   : in String;
+      Right_Name  : in String;
+      Target_Name : in String)
+   is
+   begin
+      Subgraph_Operation (Left_Name, Right_Name, Target_Name,
+                          Graph_Lib.Subgraphs.Union'Access);
+   end;
 
    ---------------------------------------------------------------------------
    --  Windows
