@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: afa.tex,v $, $Revision: 1.12 $
-%  $Date: 2003/03/31 22:02:25 $
+%  $RCSfile: afa.tex,v $, $Revision: 1.13 $
+%  $Date: 2003/04/05 11:08:45 $
 %  $Author: squig $
 %
 %  Description: Beschreibung allgemeiner funktionaler Anforderungen - UseCase
@@ -201,11 +201,9 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
                Anzeigefenstern} 
 
   \index{Selektieren}
-
-  Hier werden die Konventionen und die nötigen Bedienhandlungen
-  zur Selektion und Deselektion einzelner
-  Fenster-Knoten und Fenster-Kanten, sowie zur Bildung von 
-  Selektionsmengen über Fenster-Knoten und Fenster-Kanten spezifiziert.
+  
+  Hier werden die Abläufe zur Selektion und Deselektion einzelner
+  Fenster-Knoten und Fenster-Kanten spezifiziert.
     
   \begin{enumerate}
   
@@ -258,11 +256,9 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
     gibt es zu jedem Anzeigefenster standardmäßig immer eine aktuelle
     Selektion, diese kann auch leer sein.
   
-    \item
-    Es gibt zu jedem Anzeigefenster beliebig viele Selektionen, 
-    davon ist maximal immer eine die aktuelle Selektion (diese kann
-    natürlich auch leer sein, also keine Fenster-Knoten oder 
-    Fenster-Kanten enthalten).
+  \item Es gibt zu jedem Anzeigefenster beliebig viele Selektionen,
+    davon ist maximal immer eine die aktuelle Selektion (siehe 
+    \ref{Selektieren von Fenster-Knoten und Fenster-Kanten in Anzeigefenstern}).
     
     \item 
     Das oben beschriebene Selektieren mittels linker Maustaste etc. betrifft
@@ -288,9 +284,9 @@ in Anzeigefenster}
 
   \index{IML-Teilgraphen!Einfügen in Anzeigefenster}
   \index{Selektionen!Einfügen in Anzeigefenster}
-
-   Dieser Abschnitt spezifiziert die Konventionen für
-   das Einfügen von IML-Teilgraphen und Selektionen in Anzeigefenster.
+  
+  In diesem Abschnitt wir das Einfügen von IML-Teilgraphen und
+  Selektionen in Anzeigefenster spezifiziert.
 
    \subsection {Vorgabe der Zielposition} \index{Zielposition}
      \label{Vorgabe der Zielposition}
@@ -486,7 +482,7 @@ in Anzeigefenster}
   
 Sollen Fenster-Knoten auf dem Anzeigeinhalt automatisch
 auseinandergeschoben werden, so geschieht dies nach dem hier beschriebenen
-Modus (keine zentrische Streckung).
+Modus.
 GIANT stellt diese Funktionalität dem Benutzer über einen
 UseCase zur manuellen Ausführung zur Verfügung. Ein automatisches 
 \gq{Auseinanderschieben von Fenster-Knoten} durch GIANT selbst ist

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: load_store.tex,v $, $Revision: 1.14 $
-%  $Date: 2003/03/31 22:02:25 $
+%  $RCSfile: load_store.tex,v $, $Revision: 1.15 $
+%  $Date: 2003/04/05 11:08:45 $
 %  $Author: squig $
 %
 %  Description: UseCases für Lade- und Speicherfunktionalität
@@ -28,16 +28,18 @@
   \begin{postsuccess}
     \cond Ein neues GIANT Projekt mit dem eingegebenen Namen 
           ist erstellt und geladen.   
+
     \cond Eine IML-Datei ist geladen.
+
     \cond Das angegebene Projektverzeichnis ist gegebenenfalls erstellt 
           worden (siehe \ref {Project Das Projektverzeichnis}).
 
     \cond Die Projektdatei (siehe \ref{Project Die Projektdatei})
           liegt im Projektverzeichnis.
  
-    \cond Das zuvor geöffnete Projekt ist geschlossen.
+    \cond Ein zuvor geöffnetes Projekt ist geschlossen.
     
-    \cond Änderungen an dem zuvor geöffneten Projekt sind gespeichert
+    \cond Änderungen an einem zuvor geöffneten Projekt sind gespeichert
           oder verworfen.
   \end{postsuccess}
 
@@ -220,14 +222,14 @@ Speichert alle Informationen zu einem Projekt in eine neue Projektdatei
           worden.
     \cond Die Informationen des Projekts sind persistent in die 
           neuen Verwaltungsdateien im Projektverzeichnis 
-          der neuen Projektdatei geschrieben (weitere Informationen
-          hierzu siehe \ref{Project Persistenz der Projekte}).
+          der neuen Projektdatei geschrieben (siehe auch
+          \ref{Project Persistenz der Projekte}).
         
     \cond Das Projekt bleibt in GIANT geöffnet, zukünftiges Speichern
           (siehe \ref{Projekt speichern} betrifft nur die Dateien 
           im neu erzeugten Projekt.
 
-    \cond Die alte Projektdatei (samt allen Verwaltungsdateien) bleibt
+    \cond Die alte Projektdatei und alle Verwaltungsdateien bleiben
           unverändert.
     
  
@@ -240,7 +242,7 @@ Speichert alle Informationen zu einem Projekt in eine neue Projektdatei
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase über das Hauptmenü
-    (\ref{Main-Window-File}) \gq{Save Project As...}.
+    (siehe \ref{Main-Window-File}) \gq{Save Project As...}.
 
      
     \step[2] Der Benutzer gibt im Standard-Filechooser-Dialog 

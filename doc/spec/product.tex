@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: product.tex,v $, $Revision: 1.34 $
-%  $Date: 2003/03/31 22:02:25 $
+%  $RCSfile: product.tex,v $, $Revision: 1.35 $
+%  $Date: 2003/04/05 11:08:45 $
 %  $Author: squig $
 %
 %  Description: Beschreibung des Produktes. Übersicht über die Funktionen
@@ -14,14 +14,14 @@
 % ==============================================================================
 \section{GIANT Projekte} \index{Projekte} \index{Persistenz}
 
-Innerhalb eines Projektes fasst GIANT Informationen, 
-wie erzeugte Anzeigefenster und
-erzeugte IML-Teilgraphen für einen vorgegebenen IML-Graphen, zusammen
-und speichert diese persistent. Die Zusammenfassung zu Projekten soll der 
-Übersicht dienen und den Austausch von Teilergebnissen, 
+Innerhalb eines Projektes fasst GIANT Informationen, wie
+Anzeigefenster und IML-Teilgraphen für einen vorgegebenen IML-Graphen,
+zusammen und speichert diese persistent. Die Zusammenfassung zu
+Projekten soll der Übersicht dienen und den Austausch von
+Teilergebnissen,
 wie z.B. einzelner Anzeigefenster, erleichtern.\\
-Für weitere Informationen zu Projekten siehe 
-Kapitel \ref{GIANT Projektverwaltung}.
+Für weitere Informationen zu Projekten siehe Kapitel \ref{GIANT
+  Projektverwaltung}.
 
 
 % ==============================================================================
@@ -30,16 +30,18 @@ Hinsichtlich der logischen Zusammenfassung von Knoten und Kanten unterscheidet
 GIANT IML-Teilgraphen und Selektionen.
 
   \subsection{IML-Teilgraphen} \index{IML-Teilgraphen}
-  \index{Graph-Knoten} \index{Graph-Kanten} \index{hervorheben} Ein
-  IML-Teilgraph beschreibt eine Knoten- und Kantenmenge aus dem
-  IML-Graphen bei der jede Kante einen Start- und einen Zielknoten hat
-  -- die sogenannten Graph-Knoten und Graph-Kanten.  Die Graph-Knoten
-  und Graph-Kanten von IML-Teilgraphen können in Anzeigefenstern
-  hervorgehoben werden. Desweiteren können die Graph-Knoten und
-  Graph-Kanten von IML-Teilgraphen als Fenster-Knoten und
-  Fenster-Kanten in Anzeigefenster eingefügt und layoutet werden.  Die
-  IML-Teilgraphen sind aber völlig unabhängig von den Anzeigefenstern
-  und enthalten insbesondere keine Layoutinformationen.
+  \index{Graph-Knoten} \index{Graph-Kanten} \index{hervorheben} 
+  
+  Ein IML-Teilgraph ist eine Knoten- und Kantenmenge aus dem
+  IML-Graphen mit der Bedingung, daß die Start- und Zielknoten jeder
+  Kante Teil der Menge sind. Diese sogenannten Graph-Knoten und
+  Graph-Kanten können in Anzeigefenstern hervorgehoben werden.
+  Desweiteren können die Graph-Knoten und Graph-Kanten von
+  IML-Teilgraphen als Fenster-Knoten und Fenster-Kanten in
+  Anzeigefenster eingefügt und layoutet werden. Die IML-Teilgraphen
+  sind global in der Anwendung verfügbar, aber völlig unabhängig von
+  den Anzeigefenstern und enthalten insbesondere keine
+  Layoutinformationen.
 
   \subsection{Selektionen} \index{Selektionen}
   Selektionen stellen die lokale Variante von Knoten- und Kantenmengen dar.

@@ -1,6 +1,6 @@
 % =============================================================================
-%  $RCSfile: fa.tex,v $, $Revision: 1.23 $
-%  $Date: 2003/03/31 22:02:25 $
+%  $RCSfile: fa.tex,v $, $Revision: 1.24 $
+%  $Date: 2003/04/05 11:08:45 $
 %  $Author: squig $
 %
 %  Description:
@@ -41,33 +41,32 @@ Programmdatei. Hierbei hat er bezüglich eventueller Kommandozeilenparameter
 die folgenden Optionen. 
 
   \subsection {Mögliche Parameter} \index{Kommandozeilenparameter}
+
+  GIANT kann folgendermaßen gestartet werden:\\
+  \verb+giant [(-n file -i file|-l file) [-e file]|-h]+
+
   \begin {enumerate}
-    
-    \item
-    \verb+-loadiml=''Pfad''+; Abkürzung: \verb+-li=''Pfad''+ \\
+
+  \item
+    \verb+--newproject='Pfad'+; Abkürzung: \verb+-n 'Pfad'+\\
+    Angabe des Pfades für die neu zu erstellenden Projektdatei.  Die
+    Datei darf nicht vorhanden sein. Das Verzeichnis der Projektdatei ist
+    automatisch Projektverzeichnis und muss bereits existieren.\\\\
+
+    \verb+--iml='Pfad'+; Abkürzung: \verb+-i 'Pfad'+ \\
     Angabe des Pfades zu einer existierenden IML-Graph Datei.
     
-    \item 
-    \verb+-newprojectfile=''Pfad''+; Abkürzung: \verb+-np''Pfad''+\\
-    Angabe des Pfades für die neu zu erstellenden Projektdatei 
-    (die Datei darf nicht bereits vorhanden sein, sonst Fehlermeldung).\\
-    Das Verzeichnis der Projektdatei ist automatisch Projektverzeichnis,
-    falls das Verzeichnis schon vorhanden ist, darf darin keine 
-    weitere Projektdatei liegen.
-    Existiert das Projektverzeichnis noch nicht, so wird es neu angelegt.
-    
-    \item 
-    \verb+-loadproject=''Pfad''+; Abkürzung: \verb+-lp=''Pfad''+ \\
+  \item 
+    \verb+--loadproject='Pfad'+; Abkürzung: \verb+-l 'Pfad'+ \\
     Angabe des Pfades zu einer existierenden Projektdatei.
           
-    \item
-    \verb+-loadquery=''Pfad''+; Abkürzung \verb+-lq=''Pfad''+\\
+  \item
+    \verb+--execute='Pfad'+; Abkürzung \verb+-e 'Pfad'+\\
     Pfad zu einer Datei in der ein GQSL Skript gespeichert ist.
   
-    \item 
-    \verb+-help+\\
-    Zeigt Hilfe zu den möglichen Kommandozeilenparametern an.
-        
+  \item 
+    \verb+--help+; Abkürzung \verb+-h+\\
+    Zeigt eine Hilfe zu den möglichen Kommandozeilenparametern an.
       
   \end {enumerate}
       
@@ -82,23 +81,19 @@ die folgenden Optionen.
     GIANT startet und zeigt das Main Window an. 
     Es ist noch kein Projekt geladen.
     
-    \item Eingabe von: \verb+giant -loadiml=''my\_iml\_file''+\\
-    \verb+-newprojectfile=''/home/projektverzeichnis/projektdatei''+\\
+    \item Eingabe von: \verb+giant --newproject='/home/projekt/sample.giant' --iml='sample.iml'+\\
     Ein neues Projekt wird geöffnet und erhält den Namen der Projektdatei.
     \label{Kommandozeile_neus}
 
-    \item Eingabe von: \verb+giant -loadproject=''my\_project\_file''+\\
+    \item Eingabe von: \verb+giant --loadproject='sample.giant'+\\
     Das angegebene Projekt wird geöffnet.
     \label{Kommandozeile_altes}
     
     \item
     Bei \ref{Kommandozeile_neus} und \ref{Kommandozeile_altes}
-    kann zusätzlich entweder der Parameter\\
-    \verb+... -loadquery''my\_query\_file''+ eingegeben werden+\\
-    In diesem Falle wird dann die übergebene Anfrage ausgeführt.
-    Die Ergebnisse werden dem neuen oder dem bestehenden Projekt 
-    hinzugefügt, sind aber noch nicht persistent gespeichert.
-
+    kann zusätzlich der Parameter \verb+--execute='file.query'+ 
+    eingegeben werden.\\
+    In diesem Falle wird das übergebene GQSL Skript ausgeführt.
 
   \end {enumerate}
   
@@ -170,3 +165,7 @@ Hier werden UseCases zur Eingabe und Ausführung von Anfragen
 
 
 \input{uc/query}
+
+%%% Local Variables: 
+%%% TeX-master: "spec"
+%%% End: 

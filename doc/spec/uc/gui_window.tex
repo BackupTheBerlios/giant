@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.30 $
-%  $Date: 2003/04/03 20:51:11 $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.31 $
+%  $Date: 2003/04/05 11:08:45 $
 %  $Author: squig $
 %
 %  Description: UseCases für die Fensterfunktionalität der GUI
@@ -166,7 +166,7 @@ Näheres zur Persistenz von Anzeigefenstern ist unter Abschnitt
 
 Mit diesem UseCase wird ein geöffnetes Anzeigefenster geschlossen.
 Näheres zur Persistenz von Anzeigefenstern ist unter Abschnitt
-\ref{Project Persistenz der Projekte} spezifiziert.
+\ref{Project Verwaltungsdateien für Anzeigefenster} spezifiziert.
 
   \begin{precond}
     \cond Ein Projekt mit mindestens einem Anzeigefenster ist geladen.
@@ -274,7 +274,7 @@ unwiederbringlich verloren.
 
 Mit diesem UseCase können die Graph-Kanten und Graph-Knoten 
 von IML-Teilgraphen in Anzeigefenster eingefügt werden.
-Siehe hierzu auch   
+Siehe auch   
 \ref{Verhalten beim Einfügen von IML-Teilgraphen und Selektionen 
 in Anzeigefenster} und
 insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
@@ -420,7 +420,7 @@ anderes Anzeigefenster unter Beibehaltung des Layouts kopiert werden
     for Insertion of copied IML Subgraph}
     Der Benutzer gibt über das Fadenkreuz die Position vor, 
     an der die neuen Fenster-Knoten und Fenster-Kanten eingefügt werden 
-    sollen (siehe hierzu auch \ref{Fadenkreuzcursor}).
+    sollen (siehe auch \ref{Fadenkreuzcursor}).
     Die Statuszeile im Hauptfenster schaltet danach auf Normalmodus zurück.
     
     \step[3]
@@ -456,7 +456,7 @@ anderes Anzeigefenster unter Beibehaltung des Layouts kopiert werden
                   
 Mittels dieses UseCases können alle Fenster-Knoten und Fenster-Kanten
 einer Selektion aus einem Anzeigefenster gelöscht werden
-(siehe hierzu auch \ref{Verhalten beim Entfernen von Fenster-Knoten und 
+(siehe auch \ref{Verhalten beim Entfernen von Fenster-Knoten und 
 Fenster-Kanten}).
 
  
@@ -494,7 +494,7 @@ Fenster-Kanten}).
   \begin{proc}    
   
     \step[1]
-    Der User führt einen Rechtsklick auf die entsprechende Selektion in der
+    Der Benutzer führt einen Rechtsklick auf die entsprechende Selektion in der
     Selektionsauswahlliste durch (siehe \ref{Selektionsauswahlliste})
     und wählt im entsprechenden Popup-Menü den Eintrag \gq{Delete Selection}
     aus.
@@ -507,7 +507,7 @@ Fenster-Kanten}).
     including Nodes and Edges?}).
     
     \step[3]
-    Der Benutzer bestätigt mit YES.
+    Der Benutzer bestätigt mit \gq{Yes}.
     
     \step[4]
     GIANT löscht die Selektion samt allen zugehörigen Fenster-Knoten und
@@ -517,7 +517,7 @@ Fenster-Kanten}).
   \end{proc}
 
   \begin{aproc}
-    \astep{2} Der Benutzer bricht den UseCase mit NO ab.
+    \astep{2} Der Benutzer bricht den UseCase mit \gq{No} ab.
   \end{aproc}
 
 
@@ -531,7 +531,7 @@ Fenster-Kanten}).
 Mittels dieses UseCase kann der Benutzer die Visualisierung
 von Fenster-Knoten und Fenster-Kanten innerhalb eines Anzeigefensters
 dynamisch durch Auswahl verschiedener frei definierbarer
-Visualisierungsstile (siehe auch \ref{Config Visualisierungsstile}) ändern.
+Visualisierungsstile ändern (siehe auch \ref{Config Visualisierungsstile}).
 
   \begin{precond}
 
@@ -539,8 +539,8 @@ Visualisierungsstile (siehe auch \ref{Config Visualisierungsstile}) ändern.
     Es gibt ein geöffnetes Anzeigefenster.    
    
     \cond
-    Es gibt mindestens einem vom Benutzer definierten Visualisierungsstil
-    (siehe hierzu auch \ref{Config Visualisierungsstile}). 
+    Es gibt mindestens einen vom Benutzer definierten Visualisierungsstil
+    (siehe auch \ref{Config Visualisierungsstile}). 
        
   \end{precond}
 
@@ -603,10 +603,10 @@ Verändert die Position des sichtbaren Anzeigeinhaltes.
       Der Benutzer scrollt den sichtbaren Anzeigefokus mittels der horizontalen
       und vertikalen Bildlaufleisten des Anzeigefensters (siehe    
       \ref{Scrolleisten}). Dies geschieht mittels
-      der Maus gemäß der gängigen Konventionen aus GTK/Ada für Bildlaufleisten.
+      der Maus gemäß der gängigen Konventionen von GTK/Ada für Bildlaufleisten.
       
       \item
-      Gemäß der gängigen intuitiven Konventionen kann auch 
+      Gemäß der gängigen Konventionen kann auch 
       mittels der Cursortasten gescrollt werden.\\
       Das Drücken der linken Cursortaste führt z.B.\ dazu, dass der sichtbare
       Anzeigeinhalt des Anzeigefensters, welches innerhalb des Windowmanagers
@@ -953,7 +953,7 @@ Drop auf dem sichtbaren Anzeigeinhalt verschoben werden.
 Dieser UseCase wird benötigt, um Fenster-Knoten auseinander schieben zu 
 können. So kann der Benutzer an einer beliebigen Stelle des Anzeigefensters
 genügend Platz zum Einfügen neuer Fenster-Knoten und Fenster-Kanten schaffen.
-Siehe hierzu auch Abschnitt \ref{Auseinanderschieben von Fenster-Knoten}.
+Siehe auch Abschnitt \ref{Auseinanderschieben von Fenster-Knoten}.
 
 
   \begin{precond}
@@ -1010,7 +1010,7 @@ Siehe hierzu auch Abschnitt \ref{Auseinanderschieben von Fenster-Knoten}.
     
     \step[5]
     GIANT schiebt die Knoten entsprechend auseinander
-    (siehe hierzu auch \ref{Auseinanderschieben von Fenster-Knoten}).
+    (siehe auch \ref{Auseinanderschieben von Fenster-Knoten}).
     
   \end{proc}
   \begin{aproc}
