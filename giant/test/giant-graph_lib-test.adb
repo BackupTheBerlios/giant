@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.2 $
---  $Author: squig $
---  $Date: 2003/06/18 17:24:07 $
+--  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.3 $
+--  $Author: koppor $
+--  $Date: 2003/06/23 15:26:37 $
 --
 
 with Ada.Text_IO;
@@ -35,44 +35,74 @@ with Giant.Logger;
 
 package body Giant.Graph_Lib.Test is
 
+   -------------------------------------
+   --  Global variables and routines  --
+   -------------------------------------
+
    package Logger is new Giant.Logger("giant.graph_lib.test");
 
-   procedure Test_Init (R : in out AUnit.Test_Cases.Test_Case'Class)
+   Root : Node_Id;
+
+   procedure Output_Attributes (Node : in Node_Id) is
+      Iter : Node_Attribute_Iterator;
+      Attr : Node_Attribute_Id;
+   begin
+      Iter := Make_Attribute_Iterator (Node);
+      while More (Iter) loop
+         Next (Iter, Attr);
+
+         Logger.Debug ("Attribute " & Convert_Node_Attribute_Id_To_Name (Attr));
+
+         case Get_Node_Attribute_Class_Id (Attr) is
+            when Class_Node_Id =>
+               null;
+            when Class_SLoc =>
+               null;
+            when others =>
+               null;
+         end case;
+
+      end loop;
+   end Output_Attributes;
+
+   -----------------
+   --  Testcases  --
+   -----------------
+
+   ---------------------------------------------------------------------------
+   --  Init of the graph
+   procedure Init (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
-      procedure Output_Attributes (Node : in Node_Id) is
-         Iter : Node_Attribute_Iterator;
-         Attr : Node_Attribute_Id;
-      begin
-         Iter := Make_Attribute_Iterator (Node);
-         while More (Iter) loop
-            Next (Iter, Attr);
-
-            Logger.Debug ("Attribute " & Convert_Node_Attribute_Id_To_Name (Attr));
-
-            case Get_Node_Attribute_Class_Id (Attr) is
-               when Class_Node_Id =>
-                  null;
-               when Class_SLoc =>
-                  null;
-               when others =>
-                  null;
-            end case;
-
-         end loop;
-      end Output_Attributes;
-
-      Root : Node_Id;
    begin
       Giant.Graph_Lib.Create ("resources/rfg_examp.iml");
 
       Root := Get_Root_Node;
-      Logger.Debug ("Got Root Node with ID: " & Node_Id_Image (Root));
+
+   end Init;
+
+   procedure Output_RootNode (R : in out AUnit.Test_Cases.Test_Case'Class)
+   is
+   begin
+      Logger.Debug ("Root Node with ID: " & Node_Id_Image (Root));
       Output_Attributes (Root);
+   end Output_RootNode;
 
-      --Assert (Ada.Text_IO.Is_Open (Out_File), "Is_Open");
+   procedure Edge_Set_Test (R : in out AUnit.Test_Cases.Test_Case'Class)
+   is
+   begin
+      null;
+   end Edge_Set_Test;
 
+   procedure Done (R : in out AUnit.Test_Cases.Test_Case'Class)
+   is
+   begin
       Giant.Graph_Lib.Destroy;
-   end;
+   end Done;
+
+
+   --------------------------------
+   --  Routines from AUnit-Test  --
+   --------------------------------
 
    function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is
    begin
@@ -81,7 +111,10 @@ package body Giant.Graph_Lib.Test is
 
    procedure Register_Tests (T : in out Test_Case) is
    begin
-      Register_Routine (T, Test_Init'Access, "Init");
+      Register_Routine (T, Init'Access, "Init");
+      Register_Routine (T, Output_RootNode'Access, "Output_RootNode");
+      Register_Routine (T, Edge_Set_Test'Access, "Edge_Set_Test");
+      Register_Routine (T, Done'Access, "Done");
    end Register_Tests;
 
    procedure Set_Up (T : in out Test_Case) is
