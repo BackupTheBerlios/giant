@@ -21,9 +21,9 @@
 --  Based on framework of: Steffen Pingel
 --  First Author:          Oliver Kopp
 --
---  $RCSfile: graphlib_test.adb,v $, $Revision: 1.9 $
+--  $RCSfile: graphlib_test.adb,v $, $Revision: 1.10 $
 --  $Author: koppor $
---  $Date: 2003/07/09 17:09:57 $
+--  $Date: 2003/07/13 00:07:22 $
 --
 
 with Ada.Text_Io;
@@ -43,59 +43,20 @@ procedure Graphlib_Test is
       Result : Access_Test_Suite := new Test_Suite;
    begin
       Add_Test (Result, new Giant.Graph_Lib.Test.Test_Case);
+      Add_Test (Result,
+                new Giant.Graph_Lib.Node_Attribute_Filters.Test.Test_Case);
+      Add_Test (Result, new Giant.Graph_Lib.Subgraphs.Atomic_Tests.Test_Case);
+      Add_Test (Result, new Giant.Graph_Lib.Subgraphs.Test.Test_Case);
       return Result;
    end Suite;
 
    procedure Run is new AUnit.Test_Runner (Suite);
 
-   ---------------------------------------------------------------------------
-   function Node_Attribute_Filters_Suite return Access_Test_Suite is
-      Result : Access_Test_Suite := new Test_Suite;
-   begin
-      Add_Test (Result,
-                new Giant.Graph_Lib.Node_Attribute_Filters.Test.Test_Case);
-      return Result;
-   end Node_Attribute_Filters_Suite;
-
-   procedure Node_Attribute_Filters_Run is
-      new AUnit.Test_Runner (Node_Attribute_Filters_Suite);
-
-   ---------------------------------------------------------------------------
-   function Subgraphs_Atomic_Suite return Access_Test_Suite is
-      Result : Access_Test_Suite := new Test_Suite;
-   begin
-      Add_Test (Result, new Giant.Graph_Lib.Subgraphs.Atomic_Tests.Test_Case);
-      return Result;
-   end Subgraphs_Atomic_Suite;
-
-   procedure Subgraphs_Atomic_Run is new AUnit.Test_Runner
-     (Subgraphs_Atomic_Suite);
-
-   ---------------------------------------------------------------------------
-   function Subgraphs_Suite return Access_Test_Suite is
-      Result : Access_Test_Suite := new Test_Suite;
-   begin
-      Add_Test (Result, new Giant.Graph_Lib.Subgraphs.Test.Test_Case);
-      return Result;
-   end Subgraphs_Suite;
-
-   procedure Subgraphs_Run is new AUnit.Test_Runner (Subgraphs_Suite);
-
 begin
    Giant.Default_Logger.Init ("debug.log");
    Giant.Default_Logger.Debug ("Starting Test...");
 
-   Ada.Text_Io.Put ("Run");
    Run;
-
-   Ada.Text_Io.Put ("Node_Attribute_Filters");
-   Node_Attribute_Filters_Run;
-
-   Ada.Text_Io.Put ("Subgraphs");
-   Subgraphs_Run;
-
-   Ada.Text_Io.Put ("Subgraphs: Atomic");
-   Subgraphs_Atomic_Run;
 
    Giant.Default_Logger.Close;
 end Graphlib_Test;
