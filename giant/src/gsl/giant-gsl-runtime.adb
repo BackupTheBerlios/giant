@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/27 10:37:09 $
+-- $Date: 2003/08/27 11:39:01 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -1210,7 +1210,9 @@ package body Giant.Gsl.Runtime is
                       (Get_Value (Gsl_Node_Id (N)), Attrib_Id)));
 
                when Class_Identifier =>
-                  return Gsl_Null;
+                  return Gsl_Type (Create_Gsl_String
+                    (Get_Node_Attribute_Identifier_Value
+                      (Get_Value (Gsl_Node_Id (N)), Attrib_Id)));
 
                when Class_String =>
                   return Gsl_Type (Create_Gsl_String
@@ -1247,12 +1249,14 @@ package body Giant.Gsl.Runtime is
                   return Gsl_Null;
 
             end case;
+         else
+            Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+              "Script 'get_attribute': Attribute not found.");
          end if;
       else
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
            "Script 'get_attribute': Gsl_Node_Id and Gsl_String expected.");
       end if;
-      return Gsl_Null;
    end Runtime_Get_Attribute;
 
    ---------------------------------------------------------------------------
