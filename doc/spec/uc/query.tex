@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: query.tex,v $, $Revision: 1.16 $
-%  $Date: 2003/04/17 22:44:59 $
-%  $Author: schwiemn $
+%  $RCSfile: query.tex,v $, $Revision: 1.17 $
+%  $Date: 2003/04/18 00:50:12 $
+%  $Author: keulsn $
 %
 %  Description: UseCases für die Anfragen
 %
@@ -14,8 +14,8 @@
 \index{Skript!ausführen}
 Mit diesem UseCase kann ein Skript über den Skriptdialog
 (siehe \ref{GUI Anfragedialog}) eingegeben werden.
-Die Möglichkeiten der GQSL sind im Detail in Kapitel
-\ref {GIANT Query Skripting Language} beschrieben.
+Die Möglichkeiten der GSL sind im Detail in Kapitel
+\ref {GIANT Scripting Language} beschrieben.
 
 
   \begin{precond}
@@ -41,21 +41,21 @@ Die Möglichkeiten der GQSL sind im Detail in Kapitel
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase durch Auswahl des Eintrags 
-    \gq{Execute GQSL Script} im Hauptmenü  
+    \gq{Execute GSL Script} im Hauptmenü  
     (siehe \ref{Main-Window-Tools}).
       
     \step[2] 
     GIANT öffnet den Skriptdialog (siehe \ref{GUI Anfragedialog}).
       
     \step[3]
-    Der Benutzer gibt dort im dafür vorgesehenen Textfeld das GQSL Skript
-    (siehe auch Kapitel \ref{GIANT Query Skripting Language}) ein und 
+    Der Benutzer gibt dort im dafür vorgesehenen Textfeld das GSL Skript
+    (siehe auch Kapitel \ref{GIANT Scripting Language}) ein und 
     bestätigt mit \gq {OK}.
 
     \step[4]
-    GIANT prüft das eingegebene GQSL Skript. Sollte das Skript
+    GIANT prüft das eingegebene GSL Skript. Sollte das Skript
     nicht den Vorgaben der Grammatik 
-    (siehe Kapitel \ref{GIANT Query Skripting Language}) entsprechen, erscheint
+    (siehe Kapitel \ref{GIANT Scripting Language}) entsprechen, erscheint
     eine Fehlermeldung (siehe \ref{afa Fehlerverhalten})
     und das System kehrt zu Schritt 3 des UseCase zurück.
         
@@ -83,7 +83,7 @@ Die Möglichkeiten der GQSL sind im Detail in Kapitel
 % ==============================================================================
 \begin{uc}[UC Anfrage laden]{UC: Skript laden}
 \index{Anfragen!aus Datei laden}
-Der Benutzer kann zusätzlich zur manuellen Eingabe von GQSL Skripten
+Der Benutzer kann zusätzlich zur manuellen Eingabe von GSL Skripten
 (siehe \ref{Anfrage ausführen}) auch gespeicherte Skripte aus 
 einer Datei (siehe \ref {Config Anfrage-Dateien}) laden.
 
@@ -110,7 +110,7 @@ einer Datei (siehe \ref {Config Anfrage-Dateien}) laden.
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase durch Auswahl des Eintrags 
-    \gq{Execute GQSL Script} im Hauptmenü  
+    \gq{Execute GSL Script} im Hauptmenü  
     (siehe \ref{Main-Window-Tools}).
       
     \step[2] 
@@ -127,12 +127,12 @@ einer Datei (siehe \ref {Config Anfrage-Dateien}) laden.
       Anfrage-Dateien}) aus.
         
     \step[6]
-    GIANT zeigt das aus der Datei geladene GQSL Skript 
-    (siehe Kapitel \ref {GIANT Query Skripting Language}) im Textfeld
+    GIANT zeigt das aus der Datei geladene GSL Skript 
+    (siehe Kapitel \ref {GIANT Scripting Language}) im Textfeld
     des Skriptdialogs an.
 
     \step[7]
-    Falls gewünscht kann der Benutzer das GQSL Skript im Textfeld
+    Falls gewünscht kann der Benutzer das GSL Skript im Textfeld
     noch manuell weiter modifizieren.
     
     \step[8]
@@ -140,9 +140,9 @@ einer Datei (siehe \ref {Config Anfrage-Dateien}) laden.
     des \gq{Start Query} im Skriptdialog (siehe \ref{GUI Anfragedialog}).
 
     \step[9]
-    GIANT prüft das geladene und eventuell modifizierte GQSL Skript. 
+    GIANT prüft das geladene und eventuell modifizierte GSL Skript. 
     Sollte das Skript nicht den Vorgaben der Grammatik 
-    (siehe Kapitel \ref {GIANT Query Skripting Language}) entsprechen, erscheint
+    (siehe Kapitel \ref {GIANT Scripting Language}) entsprechen, erscheint
     eine Fehlermeldung (siehe \ref {afa Fehlerverhalten})
     und das System kehrt zu Schritt 7 des UseCase zurück.
 
@@ -171,7 +171,7 @@ einer Datei (siehe \ref {Config Anfrage-Dateien}) laden.
 % ==============================================================================
 \begin{uc}[Anfrage speichern]{UC: Skript speichern}
 \index{Anfragen!in eine Datei speichern}
-Mit diesem UseCase kann der Benutzer GQSL Skripte aus dem 
+Mit diesem UseCase kann der Benutzer GSL Skripte aus dem 
 Skriptdialog (siehe \ref{GUI Anfragedialog}) in Dateien 
 (siehe \ref {Config Anfrage-Dateien}) speichern.
 
@@ -179,14 +179,14 @@ Skriptdialog (siehe \ref{GUI Anfragedialog}) in Dateien
     \cond Der Skriptdialog (siehe \ref{GUI Anfragedialog}) ist
           geöffnet und enthält in dem dafür vorgesehenen Textfeld
           entweder ein manuell eingegebenes oder ein aus einer
-          Datei geladenes und eventuell modifiziertes GQSL Skript.
+          Datei geladenes und eventuell modifiziertes GSL Skript.
 
   \end{precond}
 
   \begin{postsuccess}
-    \cond Eine Datei, welche das GQSL Skript enthält, wurde
+    \cond Eine Datei, welche das GSL Skript enthält, wurde
           angelegt.
-    \cond GIANT zeigt den Skriptdialog, das gespeicherte GQSL Skript
+    \cond GIANT zeigt den Skriptdialog, das gespeicherte GSL Skript
           ist weiterhin in dem Textfeld vorhanden.
       
   \end{postsuccess}
@@ -196,7 +196,7 @@ Skriptdialog (siehe \ref{GUI Anfragedialog}) in Dateien
     \cond Es wurde keine Datei erzeugt
     \cond GIANT zeigt weiterhin den Skriptdialog an
           (siehe \ref{GUI Anfragedialog}) und alle dort getätigten
-          Eingaben (insbesondere das GQSL Skript im Textfeld des
+          Eingaben (insbesondere das GSL Skript im Textfeld des
           Dialoges) bleiben erhalten.
    
   \end{postfail}
@@ -208,8 +208,8 @@ Skriptdialog (siehe \ref{GUI Anfragedialog}) in Dateien
     den Button \gq{Save As...}.
     
     \step[2]
-    GIANT prüft ob das GQSL Skript im Textfeld des Skriptdialogs den
-    Vorgaben der Grammatik (siehe Kapitel \ref {GIANT Query Skripting Language}) 
+    GIANT prüft ob das GSL Skript im Textfeld des Skriptdialogs den
+    Vorgaben der Grammatik (siehe Kapitel \ref {GIANT Scripting Language}) 
     entspricht. Falls nicht, erscheint eine Fehlermeldung 
     (siehe \ref {afa Fehlerverhalten})
     und das System kehrt zu Schritt 1 zurück.
@@ -219,11 +219,11 @@ Skriptdialog (siehe \ref{GUI Anfragedialog}) in Dateien
     \ref {Standard-Filechooser-Dialog}).
   
     \step[4]
-    Der Benutzer gibt den Pfad und die Datei, in der das GQSL Skript
+    Der Benutzer gibt den Pfad und die Datei, in der das GSL Skript
     gespeichert werden soll, vor und bestätigt mit OK.
 
     \step[5]
-    GIANT speichert das GQSL Skript in der vorgegebenen Datei.
+    GIANT speichert das GSL Skript in der vorgegebenen Datei.
 
   \end{proc}
 
