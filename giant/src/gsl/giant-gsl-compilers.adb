@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-compilers.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/09 14:14:22 $
+-- $Date: 2003/06/10 11:58:45 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -79,17 +79,14 @@ package body Giant.Gsl.Compilers is
       Script : Gsl_Script; 
       Stack  : Execution_Stacks.Stack;
    begin
-      Text_IO.Put ("Looking for " & Name & " in Hash Map: ");
       if Script_Hashed_Mappings.Is_Bound (Comp.Scripts, 
         To_Unbounded_String(Name)) then
-         Text_IO.Put_Line ("Found");
          -- script was already parsed
          -- syntax tree is in the cache
          Script := Script_Hashed_Mappings.Fetch (Comp.Scripts,
            To_Unbounded_String(Name)); 
          return Get_Execution_Stack (Comp, Script.Syntax_Tree);
       else
-         Text_IO.Put_Line ("Not Found");
          Script := new Gsl_Script_Record (Name'Length);
          Script.Name := Name;
  
@@ -98,11 +95,14 @@ package body Giant.Gsl.Compilers is
            To_Unbounded_String(Name), Script);
 
          -- use the gsl parser to generate a syntax tree
-         Text_IO.Put_Line ("Start Parser..");
+         Default_Logger.Debug
+           ("Compiler: Starting parser ...", "Giant.Gsl");
          Giant.Scanner.IO.Open_Input (Name & ".gsl");
          Giant.Parser.yyparse;
          Script.Syntax_Tree := Giant.Parser.Get_Syntax_Tree;
          Giant.Scanner.IO.Close_Input;
+         Default_Logger.Debug
+           ("Compiler: Parser finished.", "Giant.Gsl");
          return Get_Execution_Stack (Comp, Script.Syntax_Tree);
       end if;
    end Get_Execution_Stack;
@@ -146,6 +146,16 @@ package body Giant.Gsl.Compilers is
                Set_Size (Node, Size);
             end if;
             Log_Syntax_Node (Node);
+
+         elsif Get_Node_Type (Node) = Script_Activation then
+            Default_Logger.Debug
+              ("Compiler: Script_Activation found.", "Giant.Gsl");
+            Execution_Stacks.Push (Stack, Node);
+            -- push the list (parameter)
+            Push_Syntax_Node (Get_Child2 (Node), Stack);
+            -- push the expression (Script_Reference)
+            Push_Syntax_Node (Get_Child1 (Node), Stack);
+
          else
             Default_Logger.Debug ("Compiler: Push", "Giant.Gsl");
             Log_Syntax_Node (Node);
