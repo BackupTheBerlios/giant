@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/14 15:23:49 $
+-- $Date: 2003/07/19 15:07:59 $
 --
 -- This package implements the Gsl Runtime Library 
 --
@@ -128,6 +128,12 @@ package Giant.Gsl.Runtime is
 
    ---------------------------------------------------------------------------
    --
+   function Runtime_Is_In
+     (Parameter : Gsl_List)
+      return Gsl_Type;
+
+   ---------------------------------------------------------------------------
+   --
    function Runtime_For_Each
      (Parameter : Gsl_List)
       return Gsl_Type;
@@ -213,8 +219,24 @@ package Giant.Gsl.Runtime is
      (Parameter : Gsl_List)
       return Gsl_Type;
 
+
 ------------------------------------------------------------------------------
--- IML graph (ref. GIANT Scripting Language Specification 1.5.1.7)
+-- IML interpreter (ref. GIANT Scripting Language Specification 1.5.2.1)
+
+   ---------------------------------------------------------------------------
+   --
+   function Runtime_Get_Current_Window
+     (Parameter : Gsl_List)
+      return Gsl_Type;
+
+   ---------------------------------------------------------------------------
+   --
+   function Runtime_Set_Current_Window
+     (Parameter : Gsl_List)
+      return Gsl_Type;
+
+------------------------------------------------------------------------------
+-- IML graph (ref. GIANT Scripting Language Specification 1.5.2.2)
 
    ---------------------------------------------------------------------------
    --
@@ -247,7 +269,7 @@ package Giant.Gsl.Runtime is
       return Gsl_Type;
 
 ------------------------------------------------------------------------------
--- GUI (ref. GIANT Scripting Language Specification 1.5.2.4)
+-- GUI (ref. GIANT Scripting Language Specification 1.5.2.3 and 1.5.2.4)
 
    function Runtime_Exists_Window
      (Parameter : Gsl_List)
