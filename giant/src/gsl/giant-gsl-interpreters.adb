@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/07 16:18:14 $
+-- $Date: 2003/07/14 15:23:01 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -37,6 +37,7 @@ with Ada.Exceptions;
 with Giant.Controller;
 with Giant.Default_Logger;
 with Giant.Graph_Lib.Subgraphs;
+with Giant.Graph_Lib.Selections;
 with Giant.Gsl.Types;
 use  Giant.Gsl.Types;
 with Giant.Gsl.Syntax_Tree;
@@ -100,6 +101,9 @@ package body Giant.Gsl.Interpreters is
      (Individual : Interpreter;
       Name       : String;
       Context    : String) is
+
+      use Giant.Gsl.Runtime;
+
    begin
       -- set the current interpreter and initilize context and script
       Current_Interpreter := Individual;
@@ -119,29 +123,37 @@ package body Giant.Gsl.Interpreters is
       -- register runtime functions
       Default_Logger.Debug
         ("Interpreter: Register runtime functions.", "Giant.Gsl");
-      Register_Runtime (Giant.Gsl.Runtime.Runtime_Set'Access, "set");
-      Register_Runtime (Giant.Gsl.Runtime.Runtime_If'Access, "if");
-      Register_Runtime (Giant.Gsl.Runtime.Runtime_Loop'Access, "loop");
-      Register_Runtime (Giant.Gsl.Runtime.Runtime_Error'Access, "error");
-      Register_Runtime (Giant.Gsl.Runtime.Runtime_Run'Access, "run");
+      Register_Runtime (Runtime_Set'Access, "set");
+      Register_Runtime (Runtime_If'Access, "if");
+      Register_Runtime (Runtime_Loop'Access, "loop");
+      Register_Runtime (Runtime_Error'Access, "error");
+      Register_Runtime (Runtime_Run'Access, "run");
 
       -- arithmetic (ref. GIANT Scripting Language Specification 1.5.1.3)
-      Register_Runtime (Giant.Gsl.Runtime.Runtime_Add'Access, "add");
-      Register_Runtime (Giant.Gsl.Runtime.Runtime_Sub'Access, "sub");
-      Register_Runtime (Giant.Gsl.Runtime.Runtime_Cat'Access, "cat");
+      Register_Runtime (Runtime_Add'Access, "add");
+      Register_Runtime (Runtime_Sub'Access, "sub");
+      Register_Runtime (Runtime_Cat'Access, "cat");
 
       -- compare (ref. GIANT Scripting Language Specification 1.5.1.4)
-      Register_Runtime (Giant.Gsl.Runtime.Runtime_Less'Access, "less");
-      Register_Runtime (Giant.Gsl.Runtime.Runtime_Equal'Access, "equal");
-      Register_Runtime (Giant.Gsl.Runtime.Runtime_In_Regexp'Access,
-                        "in_regexp");
-      Register_Runtime (Giant.Gsl.Runtime.Runtime_Type_In'Access, "type_in");
+      Register_Runtime (Runtime_Less'Access, "less");
+      Register_Runtime (Runtime_Equal'Access, "equal");
+      Register_Runtime (Runtime_In_Regexp'Access, "in_regexp");
+      Register_Runtime (Runtime_Type_In'Access, "type_in");
 
       -- types (ref. GIANT Scripting Language Specification 1.5.1.6)
-      Register_Runtime (Giant.Gsl.Runtime.Runtime_Is_Nodeid'Access,
-                        "is_nodeid");
-      Register_Runtime (Giant.Gsl.Runtime.Runtime_Is_Edgeid'Access,
-                        "is_edgeid");
+      Register_Runtime (Runtime_Is_Nodeid'Access, "is_nodeid");
+      Register_Runtime (Runtime_Is_Edgeid'Access, "is_edgeid");
+      Register_Runtime (Runtime_Is_Node_Set'Access, "is_node_set");
+      Register_Runtime (Runtime_Is_Edge_Set'Access, "is_edge_set");
+      Register_Runtime (Runtime_Is_String'Access, "is_string");
+      Register_Runtime (Runtime_Is_Boolean'Access, "is_boolean");
+      Register_Runtime (Runtime_Is_Natural'Access, "is_natural");
+      Register_Runtime (Runtime_Is_List'Access, "is_list");
+      Register_Runtime (Runtime_Is_Reference'Access, "is_reference");
+      Register_Runtime (Runtime_Is_Script'Access, "is_script");
+      Register_Runtime (Runtime_Is_Null'Access, "is_null");
+
+      Register_Runtime (Runtime_Create_Window'Access, "create_window");
 
       -- initilze the evolution object, comlexity is 0
       Initialize (Individual, 0);
@@ -162,6 +174,7 @@ package body Giant.Gsl.Interpreters is
       Lit      : Gsl_Type;
       Res_List : Gsl_List;
       Sub      : Giant.Graph_Lib.Subgraphs.Subgraph;
+      Sel      : Giant.Graph_Lib.Selections.Selection;
    begin
       if Execution_Stacks.Is_Empty (Current_Interpreter.Execution_Stack) then
          Next_Action := Giant.Evolutions.Finish;
@@ -196,12 +209,14 @@ package body Giant.Gsl.Interpreters is
                end if;
 
             when Global_Var =>
-               -- controller
+               -- controller interaction
                Lit := Get_Literal (Cmd);
                if Get_Ref_Type (Gsl_Var_Reference (Lit)) = Subgraph then
-                  if Exists_Subgraph (Get_Ref_Name
-                       (Gsl_Var_Reference (Lit))) then
-                     Sub := Get_Subgraph (Get_Ref_Name (Gsl_Var_Reference (Lit)));
+                  if Exists_Subgraph (Get_Ref_Name (Gsl_Var_Reference (Lit)))
+                  then
+                     Default_Logger.Debug ("Subgraph found.");
+                     Sub := Get_Subgraph 
+                       (Get_Ref_Name (Gsl_Var_Reference (Lit)));
                      Res_List := Create_Gsl_List (2);
                      Set_Value_At (Res_List, 1, Gsl_Type (Create_Gsl_Node_Set
                        (Giant.Graph_Lib.Subgraphs.Get_All_Nodes (Sub))));
@@ -215,8 +230,28 @@ package body Giant.Gsl.Interpreters is
                         "Gsl Interpreter: Subgraph does not exist.");
                   end if;
                elsif Get_Ref_Type (Gsl_Var_Reference (Lit)) = Selection then
-                  null;
-                  --Giant.Controller.Get_Selection ();
+                  if Current_Interpreter.Context = "" then
+                     Ada.Exceptions.Raise_Exception
+                       (Gsl_Runtime_Error'Identity,
+                        "Gsl Interpreter: No context set.");
+                  elsif Exists_Selection
+                          (To_String (Current_Interpreter.Context),
+                           (Get_Ref_Name (Gsl_Var_Reference (Lit)))) then
+                     Sel := Get_Selection
+                       (To_String (Current_Interpreter.Context),
+                       (Get_Ref_Name (Gsl_Var_Reference (Lit))));
+                     Res_List := Create_Gsl_List (2);
+                     Set_Value_At (Res_List, 1, Gsl_Type (Create_Gsl_Node_Set
+                       (Giant.Graph_Lib.Selections.Get_All_Nodes (Sel))));
+                     Set_Value_At (Res_List, 2, Gsl_Type (Create_Gsl_Edge_Set
+                       (Giant.Graph_Lib.Selections.Get_All_Edges (Sel))));
+                     Result_Stacks.Push (Current_Interpreter.Result_Stack, 
+                       Gsl_Type (Res_List));
+                  else
+                     Ada.Exceptions.Raise_Exception
+                       (Gsl_Runtime_Error'Identity,
+                        "Gsl Interpreter: Selection does not exist.");
+                  end if;
                end if;
 
             when Visible_Ref =>
