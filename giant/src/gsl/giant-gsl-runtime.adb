@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/29 18:15:28 $
+-- $Date: 2003/06/30 16:02:35 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -88,7 +88,6 @@ package body Giant.Gsl.Runtime is
       ES := Get_Current_Execution_Stack;
       RS := Get_Current_Result_Stack;
 
-      Default_Logger.Debug ("Interpreter: Runtime_If called.", "Giant.Gsl");
       if Get_List_Size (Parameter) /= 3 then
          Ada.Exceptions.Raise_Exception
            (Gsl_Runtime_Error'Identity, "Script 'if' requires " &
@@ -97,26 +96,7 @@ package body Giant.Gsl.Runtime is
       Cond := Get_Value_At (Parameter, 1);
       True_Branch := Get_Value_At (Parameter, 2);
       False_Branch := Get_Value_At (Parameter, 3);
-      if Cond'Tag = Gsl_Script_Reference_Record'Tag then
-         -- condition is a Script_Reference 
-         -- execute this script and then call if another time
-         Execution_Stacks.Push (ES,
-                 Giant.Gsl.Compilers.Get_Execution_Stack
-                   (Compiler, Giant.Gsl.Syntax_Tree.Create_Node
-                     (Script_Activation, Null_Node, Null_Node)));
-         Result_Stacks.Push (RS, Get_Var ("if"));
-         Result_Stacks.Push (RS, Gsl_Type (Parameter));
-
-         -- set Ececution_Stack for script 'cond'
-         Execution_Stacks.Push (ES,
-                 Giant.Gsl.Compilers.Get_Execution_Stack
-                   (Compiler, Giant.Gsl.Syntax_Tree.Create_Node
-                     (Script_Activation, Null_Node, Null_Node)));
-         Result_Stacks.Push (RS, Cond);
-         Param := Create_Gsl_List (0);         
-         return Gsl_Type (Param);
-
-      elsif Cond'Tag = Gsl_Boolean_Record'Tag then
+      if Cond'Tag = Gsl_Boolean_Record'Tag then
          if Get_Value (Gsl_Boolean (Cond)) = true then
             if True_Branch'Tag = Gsl_Script_Reference_Record'Tag then
 
@@ -150,8 +130,7 @@ package body Giant.Gsl.Runtime is
          end if;
       else
          Ada.Exceptions.Raise_Exception
-           (Gsl_Runtime_Error'Identity, "Gsl_Script_Reference or " &
-             "Gsl_Boolean expected.");
+           (Gsl_Runtime_Error'Identity, "Script 'if': Gsl_Boolean expected.");
       end if;
    end Runtime_If;
 
