@@ -20,16 +20,17 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-node_annotations.adb,v $, $Revision: 1.12 $
+--  $RCSfile: giant-node_annotations.adb,v $, $Revision: 1.13 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 18:12:32 $
+--  $Date: 2003/09/12 20:30:12 $
 --
 with Ada.Text_IO;
 with Ada.Unchecked_Deallocation;
 
-with GIANT.File_Management; --  from GIANT
-with GIANT.XML_File_Access; --  from GIANT
-with GIANT.Logger;          --  from GIANT
+with Giant.File_Management; --  from GIANT
+with Giant.XML_File_Access; --  from GIANT
+with Giant.Logger;          --  from GIANT
+pragma Elaborate_All (Giant.Logger);
 
 with Tree_Readers;       --  from xmlada
 with DOM.Core;           --  from xmlada

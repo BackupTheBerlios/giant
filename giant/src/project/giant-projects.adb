@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.48 $
---  $Author: squig $
---  $Date: 2003/08/15 11:42:17 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.49 $
+--  $Author: keulsn $
+--  $Date: 2003/09/12 20:30:12 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -42,6 +42,8 @@ with Dom.Core.Elements;  -- from xmlada
 with Giant.File_Management; -- from GIANT
 with Giant.XML_File_Access; -- from GIANT
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
+
 
 package body Giant.Projects is
 

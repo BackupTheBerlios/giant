@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.17 $
--- $Author: squig $
--- $Date: 2003/09/02 20:29:15 $
+-- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.18 $
+-- $Author: keulsn $
+-- $Date: 2003/09/12 20:30:11 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Strings.Fixed;
@@ -43,6 +43,7 @@ with DOM.Core.Documents; -- from xmlada
 with DOM.Core.Elements;  -- from xmlada
 
 with Giant.Logger;          -- from GIANT
+pragma Elaborate_All (Giant.Logger);
 with Giant.XML_File_Access; -- from GIANT
 with Giant.File_Management; -- from GIANT
 with Giant.String_Split;    -- from GIANT

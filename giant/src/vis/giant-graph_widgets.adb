@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.51 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.52 $
 --  $Author: keulsn $
---  $Date: 2003/09/10 23:34:24 $
+--  $Date: 2003/09/12 20:30:13 $
 --
 ------------------------------------------------------------------------------
 
@@ -44,7 +44,9 @@ with Giant.Graph_Widgets.Positioning;
 with Giant.Graph_Widgets.Settings;
 with Giant.Graph_Widgets.States;
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 with Giant.Simple_Priority_Queues;
+pragma Elaborate_All (Giant.Simple_Priority_Queues);
 
 package body Giant.Graph_Widgets is
 

@@ -20,15 +20,16 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-iml_class_inheritance_proc.adb,v $, $Revision: 1.3 $
---  $Author: koppor $
---  $Date: 2003/07/30 07:39:08 $
+--  $RCSfile: giant-iml_class_inheritance_proc.adb,v $, $Revision: 1.4 $
+--  $Author: keulsn $
+--  $Date: 2003/09/12 20:30:11 $
 --
 with DOM.Core.Elements;  -- from xmlada
 
-with GIANT.Logger;  -- from GIANT
+with Giant.Logger;  -- from GIANT
+pragma Elaborate_All (Giant.Logger);
 
-   package body Giant.IML_Class_Inheritance_Proc is
+package body Giant.IML_Class_Inheritance_Proc is
 
    package Logger is new Giant.Logger("Giant.IML_Class_Inheritance_Proc");
 

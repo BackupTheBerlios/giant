@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-simple_priority_queues.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-simple_priority_queues.ads,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/06/30 02:55:17 $
+--  $Date: 2003/09/12 20:30:13 $
 --
 ------------------------------------------------------------------------------
 --
@@ -57,8 +57,6 @@ generic
      return Boolean;
 
 package Giant.Simple_Priority_Queues is
-
-   pragma Elaborate_Body;
 
    ----------------------------------------------------------------------------
    --  Type for fixed size priority queues of size at most 'Max_Size' elements

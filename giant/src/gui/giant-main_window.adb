@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.64 $
---  $Author: squig $
---  $Date: 2003/09/12 00:18:24 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.65 $
+--  $Author: keulsn $
+--  $Date: 2003/09/12 20:30:12 $
 --
 
 with Ada.Exceptions;
@@ -78,6 +78,7 @@ with Giant.Gui_Manager;
 with Giant.Gui_Manager.Actions;
 with Giant.Gui_Utils;
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 with Giant.Main_Window.Actions;
 with Giant.Menu_Factory;
 with Giant.Node_Info_Dialog;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.38 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.39 $
 --  $Author: keulsn $
---  $Date: 2003/08/17 00:34:24 $
+--  $Date: 2003/09/12 20:30:14 $
 --
 ------------------------------------------------------------------------------
 
@@ -31,6 +31,7 @@ with Ada.Numerics.Generic_Elementary_Functions;
 with Ada.Unchecked_Deallocation;
 
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 
 package body Giant.Vis_Data is
 

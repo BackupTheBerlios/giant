@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.25 $
--- $Author: squig $
--- $Date: 2003/09/12 00:18:24 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.26 $
+-- $Author: keulsn $
+-- $Date: 2003/09/12 20:30:12 $
 --
 
 with Glib;
@@ -40,6 +40,7 @@ with Gnat.OS_Lib;
 with Giant.Config;
 with Giant.Config.Global_Data;
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 
 package body Giant.Gui_Utils is
 

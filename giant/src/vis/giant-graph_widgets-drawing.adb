@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.31 $
---  $Author: squig $
---  $Date: 2003/09/09 15:31:24 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.32 $
+--  $Author: keulsn $
+--  $Date: 2003/09/12 20:30:13 $
 --
 ------------------------------------------------------------------------------
 
@@ -36,6 +36,7 @@ with Giant.Graph_Lib.Node_Attribute_Filters;
 with Giant.Graph_Widgets.Settings;
 with Giant.Graph_Widgets.States;
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 
 package body Giant.Graph_Widgets.Drawing is
 

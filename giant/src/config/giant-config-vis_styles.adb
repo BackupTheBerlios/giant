@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.23 $
--- $Author: squig $
--- $Date: 2003/09/01 22:09:11 $
+-- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.24 $
+-- $Author: keulsn $
+-- $Date: 2003/09/12 20:30:11 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -35,9 +35,10 @@ with Tree_Readers;
 
 with Giant.XML_File_Access;            -- from GIANT
 with Giant.File_Management;            -- from GIANT
-with GIANT.Edge_Class_Proc;            -- from GIANT
-with GIANT.IML_Class_Inheritance_Proc; -- from GIANT
-with GIANT.Logger;                     -- from GIANT
+with Giant.Edge_Class_Proc;            -- from GIANT
+with Giant.IML_Class_Inheritance_Proc; -- from GIANT
+with Giant.Logger;                     -- from GIANT
+pragma Elaborate_All (Giant.Logger);
 
 package body Giant.Config.Vis_Styles is
 

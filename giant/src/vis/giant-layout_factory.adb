@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.18 $
---  $Author: koppor $
---  $Date: 2003/09/02 13:37:40 $
+--  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.19 $
+--  $Author: keulsn $
+--  $Date: 2003/09/12 20:30:13 $
 --
 
 with Ada.Exceptions;
@@ -32,11 +32,13 @@ with Ada.Strings.Unbounded;
 with Giant.Config;
 with Giant.Config.Class_Sets;
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 with Giant.Matrix_Layouts;
 with Giant.Tree_Layouts;
 with Giant.String_Split;
 
 with Lists;
+pragma Elaborate_All (Lists);
 with String_Lists;
 
 package body Giant.Layout_Factory is

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-clists.adb,v $, $Revision: 1.8 $
---  $Author: squig $
---  $Date: 2003/09/09 15:31:24 $
+--  $RCSfile: giant-clists.adb,v $, $Revision: 1.9 $
+--  $Author: keulsn $
+--  $Date: 2003/09/12 20:30:12 $
 --
 
 with Ada.Strings.Unbounded;
@@ -34,6 +34,7 @@ with Gdk.Types;
 with Gtk.Arguments;
 with Gtk.Enums;
 with Gtk.Handlers;
+pragma Elaborate_All (Gtk.Handlers);
 with Gtk.Menu;
 with Gtk.Menu_Item;
 with Gtk.TearOff_Menu_Item;

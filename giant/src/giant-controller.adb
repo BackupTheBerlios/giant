@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.94 $
---  $Author: squig $
---  $Date: 2003/09/12 15:06:44 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.95 $
+--  $Author: keulsn $
+--  $Date: 2003/09/12 20:30:11 $
 --
 
 with Ada.Strings.Unbounded;
@@ -44,8 +44,9 @@ with Giant.Graph_Widgets;
 with Giant.Gui_Manager;
 with Giant.Gsl_Support;
 with Giant.Layout_Factory;
-With Giant.Logger;
-With Giant.Node_Annotations;
+with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
+with Giant.Node_Annotations;
 with Giant.Vis_Windows;
 
 package body Giant.Controller is

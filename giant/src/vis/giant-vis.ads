@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis.ads,v $, $Revision: 1.16 $
+--  $RCSfile: giant-vis.ads,v $, $Revision: 1.17 $
 --  $Author: keulsn $
---  $Date: 2003/08/12 14:30:31 $
+--  $Date: 2003/09/12 20:30:14 $
 --
 ------------------------------------------------------------------------------
 
@@ -32,6 +32,7 @@ with Glib;
 with Bauhaus_IO;
 
 with Giant.Vectors;
+pragma Elaborate_All (Giant.Vectors);
 
 package Giant.Vis is
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-data_clists.ads,v $, $Revision: 1.3 $
---  $Author: squig $
---  $Date: 2003/07/15 11:50:26 $
+--  $RCSfile: giant-data_clists.ads,v $, $Revision: 1.4 $
+--  $Author: keulsn $
+--  $Date: 2003/09/12 20:30:12 $
 --
 --  Provides an convenince Gtk.Clist that has a single row data type
 --  associated.
@@ -41,8 +41,6 @@ generic
    type Data_Type (<>) is private;
 
 package Giant.Data_Clists is
-
-   pragma Elaborate_Body;
 
    type Giant_Data_Clist_Record is new Clists.Giant_Clist_Record with private;
 

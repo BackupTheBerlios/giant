@@ -20,13 +20,14 @@
 --
 --  First Author: <unkown>
 --
---  $RCSfile: template.adb,v $, $Revision: 1.3 $
---  $Author: squig $
---  $Date: 2003/06/25 17:47:57 $
+--  $RCSfile: template.adb,v $, $Revision: 1.4 $
+--  $Author: keulsn $
+--  $Date: 2003/09/12 20:30:11 $
 --
 
 with Giant.Controller;
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 
 package body Giant.Template is
 

@@ -18,13 +18,14 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.20 $
---  $Author: squig $
---  $Date: 2003/08/26 16:07:16 $
+--  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.21 $
+--  $Author: keulsn $
+--  $Date: 2003/09/12 20:30:11 $
 
 with Untagged_Ptr_Ops;
 
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 
 package body Giant.Graph_Lib.Selections is
 

@@ -20,9 +20,9 @@
 --
 -- First Author: Steffen Pingel
 --
--- $RCSfile: giant-config_settings_validators.ads,v $, $Revision: 1.2 $
--- $Author: squig $
--- $Date: 2003/06/26 13:05:16 $
+-- $RCSfile: giant-config_settings_validators.ads,v $, $Revision: 1.3 $
+-- $Author: keulsn $
+-- $Date: 2003/09/12 20:30:11 $
 --
 
 generic
@@ -30,8 +30,6 @@ generic
    type Data_Type is (<>);
 
 package Giant.Config_Settings_Validators is
-
-   pragma Elaborate_Body;
 
    function Validate
      (Value : in String)

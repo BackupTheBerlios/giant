@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.19 $
---  $Author: squig $
---  $Date: 2003/09/09 15:31:25 $
+--  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.20 $
+--  $Author: keulsn $
+--  $Date: 2003/09/12 20:30:13 $
 --
 ------------------------------------------------------------------------------
 
@@ -35,6 +35,7 @@ with Gdk.Drawable;
 with Gdk.Pixmap;
 
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 
 package body Giant.Graph_Widgets.Settings is
 

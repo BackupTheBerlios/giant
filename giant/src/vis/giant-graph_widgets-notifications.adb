@@ -20,15 +20,16 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-notifications.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-graph_widgets-notifications.adb,v $, $Revision: 1.6 $
 --  $Author: keulsn $
---  $Date: 2003/08/19 12:21:25 $
+--  $Date: 2003/09/12 20:30:13 $
 --
 ------------------------------------------------------------------------------
 
 
 with Giant.Graph_Widgets.Handlers;
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 
 package body Giant.Graph_Widgets.Notifications is
 

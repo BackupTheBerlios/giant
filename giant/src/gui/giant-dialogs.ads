@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-dialogs.ads,v $, $Revision: 1.3 $
---  $Author: squig $
---  $Date: 2003/06/25 18:59:59 $
+--  $RCSfile: giant-dialogs.ads,v $, $Revision: 1.4 $
+--  $Author: keulsn $
+--  $Date: 2003/09/12 20:30:12 $
 --
 ------------------------------------------------------------------------------
 --
@@ -33,6 +33,7 @@ with Gtk.Object;
 
 with Giant.Default_Dialog;
 with Giant.Input_Dialog;
+pragma Elaborate (Giant.Input_Dialog);
 
 package Giant.Dialogs is
 

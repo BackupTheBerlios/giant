@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.28 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.29 $
 --  $Author: keulsn $
---  $Date: 2003/08/17 00:34:25 $
+--  $Date: 2003/09/12 20:30:14 $
 --
 ------------------------------------------------------------------------------
 --
@@ -43,7 +43,9 @@ pragma Elaborate_All (Lists);
 
 with Giant.Graph_Lib;
 with Giant.Merging_Iterators;
+pragma Elaborate_All (Giant.Merging_Iterators);
 with Giant.Simple_Priority_Queues;
+pragma Elaborate_All (Giant.Simple_Priority_Queues);
 with Giant.Vis;
 
 package Giant.Vis_Data is

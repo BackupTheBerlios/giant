@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-mini_maps.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-mini_maps.adb,v $, $Revision: 1.10 $
 --  $Author: keulsn $
---  $Date: 2003/09/09 16:10:25 $
+--  $Date: 2003/09/12 20:30:13 $
 --
 ------------------------------------------------------------------------------
 
@@ -51,6 +51,7 @@ with Gtkada.Types;
 
 with Giant.Graph_Widgets.Handlers;
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 
 package body Giant.Mini_Maps is
 

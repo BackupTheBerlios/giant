@@ -20,13 +20,14 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-layout_dialog-actions.adb,v $, $Revision: 1.2 $
---  $Author: squig $
---  $Date: 2003/09/01 22:09:11 $
+--  $RCSfile: giant-layout_dialog-actions.adb,v $, $Revision: 1.3 $
+--  $Author: keulsn $
+--  $Date: 2003/09/12 20:30:12 $
 --
 
 with Giant.Controller;
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 
 package body Giant.Layout_Dialog.Actions is
 

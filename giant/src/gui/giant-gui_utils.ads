@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.20 $
---  $Author: squig $
---  $Date: 2003/09/12 00:18:24 $
+--  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.21 $
+--  $Author: keulsn $
+--  $Date: 2003/09/12 20:30:12 $
 --
 ------------------------------------------------------------------------------
 --
@@ -50,12 +50,11 @@ with Gtk.Widget;
 with Gtk.Window;
 
 with Giant.Data_Clists;
+pragma Elaborate_All (Giant.Data_Clists);
 with Giant.Projects;
 with Giant.Vis_Windows;
 
 package Giant.Gui_Utils is
-
-   pragma Elaborate_Body;
 
    -----------------
    --  Constants  --

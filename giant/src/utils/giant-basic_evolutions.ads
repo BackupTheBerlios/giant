@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-basic_evolutions.ads,v $, $Revision: 1.3 $
---  $Author: squig $
---  $Date: 2003/09/12 14:12:29 $
+--  $RCSfile: giant-basic_evolutions.ads,v $, $Revision: 1.4 $
+--  $Author: keulsn $
+--  $Date: 2003/09/12 20:30:12 $
 --
 ------------------------------------------------------------------------------
 --
@@ -34,6 +34,7 @@
 with Ada.Real_Time;
 
 with Gtk.Handlers;
+pragma Elaborate_All (Gtk.Handlers);
 
 with Giant.Progress_Dialog;
 

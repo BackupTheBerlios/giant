@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.68 $
---  $Author: squig $
---  $Date: 2003/09/12 14:12:28 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.69 $
+--  $Author: keulsn $
+--  $Date: 2003/09/12 20:30:12 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -29,6 +29,7 @@ with Ada.Tags;
 
 --  from Bauhaus
 with Tagged_Ptr_Hash;
+pragma Elaborate_All (Tagged_Ptr_Hash);
 with Tagged_Constant_Ptr_Ops;
 with Untagged_Ptr_Ops;
 
@@ -42,10 +43,10 @@ with Lists;
 
 --  from Giant
 with Giant.Ptr_Normal_Hashs;
-with Giant.Logger;
-
 pragma Elaborate_All (Giant.Ptr_Normal_Hashs);
-pragma Elaborate_All (Tagged_Ptr_Hash);
+with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
+
 
 package body Giant.Graph_Lib is
 

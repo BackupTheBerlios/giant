@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.43 $
---  $Author: squig $
---  $Date: 2003/09/09 20:22:24 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.44 $
+--  $Author: keulsn $
+--  $Date: 2003/09/12 20:30:11 $
 --
 --
 ------------------------------------------------------------------------------
@@ -51,6 +51,7 @@ with Giant.Default_Logger;
 with Giant.File_Management;
 with Giant.Graph_Lib;
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 
 procedure Giant.Main
 is

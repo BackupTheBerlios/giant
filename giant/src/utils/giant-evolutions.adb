@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.19 $
---  $Author: squig $
---  $Date: 2003/09/12 14:12:29 $
+--  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.20 $
+--  $Author: keulsn $
+--  $Date: 2003/09/12 20:30:12 $
 --
 ------------------------------------------------------------------------------
 
@@ -37,7 +37,10 @@ with Gtk.Main;
 with Tagged_Ptr_Ops;
 
 with Giant.Fixed_Priority_Queues;
+pragma Elaborate_All (Giant.Fixed_Priority_Queues);
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
+
 
 package body Giant.Evolutions is
 

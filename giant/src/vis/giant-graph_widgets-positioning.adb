@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-positioning.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-graph_widgets-positioning.adb,v $, $Revision: 1.10 $
 --  $Author: keulsn $
---  $Date: 2003/09/02 04:49:38 $
+--  $Date: 2003/09/12 20:30:13 $
 --
 ------------------------------------------------------------------------------
 
@@ -32,6 +32,7 @@ with Ada.Numerics.Generic_Elementary_Functions;
 
 with Giant.Graph_Widgets.Drawing;
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 
 package body Giant.Graph_Widgets.Positioning is
 

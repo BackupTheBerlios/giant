@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-merging_iterators.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-merging_iterators.ads,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/07/21 19:01:06 $
+--  $Date: 2003/09/12 20:30:13 $
 --
 ------------------------------------------------------------------------------
 --
@@ -92,8 +92,6 @@ generic
       "<"       => "<");
 
 package Giant.Merging_Iterators is
-
-   pragma Elaborate_Body;
 
    ---------------------------------------------------------------------------
    --  List of Iterators

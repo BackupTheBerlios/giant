@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-basic_evolutions.adb,v $, $Revision: 1.3 $
---  $Author: squig $
---  $Date: 2003/09/12 14:12:29 $
+--  $RCSfile: giant-basic_evolutions.adb,v $, $Revision: 1.4 $
+--  $Author: keulsn $
+--  $Date: 2003/09/12 20:30:12 $
 --
 ------------------------------------------------------------------------------
 
@@ -32,6 +32,7 @@ with Glib;
 with Gtk.Main;
 
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 with Giant.Progress_Dialog;
 use type Giant.Progress_Dialog.Progress_Dialog_Access;
 

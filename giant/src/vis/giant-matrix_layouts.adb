@@ -20,15 +20,16 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-matrix_layouts.adb,v $, $Revision: 1.13 $
---  $Author: koppor $
---  $Date: 2003/07/14 16:14:07 $
+--  $RCSfile: giant-matrix_layouts.adb,v $, $Revision: 1.14 $
+--  $Author: keulsn $
+--  $Date: 2003/09/12 20:30:13 $
 --
 
 with Ada.Numerics.Generic_Elementary_Functions;
 
 with Giant.Graph_Lib;
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 
 package body Giant.Matrix_Layouts is
 

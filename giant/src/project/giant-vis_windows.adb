@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.36 $
---  $Author: squig $
---  $Date: 2003/09/01 22:09:11 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.37 $
+--  $Author: keulsn $
+--  $Date: 2003/09/12 20:30:12 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -33,6 +33,9 @@ with Giant.Config.Vis_Styles; -- from GIANT
 with Giant.Graph_Lib;         -- from GIANT
 
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
+
+
 package body Giant.Vis_Windows is
 
    package Logger is new Giant.Logger("Giant.Vis_Windows");

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.19 $
---  $Author: squig $
---  $Date: 2003/09/12 00:18:24 $
+--  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.20 $
+--  $Author: keulsn $
+--  $Date: 2003/09/12 20:30:12 $
 --
 
 with Ada.Exceptions;
@@ -44,8 +44,10 @@ with Gtk.Widget;
 with Giant.Controller;
 with Giant.Dialogs;
 with Giant.File_Management;
+pragma Elaborate_All (Giant.File_Management);
 with Giant.Gui_Utils;
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 with Giant.Main_Window;
 
 package body Giant.Gsl_Dialog is
