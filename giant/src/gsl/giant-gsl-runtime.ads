@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/03 13:47:05 $
+-- $Date: 2003/07/14 15:23:49 $
 --
 -- This package implements the Gsl Runtime Library 
 --
@@ -223,6 +223,49 @@ package Giant.Gsl.Runtime is
       return Gsl_Type;
 
    function Runtime_All_Nodes
+     (Parameter : Gsl_List)
+      return Gsl_Type;
+
+   function Runtime_Has_Attribute
+     (Parameter : Gsl_List)
+      return Gsl_Type;
+
+   function Runtime_Get_Attribute
+     (Parameter : Gsl_List)
+      return Gsl_Type;
+
+   function Runtime_Get_Type
+     (Parameter : Gsl_List)
+      return Gsl_Type;
+
+   function Runtime_Get_Source
+     (Parameter : Gsl_List)
+      return Gsl_Type;
+
+   function Runtime_Get_Target
+     (Parameter : Gsl_List)
+      return Gsl_Type;
+
+------------------------------------------------------------------------------
+-- GUI (ref. GIANT Scripting Language Specification 1.5.2.4)
+
+   function Runtime_Exists_Window
+     (Parameter : Gsl_List)
+      return Gsl_Type;
+
+   function Runtime_Get_Window_Content
+     (Parameter : Gsl_List)
+      return Gsl_Type;
+
+   function Runtime_Create_Window
+     (Parameter : Gsl_List)
+      return Gsl_Type;
+
+   function Runtime_Insert_Into_Window
+     (Parameter : Gsl_List)
+      return Gsl_Type;
+
+   function Runtime_Remove_From_Window
      (Parameter : Gsl_List)
       return Gsl_Type;
 

@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/07 16:17:41 $
+-- $Date: 2003/07/14 15:23:49 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -33,6 +33,7 @@ with Ada.Exceptions;
 
 with GNAT.Regpat;
 
+with Giant.Controller;
 with Giant.Graph_Lib;
 use type Giant.Graph_Lib.Edge_Id;
 use type Giant.Graph_Lib.Node_Id;
@@ -60,7 +61,7 @@ package body Giant.Gsl.Runtime is
            "Script 'set': Expecting 2 parameters");
       end if;
       Var := Get_Value_At (Parameter, 1);
-      if Var'Tag /= Gsl_Var_Reference_Record'Tag then
+      if not Is_Gsl_Var_Reference (Var) then
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
            "Script 'set': Gsl_Var_Reference expected.");
       else
@@ -99,10 +100,9 @@ package body Giant.Gsl.Runtime is
       Cond := Get_Value_At (Parameter, 1);
       True_Branch := Get_Value_At (Parameter, 2);
       False_Branch := Get_Value_At (Parameter, 3);
-      if Cond'Tag = Gsl_Boolean_Record'Tag then
+      if Is_Gsl_Boolean (Cond) then
          if Get_Value (Gsl_Boolean (Cond)) = true then
-            if True_Branch'Tag = Gsl_Script_Reference_Record'Tag then
-
+            if Is_Gsl_Script_Reference (True_Branch) then
                -- Script_Activation to Execution Stack
                Execution_Stacks.Push (ES, Get_Execution_Stack
                  (Comp, Create_Node (Script_Activation, 
@@ -115,8 +115,7 @@ package body Giant.Gsl.Runtime is
                return True_Branch;
             end if;
          else
-            if False_Branch'Tag = Gsl_Script_Reference_Record'Tag then
-
+            if Is_Gsl_Script_Reference (False_Branch) then
                -- Script_Activation to Execution Stack
                Execution_Stacks.Push (ES, Get_Execution_Stack
                  (Comp, Create_Node (Script_Activation, 
@@ -157,7 +156,7 @@ package body Giant.Gsl.Runtime is
            "Script 'loop': Expecting 1 parameter.");
       end if;
       Script := Get_Value_At (Parameter, 1);
-      if Script'Tag = Gsl_Script_Reference_Record'Tag then
+      if Is_Gsl_Script_Reference (Script) then
          Loop_Cmd := Create_Node (Script_Loop, 
            Get_Script_Node (Gsl_Script_Reference (Script)), Null_Node);
          Execution_Stacks.Push (ES, Loop_cmd);
@@ -201,18 +200,14 @@ package body Giant.Gsl.Runtime is
       Comp : Compiler;
       ES   : Execution_Stacks.Stack;
    begin
-      Default_Logger.Debug ("Runtime_Run called");
       Comp := Get_Current_Compiler;
       ES := Get_Current_Execution_Stack;
       if Get_List_Size (Parameter) /= 1 then
-         Ada.Exceptions.Raise_Exception
-           (Gsl_Runtime_Error'Identity, "Script 'run' requires " &
-             "1 parameter.");
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'run': Expecting 1 parameter.");
       end if;
       Name := Get_Value_At (Parameter, 1);
-      if Name'Tag = Gsl_String_Record'Tag then
-         Default_Logger.Debug ("Runtime_Run: Looking for library:  " &
-                               Get_Value (Gsl_String (Name)));
+      if Is_Gsl_String (Name) then
          -- push the code of the library to the execution stack 
          Execution_Stacks.Push (ES, Get_Execution_Stack (Comp, 
            Giant.GSL_Support.Get_GSL_Include (Get_Value (Gsl_String (Name)) 
@@ -241,32 +236,34 @@ package body Giant.Gsl.Runtime is
       Sum    : Gsl_Natural;
    begin
       if Get_List_Size (Parameter) /= 2 then
-         Ada.Exceptions.Raise_Exception
-           (Gsl_Runtime_Error'Identity, "Script 'add' requires " &
-             "2 parameters.");
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'run': Expecting 2 parameters.");
       end if;
       Param1 := Get_Value_At (Parameter, 1);
       Param2 := Get_Value_At (Parameter, 2);
-      if (Param1 = Gsl_Null) or (Param2 = Gsl_Null) then
-        Ada.Exceptions.Raise_Exception
-           (Gsl_Runtime_Error'Identity, "Parameter with type Gsl_Null.");
-      elsif (Param1'Tag = Gsl_Natural_Record'Tag) and
-            (Param2'Tag = Gsl_Natural_Record'Tag) then
+      if Is_Gsl_Natural (Param1) and Is_Gsl_Natural (Param2) then
          -- 2 Gsl_Natural, normal addition
          Sum := Create_Gsl_Natural;
          Set_Value (Sum, Get_Value (Gsl_Natural (Param1)) + 
                          Get_Value (Gsl_Natural (Param2)));
          return Gsl_Type (Sum);
 
-      elsif Param1'Tag = Gsl_Var_Reference_Record'Tag then
-         null;
+      elsif Is_Gsl_Var_Reference (Param1) then
+         if Is_Gsl_Node_Id (Param2) then
+            null;
+         elsif Is_Gsl_Edge_Id (Param2) then
+            null;
+         else
+            Ada.Exceptions.Raise_Exception
+              (Gsl_Runtime_Error'Identity,
+               "Script 'add': Gsl_Node_Id or Gsl_Edge_Id expected.");
+         end if;
 
       else
          Ada.Exceptions.Raise_Exception
-           (Gsl_Runtime_Error'Identity, "Script 'add' requires " &
-             "Gsl_Natural or Gsl_Var_Reference as first parameter.");
+           (Gsl_Runtime_Error'Identity,
+            "Script 'add': Gsl_Natural or Gsl_Var_Reference expected.");
       end if;
-
       return Gsl_Null;
    end Runtime_Add;
 
@@ -290,26 +287,19 @@ package body Giant.Gsl.Runtime is
       Cat    : Gsl_String;
    begin
       if Get_List_Size (Parameter) /= 2 then
-         Ada.Exceptions.Raise_Exception
-           (Gsl_Runtime_Error'Identity, "Script 'cat' requires " &
-             "2 parameters.");
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'cat': Expecting 2 parameters.");
       end if;
       Param1 := Get_Value_At (Parameter, 1);
       Param2 := Get_Value_At (Parameter, 2);
 
-      if (Param1 = Gsl_Null) or (Param2 = Gsl_Null) then
-         Ada.Exceptions.Raise_Exception
-           (Gsl_Runtime_Error'Identity, "Parameter with type Gsl_Null.");
-      elsif (Param1'Tag = Gsl_String_Record'Tag) and
-            (Param2'Tag = Gsl_String_Record'Tag) then
+      if Is_Gsl_String (Param1) and Is_Gsl_String (Param2) then
          Cat := Create_Gsl_String (Get_Value (Gsl_String (Param1)) & 
                                    Get_Value (Gsl_String (Param2)));
          return Gsl_Type (Cat);
-
       else
-      Ada.Exceptions.Raise_Exception
-           (Gsl_Runtime_Error'Identity, "Script 'cat' requires parameters" &
-             "with type Gsl_String.");
+         Ada.Exceptions.Raise_Exception
+           (Gsl_Runtime_Error'Identity, "Script 'cat': Gsl_String expected.");
       end if;
    end Runtime_Cat;
 
@@ -327,22 +317,13 @@ package body Giant.Gsl.Runtime is
       Res    : Gsl_Boolean;
    begin
       if Get_List_Size (Parameter) /= 2 then
-         Ada.Exceptions.Raise_Exception
-           (Gsl_Runtime_Error'Identity, "Script 'less' requires " &
-             "2 parameters.");
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'less': Expecting 2 parameters.");
       end if;
       Param1 := Get_Value_At (Parameter, 1);
       Param2 := Get_Value_At (Parameter, 2);
 
-      if (Param1 = Gsl_Null) or (Param2 = Gsl_Null) then
-         Ada.Exceptions.Raise_Exception
-           (Gsl_Runtime_Error'Identity, "Parameter with type Gsl_Null.");
-
-      elsif (Param1'Tag /= Param2'Tag) then
-         Ada.Exceptions.Raise_Exception
-           (Gsl_Runtime_Error'Identity, "Parameter with type Gsl_Null.");
-
-      elsif (Param1'Tag = Gsl_Natural_Record'Tag) then
+      if Is_Gsl_Natural (Param1) and Is_Gsl_Natural (Param2) then
          if Get_Value (Gsl_Natural (Param1)) <
             Get_Value (Gsl_Natural (Param2)) then
             Res := Create_Gsl_Boolean (true);
@@ -350,7 +331,7 @@ package body Giant.Gsl.Runtime is
             Res := Create_Gsl_Boolean (false);
          end if;
  
-      elsif (Param1'Tag = Gsl_Edge_Id_Record'Tag) then
+      elsif Is_Gsl_Edge_Id (Param1) and Is_Gsl_Edge_Id (Param2) then
          if Get_Value (Gsl_Edge_Id (Param1)) <
             Get_Value (Gsl_Edge_Id (Param2)) then
             Res := Create_Gsl_Boolean (true);
@@ -358,7 +339,7 @@ package body Giant.Gsl.Runtime is
             Res := Create_Gsl_Boolean (false);
          end if;
 
-      elsif (Param1'Tag = Gsl_Node_Id_Record'Tag) then
+      elsif Is_Gsl_Node_Id (Param1) and Is_Gsl_Node_Id (Param2) then
          if Get_Value (Gsl_Node_Id (Param1)) <
             Get_Value (Gsl_Node_Id (Param2)) then
             Res := Create_Gsl_Boolean (true);
@@ -366,7 +347,7 @@ package body Giant.Gsl.Runtime is
             Res := Create_Gsl_Boolean (false);
          end if;
 
-      elsif (Param1'Tag = Gsl_String_Record'Tag) then
+      elsif Is_Gsl_String (Param1) and Is_Gsl_String (Param2) then
          if Get_Value (Gsl_String (Param1)) <
             Get_Value (Gsl_String (Param2)) then
             Res := Create_Gsl_Boolean (true);
@@ -374,6 +355,10 @@ package body Giant.Gsl.Runtime is
             Res := Create_Gsl_Boolean (false);
          end if;
 
+      else
+         Ada.Exceptions.Raise_Exception
+           (Gsl_Runtime_Error'Identity, "Script 'less': Gsl_Natural, " &
+            "Gsl_Edge_Id, Gsl_Node_Id or Gsl_String expected.");
       end if;
       return Gsl_Type (Res);
    end Runtime_Less;
@@ -383,8 +368,56 @@ package body Giant.Gsl.Runtime is
    function Runtime_Equal
      (Parameter : Gsl_List)
       return Gsl_Type is
+
+      Param1 : Gsl_Type;
+      Param2 : Gsl_Type;
+      Res    : Gsl_Boolean;
    begin
-      return Gsl_Null;
+      if Get_List_Size (Parameter) /= 2 then
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'equal': Expecting 2 parameters.");
+      end if;
+      Param1 := Get_Value_At (Parameter, 1);
+      Param2 := Get_Value_At (Parameter, 2);
+
+      if Is_Gsl_Natural (Param1) and Is_Gsl_Natural (Param2) then
+         if Get_Value (Gsl_Natural (Param1)) =
+            Get_Value (Gsl_Natural (Param2)) then
+            Res := Create_Gsl_Boolean (true);
+         else
+            Res := Create_Gsl_Boolean (false);
+         end if;
+ 
+      elsif Is_Gsl_Edge_Id (Param1) and Is_Gsl_Edge_Id (Param2) then
+         if Get_Value (Gsl_Edge_Id (Param1)) =
+            Get_Value (Gsl_Edge_Id (Param2)) then
+            Res := Create_Gsl_Boolean (true);
+         else
+            Res := Create_Gsl_Boolean (false);
+         end if;
+
+      elsif Is_Gsl_Node_Id (Param1) and Is_Gsl_Node_Id (Param2) then
+         if Get_Value (Gsl_Node_Id (Param1)) =
+            Get_Value (Gsl_Node_Id (Param2)) then
+            Res := Create_Gsl_Boolean (true);
+         else
+            Res := Create_Gsl_Boolean (false);
+         end if;
+
+      elsif Is_Gsl_String (Param1) and Is_Gsl_String (Param2) then
+         if Get_Value (Gsl_String (Param1)) =
+            Get_Value (Gsl_String (Param2)) then
+            Res := Create_Gsl_Boolean (true);
+         else
+            Res := Create_Gsl_Boolean (false);
+         end if;
+
+      else
+         Ada.Exceptions.Raise_Exception
+           (Gsl_Runtime_Error'Identity, "Script 'equal': Gsl_Natural, " &
+            "Gsl_Edge_Id, Gsl_Node_Id or Gsl_String expected.");
+      end if;
+      return Gsl_Type (Res);
    end Runtime_Equal;
 
    ---------------------------------------------------------------------------
@@ -400,27 +433,19 @@ package body Giant.Gsl.Runtime is
       Res     : Gsl_Boolean;
    begin
       if Get_List_Size (Parameter) /= 2 then
-         Ada.Exceptions.Raise_Exception
-           (Gsl_Runtime_Error'Identity, "Script 'in_regexp' requires " &
-             "2 parameters.");
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'in_regexp': Expecting 2 parameters.");
       end if;
       Data:= Get_Value_At (Parameter, 1);
       Regexp := Get_Value_At (Parameter, 2);
 
-      if (Data = Gsl_Null) or (Regexp = Gsl_Null) then
-         Ada.Exceptions.Raise_Exception
-           (Gsl_Runtime_Error'Identity, "Parameter with type Gsl_Null.");
-
-      elsif (Data'Tag = Gsl_String_Record'Tag) and
-            (Regexp'Tag = Gsl_String_Record'Tag) then
+      if Is_Gsl_String (Data) and Is_Gsl_String (Regexp) then
          Res := Create_Gsl_Boolean (Match (Get_Value (Gsl_String (Regexp)), 
                                            Get_Value (Gsl_String (Data))));
          return Gsl_Type (Res);
-
       else
-         Ada.Exceptions.Raise_Exception
-           (Gsl_Runtime_Error'Identity, "Script 'in_regexp' requires " &
-             "parameters with tpye Gsl_String.");
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'in_regexp': Gsl_String expected.");
       end if;
    end Runtime_In_Regexp;
 
@@ -441,8 +466,16 @@ package body Giant.Gsl.Runtime is
    function Runtime_Empty_Node_Set
      (Parameter : Gsl_List)
       return Gsl_Type is
+
+      Node_Set : Gsl_Node_Set;
    begin
-      return Gsl_Null;
+      if Get_List_Size (Parameter) /= 0 then
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'empty_node_set': Expecting no parameters.");
+      end if;
+      Node_Set := Create_Gsl_Node_Set
+        (Giant.Graph_Lib.Node_Id_Sets.Empty_Set);
+      return Gsl_Type (Node_Set);
    end Runtime_Empty_Node_Set;
 
    ---------------------------------------------------------------------------
@@ -450,9 +483,50 @@ package body Giant.Gsl.Runtime is
    function Runtime_Empty_Edge_Set
      (Parameter : Gsl_List)
       return Gsl_Type is
+
+      Edge_Set : Gsl_Edge_Set;
    begin
-      return Gsl_Null;
+      if Get_List_Size (Parameter) /= 0 then
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'empty_edge_set': Expecting no parameters.");
+      end if;
+      Edge_Set := Create_Gsl_Edge_Set
+        (Giant.Graph_Lib.Edge_Id_Sets.Empty_Set);
+      return Gsl_Type (Edge_Set);
    end Runtime_Empty_Edge_Set;
+
+   ---------------------------------------------------------------------------
+   --
+   function Runtime_Is_In
+     (Parameter : Gsl_List)
+      return Gsl_Type is
+
+      Set     : Gsl_Type;
+      Element : Gsl_Type;
+      Res     : Gsl_Boolean;
+   begin
+      if Get_List_Size (Parameter) /= 2 then
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'is_in': Expecting 2 parameters.");
+      end if;
+      Set := Get_Value_At (Parameter, 1);
+      Element := Get_Value_At (Parameter, 2);
+      if Is_Gsl_Node_Set (Set) and Is_Gsl_Node_Id (Element) then
+         Res := Create_Gsl_Boolean (Giant.Graph_Lib.Node_Id_Sets.Is_Member
+                                    (Get_Value (Gsl_Node_Set (Set)),
+                                     Get_Value (Gsl_Node_Id (Element))));
+      elsif Is_Gsl_Edge_Set (Set) and Is_Gsl_Edge_Id (Element) then
+         Res := Create_Gsl_Boolean (Giant.Graph_Lib.Edge_Id_Sets.Is_Member
+                                    (Get_Value (Gsl_Edge_Set (Set)),
+                                     Get_Value (Gsl_Edge_Id (Element))));
+
+      else
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'is_in': Gsl_Node_Set or Gsl_Edge_Set and " &
+           "Gsl_Node_Id or Gsl_Edge_Id expected.");
+      end if;
+      return Gsl_Type (Res);
+   end Runtime_Is_In;
 
    ---------------------------------------------------------------------------
    --
@@ -468,8 +542,29 @@ package body Giant.Gsl.Runtime is
    function Runtime_Size_Of
      (Parameter : Gsl_List)
       return Gsl_Type is
+
+      Param : Gsl_Type;
+      Size  : Gsl_Natural;
    begin
-      return Gsl_Null;
+      if Get_List_Size (Parameter) /= 1 then
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'size_of': Expecting 1 parameter.");
+      end if;
+      Param := Get_Value_At (Parameter, 1);
+      if Is_Gsl_List (Param) then
+         Size := Create_Gsl_Natural (Get_List_Size (Gsl_List (Param)));
+      elsif Is_Gsl_Node_Set (Param) then
+         Size := Create_Gsl_Natural (Giant.Graph_Lib.Node_Id_Sets.Size
+                                      (Get_Value (Gsl_Node_Set (Param))));
+      elsif Is_Gsl_Edge_Set (Param) then
+         Size := Create_Gsl_Natural (Giant.Graph_Lib.Edge_Id_Sets.Size
+                                      (Get_Value (Gsl_Edge_Set (Param))));
+      else
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'size_of': Gsl_List, Gsl_Node_Set or " &
+           "Gsl_Edge_Set expected.");
+      end if;
+      return Gsl_Type (Size);
    end Runtime_Size_Of;
 
    ---------------------------------------------------------------------------
@@ -477,8 +572,30 @@ package body Giant.Gsl.Runtime is
    function Runtime_Get_Entry
      (Parameter : Gsl_List)
       return Gsl_Type is
+
+      List  : Gsl_Type;
+      Index : Gsl_Type;
+      Res   : Gsl_Type;
    begin
-      return Gsl_Null;
+      if Get_List_Size (Parameter) /= 2 then
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'get_entry': Expecting 2 parameters.");
+      end if;
+      List := Get_Value_At (Parameter, 1);
+      Index := Get_Value_At (Parameter, 2);
+      if Is_Gsl_List (List) and Is_Gsl_Natural (Index) then
+         if Get_List_Size (Gsl_List (List)) <
+            Get_Value (Gsl_Natural (Index)) then
+            Res := Get_Value_At (Gsl_List (List),
+                              Get_Value (Gsl_Natural (Index)));
+         else
+            Res := Gsl_Null;
+         end if;
+      else
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'get_entry': Gsl_List and Gsl_Natural expected.");
+      end if;
+      return Res;
    end Runtime_Get_Entry;
 
 ------------------------------------------------------------------------------
@@ -498,13 +615,7 @@ package body Giant.Gsl.Runtime is
              "1 parameter.");
       end if;
       Param := Get_Value_At (Parameter, 1);
-      if Param = Gsl_Null then
-         return Gsl_Type (Create_Gsl_Boolean (false));
-      elsif Param'Tag = Gsl_Node_Id_Record'Tag then 
-         return Gsl_Type (Create_Gsl_Boolean (true));
-      else
-         return Gsl_Type (Create_Gsl_Boolean (false));
-      end if;
+      return Gsl_Type (Create_Gsl_Boolean (Is_Gsl_Node_Id (Param)));
    end Runtime_Is_Nodeid;
 
    ---------------------------------------------------------------------------
@@ -521,13 +632,7 @@ package body Giant.Gsl.Runtime is
              "1 parameter.");
       end if;
       Param := Get_Value_At (Parameter, 1);
-      if Param = Gsl_Null then
-         return Gsl_Type (Create_Gsl_Boolean (false));
-      elsif Param'Tag = Gsl_Edge_Id_Record'Tag then 
-         return Gsl_Type (Create_Gsl_Boolean (true));
-      else
-         return Gsl_Type (Create_Gsl_Boolean (false));
-      end if;
+      return Gsl_Type (Create_Gsl_Boolean (Is_Gsl_Edge_Id (Param)));
    end Runtime_Is_Edgeid;
 
    ---------------------------------------------------------------------------
@@ -544,13 +649,7 @@ package body Giant.Gsl.Runtime is
              "1 parameter.");
       end if;
       Param := Get_Value_At (Parameter, 1);
-      if Param = Gsl_Null then
-         return Gsl_Type (Create_Gsl_Boolean (false));
-      elsif Param'Tag = Gsl_Node_Set_Record'Tag then 
-         return Gsl_Type (Create_Gsl_Boolean (true));
-      else
-         return Gsl_Type (Create_Gsl_Boolean (false));
-      end if;
+      return Gsl_Type (Create_Gsl_Boolean (Is_Gsl_Node_Set (Param)));
    end Runtime_Is_Node_Set;
 
    ---------------------------------------------------------------------------
@@ -567,13 +666,7 @@ package body Giant.Gsl.Runtime is
              "1 parameter.");
       end if;
       Param := Get_Value_At (Parameter, 1);
-      if Param = Gsl_Null then
-         return Gsl_Type (Create_Gsl_Boolean (false));
-      elsif Param'Tag = Gsl_Edge_Set_Record'Tag then 
-         return Gsl_Type (Create_Gsl_Boolean (true));
-      else
-         return Gsl_Type (Create_Gsl_Boolean (false));
-      end if;
+      return Gsl_Type (Create_Gsl_Boolean (Is_Gsl_Edge_Set (Param)));
    end Runtime_Is_Edge_Set;
 
    ---------------------------------------------------------------------------
@@ -590,13 +683,7 @@ package body Giant.Gsl.Runtime is
              "1 parameter.");
       end if;
       Param := Get_Value_At (Parameter, 1);
-      if Param = Gsl_Null then
-         return Gsl_Type (Create_Gsl_Boolean (false));
-      elsif Param'Tag = Gsl_String_Record'Tag then 
-         return Gsl_Type (Create_Gsl_Boolean (true));
-      else
-         return Gsl_Type (Create_Gsl_Boolean (false));
-      end if;
+      return Gsl_Type (Create_Gsl_Boolean (Is_Gsl_String (Param)));
    end Runtime_Is_String;
 
    ---------------------------------------------------------------------------
@@ -613,13 +700,7 @@ package body Giant.Gsl.Runtime is
              "1 parameter.");
       end if;
       Param := Get_Value_At (Parameter, 1);
-      if Param = Gsl_Null then
-         return Gsl_Type (Create_Gsl_Boolean (false));
-      elsif Param'Tag = Gsl_Boolean_Record'Tag then 
-         return Gsl_Type (Create_Gsl_Boolean (true));
-      else
-         return Gsl_Type (Create_Gsl_Boolean (false));
-      end if;
+      return Gsl_Type (Create_Gsl_Boolean (Is_Gsl_Boolean (Param)));
    end Runtime_Is_Boolean;
 
    ---------------------------------------------------------------------------
@@ -636,13 +717,7 @@ package body Giant.Gsl.Runtime is
              "1 parameter.");
       end if;
       Param := Get_Value_At (Parameter, 1);
-      if Param = Gsl_Null then
-         return Gsl_Type (Create_Gsl_Boolean (false));
-      elsif Param'Tag = Gsl_Natural_Record'Tag then 
-         return Gsl_Type (Create_Gsl_Boolean (true));
-      else
-         return Gsl_Type (Create_Gsl_Boolean (false));
-      end if;
+      return Gsl_Type (Create_Gsl_Boolean (Is_Gsl_Natural (Param)));
    end Runtime_Is_Natural;
 
    ---------------------------------------------------------------------------
@@ -659,13 +734,7 @@ package body Giant.Gsl.Runtime is
              "1 parameter.");
       end if;
       Param := Get_Value_At (Parameter, 1);
-      if Param = Gsl_Null then
-         return Gsl_Type (Create_Gsl_Boolean (false));
-      elsif Param'Tag = Gsl_List_Record'Tag then 
-         return Gsl_Type (Create_Gsl_Boolean (true));
-      else
-         return Gsl_Type (Create_Gsl_Boolean (false));
-      end if;
+      return Gsl_Type (Create_Gsl_Boolean (Is_Gsl_List (Param)));
    end Runtime_Is_List;
 
    ---------------------------------------------------------------------------
@@ -682,13 +751,7 @@ package body Giant.Gsl.Runtime is
              "1 parameter.");
       end if;
       Param := Get_Value_At (Parameter, 1);
-      if Param = Gsl_Null then
-         return Gsl_Type (Create_Gsl_Boolean (false));
-      elsif Param'Tag = Gsl_Var_Reference_Record'Tag then 
-         return Gsl_Type (Create_Gsl_Boolean (true));
-      else
-         return Gsl_Type (Create_Gsl_Boolean (false));
-      end if;
+      return Gsl_Type (Create_Gsl_Boolean (Is_Gsl_Var_Reference (Param)));
    end Runtime_Is_Reference;
 
    ---------------------------------------------------------------------------
@@ -705,13 +768,7 @@ package body Giant.Gsl.Runtime is
              "1 parameter.");
       end if;
       Param := Get_Value_At (Parameter, 1);
-      if Param = Gsl_Null then
-         return Gsl_Type (Create_Gsl_Boolean (false));
-      elsif Param'Tag = Gsl_Script_Reference_Record'Tag then 
-         return Gsl_Type (Create_Gsl_Boolean (true));
-      else
-         return Gsl_Type (Create_Gsl_Boolean (false));
-      end if;
+      return Gsl_Type (Create_Gsl_Boolean (Is_Gsl_Script_Reference (Param)));
    end Runtime_Is_Script;
 
    ---------------------------------------------------------------------------
@@ -769,5 +826,138 @@ package body Giant.Gsl.Runtime is
       end if;
       return Gsl_Type (Create_Gsl_Node_Set (Graph_Lib.Get_All_Nodes));
    end Runtime_All_Nodes;
+
+   ---------------------------------------------------------------------------
+   --
+   function Runtime_Has_Attribute
+      (Parameter : Gsl_List)
+      return Gsl_Type is
+   begin
+      return Gsl_Null;
+   end Runtime_Has_Attribute;
+
+   ---------------------------------------------------------------------------
+   --
+   function Runtime_Get_Attribute
+      (Parameter : Gsl_List)
+      return Gsl_Type is
+   begin
+      return Gsl_Null;
+   end Runtime_Get_Attribute; 
+
+   ---------------------------------------------------------------------------
+   --
+   function Runtime_Get_Type
+      (Parameter : Gsl_List)
+      return Gsl_Type is
+   begin
+      return Gsl_Null;
+   end Runtime_Get_Type;
+
+
+   ---------------------------------------------------------------------------
+   --
+   function Runtime_Get_Source
+      (Parameter : Gsl_List)
+      return Gsl_Type is
+   begin
+      return Gsl_Null;
+   end Runtime_Get_Source;
+
+   ---------------------------------------------------------------------------
+   --
+   function Runtime_Get_Target
+      (Parameter : Gsl_List)
+      return Gsl_Type is
+   begin
+      return Gsl_Null;
+   end Runtime_Get_Target;
+
+------------------------------------------------------------------------------
+-- GUI (ref. GIANT Scripting Language Specification 1.5.2.4)
+
+   ---------------------------------------------------------------------------
+   --
+   function Runtime_Exists_Window
+      (Parameter : Gsl_List)
+      return Gsl_Type is
+
+      Param : Gsl_Type;
+   begin
+      if Get_List_Size (Parameter) /= 1 then
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'exists_window': Expecting 1 parameter.");
+      end if;
+      Param := Get_Value_At (Parameter, 1);
+      if Param = Gsl_Null then
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'create_window': Gsl_String expected.");
+      elsif Param'Tag = Gsl_String_Record'Tag then
+         return Gsl_Type (Create_Gsl_Boolean
+           (Giant.Controller.Exists_Window (Get_Value (Gsl_String (Param)))));
+      else
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'create_window': Gsl_String expected.");
+      end if;   
+      return Gsl_Type (Create_Gsl_Boolean (false));
+   end Runtime_Exists_Window;
+
+   ---------------------------------------------------------------------------
+   --
+   function Runtime_Get_Window_Content
+      (Parameter : Gsl_List)
+      return Gsl_Type is
+   begin
+      return Gsl_Null;
+   end Runtime_Get_Window_Content;
+
+   ---------------------------------------------------------------------------
+   --
+   function Runtime_Create_Window
+      (Parameter : Gsl_List)
+      return Gsl_Type is
+
+      Param  : Gsl_Type;
+   begin
+      if Get_List_Size (Parameter) /= 1 then
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'create_window': Expecting 1 parameter.");
+      end if;
+      Param := Get_Value_At (Parameter, 1);
+      if Param = Gsl_Null then
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'create_window': Gsl_String expected.");
+      elsif Param'Tag = Gsl_String_Record'Tag then
+         if Giant.Controller.Exists_Window (Get_Value (Gsl_String (Param)))
+         then
+            return Gsl_Type (Create_Gsl_Boolean (false));
+         else
+            Giant.Controller.Create_Window (Get_Value (Gsl_String (Param)));
+            return Gsl_Type (Create_Gsl_Boolean (true));
+         end if;
+      else
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'create_window': Gsl_String expected.");
+      end if;
+      return Gsl_Type (Create_Gsl_Boolean (false));
+   end Runtime_Create_Window;
+
+   ---------------------------------------------------------------------------
+   --
+   function Runtime_Insert_Into_Window
+      (Parameter : Gsl_List)
+      return Gsl_Type is
+   begin
+      return Gsl_Null;
+   end Runtime_Insert_Into_Window;
+
+   ---------------------------------------------------------------------------
+   --
+   function Runtime_Remove_From_Window
+      (Parameter : Gsl_List)
+      return Gsl_Type is
+   begin
+      return Gsl_Null;
+   end Runtime_Remove_From_Window;
 
 end Giant.Gsl.Runtime;
