@@ -27,7 +27,7 @@
             <li>Interruptable operations</li>
             <li>Available for Linux, Solaris and Windows</li>
           </ul>
-      </p>
+        </p>
 
 	  </section>
 
@@ -49,6 +49,9 @@
             <li>AUnit 1.0.1</li>
           </ul>
        </p>
+
+     </section>
+
 	</body>
   </document>
   

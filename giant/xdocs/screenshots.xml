@@ -11,15 +11,15 @@
           <section name="Screenshots">
                 
                 <p>
-                  Here are some screenshots of GIANT 1.1.0 running on
+                  Here are some screenshots of GIANT 1.1.3 running on
                   Linux.
                 </p>
                   
                 <table>
                   <tr>
                         <td>
-                          <a href="images/graph-window.png"><img
-                                  src="images/graph-window-thumb.png"/></a>
+                          <a href="images/graph_window_1.png"><img
+                                  src="images/graph_window_1_thumb.png"/></a>
                         </td>
                         <td>
                           Graph Window
