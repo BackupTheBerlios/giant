@@ -21,8 +21,8 @@
 -- First Author: Gerrit Schulz
 --
 -- $RCSfile: giant-gsl.ads,v $
--- $Author: squig $
--- $Date: 2003/06/30 17:31:57 $
+-- $Author: schulzgt $
+-- $Date: 2003/07/01 10:24:36 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -83,12 +83,20 @@ package Giant.Gsl is
       return String;
 
    ---------------------------------------------------------------------------
+   -- Activation Record used in the Gsl Interpreter
+   type Activation_Record_Record is private;
+   type Activation_Record is access all Activation_Record_Record;
+
+   ---------------------------------------------------------------------------
    -- from Reuse
    package Execution_Stacks is new Stacks_Unbounded
      (Elem_Type => Syntax_Node);
 
    package Result_Stacks is new Stacks_Unbounded
      (Elem_Type => Gsl_Type);
+
+   package Activation_Record_Stacks is new Stacks_Unbounded
+     (Elem_Type => Activation_Record);
 
    ---------------------------------------------------------------------------
    -- instantiation of Hashed_Mappings for GSL variables
@@ -101,11 +109,6 @@ package Giant.Gsl is
      (Key_Type => Unbounded_String,
       Value_Type => Gsl_Type,
       Hash => Gsl_Var_Hash);
-
-   ---------------------------------------------------------------------------
-   -- Activation Record used in the Gsl Interpreter
-   type Activation_Record_Record is private;
-   type Activation_Record is access all Activation_Record_Record;
 
 private
 
