@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.8 $
+-- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.9 $
 -- $Author: schwiemn $
--- $Date: 2003/06/24 19:02:04 $
+-- $Date: 2003/06/24 20:21:05 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -1123,8 +1123,6 @@ package body Giant.Config.Vis_Styles is
             end;
          end if;
 
-
-
          if (Ignore_File = False) then
 
             -- remove older vis_style (with same name) if exists
@@ -1164,29 +1162,20 @@ package body Giant.Config.Vis_Styles is
       -- this style must be correct
       
       
-    --  begin
-      
-         Logger.Debug ("HI");
-         Logger.Debug 
-           (File_management.Return_Dir_Path_For_File_Path
-             (Default_Vis_Style_File));       
-         Logger.Debug (Ada.Strings.Unbounded.To_String
-           (Default_Vis_Style_Name));
-         
+      begin
+
          New_Vis_Style := Process_XML_Vis_Style
            (Default_Vis_Style_XML_Document,
             Resources_Root_Dir,
             File_management.Return_Dir_Path_For_File_Path
              (Default_Vis_Style_File),
             Default_Vis_Style_Name);
-            
-         Logger.Debug ("HI-2");            
-            
-    --  exception
-    --     when others =>
+                              
+      exception
+         when others =>
 
-      --      raise E; -- Illegal_Default_Vis_Style_Exception;
-   --   end;
+            raise Illegal_Default_Vis_Style_Exception;
+      end;
 
       -- remove other vis style with same name if necessary
       if All_Vis_Styles_Hashed_Mappings.Is_Bound

@@ -18,11 +18,11 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  First Author: Steffen Pingel
+--  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-config-vis_styles-test.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-config-vis_styles-test.ads,v $, $Revision: 1.2 $
 --  $Author: schwiemn $
---  $Date: 2003/06/24 19:23:25 $
+--  $Date: 2003/06/24 20:21:05 $
 --
 ------------------------------------------------------------------------------
 --

@@ -18,11 +18,11 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  First Author: Steffen Pingel
+--  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-config-vis_styles-test.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-config-vis_styles-test.adb,v $, $Revision: 1.2 $
 --  $Author: schwiemn $
---  $Date: 2003/06/24 19:23:25 $
+--  $Date: 2003/06/24 20:21:05 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -43,18 +43,22 @@ package body Giant.Config.Vis_Styles.Test is
      
    begin
       
+      for i in 1 .. 50000 loop
       
-      Giant.Config.Vis_Styles.Initialize_Config_Vis_Styles
-        ("/home/schwiemn/giant/schwiemn/CVS_Hpro/giant/test/resources/"
-         & "vis_styles/resources_dir",
-         "",
-         "", 
-         "/import/sirius/stupro/giant/schwiemn/CVS_Hpro/giant/"
-         & "test/resources/vis_styles/only_defaults_giant_vis_style.xml");
+        Giant.Config.Vis_Styles.Initialize_Config_Vis_Styles
+          ("/home/schwiemn/giant/schwiemn/CVS_Hpro/giant/test/resources/"
+           & "vis_styles/resources_dir",
+           "",
+           "", 
+           "/import/sirius/stupro/giant/schwiemn/CVS_Hpro/giant/"
+           & "test/resources/vis_styles/only_defaults_giant_vis_style.xml");
       
-      Assert (Giant.Config.Vis_Styles.Get_Number_Of_Known_Vis_Styles = 2,
-              "Anzahl geladener Vis_Styles korrekt");
+    --    Assert (Giant.Config.Vis_Styles.Get_Number_Of_Known_Vis_Styles = 1,
+      --          "Test whether ammount of loaded vis styles is correct");
 
+                
+        Giant.Config.Vis_Styles.Clear_Config_Vis_Styles;
+      end loop;
    end Test_Initialisation;
 
 

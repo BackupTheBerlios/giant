@@ -18,16 +18,17 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  First Author: Steffen Pingel
+--  First Author: Martin Schwienbacher
 --
---  $RCSfile: martin_test.adb,v $, $Revision: 1.1 $
+--  $RCSfile: martin_test.adb,v $, $Revision: 1.2 $
 --  $Author: schwiemn $
---  $Date: 2003/06/24 19:23:25 $
+--  $Date: 2003/06/24 20:21:05 $
 --  
 with AUnit.Test_Suites; use AUnit.Test_Suites;
 with AUnit.Test_Runner;
 
 with Giant.Config.Vis_Styles.Test; 
+with Giant.Projects.Test;
 
 with Giant.Default_Logger;
 
@@ -37,6 +38,8 @@ procedure Martin_Test is
       Result : Access_Test_Suite := new Test_Suite;
    begin
    
+   --  Add_Test (Result, new Giant.Projects.Test.Test_Case);
+       
       Add_Test (Result, new Giant.Config.Vis_Styles.Test.Test_Case);
             
       return Result;
