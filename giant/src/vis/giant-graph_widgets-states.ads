@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-states.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_widgets-states.ads,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/07/08 19:41:48 $
+--  $Date: 2003/07/10 00:16:54 $
 --
 ------------------------------------------------------------------------------
 --
@@ -81,6 +81,10 @@ package Giant.Graph_Widgets.States is
    procedure Destroy_Lock
      (Widget : access Graph_Widget_Record'Class;
       Lock   : in     Lock_Type);
+
+   function Is_Locked
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean;
 
    function Is_Valid_Lock
      (Widget : access Graph_Widget_Record'Class;

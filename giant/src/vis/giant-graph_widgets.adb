@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.17 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.18 $
 --  $Author: keulsn $
---  $Date: 2003/07/09 10:38:33 $
+--  $Date: 2003/07/10 00:16:54 $
 --
 ------------------------------------------------------------------------------
 
@@ -396,8 +396,35 @@ package body Giant.Graph_Widgets is
       Node      : in     Graph_Lib.Node_Id;
       Location  : in     Vis.Logic.Vector_2d;
       Lock      : in     Lock_Type) is
+
+      Vis_Node : Vis_Data.Vis_Node_Id;
    begin
-      raise Unimplemented;
+      if States.Is_Locked (Widget) then
+         pragma Assert (States.Is_Valid_Lock (Widget, Lock));
+         Vis_Node := Look_Up (Widget, Node);
+         if Vis_Node /= null then
+            if Vis_Data.Has_Manager (Vis_Node) then
+               Vis_Data.Drop_Node (Widget.Manager, Vis_Node);
+            end if;
+            if not Vis_Node_Sets.Is_Member
+              (Widget.Unsized_Nodes, Vis_Node) then
+
+               --  will not insert twice, even if already
+               --  'Is_Member (Widget.Locked_Nodes, Vis_Nodes)'
+               Vis_Node_Sets.Insert (Widget.Locked_Nodes, Vis_Node);
+            end if;
+            Vis_Data.Set_Position (Vis_Node, Location);
+         else
+            Graph_Widget_Logger.Fatal
+              ("Set_Top_Middle called for unknown node: " &
+               Graph_Lib.Node_Id_Image (Node) & "Request ignored.");
+         end if;
+      else
+         Graph_Widget_Logger.Fatal
+           ("Set_Top_Middle called while graph widget not locked! " &
+            "Illegal Lock:" & Natural'Image (Natural (Lock)) &
+            ". Request ignored.");
+      end if;
    end Set_Top_Middle;
    pragma Inline (Set_Top_Middle);
 

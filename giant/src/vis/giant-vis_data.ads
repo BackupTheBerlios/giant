@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.18 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.19 $
 --  $Author: keulsn $
---  $Date: 2003/07/08 19:41:48 $
+--  $Date: 2003/07/10 00:16:54 $
 --
 ------------------------------------------------------------------------------
 --
@@ -314,23 +314,26 @@ package Giant.Vis_Data is
      (Edge      : in     Vis_Edge_Id;
       Size      : in     Vis.Absolute.Vector_2d);
 
+   --  Sets the position of the text area
+   --
+   --  Parameters:
+   --    Edge       - This edge's text area will be moved
+   --    Position   - Position, the text area will be moved to
+   --    Align_Left - If True, then the text area will be left aligned relative
+   --                 to 'Position' otherwise it will be right aligned relative
+   --                 to 'Position'
+   --    Align_Top  - If True, then the text area will be top aligned relative
+   --                 to 'Position', otherwise it will be bottom aligned
+   --                 relative to 'Position'
    --  Precondition:
-   --    Has_Text_Area (Edge) and
-   --      for all Rm : Region_Manager : not Contains (Rm, Edge)
-   --  Postcondition:
-   --    Get_Top_Left (Get_Text_Area (Edge)) = Top_Left
-   procedure Move_Text_Area_Top_Left_To
-     (Edge      : in     Vis_Edge_Id;
-      Top_Left  : in     Vis.Absolute.Vector_2d);
-
-   --  Precondition:
-   --    Has_Text_Area (Edge) and
-   --      for all Rm : Region_Manager : not Contains (Rm, Edge)
-   --  Postcondition:
-   --    Get_Bottom_Left (Get_Text_Area (Edge)) = Bottom_Left
-   procedure Move_Text_Area_Bottom_Left_To
-     (Edge        : in     Vis_Edge_Id;
-      Bottom_Left : in     Vis.Absolute.Vector_2d);
+   --    * The text area must not be contained in any region manager
+   --    * The size of the text area must have been set using
+   --      'Set_Text_Area_Size'
+   procedure Move_Text_Area_To
+     (Edge       : in     Vis_Edge_Id;
+      Position   : in     Vis.Absolute.Vector_2d;
+      Align_Left : in     Boolean;
+      Align_Top  : in     Boolean);
 
    --  Precondition:
    --    for all Rm : Region_Manager : not Contains (Rm, Edge)
@@ -458,6 +461,10 @@ package Giant.Vis_Data is
    function Get_Highlighting
      (Node : in     Vis_Node_Id)
      return Flags_Type;
+
+   procedure Set_Position
+     (Node     : in Vis_Node_Id;
+      Position : in Vis.Logic.Vector_2d);
 
    --  Precondition:
    --    for all Rm : Region_Manager : not Contains (Rm, Node)

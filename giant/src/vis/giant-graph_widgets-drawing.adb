@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.10 $
 --  $Author: keulsn $
---  $Date: 2003/07/09 19:45:36 $
+--  $Date: 2003/07/10 00:16:54 $
 --
 ------------------------------------------------------------------------------
 
@@ -145,6 +145,7 @@ package body Giant.Graph_Widgets.Drawing is
       Font   : in     Gdk.Font.Gdk_Font;
       Gc     : in     Gdk.GC.Gdk_GC;
       Area   : in     Vis.Absolute.Rectangle_2d;
+      Origin : in     Vis.Absolute.Vector_2d := Vis.Absolute.Zero_2d;
       Text   : in     String) is
 
       use type Glib.Gint;
@@ -214,8 +215,8 @@ package body Giant.Graph_Widgets.Drawing is
               (Drawable => Buffer,
                Font     => Font,
                Gc       => Gc,
-               X        => Glib.Gint (Get_Left (Area)),
-               Y        => Glib.Gint (Get_Top (Area)) +
+               X        => Glib.Gint (Get_Left (Area) - Get_X (Origin)),
+               Y        => Glib.Gint (Get_Top (Area) - Get_Y (Origin)) +
                              Gdk.Font.Get_Ascent (Font),
                Text     => Text (Text'First .. Minimum) &
                              Default_Text_Abbreviation);
@@ -230,8 +231,8 @@ package body Giant.Graph_Widgets.Drawing is
            (Drawable => Buffer,
             Font     => Font,
             Gc       => Gc,
-            X        => Glib.Gint (Get_Left (Area)),
-            Y        => Glib.Gint (Get_Top (Area)) +
+            X        => Glib.Gint (Get_Left (Area) - Get_X (Origin)),
+            Y        => Glib.Gint (Get_Top (Area) - Get_Y (Origin)) +
                           Gdk.Font.Get_Ascent (Font),
             Text     => Text);
       end if;
@@ -431,17 +432,24 @@ package body Giant.Graph_Widgets.Drawing is
          end loop;
       end if;
 
+      Gdk.GC.Set_Foreground
+        (GC    => Widget.Drawing.Edge_Line (Style),
+         Color => Settings.Get_Edge_Color (Widget, Edge));
       Draw_All_Edge_Lines
         (Gc    => Widget.Drawing.Edge_Line (Style),
          Style => Style,
          Width => Default_Edge_Line_Thickness);
 
       if Vis_Data.Has_Text_Area (Edge) then
+         Gdk.GC.Set_Foreground
+           (GC     => Widget.Drawing.Edge_Label,
+            Color  => Settings.Get_Edge_Label_Color (Widget, Edge));
          Draw_Text
            (Buffer => Buffer,
             Font   => Settings.Get_Edge_Font (Widget),
             Gc     => Widget.Drawing.Edge_Label,
             Area   => Vis_Data.Get_Text_Area (Edge),
+            Origin => Origin,
             Text   => Graph_Lib.Get_Edge_Tag (Vis_Data.Get_Graph_Edge (Edge)));
       end if;
    end Draw_Edge;
@@ -700,7 +708,9 @@ package body Giant.Graph_Widgets.Drawing is
                Y := Glib.Gint (Get_Top (Inner_Rect));
 
                Icons_Width := Icons_Width + Width;
-               Icons_Height := Icons_Height + Height;
+               if Icons_Height < Height then
+                  Icons_Height := Height;
+               end if;
 
                if Icons_Width > Inner_Width then
                   Too_Much := Icons_Width - Inner_Width;
@@ -724,8 +734,6 @@ package body Giant.Graph_Widgets.Drawing is
                      Width    => Width,
                      Height   => Height);
                end if;
-            else
-               Drawing_Logger.Debug ("... no icon.");
             end if;
          end Draw_Icon;
 
@@ -763,10 +771,11 @@ package body Giant.Graph_Widgets.Drawing is
                Icon, Width, Height);
             Draw_Icon (Icon, Width, Height);
          end if;
-         Shrink (Draw_Rect, Default_Text_Spacing);
 
          Icons_Bottom := Get_Top (Draw_Rect) + Vis.Absolute_Int'Max
            (Vis.Absolute_Int (Icons_Height), Get_Height (Font));
+
+         Shrink (Draw_Rect, Default_Text_Spacing);
 
          if Vis.Absolute_Int (Icons_Width) < Get_Width (Draw_Rect) then
             Id_Rect := Combine_Rectangle

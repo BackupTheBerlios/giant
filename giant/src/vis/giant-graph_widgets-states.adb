@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.5 $
 --  $Author: keulsn $
---  $Date: 2003/07/08 19:41:48 $
+--  $Date: 2003/07/10 00:16:54 $
 --
 ------------------------------------------------------------------------------
 
@@ -115,6 +115,13 @@ package body Giant.Graph_Widgets.States is
          end if;
       end if;
    end Destroy_Lock;
+
+   function Is_Locked
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean is
+   begin
+      return not Lock_Sets.Is_Empty (Widget.States.Locks);
+   end Is_Locked;
 
    function Is_Valid_Lock
      (Widget : access Graph_Widget_Record'Class;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-positioning.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-graph_widgets-positioning.ads,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 03:35:59 $
+--  $Date: 2003/07/10 00:16:54 $
 --
 ------------------------------------------------------------------------------
 --
@@ -111,12 +111,14 @@ package Giant.Graph_Widgets.Positioning is
 
 private
 
-   Default_Dock_Spacing      : constant := 2;
-   Default_Loop_Radius       : constant := 15.0;
-   Default_Loop_Separation   : constant := 2.0;
+   Default_Dock_Spacing        : constant := 2;
+   Default_Loop_Radius         : constant := 15.0;
+   Default_Loop_Separation     : constant := 2.0;
 
-   Default_Edge_Arrow_Angle  : constant Float :=
+   Default_Edge_Label_Distance : constant := 50.0;
+
+   Default_Edge_Arrow_Angle    : constant Float :=
      (30.0 / 180.0) * Ada.Numerics.Pi;
-   Default_Edge_Arrow_Length : constant := 8.0;
+   Default_Edge_Arrow_Length   : constant := 8.0;
 
 end Giant.Graph_Widgets.Positioning;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-vectors.adb,v $, $Revision: 1.11 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 03:35:59 $
+--  $Date: 2003/07/10 00:16:54 $
 --
 ------------------------------------------------------------------------------
 
@@ -498,7 +498,7 @@ package body Giant.Vectors is
      (Rectangle : in out Rectangle_2d;
       Target    : in     Vector_2d) is
 
-      Offset : Vector_2d := Get_Source_Point (Rectangle) - Target;
+      Offset : Vector_2d := Target - Get_Source_Point (Rectangle);
    begin
       Move (Rectangle, Offset);
    end Move_To;

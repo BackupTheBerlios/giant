@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-positioning.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-graph_widgets-positioning.adb,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/07/08 19:41:48 $
+--  $Date: 2003/07/10 00:16:54 $
 --
 ------------------------------------------------------------------------------
 
@@ -30,12 +30,17 @@
 with Ada.Numerics.Generic_Elementary_Functions;
 
 with Giant.Graph_Widgets.Drawing;
+with Giant.Logger;
 
 package body Giant.Graph_Widgets.Positioning is
 
 
    use Vis.Absolute;
    use Vis.Logic;
+
+
+   package Positioning_Logger is new Logger
+     (Name => "Giant.Graph_Widgets.Positioning");
 
 
    package Trigonometry is new Ada.Numerics.Generic_Elementary_Functions
@@ -46,8 +51,6 @@ package body Giant.Graph_Widgets.Positioning is
    -- Calculations --
    ------------------
 
-   --  Precondition:
-   --    Get_X (Direction) /= 0.0
    function Calculate_Docking_Point_Not_Vertical
      (Direction : in     Vis.Logic.Vector_2d;
       Reversing : in     Boolean;
@@ -59,9 +62,9 @@ package body Giant.Graph_Widgets.Positioning is
       X             : Vis.Absolute_Int;
       Y             : Vis.Absolute_Int;
       Point         : Vis.Absolute.Vector_2d;
-      Gradient      : Float := Get_X (Direction) / Get_Y (Direction);
-      Node_Gradient : Float := Vis.Logic_Float (Get_Width (Extent)) /
-                                 Vis.Logic_Float (Get_Height (Extent));
+      Gradient      : Float := Get_Y (Direction) / Get_X (Direction);
+      Node_Gradient : Float := Vis.Logic_Float (Get_Height (Extent)) /
+                                 Vis.Logic_Float (Get_Width (Extent));
    begin
       if abs Gradient <= Node_Gradient then
          --  intersection with vertical line
@@ -70,7 +73,7 @@ package body Giant.Graph_Widgets.Positioning is
          else
             Sign := -1;
          end if;
-         X := Get_Width (Extent) + Spacing;
+         X := Get_Width (Extent) / 2 + Spacing;
          Y := Vis.Absolute_Int (Float (X) * Gradient);
          Point := Vis.Absolute.Get_Center (Extent) +
            Sign * Vis.Absolute.Combine_Vector (X, Y);
@@ -81,7 +84,7 @@ package body Giant.Graph_Widgets.Positioning is
          else
             Sign := -1;
          end if;
-         Y := Get_Height (Extent) + Spacing;
+         Y := Get_Height (Extent) / 2 + Spacing;
          X := Vis.Absolute_Int (Float (Y) / Gradient);
          Point := Vis.Absolute.Get_Center (Extent) +
            Sign * Vis.Absolute.Combine_Vector (X, Y);
@@ -208,6 +211,52 @@ package body Giant.Graph_Widgets.Positioning is
       Vis_Data.Move_Node (Node, Target - Source);
    end Update_Node_Position;
 
+   procedure Update_Text_Area_Position
+     (Edge   : in     Vis_Data.Vis_Edge_Id) is
+
+      Position      : Vis.Absolute.Vector_2d;
+      X             : Vis.Logic_Float;
+      Y             : Vis.Logic_Float;
+      Multiple_1    : Vis.Logic_Float;
+      Multiple_2    : Vis.Logic_Float;
+      Start_Point   : Vis.Absolute.Vector_2d :=
+        Vis_Data.Get_Point (Edge, 1);
+      Direction     : Vis.Absolute.Vector_2d :=
+        Vis_Data.Get_Point (Edge, 2) - Start_Point;
+      Text_Distance : Vis.Logic.Vector_2d :=
+        Vis.To_Logic (Direction);
+   begin
+      X := abs Get_X (Text_Distance);
+      if X /= 0.0 then
+         Multiple_1 := Vis.Logic_Float'Min
+           (X / 2.0, Default_Edge_Label_Distance) / X;
+      else
+         Multiple_1 := 0.0;
+      end if;
+      Y := abs Get_Y (Text_Distance);
+      if Y /= 0.0 then
+         Multiple_2 := Vis.Logic_Float'Min
+           (Y / 2.0, Default_Edge_Label_Distance) / Y;
+      else
+         Multiple_2 := 0.0;
+      end if;
+      if Multiple_1 = 0.0 then
+         Text_Distance := Multiple_2 * Text_Distance;
+      elsif Multiple_2 = 0.0 then
+         Text_Distance := Multiple_1 * Text_Distance;
+      else
+         Text_Distance := Vis.Logic_Float'Min (Multiple_1, Multiple_2) *
+           Text_Distance;
+      end if;
+
+      Position := Start_Point + Vis.To_Absolute (Text_Distance);
+      Vis_Data.Move_Text_Area_To
+        (Edge       => Edge,
+         Position   => Position,
+         Align_Left => Get_X (Direction) >= 0,
+         Align_Top  => Get_Y (Direction) <= 0);
+   end Update_Text_Area_Position;
+
    procedure Update_Edge_Position
      (Widget : access Graph_Widget_Record'Class;
       Edge   : in     Vis_Data.Vis_Edge_Id) is
@@ -269,6 +318,9 @@ package body Giant.Graph_Widgets.Positioning is
            (Edge  => Edge,
             Num   => Vis_Data.Get_Number_Of_Points (Edge),
             Point => End_Point);
+      end if;
+      if Vis_Data.Has_Text_Area (Edge) then
+         Update_Text_Area_Position (Edge);
       end if;
    end Update_Edge_Position;
 

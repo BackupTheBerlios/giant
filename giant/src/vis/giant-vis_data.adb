@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.17 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.18 $
 --  $Author: keulsn $
---  $Date: 2003/07/09 19:45:36 $
+--  $Date: 2003/07/10 00:16:54 $
 --
 ------------------------------------------------------------------------------
 
@@ -167,7 +167,7 @@ package body Giant.Vis_Data is
                                 (X_1 => 0, X_2 => 0,
                                  Y_1 => 1, Y_2 => Vis.Absolute_Int'Last),
          Layer             => Layer,
-         Points            => (1 .. Inflections => Vis.Absolute.Zero_2d),
+         Points            => (1 .. Inflections + 2 => Vis.Absolute.Zero_2d),
          Left_Arrow_Point  => Vis.Absolute.Zero_2d,
          Right_Arrow_Point => Vis.Absolute.Zero_2d,
          Regions           => Region_Lists.Create,
@@ -302,6 +302,51 @@ package body Giant.Vis_Data is
       pragma Assert (Region_Lists.IsEmpty (Edge.Regions));
       Vis.Absolute.Set_Size (Edge.Text_Area, Size);
    end Set_Text_Area_Size;
+
+   procedure Move_Text_Area_To
+     (Edge       : in     Vis_Edge_Id;
+      Position   : in     Vis.Absolute.Vector_2d;
+      Align_Left : in     Boolean;
+      Align_Top  : in     Boolean) is
+
+      generic
+         with function Get_Point
+           (Rectangle : in     Vis.Absolute.Rectangle_2d)
+           return Vis.Absolute.Vector_2d;
+      procedure Move_To;
+
+      procedure Move_To is
+         procedure Move_Point_To is new Vis.Absolute.Move_To
+           (Get_Source_Point => Get_Point);
+      begin
+         Move_Point_To
+           (Rectangle => Edge.Text_Area,
+            Target    => Position);
+      end Move_To;
+
+      procedure Move_Top_Left_To is new Move_To
+        (Get_Point => Vis.Absolute.Get_Top_Left);
+      procedure Move_Top_Right_To is new Move_To
+        (Get_Point => Vis.Absolute.Get_Top_Right);
+      procedure Move_Bottom_Left_To is new Move_To
+        (Get_Point => Vis.Absolute.Get_Bottom_Left);
+      procedure Move_Bottom_Right_To is new Move_To
+        (Get_Point => Vis.Absolute.Get_Bottom_Right);
+   begin
+      if Align_Top then
+         if Align_Left then
+            Move_Top_Left_To;
+         else
+            Move_Top_Right_To;
+         end if;
+      else
+         if Align_Left then
+            Move_Bottom_Left_To;
+         else
+            Move_Bottom_Right_To;
+         end if;
+      end if;
+   end Move_Text_Area_To;
 
    procedure Move_Text_Area_Top_Left_To
      (Edge      : in     Vis_Edge_Id;
@@ -477,6 +522,13 @@ package body Giant.Vis_Data is
    begin
       return Node.Flags and Only_Highlighting;
    end Get_Highlighting;
+
+   procedure Set_Position
+     (Node     : in     Vis_Node_Id;
+      Position : in     Vis.Logic.Vector_2d) is
+   begin
+      Node.Position := Position;
+   end Set_Position;
 
    procedure Set_Node_Size
      (Node : in     Vis_Node_Id;
@@ -1060,6 +1112,9 @@ package body Giant.Vis_Data is
          --  between the position-columns 'Outer_Position_X'
          --  and 'Inner_Position_X'
          Outer_Position_X := Get_Outer_Position_X (X, Horizontal_Profile);
+         --  use any valid value for Position.X, only used for the call
+         --  to 'Get_Region_Extent', will then be overwritten
+         Set_X (Position, 0);
          Done := False;
          loop
             --  next horizontal line
@@ -1122,7 +1177,12 @@ package body Giant.Vis_Data is
          Vis.Absolute.Set_Bottom (Area, Max_Y + (Thickness + 1) / 2);
 
          Pool := Create_Position_Pool_From_Area
-           (Manager, Combine_Rectangle (Start_Point, End_Point));
+           (Manager,
+            Combine_Rectangle
+              (X_1 => Get_X (Start_Point),
+               Y_1 => Get_Y (Start_Point),
+               X_2 => Get_X (End_Point),
+               Y_2 => Get_Y (End_Point)));
          Make_Position_Iterator (Pool, Iterator);
          while Has_More (Iterator) loop
             Hit (Get_Current (Iterator));
@@ -1130,7 +1190,7 @@ package body Giant.Vis_Data is
          end loop;
 
       else
-         if Vis.Absolute.Get_Y (Start_Point) <=
+         if Vis.Absolute.Get_Y (Start_Point) >=
            Vis.Absolute.Get_Y (End_Point) then
 
             Add_Line_Bottom_To_Top (Start_Point, End_Point);
@@ -1198,6 +1258,7 @@ package body Giant.Vis_Data is
          Make_Position_Iterator (Pool, Iterator);
          while Has_More (Iterator) loop
             Hit_Position (Get_Current (Iterator));
+            Next (Iterator);
          end loop;
       end if;
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant_test-graph_widget.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant_test-graph_widget.adb,v $, $Revision: 1.7 $
 --  $Author: keulsn $
---  $Date: 2003/07/09 19:45:37 $
+--  $Date: 2003/07/10 00:16:54 $
 --
 ------------------------------------------------------------------------------
 
@@ -205,23 +205,30 @@ begin
       Node := Giant.Graph_Lib.Get_Root_Node;
       Giant.Graph_Lib.Selections.Add_Node (Selection, Node);
       Test_Log.Debug
-        ("Root node added, nodes count = " &
-         Natural'Image (Giant.Graph_Lib.Selections.Get_Node_Count (Selection)));
---      Edge_Set := Giant.Graph_Lib.Get_Outgoing_Edges (Node);
---      Iterator := Giant.Graph_Lib.Edge_Id_Sets.Make_Iterator (Edge_Set);
---      pragma Assert (Giant.Graph_Lib.Edge_Id_Sets.More (Iterator));
---      Giant.Graph_Lib.Edge_Id_Sets.Next (Iterator, Edge);
---      Test_Log.Debug ("Edge_Id =" & Integer'Image (To_Integer (Edge)));
---      Giant.Graph_Lib.Edge_Id_Sets.Destroy (Iterator);
---      Giant.Graph_Lib.Edge_Id_Sets.Destroy (Edge_Set);
---      Giant.Graph_Lib.Selections.Add_Edge (Selection, Edge);
---      Second_Node := Giant.Graph_Lib.Get_Target_Node (Edge);
---      Giant.Graph_Lib.Selections.Add_Node (Selection, Second_Node);
+        ("Root node added, nodes count = " & Natural'Image
+         (Giant.Graph_Lib.Selections.Get_Node_Count (Selection)));
+
+      Edge_Set := Giant.Graph_Lib.Get_Outgoing_Edges (Node);
+      Iterator := Giant.Graph_Lib.Edge_Id_Sets.Make_Iterator (Edge_Set);
+      pragma Assert (Giant.Graph_Lib.Edge_Id_Sets.More (Iterator));
+      Giant.Graph_Lib.Edge_Id_Sets.Next (Iterator, Edge);
+      Test_Log.Debug ("Edge_Id =" & Integer'Image (To_Integer (Edge)));
+      Giant.Graph_Lib.Edge_Id_Sets.Destroy (Iterator);
+      Giant.Graph_Lib.Edge_Id_Sets.Destroy (Edge_Set);
+      Giant.Graph_Lib.Selections.Add_Edge (Selection, Edge);
+      Second_Node := Giant.Graph_Lib.Get_Target_Node (Edge);
+      Giant.Graph_Lib.Selections.Add_Node (Selection, Second_Node);
       --  einfügen
+      Test_Log.Debug ("Insert Selection.");
       Giant.Graph_Widgets.Insert_Selection (Graph_Widget, Selection, Lock);
-      Test_Log.Debug ("Selection inserted.");
+      Test_Log.Debug ("Move nodes");
+      Giant.Graph_Widgets.Set_Top_Middle
+        (Widget   => Graph_Widget,
+         Node     => Second_Node,
+         Location => Giant.Vis.Logic.Combine_Vector (140.0, -30.0),
+         Lock     => Lock);
+      Test_Log.Debug ("Release_Lock.");
       Giant.Graph_Widgets.Release_Lock (Graph_Widget, Lock);
-      Test_Log.Debug ("Lock released.");
       --  fertig
       Test_Log.Debug ("Destroy Funny_Selection.");
       Giant.Graph_Lib.Selections.Destroy (Selection);

@@ -6,7 +6,7 @@
 
    <!-- ................................................................. -->
    <global_settings
-      vis_window_background_color="blue"/> 
+      vis_window_background_color="RGB:20/20/20"/> 
 
    <!-- ................................................................. -->
 
@@ -14,15 +14,15 @@
       icon         = "node_icon1.xpm"
       text_color   = "yellow"
       border_color = "red"
-      fill_color   = "green"> 
+      fill_color   = "black"> 
    </default_node_setting>
 
 
    <!-- ................................................................. -->
    <default_edge_setting
       line_color = "green"     
-      text_color = "black"     
-      line_style = "dotted_line"      
+      text_color = "green"     
+      line_style = "continuous_line"      
       show_label = "yes" />  
       
 </giant_vis_style_file>
