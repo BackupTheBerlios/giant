@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: product.tex,v $, $Revision: 1.12 $
-%  $Date: 2003/02/18 18:20:48 $
+%  $RCSfile: product.tex,v $, $Revision: 1.13 $
+%  $Date: 2003/02/18 18:37:23 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung des Produktes. Übersicht über die Funktionen
@@ -170,10 +170,12 @@ ausgeführt, dies ist aber nicht zwingend nötig.
   \subsection {Einlesen unzulässiger Daten aus Dateien}
 
   \begin {enumerate}
+  
     \item
     GIANT verfügt über keine Mechanismen, die speziell darauf
     ausgelegt sind, die Korrektheit von Daten, die aus Dateien gelesen werden,
     zu prüfen.
+    
     \item
     Stellt das System fest, dass eine einzulesende Datei ungültige 
     Daten enthält, so wird das System mit einer entsprechenden Fehlermeldung
@@ -236,60 +238,63 @@ ausgeführt, dies ist aber nicht zwingend nötig.
   
   
 \section {Grundlegende Bedienkonzepte}
-Hier werden Konzepte der Bedienung beschrieben, die in den
-UseCases dann nicht mehr näher erläutert werden.
+Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
 
-  \subsection {Selektieren von Knoten und Kanten in Anzeigefenstern}
+  \subsection {Selektieren von Fenster-Knoten und Fenster-Kanten in Anzeigefenstern}
   \begin{enumerate}
   
    \item Selektieren durch Anklicken mit linker Maustaste.\\
-   Nur der angeklickte Knoten oder die angelickte Kante wird selektiert. 
-   Andere bis dahin selektierte Knoten und Kanten werden deselektiert.
+   Nur der angeklickte Fenster-Knoten oder die angeklickte Fenster-Kante 
+   wird selektiert. 
+   Andere bis dahin selektierte Fenster-Knoten und Fenster-Kanten 
+   werden deselektiert.
    
    \item Selektieren durch Anklicken mittels Left-Shift + linke Maustatste.\\
-   Falls nocht nicht selektiert wird der angeklickte Knoten oder die
-   angeklckte Kante zu der aktuellen Selektion hinzugefügt.
-   Falls bereits selektiert wird der Knoten oder die Kante aus der 
-   aktuellen Selektion entfernt.
+   Falls nocht nicht selektiert wird der angeklickte Fenster-Knoten oder die
+   angeklickte Fenster-Kante zu der aktuellen Selektion hinzugefügt.
+   Falls bereits selektiert wird der Fenster-Knoten oder die Fenster-Kante 
+   aus der aktuellen Selektion entfernt.
    
    \item Selektieren durch Aufziehen eines Rahmens mittes gedrückter 
    linker Maustaste.\\
-   Alle Knoten und Knaten innerhalb des Rahmens werden selektiert, alle
-   Knoten und Kanten außerhalb des Rahmens werden deselektiert.
+   Alle Fenster-Knoten und Fenster-Kanten innerhalb des Rahmens werden 
+   selektiert, alle Fenster-Knoten und Fenster-Kanten außerhalb des 
+   Rahmens werden deselektiert.
    
    \item Selektieren durch Aufziehen eines Rahmens mittes 
    Left-Shift + gedrückte linke Maustaste.\\
-   Alle Knoten und Knaten innerhalb des Rahmens, die noch nicht selektiert
-   sind, werden der aktuellen Selektion hinzugefügt.\\
-   Alle Knoten und Knaten innerhalb des Rahmens, die bereits selektiert
+   Alle Fenster-Knoten und Knaten innerhalb des Rahmens, 
+   die noch nicht selektiert sind, werden der aktuellen Selektion 
+   hinzugefügt.\\
+   Alle Fenster-Knoten und Knaten innerhalb des Rahmens, 
+   die bereits selektiert
    sind, werden aus der aktuellen Selektion entefernt.
   
   \end{enumerate}
   
 
-  
-  
+    
   \subsection {Aktuelle Selektion vs.\ Selektionen}
   \begin {enumerate}
   
     \item
     Es gibt zu jedem Anzeigefenster beliebig viele Selektionen, 
     davon ist maximal immer eine die aktuelle Selektion (diese kann
-    natürlich auch leer sein).
+    natürlich auch leer sein, also keine Fenster-Knoten oder 
+    Fenster-Kanten enthalten).
     
     \item 
     Das oben beschriebene Selektieren mittels linker Maustaste etc. betrifft
-    nur die aktuelle Selektion. Alle anderen Selektionen können zwar
-    hervorgehoben werden, aber nicht durch das Selektieren wie oben
-    beschrieben geändert werden.
-    
-    
-    
+    immer nur die aktuelle Selektion. \\
+    Alle anderen Selektionen können zwar hervorgehoben werden, aber nicht 
+    durch das Selektieren mittels linker Maustaste etc. geändert werden.
+      
     \item
-    Natürlich kann der Benutzer jederzeit bestimmen welche Selektion die
-    aktuelle Selektion
-  
-  
+    Natürlich kann der Benutzer jederzeit bestimmen welche der Selektion die
+    aktuelle Selektion ist.
+    
+    \item 
+    Die aktuelle Selektion wird immer hervorgehoben. 
   
   \end {enumerate}
   
