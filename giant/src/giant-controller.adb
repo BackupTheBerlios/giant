@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.77 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.78 $
 --  $Author: schulzgt $
---  $Date: 2003/08/04 15:04:02 $
+--  $Date: 2003/08/04 16:10:00 $
 --
 
 with Ada.Strings.Unbounded;
@@ -149,6 +149,7 @@ package body Giant.Controller is
    is
       use type Gsl.Interpreters.Interpreter;
 
+      Confirm : Boolean;
       Started : Boolean;
    begin
       if (Gsl_Interpreter = null) then
@@ -156,12 +157,15 @@ package body Giant.Controller is
          Gsl_Interpreter := Gsl.Interpreters.Create_Interpreter;
       end if;
 
+      Confirm := Config_Settings.Get_Setting_As_Boolean ("Confirm.Delete");
+      Config_Settings.Set_Setting ("Confirm.Delete", False);
       Gsl.Interpreters.Execute_Script (Gsl_Interpreter, Filename, "");
       Gsl.Interpreters.Start_Calculation
         (Individual => Gsl_Interpreter,
          Started    => Started,
          Dialog     => Gui_Manager.Create_Progress_Dialog
          (-"Executing GSL Script", -"Script is running..."));
+      Config_Settings.Set_Setting ("Confirm.Delete", Confirm);
       Logger.Info ("Script finished:");
    end Execute_GSL;
 
