@@ -56,7 +56,7 @@ HTML_PATH       = ../../html
 HTML_MAIN       = $(shell namei $(MAIN) | xargs | sed s/.*\ -\ //)
 
 VERSION = $(shell grep VERSION src/giant.ads | sed -e 's/.* "//;s/".*//')
-SRCDIST = COPYING giant.sh Makefile README src etc/global_config.xml etc/
+SRCDIST = COPYING Makefile README src
 DIST = COPYING etc/ giant.sh Makefile README shared/
 
 ifeq ($(shell test -r Makefile.local && echo "true"),true)
@@ -128,5 +128,6 @@ release :
 	cd tmp; cvs -d `cat ../CVS/Root` export \
 	  -r `echo giant-$(VERSION) | sed -e 's/\./_/g'` giant
 	mkdir tmp/giant-$(VERSION)
-	tar -C tmp/giant -cf - $(DIST) | tar -C tmp/giant-$(VERSION) -xvf -
-	mv tmp/giant-$(VERSION)/giant.sh tmp/giant-$(VERSION)/giant
+	tar -C tmp/giant -cf - $(SRCDIST) | tar -C tmp/giant-$(VERSION) -xvf -
+	tar -C tmp -czvf giant-$(VERSION).tar.gz giant-$(VERSION)/
+#mv tmp/giant-$(VERSION)/giant.sh tmp/giant-$(VERSION)/giant

@@ -25,7 +25,7 @@
   <setting name="GSL.Include_Path" value="../shared/gsl" />
 
   <!-- Settings for scripts in menus -->
-  <setting name="GSL.No_Param" value="Open Entire Graph:Create HPG:Search For Routine" />
+  <setting name="GSL.No_Param" value="Open Entire Graph:Open HPG:Search For Routine" />
   <setting name="GSL.No_Param_Context" value="" />
   <setting name="GSL.Node_Id_Param" value="Get Adjacent Nodes" />
   <setting name="GSL.Edge_Id_Param" value="" />
