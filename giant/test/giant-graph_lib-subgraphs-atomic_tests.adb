@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_lib-subgraphs-atomic_tests.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-graph_lib-subgraphs-atomic_tests.adb,v $, $Revision: 1.3 $
 --  $Author: koppor $
---  $Date: 2003/06/30 12:29:59 $
+--  $Date: 2003/10/08 22:20:50 $
 --
 
 with Ada.Text_IO;
@@ -32,6 +32,7 @@ with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
 
 with Giant.Graph_Lib; use Giant.Graph_Lib;
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 
 package body Giant.Graph_Lib.Subgraphs.Atomic_Tests is
 
@@ -51,7 +52,7 @@ package body Giant.Graph_Lib.Subgraphs.Atomic_Tests is
    is
    begin
       Giant.Graph_Lib.Initialize;
-      Giant.Graph_Lib.Load ("resources/rfg_examp.iml");
+      Giant.Graph_Lib.Load ("resources/graphs/concept_analysis.iml");
    end Init;
 
    Test_Subgraph : Subgraph;
