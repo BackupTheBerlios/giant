@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.10 $
+-- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.11 $
 -- $Author: squig $
--- $Date: 2003/06/26 13:05:16 $
+-- $Date: 2003/06/26 13:43:52 $
 --
 -- -----
 -- This package holds the functionality needed to access and handle
@@ -139,7 +139,7 @@ package Giant.Config_Settings is
 
       (To_UStr ("Confirm.Delete"),
        To_UStr ("True"),
-       Boolean_Settings.Validate'Access)
+       Boolean_Settings.Validate'Access),
 
       (To_UStr ("Editor.Source"),
        To_UStr ("/usr/bin/emacs +%l:%c %f"),

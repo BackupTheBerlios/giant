@@ -20,17 +20,17 @@
 --
 -- First Author: Steffen Pingel
 --
--- $RCSfile: giant-string_utils.ads,v $, $Revision: 1.1 $
+-- $RCSfile: giant-string_utils.ads,v $, $Revision: 1.2 $
 -- $Author: squig $
--- $Date: 2003/06/26 13:05:16 $
+-- $Date: 2003/06/26 13:43:53 $
 --
 
 package Giant.String_Utils is
-   
-   procedure Replace_All
-	 (Haystack	 : in String;
-	  Needle	 : in String;
-	  New_Needle : in String)
-	 return String;
-   
+
+--     procedure Replace_All
+--       (Haystack   : in String;
+--        Needle     : in String;
+--        New_Needle : in String)
+--       return String;
+
 end Giant.String_Utils;

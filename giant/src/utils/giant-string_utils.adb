@@ -20,33 +20,21 @@
 --
 -- First Author: Steffen Pingel
 --
--- $RCSfile: giant-string_utils.adb,v $, $Revision: 1.1 $
+-- $RCSfile: giant-string_utils.adb,v $, $Revision: 1.2 $
 -- $Author: squig $
--- $Date: 2003/06/26 13:05:16 $
+-- $Date: 2003/06/26 13:43:53 $
 --
 
 package body Giant.String_Utils is
-   
-   procedure Replace_All
-	 (Haystack	 : in String;
-	  Needle	 : in String;
-	  New_Needle : in String)
-	 return String
-   is
-	  
-   begin
-	  Find_Token (Source : in String;
-                          Set    : in Maps.Character_Set;
-                          Test   : in Membership;
-                          First  : out Positive;
-				  Last   : out Natural);
-	  
-	  Replace_Slice (Source   : in String;
-                            Low      : in Positive;
-                            High     : in Natural;
-                            By       : in String)
-       return String;
-	  
-   end Replace_All;
-   
+
+--     procedure Replace_All
+--       (Haystack   : in String;
+--        Needle     : in String;
+--        New_Needle : in String)
+--       return String
+--     is
+--     begin
+--        return Haystack;
+--     end Replace_All;
+
 end Giant.String_Utils;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-dialogs.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-dialogs.adb,v $, $Revision: 1.7 $
 --  $Author: squig $
---  $Date: 2003/06/26 13:05:16 $
+--  $Date: 2003/06/26 13:43:52 $
 --
 
 with Gtk.Box;
@@ -45,7 +45,7 @@ package body Giant.Dialogs is
       Response : Default_Dialog.Response_Type;
    begin
       --  FIX: query setting
-      if (Config_Settings.Boolean.Get
+      if (Config_Settings.Boolean_Settings.Get
           (Config_Settings.Get_Setting_As_String
            ("Confirm.Delete")) = False) then
          return True;
