@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.27 $
-%  $Date: 2003/02/24 20:28:13 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.28 $
+%  $Date: 2003/02/24 20:55:38 $
 %  $Author: birdy $
 %
 %  Description: Bis zu Revision 1.6 sind UseCase-artige Beschreibungen enthalten,
@@ -47,12 +47,11 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
   \subsection {Menüleiste (Main Window)}
   In der Menüleiste befinden sich folgende Einträge:
 
-    \subsubsection {Untermenü Datei (Main Window)}
+    \subsubsection {Untermenü Datei (Main Window)} \label{Main Window}
     Im Untermenü Datei des Hauptfensters befinden sich folgende Einträge.  
 
       \begin{enumerate}
-         \item {Load Project\\
-	  blah}
+         \item {Load Project}
          \item {Save Project}
          \item {New Project}
          \item{ Quit}
@@ -206,6 +205,8 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
       \item Hide Node ????
       \item Show Parent ????
       \item Show Children ????
+      \item Annotate Node \label{Annotate Node}
+      \item Delete Node Annotation \label{Delete Node Annotation}
     \end{enumerate}
     Wenn in der VIS\_PANE, nicht auf einer Kante oder einem Knoten, die rechte
     Maustaste geklickt wird, öffnet sich folgendes Kontextmenü:
