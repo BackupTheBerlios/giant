@@ -20,9 +20,9 @@
 --
 -- First Author: Gerrit Schulz
 --
--- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.11 $
+-- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.12 $
 -- $Author: schulzgt $
--- $Date: 2003/07/19 15:09:08 $
+-- $Date: 2003/07/23 13:45:27 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Tags;
@@ -54,8 +54,11 @@ package body Giant.Gsl.Types is
       end if;
    end Destroy_Gsl_Type;
 
+------------------------------------------------------------------------------
+-- Gsl_Node_Id
+
    ---------------------------------------------------------------------------
-   -- Gsl_Node_Id
+   --
    function Create_Gsl_Node_Id return Gsl_Node_Id is
 
       Var : Gsl_Node_Id;
@@ -64,6 +67,21 @@ package body Giant.Gsl.Types is
       return Var;
    end Create_Gsl_Node_Id;
 
+   ---------------------------------------------------------------------------
+   --
+   function Create_Gsl_Node_Id
+     (Value : Giant.Graph_Lib.Node_Id)
+      return Gsl_Node_Id is
+
+      Var : Gsl_Node_Id;
+   begin
+      Var := new Gsl_Node_Id_Record;
+      Var.Value := Value;
+      return Var;
+   end Create_Gsl_Node_Id;
+
+   ---------------------------------------------------------------------------
+   --
    function Is_Gsl_Node_Id
      (Var : Gsl_Type)
       return Boolean is
@@ -77,6 +95,8 @@ package body Giant.Gsl.Types is
       end if;
    end Is_Gsl_Node_Id;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Value
      (Var : Gsl_Node_Id)
       return Giant.Graph_Lib.Node_Id is
@@ -84,6 +104,8 @@ package body Giant.Gsl.Types is
       return Var.Value;
    end Get_Value;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Set_Value
      (Var   : Gsl_Node_Id;
       Value : Giant.Graph_Lib.Node_Id) is
@@ -91,6 +113,8 @@ package body Giant.Gsl.Types is
       Var.Value := Value;
    end Set_Value;
 
+   ---------------------------------------------------------------------------
+   --
    function Copy
      (Object : access Gsl_Node_Id_Record)
       return Gsl_Type is
@@ -102,6 +126,8 @@ package body Giant.Gsl.Types is
       return Gsl_Type (Var);
    end Copy;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Destroy
      (Object : in out Gsl_Node_Id) is
 
@@ -112,8 +138,11 @@ package body Giant.Gsl.Types is
       Free (Object);
    end Destroy;
 
+------------------------------------------------------------------------------
+-- Gsl_Edge_Id
+
    ---------------------------------------------------------------------------
-   -- Gsl_Edge_Id
+   --
    function Create_Gsl_Edge_Id return Gsl_Edge_Id is
 
       Var : Gsl_Edge_Id;
@@ -122,6 +151,21 @@ package body Giant.Gsl.Types is
       return Var;
    end Create_Gsl_Edge_Id;
 
+   ---------------------------------------------------------------------------
+   --
+   function Create_Gsl_Edge_Id
+     (Value : Giant.Graph_Lib.Edge_Id)
+      return Gsl_Edge_Id is
+
+      Var : Gsl_Edge_Id;
+   begin
+      Var := new Gsl_Edge_Id_Record;
+      Var.Value := Value;
+      return Var;
+   end Create_Gsl_Edge_Id;
+
+   ---------------------------------------------------------------------------
+   --
    function Is_Gsl_Edge_Id
      (Var : Gsl_Type)
       return Boolean is
@@ -135,6 +179,8 @@ package body Giant.Gsl.Types is
       end if;
    end Is_Gsl_Edge_Id;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Value
      (Var : Gsl_Edge_Id)
       return Giant.Graph_Lib.Edge_Id is
@@ -142,6 +188,8 @@ package body Giant.Gsl.Types is
       return Var.Value;
    end Get_Value;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Set_Value
      (Var   : Gsl_Edge_Id;
       Value : Giant.Graph_Lib.Edge_Id) is
@@ -149,6 +197,8 @@ package body Giant.Gsl.Types is
       Var.Value := Value;
    end Set_Value;
 
+   ---------------------------------------------------------------------------
+   --
    function Copy
      (Object : access Gsl_Edge_Id_Record)
       return Gsl_Type is
@@ -160,6 +210,8 @@ package body Giant.Gsl.Types is
       return Gsl_Type (Var);
    end Copy;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Destroy
      (Object : in out Gsl_Edge_Id) is
 
@@ -170,8 +222,8 @@ package body Giant.Gsl.Types is
       Free (Object);      
    end Destroy;
 
-   ---------------------------------------------------------------------------
-   -- Gsl_Node_Set
+------------------------------------------------------------------------------
+-- Gsl_Node_Set
    function Create_Gsl_Node_Set
      (Value : Giant.Graph_Lib.Node_Id_Set)
       return Gsl_Node_Set is
@@ -470,8 +522,8 @@ package body Giant.Gsl.Types is
       Free (Object);
    end Destroy;
 
-   ---------------------------------------------------------------------------
-   -- Gsl_List
+------------------------------------------------------------------------------
+-- Gsl_List
    function Create_Gsl_List
      (Size : Natural)
       return Gsl_List is
@@ -539,8 +591,8 @@ package body Giant.Gsl.Types is
       Free (Object);
    end Destroy;
 
-   ---------------------------------------------------------------------------
-   -- Gsl_Var_Reference
+------------------------------------------------------------------------------
+-- Gsl_Var_Reference
    function Create_Gsl_Var_Reference
      (Ref_Type : Reference_Type;
       Ref_Name : String)
@@ -602,8 +654,8 @@ package body Giant.Gsl.Types is
       Free (Object);
    end Destroy;
 
-   ---------------------------------------------------------------------------
-   -- Gsl_Script_Reference
+------------------------------------------------------------------------------
+-- Gsl_Script_Reference
    function Create_Gsl_Script_Reference
      (Parameter_List : Syntax_Node;
       Script_Node    : Syntax_Node)
@@ -707,4 +759,27 @@ package body Giant.Gsl.Types is
       Free (Object);
    end Destroy;
 
+------------------------------------------------------------------------------
+--
+
+   function Is_Gsl_Object_Set
+     (Var : Gsl_Type)
+      return Boolean is
+   begin
+      if Var = Gsl_Null then
+         return false;
+      elsif Is_Gsl_List (Var) then
+         if Get_List_Size (Gsl_List (Var)) = 2 then
+            if Is_Gsl_Node_Set (Get_Value_At (Gsl_List (Var), 1)) and
+               Is_Gsl_Edge_Set (Get_Value_At (Gsl_List (Var), 2)) then
+               return true;
+            else
+               return false;
+            end if;
+         else
+            return false;
+         end if;
+      end if;
+   end Is_Gsl_Object_Set;
+	   
 end Giant.Gsl.Types;

@@ -21,7 +21,7 @@
 --
 -- $RCSfile: giant-gsl-types.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/14 15:22:08 $
+-- $Date: 2003/07/23 13:45:27 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -38,60 +38,96 @@ package Giant.Gsl.Types is
    procedure Destroy_Gsl_Type 
      (Var : in out Gsl_Type);
 
-   --------------------------------------------------------------------------
-   -- Gsl_Node_Id
+------------------------------------------------------------------------------
+-- Gsl_Node_Id
    type Gsl_Node_Id_Record is new Gsl_Type_Record with private;
    type Gsl_Node_Id is access all Gsl_Node_Id_Record;
 
+   ---------------------------------------------------------------------------
+   --
    function Create_Gsl_Node_Id return Gsl_Node_Id;
+
+   ---------------------------------------------------------------------------
+   --
+   function Create_Gsl_Node_Id
+     (Value : Giant.Graph_Lib.Node_Id)
+      return Gsl_Node_Id;
    
+   ---------------------------------------------------------------------------
+   --
    function Is_Gsl_Node_Id
      (Var : Gsl_Type)
       return Boolean;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Value
      (Var : Gsl_Node_Id)
       return Giant.Graph_Lib.Node_Id;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Set_Value
      (Var   : Gsl_Node_Id;
       Value : Giant.Graph_Lib.Node_Id);
  
+   ---------------------------------------------------------------------------
+   --
    function Copy
      (Object : access Gsl_Node_Id_Record)
       return Gsl_Type;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Destroy
      (Object : in out Gsl_Node_Id);
 
-   ---------------------------------------------------------------------------
-   -- Gsl_Edge_Id
+------------------------------------------------------------------------------
+-- Gsl_Edge_Id
    type Gsl_Edge_Id_Record is new Gsl_Type_Record with private;
    type Gsl_Edge_Id is access all Gsl_Edge_Id_Record;
 
+   ---------------------------------------------------------------------------
+   --
    function Create_Gsl_Edge_Id return Gsl_Edge_Id;
 
+   ---------------------------------------------------------------------------
+   --
+   function Create_Gsl_Edge_Id
+     (Value : Giant.Graph_Lib.Edge_Id)
+      return Gsl_Edge_Id;
+
+   ---------------------------------------------------------------------------
+   --
    function Is_Gsl_Edge_Id
      (Var : Gsl_Type)
       return Boolean;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Value
      (Var : Gsl_Edge_Id)
       return Giant.Graph_Lib.Edge_Id;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Set_Value
      (Var   : Gsl_Edge_Id;
       Value : Giant.Graph_Lib.Edge_Id);
 
+   ---------------------------------------------------------------------------
+   --
    function Copy
      (Object : access Gsl_Edge_Id_Record)
       return Gsl_Type;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Destroy
      (Object : in out Gsl_Edge_Id);
 
-   ---------------------------------------------------------------------------
-   -- Gsl_Node_Set
+------------------------------------------------------------------------------
+-- Gsl_Node_Set
    type Gsl_Node_Set_Record is new Gsl_Type_Record with private;
    type Gsl_Node_Set is access all Gsl_Node_Set_Record;
 
@@ -299,64 +335,97 @@ package Giant.Gsl.Types is
    procedure Destroy
      (Object : in out Gsl_Var_Reference);
 
-   ---------------------------------------------------------------------------
-   -- Gsl_Script_Reference
+------------------------------------------------------------------------------
+-- Gsl_Script_Reference
    type Gsl_Script_Reference_Record is new Gsl_Type_Record with private;
    type Gsl_Script_Reference is access all Gsl_Script_Reference_Record;
 
    type Gsl_Script_Type is (Gsl_Script, Gsl_Runtime);
 
-   --------------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    --
    type Runtime_Function is access
      function
        (Parameter : Gsl_List)
         return Gsl_Type;
 
+   ---------------------------------------------------------------------------
+   --
    function Create_Gsl_Script_Reference
      (Parameter_List : Syntax_Node;
       Script_Node    : Syntax_Node) 
       return Gsl_Script_Reference;
 
+   ---------------------------------------------------------------------------
+   --
    function Create_Gsl_Script_Reference
      (Runtime : Runtime_Function)
       return Gsl_Script_Reference;
 
+   ---------------------------------------------------------------------------
+   --
    function Is_Gsl_Script_Reference
      (Var : Gsl_Type)
       return Boolean;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Script_Type
      (Object : Gsl_Script_Reference)
       return Gsl_Script_Type; 
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Parameter_List
      (Object : Gsl_Script_Reference)
       return Syntax_Node;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Script_Node
      (Object : Gsl_Script_Reference)
       return Syntax_Node;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Activation_Record
      (Object : Gsl_Script_Reference)
       return Activation_Record;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Set_Activation_Record
      (Object : Gsl_Script_Reference;
       AR     : Activation_Record);
-
+   
+   ---------------------------------------------------------------------------
+   --
    function Get_Gsl_Runtime
      (Object : Gsl_Script_Reference)
       return Runtime_Function;
 
+   
+   ---------------------------------------------------------------------------
+   --
    function Copy
      (Object : access Gsl_Script_Reference_Record)
       return Gsl_Type;
 
+   
+   ---------------------------------------------------------------------------
+   --
    procedure Destroy
      (Object : in out Gsl_Script_Reference);
-      
+
+------------------------------------------------------------------------------
+--
+   
+   ---------------------------------------------------------------------------
+   --   
+   function Is_Gsl_Object_Set
+     (Var : Gsl_Type)
+      return Boolean;
+
 ------------------------------------------------------------------------------
 -- private part 
 private
