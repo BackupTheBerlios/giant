@@ -20,11 +20,12 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.32 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.33 $
 --  $Author: squig $
---  $Date: 2003/06/25 16:07:51 $
+--  $Date: 2003/06/25 17:28:05 $
 --
 
+with Ada.Exceptions;
 with Ada.Strings.Unbounded;
 with Interfaces.C.Strings;
 with System;
@@ -142,6 +143,23 @@ package body Giant.Main_Window is
 
    Loaded: Boolean;
 
+   procedure Handle_Project_Exception
+     (Error : in Ada.Exceptions.Exception_Occurrence)
+   is
+   begin
+      Ada.Exceptions.Reraise_Occurrence (Error);
+   exception
+     when Giant.Graph_Lib.Load_Error =>
+        Dialogs.Show_Error_Dialog (-"The IML graph could not be loaded.");
+     when Projects.Invalid_Project_Directory_Excpetion =>
+        Dialogs.Show_Error_Dialog (-"The selected directory is invalid.");
+     when Projects.Wrong_IML_Graph_Loaded_Exception =>
+        Dialogs.Show_Error_Dialog (-"The IML graph is invalid.");
+     when Projects.Directory_Holds_Already_A_Project_File_Exception =>
+        Dialogs.Show_Error_Dialog (-"The project could not be created. The directory already contains a project.");
+
+   end Handle_Project_Exception;
+
    procedure Update_Children
      (Widget : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
@@ -220,14 +238,8 @@ package body Giant.Main_Window is
          end if;
       end;
    exception
-     when Giant.Graph_Lib.Load_Error =>
-        Dialogs.Show_Error_Dialog (-"The IML graph could not be loaded.");
-     when Projects.Invalid_Project_Directory_Excpetion =>
-        Dialogs.Show_Error_Dialog (-"The selected directory is invalid.");
-     when Projects.Wrong_IML_Graph_Loaded_Exception =>
-        Dialogs.Show_Error_Dialog (-"The IML graph is invalid.");
-     when Projects.Directory_Holds_Already_A_Project_File_Exception =>
-        Dialogs.Show_Error_Dialog (-"The project could not be created. The directory already contains a project.");
+     when E: others =>
+        Handle_Project_Exception (E);
    end On_Project_New;
 
    procedure On_Project_Open
@@ -245,8 +257,8 @@ package body Giant.Main_Window is
          end if;
       end;
    exception
-      when Projects.Project_Does_Not_Exist_Exception =>
-         Dialogs.Show_Error_Dialog (-"The project could not be opened. One or more project files are missing.");
+     when E: others =>
+        Handle_Project_Exception (E);
    end On_Project_Open;
 
    procedure On_Project_Close
@@ -278,6 +290,9 @@ package body Giant.Main_Window is
             Controller.Save_Project (Filename);
          end if;
       end;
+   exception
+     when E: others =>
+        Handle_Project_Exception (E);
    end On_Project_Save_As;
 
    procedure On_Project_Info
@@ -288,6 +303,9 @@ package body Giant.Main_Window is
       Logger.Info ("Nodes : " & Integer'Image
                    (Graph_Lib.Node_Id_Sets.Size
                     (Graph_Lib.Get_All_Nodes)));
+      Logger.Info ("Edges : " & Integer'Image
+                   (Graph_Lib.Edge_Id_Sets.Size
+                    (Graph_Lib.Get_All_Edges)));
       Node_Info_Dialog.Create (Dialog);
       Node_Info_Dialog.Set_Node (Dialog, Graph_Lib.Get_Root_Node);
       Node_Info_Dialog.Show_All (Dialog);
@@ -815,6 +833,34 @@ package body Giant.Main_Window is
    --  Public Methods
    ---------------------------------------------------------------------------
 
+   function Close_Project
+     (Ask_For_Confirmation : in Boolean := True)
+     return Boolean
+   is
+      use type Default_Dialog.Response_Type;
+
+      Response : Default_Dialog.Response_Type;
+   begin
+      if (Ask_For_Confirmation) then
+         Response := Dialogs.Show_Confirmation_Dialog
+           (-"The project has changed. Save changes?",
+            Default_Dialog.Button_Yes_No_Cancel);
+         if (Response = Default_Dialog.Response_Yes) then
+            Controller.Save_Project;
+         elsif (Response = Default_Dialog.Response_Cancel) then
+            return False;
+         end if;
+      end if;
+
+      --  notify all open dialogs
+      Main_Window_Callback.Emit_By_Name (Window, "close_project");
+
+      --  disable widgets
+      Set_Project_Loaded (False);
+
+      return True;
+   end Close_Project;
+
    procedure Connect_Close_Project
      (Callback : in     Widget_Callback.Marshallers.Void_Marshaller.Handler;
       Widget   : access Gtk.Widget.Gtk_Widget_Record'Class)
@@ -830,7 +876,9 @@ package body Giant.Main_Window is
      return Boolean
    is
    begin
-      if (Ask_For_Confirmation) then
+      if (Ask_For_Confirmation
+          and then Controller.Is_Project_Loaded
+          and then Controller.Has_Project_Changed) then
          if (not Close_Project (Ask_For_Confirmation)) then
             --  the user has cancelled
             return False;
@@ -880,34 +928,6 @@ package body Giant.Main_Window is
 
       Show_All (Window);
    end Show;
-
-   function Close_Project
-     (Ask_For_Confirmation : in Boolean := True)
-     return Boolean
-   is
-      use type Default_Dialog.Response_Type;
-
-      Response : Default_Dialog.Response_Type;
-   begin
-      if (Ask_For_Confirmation) then
-         Response := Dialogs.Show_Confirmation_Dialog
-           (-"The project has changed. Save changes?",
-            Default_Dialog.Button_Yes_No_Cancel);
-         if (Response = Default_Dialog.Response_Yes) then
-            Controller.Save_Project;
-         elsif (Response = Default_Dialog.Response_Cancel) then
-            return False;
-         end if;
-      end if;
-
-      --  notify all open dialogs
-      Main_Window_Callback.Emit_By_Name (Window, "close_project");
-
-      --  disable widgets
-      Set_Project_Loaded (False);
-
-      return True;
-   end Close_Project;
 
    procedure Set_Status
      (Text : in String)

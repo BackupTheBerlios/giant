@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.18 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.19 $
 --  $Author: squig $
---  $Date: 2003/06/25 16:07:51 $
+--  $Date: 2003/06/25 17:28:05 $
 --
 --
 ------------------------------------------------------------------------------
@@ -55,24 +55,27 @@ begin
 
    Config.Global_Data.Initialize_Config_Data;
 
+   Giant.Graph_Lib.Initialize;
+
    Config.Vis_Styles.Initialize_Config_Vis_Styles
-     (Resources_Root_Dir     => Config.Global_Data.Get_Resources_Directory,
+     (Resources_Root_Dir     =>
+        Config.Global_Data.Get_Resources_Directory,
       GIANT_VIS_Directory    => "",
       User_Vis_Directory     => "",
-      Default_Vis_Style_File
-      => "test/resources/vis_styles/only_defaults_giant_vis_style.xml");
+      Default_Vis_Style_File =>
+        "test/resources/vis_styles/only_defaults_giant_vis_style.xml");
 
    -- FIX: remove the following lines
    declare
    begin
-      declare
-      begin
-         File_Management.Delete_File ("test/resources/GiantTest.xml");
-      exception
-         when others =>
-            null;
-      end;
-      Controller.Open_Project ("test/resources/GiantTest.xml");
+--        declare
+--        begin
+--           File_Management.Delete_File ("test/resources/GiantTest.xml");
+--        exception
+--           when others =>
+--              null;
+--        end;
+      Controller.Open_Project ("test/resources/test.xml");
    exception
       when others =>
          null;
@@ -84,9 +87,12 @@ begin
 
    Logger.Debug ("closing giant");
 
+   Giant.Graph_Lib.Destroy;
+
    --  store config settings
    Logger.Debug ("storing config settings: " & Config_Filename);
    Config_Settings.Store_User_Config_File (Config_Filename);
+
 
    Giant.Default_Logger.Close;
 end Giant.Main;

@@ -1,4 +1,3 @@
-
 ------------------------------------------------------------------------------
 --  GIANT - Graphical IML Analysis and Navigation Tool
 --
@@ -21,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.22 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.23 $
 --  $Author: squig $
---  $Date: 2003/06/25 16:07:51 $
+--  $Date: 2003/06/25 17:28:05 $
 --
 
 with Ada.Strings.Unbounded;
@@ -73,6 +72,9 @@ package body Giant.Controller is
          --FIX: Current_Project := null;
          return True;
       end if;
+
+      Graph_Lib.Unload;
+
       return False;
    end;
 
@@ -83,7 +85,7 @@ package body Giant.Controller is
       Checksum : Integer;
    begin
       --  create graph
-      Giant.Graph_Lib.Create (Graph_Filename);
+      Graph_Lib.Load (Graph_Filename);
       Checksum := Graph_Lib.Get_Graph_Hash;
 
       Logger.Info (-"Creating project " & Filename);
@@ -132,6 +134,13 @@ package body Giant.Controller is
       return "";
    end;
 
+   function Has_Project_Changed
+     return Boolean
+   is
+   begin
+      return Project_Changed;
+   end Has_Project_Changed;
+
    function Is_Project_Loaded
      return Boolean
    is
@@ -150,7 +159,7 @@ package body Giant.Controller is
         (Filename, Graph_Filename, Checksum);
 
       --  create graph
-      Giant.Graph_Lib.Create (Ada.Strings.Unbounded.To_String (Graph_Filename));
+      Giant.Graph_Lib.Load (Ada.Strings.Unbounded.To_String (Graph_Filename));
 
       Logger.Info (-"Opening project " & Filename);
       Current_Project := Projects.Load_Project_File (Filename);

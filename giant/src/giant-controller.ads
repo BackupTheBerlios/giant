@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.18 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.19 $
 --  $Author: squig $
---  $Date: 2003/06/25 16:07:51 $
+--  $Date: 2003/06/25 17:28:05 $
 --
 ------------------------------------------------------------------------------
 --
@@ -48,8 +48,20 @@ package Giant.Controller is
    --  GUI
    ---------------------------------------------------------------------------
 
+   ---------------------------------------------------------------------------
+   --  Shows the main window.
+   --
+   --  See:
+   --    Giant.Gui_Manager.Show
    procedure Show_Gui;
 
+   ---------------------------------------------------------------------------
+   --  Closes all windows. The current project is not closed.
+   --
+   --  Returns:
+   --    True, if gui was hidden; False, if the user cancelled.
+   --  See:
+   --    Giant.Gui_Manager.Hide
    function Hide_Gui
      (Ask_For_Confirmation : in Boolean := True)
      return Boolean;
@@ -77,6 +89,11 @@ package Giant.Controller is
    --  Projects
    ---------------------------------------------------------------------------
 
+   ---------------------------------------------------------------------------
+   --  Closes the currently open project.
+   --
+   --  This method needs to be called prior to Create_Project and
+   --  Open_Project if Is_Project_Loaded returns True.
    function Close_Project
      (Ask_For_Confirmation : in Boolean := True)
      return Boolean;
@@ -85,7 +102,8 @@ package Giant.Controller is
    --  Creates a new project.
    --
    --  See:
-   --    Giant.Graph_Lib.Create
+   --    Close_Project
+   --    Giant.Graph_Lib.Load
    --    Giant.Projects.Create_Empty_Project_For_File
    procedure Create_Project
      (Filename       : in String;
@@ -93,25 +111,53 @@ package Giant.Controller is
 
    ---------------------------------------------------------------------------
    --  Returns the currently open project.
-   --
    function Get_Project
      return Projects.Project_Access;
 
+   ---------------------------------------------------------------------------
+   --  Returns a unique name for the current project by appending
+   --  digits to Name. This is useful for the creation of project
+   --  global object like Vis_Windows and Subgraphs.
    function Get_Unique_Name
      (Name : in String := "Unknown")
       return String;
 
+   ---------------------------------------------------------------------------
+   --  Returns True, if the current project was modified. The return
+   --  value is undefined if no project is loaded.
+   function Has_Project_Changed
+     return Boolean;
+
+   ---------------------------------------------------------------------------
+   --  Returns True, if a project is loaded; False, otherwise.
    function Is_Project_Loaded
      return Boolean;
 
+   ---------------------------------------------------------------------------
+   --  Opens a project.
+   --
+   --  See:
+   --    Close_Project
+   --    Giant.Projects.Get_Bauhaus_IML_Graph_Data_File
+   --    Giant.Graph_Lib.Load
+   --    Giant.Projects.Load_Project_File
    procedure Open_Project
      (Filename : in String);
 
+   ---------------------------------------------------------------------------
+   --  Saves the current project.
+   --
+   --  See:
+   --    Giant.Projects.Store_Whole_Project
    procedure Save_Project;
 
+   ---------------------------------------------------------------------------
+   --  Saves the current project with in a different directory.
+   --
+   --  See:
+   --    Giant.Projects.Store_Whole_Project_As_For_File
    procedure Save_Project
      (Filename : in String);
-
 
    ---------------------------------------------------------------------------
    --  Selections
@@ -220,5 +266,6 @@ private
 
    Current_Project : Projects.Project_Access;
    Project_Loaded : Boolean := False;
+   Project_Changed : Boolean := False;
 
 end Giant.Controller;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.15 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.16 $
 --  $Author: squig $
---  $Date: 2003/06/25 16:07:51 $
+--  $Date: 2003/06/25 17:28:05 $
 --
 
 with Ada.Strings.Unbounded;
@@ -104,7 +104,7 @@ package body Giant.Gui_Manager is
    ---------------------------------------------------------------------------
 
    function Hide
-     (Ask_For_Confirmation: Boolean)
+     (Ask_For_Confirmation: in Boolean)
      return Boolean
    is
    begin

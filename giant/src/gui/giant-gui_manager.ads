@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.14 $
+--  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.15 $
 --  $Author: squig $
---  $Date: 2003/06/25 16:07:51 $
+--  $Date: 2003/06/25 17:28:05 $
 --
 --  Stores the window records. Handles the controller updates. Provides
 --  a facade for the gui.
@@ -42,12 +42,17 @@ package Giant.Gui_Manager is
 
    ---------------------------------------------------------------------------
    --  Shows the main window.
-   --
    procedure Show;
 
    ---------------------------------------------------------------------------
-   --  Quits the application.
+   --  Hides the main window.
    --
+   --  Parameters:
+   --    Ask_For_Confirmation - If True and project is modified, ask
+   --    the user to save the project
+   --  Returns:
+   --    True, if the windows were closed; False, if the user
+   --    cancelled.
    function Hide
      (Ask_For_Confirmation: Boolean)
      return Boolean;

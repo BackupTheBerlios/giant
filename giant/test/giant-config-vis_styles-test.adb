@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-config-vis_styles-test.adb,v $, $Revision: 1.3 $
---  $Author: schwiemn $
---  $Date: 2003/06/25 16:13:26 $
+--  $RCSfile: giant-config-vis_styles-test.adb,v $, $Revision: 1.4 $
+--  $Author: squig $
+--  $Date: 2003/06/25 17:28:05 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -40,21 +40,21 @@ package body Giant.Config.Vis_Styles.Test is
 
    procedure Test_Initialisation
      (R : in out AUnit.Test_Cases.Test_Case'Class) is
-     
+
    begin
-      
+
       for i in 1 .. 1 loop
-      
+
         Giant.Config.Vis_Styles.Initialize_Config_Vis_Styles
           ("resources/vis_styles/resources_dir",
            "",
-           "", 
+           "",
            "resources/vis_styles/only_defaults_giant_vis_style.xml");
-      
+
     --    Assert (Giant.Config.Vis_Styles.Get_Number_Of_Known_Vis_Styles = 1,
       --          "Test whether ammount of loaded vis styles is correct");
 
-                
+
         Giant.Config.Vis_Styles.Clear_Config_Vis_Styles;
       end loop;
    end Test_Initialisation;
@@ -72,8 +72,8 @@ package body Giant.Config.Vis_Styles.Test is
 
    procedure Set_Up (T : in out Test_Case) is
    begin
-      Giant.Graph_Lib.Create 
-      ("/home/schwiemn/giant/schwiemn/CVS_Hpro/giant/test/resources/"
+      Giant.Graph_Lib.Create
+      ("resources/"
        & "rfg_examp.iml");
    end Set_Up;
 
