@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.12 $
+--  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.13 $
 --  $Author: koppor $
---  $Date: 2003/07/11 01:42:07 $
+--  $Date: 2003/07/11 01:47:01 $
 --
 ------------------------------------------------------------------------------
 --  Variables are named according to the paper
@@ -626,7 +626,7 @@ package body Giant.Tree_Layouts is
             Next_Action  := Evolutions.Run;
 
          when FirstWalk_Start =>
-            Logger.Debug ("State: Step: FirstWalk_Part_Start");
+            Logger.Debug ("State: Step: FirstWalk_Start");
             Node_Layout_Data_Stacks.Push
               (Layout.FirstWalk_Part_One_Stack, Layout.Tree_Root);
 
@@ -978,6 +978,9 @@ package body Giant.Tree_Layouts is
          end loop;
 
          Evolutions.Advance_Progress (Layout, Level - 1);
+
+         Layout.State := FirstWalk_Start;
+         Next_Action  := Evolutions.Run;
       end Init_Calculation_Part_Two;
 
    begin
