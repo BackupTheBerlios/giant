@@ -1,7 +1,7 @@
 % ==============================================================================
 %  $RCSfile: node_annotations.tex,v $
-%  $Date: 2003/04/07 18:53:13 $
-%  $Author: squig $
+%  $Date: 2003/04/17 00:29:18 $
+%  $Author: schwiemn $
 %
 %  Description: UseCases zum Annotieren von Knoten
 %
@@ -39,7 +39,7 @@
     Der Benutzer führt einen Rechtsklick auf den 
     Knoten, der annotiert werden soll,
     durch und wählt im Popup Menü für Knoten den Eintrag
-    \gq {Annotate Node} aus (siehe \ref{Node-Popup-Menü}).
+    \gq{Annotation -- Add} aus (siehe \ref{Node-Popup-Menü}).
    
     \step[2]
     GIANT zeigt nun den Knoten Annotations-Dialog 
@@ -103,7 +103,7 @@
     Der Benutzer führt einen Rechtsklick auf den 
     Knoten, dessen Annotation geändert werden soll,
     durch und wählt im Popup Menü für Knoten den Eintrag
-    \gq {Change Node Annotation} aus (siehe \ref{Node-Popup-Menü}).
+    \gq{Annotation -- Change} aus (siehe \ref{Node-Popup-Menü}).
  
     
     \step[2]
@@ -167,7 +167,7 @@
     Der Benutzer führt einen Rechtsklick auf den Fenster-Knoten,
     dessen Annotation gelöscht werden soll, durch und wählt im Popup 
     Menü für Knoten den Eintrag
-    \gq {Delete Node Annotation} aus (siehe \ref{Node-Popup-Menü}).
+    \gq {Annotation -- Delete} aus (siehe \ref{Node-Popup-Menü}).
           
     \step[2] 
     GIANT löscht die entsprechende Annotation.
@@ -179,7 +179,9 @@
 
 % ==============================================================================
 
-\begin{uc}[Knoten-Annotationen filtern]{UC: Unreferenzierte Knoten-Annotationen löschen}
+\begin{uc}[Knoten-Annotationen filtern]
+          {UC: Unreferenzierte Knoten-Annotationen löschen}
+
   Dieser UseCase soll es ermöglichen, nicht mehr benötigte
   Annotationen automatisch entfernen zu lassen.  Es werden alle
   bestehenden Knoten-Annotationen des Projektes für die es in
@@ -206,8 +208,9 @@
     \begin{proc}
 
      \step[1] 
-     Der Benutzer wählt im Hauptmenü den Eintag 
-     \gq{Delete Annotations Having No Visible Node}
+     Der Benutzer wählt im Untermenü \gq{Tools} des Hauptmenüs 
+     den Eintag 
+     \gq{Delete Unreferenced Annotations}
      (siehe \ref{Main-Window-Tools}) aus.
     
      \step[2]

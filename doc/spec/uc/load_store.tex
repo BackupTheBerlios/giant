@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: load_store.tex,v $, $Revision: 1.19 $
-%  $Date: 2003/04/16 17:45:38 $
+%  $RCSfile: load_store.tex,v $, $Revision: 1.20 $
+%  $Date: 2003/04/17 00:29:18 $
 %  $Author: schwiemn $
 %
 %  Description: UseCases für Lade- und Speicherfunktionalität
@@ -240,24 +240,27 @@ Speichert alle Informationen zu einem Projekt in eine neue Projektdatei
   \begin{precond}
     \cond Das Programm ist gestartet.
     \cond Ein Projekt ist geöffnet (entweder ein neu erzeugtes oder ein
-    geladenes).
+          geladenes).
   \end{precond}
 
   \begin{postsuccess}
-    \cond Eine neue Projektdatei ist erzeugt.
-    \cond Das angegebene Projektverzeichnis ist gegebenenfalls erstellt 
-          worden.
-    \cond Die Informationen des Projekts sind persistent in die 
+    \cond Eine neue Projektdatei ist erzeugt worden.
+
+    \cond Das angegebene Projektverzeichnis ist, falls es noch
+          nicht vorhanden war, erstellt worden.
+
+    \cond Die Daten des Projekts sind persistent in die 
           neuen Verwaltungsdateien im Projektverzeichnis 
           der neuen Projektdatei geschrieben (siehe auch
           \ref{Project Persistenz der Projekte}).
         
-    \cond Das Projekt bleibt in GIANT geöffnet, zukünftiges Speichern
-          (siehe \ref{Projekt speichern}) betrifft nur die Dateien 
-          im neu erzeugten Projekt.
+    \cond Das aktuell geöffnete Projekt bleibt in GIANT geöffnet, 
+          zukünftiges Speichern
+          (siehe \ref{Projekt speichern}) betrifft nur die 
+          Verwaltungsdateien im neu erzeugten Projekt.
 
-    \cond Die alte Projektdatei und alle Verwaltungsdateien bleiben
-          unverändert.
+    \cond Die alte Projektdatei und alle zugehörigen Verwaltungsdateien 
+          bleiben unverändert.
     
  
   \end{postsuccess}
@@ -284,15 +287,21 @@ Speichert alle Informationen zu einem Projekt in eine neue Projektdatei
              wird später von GIANT automatisch gesetzt. \\
     Der Name der Projektdatei ist automatisch auch der Name für das Projekt.
     Zulässige Namen sind unter Abschnitt \ref{afa Zulaessige Namen}
-    spezifiziert. \\
-    Das Verzeichnis in dem die Projektdatei liegt, wird automatisch zum 
-    Projektverzeichnis. 
+    spezifiziert. \\ Das Verzeichnis, welches für die Projektdatei 
+    angebenen wurde, wird automatisch zum Projektverzeichnis. 
   
     \step[3]  
     Der Benutzer bestätigt seine Eingabe mit OK.\\
     Existiert die eingegebene Datei schon, erscheint eine Fehlermeldung.\\
-    Existiert in dem Projektverzeichnis bereits eine andere Projektdatei, so 
-    erscheint eine entsprechende Fehlermeldung.\\
+    Existiert in dem angebebenen Projektverzeichnis 
+    bereits eine andere Projektdatei, so erscheint eine entsprechende 
+    Fehlermeldung.\\
+
+    \step[4]
+    GIANT speichert das alte Projekt in der neuen Projektdatei,
+    falls noch nicht vorhanden wird auch das neue Projektverzeichnis
+    angelegt. Alle Verwaltungsdateien werden ebenfalls im neuen
+    Projektverzeichnis gespeichert.
   
   \end{proc}
 

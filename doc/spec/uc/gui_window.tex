@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.38 $
-%  $Date: 2003/04/08 05:24:52 $
-%  $Author: keulsn $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.39 $
+%  $Date: 2003/04/17 00:29:17 $
+%  $Author: schwiemn $
 %
 %  Description: UseCases für die Fensterfunktionalität der GUI
 %
@@ -35,7 +35,7 @@ Projektes anlegen.
     
     \step[2]
     GIANT erzeugt ein neues Anzeigefenster (siehe \ref{GUI Anzeigefenster})
-    mit einem Standard-Namen und öffnet dies.
+    mit einem Standard-Namen und öffnet dieses.
   \end{proc}
 
 \end{uc}
@@ -95,7 +95,8 @@ Dient zum Umbenennen eines Anzeigefensters des Projektes.
 
     \step[3]
     Der Benutzer gibt dort einen zulässigen Namen für das Anzeigefenster ein
-    und bestätigt seine Eingabe mit OK.
+    und bestätigt seine Eingabe mit OK. Zulässige Namen für Anzeigefenster
+    sind unter Abschnitt \ref{afa Zulaessige Namen} spezifiziert.
     
     \step[4]
     GIANT benennt das Anzeigefenster (siehe \ref{GUI Anzeigefenster}) um.
@@ -118,8 +119,12 @@ Näheres zur Persistenz von Anzeigefenstern ist unter Abschnitt
 
   \begin{postsuccess}  
     \cond Nach dem letzten Speichern am Anzeigefenster vorgenommene
-    Modifikationen sind in der Verwaltungsdatei
+    Änderungen sind jetzt in der Verwaltungsdatei des Anzeigefensters
     (siehe \ref {Project Verwaltungsdateien für Anzeigefenster}) gespeichert.
+
+    \cond Wurde das Anzeigefenster zum ersten mal gespeichert, so existiert
+    jetzt eine Verwaltungsdatei für das Anzeigefenster im Projektverzeichnis.
+
   \end{postsuccess}  
 
   \begin{proc}
@@ -130,6 +135,10 @@ Näheres zur Persistenz von Anzeigefenstern ist unter Abschnitt
     
     \step[2]
     GIANT schreibt alle Änderungen in die Verwaltungsdatei des Anzeigefensters.
+    Anzeigefenster, die zum ersten mal gespeichert werden, haben noch
+    keine Verwaltungsdatei. In diesem Fall erzeugt GIANT jetzt die
+    Verwaltungsdatei für das Anzeigefenster.
+    
   \end{proc}  
 
 \end{uc}
@@ -150,10 +159,23 @@ Näheres zur Persistenz von Anzeigefenstern ist unter Abschnitt
 
   \begin{postsuccess}  
     \cond Das Anzeigefenster ist geschlossen.    
+
     \cond Nach dem letzten Speichern am Anzeigefenster vorgenommene
-    Modifikationen sind in der Verwaltungsdatei
+    Änderungen (wie z.B. das Verschieben von Fenster-Knoten)
+    sind je nach Wahl des Benutzers bei der Sicherheitsabfrage
+    in der Verwaltungsdatei des Anzeigefensters 
     (siehe \ref {Project Verwaltungsdateien für Anzeigefenster})
-    gespeichert.
+    gespeichert oder nicht.
+
+    \cond
+    Hat der Benutzer bei der Sicherheitsabfrage das Speichern abgelehnt
+    und handelt es sich bei dem geschlossenen Anzeigefenster um
+    ein Anzeigefenster, dass zuvor nicht mindestens
+    einmal gespeichert wurde (ein solches Anzeigefenster hat noch keine
+    Verwaltungsdatei), so gehen alle Informationen zu diesem
+    Anzeigefenster verloren und das Anzeigefenster gehört nicht mehr
+    zum Projekt.
+
   \end{postsuccess}  
 
   \begin{proc}    
@@ -165,8 +187,7 @@ Näheres zur Persistenz von Anzeigefenstern ist unter Abschnitt
     \step[2]
     GIANT zeigt die allgemeine Sicherheitsabfrage 
     (siehe \ref{Sicherheitsabfrage}) und fragt nach, ob eventuelle
-    Änderungen im Anzeigefenster gespeichert werden sollen oder nicht
-    \gq{The content has changed. Do you want to save the changes?}.
+    Änderungen im Anzeigefenster gespeichert werden sollen oder nicht.
     
     \step[3]
     Bestätigt der Benutzer mit Yes, werden die Änderungen in die 
@@ -195,6 +216,10 @@ unwiederbringlich verloren.
   \begin{postsuccess}
     \cond 
     Das gelöschte Anzeigefenster ist nicht mehr Bestandteil des Projektes.
+
+    \cond
+    Falls das Anzeigefenster vor dem Löschen geöffnet war, so
+    ist das Anzeigefenster jetzt natürlich auch geschlossen.
     
     \cond
     Die Verwaltungsdatei für das Anzeigefenster (siehe   
@@ -287,9 +312,9 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
     For Insertion Of IML Subgraph} an.
     Der Benutzer wählt das entsprechende Anzeigefenster aus und
     gibt über das Fadenkreuz (siehe \ref{Fadenkreuzcursor}) die Position vor, 
-    an der die neuen
-    Fenster-Knoten und Fenster-Kanten eingefügt werden sollen.
-    Die Statuszeile im Hauptfenster schaltet auf Normalmodus zurück.
+    an der die neuen Fenster-Knoten und Fenster-Kanten 
+    eingefügt werden sollen.
+
     
     \step[3]
     GIANT zeigt den Dialog zur Auswahl von Layoutalgorithmen
@@ -321,6 +346,11 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
   \end{proc}
 
   \begin{aproc}
+
+    \astep{2} Der Benutzer kann den UseCase abbrechen, indem er mit der
+              Maus (dem Fadenkreuzcursor) einen Rechtsklick auf 
+              eine beliebige Stelle durchführt.
+
     \astep{4} Der Benutzer bricht den UseCase mit Cancel ab.
     \astep{6} Der Benutzer bricht die Berechnung des Layouts ab.  
   \end{aproc}
@@ -348,16 +378,18 @@ Ziel-Anzeigefenster unter Beibehaltung des Layouts kopiert werden
     
   \end{precond}
 
+
   \begin{postsuccess}
     
     \cond
-    Das Position von Fenster-Knoten, die vor dem Einfügen bereits im
+    Die Position von Fenster-Knoten, die vor dem Einfügen bereits im
     Ziel-Anzeigefenster vorhanden waren, bleibt 
     je nach Wahl des Benutzers unverändert oder wird ebenfalls geändert.
     
     \cond
     Die kopierte Selektion existiert auch im Ziel-Anzeigefenster
-    als Ziel-Selektion und trägt dort ebenfalls den Namen der Selektion. 
+    als Selektion, sie wird dort zur Standard-Selektion. Der alte Inhalt
+    der Standard-Selektion wird überschrieben.
 
     \cond
     Im Ziel-Anzeigefenster gibt es keine Knoten mit der selben ID
@@ -365,31 +397,40 @@ Ziel-Anzeigefenster unter Beibehaltung des Layouts kopiert werden
 
   \end{postsuccess}
 
+  \begin{postfail}
+    \cond Hat der Benutzer den UseCase an irgendeinem Punkt abgebrochen,
+    kehrt das System zu dem Zustand zurück, in dem es vor dem Start des
+    UseCase war.
+  \end{postfail}
+
  
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase über das Popup-Menü
     (siehe \ref{Selektionsauswahlliste}) in der Selektionsauswahlliste.
     Durch Auswahl eines der beiden Menüeinträge 
-    \gq{Copy SelEction Keep Existing Layout} oder 
-    \gq{Copy Selection Change Existing Layout}.
+    \gq{Copy Selection Keeping Existing Layout} oder 
+    \gq{Copy Selection Changing Existing Layout}.
     Hierdurch wird automatisch die Selektion bestimmt (immer
     die Selektion, auf der der Rechtsklick ausgeführt wurde).
     
     \step[2] 
     Der Benutzer wählt das entsprechende Ziel-Anzeigefenster aus.
-    Das Ziel-Anzeigefenster darf nicht das Quell-Anzeigefenster sein,
-    sonst wird eine Fehlermeldung ausgegeben.
-    GIANT zeigt in der Statuszeile im Hauptfenster 
+    Das Ziel-Anzeigefenster kann nicht das Quell-Anzeigefenster sein.
+    GIANT zeigt in der Statuszeile im Hauptfenster den Text
     \gq{Select Position in Display Window
-    for Insertion of copied IML Subgraph}.
+    for Insertion of copied IML Subgraph} an.
     Der Benutzer gibt über das Fadenkreuz die Position vor, 
     an der die neuen Fenster-Knoten und Fenster-Kanten eingefügt werden 
     sollen (siehe auch \ref{Fadenkreuzcursor}).
+    Die mit dem Fadenkreuzcursor vorgegebene Position entspricht hierbei
+    in etwa dem Punkt, an dem der Mittelpunkt eines die zu kopierende
+    Selektion umspannenden Rechtecks dann im Ziel-Anzeigefenster liegt.
+
     
     \step[3]
     GIANT kopiert die Knoten und Kanten der 
-    Selektion in das Ziel-Anzeigefenster.
+    Selektion in das Ziel-Anzeigefenster. 
     Je nachdem, welchen Eintrag der Benutzer im Popup-Menü ausgewählt hat,
     geschieht mit den bereits im Ziel-Anzeigefenster vorhandenen 
     Fenster-Knoten der Selektion folgendes:
@@ -401,12 +442,21 @@ Ziel-Anzeigefenster unter Beibehaltung des Layouts kopiert werden
        
      \item Falls \gq{Copy Selection Changing Existing Layout} gewählt
        wurde, wird ihre Position im Zielanzeigefenster gemäß dem
-       Layout der Selektion verändert.
+       Layout der eingefügten Selektion verändert.
         
     \end {enumerate}
       
   \end{proc}
 
+
+  \begin{aproc}
+
+    \astep{2} Der Benutzer kann den UseCase abbrechen, indem er mit der
+              Maus einen Rechtsklick auf eine beliebige Stelle 
+              durchführt.
+  \end{aproc}
+
+  
 
 \end{uc}
 
@@ -428,7 +478,9 @@ Fenster-Kanten}).
     \cond Ein Projekt mit mindestens einem geöffneten 
           Anzeigefenster ist geladen.
     
-    \cond Es gibt eine Selektion.
+    \cond Es gibt mindestens eine Selektion (dies kann auch die
+          immer vorhandene Standard-Selektion sein).
+          
     
   \end{precond}
 
@@ -460,8 +512,8 @@ Fenster-Kanten}).
     \step[1]
     Der Benutzer führt einen Rechtsklick auf die entsprechende Selektion in der
     Selektionsauswahlliste durch (siehe \ref{Selektionsauswahlliste})
-    und wählt im entsprechenden Popup-Menü \gq{Delete Selection}
-    aus.
+    und wählt im entsprechenden Popup-Menü \gq{Delete Nodes and Edges
+    of Selection} aus.
       
     
     \step[2]
@@ -476,6 +528,10 @@ Fenster-Kanten}).
     \step[4]
     GIANT löscht die Selektion samt allen zugehörigen Fenster-Knoten und
     Fenster-Kanten aus dem entsprechenden Anzeigefenster.
+    Wurde der UseCase für die Standard-Selektion
+    (siehe \ref{Standard-Selektion}) ausgeführt, so werden die
+    Fenster-Knoten und Fenster-Kanten aus dem Anzeigeinhalt gelöscht, 
+    die Standard-Selektion selbst wird geleert aber nicht gelöscht.
       
   
   \end{proc}
@@ -571,7 +627,12 @@ Verändert die Position des sichtbaren Anzeigeinhaltes.
       \item
       Es kann auch mittels der Cursortasten gescrollt werden.\\
       Das Drücken der linken Cursortaste führt z.B.\ dazu, dass der sichtbare
-      Anzeigeinhalt des aktiven Anzeigefensters nach links verschoben wird.
+      Anzeigeinhalt des aktiven Anzeigefensters nach links verschoben wird;
+      dadurch werden dann die Fenster-Knoten und Fenster-Kanten sichtbar, die
+      sich links vom aktuell sichtbaren Anzeigeinhalt befinden.\\
+      Mittels der Cursortasten werden also die Scrollleisten simuliert.
+      Das Drücken der linken Cursortaste entspricht z.B.\ dann einem Klick
+      auf den linken Pfeil der horizontalen Scrollleiste.
       
     \end {enumerate}
         
@@ -757,7 +818,8 @@ im sichtbaren Anzeigeinhalt liegt.
   \begin{aproc}
 
     \astep{3} Der Benutzer kann den UseCase abbrechen, indem er
-    auf eine einen Rechtsklick mit der Maus ausführt.
+    einen Rechtsklick mit der Maus (dem Fadenkreuzcursor) auf eine
+    beliebige Stelle ausführt.
   
   \end{aproc}
 
@@ -765,8 +827,8 @@ im sichtbaren Anzeigeinhalt liegt.
 
 
 % ==============================================================================
-\begin{uc}[Verschieben von Fenster-Knoten und Selektionen mittels Cut and Paste]{UC: Verschieben von Fenster-Knoten und Selektionen mittels
-                  Cut and Paste}
+\begin{uc}[Verschieben von Fenster-Knoten und Selektionen mittels Cut and Paste]
+{UC: Verschieben von Fenster-Knoten und Selektionen mittels Cut and Paste}
 \index{verschieben!einzelne Knoten}
 \index{verschieben!ganze Selektionen}
 
@@ -786,8 +848,10 @@ Anzeigeinhalt verschoben werden. Dieses Verschieben geschieht mittels
   \begin{postsuccess}
     
     \cond
-    Der einzelne Fensterknoten oder alle Fenster-Knoten der Selektion
-    wurden im Anzeigeinhalt verschoben.  
+    Der einzelne Fenster-Knoten oder alle Fenster-Knoten der Selektion
+    wurden im Anzeigeinhalt verschoben. Das Layout der Fensterknoten
+    bleibt hierbei unverändert.
+
   \end{postsuccess}
 
   \begin{postfail}
@@ -832,7 +896,9 @@ Anzeigeinhalt verschoben werden. Dieses Verschieben geschieht mittels
 
     \step[4]
     GIANT verschiebt die ausgewählten Fenster-Knoten an die gewünschte
-    Stelle.
+    Stelle. Die zuvor mit dem Fadenkreuzcursor vorgegebene Position entspricht
+    jetzt der des Mittelpunktes eines die verschobene Selektion umspannenden
+    Rechtecks.
       
   \end{proc}
 
@@ -975,7 +1041,7 @@ Mit diesem UseCase kann ein neuer Pin erzeugt werden (siehe auch
 \ref{Pins}).
 
  \begin{precond}
-    \cond Es gibt ein geöffnetes Anzeigefenster.
+    \cond Es gibt mindestens ein geöffnetes Anzeigefenster.
   \end{precond}
 
   \begin{postsuccess}
@@ -1031,7 +1097,7 @@ Stellt die im Pin gespeicherte Position des sichtbaren Anzeigeinhaltes
 wieder her (siehe auch \ref{Pins}).
 
  \begin{precond}
-    \cond Es gibt ein geöffnetes Anzeigefenster mit mindestens 
+    \cond Es gibt mindestens ein geöffnetes Anzeigefenster mit mindestens 
     einem Pin.
   \end{precond}
 
@@ -1079,7 +1145,7 @@ wieder her (siehe auch \ref{Pins}).
 Löscht einen Pin (siehe auch \ref{Pins}).
 
  \begin{precond}
-    \cond Es gibt ein geöffnetes Anzeigefenster mit mindestens 
+    \cond Es gibt mindestens ein geöffnetes Anzeigefenster mit mindestens 
     einem Pin.
   \end{precond}
 

@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: additional.tex,v $, $Revision: 1.14 $
-%  $Date: 2003/04/07 18:53:13 $
-%  $Author: squig $
+%  $RCSfile: additional.tex,v $, $Revision: 1.15 $
+%  $Date: 2003/04/17 00:29:17 $
+%  $Author: schwiemn $
 %
 %  Description: Sonstige UseCases
 %
@@ -20,8 +20,10 @@ Die verfügbaren Layoutalgorithmen sind im Kapitel
 
 
   \begin{precond}
-    \cond Es gibt ein geöffnetes Anzeigefenster mit
-          einer Selektion.
+    \cond Es gibt mindestens ein geöffnetes Anzeigefenster mit
+          mindestens einer Selektion (dies kann auch die
+          immer vorhandene Standard-Selektion sein).
+
   \end{precond}
 
   \begin{postsuccess}
@@ -70,7 +72,8 @@ Die verfügbaren Layoutalgorithmen sind im Kapitel
     Der Benutzer bestätigt seine Eingaben mit OK.
 
     \step[6]
-    GIANT berechnet das Layout und zeigt einen Progress-Dialog (siehe \ref{Progressbar-Modale}) an. 
+    GIANT berechnet das Layout und zeigt einen Progress-Dialog 
+    (siehe \ref{Progressbar-Modale}) an. 
     Während der Berechnung des Layouts ist die GUI mit Ausnahme des
     Progress-Dialogs gesperrt.
          
@@ -91,7 +94,7 @@ Die verfügbaren Layoutalgorithmen sind im Kapitel
 anzeigen]{UC: Details zu Knoten in einem neuen Informationsfenster
 anzeigen}
 
-Dieser UseCase ermöglicht es dem Kunden, sich alle verfügbaren
+Dieser UseCase ermöglicht dem Benutzer, sich alle verfügbaren
 Informationen zu einem Fenster-Knoten (Kanten und Attribute des
 zugehörigen IML-Knoten) anzeigen zu lassen. Mit diesem UseCase
 kann der Benutzer beliebig viele Knoten-Informationsfenster 
@@ -99,8 +102,8 @@ kann der Benutzer beliebig viele Knoten-Informationsfenster
 
 
   \begin{precond}
-    \cond Es gibt ein geöffnetes Anzeigefenster mit
-          einem Fenster-Knoten.
+    \cond Es gibt mindestens ein geöffnetes Anzeigefenster mit
+          mindestens einem Fenster-Knoten.
   \end{precond}
 
   \begin{postsuccess}
@@ -109,16 +112,12 @@ kann der Benutzer beliebig viele Knoten-Informationsfenster
     Knoten-Informationsfenster angezeigt. 
 
   \end{postsuccess}
-
-  \begin{postfail}
-    \cond Das System bleibt im bisherigen Zustand.      
-  \end{postfail}
-  
+ 
   \begin{proc}    
 
     \step[1]
     Der Benutzer wählt im entsprechenden Anzeigefenster den 
-    gewünschten Fenster-Knoten aus und führt einen Linksklick
+    gewünschten Fenster-Knoten aus und führt einen Rechtsklick
     auf diesen Fenster-Knoten durch. Im darauf angezeigten Popup-Menü
     (siehe \ref{Node-Popup-Menü}) wählt der Benutzer dann 
     den Eintrag \gq{Show Node Info Window} aus.
@@ -126,16 +125,11 @@ kann der Benutzer beliebig viele Knoten-Informationsfenster
     \step[2]
     GIANT öffnet ein neues Knoten-Informationsfenster
     (siehe \ref{Knoten-Informationsfenster}) und zeigt alle
-    Verfügbaren Informationen zu dem IML-Knoten an.
+    verfügbaren Informationen zu dem IML-Knoten an.
     
   \end{proc}
 
-  \begin{aproc}
-    \astep{1} Der Benutzer bricht die Verarbeitung mit einem Rechtsklick ab.  
-  \end{aproc}
-
 \end{uc}
-
 
 
 
@@ -143,18 +137,18 @@ kann der Benutzer beliebig viele Knoten-Informationsfenster
 Informationsfenster anzeigen]{UC: Details zu Knoten in einem bestehenden
 Informationsfenster anzeigen}
 
-Dieser UseCase ermöglicht es dem Kunden, sich alle verfügbaren
+Mittels dieses UseCase kann sich der Benutzer alle verfügbaren
 Informationen zu einem Fenster-Knoten (Kanten und Attribute des
 zugehörigen IML-Knoten) innerhalb eines bereits geöffneten
 Knoten-Informationsfensters (siehe \ref{Knoten-Informationsfenster})
-anzeigen zu lassen.
+anzeigen lassen.
 
 
   \begin{precond}
-    \cond Es gibt ein geöffnetes Anzeigefenster mit
-          einem Fenster-Knoten.
+    \cond Es gibt mindestens ein geöffnetes Anzeigefenster mit
+          mindestens einem Fenster-Knoten.
 
-    \cond Es gibt ein offenes Knoten-Informationsfenster.
+    \cond Es gibt mindestens ein offenes Knoten-Informationsfenster.
 
   \end{precond}
 
@@ -167,7 +161,16 @@ anzeigen zu lassen.
 
   \end{postsuccess}
 
-  
+
+  \begin{postfail}
+
+    \cond Hat der Benutzer den UseCase abgebrochen, bleibt
+          das System im bisherigen Zustand.
+
+  \end{postfail}
+
+
+
   \begin{proc}    
 
     \step[1]
@@ -191,20 +194,29 @@ anzeigen zu lassen.
     
   \end{proc}
 
+  \begin{aproc}
+    \astep{3} Während der Fadenkreuzcursor aktiv ist, kann der Benutzer 
+              den UseCase mit einem Rechtsklick auf eine beliebige
+              Stelle abbrechen.  
+  \end{aproc}
+
 \end{uc}
 
 
 
 
-\begin{uc}[Anzeige des Quellcodes eines Knotens in externem Editor]{UC: Anzeige des Quellcodes eines Knotens in externem Editor}
+\begin{uc}[Anzeige des Quellcodes eines Knotens in externem Editor]
+{UC: Anzeige des Quellcodes eines Knotens in externem Editor}
 
 Mittels dieses UseCases kann der zu einem IML-Knoten korrespondierende
-Quellcode innerhalb eines Editors zur Anzeige gebracht werden.
+Quellcode innerhalb eines Editors (unterstützt werden Emacs und vi)
+zur Anzeige gebracht werden.
 
 
   \begin{precond}
-    \cond Es gibt ein geöffnetes Anzeigefenster mit
-          einem Fenster-Knoten.
+    \cond Es gibt mindestens ein geöffnetes Anzeigefenster mit
+          einem oder mehr Fenster-Knoten.
+       
   \end{precond}
 
   \begin{postsuccess}
@@ -215,6 +227,10 @@ Quellcode innerhalb eines Editors zur Anzeige gebracht werden.
     Der Cursor des Editors ist auf die dem IML-Knoten
     entsprechende Position innerhalb des Quelltextes gesetzt, also
     z.B.\ auf einen Bezeichnernamen, den der IML-Knoten repräsentiert.
+
+    \cond
+    Hat der IML-Knoten keine \gq{Source Code Position}, so wird
+    nur die zugehörige Quellcode Datei geöffnet.
  
   \end{postsuccess}
 
@@ -227,10 +243,14 @@ Quellcode innerhalb eines Editors zur Anzeige gebracht werden.
     auf diesen Knoten durch. Im darauf angezeigten Popup-Menü
     (siehe \ref{Node-Popup-Menü}) wählt der Benutzer dann 
     den Eintrag \gq{Show Corresponding Source Code} aus.
+    Der UseCase kann nicht für IML-Knoten durchgeführt werden,
+    für die die Reflektion zur Bauhaus IML-Graph-Bibliothek
+    keine zugehörige Quellcode-Datei liefern kann.
 
     \step[2]
     GIANT öffnet die Quellcode Datei für den IML-Knoten in
-    einem Editor.
+    einem Editor (falls die Information zur Quellcode Datei
+    für den IML-Knoten vefügbar ist).
     
   \end{proc}
 
@@ -239,10 +259,8 @@ Quellcode innerhalb eines Editors zur Anzeige gebracht werden.
 
 
 
-
-\begin{uc}[Verschieben des sichtbaren Anzeigeinhaltes 
-über die Minimap]{UC: Verschieben des sichtbaren Anzeigeinhaltes 
-über die Minimap}
+\begin{uc}[Verschieben des sichtbaren Anzeigeinhaltes über die Minimap]
+{UC: Verschieben des sichtbaren Anzeigeinhaltes über die Minimap}
 
 Der Benutzer kann mittels der Minimap (siehe auch \ref{GUI Minimap})
 den sichtbaren Anzeigeinhalt scrollen.
@@ -250,7 +268,7 @@ den sichtbaren Anzeigeinhalt scrollen.
 
  \begin{precond}
 
-    \cond Es gibt ein geöffnetes Anzeigefenster.
+    \cond Es gibt mindestens ein geöffnetes Anzeigefenster.
 
   \end{precond}
 
