@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-handlers.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-graph_widgets-handlers.adb,v $, $Revision: 1.7 $
 --  $Author: keulsn $
---  $Date: 2003/08/19 12:21:25 $
+--  $Date: 2003/08/19 12:42:32 $
 --
 ------------------------------------------------------------------------------
 
@@ -94,6 +94,11 @@ package body Giant.Graph_Widgets.Handlers is
       return Action.all;
    end To_Button_Press_Action;
 
+   function To_Address is new Ada.Unchecked_Conversion
+     (Source => Button_Press_Action_Access,
+      Target => System.Address);
+
+
    function To_Selection_Change_Action
      (Args : in Gtk.Arguments.Gtk_Args;
       Num  : in Natural)
@@ -114,13 +119,13 @@ package body Giant.Graph_Widgets.Handlers is
       Event    : in     Gdk.Event.Gdk_Event_Button;
       Location : in     Vis.Logic.Vector_2d) is
 
-      function To_Address is new Ada.Unchecked_Conversion
-        (Source => Button_Press_Action_Access, Target => System.Address);
-      User_Action : aliased constant Button_Press_Action :=
-        (Event      => Event,
-         Location   => Location,
-         Pressed_On => On_Background);
+      User_Action : aliased Button_Press_Action;
    begin
+      User_Action.Event := Event;
+      User_Action.Location := Location;
+      User_Action.Pressed_On := On_Background;
+      --  'User_Action.Edge' remains uninitialized
+      --  'User_Action.Node' remains uninitialized
       Action_Mode_Marshallers.Emit_By_Name
         (Object => Widget,
          Name   => Background_Popup_Event,
@@ -133,14 +138,13 @@ package body Giant.Graph_Widgets.Handlers is
       Location : in     Vis.Logic.Vector_2d;
       Edge     : in     Graph_Lib.Edge_Id) is
 
-      function To_Address is new Ada.Unchecked_Conversion
-        (Source => Button_Press_Action_Access, Target => System.Address);
-      User_Action : aliased constant Button_Press_Action :=
-        (Event      => Event,
-         Location   => Location,
-         Pressed_On => On_Edge,
-         Edge       => Edge);
+      User_Action : aliased Button_Press_Action;
    begin
+      User_Action.Event := Event;
+      User_Action.Location := Location;
+      User_Action.Pressed_On := On_Edge;
+      User_Action.Edge := Edge;
+      --  'User_Action.Node' remains uninitialized
       Action_Mode_Marshallers.Emit_By_Name
         (Object => Widget,
          Name   => Edge_Popup_Event,
@@ -153,14 +157,13 @@ package body Giant.Graph_Widgets.Handlers is
       Location : in     Vis.Logic.Vector_2d;
       Node     : in     Graph_Lib.Node_Id) is
 
-      function To_Address is new Ada.Unchecked_Conversion
-        (Source => Button_Press_Action_Access, Target => System.Address);
-      User_Action : aliased constant Button_Press_Action :=
-        (Event      => Event,
-         Location   => Location,
-         Pressed_On => On_Node,
-         Node       => Node);
+      User_Action : aliased Button_Press_Action;
    begin
+      User_Action.Event := Event;
+      User_Action.Location := Location;
+      User_Action.Pressed_On := On_Node;
+      --  'User_Action.Edge' remains uninitialized
+      User_Action.Node := Node;
       Action_Mode_Marshallers.Emit_By_Name
         (Object => Widget,
          Name   => Node_Popup_Event,
@@ -201,12 +204,17 @@ package body Giant.Graph_Widgets.Handlers is
      (Widget   : access Graph_Widget_Record'Class;
       Event    : in     Gdk.Event.Gdk_Event_Button;
       Location : in     Vis.Logic.Vector_2d) is
+
+      User_Action : Button_Press_Action;
    begin
+      User_Action.Event := Event;
+      User_Action.Location := Location;
+      User_Action.Pressed_On := On_Background;
+      --  'User_Action.Edge' remains uninitialized
+      --  'User_Action.Node' remains uninitialized
       Emit_Action_Mode_Button_Press_Event
         (Widget => Widget,
-         Action => (Event      => Event,
-                    Location   => Location,
-                    Pressed_On => On_Background));
+         Action => User_Action);
    end Emit_Action_Mode_Button_Press_Event_Background;
 
    procedure Emit_Action_Mode_Button_Press_Event_Edge
@@ -214,13 +222,17 @@ package body Giant.Graph_Widgets.Handlers is
       Event    : in     Gdk.Event.Gdk_Event_Button;
       Location : in     Vis.Logic.Vector_2d;
       Edge     : in     Graph_Lib.Edge_Id) is
+
+      User_Action : Button_Press_Action;
    begin
+      User_Action.Event := Event;
+      User_Action.Location := Location;
+      User_Action.Pressed_On := On_Edge;
+      User_Action.Edge := Edge;
+      --  'User_Action.Node' remains uninitialized
       Emit_Action_Mode_Button_Press_Event
         (Widget => Widget,
-         Action => (Event      => Event,
-                    Location   => Location,
-                    Pressed_On => On_Edge,
-                    Edge       => Edge));
+         Action => User_Action);
    end Emit_Action_Mode_Button_Press_Event_Edge;
 
    procedure Emit_Action_Mode_Button_Press_Event_Node
@@ -228,13 +240,17 @@ package body Giant.Graph_Widgets.Handlers is
       Event    : in     Gdk.Event.Gdk_Event_Button;
       Location : in     Vis.Logic.Vector_2d;
       Node     : in     Graph_Lib.Node_Id) is
+
+      User_Action : Button_Press_Action;
    begin
+      User_Action.Event := Event;
+      User_Action.Location := Location;
+      User_Action.Pressed_On := On_Node;
+      --  'User_Action.Edge' remains uninitialized
+      User_Action.Node := Node;
       Emit_Action_Mode_Button_Press_Event
         (Widget => Widget,
-         Action => (Event      => Event,
-                    Location   => Location,
-                    Pressed_On => On_Node,
-                    Node       => Node));
+         Action => User_Action);
    end Emit_Action_Mode_Button_Press_Event_Node;
 
 

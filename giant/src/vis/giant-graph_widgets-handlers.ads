@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-handlers.ads,v $, $Revision: 1.10 $
+--  $RCSfile: giant-graph_widgets-handlers.ads,v $, $Revision: 1.11 $
 --  $Author: keulsn $
---  $Date: 2003/08/19 12:21:25 $
+--  $Date: 2003/08/19 12:42:32 $
 --
 ------------------------------------------------------------------------------
 --
@@ -68,21 +68,25 @@ package Giant.Graph_Widgets.Handlers is
    --  "edge_popup_event" on an edge within a graph widget
    --  "node_popup_event" on a node within a graph widget
    --  "button_press_event" on the graph widget while it was in action mode
-   type Button_Press_Action (Pressed_On : Pressed_On_Type) is
+   type Button_Press_Action is
       record
          --  The event given through "button_press_event"
          Event    : Gdk.Event.Gdk_Event_Button;
          --  The logical location where the event happened in the graph
          Location : Vis.Logic.Vector_2d;
-         --  The object on that the "button_press_event" happened, if any
-         case Pressed_On is
-            when On_Edge =>
-               Edge : Graph_Lib.Edge_Id;
-            when On_Node =>
-               Node : Graph_Lib.Node_Id;
-            when others =>
-               null;
-         end case;
+         --  The object on that the "button_press_event" happened, if any.
+         --  Depending on the value of field 'Pressed_On' at most one of the
+         --  fields 'Edge' and 'Node', if any, has a defined value.
+         --  'Pressed_On' cannot be declared as a discriminant to
+         --  'Button_Press_Action' because the GtkAda generic marshallers
+         --  package takes a definite subtype as generic formal parameter
+         Pressed_On : Pressed_On_Type;
+         --  WARNING: only valid if 'Pressed_On = On_Edge', in that case
+         --  the edge on which the press happened
+         Edge : Graph_Lib.Edge_Id;
+         --  WARNING: only valid if 'Pressed_On = On_Node', in that case
+         --  the node on which the press happened
+         Node : Graph_Lib.Node_Id;
       end record;
 
    ----------------------------------------------------------------------------
