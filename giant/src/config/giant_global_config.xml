@@ -3,6 +3,8 @@
   SYSTEM "giant_config_file.dtd">
 
 <giant_config_file>
+
+  <absolute_path_root root_directory  = "." />
  
   <!-- Some Free Config Settings -->
   <setting name="Reiche_Ente" value="Dagobert Duck" />
@@ -11,8 +13,7 @@
 			
   <!-- Required Config Settings -->  
   
-  <!-- This must be an absolute path -->
-  <setting name="Resources_Directory" value="./" />
+  <setting name="Resources_Directory" value="." />
   
   <!-- Relative Paths in all config files are regarded as relative -->
   <!-- towards the "Resources_Directory" if you change the standard
@@ -23,13 +24,12 @@
   
   <setting name="Actual_Selection_Highlight_Color" value="RGB:AA/AA/AA" />
 					  
-  <setting name="Selection_Highlight_Color_1" value="RGB:AA/AA/AA" />					  
-  <setting name="Selection_Highlight_Color_2" value="RGB:AA/AA/AA"/>					  
+  <setting name="Selection_Highlight_Color_1" value="RGB:AA/AA/AA" />
+  <setting name="Selection_Highlight_Color_2" value="RGB:AA/AA/AA"/>
   <setting name="Selection_Highlight_Color_3" value="RGB:AA/AA/AA" />
 					  
-  <setting name="IML_Subgraph_Highlight_Color_1" value="RGB:AA/AA/AA" />					   
-  <setting name="IML_Subgraph_Highlight_Color_2" value="RGB:AA/AA/AA" />	
+  <setting name="IML_Subgraph_Highlight_Color_1" value="RGB:AA/AA/AA" />
+  <setting name="IML_Subgraph_Highlight_Color_2" value="RGB:AA/AA/AA" />
   <setting name="IML_Subgraph_Highlight_Color_3" value="RGB:AA/AA/AA" />  
-  
 </giant_config_file>
 

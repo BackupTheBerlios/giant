@@ -20,64 +20,70 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.4 $
+-- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.5 $
 -- $Author: schwiemn $
--- $Date: 2003/06/20 20:33:57 $
+-- $Date: 2003/06/22 16:14:50 $
 --
 -- -----
 -- This package holds the functionality needed to access and handle
 -- xml configuration files used for giant.
--- 
+--
 -- The Implementation is quite independent from giant itself.
 -- Therefore the settings are simply read from the files
--- into that ADO - 
+-- into that ADO -
 -- If necessary special interpretation is done by other packages.
 --
 with Ada.Strings.Unbounded;
 
 package Giant.Config_Settings is
 
-   --------------------------------------------------------------------------
+   ---------------------------------------------------------------------------
+   -- Used to identify a config file by the top level node (document node)
+   -- of a xml file. Only files with this top level node will be accepted
+   -- duiring initialisation of this ADO.
+   Config_File_Identifier : constant String := "giant_config_file";
+
+   ---------------------------------------------------------------------------
    -- 0.1 Validators
    --
-   -- Validators check settings (String values) that are read from 
+   -- Validators check settings (String values) that are read from
    -- xml config files whether they correspond to a required format etc.
-   -- If a validator function returns "False" the Default Setting will be used
-   -- instead of the read settings.
+   -- If a validator function returns "False" the Default Setting will be
+   -- used instead of the read settings.
    --
    -- In this version validators are only used while reading a config
    -- file, not while writing one or changing config settings.
    --
    -- The default settings itself are not checked in any way.
    type Validator is access function (Value : in String) return Boolean;
-   
-   --------------------------------------------------------------------------
+
+   ---------------------------------------------------------------------------
    -- Checks whether "Val" may be converted to Integer by
    -- Integer'Value(Value).
    function Validate_Integer (Value : in String) return Boolean;
-     
-   --------------------------------------------------------------------------
+
+   ---------------------------------------------------------------------------
    -- 0.2 Default Settings
    --
    -- These settings are used if the setting is not found in the config files
    -- or if a read setting is not valid (see validators).
-   --------------------------------------------------------------------------
-     
+   ---------------------------------------------------------------------------
+
    -- Only used to build the array "Default_Settings"
-   function To_UStr (Value : String) 
+   function To_UStr (Value : String)
      return Ada.Strings.Unbounded.Unbounded_String
      renames Ada.Strings.Unbounded.To_Unbounded_String;
-          
+
    type Default_Setting_Element is record
      -- the name of a setting
      Name      : Ada.Strings.Unbounded.Unbounded_String;
      -- the default value for that setting
      Def_Value : Ada.Strings.Unbounded.Unbounded_String;
      -- used to check whether a read setting is valid
-     -- (may be a null pointer if no validation should be done)     
+     -- (may be a null pointer if no validation should be done)
      Validator_Function : Validator;
    end record;
-   
+
    type Default_Settings_Array is array (integer range <>)
      of Default_Setting_Element;
 
@@ -85,39 +91,39 @@ package Giant.Config_Settings is
    -- Here you may enter default values for necessary settings.
    -- If a setting is not found in the config files, these default
    -- values will be used.
-   Default_Settings : constant Default_Settings_Array :=      
-     ( (To_UStr ("Resources_Directory"), 
+   Default_Settings : constant Default_Settings_Array :=
+     ( (To_UStr ("Resources_Directory"),
         To_Ustr ("."), null),
-        
-       (To_UStr ("Icon_For_Node_Annotations"), 
+
+       (To_UStr ("Icon_For_Node_Annotations"),
         To_UStr ("my_icon.xpm"), null),
-        
-       (To_UStr ("Actual_Selection_Highlight_Color"), 
+
+       (To_UStr ("Actual_Selection_Highlight_Color"),
         To_UStr ("RGB:AA/AA/AA"), null),
-        
-       (To_UStr ("Selection_Highlight_Color_1"), 
+
+       (To_UStr ("Selection_Highlight_Color_1"),
         To_UStr ("RGB:AA/AA/AA"), null),
-        
-       (To_UStr ("Selection_Highlight_Color_2"), 
+
+       (To_UStr ("Selection_Highlight_Color_2"),
         To_UStr ("RGB:AA/AA/AA"), null),
-        
-       (To_UStr ("Selection_Highlight_Color_3"), 
+
+       (To_UStr ("Selection_Highlight_Color_3"),
         To_UStr ("RGB:AA/AA/AA"), null),
-        
-       (To_UStr ("IML_Subgraph_Highlight_Color_1"), 
+
+       (To_UStr ("IML_Subgraph_Highlight_Color_1"),
         To_UStr ("RGB:AA/AA/AA"), null),
-        
-       (To_UStr ("IML_Subgraph_Highlight_Color_2"), 
+
+       (To_UStr ("IML_Subgraph_Highlight_Color_2"),
         To_UStr ("RGB:AA/AA/AA"), null),
-       
-       (To_UStr ("IML_Subgraph_Highlight_Color_3"), 
+
+       (To_UStr ("IML_Subgraph_Highlight_Color_3"),
         To_UStr ("RGB:AA/AA/AA"), null));
-    
+
    ---------------------------------------------------------------------------
    -- A
    -- Initialisation and finalisation
    ---------------------------------------------------------------------------
-  
+
    ---------------------------------------------------------------------------
    -- Raised if a passed config file could not be parsed as a
    -- valid xml file.
@@ -150,7 +156,7 @@ package Giant.Config_Settings is
    --
    -- After processing the files the validators will replace all non
    -- valid setting values by the default value.
-   -- For all settings not found in the config files that have a default 
+   -- For all settings not found in the config files that have a default
    -- value this default value will be taken.
    --
    -- Parameters:
@@ -189,7 +195,7 @@ package Giant.Config_Settings is
    --  you will definitely have dangling pointers
    --
    -- Raises:
-   --   Config_Settings_ADO_Not_Initialized_Exception - 
+   --   Config_Settings_ADO_Not_Initialized_Exception -
    --     raised if this subprogram is called before "
    --     Initialize_Config_Settings".
    procedure Clear_Config_Data;
@@ -204,8 +210,8 @@ package Giant.Config_Settings is
    -- Raised if a config setting identified by its unique name does not
    -- exist.
    Config_Setting_Does_Not_Exist_Exception : exception;
-   
-   --------------------------------------------------------------------------- 
+
+   ---------------------------------------------------------------------------
    -- Raised if a setting demanded as an integer value could not be converted
    -- into an integer value.
    Config_Setting_Is_Not_An_Integer_Value : exception;
@@ -220,11 +226,11 @@ package Giant.Config_Settings is
    -- Returns:
    --   True, if the config setting exists; False, otherwise.
    -- Raises:
-   --   Config_Settings_ADO_Not_Initialized_Exception - 
+   --   Config_Settings_ADO_Not_Initialized_Exception -
    --     raised if this subprogram is called before "
    --     Initialize_Config_Settings".
-   function Does_Setting_Exist (Name : in String)
-     return Boolean;
+   function Does_Setting_Exist
+     (Name : in String) return Boolean;
 
    ---------------------------------------------------------------------------
    -- This method returns a config setting as a string.
@@ -236,13 +242,43 @@ package Giant.Config_Settings is
    -- Returns:
    --   The the config setting corresponding to "Name_of_Setting"
    -- Raises:
-   --   Config_Settings_ADO_Not_Initialized_Exception - 
+   --   Config_Settings_ADO_Not_Initialized_Exception -
    --     raised if this subprogram is called before "
    --     Initialize_Config_Settings".
    --   Config_Setting_Does_Not_Exist_Exception - raised if there is
    --     no config setting with the name "Name";
-   function Get_Setting_As_String (Name : in String)
-     return String;
+   function Get_Setting_As_String
+     (Name : in String) return String;
+
+   ---------------------------------------------------------------------------
+   -- This method returns a config setting.
+   --
+   -- This setting must hold an path to a directory or a file.
+   -- If the path is an relative path it will be expanded regarding the
+   -- following rules:
+   --
+   -- 1. Expansion towards the value of the "root_directory" attribute
+   --    of the <absolute_path_root> - node if exists in the config
+   --    file.
+   -- 2. If there is no <absolute_path_root> - node or no existing
+   --    path could be calculated. Then expansion is done based on
+   --    the directory of the config file from that the setting
+   --    was read.
+   -- 3. If still no path to an existing directory of file could be
+   --    calculated then an empty String ("") will be returned.
+   --
+   -- Parameters:
+   --   Name - The unique identifier of a config setting.
+   -- Returns:
+   --   A path to a directory or file calculated to the rules described
+   --   above.
+   -- Raises:
+   --   Config_Settings_ADO_Not_Initialized_Exception -
+   --     raised if this subprogram is called before "
+   --     Initialize_Config_Settings".
+   --   Config_Setting_Does_Not_Exist_Exception - raised if there is
+   --     no config setting with the name "Name";
+   function Get_Setting_With_Path_Expanded (Name : in String) return String;
 
    ---------------------------------------------------------------------------
    -- This method returns a config setting as a integer value.
@@ -254,7 +290,7 @@ package Giant.Config_Settings is
    -- Returns:
    --   The config setting corresponding to "Name_of_Setting"
    -- Raises:
-   --   Config_Settings_ADO_Not_Initialized_Exception - 
+   --   Config_Settings_ADO_Not_Initialized_Exception -
    --     raised if this subprogram is called before "
    --     Initialize_Config_Settings".
    --   Config_Setting_Does_Not_Exist_Exception - raised if there is
@@ -263,36 +299,36 @@ package Giant.Config_Settings is
    --     value if the setting "Name_Of_Setting" is not an integer value.
    function Get_Setting_As_Integer (Name : in String)
      return Integer;
-                      
+
    ---------------------------------------------------------------------------
    -- Adds a new setting or changes the value of an existing setting.
    --
-   -- Parameters: 
+   -- Parameters:
    --   Name - The name of the setting that should
    --     be added or those value should be changed (if already
-   --     exists). 
+   --     exists).
    --   Value - The new value for that setting.
-   -- Raises: 
-   --   Config_Settings_ADO_Not_Initialized_Exception - 
+   -- Raises:
+   --   Config_Settings_ADO_Not_Initialized_Exception -
    --     raised if this subprogram is called before "
    --     Initialize_Config_Settings".
    procedure Set_Setting (Name : in String; Value : in String);
-      
+
    ---------------------------------------------------------------------------
    -- Adds a new setting or changes the value of an existing setting.
    --
-   -- Parameters: 
+   -- Parameters:
    --   Name - The name of the setting that should
    --     be added or those value should be changed (if already
-   --     exists). 
+   --     exists).
    --   Value - A integer value for the setting - will be converted
    --     to String by Integer'Image (Value).
-   -- Raises: 
-   --   Config_Settings_ADO_Not_Initialized_Exception - 
+   -- Raises:
+   --   Config_Settings_ADO_Not_Initialized_Exception -
    --     raised if this subprogram is called before "
    --     Initialize_Config_Settings".
    procedure Set_Setting (Name : in String; Value : in Integer);
-      
+
    ---------------------------------------------------------------------------
    -- Writes all config settings that have been read from "User_Config_File"
    -- or that have been added/changed by ("Set_Setting") into
@@ -304,9 +340,9 @@ package Giant.Config_Settings is
    --   File_Name - The name of the file into that the settings should be
    --     written.
    -- Raises:
-   --   Config_Settings_ADO_Not_Initialized_Exception - 
+   --   Config_Settings_ADO_Not_Initialized_Exception -
    --     raised if this subprogram is called before "
    --     Initialize_Config_Settings".
    procedure Store_User_Config_File (File_Name : in String);
-       
+
 end Giant.Config_Settings;

@@ -1,77 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- internal DTD - external DTD also possible -->
-<!DOCTYPE giant_visualisation_style_file [
+<!DOCTYPE giant_vis_style_file
+  SYSTEM "giant_vis_style_file.dtd">
 
-   <!ELEMENT giant_visualisation_style_file 
-       (global_settings,
-       default_node_setting, 
-       (node_class_specific_setting)*,
-       default_edge_setting,
-       (edge_class_specific_setting)*)>
-
-      <!-- ............................................................... -->
-      <!ELEMENT global_settings EMPTY>
-      <!ATTLIST global_settings 
-         vis_window_background_color CDATA #REQUIRED
-      >
- 
-      <!-- ............................................................... -->
-      <!ELEMENT default_node_setting (node_attribute)*>
-      <!ATTLIST default_node_setting 
-         icon         CDATA #REQUIRED
-         text_color   CDATA #REQUIRED
-         border_color CDATA #REQUIRED
-         fill_color   CDATA #REQUIRED
-      >
-
-      <!ELEMENT node_class_specific_setting 
-         ((node_attribute)*, (node_class)*)>
-      <!ATTLIST node_class_specific_setting 
-         icon         CDATA #REQUIRED
-         text_color   CDATA #REQUIRED
-         border_color CDATA #REQUIRED
-         fill_color   CDATA #REQUIRED
-      >
-      
-         <!-- A list of attributes that should be shown inside the
-              visulisation window. -->
-         <!ELEMENT node_attribute EMPTY>
-         <!ATTLIST node_attribute 
-            attribute_name CDATA #REQUIRED
-         >
-
-         <!-- A node class that is affected by this setting. -->
-         <!ELEMENT node_class EMPTY>   
-         <!ATTLIST node_class
-             node_class_name CDATA #REQUIRED
-         >
-
-    <!-- ............................................................... -->
-    <!ELEMENT default_edge_setting EMPTY>
-    <!ATTLIST default_edge_setting
-       line_color CDATA                                     #REQUIRED
-       text_color CDATA                                     #REQUIRED 
-       line_style (continuous_line|dotted_line|dashed_line) #REQUIRED
-       show_label (yes|no)                                  #REQUIRED
-    >
-
-    <!ELEMENT edge_class_specific_setting (edge_class)*>
-    <!ATTLIST edge_class_specific_setting
-       line_color CDATA                                     #REQUIRED
-       text_color CDATA                                     #REQUIRED
-       line_style (continuous_line|dotted_line|dashed_line) #REQUIRED
-       show_label (yes|no)                                  #REQUIRED
-    > 
- 
-         
-       <!-- A edge class that is affected by this setting -->
-       <!ELEMENT edge_class EMPTY>
-       <!ATTLIST edge_class
-          start_node_class CDATA #REQUIRED
-          attribute_name   CDATA #REQUIRED
-       >
-]>
-<giant_visualisation_style_file>
+<giant_vis_style_file>
 
    <!-- ................................................................. -->
    <global_settings
@@ -129,4 +60,4 @@
          start_node_class = "*" attribute_name = "IQ Edge" />
    </edge_class_specific_setting> 
 
-</giant_visualisation_style_file>
+</giant_vis_style_file>

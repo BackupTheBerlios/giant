@@ -1,53 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-  <!-- internal DTD - external DTD also possible -->
-<!DOCTYPE giant_class_set_file [
+<!DOCTYPE giant_class_set_file 
+  SYSTEM "giant_class_set_file.dtd">
 
- 
-  <!ELEMENT giant_class_sets_file 
-    (associated_node_classes, associated_edge_classes)>
-
-  <!-- ------------------------------------------------------------------- -->
-  <!ELEMENT associated_node_classes (node_class)*>
-
-    <!-- GIANT will ignore node classes that are not known
-         by the IML Graph Reflection.
-         No wildcards possible.
-    -->
-
-    <!ELEMENT node_class EMPTY>   
-      <!ATTLIST node_class
-        node_class_name CDATA #REQUIRED
-      >
-
-  <!-- ------------------------------------------------------------------- -->
-  <!ELEMENT associated_edge_classes (edge_class)*>
-
-    <!-- GIANT will ignore edge classe that are not known
-         by the IML Graph Reflection.
-         Each_Edge_Class is determined by the class of
-         the start node and the name of the attribute that
-         represents the edge.
-         There is a wildcard "*" - the following combinations are 
-         allowed:
-
-         <edge_class Start_Node_Class="*" Attribute_Name="att_x" />
-           -- then all existing edge classes whose corresponding
-              attribute name is att_x regardeless of the node_class
-              of their start node will be part of the class set
-
-         <edge_class Start_Node_Class="node_cdx" Attribute_Name="*" />
-           -- then all existing edge classes with node_x as start
-              node regardeless of the name of the corresponding
-              attribute will be part of the class set
-    -->
-
-    <!ELEMENT edge_class EMPTY>
-      <!ATTLIST edge_class
-        start_node_class CDATA #REQUIRED
-        attribute_name   CDATA #REQUIRED
-      >
-]>
-<giant_class_sets_file>
+<giant_class_set_file>
 
   <!-- All node classes being a member of the class set -->
   <associated_node_classes>
@@ -68,5 +23,5 @@
   </associated_edge_classes>
  
 
-</giant_class_sets_file>
+</giant_class_set_file>
 
