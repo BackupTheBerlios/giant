@@ -11,7 +11,7 @@
          "HPG", 
          subgraph.hpg,
          "tree",
-         ";" );
+         "" );
    ]
 }()
 

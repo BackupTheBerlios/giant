@@ -1,0 +1,22 @@
+REQUIREMENTS
+
+In order to run giant the following components need to be installed on
+the system:
+
+ * GtkAda 1.2.12
+ * X11/R6
+
+RUN
+
+Run the giant script from the root directory like this: ./giant. 
+
+INSTALL
+
+Copy the giant executables, the etc/ and shared/ directory to your
+favourite destination.
+
+COMPILE
+
+Extract the archives located in the src/ directory and adopt the
+Makefile in the giant directory to suite your local installation. Use
+make to compile giant.
