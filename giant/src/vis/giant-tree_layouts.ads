@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.ads,v $, $Revision: 1.5 $
---  $Author: koppor $
---  $Date: 2003/07/07 11:22:44 $
+--  $RCSfile: giant-tree_layouts.ads,v $, $Revision: 1.6 $
+--  $Author: squig $
+--  $Date: 2003/07/07 13:40:07 $
 --
 ------------------------------------------------------------------------------
 --
@@ -32,6 +32,7 @@
 with Lists;
 pragma Elaborate_All (Lists);
 
+with Giant.Config;
 with Giant.Config.Class_Sets;
 with Giant.Evolutions;
 with Giant.Graph_Lib;
