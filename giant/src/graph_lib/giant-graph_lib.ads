@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.15 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.16 $
 --  $Author: koppor $
---  $Date: 2003/06/24 17:53:44 $
+--  $Date: 2003/06/24 19:24:46 $
 --
 
 --  Bauhaus / IML
@@ -84,6 +84,11 @@ package Giant.Graph_Lib is
    subtype Node_Attribute_Id is IML_Reflection.Field_ID;
 
    ---------------------------------------------------------------------------
+   --  Needed by Attribute_Filters
+   type Node_Attribute_Id_Array is
+     array (Positive range <>) of Node_Attribute_Id;
+
+   ---------------------------------------------------------------------------
    --  Id of one class to which an attribute may belong to
    --    ("Type of the attribute")
    --  Mirror of IML-Fields
@@ -113,6 +118,10 @@ package Giant.Graph_Lib is
    ---------------------------------------------------------------------------
    --  unique Id of one single edge in the duplicated IML-Graph
    type Edge_Id is access all Edge_Record;
+
+   ---------------------------------------------------------------------------
+   --  Needed for Node_Record, used to store incoming and outgoing edges
+   type Edge_Id_Array is array (Positive range <>) of Edge_Id;
 
    ---------------------------------------------------------------------------
    --  to be considered private
@@ -317,6 +326,8 @@ package Giant.Graph_Lib is
    ---------------------------------------------------------------------------
    --  Returns:
    --    The name belonging to given Node_Attribute
+   --  Raises:
+   --    Node_Attribute_Does_Not_Exist
    function Convert_Node_Attribute_Id_To_Name
       (Node_Attribute : in Node_Attribute_Id)
       return String;
@@ -700,10 +711,6 @@ package Giant.Graph_Lib is
    function Hash_Edge_Class_Id (Key : in Edge_Class_Id) return Integer;
 
 private
-
-   ---------------------------------------------------------------------------
-   --  Needed for Node_Record, used to store incoming and outgoing edges
-   type Edge_Id_Array is array (Positive range <>) of Edge_Id;
 
    ---------------------------------------------------------------------------
    --  Represents a single node of the IML_Graph
