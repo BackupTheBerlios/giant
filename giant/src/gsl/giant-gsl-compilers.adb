@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-compilers.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/10 11:58:45 $
+-- $Date: 2003/06/13 13:10:40 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -132,7 +132,8 @@ package body Giant.Gsl.Compilers is
       if Node /= Null_Node then
          if Get_Node_Type (Node) = Sequence or 
             Get_Node_Type (Node) = List then
-            -- sequence or list needs a recursive traversation
+            -- Sequence or List needs a recursive traversation
+            -- push all elements using Push_Sequence
             Default_Logger.Debug
               ("Compiler: List or Sequence found.", "Giant.Gsl");
             Execution_Stacks.Push (Stack, Node);
@@ -148,6 +149,8 @@ package body Giant.Gsl.Compilers is
             Log_Syntax_Node (Node);
 
          elsif Get_Node_Type (Node) = Script_Activation then
+            -- Script_Activation, needs to push Child1 (Script_Reference)
+            -- and Child2 (parameter)
             Default_Logger.Debug
               ("Compiler: Script_Activation found.", "Giant.Gsl");
             Execution_Stacks.Push (Stack, Node);
@@ -157,6 +160,7 @@ package body Giant.Gsl.Compilers is
             Push_Syntax_Node (Get_Child1 (Node), Stack);
 
          else
+            -- default for all other nodes (only push the node)
             Default_Logger.Debug ("Compiler: Push", "Giant.Gsl");
             Log_Syntax_Node (Node);
             Execution_Stacks.Push (Stack, Node);
