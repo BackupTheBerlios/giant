@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: spec.tex,v $, $Revision: 1.22 $
-%  $Date: 2003/03/01 14:11:48 $
-%  $Author: squig $
+%  $RCSfile: spec.tex,v $, $Revision: 1.23 $
+%  $Date: 2003/03/27 07:14:46 $
+%  $Author: stupro $
 %
 %  Description: Master Datei der Spezifikation
 %
@@ -80,6 +80,12 @@ beachtet werden sollen.
 % Produktübersicht
 %
 \chapter{Produktübersicht}
+
+In diesem Kapitel werden grundlegende Konzepte von GIANT 
+vorgestellt und kurz beschrieben. Eine ausführliche
+Spezifikation dieser Konzepte erfolgt weiter hinten
+in der Spezifikation.
+
 \input{product}
 
 
@@ -88,6 +94,13 @@ beachtet werden sollen.
 % Allgemeines zu den Funktionalen ANforderungen
 %
 \chapter{Allgemeine Funktionale Anforderungen}
+
+Dieses Kapitel beschreibt die funktionalen Anforderungen
+an GIANT, die das System als Ganzes und nicht nur
+einzelne UseCases betreffen. 
+Dies sind z.B. allegemeine Bedienkonzepte zur Selektion
+von Knoten und Kanten, sowie das grundlegene 
+Fehlerverhalten von GIANT.
 \input{afa}
 
 
@@ -96,6 +109,12 @@ beachtet werden sollen.
 % Funktionale Anforderungen
 %
 \chapter{Funktionale Anforderungen}
+
+Dieses Kapitel beschreibt die funktionalen Anforderungen
+aln GIANT inform von UseCases, d.h. alle Aktionsmöglichkeiten, 
+die dem Benutzer über die GUI von GIANT zugänglich sind, 
+weden in diesem Kapitel durch einen UseCase repräsentiert.
+
 \input{fa}
 
 
@@ -112,6 +131,12 @@ beachtet werden sollen.
 % Projektverwaltung
 %
 \chapter{GIANT Projektverwaltung}\label{GIANT Projektverwaltung}
+
+In diesem Kapitel wird beschrieben, wie persistente Arbeitsergebnisse
+von GIANT logisch und physich strukturiert und gespeichert werden.
+Arbeitsergebnisse sind z.B., vom Benutzer erzeugte Anzeigefenster
+mit visualisierten Knoten eines IML-Graphen.
+
 \input{project}
 
 
@@ -120,6 +145,11 @@ beachtet werden sollen.
 % Beschreibung aller Konfigurationsdateien
 %
 \chapter{Konfiguration von GIANT}\label{Konfiguration von GIANT}
+
+Hier wird beschrieben, wie benutzerdefinierbare Einstellungen von
+GIANT gespeichert und verwaltet werden. In diesem Kapitel wird 
+insbeondere spezfifizert, welche Einstellungen der Benutzer
+in welchen Konfigurationsdateien vornehmen kann.
 \input{config}
 
 %===============================================================================
@@ -127,6 +157,11 @@ beachtet werden sollen.
 % Beschreibung der GUI
 %
 \chapter{Beschreibung der GUI}
+
+In diesem Kapitel werden die Dialoge und Menüs der grafischen
+Benutzerschnittstelle von GINAT beschrieben.
+Die Funktionalität dieser Dialoge wird im Detail bei
+den jeweiligen UseCases beschrieben.
 \input{gui}
 
 
@@ -135,6 +170,13 @@ beachtet werden sollen.
 % Visualisierung des IML-Graphen
 %
 \chapter{Visualisierung des IML-Graphen}
+
+Dieses Kapitel beschreibt, wie Knoten und Kanten des
+IML-Graphen innerhalb von Anzeigefenstern als Fenster-Knoten
+und Fenster-Kanten dargestellt werden. Speziefiert wird hier
+jediglich das Ergebnis dieser Visualisierung, also das
+Aussehen der Knoten und Kanten, nicht aber die Art und Weise,
+wie GIANT diese Visualisierung erzeugt.
 \input{visulization}
 
 
@@ -143,6 +185,11 @@ beachtet werden sollen.
 % Nichtfunktionale Anforderungen
 %
 \chapter{Nichtfunktionale Anforderungen}
+
+Hier werden die wesentlichen nichtfunktionalen Anforderungen an GIANT
+spezifiziert. Insbeondere sind dies Anforderungen aus dem Bereich
+des Softwareengineering, wie z.B. Wartbarkeit und Erweiterbarkeit.
+
 \input{nfa}
 
 
@@ -151,6 +198,10 @@ beachtet werden sollen.
 % Technische Produktumgebung
 %
 \chapter{Technische Produktumgebung}
+
+Hier werden die zum Betrieb von GIANT nötige Hardware 
+und Software spezifiziert.
+
 \input{technical}
 
 
@@ -159,6 +210,13 @@ beachtet werden sollen.
 % Anforderungen an die Entwicklungsumgebung
 %
 \chapter{Anforderungen an die Entwicklungsumgebung}
+
+Hier werden die wesentlichen Anforderungen an die Entwicklungsumgebung
+von GIANT spezifiziert. Dies sind Werkzeuge, Programmiersprachen und
+Bibliotheken, die bei der Entwicklung eingesetzt werden müssen, und
+Standards, die beachtet werden sollen.
+Spezifiziert wird hier auch die Sprache aller zum Lieferumfang von GIANT
+gehörender Dokumente.
 \input{development}
 
 
@@ -167,6 +225,11 @@ beachtet werden sollen.
 % Begriffslexikon
 %
 \chapter{Begriffslexikon}
+Das Begriffslexikon nennt Begriffe aus der \gq{realen Welt} und definiert
+ihre besondere Bedeutung innerhalb dieser Spezifikation und darauf 
+aufbauender Dokumente. Des weiteren wird hier die englische Übersetzung 
+dieser Begriffe für alle englischprachigen Dokumente von GIANT vorgegeben.
+
 \include{nomenclature}
 
 

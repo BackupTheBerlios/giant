@@ -1,15 +1,11 @@
 % ==============================================================================
-%  $RCSfile: visulization.tex,v $, $Revision: 1.11 $
-%  $Date: 2003/02/26 07:50:27 $
-%  $Author: schwiemn $
+%  $RCSfile: visulization.tex,v $, $Revision: 1.12 $
+%  $Date: 2003/03/27 07:14:46 $
+%  $Author: stupro $
 %
 %  Description:
 %
 % ==============================================================================
-
-Beschreibung der Visualisierung von Teilgraphen des IML-Graphen
-in einem Anzeigefenster. Insbeondere soll hier die Darstellung von
-Fenster-Knoten und Fenster-Kanten erläutert werden.
 
 
 \section{Visualisierung von Knoten}
@@ -49,8 +45,9 @@ stark von der aktuellen Zoomstufe und dem gewählten Visualisierungsstil ab.
   
 
   \subsection {Klassenname und ID}
-  Die ID eines Knotens wird innerhalb des Knoten-Rechtecks rechts oben 
-  angezeigt.\\  Der Name der Knotenklasse wird bei den Attributen angezeigt.
+  Die ID eines Knotens wird innerhalb des Knoten-Rechtecks rechts oben als
+  Hexadezimalzahl angezeigt.\\  
+  Der Name der Knotenklasse wird bei den Attributen angezeigt.
 
   \subsection {Attribute des Knoten}
   Innerhalb des Knoten-Rechtecks können auch Attribute dargestellt werden 
@@ -70,18 +67,10 @@ stark von der aktuellen Zoomstufe und dem gewählten Visualisierungsstil ab.
   (z.B. gestrichelt oder durchgezogen) unterscheiden.
 
   \item
-  Der IML-Graph kennt auch Schleifen, solche Kanten werden als Polygonzug
-  vom Start-Knoten über zwei Knickpunkte zurück zum Start-Knoten dargestellt.
-  
+  Selbstkanten werden als kreisförmige Schleifen dargestellt.
 \end {enumerate}
 
  
-  \subsection{Vorhandene Kanten nicht anzeigen}
-  In den Konfigurationsdateien kann genau eingestellt werden, wann eine Kante 
-  angezeigt werden soll und wann nicht.\\ 
-  So kann verhindert werden, dass Kanten deren Start- oder Zielknoten nicht im 
-  sichtbaren Anzeigeinhalt liegen angezeigt werden.
-
 \section {Hervorheben von Knoten und Kanten}
 Hier ist spezifiziert, wie Fenster-Knoten und Fenster-Kanten
 hervorgehoben werden. Die genaue Art der Hervorhebung kann 
@@ -213,8 +202,10 @@ Die Minimap bietet die folgende Funktionalität:
    Anzeigeinhalt dargestellt.
 
   \item 
-  Durch angklicken entsprechender Punkte kann mittels der Minimap gescrollt 
-  werden.
+  Über die Minimap kann auch gescrollt werden. Klickt der Benutzer
+  auf einen Punkt innerhalb der Minimap, so wird der sichtbare
+  Anzeigeinhalt automatisch auf den diesem Punkte entsprechenden
+  Bereich des Anzeigeinhaltes gesetzt.  
 
 \end {enumerate}
 

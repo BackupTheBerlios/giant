@@ -1,15 +1,15 @@
 % =============================================================================
-%  $RCSfile: fa.tex,v $, $Revision: 1.14 $
-%  $Date: 2003/02/26 07:50:27 $
-%  $Author: schwiemn $
+%  $RCSfile: fa.tex,v $, $Revision: 1.15 $
+%  $Date: 2003/03/27 07:14:46 $
+%  $Author: stupro $
 %
 %  Description:
 %
 % =============================================================================
 
 \section{Der Aktor \gq{Benutzer}}
-Aktor im Sinne der anschließend spezifizierten UseCases ist immmer die 
-menschliche Person, die den IML-Browser GIANT gerade bedient, also der 
+Aktor im Sinne der anschließend spezifizierten UseCases ist immer die 
+Person, die den IML-Browser GIANT gerade bedient, also der 
 \gq{Benutzer}. Neben dem \gq{Benutzer} sind keine weiteren Aktoren 
 vorgesehen.\\
 
@@ -19,11 +19,9 @@ vorgesehen.\\
   die folgenden Kenntnisse verfügen:
 
   \begin{enumerate}
-    \item Erfahrung im Umgang mit grafischen GUIs und 
+    \item Erfahrung im Umgang mit GUIs und 
           dem entsprechenden Betriebssystem.
   
-    \item Erfahrung im Bereich Reengineering.
-
     \item Kenntnisse über Struktur und Aufbau des IML-Graphen. 
     
     \item Kenntnisse in der Anfragesprache GQSL von GIANT.
@@ -41,10 +39,10 @@ die folgenden Optionen.
   \subsection {Mögliche Parameter}
   \begin {enumerate}
     
-    \item loadiml=''Pfad''; als Kurzversion auch li=''Pfad''\
+    \item <-loadiml=''Pfad''>; als Kurzversion auch <-li=''Pfad'>'\
     Angabe des Pfades zu einer existierenden IML-Graph Datei.
     
-    \item newprojectfile=''Pfad''; als Kurzversion auch np''Pfad''\\
+    \item <-newprojectfile=''Pfad''>; als Kurzversion auch <-np''Pfad''>\\
     Angabe des Pfades für die neu zu erstellenden Projektdatei 
     (die Datei darf nicht bereits vorhanden sein, sonst Fehlermeldung).\\
     Das Verzeichnis der Projektdatei ist automatisch Projektverzeichnis,
@@ -52,20 +50,22 @@ die folgenden Optionen.
     weitere Projektdatei liegen.
     Existiert das Projektverzeichnis noch nicht, so wird es neu angelegt.
     
-    \item loadproject=''Pfad''; als Kurzversion auch lp=''Pfad'' \\
+    \item -loadproject=''Pfad''; als Kurzversion auch <-lp=''Pfad''> \\
     Angabe des Pfades zu einer existierenden Projektdatei.
           
-    \item loadquery=''Pfad''; als Kurzversion auch lq=''Pfad'' \\
+    \item -loadquery=''Pfad''; als Kurzversion auch <-lq=''Pfad''> \\
     Pfad zu einer Datei in der ein GQSL Skript gespeichert ist.
   
-    \item help\\
-    Zeigt Hilfe zu den Kommandozeilenparametern an.
-  
-      
+    \item -help\\
+    Zeigt Hilfe zu den möglichen Kommandozeilenparametern an.
+        
       
   \end {enumerate}
       
   \subsection {Mögliche Aufrufe}
+
+  Hier werden mögliche Parameterfolgen zum Start von GIANT via
+  Kommandozeile erläutert.
 
   \begin {enumerate}
   
@@ -86,7 +86,6 @@ die folgenden Optionen.
     \item
     Bei \ref{Kommandozeile_neus} und \ref{Kommandozeile_altes}
     kann zusätzlich entweder der Parameter\\
-    <... -executequery''my\_query\_string''> oder der Parameter\\
     <... -loadquery''my\_query\_file''> eingegeben werden.\\
     In diesem Falle wird dann die übergebene Anfrage ausgeführt.
     Die Ergebnisse werden dem neuen oder dem bestehenden Projekt 

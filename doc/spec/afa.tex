@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: afa.tex,v $, $Revision: 1.3 $
-%  $Date: 2003/02/26 07:50:26 $
-%  $Author: schwiemn $
+%  $RCSfile: afa.tex,v $, $Revision: 1.4 $
+%  $Date: 2003/03/27 07:14:46 $
+%  $Author: stupro $
 %
 %  Description: Beschreibung allgemeiner funktionaler Anforderungen - UseCase
 %  übergreifend.
@@ -10,6 +10,7 @@
 
 
 \section{Fehlerverhalten}
+
 \begin {enumerate}
   \item
   Fehlermeldungen werden grundsätzlich über einen allgemeinen Fehlerdialog
@@ -22,6 +23,13 @@
   \item
   Abweichungen von diesem Verhalten werden gegebenenfalls an der 
   entsprechenden Stelle explizit spezifiziert.
+
+  \item
+  Sollten mehrere Fehler, wie z.B. Eingabefehler, gleichzeitig auftreten,
+  so werden die entsprechenden Fehlermeldungen falls möglich 
+  in einem Dialog \gq{auf einen Schlag} an den Benutzer ausgegeben.
+   
+
 \end{enumerate}
 
   \subsection {Ungültige oder unvollständige Eingaben bei Dialogen}
@@ -46,22 +54,23 @@
   \end {enumerate}
 
   \subsection {Ungültige oder unvollständige Eingaben bei Kommandozeilenaufruf}
-  Der Start von GIANT wird abgeborchen. Auf der Kommandozeile wird eine
+  Der Start von GIANT wird abgebrochen. Auf der Kommandozeile wird eine
   Meldung mit Hinweisen zur Fehlerursache ausgegeben.
 
   \subsection {Fehler beim Einlesen von Dateien}
-  Aufgrund der Vielzahl der hierbei möglichen Fehlern (technische Defekte etc.)
-  kann das Verhalten grundsätlich nicht spezifiziert werden.
-  Generell gilt:
   
   \begin{enumerate}
     \item Können zum Betrieb von GIANT nötige Dateien nicht an der 
           dafür vorgesehenen Position gefunden werden, so wird das 
           System mit einer entsprechenden Fehlermeldung beendet.
+          In dieser Fehlermeldung werden die nicht gefundenen Dateien
+          und der Pfad an dem von GIANT nach diesen Dateien gesucht wird,
+          angegeben.
+          
+    \item Das Verhalten bei allen anderen möglichen Fehlern, die im Zusammenhang
+          mit dem Zugriff auf Dateien auftreten (fehlende Zugriffsrechte, 
+          defekte Sektoren etc.), ist undefiniert.
 
-    \item Das Verhalten bei anderen möglichen Fehlern (fehlende 
-          Zugriffsrechte, defekte Sektoren etc.) ist 
-          undefiniert.
   \end{enumerate} 
 
 
@@ -88,11 +97,12 @@
    \subsection{\gq{I am busy Feedback}}
    Während der der Berechnung durch Layoutalgorithmen und Anfragen 
    informiert GIANT den Benutzer laufend, dass es gerade mit Berechnungen 
-   beschäftigt ist. Dies kann wie folgt geschehen:
+   beschäftigt ist. Dies keine über eine der beiden 
+   hier beschriebenen Möglichkeiten geschehen:
    \begin {enumerate}
    
      \item 
-     Anzeige eines Dialoges mit einem sich stängig leicht ändernden
+     Anzeige eines Dialoges mit einem sich ständig leicht ändernden
      Inhalt, so dass erkennbar ist, dass das System noch läuft.
      
      \item
@@ -110,9 +120,7 @@ von GIANT (z.B. bei den entsprechenden Texteingabedialogen) zulässig sind.
 Unzulässige Namen werden generell abgelehnt und führen zu einer Fehlermeldung.
 
   \subsection {STANDARD NAME}
-  Ein String, der nur die im Folgenden beschriebenen Zeichen enthalten darf.
-  Der String darf nicht mit einem Schlüsselwort der GQSL Anfragesprache 
-  übereinstimmen.\\
+  Ein String, der nur die im Folgenden beschriebenen Zeichen enthalten darf.\\
   Zulässige Zeichen sind:
   \begin {enumerate}
   
@@ -149,7 +157,7 @@ Unzulässige Namen werden generell abgelehnt und führen zu einer Fehlermeldung.
     
     \item Name eines Pins: STANDARD NAME \\
           Dieser Name muss für jeden Pin
-	  innerhalb eins Anzeigfensters eindeutig sein.
+	  innerhalb eines Anzeigfensters eindeutig sein.
  
   \end {enumerate}
  
@@ -167,7 +175,7 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
    Andere bis dahin selektierte Fenster-Knoten und Fenster-Kanten 
    werden deselektiert.
    
-   \item Selektieren durch Anklicken mittels Left-Shift + linke Maustatste.\\
+   \item Selektieren durch Anklicken mittels Shift + linke Maustatste.\\
    Falls nocht nicht selektiert wird der angeklickte Fenster-Knoten oder die
    angeklickte Fenster-Kante zu der aktuellen Selektion hinzugefügt.
    Falls bereits selektiert wird der Fenster-Knoten oder die Fenster-Kante 
@@ -180,7 +188,7 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
    Rahmens werden deselektiert.
    
    \item Selektieren durch Aufziehen eines Rahmens mittes 
-   Left-Shift + gedrückte linke Maustaste.\\
+   Shift + gedrückte linke Maustaste.\\
    Alle Fenster-Knoten und Kanten innerhalb des Rahmens, 
    die noch nicht selektiert sind, werden der aktuellen Selektion 
    hinzugefügt.\\
@@ -234,7 +242,6 @@ in Anzeigefenster}
   \label{Verhalten beim Einfügen von IML-Teilgraphen und Selektionen
          in Anzeigefenster}
 
-
    \subsection {Vorgabe der Zielposition}
      \label{Vorgabe der Zielposition}
    Für bestimmte UseCases (siehe z.B.\ 
@@ -242,9 +249,7 @@ in Anzeigefenster}
    muss der Benutzer manuell Zielpositionen innerhalb eines 
    zu bestimmenden Anzeigefensters auswählen. An dieser
    Zielposition werden dann z.B. neue Fenster-Knoten etc. eingefügt.\\
-   
    Ablauf:
-   
    
    \begin {enumerate}
    
@@ -328,6 +333,10 @@ in Anzeigefenster}
 \section {Verhalten bei Umwandeln von Selektionen und IML-Teilgraphen}
   \label{Verhalten bei Umwandeln von Selektionen und IML-Teilgraphen}
   
+  Dieser Abschnitt beschreibt grundlegende Konventionen für die
+  Umwandlung von IML-Teilgraphen in Selektionen und anders herum.
+
+
   \subsection {Selektion aus IML-Teilgraphen ableiten}
     \label{Selektion aus IML-Teilgraphen ableiten}
   
@@ -370,8 +379,15 @@ in Anzeigefenster}
 \section {Verhalten beim Entfernen von Fenster-Knoten und Fenster-Kanten}
   \label{Verhalten beim Entfernen von Fenster-Knoten und Fenster-Kanten}
   
-  
-  \subsection {Entfernen aller Knoten und Kanten einer Selektionen}.
+  Beim \gq{Entfernen} von Fenster-Knoten und Fenster-Kanten aus einem
+  Anzeigefenster werden nur die Grafischen repäsentationen der Knoten und
+  Kanten des Bauhaus-IML-Graphen in dem betroffenen ANzeigefenster gelöscht.
+  Die IML-Knoten und IML-Kanten des IML-Graphen bleiben davon unberührt.
+  Grundsätzlich gelten beim \gq{Entfernen} die im Folgenden beschriebenen
+  Konventionen.
+ 
+ 
+  \subsection {Entfernen aller Knoten und Kanten einer Selektionen}
     \label {Entfernen aller Knoten und Kanten einer Selektionen}
   
   \begin {enumerate}
@@ -384,13 +400,14 @@ in Anzeigefenster}
     Fenster-Kanten im Anzeigefenster, deren Start- oder Zielknoten
     entfernt wird, werden ebenfalls entfernt (auch wenn sie nicht
     zur entsprechenden Selektion gehören).
-    
-        
+            
     \item 
-    Andere Selektionen des Anzeigefensters werden entsprechend aktualisiert.
+    Andere Selektionen des Anzeigefensters werden entsprechend aktualisiert, 
+    die betroffenen Fenster-Knoten und Fenster-Kanten werden also auch aus 
+    diesen Selektionen entfernt.
+
       
   \end{enumerate}
-
 
 
 
@@ -400,6 +417,11 @@ in Anzeigefenster}
 Sollen Fenster-Knoten auf dem Anzeigeinhalt automatisch
 auseinandergeschoben werden, so geschieht dies nach dem folgenden
 Modus (keine zentrische Streckung).
+GIANT stellt diese Funktionalität dem Benutzer über einen
+UseCase zur manuellen Ausführung zur Verfügung. Ein automatisches 
+\gq{Auseinanderschieben von Fenster-Knoten} durch GIANT selbst ist
+nicht vorgesehen, der Entwurf wird aber eine einfache Erweiterbarkeit
+von GIANT diesbezüglich unterstützen.
 
 \begin {enumerate}
 

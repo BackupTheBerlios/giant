@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: project.tex,v $, $Revision: 1.20 $
-%  $Date: 2003/02/26 07:50:27 $
-%  $Author: schwiemn $
+%  $RCSfile: project.tex,v $, $Revision: 1.21 $
+%  $Date: 2003/03/27 07:14:46 $
+%  $Author: stupro $
 %
 %  Description:
 %
@@ -11,7 +11,7 @@
 %===================
 \section {Persistenz der Projekte}
 
-GIANT speichert persistente Informationen in so genannten Projekten.
+GIANT speichert persistente Informationen in sogenannten Projekten.
 \begin {enumerate}
 
   \item
@@ -175,20 +175,55 @@ GIANT speichert persistente Informationen in so genannten Projekten.
   Diese Funktionalität wird von entsprechenden UseCases genutzt. 
   Hierbei werden alle Anzeigefenster, IML-Teilgraphen 
   und Knoten-Annotationen in die Verwaltungsdateien geschrieben, 
-  wobei alle Änderungen an noch offenen Anzeigefenstern berücksichtigt 
-  werden.\\
- 
+  wobei auch alle Änderungen an noch offenen Anzeigefenstern berücksichtigt 
+  werden; d.h. der aktuelle Zustand (z.B. die Position der IML-Knoten)
+  der offenen Anzeigefenster wird ohne explizite Rückfrage beim Benutzer
+  in die Verwaltungsdateien geschrieben.
+  Der Zustand der persistenten Informationen in den Verwaltungsdateien
+  entspricht nach Ausführung von \gq{Alles Speichern} exakt dem Zustand 
+  des Projektes, der dem aktuellen Bearbeitungsstand innerhalb von
+  GIANT entspricht.
 
   %===
   \subsection {Persistenz von Anzeigefenstern}
   \begin {enumerate}
+
+    \item 
+    Beim Speichern von Anzeigefenstern in Verwaltungsdateien werden
+    für jedes Anzeigefenster alle Informationen gespeichert, die nötig
+    sind um den Zustand des Anzeigefensters zu rekonstruieren, der
+    möglichst exakt dem Zustand bei der Speicherung des Anzeigefensters
+    entspricht. Inbesondere werden hierbei die folgenden Bestandteile
+    des Anzeigefensters gespeichert:
+
+      \subitem
+      Alle Selektionen und Pins des Anzeigefensters.
+
+      \subitem
+      Der exakte Zustand jeder Selektion; d.h. ob und wie die
+      Selektion hervorgehoben ist.
+
+      \subitem
+      Die Position der Fenster-Knoten und Fenster-Kanten des 
+      Anzeigefensters.
+
+    \item
+    Für den gewählten Visualisierungsstil des Anzeigefensters wird
+    nur der Name gespeichert, da die Visualisierungstile über
+    die Konfigurationsdateien beliebig editiert
+    und auch gelöscht werden können. Wird beim Laden eines
+    Anzeigefensters aus der Verwaltungsdatei kein Visualisierungstil
+    gefunden, dessen Name dem gespeicherten entspricht, so
+    wird für das Anzeigefenster statt dessen ein 
+    Default-Visualisierungsstil verwendet.
+      
 
     \item
     Sämtliche dem Projekt bekannten Anzeigefenster (alle Anzeigefenster zu 
     denen es eine entsprechende Verwaltungsdatei gibt) werden in 
     der Liste über die Anzeigefenster angezeigt, egal ob sie geöffnet sind
     oder nicht. 
-
+   
     \item 
     Zu jedem Anzeigefenster eines Projektes gibt es eine Verwaltungsdatei.
     Bei neu erzeugten Anzeigefenstern wird diese Verwaltungsdatei beim
