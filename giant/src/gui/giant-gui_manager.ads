@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.25 $
+--  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.26 $
 --  $Author: squig $
---  $Date: 2003/07/10 20:17:45 $
+--  $Date: 2003/07/21 14:02:24 $
 --
 --  Stores the window records. Handles the controller updates. Provides
 --  a facade for the gui.
@@ -31,6 +31,7 @@
 --    ADT
 --
 
+with Giant.Graph_Lib;
 with Giant.Graph_Window;
 with Giant.Progress_Dialog;
 with Giant.Vis_Windows;
@@ -77,6 +78,13 @@ package Giant.Gui_Manager is
 
    procedure Set_Status
      (Text : in String);
+
+   ---------------------------------------------------------------------------
+   --  Node Annotations
+   ---------------------------------------------------------------------------
+
+   procedure Update_Node_Annotation
+     (Node : in Graph_Lib.Node_Id);
 
    ---------------------------------------------------------------------------
    --  Pins
@@ -171,8 +179,10 @@ package Giant.Gui_Manager is
 
    ---------------------------------------------------------------------------
    --  Invokes Call_Procedure for each open graph window.
-   procedure For_Each
-     (Call_Procedure : in For_Each_Graph_Window_Type);
+   generic
+      with procedure Execute
+        (Window : in Graph_Window.Graph_Window_Access);
+   procedure For_Each_Open_Window;
 
    ---------------------------------------------------------------------------
    --  Returns the window with Name, if window is open; null, if

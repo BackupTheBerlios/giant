@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.41 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.42 $
 --  $Author: squig $
---  $Date: 2003/07/19 00:14:45 $
+--  $Date: 2003/07/21 14:02:24 $
 --
 ------------------------------------------------------------------------------
 --
@@ -264,6 +264,11 @@ package Giant.Controller is
    --  Selections
    ---------------------------------------------------------------------------
 
+   procedure Add_Selection
+     (Window_Name     : in String;
+      Selection       : in Graph_Lib.Selections.Selection;
+      Replace_Content : in Boolean);
+
    procedure Create_Selection
      (Window_Name : in String;
       Name        : in String);
@@ -370,6 +375,9 @@ package Giant.Controller is
    ---------------------------------------------------------------------------
    --  Subgraphs
    ---------------------------------------------------------------------------
+
+   procedure Add_Subgraph
+     (Subgraph : in Graph_Lib.Subgraphs.Subgraph);
 
    procedure Create_Subgraph
      (Name : in String);

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.42 $
---  $Author: keulsn $
---  $Date: 2003/07/20 23:20:04 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.43 $
+--  $Author: squig $
+--  $Date: 2003/07/21 14:02:24 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -312,7 +312,7 @@ package body Giant.Graph_Window is
          Remove_Content => False, Ask_For_Confirmation => True);
    exception
       when Vis_Windows.Standard_Selection_May_Not_Be_Removed_Exception =>
-         Dialogs.Show_Error_Dialog ("The default or active selection can not be removed.");
+         Dialogs.Show_Error_Dialog ("The default selection may not be removed.");
    end On_Selection_List_Delete;
 
    procedure On_Selection_List_Delete_With_Content
@@ -814,11 +814,18 @@ package body Giant.Graph_Window is
       Gtk.Paned.Add2 (Left_Paned, Add_Scrollbars (Window.Selection_List));
 
       --  visualization style
+      Gtk.Box.Gtk_New_Vbox (Vbox, Homogeneous => False, Spacing => 0);
+      Gtk.Box.Set_Border_Width (Vbox, DEFAULT_SPACING);
+      Gtk.Box.Pack_Start (Left_Box, Add_Frame (Vbox, -"Style"),
+                          Expand => False, Fill => False, Padding => 0);
+
       --  Causes: Gtk-WARNING **: gtk_scrolled_window_add(): cannot add non scrollable widget use gtk_scrolled_window_add_with_viewport() instead
       Gtk.Combo.Gtk_New (Window.Vis_Style_Combo);
-      Gtk.Box.Pack_Start (Left_Box,
-                          Add_Frame (Window.Vis_Style_Combo, -"Style"),
+      Gtk.Box.Pack_Start (Vbox, Window.Vis_Style_Combo,
                           Expand => False, Fill => False, Padding => 0);
+--        Gtk.Box.Pack_Start (Left_Box,
+--                            Add_Frame (Window.Vis_Style_Combo, -"Style"),
+--                            Expand => False, Fill => False, Padding => 0);
 
       Widget_Callback.Object_Connect
         (Gtk.Combo.Get_List (Window.Vis_Style_Combo), "select_child",
@@ -970,6 +977,18 @@ package body Giant.Graph_Window is
          Window.Local_Action := null;
       end if;
    end Trigger_Local_Action;
+
+   ---------------------------------------------------------------------------
+   --  Node Annotations
+   ---------------------------------------------------------------------------
+
+   procedure Update_Node_Annotation
+     (Window : access Graph_Window_Record;
+      Node   : in     Graph_Lib.Node_Id)
+   is
+   begin
+      Graph_Widgets.Change_Annotation_State (Window.Graph, Node);
+   end Update_Node_Annotation;
 
    ---------------------------------------------------------------------------
    --  Pin Methods

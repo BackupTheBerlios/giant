@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.64 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.65 $
 --  $Author: squig $
---  $Date: 2003/07/19 00:14:45 $
+--  $Date: 2003/07/21 14:02:24 $
 --
 
 with Ada.Strings.Unbounded;
@@ -255,6 +255,7 @@ package body Giant.Controller is
       else
          Node_Annotations.Add_Node_Annotation
            (Projects.Get_Node_Annotations (Current_Project), Node, Text);
+         Gui_Manager.Update_Node_Annotation (Node);
       end if;
    end;
 
@@ -265,6 +266,7 @@ package body Giant.Controller is
       if (Is_Node_Annotated (Node)) then
          Node_Annotations.Remove_Node_Annotation
            (Projects.Get_Node_Annotations (Current_Project), Node);
+         Gui_Manager.Update_Node_Annotation (Node);
       end if;
    end;
 
@@ -512,6 +514,47 @@ package body Giant.Controller is
    --  Selections
    ---------------------------------------------------------------------------
 
+   procedure Add_Selection
+     (Window_Name     : in String;
+      Selection       : in Graph_Lib.Selections.Selection;
+      Replace_Content : in Boolean)
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project,
+                                              Window_Name);
+      Name : constant String := Graph_Lib.Selections.Get_Name (Selection);
+      Replace : Boolean;
+      Removed : Boolean;
+      Lock : Graph_Widgets.Lock_Type;
+      Old_Highlight_Status : Vis_Windows.Selection_Highlight_Status;
+   begin
+      if (Name = Vis_Windows.Get_Standard_Selection (Window)) then
+         raise Vis_Windows.Standard_Selection_Name_May_Not_Be_Changed_Exception;
+      end if;
+
+      Replace := Vis_Windows.Does_Selection_Exist (Window, Name);
+      if (Replace) then
+         --  save status
+         Old_Highlight_Status := Vis_Windows.Get_Highlight_Status (Window, Name);
+
+         Removed := Remove_Selection (Window_Name, Name,
+                                      Ask_For_Confirmation => False,
+                                      Remove_Content       => Replace_Content);
+         pragma Assert (Removed);
+      end if;
+
+      Vis_Windows.Add_Selection (Window, Selection);
+      Graph_Widgets.Insert_Selection
+        (Vis_Windows.Get_Graph_Widget (Window), Selection, Lock);
+      Graph_Widgets.Release_Lock
+        (Vis_Windows.Get_Graph_Widget (Window), Lock);
+      Gui_Manager.Add_Selection (Window_Name, Name);
+
+      if (Replace) then
+         Highlight_Selection (Window_Name, Name, Old_Highlight_Status);
+      end if;
+   end Add_Selection;
+
    procedure Create_Selection
      (Window_Name : in String;
       Name        : in String)
@@ -536,14 +579,8 @@ package body Giant.Controller is
         := Projects.Get_Subgraph (Current_Project, Subgraph_Name);
       Selection : Graph_Lib.Selections.Selection
         := Graph_Lib.Subgraphs.Create_Selection (Subgraph, Selection_Name);
-      Lock : Graph_Widgets.Lock_Type;
    begin
-      Vis_Windows.Add_Selection (Window, Selection);
-      Graph_Widgets.Insert_Selection
-        (Vis_Windows.Get_Graph_Widget (Window), Selection, Lock);
-      Graph_Widgets.Release_Lock
-        (Vis_Windows.Get_Graph_Widget (Window), Lock);
-      Gui_Manager.Add_Selection (Window_Name, Selection_Name);
+      Add_Selection (Window_Name, Selection, Replace_Content => False);
    end Create_Selection_From_Subgraph;
 
    procedure Duplicate_Selection
@@ -700,15 +737,20 @@ package body Giant.Controller is
       Selection : Graph_Lib.Selections.Selection
         := Get_Selection (Window_Name, Name);
    begin
-      if (Vis_Windows.Get_Standard_Selection (Window) = Name
-          or else Vis_Windows.Get_Current_Selection (Window) = Name) then
+      if (Vis_Windows.Get_Standard_Selection (Window) = Name) then
          --  we need to raise this before Gui_Manager.Remove_Selection
          --  is called, otherwise we loose gui consistency
          raise Vis_Windows.Standard_Selection_May_Not_Be_Removed_Exception;
       end if;
 
       if (Gui_Manager.Remove_Selection (Window_Name, Name)) then
-      -- FIX Martin   Unhighlight_Selection (Window_Name, Name);
+         if (Vis_Windows.Get_Current_Selection (Window) = Name) then
+            Set_Current_Selection
+              (Window_Name, Vis_Windows.Get_Standard_Selection (Window));
+         else
+            Unhighlight_Selection (Window_Name, Name);
+         end if;
+
          if (Remove_Content) then
             --  remove the selection from display before it is destroyed
             Graph_Widgets.Remove_Selection
@@ -899,6 +941,30 @@ package body Giant.Controller is
    --  Subgraphs
    ---------------------------------------------------------------------------
 
+   procedure Add_Subgraph
+     (Subgraph : in Graph_Lib.Subgraphs.Subgraph)
+   is
+      Name : constant String := Graph_Lib.Subgraphs.Get_Name (Subgraph);
+      Replace : Boolean;
+      Removed : Boolean;
+      Old_Highlight_Status : Projects.Subgraph_Highlight_Status;
+   begin
+      Replace := Projects.Does_Subgraph_Exist (Current_Project, Name);
+      if (Replace) then
+         Old_Highlight_Status
+           := Projects.Get_Highlight_Status (Current_Project, Name);
+         Removed := Remove_Subgraph (Name);
+         pragma Assert (Removed);
+      end if;
+
+      Projects.Add_Subgraph (Current_Project, Subgraph);
+      Gui_Manager.Add_Subgraph (Name);
+
+      if (Replace) then
+         Highlight_Subgraph (Name, Old_Highlight_Status);
+      end if;
+   end Add_Subgraph;
+
    procedure Create_Subgraph
      (Name : in String)
    is
@@ -909,8 +975,7 @@ package body Giant.Controller is
       Graph_Lib.Subgraphs.Add_Node_Set (Subgraph, Graph_Lib.Get_All_Nodes);
       Graph_Lib.Subgraphs.Add_Edge_Set (Subgraph, Graph_Lib.Get_All_Edges);
 
-      Projects.Add_Subgraph (Current_Project, Subgraph);
-      Gui_Manager.Add_Subgraph (Unique_Name);
+      Add_Subgraph (Subgraph);
    end Create_Subgraph;
 
    procedure Create_Subgraph_From_Selection
@@ -925,8 +990,7 @@ package body Giant.Controller is
       Subgraph : Graph_Lib.Subgraphs.Subgraph
         := Graph_Lib.Subgraphs.Create (Subgraph_Name, Selection);
    begin
-      Projects.Add_Subgraph (Current_Project, Subgraph);
-      Gui_Manager.Add_Subgraph (Subgraph_Name);
+      Add_Subgraph (Subgraph);
    end Create_Subgraph_From_Selection;
 
    procedure Duplicate_Subgraph

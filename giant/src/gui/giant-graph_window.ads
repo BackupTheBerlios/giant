@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.21 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.22 $
 --  $Author: squig $
---  $Date: 2003/07/15 11:50:26 $
+--  $Date: 2003/07/21 14:02:24 $
 --
 ------------------------------------------------------------------------------
 --
@@ -125,6 +125,14 @@ package Giant.Graph_Window is
      (Window   : access Graph_Window.Graph_Window_Record'Class;
       Event    : in     Gdk.Event.Gdk_Event;
       Location : in     Vis.Logic.Vector_2d);
+
+   ---------------------------------------------------------------------------
+   --  Node Annotations
+   ---------------------------------------------------------------------------
+
+   procedure Update_Node_Annotation
+     (Window : access Graph_Window_Record;
+      Node   : in     Graph_Lib.Node_Id);
 
    ---------------------------------------------------------------------------
    --  Pin Methods

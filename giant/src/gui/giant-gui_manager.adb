@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.31 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.32 $
 --  $Author: squig $
---  $Date: 2003/07/18 15:40:31 $
+--  $Date: 2003/07/21 14:02:24 $
 --
 
 with Ada.Strings.Unbounded;
@@ -236,6 +236,25 @@ package body Giant.Gui_Manager is
 
       Main_Window.Set_Status (Text);
    end Set_Status;
+
+   ---------------------------------------------------------------------------
+   --  Node Annotations
+   ---------------------------------------------------------------------------
+
+   procedure Update_Node_Annotation
+     (Node : in Graph_Lib.Node_Id)
+   is
+      procedure Update
+        (Window : in Graph_Window.Graph_Window_Access)
+      is
+      begin
+         Graph_Window.Update_Node_Annotation (Window, Node);
+      end Update;
+
+      procedure Apply is new For_Each_Open_Window (Update);
+   begin
+      Apply;
+   end Update_Node_Annotation;
 
    ---------------------------------------------------------------------------
    --  Pins
@@ -522,8 +541,7 @@ package body Giant.Gui_Manager is
       return True;
    end Close;
 
-   procedure For_Each
-     (Call_Procedure : in For_Each_Graph_Window_Type)
+   procedure For_Each_Open_Window
    is
       Iterator : Graph_Window_Lists.ListIter;
       Window : Graph_Window.Graph_Window_Access;
@@ -535,9 +553,9 @@ package body Giant.Gui_Manager is
       Iterator := Graph_Window_Lists.MakeListIter (Open_Windows);
       while Graph_Window_Lists.More (Iterator) loop
          Graph_Window_Lists.Next (Iterator, Window);
-         Call_Procedure (Window);
+         Execute (Window);
       end loop;
-   end For_Each;
+   end For_Each_Open_Window;
 
    function Get_Open_Window (Name : in String)
      return Graph_Window.Graph_Window_Access

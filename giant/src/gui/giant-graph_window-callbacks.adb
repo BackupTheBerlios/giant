@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.10 $
---  $Author: keulsn $
---  $Date: 2003/07/20 23:20:03 $
+--  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.11 $
+--  $Author: squig $
+--  $Date: 2003/07/21 14:02:24 $
 --
 
 with Ada.Unchecked_Conversion;
@@ -169,6 +169,7 @@ package body Giant.Graph_Window.Callbacks is
          when Giant.Graph_Widgets.Clear =>
             Graph_Lib.Selections.Clear (Selection);
       end case;
+      Update_Selection (Window, Graph_Lib.Selections.Get_Name (Selection));
    end On_Selection_Changed;
 
    ---------------------------------------------------------------------------
