@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.11 $
--- $Author: schwiemn $
--- $Date: 2003/06/26 13:23:55 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.12 $
+-- $Author: squig $
+-- $Date: 2003/06/26 13:43:52 $
 --
 --
 with Ada.Streams;
@@ -249,48 +249,48 @@ package body Giant.File_Management is
          GNAT.Directory_Operations.Change_Dir (Old_Exec_Dir);
          raise File_Does_Not_Exist_Exception;
    end Get_Absolute_Path_To_File_From_Relative;
-   
-         
+
+
    ---------------------------------------------------------------------------
    function Get_Relative_Path_To_File_From_Absolute
      (Abs_Path_Root : in String;
-      Abs_Path      : in String) 
+      Abs_Path      : in String)
      return String is
-      
+
       Dir_Separator : Character := GNAT.OS_Lib.Directory_Separator;
-      
+
    begin
-   
+
       if (Abs_Path_Root'Length > Abs_Path'Length) then
          return Abs_Path;
-      
+
       elsif (Abs_Path_Root'Length = Abs_Path'Length) and then
         Abs_Path_Root (Abs_Path_Root'Range) = Abs_Path (Abs_Path'Range) then
-        
+
         return ("." & Dir_Separator);
-                   
+
       -- calculate relative path
-      elsif (Abs_Path_Root'Length < Abs_Path'Length) and then      
-        (Abs_Path_Root (Abs_Path_Root'Range) = Abs_Path 
+      elsif (Abs_Path_Root'Length < Abs_Path'Length) and then
+        (Abs_Path_Root (Abs_Path_Root'Range) = Abs_Path
           (Abs_Path'First .. Abs_Path'First + Abs_Path_Root'Length - 1)) then
-          
-         if (Abs_Path (Abs_Path'First + Abs_Path_Root'Length) 
+
+         if (Abs_Path (Abs_Path'First + Abs_Path_Root'Length)
            = Dir_Separator) then
-           
-            return ("." & Abs_Path 
+
+            return ("." & Abs_Path
               (Abs_Path'First + Abs_Path_Root'Length .. Abs_Path'Last));
          else
-          
-            return ("." & Dir_Separator & Abs_Path (Abs_Path'First + 
+
+            return ("." & Dir_Separator & Abs_Path (Abs_Path'First +
               Abs_Path_Root'Length .. Abs_Path'Last));
          end if;
       else
-      
+
          return Abs_Path;
       end if;
-   
+
    end Get_Relative_Path_To_File_From_Absolute;
-      
+
    ---------------------------------------------------------------------------
    function Get_Absolute_Path_To_Directory_From_Relative
      (Start_Dir    : in String;
@@ -456,5 +456,67 @@ package body Giant.File_Management is
       end if;
       return Path;
    end Get_User_Config_Path;
+
+   procedure Execute
+     (Command : in String)
+   is
+      Args   : Argument_List_Access;
+      Pid    : GNAT.OS_Lib.Process_Id;
+      Prog   : GNAT.OS_Lib.String_Access;
+   begin
+      Args := Argument_String_To_List (Editor);
+      Prog := Locate_Exec_On_Path (Args (Args'First).all);
+
+      if Prog /= null then
+         Pid := GNAT.OS_Lib.Non_Blocking_Spawn
+           (Prog.all, Args (Args'First + 1 .. Args'Last));
+         Free (Prog);
+      end if;
+
+      if Args /= null then
+         for J in Args'Range loop
+            Free (Args (J));
+         end loop;
+
+         Free (Args);
+      end if;
+   end Execute;
+
+   procedure Execute_External_Editor
+     (Command  : in String;
+      Filename : in String;
+      Line     : in Natural;
+      Column   : in Natural)
+   is
+            function Substitute
+        (Name : String; File : String; Line : Natural) return String
+      is
+         Index : Natural := Name'First;
+      begin
+         while Index < Name'Last loop
+            if Name (Index) = '%' and then Name (Index + 1) = 'f' then
+               return Name (Name'First .. Index - 1) &
+                 File & Substitute (Name (Index + 2 .. Name'Last), File, Line);
+
+            elsif Name (Index) = '%' and then Name (Index + 1) = 'l' then
+               declare
+                  Img : constant String := Natural'Image (Line);
+               begin
+                  return Name (Name'First .. Index - 1) &
+                    Img (Img'First + 1 .. Img'Last) &
+                    Substitute (Name (Index + 2 .. Name'Last), File, Line);
+               end;
+            end if;
+
+            Index := Index + 1;
+         end loop;
+
+         return Name;
+      end Substitute;
+
+   begin
+
+      null;
+   end Execute_External_Editor;
 
 end Giant.File_Management;
