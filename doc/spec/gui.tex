@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.55 $
-%  $Date: 2003/03/29 18:12:18 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.56 $
+%  $Date: 2003/03/29 19:02:58 $
 %  $Author: birdy $
 %
 %  Description: 
@@ -417,7 +417,7 @@ Bestandteile des Dialoges sind:
  Bei einer Mengenoperation über IML-Teilgraphen, werden alle IML-Teilgraphen
  des Projektes angezeigt.
  
- \item <OP>\\
+ \item <OP> Combobox\\
  Mengenoperation, die ausgeführt werden soll: Union, Difference oder Intersection.
  
  \item TARGET Textfield\\
@@ -435,6 +435,12 @@ Bestandteile des Dialoges sind:
 
 \section {Layoutalgorithmen Dialog}\label{Layoutalgorithmen-Dialog}
 
+    \begin{figure}[!htbp]
+       \centering
+       \includegraphics[10cm,10cm][0,0]{Layout_Algorithm_Dialog.png}
+       \caption{Layout-Algorithm-Dialog}
+    \end{figure}
+
 Der Dialog Layoutalgorithmen bietet folgende Möglichkeiten:
 
 \begin {enumerate}
@@ -444,15 +450,18 @@ Der Dialog Layoutalgorithmen bietet folgende Möglichkeiten:
  \item Cancel Button
 \end {enumerate}
 
-
-
-
 \section{Dateneingabe}
 Beschreibung von verschiedenen Textfeldtypen etc. zur Eingabe von Daten.
 
 \subsection{Knoten Annotations-Dialog}
 \label{Knoten Annotations-Dialog}
 
+    \begin{figure}[!htbp]
+       \centering
+       \includegraphics[10cm,10cm][0,0]{Node_Annotation_Dialog.png}
+       \caption{Node-Annotation-Dialog}
+    \end{figure}
+    
 Der Knoten-Annotations-Dialog besteht aus einem Fenster mit einem
 Label mit der Knoten-ID und einem Textfeld für den Annotationstext.
 Mittels der beiden Buttons OK und Cancel können die Änderungen im
@@ -461,12 +470,25 @@ Textfeld übernommen oder verworfen werden.
 \subsection{Platz Schaffen-Dialog}
 \label{Platz Schaffen-Dialog}
 
+    \begin{figure}[!htbp]
+       \centering
+       \includegraphics[10cm,10cm][0,0]{Make_Room_Dialog.png}
+       \caption{Make-Room-Dialog}
+    \end{figure}
+
 Im Dialogfenster MAKE\_ROOM wird in einem Textfeld als Zahl angegeben, um wieviel
 Pixel die Knoten an der vorher markierten Stelle auseinandergeschoben werden sollen.
 Mit dem Button OK kann bestätigt werden, mit Button Cancel abgebrochen werden.
 
 \section{Ausgabe von Fehlermeldungen}
 \label {GUI Ausgabe von Fehlermeldungen}
+
+    \begin{figure}[!htbp]
+       \centering
+       \includegraphics[10cm,10cm][0,0]{Error_Window.png}
+       \caption{Error-Window}
+    \end{figure}
+
 Ein allgemeiner Fehlerdialog ist ein Fenster ERROR\_WINDOW mit dem
 Titel \gq{GIANT Error}. Im Fenster ist
 ein Fehlertext Text ERROR\_LABEL und ein Button OK\_BUTTON mit der
@@ -476,6 +498,12 @@ Defaultmäßig ist der Button mit \gq{OK} beschriftet.
 \section{Sicherheitsabfrage}\label{Sicherheitsabfrage}
 \index{Sicherheitsabfrage}
 
+    \begin{figure}[!htbp]
+       \centering
+       \includegraphics[10cm,10cm][0,0]{Confirmation_Window.png}
+       \caption{Confirmation-Window}
+    \end{figure}
+    
 Eine allgemeine Sicherheitsabfrage ist ein Fenster CONFIRMATION\_WINDOW mit dem
 Titel \gq{GIANT Confirmation Prompt}. Im Fenster ist
 ein Fragetext Text CONFIRMATION\_LABEL und ein Button YES\_BUTTON mit der
@@ -490,6 +518,13 @@ mit \gq{No}.
 
   \subsection {Der \gq{Standard-Filechooser-Dialog}}
   \label {Standard-Filechooser-Dialog}
+
+    \begin{figure}[!htbp]
+       \centering
+       \includegraphics[10cm,10cm][0,0]{Filechooser.png}
+       \caption{Filechooser-Window}
+    \end{figure}
+
   Die Auswahl von Dateien (Laden/Speichern) passiert bei GIANT mittels
   des Standard Filechooser-Dialogs. Filter mit Wildcards für Dateinamen
   werden dabei von GIANT gesetzt.
