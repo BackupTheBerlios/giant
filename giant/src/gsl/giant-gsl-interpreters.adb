@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/26 14:01:03 $
+-- $Date: 2003/08/26 14:28:31 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -283,8 +283,8 @@ package body Giant.Gsl.Interpreters is
      (List  : in out Gsl_Params;
       Param : in     String) is
    begin
-      --Add_Parameter (List, Gsl_Type (Create_Gsl_Edge_Id (Param)));
-      null;
+      Add_Parameter (List, Gsl_Type
+        (Create_Gsl_Var_Reference (Subgraph, Param)));
    end Add_Parameter;
 
    ---------------------------------------------------------------------------
@@ -294,8 +294,8 @@ package body Giant.Gsl.Interpreters is
       Param   : in     String;
       Context : in     String) is
    begin
-      --Add_Parameter (List, Gsl_Type (Create_Gsl_Edge_Id (Param)));
-      null;
+      Add_Parameter (List, Gsl_Type
+        (Create_Gsl_Var_Reference (Selection, Param, Context)));
    end Add_Parameter;
 
    ---------------------------------------------------------------------------
