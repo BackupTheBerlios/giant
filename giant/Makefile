@@ -8,6 +8,8 @@ TMP_PATH		= /tmp/$(shell id -un)
 # therefore all pathes need to be relative to this directory
 OUT_PATH        = obj/
 
+GCOV_OUT_PATH   = gcov/
+
 # IML - if available, take StuPro's IML-lib
 #GLOBAL_IMLLIB_PATH = /home/stsopra/giant/IML/iml_browser
 #ifeq ($(shell test -d $(GLOBAL_IMLLIB_PATH) && echo "true"),true)
@@ -55,7 +57,7 @@ ifeq ($(shell test -r Makefile.local && echo "true"),true)
   include Makefile.local
 endif
 
-.PHONY : all html static style
+.PHONY : all html static style gcov
 
 all: 
 	test -x $(OUT_PATH) || mkdir $(OUT_PATH)
@@ -101,3 +103,16 @@ html : all
 	find $(OUT_PATH)$(GIANT_PATH)src/ -name '*.ad?' -exec cp {} $(OUT_PATH)$(SNAPSHOT_PATH) \;
 	cd $(OUT_PATH)$(SNAPSHOT_PATH) && \
 	gnathtml $(HTML_DEPTH) -f -l1 -o$(HTML_PATH) $(HTML_MAIN)
+
+gcov :
+	test -x $(GCOV_OUT_PATH) || mkdir $(GCOV_OUT_PATH)
+	PATH=/home/stsopra/giant/lcov-1.0:$(PATH) lcov.pl --directory obj --reset
+	make -C test
+	cd test/ && ./framework_test
+#find obj/ -maxdepth 1 -name "*.da" -not -name "giant-*" -exec rm {} \;
+	PATH=/home/stsopra/giant/lcov-1.0:$(PATH) lcov.pl --directory obj \
+	  --capture --output-file $(GCOV_OUT_PATH)/giant.info
+	PATH=/home/stsopra/giant/lcov-1.0:$(PATH) genhtml.pl \
+	  --show-details --output-directory $(GCOV_OUT_PATH) \
+	  --title "GIANT Test Coverage" $(GCOV_OUT_PATH)/giant.info
+

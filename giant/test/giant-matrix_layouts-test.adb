@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-matrix_layouts-test.adb,v $, $Revision: 1.3 $
---  $Author: koppor $
---  $Date: 2003/07/14 19:48:37 $
+--  $RCSfile: giant-matrix_layouts-test.adb,v $, $Revision: 1.4 $
+--  $Author: squig $
+--  $Date: 2003/07/15 08:50:59 $
 --
 
 with Ada.Text_IO;
@@ -77,6 +77,8 @@ package body Giant.Matrix_Layouts.Test is
    procedure Init (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
    begin
+      Logger.Warn ("=== Running Matrix Layout ===");
+
       Gtk.Main.Init;
 
       Giant.Graph_Lib.Initialize;
