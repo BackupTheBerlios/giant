@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-vis_windows-test.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-vis_windows-test.adb,v $, $Revision: 1.11 $
 --  $Author: schwiemn $
---  $Date: 2003/07/14 19:45:50 $
+--  $Date: 2003/07/15 20:31:30 $
 --
 with Ada.Streams.Stream_IO;
 
@@ -42,6 +42,8 @@ with Giant.Node_Annotations;
 
 with Giant.Vis_Windows;
 with Giant.Graph_Lib.Selections;
+
+with Giant.Config.Vis_Styles;
 
 package body Giant.Vis_Windows.Test is
 
@@ -156,8 +158,14 @@ package body Giant.Vis_Windows.Test is
       Vis_Windows.Add_Pin
         (Vis_Window => New_Vis_Window,
          Name       => "Pin_3",
-         Position   => Vis.Logic.Zero_2d,
+         Position   => Vis.Logic.Zero_2d,                  
          Zoom_Level => 0.3);
+         
+      Vis_Windows.Add_Pin
+        (Vis_Window => New_Vis_Window,
+         Name       => "Pin_4",
+         Position   => Vis.Logic.Zero_2d,
+         Zoom_Level => 0.4);
 
       return New_Vis_Window;
    end Set_Up_Vis_Window;
@@ -235,7 +243,7 @@ package body Giant.Vis_Windows.Test is
       -- test pins
       ------------
       Test_List := Get_All_Pins (Test_Window);
-      Assert (String_Lists.Length (Test_List) = 3,
+      Assert (String_Lists.Length (Test_List) = 4,
               "Test Length of pin list");
       String_Lists.Destroy (Test_List);
 
@@ -248,7 +256,16 @@ package body Giant.Vis_Windows.Test is
       Assert
         (Vis_Windows.Does_Pin_Exist (Test_Window, "Pin_3"),
          "Test whether ""Pin_3"" exists");
-
+      Assert
+        (Vis_Windows.Does_Pin_Exist (Test_Window, "Pin_4"),
+         "Test whether ""Pin_4"" exists");
+         
+      -- test vis style
+      -----------------
+      Assert 
+        (Vis_Windows.Get_Vis_Style (Test_Window) = "test_vis_style_1_default",
+         "Check whether correct vis style loaded");
+        
 
    end Check_Default_Win_Status;
 
@@ -299,17 +316,21 @@ package body Giant.Vis_Windows.Test is
       Vis_Windows.Deallocate_Vis_Window_Deep (Test_Window);
    end Test_Streaming;
 
-
-
    ---------------------------------------------------------------------------
    procedure Test_Changing_Status_And_Content
       (R : in out AUnit.Test_Cases.Test_Case'Class) is
-
-      Test_Window : Vis_Windows.Visual_Window_Access;
+      
+      use Vis.Logic;
+      
+      Test_Window    : Vis_Windows.Visual_Window_Access;      
+      Test_Selection : Graph_Lib.Selections.Selection;
+      Test_Float     : Float;
    begin
    
       Test_Window := Set_Up_Vis_Window ("Test_Window_X");
       Check_Default_Win_Status (Test_Window);
+      
+      Test_Selection := Graph_Lib.Selections.Create ("Selection_1-New_Name");
       
       -- do some changes
       ------------------
@@ -326,10 +347,124 @@ package body Giant.Vis_Windows.Test is
          "Selection_2-New_Name");  
                  
       Vis_Windows.Set_Current_Selection (Test_Window, "Selection_3");
-                 
+      
+      Assert 
+        (not May_Highlight_Status_Be_Changed (Test_Window, "Selection_3"),
+         "Test whether Higlight Status may be changed - Selection_3");
+
+      Assert 
+        (May_Highlight_Status_Be_Changed 
+          (Test_Window, "Selection_1-New_Name"),
+         "Test whether Higlight Status may be changed "
+         &"- Selection_1-New_Name");
+         
+      Assert 
+        (Get_Highlight_Status (Test_Window, "Selection_3") 
+         = Current_Selection,
+         "Check highlight status of new current selection");
+         
+      Assert 
+        (Get_Highlight_Status (Test_Window, "Default") 
+         = None,
+         "Check highlight status of former current selection");         
+ 
+      Assert 
+        (Graph_Lib.Selections.Get_Name 
+          (Vis_Windows.Get_Selection 
+            (Test_Window, Vis_Windows.Get_Current_Selection (Test_Window)))
+         = "Selection_3",
+         "Test correct name of new current selection");
+         
+      Assert
+        (Get_Highlight_Status (Test_Window, "Default") 
+         = None,
+         "Check highlight status of former current selection");     
+                  
+      Assert
+        (not Vis_Windows.May_Be_Faded_Out (Test_Window, "Selection_3"),
+         "Test current selection may not be faded out - Selection_3");
+
+      Assert
+        (not Vis_Windows.May_Be_Faded_Out (Test_Window, "Default"),
+         "Test standard selection may not be faded out - Default");
+  
+      Assert
+        (Vis_Windows.May_Be_Faded_Out 
+          (Test_Window, "Selection_1-New_Name"),
+         "Test selection may be faded out - Selection_1-New_Name"); 
+      
+      -- Selection_May_Not_Be_Faded_Out_Exception   
+      begin
+         Vis_Windows.Fade_Out_Selection 
+           (Test_Window, "Default");         
+         Assert 
+           (False, 
+            "Check Fade_Out_Selection " 
+            & "- ""Selection_May_Not_Be_Faded_Out_Exception"" "
+            & "not rised correctly.");
+      exception
+         when Selection_May_Not_Be_Faded_Out_Exception =>
+            Assert 
+              (True, 
+               "Check Fade_Out_Selection " 
+               & "- ""Selection_May_Not_Be_Faded_Out_Exception"" "
+               & "not rised correctly. - Default");    
+      end;   
+         
+      -- Selection_May_Not_Be_Faded_Out_Exception   
+      begin
+         Vis_Windows.Fade_Out_Selection 
+           (Test_Window, "Selection_3");         
+         Assert 
+           (False, 
+            "Check Fade_Out_Selection " 
+            & "- ""Selection_May_Not_Be_Faded_Out_Exception"" "
+            & "not rised correctly.");
+      exception
+         when Selection_May_Not_Be_Faded_Out_Exception =>
+            Assert 
+              (True, 
+               "Check Fade_Out_Selection " 
+               & "- ""Selection_May_Not_Be_Faded_Out_Exception"" "
+               & "not rised correctly. - Selection_3");    
+      end;           
+                                              
       -- should also reset current selection to default           
       Vis_Windows.Remove_Selection (Test_Window, "Selection_3");
-                                   
+              
+      Vis_Windows.Set_Highlight_Status 
+        (Test_Window, "Selection_2-New_Name", None);
+      Vis_Windows.Set_Highlight_Status 
+        (Test_Window, "Selection_2-New_Name", Color_2);
+
+      Vis_Windows.Set_Highlight_Status 
+        (Test_Window, "Selection_1-New_Name", Color_1);
+        
+      Fade_Out_Selection (Test_Window, "Selection_1-New_Name");
+      Fade_In_Selection (Test_Window, "Selection_1-New_Name");
+      
+      Fade_Out_Selection (Test_Window, "Selection_2-New_Name");
+      
+      
+      -- Pins
+      Vis_Windows.Remove_Pin (Test_Window, "Pin_1");
+      
+      Vis_Windows.Add_Pin
+        (Vis_Window => Test_Window,
+         Name       => "Pin_1",
+         Position   => Vis.Logic.Zero_2d,
+         Zoom_Level => 0.1);
+         
+      Vis_Windows.Remove_Pin (Test_Window, "Pin_4");
+      
+      Vis_Windows.Change_Pin_Name (Test_Window, "Pin_1", "Pin_1_New");
+      Vis_Windows.Change_Pin_Name (Test_Window, "Pin_1_New", "Pin_1");
+
+      Vis_Windows.Change_Pin_Name (Test_Window, "Pin_2", "Pin_2_New");
+      
+      -- vis styles
+      Vis_Windows.Set_Vis_Style (Test_Window, "test_vis_style_2");
+      
                                                                     
       -- check important exceptions
       -----------------------------
@@ -348,7 +483,7 @@ package body Giant.Vis_Windows.Test is
       exception
          when Standard_Selection_Name_May_Not_Be_Changed_Exception =>
             Assert 
-              (False, 
+              (True, 
                "Check Change_Selection_Name " 
                & "- ""Standard_Selection_Name_May_Not_Be_Changed_Exception"" "
                & "not rised correctly.");    
@@ -365,19 +500,207 @@ package body Giant.Vis_Windows.Test is
       exception
          when Standard_Selection_May_Not_Be_Removed_Exception =>
             Assert 
-              (False, 
+              (True, 
                "Check Remove_Selection " 
                & "- ""Standard_Selection_May_Not_Be_Removed_Exception"" "
                & "not rised correctly.");    
       end;
+          
+      -- Highlight_Status_Of_Selection_May_Not_Be_Changed_Exception
+      begin
+         Vis_Windows.Set_Highlight_Status 
+           (Test_Window, "Default", Vis_Windows.None);       
+         Assert 
+           (False, 
+            "Check Set_Highlight_Status " 
+            & "- ""Highlight_Status_Of_Selection_May_"
+            & "Not_Be_Changed_Exception"" "
+            & "not rised correctly.");
+      exception
+         when Highlight_Status_Of_Selection_May_Not_Be_Changed_Exception =>
+            Assert 
+              (True, 
+               "Check Set_Highlight_Status " 
+               & "- ""Highlight_Status_Of_Selection_May_"
+               & "Not_Be_Changed_Exception"" "
+               & "not rised correctly.");    
+      end;     
       
+      -- Selection_Is_Already_Part_Of_Window_Exception
+      begin
+         Vis_Windows.Add_Selection 
+           (Test_Window, Test_Selection);       
+         Assert 
+           (False, 
+            "Check Set_Highlight_Status " 
+            & "- ""Selection_Is_Already_Part_Of_Window_Exception"" "
+            & "not rised correctly.");
+      exception
+         when Selection_Is_Already_Part_Of_Window_Exception =>
+            Assert 
+              (True, 
+               "Check Set_Highlight_Status " 
+               & "- ""Selection_Is_Already_Part_Of_Window_Exception"" "
+               & "not rised correctly.");    
+      end;  
+      
+      -- Pin_Does_Already_Exist_Exception
+      begin
+         Vis_Windows.Add_Pin
+           (Vis_Window => Test_Window,
+            Name       => "Pin_1",
+            Position   => Vis.Logic.Zero_2d,
+            Zoom_Level => 0.1);               
+         Assert 
+           (False, 
+            "Check Add_Pin " 
+            & "- ""Pin_Does_Already_Exist_Exception"" "
+            & "not rised correctly.");
+      exception
+         when Pin_Does_Already_Exist_Exception =>
+            Assert 
+              (True, 
+               "Check Add_Pin " 
+               & "- ""Pin_Does_Already_Exist_Exception"" "
+               & "not rised correctly.");    
+      end;  
+      
+      -- Pin_With_Passed_Name_Not_Found_Exception
+      begin
+         Test_Float := Vis_Windows.Get_Zoom
+           (Test_Window, "Pin_4");               
+         Assert 
+           (False, 
+            "Check Get_Zoom " 
+            & "- ""Pin_With_Passed_Name_Not_Found_Exception"" "
+            & "not rised correctly.");
+      exception
+         when Pin_With_Passed_Name_Not_Found_Exception =>
+            Assert 
+              (True, 
+               "Check Get_Zoom " 
+               & "- ""Pin_With_Passed_Name_Not_Found_Exception"" "
+               & "not rised correctly.");    
+      end;        
+      
+      -- Vis_Style_Does_Not_Exist_Exception
+      begin
+         Vis_Windows.Set_Vis_Style
+           (Test_Window, "I_do_not_exist");               
+         Assert 
+           (False, 
+            "Check Set_Vis_Style " 
+            & "- ""Vis_Style_Does_Not_Exist_Exception"" "
+            & "not rised correctly.");
+      exception
+         when Vis_Style_Does_Not_Exist_Exception =>
+            Assert 
+              (True, 
+               "Check Set_Vis_Style " 
+               & "- ""Vis_Style_Does_Not_Exist_Exception"" "
+               & "not rised correctly.");    
+      end;         
+                                                  
+      -- Stream and reload Vis_Window
+      -------------------------------
+      
+      Write_Vis_Window_To_File
+        ("./resources/test_vis_window_stream_file.viswindow",
+         Test_Window);
 
       Vis_Windows.Deallocate_Vis_Window_Deep (Test_Window);
+
+      Test_Window := Load_Vis_Window_Into_Main_Memory
+        ("./resources/test_vis_window_stream_file.viswindow",
+         Node_Annotations.Create_Empty);
+            
+      -- Status Check
+      ----------------
       
+      Assert 
+        (Vis_Windows.Get_Current_Selection (Test_Window) = "Default",
+         "Test whether current selection resetted correctly to default");
       
+      Assert (not Vis_Windows.Does_Selection_Exist
+        (Test_Window, "Selection_3"),
+        "Test whether Selection_3 was removed correctly");
+        
+      Assert (not Vis_Windows.Does_Selection_Exist
+        (Test_Window, "Selection_1"),
+        "Test whether Selection_1 was renamed correctly - 1");        
+
+      Assert (Vis_Windows.Does_Selection_Exist
+        (Test_Window, "Selection_1-New_Name"),
+        "Test whether Selection_1 was renamed correctly - 2");  
+        
+      Assert (not Vis_Windows.Does_Selection_Exist
+        (Test_Window, "Selection_2"),
+        "Test whether Selection_2 was renamed correctly - 1");        
       
+      Assert (Vis_Windows.Does_Selection_Exist
+        (Test_Window, "Selection_2-New_Name"),
+        "Test whether Selection_2 was renamed correctly - 2");  
+
+      Assert (Graph_Lib.Selections.Get_Name 
+          (Get_Selection (Test_Window, "Selection_2-New_Name"))
+         = "Selection_2-New_Name",
+         "Test whether Selection_2 was renamed correctly - 3");
+                            
+      Assert 
+        (Get_Highlight_Status (Test_Window, "Selection_1-New_Name") 
+         = Color_1,
+         "Check highlight status of Selection_1-New_Name");
       
-      -- Reload
+      Assert 
+        (Get_Highlight_Status (Test_Window, "Selection_2-New_Name") 
+         = Color_2,
+         "Check highlight status of Selection_2-New_Name");      
+      
+      Assert 
+        (not Vis_Windows.Is_Faded_Out (Test_Window, "Selection_1-New_Name"),
+         "Check Fading Status of Selection_1-New_Name");
+      
+      Assert 
+        (Vis_Windows.Is_Faded_Out (Test_Window, "Selection_2-New_Name"),
+         "Check Fading Status of Selection_2-New_Name");      
+     
+      -- pins
+      -------
+      
+      Assert 
+        (Vis_Windows.Does_Pin_Exist (Test_Window, "Pin_1"),
+         "Check whether Pin_1 exits");        
+      Assert 
+        (Vis_Windows.Get_Position (Test_Window, "Pin_1") 
+         = Vis.Logic.Zero_2d,
+         "Check position of Pin_1");
+      Assert 
+        (Vis_Windows.Get_Zoom (Test_Window, "Pin_1") = 0.1,
+         "Check zoom of Pin_1");         
+         
+      Assert 
+        (not Vis_Windows.Does_Pin_Exist (Test_Window, "Pin_2"),
+         "Check Pin_2 renamed correctly - 1"); 
+      Assert 
+        (Vis_Windows.Does_Pin_Exist (Test_Window, "Pin_2_New"),
+         "Check Pin_2 renamed correctly - 2");          
+     
+      Assert 
+        (Vis_Windows.Does_Pin_Exist (Test_Window, "Pin_3"),
+         "Check whether Pin_3 exits");  
+         
+      Assert 
+        (not Vis_Windows.Does_Pin_Exist (Test_Window, "Pin_4"),
+         "Check whether Pin_4 is removed");          
+                
+      -- vis styles                
+      Assert
+        (Vis_Windows.Get_Vis_Style (Test_Window) = "test_vis_style_2",
+        "Test Vis Style changed correctly to ""test_vis_style_2""");
+               
+      -- free storrage
+      Graph_Lib.Selections.Destroy (Test_Selection);
+      Vis_Windows.Deallocate_Vis_Window_Deep (Test_Window);
    end  Test_Changing_Status_And_Content;
 
    ---------------------------------------------------------------------------
@@ -393,8 +716,10 @@ package body Giant.Vis_Windows.Test is
       Register_Routine (T, Leack_Test'Access, "Leack_Test");
       Register_Routine (T, Test_Init'Access, "Test_Init");
       Register_Routine (T, Test_Streaming'Access, "Test_Streaming");
+      Register_Routine 
+        (T, Test_Changing_Status_And_Content'Access, 
+         "Test_Changing_Status_And_Content");
 
-      null;
    end Register_Tests;
 
    ---------------------------------------------------------------------------
@@ -407,10 +732,11 @@ package body Giant.Vis_Windows.Test is
       Giant.Graph_Lib.Load
         ("resources/rfg_examp.iml");
       Giant.Config.Vis_Styles.Initialize_Config_Vis_Styles
-        ("resources/vis_styles/resources_dir",
+        ("",
+         "resources/vis_styles/vis_styles_test_set_1",
          "",
-         "",
-         "resources/vis_styles/only_defaults_giant_vis_style.xml");
+         "resources/vis_styles/vis_styles_test_set_1/"
+         & "test_vis_style_1_default.xml");
    end Set_Up;
 
    ---------------------------------------------------------------------------

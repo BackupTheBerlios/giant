@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.21 $
+-- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.22 $
 -- $Author: schwiemn $
--- $Date: 2003/07/14 19:15:00 $
+-- $Date: 2003/07/15 20:31:30 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -1491,8 +1491,7 @@ package body Giant.Config.Vis_Styles is
    begin
 
       if (ADO_Initialized = False) then
---FIX:         raise Config_Vis_Styles_Not_Initialized_Exception;
-         return Ada.Strings.Unbounded.To_Unbounded_String ("Default");
+         raise Config_Vis_Styles_Not_Initialized_Exception;
       end if;
 
       if (Vis_Style = null) then

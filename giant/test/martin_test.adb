@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: martin_test.adb,v $, $Revision: 1.16 $
+--  $RCSfile: martin_test.adb,v $, $Revision: 1.17 $
 --  $Author: schwiemn $
---  $Date: 2003/07/14 19:45:50 $
+--  $Date: 2003/07/15 20:31:30 $
 --  
 with AUnit.Test_Suites; use AUnit.Test_Suites;
 with AUnit.Test_Runner;
@@ -45,9 +45,9 @@ procedure Martin_Test is
    begin
    
    
-     Add_Test (Result, new Giant.Vis_Windows.Test.Test_Case); 
+ --    Add_Test (Result, new Giant.Vis_Windows.Test.Test_Case); 
    
- --  Add_Test (Result, new Giant.Projects.Test.Test_Case);
+   Add_Test (Result, new Giant.Projects.Test.Test_Case);
        
        
   

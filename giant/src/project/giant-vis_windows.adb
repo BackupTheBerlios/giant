@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.32 $
---  $Author: squig $
---  $Date: 2003/07/10 14:04:50 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.33 $
+--  $Author: schwiemn $
+--  $Date: 2003/07/15 20:31:30 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -31,7 +31,11 @@ with Unbounded_String_Hash; -- from Bauhaus IML "Reuse.src"
 with Giant.Config;            -- from GIANT
 with Giant.Config.Vis_Styles; -- from GIANT
 with Giant.Graph_Lib;         -- from GIANT
+
+with Giant.Logger;
 package body Giant.Vis_Windows is
+
+   package Logger is new Giant.Logger("Giant.Vis_Windows");
 
    ---------------------------------------------------------------------------
    --  The default name used for standard selections
@@ -661,14 +665,11 @@ package body Giant.Vis_Windows is
 
       Dummy_Selection := Graph_Lib.Selections.Create (Selection_Name);
       Dummy_Data_Element.The_Selection := Dummy_Selection;
-
-      Selection_Data_Sets.Remove
-        (Vis_Window.All_Managed_Selections, Dummy_Data_Element);
-
-      Graph_Lib.Selections.Destroy (Dummy_Selection);
-
-      --  on removal of current selection the standard selection becomes
-      --  the current selection
+     
+      --  Must happen before removal. 
+      --      
+      --  On removal of current selection the standard selection becomes
+      --  the current selection.
       if Ada.Strings.Unbounded."="
         (Selection_Name, Vis_Window.Current_Selection) then
          Set_Current_Selection
@@ -676,6 +677,15 @@ package body Giant.Vis_Windows is
             Ada.Strings.Unbounded.To_String
              (Vis_Window.Standard_Selection));
       end if;
+      
+      Selection_Data_Sets.Remove
+        (Vis_Window.All_Managed_Selections, Dummy_Data_Element);
+
+      Graph_Lib.Selections.Destroy (Dummy_Selection);
+      
+      Logger.Debug 
+        ("Rem Selectio - Stand Sel: "
+         & Ada.Strings.Unbounded.To_String (Vis_Window.Standard_Selection));     
    end Remove_Selection;
 
    ---------------------------------------------------------------------------
@@ -692,6 +702,7 @@ package body Giant.Vis_Windows is
    end Get_Current_Selection;
 
    ---------------------------------------------------------------------------
+   -- Assumes that a current selection always exists
    procedure Set_Current_Selection
      (Vis_Window     : in Visual_Window_Access;
       Selection_Name : in String) is
