@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: konzepteundbegriffe.tex,v $, $Revision: 1.2 $
-%  $Date: 2003/07/02 14:35:30 $
+%  $RCSfile: konzepteundbegriffe.tex,v $, $Revision: 1.3 $
+%  $Date: 2003/08/05 15:01:02 $
 %  $Author: birdy $
 %
 %  Description:
@@ -14,115 +14,81 @@
 
 Dieses Kapitel führt die für das Verständnis dieses Handbuches und die
 Benutzung von GIANT wichtigen Begriffe ein.
+Eine tabellarische Beschreibung der einzelnen Begriffe findet sich
+in der Spezifikation von GIANT, Kapitel Begriffslexikon.
 
 \section{Begriffe}
 
-\begin{enumerate}
 
-  \item{Anfrage (Query):}{ Eine Anfrage beschreibt einen Vorgang, bei dem
-    über geeignete Kriterien IML-Konten und IML-Kanten aus dem IML-Graphen
-    oder aus IML-Teilgraphen ausgewählt werden.}
-  
-  \item{Anzeigefenster (Visualization Window):}{ Ein Fenster in dem ein
-    Teilgraph des IML-Graphen nach bestimmten Kriterien visualisiert
-    ist. Jedem Anzeigefenster ist ein Anzeigeinhalt zugeordnet.}
-  
-  \item{Anzeigeinhalt (Window Content):}{ Eine \gq{virtuelle} Oberfläche
-    auf der die Objekte des visualisierten Teilgraphen (also
-    Fenster-Knoten und Fenster-Kanten) angeordnet sind, d.h. räumliche
-    Layoutinformation zu allen Objekten des entsprechenden
-    Anzeigefensters. Abhängig von der Zoomstufe ist jeweils nur ein
-    bestimmter Teil des Anzeigeinhaltes sichtbar - der sichtbare
-    Anzeigeinhalt.  Die Größe des Anzeigeinhaltes ist theoretisch
-    unbegrenzt.}
-  
-  \item{Fenster-Kante (Window Edge): }{Die graphische Repräsentation einer
-    IML-Kante innerhalb eines Anzeigefensters.}
-  
-  \item{Fenster-Knoten (Window Node): }{Die graphische Repräsentation
-    eines IML-Knoten innerhalb eines Anzeigefensters.}
-  
-  \item{Graph-Kante (Graph Edge): }{Eine Kante des IML-Graphen welche
-    Bestandteil eines IML-Teilgraphen ist.}
-  
-  \item{Graph-Knoten (Graph Node): }{Ein Knoten des IML-Graphen welcher
-    Bestandteil eines IML-Teilgraphen ist.}
-  
-  \item{IML-Graph (IML Graph): }{Der IML-Graph, wie er von der Bauhaus
-    Reengineering GmbH gestellt wird.  Auf diesen Graphen wird über
-    das sogenannte Reflection Model zugegriffen.}
-  
-  \item{IML-Kante (IML Edge): }{Eine Kante des IML-Graphen.}
-  
-  \item{IML-Knoten (IML Node): }{Ein Knoten des IML-Graphen.}
-  
-  \item{IML-Teilgraph (IML Subgraph): }{Eine Menge über Knoten und Kanten
-    des IML-Graphen, die so gestaltet ist, dass sie einen Teilgraphen
-    des IML-Graphen darstellt.}
-  
-  \item{Kantenklasse (Edge Class): }{Die Einteilung der IML-Kanten des
-    IML-Graphen in verschiedene Klassen, wie sie sich aus der
-    IML-Graph-Bibliothek von Bauhaus ergibt.\\
-    Innerhalb dieser Spezifikation ist der Begriff Kantenklasse so
-    zu verstehen, dass jede IML-Kante eindeutig zu genau einer Kantenklasse
-    gehört, eine Vererbungshierarchie existiert nicht. Die Zuordnung
-    einer IML-Kante zu einer Kantenklasse wird durch die Knotenklasse
-    des Start-Knotens und den Namen des Attributes
-    (aus dem Bauhaus-IML-Graphen), welches die IML-Kante
-    beschreibt, festgelegt. Jede vorkommende Kombination aus der
-    Knoten-Klasse eines Start-Knotens und dem Namen eines Attributes,
-    welches eine Kante beschreibt, ist somit eine eigene Kantenklasse}
 
-  \item{Klassenmenge (Class Set): }{Eine durch die IML-Graph Bibliothek
-    vorgegebene Zusammenfassung von Kantenklassen und Knotenklassen.
-    Es kann mehrere Klassenmengen geben. Die selben Knotenklassen und 
-    Kantenklassen können gleichzeitig zu mehreren Klassenmengen gehören.}
+Eine Anfrage (Query) beschreibt einen Vorgang, bei dem
+über geeignete Kriterien IML-Knoten und IML-Kanten aus dem IML-Graphen
+oder aus IML-Teilgraphen ausgewählt werden.
+GIANT greift über eine Schnittstelle, das Reflection Model von Bauhaus
+Reengineering, auf den IML-Graphen zu.\\
 
-  \item{Knoten-Annotationen (Node Annotation): }{Eine textuelle
-    Beschreibung zu einem bestimmten Knoten des IML-Graphen.}
-  
-  \item{Knotenklasse (Node Class): }{Die Einteilung der IML-Knoten des
-    IML-Graphen in verschiedene Klassen, wie sie sich aus der
-    IML-Graph-Bibliothek von Bauhaus ergibt.\\
-    Im Sinne der Verwendung dieses Begriffes innerhalb dieser Spezifikation
-    liegt den Knotenklassen keine Vererbungshierarchie zu Grunde, jeder
-    IML-Knoten gehört also eindeutig zu genau einer Knotenklasse}
-  
-  \item{Layout (Layout): }{Die zweidimensionale räumliche Anordnung von
-    Fenster-Knoten und Fenster-Kanten innerhalb eines Anzeigefensters
-    auf dem sogenannten Anzeigeinhalt.}
- 
-  \item{Reflektion (Reflection Model): }{Die Schnittstelle zum Zugriff
-    auf den IML-Graphen.}
-  
-  \item{Schleife (Loop): }{Eine Kante mit identischem Start- und Zielknoten.
-    Wird oft auch als Selbstkante bezeichnet.}
-  
-  \item{Selektion (Selection): }{Eine Auswahl von Fenster-Knoten und Fenster-Kanten 
-    eines visualisierten Teilgraphen des IML-Graphen innerhalb eines
-    Anzeigefensters.}
-  
-  \item{Sichtbarer Anzeigeinhalt (Visible Window Content): }{ Der Bereich
-    des Anzeigeinhaltes eines Anzeigefensters, der zur Zeit sichtbar
-    dargestellt wird.}
-  
-  \item{Zoomstufe (Zoom Level): }{ Dieser Faktor beschreibt die Größe des
-    sichtbaren Anzeigeinhaltes.  Bei einer sehr niedrigen Zoomstufe
-    (auch: weit weg gezoomt) ist ein größerer Teil des im
-    Anzeigefenster visualisierten IML-Graphen sichtbar als bei einer
-    hohen Zoomstufe (auch: sehr nach heran gezoomt).}
-  
-  \item{hervorheben (to highlight): }{Hervorheben bedeutet, dass in einem
-    Anzeigefenster visualisierte Fenster-Knoten oder Fenster-Kanten
-    z.B.\ durch eine farbige Umrahmung von anderen Fenster-Knoten oder
-    Fenster-Kanten unterscheidbar gemacht werden.}
+Die Visualisierung des Graphen erfolgt in Anzeigefenstern.
+
+Mit GIANT können Teilmengen des IML-Graphen gebildet werden, diese
+heißen IML-Teilgraphen.
+
+In dieser Anleitung weden für Knoten und Kanten des Graphen die Begriffe
+Fenster-Knoten und Fenster-Kante verwendet, wenn diese in einem Anzeigefenster
+sichtbar sind, oder allgemein IML-Knoten bzw. IML-Kante.
+Die Namen Graph-Knoten und Graph-Kante werden verwendet, wenn Knoten bzw.
+Kante Bestandteil eines IML-Teilgraphen sind.
     
-  \item{selektieren (to select): }{Selektieren beschreibt einen Vorgang
-    über den der Benutzer, z.B.\ durch Anklicken von Fenster-Knoten
-    oder Fenster-Kanten mit der Maus, eine Selektion aufbaut.}
-    
-\end{enumerate}
 
+Der Begriff Kantenklasse (Edge Class) bezeichnet die Einteilung der
+IML-Kanten des IML-Graphen in verschiedene Klassen, wie sie sich aus der
+IML-Graph-Bibliothek von Bauhaus ergibt.\\
+
+Die Zuordnung einer IML-Kante zu einer Kantenklasse wird durch die Knotenklasse
+des Start-Knotens und den Namen des Attributes (aus dem Bauhaus-IML-Graphen),
+welches die IML-Kante beschreibt, festgelegt. Jede vorkommende Kombination aus
+der Knoten-Klasse eines Start-Knotens und dem Namen eines Attributes,
+welches eine Kante beschreibt, ist somit eine eigene Kantenklasse.\\
+
+Eine Knotenklasse (Node Class) ergibt sich aus der Einteilung der IML-Knoten
+des IML-Graphen in verschiedene Klassen, wie sie sich aus der
+IML-Graph-Bibliothek von Bauhaus ergibt.\\
+
+Eine Klassenmenge (Class Set) ist eine durch die IML-Graph Bibliothek
+vorgegebene Zusammenfassung von Kantenklassen und Knotenklassen.
+Es kann mehrere Klassenmengen geben. Die selben Knotenklassen und 
+Kantenklassen können gleichzeitig zu mehreren Klassenmengen gehören.\\
+
+Eine Knoten-Annotationen (Node Annotation ist eine eine textuelle
+Beschreibung zu einem bestimmten Knoten des IML-Graphen, die der Nutzer
+hinzufügen kann.\\
+    
+Die zweidimensionale räumliche Anordnung von
+Fenster-Knoten und Fenster-Kanten innerhalb eines Anzeigefensters
+auf dem sogenannten Anzeigeinhalt wird Layout genannt.\\
+  
+Eine Auswahl von Fenster-Knoten und Fenster-Kanten 
+eines visualisierten Teilgraphen des IML-Graphen innerhalb eines
+Anzeigefensters. heißt Selektion (Selection).\\
+  
+Selektieren (to select) beschreibt einen Vorgang über den der Benutzer, z.B.
+durch Anklicken von Fenster-Knoten oder Fenster-Kanten mit der Maus,
+eine Selektion aufbaut.
+  
+
+
+  
+Der Nutzer kann in GIANT-Anzeigefenster zoomen, d.h. die Zoomstufe
+(Zoom Level) jedes Fensters verändern.  Dieser Faktor beschreibt die Größe des
+sichtbaren Anzeigeinhaltes.  Bei einer sehr niedrigen Zoomstufe
+(auch: weit weg gezoomt) ist ein größerer Teil des im
+Anzeigefenster visualisierten IML-Graphen sichtbar als bei einer
+hohen Zoomstufe (auch: sehr nach heran gezoomt).\\
+  
+Hervorheben von Knoten bedeutet, dass in einem
+Anzeigefenster visualisierte Fenster-Knoten oder Fenster-Kanten
+z.B. durch eine farbige Umrahmung von anderen Fenster-Knoten oder
+Fenster-Kanten unterscheidbar gemacht werden.\\
+    
 \section{Bezeichnertypen} \label{afa Bezeichnertypen}
  Hier werden Bezeichnertypen, also von GIANT als für z.B. Fensternamen zulässig akzeptierte
  Folgen von Ziffern, Buchstaben und Sonderzeichen definiert.
