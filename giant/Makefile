@@ -125,12 +125,18 @@ gcov :
 	  --title "GIANT Test Coverage" $(GCOV_OUT_PATH)/giant.info
 
 release :
-	rm -rf tmp/giant
 	mkdir -p tmp
+	rm -rf tmp/doc tmp/giant
+	cd tmp; cvs -d `cat ../CVS/Root` export -r $(RELEASE_TAG) doc  
 	cd tmp; cvs -d `cat ../CVS/Root` export -r $(RELEASE_TAG) giant
 	mkdir -p $(DIST_PATH)
 	cd $(DIST_PATH)/../template; tar -cf - . \
 	  | (cd $(DIST_PATH); tar -xvf -)	
+	mkdir -p $(DIST_PATH)/doc
+	cd tmp/doc/handbuch && pdfelatex handbuch || true
+	cd tmp/doc/handbuch	&& pdfelatex handbuch || true
+	cp tmp/doc/handbuch/handbuch.pdf $(DIST_PATH)/doc/handbuch.pdf
+	cp tmp/doc/spec/gsl/gsl-final.pdf $(DIST_PATH)/doc/gsl.pdf
 	mkdir -p $(DIST_PATH)/src/giant
 	cd tmp/giant; tar -cf - $(SRCDIST) \
 	  | (cd $(DIST_PATH)/src/giant; tar -xvf -)
