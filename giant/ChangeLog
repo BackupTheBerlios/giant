@@ -1,3 +1,8 @@
+2003-10-06  Oliver Kopp  <koppor@studi.informatik.uni-stuttgart.de>
+
+	* src/vis/giant-tree_layouts.adb: added Reverse_Edges,
+	Position of Matrix-Layout fixed
+
 2003-10-02  Oliver Kopp  <koppor@studi.informatik.uni-stuttgart.de>
 
 	* src/vis/giant-tree_layouts.adb: 

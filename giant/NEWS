@@ -7,6 +7,16 @@ in the source directory for details.
 Version ?
 
  * ported to IML-lib 20030923
+ * Treelayout: 
+     - position of matrix-layout fixed
+     - New Parameter "Reverse_Edges" - useful for layouting edges
+       belonging to "parent_edge_class_set"
+ * gsl:
+     - speed up
+     - added instance_of for (edges X class_sets)
+ * documentation:
+     - added layoutparameters @ GSL-Documentation @ handbook
+     - added instance_of for edges and class_sets @ gsl-spec
 
 Version 1.1.1 (2003-09-24)
 
