@@ -1,6 +1,6 @@
 // ===========================================================================
-//  $RCSfile: standard.gsl,v $ $Revision: 1.7 $
-//  $Date: 2003/09/18 15:34:51 $
+//  $RCSfile: standard.gsl,v $ $Revision: 1.8 $
+//  $Date: 2003/09/18 15:58:23 $
 //  $Author: koppor $
 //
 //  File:         GSL-Library standard.gsl
@@ -111,7 +111,8 @@
         if
          (start_cond,
           {() loop ({() [c (); b ();]})},
-          null)
+          null);
+       ]
     });
 
   set
