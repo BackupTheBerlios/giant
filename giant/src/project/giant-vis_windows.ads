@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.24 $
+--  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.25 $
 --  $Author: schwiemn $
---  $Date: 2003/06/30 12:25:52 $
+--  $Date: 2003/07/01 17:09:52 $
 --
 --  ----------------
 --  This package realizes a container that administrates the components
@@ -63,9 +63,15 @@ package Giant.Vis_Windows is
    type Visual_Window_Access is private;
 
    ---------------------------------------------------------------------------
-   --  This type describes the colors that may be used to highlight all
-   --  selections except the current selection.
-   type Selection_Highlight_Status is (None, Color_1, Color_2, Color_3);
+   --  This type describes the highlight status of all selections.
+   type Selection_Highlight_Status is 
+     (None, Color_1, Color_2, Color_3, Current_Selection);
+     
+   ---------------------------------------------------------------------------
+   --  Necessary to prevent user from changing the Highlightstatus to current
+   --  selection (this is done automatically).
+   subtype Changable_Highlight_Status is Selection_Highlight_Status 
+     range None .. Color_3;
 
    ---------------------------------------------------------------------------
    --  This exception is raised if a not initialized instance of the
@@ -553,6 +559,8 @@ package Giant.Vis_Windows is
    ---------------------------------------------------------------------------
    --  Changes the "Higlight-Status" of a selection.
    --
+   --  You are not allowed to set the Highlight Status to "Current_Selection".
+   --
    --  Parameters:
    --    Vis_Window - The "model" for a visualisation window.
    --    Selection_Name - The name of the selection whose "Highlight-Status"
@@ -571,7 +579,7 @@ package Giant.Vis_Windows is
    procedure Set_Highlight_Status
      (Vis_Window           : in Visual_Window_Access;
       Selection_Name       : in String;
-      New_Highlight_Status : in Selection_Highlight_Status);
+      New_Highlight_Status : in Changable_Highlight_Status);
 
 
    ---------------------------------------------------------------------------

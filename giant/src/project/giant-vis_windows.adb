@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.26 $
---  $Author: squig $
---  $Date: 2003/06/30 12:35:55 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.27 $
+--  $Author: schwiemn $
+--  $Date: 2003/07/01 17:09:52 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -129,7 +129,36 @@ package body Giant.Vis_Windows is
    ---------
    procedure Pin_Sets_Write is new Pin_Sets.Write_Set
      (Write_Element => Pin_Write);
+     
+   ---------------------------------------------------------------------------
+   -- for internal use
+   procedure Internal_Set_Highlight_Status_Unchecked
+     (Vis_Window           : in Visual_Window_Access;
+      Selection_Name       : in String;
+      New_Highlight_Status : in Selection_Highlight_Status) is
 
+      Dummy_Selection     : Graph_Lib.Selections.Selection;
+      Dummy_Data_Element  : Selection_Data_Elemet;
+      Change_Data_Element : Selection_Data_Elemet;
+   begin
+
+      Dummy_Selection := Graph_Lib.Selections.Create (Selection_Name);
+      Dummy_Data_Element.The_Selection := Dummy_Selection;
+
+      Change_Data_Element := Selection_Data_Sets.Get
+        (Vis_Window.All_Managed_Selections, Dummy_Data_Element);
+
+      Change_Data_Element.Highlight_Status := New_Highlight_Status;
+
+      Selection_Data_Sets.Remove
+        (Vis_Window.All_Managed_Selections, Dummy_Data_Element);
+
+      Selection_Data_Sets.Insert
+        (Vis_Window.All_Managed_Selections, Change_Data_Element);
+
+      Graph_Lib.Selections.Destroy (Dummy_Selection);
+   end Internal_Set_Highlight_Status_Unchecked;
+   
 
    ---------------------------------------------------------------------------
    --  A
@@ -186,7 +215,7 @@ package body Giant.Vis_Windows is
 
       --  Build management data for standard selection
       Standard_Sel_Data.The_Selection := New_Standard_Sel;
-      Standard_Sel_Data.Highlight_Status := None;
+      Standard_Sel_Data.Highlight_Status := Current_Selection;
       Standard_Sel_Data.Is_Faded_Out := False;
 
       -- Insert standard selection
@@ -623,7 +652,10 @@ package body Giant.Vis_Windows is
       --  the current selection
       if Ada.Strings.Unbounded."="
         (Selection_Name, Vis_Window.Current_Selection) then
-         Vis_Window.Current_Selection := Vis_Window.Standard_Selection;
+         Set_Current_Selection 
+           (Vis_Window, 
+            Ada.Strings.Unbounded.To_String
+             (Vis_Window.Standard_Selection));
       end if;
    end Remove_Selection;
 
@@ -644,6 +676,11 @@ package body Giant.Vis_Windows is
    procedure Set_Current_Selection
      (Vis_Window     : in Visual_Window_Access;
       Selection_Name : in String) is
+      
+      Dummy_Selection     : Graph_Lib.Selections.Selection;
+      Dummy_Data_Element  : Selection_Data_Elemet;
+      Change_Data_Element : Selection_Data_Elemet;
+
    begin
 
       if Vis_Window = null then
@@ -661,9 +698,22 @@ package body Giant.Vis_Windows is
       if Get_Highlight_Status (Vis_Window, Selection_Name) /= None then
          raise Illegal_Current_Selection_Exception;
       end if;
-
+      
+      --  reset highlight status of former current selection
+      Internal_Set_Highlight_Status_Unchecked
+        (Vis_Window,
+         Ada.Strings.Unbounded.To_String (Vis_Window.Current_Selection),
+         Selection_Highlight_Status'(None));
+            
       Vis_Window.Current_Selection :=
         Ada.Strings.Unbounded.To_Unbounded_String (Selection_Name);
+                
+      --  update highlight status of current selection
+      Internal_Set_Highlight_Status_Unchecked
+        (Vis_Window,
+         Selection_Name,
+         Selection_Highlight_Status'(Current_Selection));
+                 
    end Set_Current_Selection;
 
    ---------------------------------------------------------------------------
@@ -734,7 +784,7 @@ package body Giant.Vis_Windows is
    procedure Set_Highlight_Status
      (Vis_Window           : in Visual_Window_Access;
       Selection_Name       : in String;
-      New_Highlight_Status : in Selection_Highlight_Status) is
+      New_Highlight_Status : in Changable_Highlight_Status) is
 
       Dummy_Selection     : Graph_Lib.Selections.Selection;
       Dummy_Data_Element  : Selection_Data_Elemet;
@@ -753,22 +803,10 @@ package body Giant.Vis_Windows is
          raise Highlight_Status_Of_Selection_May_Not_Be_Changed_Exception;
       end if;
 
-      Dummy_Selection := Graph_Lib.Selections.Create (Selection_Name);
-      Dummy_Data_Element.The_Selection := Dummy_Selection;
-
-      Change_Data_Element := Selection_Data_Sets.Get
-        (Vis_Window.All_Managed_Selections, Dummy_Data_Element);
-
-      Change_Data_Element.Highlight_Status := New_Highlight_Status;
-
-      Selection_Data_Sets.Remove
-        (Vis_Window.All_Managed_Selections, Dummy_Data_Element);
-
-      Selection_Data_Sets.Insert
-        (Vis_Window.All_Managed_Selections, Change_Data_Element);
-
-      Graph_Lib.Selections.Destroy (Dummy_Selection);
+      Internal_Set_Highlight_Status_Unchecked 
+        (Vis_Window, Selection_Name, New_Highlight_Status);
    end Set_Highlight_Status;
+
 
    --------------------------------------------------------------------------
    -- D

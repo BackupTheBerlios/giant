@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.12 $
--- $Author: squig $
--- $Date: 2003/06/27 11:33:22 $
+-- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.13 $
+-- $Author: schwiemn $
+-- $Date: 2003/07/01 17:09:51 $
 --
 -- -----
 -- This package holds the functionality needed to access and handle
@@ -280,6 +280,9 @@ package Giant.Config_Settings is
    -- This setting must hold an path to a directory or a file.
    -- If the path is an relative path it will be expanded regarding the
    -- following rules:
+   --
+   -- Config Settings that describe a path to directory must end with
+   -- a directory separator.
    --
    -- 1. Expansion towards the value of the "root_directory" attribute
    --    of the <absolute_path_root> - node if exists in the config
