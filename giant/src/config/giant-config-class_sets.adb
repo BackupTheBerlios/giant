@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.8 $
+-- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.9 $
 -- $Author: schwiemn $
--- $Date: 2003/07/08 11:49:38 $
+-- $Date: 2003/07/08 13:41:31 $
 --
 with Giant.File_Management;  -- from GIANT
 with Giant.XML_File_Access;  -- from GIANT
@@ -497,6 +497,23 @@ package body Giant.Config.Class_Sets is
    -- Meta Class Sets
    --------------------------------------------------------------------------- 
    
+   ---------------------------------------------------------------------------
+   function Is_Empty (Meta : Meta_Class_Set_Access) return Boolean is
+
+   begin
+      if Node_Class_Look_Up_Hashed_Mappings.Is_Empty 
+        (Meta.Node_Classes) 
+        and Edge_Class_Look_Up_Hashed_Mappings.Is_Empty
+        (Meta.Edge_Classes) then
+        
+        return True;
+      else 
+      
+         return False;        
+      end if;
+      
+   end Is_Empty;
+            
    ---------------------------------------------------------------------------
    function Build (Elements : in Class_Set_Array) 
      return Meta_Class_Set_Access is

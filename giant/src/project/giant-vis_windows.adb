@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.29 $
---  $Author: squig $
---  $Date: 2003/07/04 22:45:46 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.30 $
+--  $Author: schwiemn $
+--  $Date: 2003/07/08 13:41:31 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -167,7 +167,9 @@ package body Giant.Vis_Windows is
 
    ---------------------------------------------------------------------------
    function Create_New
-     (Vis_Window_Name : in String)
+     (Vis_Window_Name : in String;
+      Annotations     : in Node_Annotations.Node_Annotation_Access :=
+        Node_Annotations.Create_Empty)
      return Visual_Window_Access is
 
       New_Window_Ac     : Visual_Window_Access;
@@ -191,7 +193,10 @@ package body Giant.Vis_Windows is
       New_Window_Ac.All_Managed_Selections := Selection_Data_Sets.Empty_Set;
 
       --  Initialize new Graph_Widget
-      Graph_Widgets.Create (New_Graph_Widget);
+      Graph_Widgets.Create 
+        (New_Graph_Widget, 
+         Config.Vis_Styles.Get_Default_Vis_Style,
+         Annotations);
 
       --  Increases the GTK Reference Counter - needed to keep the graph
       --  widget persistent in this data structure
@@ -214,9 +219,9 @@ package body Giant.Vis_Windows is
           (Graph_Lib.Selections.Get_Name (New_Standard_Sel));
 
       --  Build management data for standard selection
-      Standard_Sel_Data.The_Selection := New_Standard_Sel;
+      Standard_Sel_Data.The_Selection    := New_Standard_Sel;
       Standard_Sel_Data.Highlight_Status := Current_Selection;
-      Standard_Sel_Data.Is_Faded_Out := False;
+      Standard_Sel_Data.Is_Faded_Out     := False;
 
       -- Insert standard selection
       Selection_Data_Sets.Insert
@@ -227,8 +232,10 @@ package body Giant.Vis_Windows is
 
    ---------------------------------------------------------------------------
    procedure Visual_Window_Access_Read
-     (Stream     : in  Bauhaus_IO.In_Stream_Type;
-      Vis_Window : out Visual_Window_Access) is
+     (Stream      : in      Bauhaus_IO.In_Stream_Type;
+      Vis_Window  :     out Visual_Window_Access;
+      Annotations : in      Node_Annotations.Node_Annotation_Access :=
+        Node_Annotations.Create_Empty) is
    begin
 
       Vis_Window := new Visual_Window_Element;
@@ -240,8 +247,8 @@ package body Giant.Vis_Windows is
       Bauhaus_IO.Read_Unbounded_String
         (Stream, Vis_Window.The_Visualisation_Style);
 
-      --  Read the_Graph_Widget
---FIX:       Graph_Widgets.Read_Graph_Widget (Stream, Vis_Window.The_Graph_Widget);
+--FIX:  Graph_Widgets.Read_Graph_Widget
+--        (Stream, Vis_Window.The_Graph_Widget, Annotations);
 
       --  Read the Set of all Pins
       Pin_Sets_Read (Stream, Vis_Window.Set_Of_All_Pins);

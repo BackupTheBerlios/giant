@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.25 $
+--  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.26 $
 --  $Author: schwiemn $
---  $Date: 2003/07/01 17:09:52 $
+--  $Date: 2003/07/08 13:41:31 $
 --
 --  ----------------
 --  This package realizes a container that administrates the components
@@ -54,6 +54,7 @@ with Giant.Graph_Lib;            -- from GIANT
 with Giant.Graph_Lib.Selections; -- from GIANT
 with Giant.Graph_Widgets;        -- from GIANT
 with Giant.Vis;                  -- from GIANT
+with Giant.Node_Annotations;     -- from GIANT
 
 package Giant.Vis_Windows is
 
@@ -98,11 +99,15 @@ package Giant.Vis_Windows is
    --
    --  Parameters:
    --    Vis_Window_Name - The name of the visualisation window.
+   --    Annotations - The Node Annotations used for the nodes showed
+   --      in the Graph_Widget that belongs to this window.
    --  Returns:
    --    A pointer that points to a new data object describing a
-   --    visualisation window
+   --    visualisation window.
    function Create_New
-     (Vis_Window_Name : in String)
+     (Vis_Window_Name : in String;
+      Annotations     : in Node_Annotations.Node_Annotation_Access :=
+        Node_Annotations.Create_Empty)
      return Visual_Window_Access;
 
    ---------------------------------------------------------------------------
@@ -120,8 +125,10 @@ package Giant.Vis_Windows is
    --    Stream - the stream where the data is read.
    --    Item - the new Instance of the ADT.
    procedure Visual_Window_Access_Read
-     (Stream     : in  Bauhaus_IO.In_Stream_Type;
-      Vis_Window : out Visual_Window_Access);
+     (Stream      : in  Bauhaus_IO.In_Stream_Type;
+      Vis_Window  : out Visual_Window_Access;
+      Annotations : in Node_Annotations.Node_Annotation_Access :=
+        Node_Annotations.Create_Empty);
 
    ---------------------------------------------------------------------------
    --  This subprogram writes the Container including all its components

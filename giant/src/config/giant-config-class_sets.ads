@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-class_sets.ads,v $, $Revision: 1.6 $
+-- $RCSfile: giant-config-class_sets.ads,v $, $Revision: 1.7 $
 -- $Author: schwiemn $
--- $Date: 2003/07/08 11:49:38 $
+-- $Date: 2003/07/08 13:41:31 $
 --
 -- ----------------
 -- This package provides the functionality needed to handle
@@ -244,7 +244,14 @@ package Giant.Config.Class_Sets is
    
    package Class_Sets_Lists is new
      Lists (ItemType => Class_Set_Access);
-      
+          
+   ---------------------------------------------------------------------------
+   -- Checks whether a meta class set is empty or not.
+   --
+   -- Returns:
+   --   True, if "Meta" is empty, False otherwise.
+   function Is_Empty (Meta : Meta_Class_Set_Access) return Boolean;
+            
    ---------------------------------------------------------------------------
    -- Builds a meta class set out of a collection of class sets.
    --
@@ -259,7 +266,8 @@ package Giant.Config.Class_Sets is
    -- Returns:
    --   A "Meta Class Set" holding all Node Classes and Edge Classes
    --   of the passed Class Sets. You are responsible for the deallocation
-   --   of the result.
+   --   of the result. Returns an empty meta class set if an empty array
+   --   (length < 1) is passed.
    function Build (Elements : in Class_Set_Array) 
      return Meta_Class_Set_Access;
          

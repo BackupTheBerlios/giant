@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.42 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.43 $
 --  $Author: schwiemn $
---  $Date: 2003/06/30 11:53:49 $
+--  $Date: 2003/07/08 13:41:31 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -207,10 +207,10 @@ package body Giant.Projects is
    ---------------------------------------------------------------------------
    -- Increases fault tolerance:
    --   Ensures that the Name of the vis window corresponds to the
-   --   file's name from that it is loaded
-   --   (user may have changed this name).
+   --   file's name from that it is loaded (user may have changed this name).
    function Load_Vis_Window_Into_Main_Memory
-     (File_Path : String)
+     (File_Path   : in String;
+      Annotations : in Node_Annotations.Node_Annotation_Access)
      return Vis_Windows.Visual_Window_Access is
 
       Stream_File       : Ada.Streams.Stream_IO.File_Type;
@@ -228,7 +228,7 @@ package body Giant.Projects is
       Bauhaus_In_Stream := Bauhaus_IO.Make_Internal (Ada_Stream);
 
       Vis_Windows.Visual_Window_Access_Read
-        (Bauhaus_In_Stream, New_Vis_Window);
+        (Bauhaus_In_Stream, New_Vis_Window, Annotations);
 
       -- close resources
       Bauhaus_IO.Release (Bauhaus_In_Stream);
@@ -1051,7 +1051,8 @@ package body Giant.Projects is
          ------------- security check
          --  try opening file - check whether vis window file really exists
          Test_Window_Acc := Load_Vis_Window_Into_Main_Memory
-           (Ada.Strings.Unbounded.To_String (A_Vis_Window_File_Name));
+           (Ada.Strings.Unbounded.To_String (A_Vis_Window_File_Name),
+           Node_Annotations.Create_Empty);
 
          Vis_Windows.Deallocate_Vis_Window_Deep (Test_Window_Acc);
          -------------
@@ -1282,7 +1283,7 @@ package body Giant.Projects is
       -- new prject name and path must already have been set.
       procedure Process_Vis_Window
         (P_Project         : in     Project_Access;
-         P_Vis_Window              : Vis_Windows.Visual_Window_Access;
+         P_Vis_Window      : Vis_Windows.Visual_Window_Access;
          P_Vis_Window_Key  : in     Ada.Strings.Unbounded.Unbounded_String;
          P_Vis_Window_Data : in out Vis_Window_Data_Element) is
 
@@ -1779,7 +1780,8 @@ package body Giant.Projects is
 
          New_Vis_Window_Inst := Load_Vis_Window_Into_Main_Memory
            (Ada.Strings.Unbounded.To_String
-            (Vis_Window_Data.Existing_Vis_Window_File));
+            (Vis_Window_Data.Existing_Vis_Window_File),
+            Project.The_Node_Annotations);
 
          -- update data entry
          Vis_Window_Data := Known_Vis_Windows_Hashs.Fetch
