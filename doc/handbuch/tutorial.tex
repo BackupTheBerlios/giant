@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: tutorial.tex,v $, $Revision: 1.3 $
-%  $Date: 2003/09/20 13:38:41 $
+%  $RCSfile: tutorial.tex,v $, $Revision: 1.4 $
+%  $Date: 2003/09/20 15:20:25 $
 %  $Author: birdy $
 %
 %  Description: Tutorial
@@ -102,7 +102,7 @@ welcher sich links Oben im Block der Knoten befindet (es kann auch ein
 beliebiger anderer Knoten verwendet werden). Durch Klick
 mit der rechten Maustaste auf den Knoten erscheint ein Popup-Menü, wir
 wählen \gq{Show Info}. Es werden hier einige Informationen zum Knoten
-angezeigt.
+angezeigt (Bild \ref{Node-Info Fenster}).
 Durch Klicken von \gq{Pick} und Klick auf einen anderen Knoten kann
 nunmehr die Information dieses anderen Knoten angezeigt werden.
 
@@ -110,6 +110,7 @@ nunmehr die Information dieses anderen Knoten angezeigt werden.
    \centering
    \includegraphics[scale=.4]{tutorial/04-nodeinfo}
    \caption{Node-Info Fenster}
+   \label{Node-Info Fenster}
 \end{figure}
 
 Wir schließen das Nodeinfo-Fenster wieder.
@@ -181,12 +182,18 @@ Als Namen wählen wir °Neu°.\\
 
 Nun wollen wir die Selektion °Neu° farbig markieren. Wir wählen dazu in
 (3) im Kontext-Menü dieser Selektion °Highlight - Color 1° an.
-Wir können nun sehen, daß die Selektion farbig markiert wird.\\
+Wir können nun sehen, daß die Selektion farbig markiert wurde. (Siehe Bild \ref{Graphenfenster mit rot hervorgehobenem Graph})\\
+
+Durch Auswählen von °Select All° oder °Select Nothing° bei Rechtsklick auf ein
+Stück von Knoten oder Kanten leeren Hintergrund des Anzeigefensterinhaltes können
+alle Knoten und Kanten markiert oder entmarkiert werden.\\
 
 \begin{figure}[h!]
    \centering
    \includegraphics[scale=.5]{tutorial/05-selection-color}
-   \caption{Node-Info Fenster}
+   \caption{Graphenfenster mit rot hervorgehobenem Graph}
+   \label{Graphenfenster mit rot hervorgehobenem Graph}
+   \clearpage
 \end{figure}
 
 Wenn wir nun im Kontextmenü der Selektion °Zoom to Selection° auswählen,
@@ -204,7 +211,8 @@ GIANT hat nun die Knoten nebst ihrer Kanten aus dem Graph gelöscht.\\
 
 Nun zu einer Mengenoperation:
 Auf der Selektion °Neu° in (3) wählen wir nun °Set Operation° aus.
-Es erscheint der Set Operation Dialog. Wir wählen (siehe Bild) \\
+Es erscheint der Set Operation Dialog. Wir wählen
+(siehe Bild \ref{Set Operation Dialog für Mengenoperationen}) \\
 
 °Left Source = Entire_Graph°\\
 °Operation = Difference°\\
@@ -216,7 +224,9 @@ aus.
    \centering
    \includegraphics[scale=.5]{tutorial/06-set-operation}
    \caption{Set Operation Dialog für Mengenoperationen}
+   \label{Set Operation Dialog für Mengenoperationen}
 \end{figure}
+\clearpage
 
 Nun bildet GIANT die Differenz zwischen den beiden Mengen °Entire_Graph°
 (also dem Gesamtgraphen) und der Menge °Neu°, die neue Menge heisst
@@ -243,7 +253,20 @@ Wir können mit der linken Maustaste durch Drag and Drop Knoten
 verschieben. Es kann vorkommen, daß Knoten aufeinander liegen,
 sie können dann damit auseinandergeschoben werden.\\
 
-Durch Klick mit der rechten Maustaste auf einen freien 
+Durch Klick mit der rechten Maustaste auf einen freien Platz im
+Anzeigeinhalt des Graphenfensters können wir im Popup-Menü
+°Make Room° anwählen. Durch diese Operation werden die
+Knoten rund um den freien Platz auseinandergeschoben, je näher
+desto weiter. Bild \ref{Make-Room-Result} zeigt das Ergebnis einer
+solchen Operation.
+
+\begin{figure}[h!]
+   \centering
+   \includegraphics[scale=.5]{tutorial/08-make-room}
+   \caption{Resultat von Platz schaffen}
+   \label{Make-Room-Result}
+\end{figure}
+
 
 \section{Mehrere Fenster}
 
@@ -280,5 +303,101 @@ machen.\\
 
 Wir schließen und speichern das °Testfenster°.
 
-\sections{Layouts}
+\section{Layouts}
+
+Mittels des oben erwähnten °Select All° entmarkieren wir alle Knoten in
+unserem verbleibenden Fenster. Wir sorgen dafür, daß im Fenster ca.
+die Hälfte des Anzeigeinhaltes frei ist.
+Wir wählen durch Ziehen mit der Maus ca. 10-15 Knoten im linken
+oberen Teil des Graphen aus und wählen
+dann in der Selektionsauswahlliste auf der aktiven °Default° Selektion
+°Apply Layout° aus.\\
+
+
+Mittels °Matrix Layout° läßt sich der Inhalt des Fensters in
+eine Matrixform bringen. Wir wählen diese Option im Tab aus
+(siehe Bild \ref{Matrix-Layout}).
+
+\begin{figure}[h!]
+   \centering
+   \includegraphics[scale=.6]{tutorial/09-matrix-layout}
+   \caption{Apply Layout}
+   \label{Matrix-Layout}
+\end{figure}
+
+Nach Klick auf °OK° klicken wir an eine leere Stelle im Anzeigefenster-
+Inhalt, dies zeigt GIANT, wo die umorganisierten Knoten platziert
+werden sollen.
+Ein mögliches Resultat wird in Bild \ref{Matrix-Layout2} gezeigt.
+
+\begin{figure}[h!]
+   \centering
+   \includegraphics[scale=.55]{tutorial/10-matrix-layout2}
+   \caption{Ergebnis des Matrix-Layouts}
+   \label{Matrix-Layout2}
+\end{figure}
+
+
+Wir wählen im Popup-Menü des Knoten rechts oben °Show Info°
+aus und merken uns den oben im Fenster angezeigten numerischen Wert °ID°
+des Knotens.
+
+Nun wählen wir ca. 5 * 5 Knoten in der rechten oberen Ecke des Graphen
+durch Ziehen mit der Maus aus, einer dieser Knoten sollte der mit der
+bekannten ID sein. Vorher sollten wir dafür sorgen, daß
+auch noch genügend freier Platz im Fenster sichtbar ist.\\
+
+
+
+Wir wählen dann in der Selektionsauswahlliste auf der aktiven °Default°
+Selektion °Apply Layout° aus. In das Feld °Root Node ID° tragen wir
+die ID des Knotens ein.
+In der Liste °Class Sets° wählen wir °parent_edge_class_set°, °empty_class_set°
+und °normal_class_set° aus. Dies sind die Klassenmengen, die für das
+Layout berücksichtigt werden. Nun ist noch ein Klick an die Position
+des Wurzelknotens im Anzeigefenster nötig, und das Layout wird berechnet
+und angezeigt.
+
+% **** Kein Bild hier, weil Bug - es wird ein Matrixlayout berechnet!
+
+\section{Benachbarte Knoten}
+
+Mittels des Menüpunktes °Scripts - Get Adjacent Nodes° können die
+benachbarten Knoten eines Knotens in eine Knotenmenge eingefügt werden.
+
+% **** Kein Bild, weil GSL Errors.
+
+%\section{Search for Routine}
+%
+%Durch Auswahl von °Scripts - Search for Routine° kann mit Wildcards
+%**** ja was eigentlich?
+
+\section{Annotieren}
+
+Knoten können durch Klick auf °Annotate° im Knoteninformationsfenster
+(siehe Bild \ref{Node-Info Fenster}) oder durch Auswahl des Punktes
+°Annotate° im Knoten-Popup-Fenster annotiert werden.
+
+Nach der Auswahl von °Annotate° öffnet sich das Knoten-Annotationsfenster
+(siehe Bild \ref{Node Annotation Window}). Hier kann ein Kommentar zum
+Knoten eingefügt werden, der mit gespeichert wird. Durch Delete
+kann der Kommentar wieder gelöscht werden.
+
+\begin{figure}[h!]
+   \centering
+   \includegraphics[scale=.55]{tutorial/11-annotation}
+   \caption{Knoten-Annotationsfenster}
+   \label{Node Annotation Window}
+\end{figure}
+
+Nach dem Annotieren wird der Benutzer bei genügend großer Zoomstufe
+durch ein kleines \gq{Dokument}-Symbol auf die Annotation
+aufmerksam gemacht. (siehe Bild \ref{Node Annotation Window2})
+
+\begin{figure}[h!]
+   \centering
+   \includegraphics[scale=.55]{tutorial/12-annotation2}
+   \caption{Annotierter Knoten Nr. 107}
+   \label{Node Annotation Window2}
+\end{figure}
 
