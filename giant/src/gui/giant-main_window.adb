@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.5 $
 --  $Author: squig $
---  $Date: 2003/05/31 19:23:40 $
+--  $Date: 2003/06/03 19:20:59 $
 --
 
 with Gdk.Event;
@@ -39,6 +39,7 @@ with Gtk.Menu_Item;
 with Gtk.Widget;
 with Gtk.Window;
 with Gtk.Paned;
+with Gtk.Tearoff_Menu_Item;
 with Gtkada.Types;
 with Interfaces.C.Strings;
 
@@ -90,97 +91,21 @@ package body Giant.Main_Window is
       null;
    end On_Window_List_Close;
 
-   ---------------------------------------------------------------------------
-   --
-   --  Lazily creates Window_List_Menu.
-   function Get_Window_List_Menu
-     return Gtk.Menu.Gtk_Menu
-   is
-      use Gtk.Menu;
-   begin
-      if Window_List_Menu /= null then
-         return Window_List_Menu;
-      end if;
-
-      Gtk.Menu.Gtk_New (Window_List_Menu);
-      Gtk.Menu.Append (Window_List_Menu,
-                       New_Menu_Item (-"Open...", On_Window_List_Open'Access));
-      Gtk.Menu.Append (Window_List_Menu,
-                       New_Menu_Item (-"Close", On_Window_List_Close'Access));
-
-      Gtk.Menu.Show_All (Window_List_Menu);
-
-      return Window_List_Menu;
-   end;
-
-
-   function On_Window_List_Button_Press
-     (Source : access Gtk.Clist.Gtk_Clist_Record'Class;
-      Event : Gdk.Event.Gdk_Event)
-     return Boolean
-   is
-      use Glib;
-      use Gdk.Types;
-
-      Row : Gint;
-      Column : Gint;
-      Is_Valid : Boolean;
-   begin
-      if Gdk.Event.Get_Button (Event) = 3
-        and then Gdk.Event.Get_Event_Type (Event) = Gdk.Types.Button_Press
-      then
-         Gtk.Clist.Get_Selection_Info (Window_List,
-                                       Gint (Gdk.Event.Get_X (Event)),
-                                       Gint (Gdk.Event.Get_Y (Event)),
-                                       Row, Column, Is_Valid);
-         if (Is_Valid) then
-            Gtk.Clist.Select_Row (Window_List, Row, Column);
-            Gtk.Menu.Popup (Get_Window_List_Menu,
-                            Button => Gdk.Event.Get_Button (Event),
-                            Activate_Time => Gdk.Event.Get_Time (Event));
-            return True;
-         end if;
-      end if;
-      return False;
-   end On_Window_List_Button_Press;
-
    function Initialize_Menu
      return Gtk.Menu_Bar.Gtk_Menu_Bar is
-      use Gtk.Menu_Bar;
-      use Gtk.Menu;
-
-      Menu_Bar : Gtk_Menu_Bar;
-      Menu : Gtk_Menu;
+      Menu_Bar : Gtk.Menu_Bar.Gtk_Menu_Bar;
+      Menu : Gtk.Menu.Gtk_Menu;
    begin
-      Gtk_New (Menu_Bar);
+      Gtk.Menu_Bar.Gtk_New (Menu_Bar);
 
       Menu := New_Sub_Menu (Menu_Bar, -"Projekt");
-      Add (Menu, New_Menu_Item (-"New", On_Project_New'Access));
-      Add (Menu, New_Menu_Separator);
-      Add (Menu, New_Menu_Item (-"Quit", On_Project_Quit'Access));
+      Gtk.Menu.Add (Menu, New_TearOff_Menu_Item);
+      Gtk.Menu.Add (Menu, New_Menu_Item (-"New", On_Project_New'Access));
+      Gtk.Menu.Add (Menu, New_Menu_Separator);
+      Gtk.Menu.Add (Menu, New_Menu_Item (-"Quit", On_Project_Quit'Access));
 
       return Menu_Bar;
    end Initialize_Menu;
-
-   function Initialize_Window_List
-     return Gtk.Widget.Gtk_Widget
-   is
-      use Gtk.Clist;
-      use Gtk.Widget;
-   begin
-      Gtk_New (Window_List, 2);
-      Set_Show_Titles (Window_List, True);
-      Clist_Return_Callback.Connect
-        (Window_List, "button_press_event",
-         Clist_Return_Callback.To_Marshaller
-         (On_Window_List_Button_Press'Access));
-
-      Set_Column_Title (Window_List, 0, -"Name");
-      Set_Column_Title (Window_List, 1, -"Open");
-
-      return Gtk_Widget
-        (Add_Scrollbar_And_Frame (Gtk_Widget (Window_List), -"Windows"));
-   end Initialize_Window_List;
 
    procedure Initialize is
       Box : Gtk.Box.Gtk_Vbox;
@@ -195,12 +120,28 @@ package body Giant.Main_Window is
       --  menu
       Gtk.Box.Pack_Start (Box, Initialize_Menu, False, False, 0);
 
-      --  panels
+      --  split pane
       Pane := New_Vpaned;
       Gtk.Box.Add (Box, Pane);
 
-      Gtk.Paned.Add (Pane, Initialize_Window_List);
+      --  window list popup menu
+      Gtk.Menu.Gtk_New (Window_List_Menu);
+      Gtk.Menu.Append (Window_List_Menu,
+                       New_Menu_Item (-"Open...", On_Window_List_Open'Access));
+      Gtk.Menu.Append (Window_List_Menu,
+                       New_Menu_Item (-"Close", On_Window_List_Close'Access));
 
+      --  window list
+      Gtk.Clist.Gtk_New (Window_List, 2);
+      Gtk.Clist.Set_Show_Titles (Window_List, True);
+      Connect_Popup_Menu (Window_List, Window_List_Menu);
+
+      Gtk.Clist.Set_Column_Title (Window_List, 0, -"Name");
+      Gtk.Clist.Set_Column_Title (Window_List, 1, -"Open");
+
+      Gtk.Paned.Add (Pane, Add_Scrollbar_And_Frame (Window_List, -"Windows"));
+
+      --  connect close button
       Widget_Return_Callback.Connect
         (Window, "delete_event",
          Widget_Return_Callback.To_Marshaller (On_Delete'Access));

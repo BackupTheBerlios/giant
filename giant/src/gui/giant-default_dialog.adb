@@ -20,9 +20,9 @@
 --
 --  First Author: <unkown>
 --
---  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.5 $
 --  $Author: squig $
---  $Date: 2003/06/02 01:04:18 $
+--  $Date: 2003/06/03 19:20:59 $
 --
 
 with Ada.Text_Io; use Ada.Text_Io;
@@ -109,7 +109,6 @@ package body Giant.Default_Dialog is
      return Boolean
    is
    begin
-      Ada.Text_Io.Put_Line ("Default_Dialog.Can_Hide:" & Response_Type'Image (Dialog.Response));
       return True;
    end Can_Hide;
 
@@ -151,11 +150,12 @@ package body Giant.Default_Dialog is
       Gtk.Window.Initialize (Dialog, Window_Toplevel);
       Set_Title (Dialog, Title);
 
+      --  center box
       Gtk.Box.Gtk_New_Vbox (Dialog.Center_Box);
       Gtk.Box.Set_Border_Width (Dialog.Center_Box, DEFAULT_SPACING);
       Add (Dialog, Dialog.Center_Box);
 
-      -- button box
+      --  button box
       Gtk.Hbutton_Box.Gtk_New (Dialog.Button_Box);
       Gtk.Hbutton_Box.Set_Spacing (Dialog.Button_Box, BUTTON_SPACING);
       Gtk.Hbutton_Box.Set_Layout (Dialog.Button_Box, Buttonbox_Spread);
@@ -163,6 +163,7 @@ package body Giant.Default_Dialog is
                         Expand => False, Fill => True,
                         Padding => DEFAULT_SPACING);
 
+      --  buttons
       if (Buttons = Button_Close) then
          Button := New_Button (-"Close", On_Yes_Button_Clicked'access);
          Gtk.Hbutton_Box.Add (Dialog.Button_Box, Button);
@@ -193,18 +194,18 @@ package body Giant.Default_Dialog is
                                           On_Cancel_Button_Clicked'access));
       end if;
 
-      -- separator
+      --  horizontal separator
       Gtk.Separator.Gtk_New_Hseparator (Separator);
       Gtk.Box.Pack_End (Dialog.Center_Box, Separator, Expand => False,
                         Fill => True, Padding => DEFAULT_SPACING);
 
-      -- activate default button
+      --  activate default button
       Result := Activate_Default (Dialog);
 
-      -- set position
+      --  set position
       Set_Position (Dialog, Win_Pos_Mouse);
 
-      -- listen for the close button
+      --  connect close button
       Widget_Return_Callback.Connect
         (Dialog, "delete_event",
          Widget_Return_Callback.To_Marshaller (On_Delete'Access));

@@ -18,11 +18,14 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.4 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.5 $
 -- $Author: squig $
--- $Date: 2003/06/02 01:04:18 $
+-- $Date: 2003/06/03 19:20:59 $
 --
 
+with Glib;
+with Gdk.Event;
+with Gdk.Types;
 with Gtk.Enums; use Gtk.Enums;
 With Gtk.Frame;
 with Gtk.Label;
@@ -31,10 +34,58 @@ with Gtk.Menu_Bar;
 with Gtk.Menu_Item;
 with Gtk.Paned;
 With Gtk.Scrolled_Window;
+with Gtk.Tearoff_Menu_Item;
 with Gtk.Widget;
 with Gtk.Window;
 
 package body Giant.Gui_Utils is
+
+   package Clist_User_Return_Callback is new
+     Gtk.Handlers.User_Return_Callback (Gtk.Clist.Gtk_Clist_Record, Boolean,
+                                        Gtk.Menu.Gtk_Menu);
+
+   function On_Clist_Button_Press
+     (Source : access Gtk.Clist.Gtk_Clist_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event;
+      Menu   : in     Gtk.Menu.Gtk_Menu)
+     return Boolean
+   is
+      use Glib;
+      use Gdk.Types;
+
+      Row : Gint;
+      Column : Gint;
+      Is_Valid : Boolean;
+   begin
+      if Gdk.Event.Get_Button (Event) = 3
+        and then Gdk.Event.Get_Event_Type (Event) = Gdk.Types.Button_Press
+      then
+         Gtk.Clist.Get_Selection_Info (Source,
+                                       Gint (Gdk.Event.Get_X (Event)),
+                                       Gint (Gdk.Event.Get_Y (Event)),
+                                       Row, Column, Is_Valid);
+         if (Is_Valid) then
+            Gtk.Clist.Select_Row (Source, Row, Column);
+            Gtk.Menu.Show_All (Menu);
+            Gtk.Menu.Popup (Menu,
+                            Button => Gdk.Event.Get_Button (Event),
+                            Activate_Time => Gdk.Event.Get_Time (Event));
+            return True;
+         end if;
+      end if;
+      return False;
+   end On_Clist_Button_Press;
+
+   procedure Connect_Popup_Menu
+     (List : access Gtk.Clist.Gtk_Clist_Record'Class;
+      Menu : access Gtk.Menu.Gtk_Menu_Record'Class)
+   is
+   begin
+      Clist_User_Return_Callback.Connect
+        (List, "button_press_event",
+         Clist_User_Return_Callback.To_Marshaller
+         (On_Clist_Button_Press'Access), Gtk.Menu.Gtk_Menu (Menu));
+   end Connect_Popup_Menu;
 
    function New_Button
      (Label    : in String;
@@ -50,9 +101,20 @@ package body Giant.Gui_Utils is
       return Button;
    end New_Button;
 
+   function New_Label
+     (Title : in String)
+     return Gtk.Label.Gtk_Label
+   is
+      Label: Gtk.Label.Gtk_Label;
+   begin
+      Gtk.Label.Gtk_New (Label, Title);
+      Gtk.Label.Set_Line_Wrap (Label, False);
+      return Label;
+   end;
+
    function New_Sub_Menu
-     (Menu_Bar : in Gtk.Menu_Bar.Gtk_Menu_Bar;
-      Label    : in String)
+     (Menu_Bar : access Gtk.Menu_Bar.Gtk_Menu_Bar_Record'Class;
+      Label    : in     String)
      return Gtk.Menu.Gtk_Menu
    is
       Item : Gtk.Menu_Item.Gtk_Menu_Item;
@@ -101,25 +163,37 @@ package body Giant.Gui_Utils is
       return Pane;
    end New_Vpaned;
 
+   function Add_Frame
+     (Widget : access Gtk.Widget.Gtk_Widget_Record'class;
+      Title  : in     String)
+     return Gtk.Frame.Gtk_Frame
+   is
+     Frame : Gtk.Frame.Gtk_Frame;
+   begin
+      Gtk.Frame.Gtk_New (Frame, Title);
+      Gtk.Frame.Set_Shadow_Type (Frame, Shadow_Etched_In);
+      Gtk.Frame.Add (Frame, Widget);
+      return Frame;
+   end Add_Frame;
+
    function Add_Scrollbar_And_Frame
-     (Widget : in Gtk.Widget.Gtk_Widget;
-      Title  : in String)
+     (Widget : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Title  : in     String)
      return Gtk.Frame.Gtk_Frame
    is
      Frame : Gtk.Frame.Gtk_Frame;
      Scrolled_Window : Gtk.Scrolled_Window.Gtk_Scrolled_Window;
    begin
-      --Set_Shadow_Type (Main_Window.Window_List_Frame, Shadow_Etched_In);
-
       Gtk.Scrolled_Window.Gtk_New (Scrolled_Window);
       Gtk.Scrolled_Window.Set_Policy (Scrolled_Window, Policy_Automatic,
                                       Policy_Always);
       Gtk.Scrolled_Window.Add (Scrolled_Window, Widget);
 
       Gtk.Frame.Gtk_New (Frame, Title);
+      Gtk.Frame.Set_Shadow_Type (Frame, Shadow_Etched_In);
       Gtk.Frame.Add (Frame, Scrolled_window);
 
-     return Frame;
+      return Frame;
    end Add_Scrollbar_And_Frame;
 
    function New_Column_Label
@@ -128,18 +202,27 @@ package body Giant.Gui_Utils is
    is
       Label: Gtk.Label.Gtk_Label;
    begin
-      Gtk.Label.Gtk_New (Label, "Name");
+      Gtk.Label.Gtk_New (Label, Title);
       Gtk.Label.Set_Alignment (Label, 0.5, 0.5);
       Gtk.Label.Set_Padding (Label, 0, 0);
       Gtk.Label.Set_Justify (Label, Justify_Center);
       Gtk.Label.Set_Line_Wrap (Label, False);
-
       return Label;
    end;
 
+   function New_TearOff_Menu_Item
+     return Gtk.Menu_Item.Gtk_Menu_Item
+   is
+      Item : Gtk.TearOff_Menu_Item.Gtk_Tearoff_Menu_Item;
+   begin
+      Gtk.TearOff_Menu_Item.Gtk_New (item);
+      return Gtk.Menu_Item.Gtk_Menu_Item (Item);
+   end New_TearOff_Menu_Item;
+
+
    procedure Set_Default
-     (Window : in Gtk.Window.Gtk_Window;
-      Widget : in Gtk.Widget.Gtk_Widget)
+     (Window : access Gtk.Window.Gtk_Window_Record'Class;
+      Widget : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
       Result : Boolean;
    begin

@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_test.adb,v $, $Revision: 1.7 $
+-- $RCSfile: giant-gui_test.adb,v $, $Revision: 1.8 $
 -- $Author: squig $
--- $Date: 2003/06/03 14:45:51 $
+-- $Date: 2003/06/03 19:20:59 $
 --
 with Gtk.Main;
 
@@ -29,6 +29,7 @@ with Ada.Text_Io; use Ada.Text_Io;
 with Giant.Default_Dialog;
 with Giant.Default_Logger;
 with Giant.Main_Window;
+with Giant.Graph_Window;
 with Giant.Gsl_Dialog;
 with Giant.Progress_Dialog;
 with Giant.Main_Window;
@@ -38,7 +39,8 @@ with Giant.Logger;
 procedure Giant.Gui_Test
 is
 --     My_Gsl_Dialog : Gsl_Dialog.Gsl_Dialog_Access;
-   My_Progress_Dialog : Progress_Dialog.Progress_Dialog_Access;
+--     My_Progress_Dialog : Progress_Dialog.Progress_Dialog_Access;
+   My_Graph_Window : Graph_Window.Graph_Window_Access;
 begin
    Default_Logger.Init;
    --Config.Initialize_Config_Data ("/etc/giant/giantrc", ".giantrc");
@@ -59,10 +61,13 @@ begin
 --     Progress_Dialog.Set_Progress_Text (My_Progress_Dialog,
 --                                        "Value %v von %u = %p");
 
-   Progress_Dialog.Create (My_Progress_Dialog, "Activity Test", "Message");
-   Progress_Dialog.Set_Activity_Mode (My_Progress_Dialog, True);
-   Progress_Dialog.Set_Value (My_Progress_Dialog, 10.0);
-   Progress_Dialog.Show_All (My_Progress_Dialog);
+--     Progress_Dialog.Create (My_Progress_Dialog, "Activity Test", "Message");
+--     Progress_Dialog.Set_Activity_Mode (My_Progress_Dialog, True);
+--     Progress_Dialog.Set_Value (My_Progress_Dialog, 10.0);
+--     Progress_Dialog.Show_All (My_Progress_Dialog);
+
+   Graph_Window.Create (My_Graph_Window);
+   Graph_Window.Show_All (My_Graph_Window);
 
 --     Main_Window.Show;
 

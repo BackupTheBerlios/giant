@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.4 $
+--  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.5 $
 --  $Author: squig $
---  $Date: 2003/06/02 01:04:18 $
+--  $Date: 2003/06/03 19:20:59 $
 --
 ------------------------------------------------------------------------------
 --
@@ -75,18 +75,27 @@ package Giant.Gui_Utils is
    package Widget_Return_Callback is new
      Gtk.Handlers.Return_Callback (Gtk.Widget.Gtk_Widget_Record, Boolean);
 
-   function Add_Scrollbar_And_Frame
-     (Widget : in Gtk.Widget.Gtk_Widget;
-      Title  : in String)
-     return Gtk.Frame.Gtk_Frame;
-
    ---------------
    --  Methods  --
    ---------------
 
+   function Add_Frame
+     (Widget : access Gtk.Widget.Gtk_Widget_Record'class;
+      Title  : in     String)
+     return Gtk.Frame.Gtk_Frame;
+
+   function Add_Scrollbar_And_Frame
+     (Widget : access Gtk.Widget.Gtk_Widget_Record'class;
+      Title  : in String)
+     return Gtk.Frame.Gtk_Frame;
+
+   procedure Connect_Popup_Menu
+     (List : access Gtk.Clist.Gtk_Clist_Record'Class;
+      Menu : access Gtk.Menu.Gtk_Menu_Record'Class);
+
    procedure Set_Default
-     (Window : in Gtk.Window.Gtk_Window;
-      Widget : in Gtk.Widget.Gtk_Widget);
+     (Window : access Gtk.Window.Gtk_Window_Record'Class;
+      Widget : access Gtk.Widget.Gtk_Widget_Record'Class);
 
    function New_Button
      (Label    : in String;
@@ -94,6 +103,10 @@ package Giant.Gui_Utils is
      return Gtk.Button.Gtk_Button;
 
    function New_Column_Label
+     (Title : in String)
+     return Gtk.Label.Gtk_Label;
+
+   function New_Label
      (Title : in String)
      return Gtk.Label.Gtk_Label;
 
@@ -106,11 +119,16 @@ package Giant.Gui_Utils is
       return Gtk.Menu_Item.Gtk_Menu_Item;
 
    function New_Sub_Menu
-     (Menu_Bar : in Gtk.Menu_Bar.Gtk_Menu_Bar;
+     (Menu_Bar : access Gtk.Menu_Bar.Gtk_Menu_Bar_Record'Class;
       Label    : in String)
      return Gtk.Menu.Gtk_Menu;
+
+   function New_TearOff_Menu_Item
+     return Gtk.Menu_Item.Gtk_Menu_Item;
 
    function New_Vpaned
      return Gtk.Paned.Gtk_Vpaned;
 
 end Giant.Gui_Utils;
+
+

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-progress_dialog.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-progress_dialog.adb,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/06/03 14:45:52 $
+--  $Date: 2003/06/03 19:20:59 $
 --
 
 with Glib;
@@ -78,7 +78,7 @@ package body Giant.Progress_Dialog is
 
       Gtk.Label.Gtk_New (Dialog.Progress_Label, Message);
       Gtk.Box.Pack_Start (Box, Dialog.Progress_Label, Expand => False,
-                          Fill => False, Padding => DEFAULT_SPACING);
+                         Fill => False, Padding => DEFAULT_SPACING);
 
       Gtk.Adjustment.Gtk_New (Dialog.Progress_Bar_Adjustment,
                               Value => 0.0, Lower => 0.0,
