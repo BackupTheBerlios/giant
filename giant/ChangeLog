@@ -1,3 +1,9 @@
+2003-09-20  Steffen Pingel  <squig@users.sourceforge.net>
+
+	* src/gui/giant-main_window.adb: Used stock item for Project:Open.
+
+	* src/gui/giant-gsl_dialog.adb: Added menu bar.
+
 2003-09-18  Oliver Kopp  <koppor@studi.informatik.uni-stuttgart.de>
 
 	* src/graph_lib/giant-graph_lib.adb: Literal_Types are handled now.

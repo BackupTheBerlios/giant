@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gsl_dialog.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-gsl_dialog.ads,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/08/15 11:42:17 $
+--  $Date: 2003/09/20 20:27:36 $
 --
 ------------------------------------------------------------------------------
 --
@@ -36,6 +36,8 @@ with Gtk.Text;
 with Gtk.Window;
 
 with Giant.Default_Dialog;
+with Giant.File_Management;
+pragma Elaborate_All (Giant.File_Management);
 
 package Giant.Gsl_Dialog is
 
@@ -63,13 +65,60 @@ package Giant.Gsl_Dialog is
       Filename : in     String);
 
 private
+
+   ---------------------------------------------------------------------------
+   --  Returns:
+   --    True, if file was read successfully; False, otherwise
+   function Read
+     (Dialog   : access Gsl_Dialog_Record'Class;
+      Filename : String)
+     return Boolean;
+
+   ---------------------------------------------------------------------------
+   --  Returns:
+   --    False, if user cancelled or data was not modified; True, otherwise
+   function Save_Changes
+     (Dialog : access Gsl_Dialog_Record'Class)
+      return Boolean;
+
+   ---------------------------------------------------------------------------
+   --  Shows a file open dialog and opens the file if the user selects okay.
+   --
+   --  Parameters:
+   --    Delete - If true, the text area is cleared before the file is
+   --      inserted
+   procedure Show_Open_Dialog
+     (Dialog : access Gsl_Dialog_Record'Class;
+      Delete : Boolean);
+
+   ---------------------------------------------------------------------------
+   --  Returns:
+   --    True, if file was saved or dialog was cancelled; False, otherwise
+   function Show_Save_As_Dialog
+     (Dialog   : access Gsl_Dialog_Record'Class)
+     return Boolean;
+
+   ---------------------------------------------------------------------------
+   --  Returns:
+   --    True, if file was written successfully; False, otherwise
+   function Write
+     (Dialog   : access Gsl_Dialog_Record'Class;
+      Filename : String)
+     return Boolean;
+
+   --  If no filename is set this file will be used
+   Temp_Gsl_Filename : constant String
+     := File_Management.Get_User_Config_Path & "temp.gsl";
+
    type Gsl_Dialog_Record is
      new Default_Dialog.Default_Dialog_Record with record
-        Filename : Ada.Strings.Unbounded.Unbounded_String;
+        Filename : Ada.Strings.Unbounded.Unbounded_String
+          := Ada.Strings.Unbounded.Null_Unbounded_String;
         Text_Area : Gtk.Text.Gtk_Text;
         Text_Has_Changed : Boolean := False;
         Filename_Bar : Gtk.Status_Bar.Gtk_Status_Bar;
         Location_Bar : Gtk.Status_Bar.Gtk_Status_Bar;
+        Last_Save_Date : File_Management.OS_Time;
      end record;
 
 end Giant.Gsl_Dialog;

@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.26 $
--- $Author: keulsn $
--- $Date: 2003/09/12 20:30:12 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.27 $
+-- $Author: squig $
+-- $Date: 2003/09/20 20:27:36 $
 --
 
 with Glib;
@@ -248,9 +248,15 @@ package body Giant.Gui_Utils is
       From_Stock : in     Boolean                                             := False)
       return Gtk.Menu_Item.Gtk_Menu_Item
    is
+      Image_Item : Gtk.Image_Menu_Item.Gtk_Image_Menu_Item;
       Item : Gtk.Menu_Item.Gtk_Menu_Item;
    begin
-      Gtk.Menu_Item.Gtk_New (Item, Label);
+      if (From_Stock) then
+         Gtk.Image_Menu_Item.Gtk_New_From_Stock (Image_Item, Label);
+         Item := Gtk.Menu_Item.Gtk_Menu_Item (Image_Item);
+      else
+         Gtk.Menu_Item.Gtk_New (Item, Label);
+      end if;
       Widget_Callback.Object_Connect
         (Item, "activate", Widget_Callback.To_Marshaller (Callback),
          Widget);

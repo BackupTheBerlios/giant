@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-constants.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-constants.ads,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/09/09 20:22:24 $
+--  $Date: 2003/09/20 20:27:36 $
 --
 ------------------------------------------------------------------------------
 --
@@ -31,6 +31,6 @@
 
 package Giant.Constants is
 
-   VERSION : constant String := "1.1.0";
+   VERSION : constant String := "1.1.1";
 
 end Giant.Constants;

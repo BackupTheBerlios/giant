@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.32 $
--- $Author: schwiemn $
--- $Date: 2003/09/15 20:12:56 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.33 $
+-- $Author: squig $
+-- $Date: 2003/09/20 20:27:37 $
 --
 --
 
@@ -269,6 +269,14 @@ package body Giant.File_Management is
       end loop;
    end Create_Dir_Path;
 
+   function File_Time_Stamp
+     (Filename : String)
+      return OS_Time
+   is
+   begin
+      return GNAT.OS_Lib.File_Time_Stamp (Filename);
+   end File_Time_Stamp;
+
    ---------------------------------------------------------------------------
    function Get_Absolute_Path_To_File_From_Relative
      (Start_Dir : in String;
@@ -402,12 +410,12 @@ package body Giant.File_Management is
    is
       -- store "working directory for the execution environment"
       Old_Exec_Dir : String := GNAT.Directory_Operations.Get_Current_Dir;
-      
+
       -- needed to calculate an absolute path
       ADA_Text_IO_File_or_Dir : ADA.Text_IO.File_Type;
 
       Abs_Path : Ada.Strings.Unbounded.Unbounded_String;
-      
+
    begin
       if (GNAT.OS_Lib.Is_Directory (Start_Dir) = False) then
          -- if an invalid start directory is passed the file
@@ -416,7 +424,7 @@ package body Giant.File_Management is
       end if;
 
       GNAT.Directory_Operations.Change_Dir (Start_Dir);
-                       
+
       begin
          ADA.Text_IO.Open
            (File => ADA_Text_IO_File_or_Dir,
@@ -428,7 +436,7 @@ package body Giant.File_Management is
 
          ADA.Text_IO.Close(ADA_Text_IO_File_or_Dir);
       exception
-         
+
          when ADA.Text_IO.Name_Error =>
            raise Abs_Path_Could_Not_Be_Calculated_Exception;
       end;

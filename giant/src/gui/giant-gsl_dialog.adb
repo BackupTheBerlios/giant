@@ -20,22 +20,24 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.20 $
---  $Author: keulsn $
---  $Date: 2003/09/12 20:30:12 $
+--  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.21 $
+--  $Author: squig $
+--  $Date: 2003/09/20 20:27:36 $
 --
 
 with Ada.Exceptions;
 with Ada.IO_Exceptions;
 with Ada.Text_Io; use Ada.Text_Io;
 
-with Glib; use type Glib.Gint;
-with Gtkada.File_Selection;
+with Glib;
+with Gdk.Event;
 with Gtk.Adjustment;
 with Gtk.Box;
 with Gtk.Button;
 with Gtk.Editable;
 with Gtk.Enums; use Gtk.Enums;
+with Gtk.Menu;
+with Gtk.Menu_Bar;
 with Gtk.Scrolled_Window;
 with Gtk.Stock;
 with Gtk.Text;
@@ -43,8 +45,8 @@ with Gtk.Widget;
 
 with Giant.Controller;
 with Giant.Dialogs;
-with Giant.File_Management;
-pragma Elaborate_All (Giant.File_Management);
+with Giant.File_Selection;
+with Giant.Gsl_Dialog.Callbacks;
 with Giant.Gui_Utils;
 with Giant.Logger;
 pragma Elaborate_All (Giant.Logger);
@@ -54,16 +56,15 @@ package body Giant.Gsl_Dialog is
 
    package Logger is new Giant.Logger("giant.gsl_dialog");
 
-   Temp_Gsl_Filename : constant String
-     := File_Management.Get_User_Config_Path & "temp.gsl";
+   package Event_Marshaller is new
+     Gui_Utils.Widget_Boolean_Callback.Marshallers.Generic_Marshaller
+     (Base_Type   => Gdk.Event.Gdk_Event,
+      Conversion  => Gdk.Event.Get_Event);
 
    ---------------------------------------------------------------------------
    --  File Operations
    ---------------------------------------------------------------------------
 
-   ---------------------------------------------------------------------------
-   --  Returns:
-   --    True, if file was read successfully; False, otherwise
    function Read
      (Dialog   : access Gsl_Dialog_Record'Class;
       Filename : String)
@@ -88,6 +89,7 @@ package body Giant.Gsl_Dialog is
 
       Ada.Text_IO.Close (In_File);
 
+      Dialog.Last_Save_Date := File_Management.File_Time_Stamp (Filename);
       Dialog.Text_Has_Changed := False;
       return True;
    exception
@@ -99,9 +101,6 @@ package body Giant.Gsl_Dialog is
         return False;
    end Read;
 
-   ---------------------------------------------------------------------------
-   --  Returns:
-   --    True, if file was written successfully; False, otherwise
    function Write
      (Dialog   : access Gsl_Dialog_Record'Class;
       Filename : String)
@@ -121,6 +120,7 @@ package body Giant.Gsl_Dialog is
 
       Ada.Text_IO.Close (Out_File);
 
+      Dialog.Last_Save_Date := File_Management.File_Time_Stamp (Filename);
       Dialog.Text_Has_Changed := False;
       return True;
    exception
@@ -136,18 +136,38 @@ package body Giant.Gsl_Dialog is
    --  File Dialogs
    ---------------------------------------------------------------------------
 
-   ---------------------------------------------------------------------------
-   --  Returns:
-   --    True, if file was saved or dialog was cancelled; False, otherwise
+   procedure Show_Open_Dialog
+     (Dialog : access Gsl_Dialog_Record'Class;
+      Delete : Boolean)
+   is
+   begin
+      declare
+         Filename : String := Giant.File_Selection.File_Selection_Dialog
+           (-"Open GSL Script", Get_Filename (Dialog),
+            Dir_Only => False, Must_Exist => True);
+         Success : Boolean;
+      begin
+         if (Filename /= "") then
+            if (Save_Changes (Dialog)) then
+               Set_Filename (Dialog, Filename);
+               if (Delete) then
+                  Gtk.Text.Delete_Text (Dialog.Text_Area);
+               end if;
+               Success := Read (Dialog, Filename);
+            end if;
+         end if;
+      end;
+   end Show_Open_Dialog;
+
    function Show_Save_As_Dialog
-     (Dialog   : access Gsl_Dialog_Record'Class)
+     (Dialog : access Gsl_Dialog_Record'Class)
      return Boolean
    is
    begin
       declare
-         Filename : String := Gtkada.File_Selection.File_Selection_Dialog
-           (-"Save GSL Script",
-            Ada.Strings.Unbounded.To_String (Dialog.Filename),
+         Filename : constant String
+           := Giant.File_Selection.File_Selection_Dialog
+           (-"Save GSL Script", Get_Filename (Dialog),
             Dir_Only => False, Must_Exist => False);
       begin
          if (Filename /= "") then
@@ -159,16 +179,12 @@ package body Giant.Gsl_Dialog is
       return True;
    end Show_Save_As_Dialog;
 
-   ---------------------------------------------------------------------------
-   --  Returns:
-   --    False, if user cancelled or data was not modified; True, otherwise
    function Save_Changes
      (Dialog : access Gsl_Dialog_Record'Class)
       return Boolean
    is
       use type Default_Dialog.Response_Type;
       use type Ada.Strings.Unbounded.Unbounded_String;
-
       Response : Default_Dialog.Response_Type;
    begin
       if (Dialog.Text_Has_Changed) then
@@ -176,12 +192,10 @@ package body Giant.Gsl_Dialog is
            (-"The script has changed. Save changes?",
             Default_Dialog.Button_Yes_No_Cancel);
          if (Response = Default_Dialog.Response_Yes) then
-            if (Dialog.Filename
-                = Ada.Strings.Unbounded.Null_Unbounded_String) then
+            if (Get_Filename (Dialog) = "") then
                return Show_Save_As_Dialog (Dialog);
             else
-               return Write (Dialog, Ada.Strings.Unbounded.To_String
-                             (Dialog.Filename));
+               return Write (Dialog, Get_Filename (Dialog));
             end if;
          elsif (Response = Default_Dialog.Response_Cancel) then
             return False;
@@ -204,75 +218,6 @@ package body Giant.Gsl_Dialog is
          Main_Window.Cancel_Close_Project;
       end if;
    end On_Can_Close_Project;
-
-   procedure On_Open_Button_Clicked
-     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
-   is
-      Dialog : Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
-   begin
-      declare
-         Filename : String := Gtkada.File_Selection.File_Selection_Dialog
-           (-"Open GSL Script",
-            Ada.Strings.Unbounded.To_String (Dialog.Filename),
-            Dir_Only => False, Must_Exist => True);
-         Success : Boolean;
-      begin
-         if (Filename /= "") then
-            if (Save_Changes (Dialog)) then
-               Set_Filename (Dialog, Filename);
-               Success := Read (Dialog, Filename);
-            end if;
-         end if;
-      end;
-   end On_Open_Button_Clicked;
-
-   procedure On_Run_Button_Clicked
-     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
-   is
-      use type Ada.Strings.Unbounded.Unbounded_String;
-
-      Dialog : constant Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
-      Success : Boolean;
-   begin
-      if (Save_Changes (Dialog)) then
-         if (Dialog.Filename
-             = Ada.Strings.Unbounded.Null_Unbounded_String) then
-            --  write to a temporary file
-            Set_Filename (Dialog, Temp_Gsl_Filename);
-            Success := Write
-              (Dialog, Ada.Strings.Unbounded.To_String (Dialog.Filename));
-         end if;
-
-         declare
-            Filename : String
-              := Ada.Strings.Unbounded.To_String (Dialog.Filename);
-         begin
-            Controller.Execute_GSL (Filename);
-
-            --  the script was executed successfully
-            --  close the dialog?
-         exception
-           when E : others =>
-              Logger.Warn ("error executing gsl script: " & Filename);
-              Logger.Error (E);
-
-              Dialogs.Show_Error_Dialog
-                (-"Error during execution"
-                 & " (" & Ada.Exceptions.Exception_Message (E)
-                 & ").");
-              -- FIX: if syntax error: jump to position
-         end;
-      end if;
-   end On_Run_Button_Clicked;
-
-   procedure On_Save_As_Button_Clicked
-     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
-   is
-      Dialog : constant Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
-      Success : Boolean;
-   begin
-      Success := Show_Save_As_Dialog (Dialog);
-   end On_Save_As_Button_Clicked;
 
    procedure On_Text_Area_Changed
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
@@ -317,11 +262,62 @@ package body Giant.Gsl_Dialog is
       Initialize (Dialog);
    end Create;
 
-   procedure Initialize
-     (Dialog : access Gsl_Dialog_Record'class)
+   procedure Initialize_Menu
+     (Dialog     : access Gsl_Dialog_Record'Class;
+      Center_Box : in     Gtk.Box.Gtk_Vbox)
    is
       use Giant.Gui_Utils;
+      use Giant.Gsl_Dialog.Callbacks;
+      Menu_Bar : Gtk.Menu_Bar.Gtk_Menu_Bar;
+      Menu : Gtk.Menu.Gtk_Menu;
+   begin
+      Gtk.Menu_Bar.Gtk_New (Menu_Bar);
+      Gtk.Box.Pack_Start (Center_Box, Menu_Bar, Expand => False, Fill => True,
+                          Padding => 0);
 
+      --  file menu
+      Menu := New_Sub_Menu (Menu_Bar, -"File");
+      Gtk.Menu.Add
+        (Menu,
+         New_Stock_Menu_Item (Gtk.Stock.Stock_New, On_File_New'Access, Dialog));
+      Gtk.Menu.Add
+        (Menu, New_Stock_Menu_Item (Gtk.Stock.Stock_Open,
+                                    On_File_Open'Access, Dialog));
+      Gtk.Menu.Add
+        (Menu, New_Menu_Item (-"Open In External Editor",
+                              On_File_Open_External'Access, Dialog));
+      Gtk.Menu.Add (Menu, New_Menu_Separator);
+      Gtk.Menu.Add
+        (Menu, New_Menu_Item (-"Insert", On_File_Insert'Access, Dialog));
+      Gtk.Menu.Add
+        (Menu, New_Menu_Item (-"Revert", On_File_Revert'Access, Dialog));
+      Gtk.Menu.Add (Menu, New_Menu_Separator);
+      Gtk.Menu.Add
+        (Menu, New_Stock_Menu_Item (Gtk.Stock.Stock_Save,
+                                    On_File_Save'Access, Dialog));
+      Gtk.Menu.Add
+        (Menu, New_Stock_Menu_Item (Gtk.Stock.Stock_Save_As,
+                                    On_File_Save_As'Access, Dialog));
+
+      --  edit menu
+      Menu := New_Sub_Menu (Menu_Bar, -"Edit");
+      Gtk.Menu.Add (Menu, New_Stock_Menu_Item (Gtk.Stock.Stock_Cut,
+                                               On_Edit_Cut'Access, Dialog));
+      Gtk.Menu.Add (Menu, New_Stock_Menu_Item (Gtk.Stock.Stock_Copy,
+                                               On_Edit_Copy'Access, Dialog));
+      Gtk.Menu.Add
+        (Menu, New_Stock_Menu_Item (Gtk.Stock.Stock_Paste,
+                                    On_Edit_Paste'Access, Dialog));
+      Gtk.Menu.Add (Menu, New_Menu_Separator);
+      Gtk.Menu.Add (Menu, New_Stock_Menu_Item (Gtk.Stock.Stock_Clear,
+                                               On_Edit_Clear'Access, Dialog));
+   end;
+
+   procedure Initialize
+     (Dialog : access Gsl_Dialog_Record'Class)
+   is
+      use Giant.Gui_Utils;
+      use Giant.Gsl_Dialog.Callbacks;
       Center_Box : Gtk.Box.Gtk_Vbox;
       --  holds multiple status bars
       Status_Box : Gtk.Box.Gtk_Hbox;
@@ -336,10 +332,13 @@ package body Giant.Gsl_Dialog is
       Gtk.Box.Gtk_New_Vbox (Center_Box);
       Set_Center_Widget (Dialog, Center_Box);
 
+      --  menu bar
+      Initialize_Menu (Dialog, Center_Box);
+
       --  text area
       Gtk.Text.Gtk_New (Dialog.Text_Area);
       Gtk.Text.Set_Editable (Dialog.Text_Area, True);
-      Gtk.Text.Set_USize (Dialog.Text_Area, -1, 250);
+      Gtk.Text.Set_USize (Dialog.Text_Area, 400, 250);
 
       Gtk.Scrolled_Window.Gtk_New (Scrolled_Window);
       Gtk.Scrolled_Window.Set_Policy (Scrolled_Window, Policy_Automatic,
@@ -365,25 +364,23 @@ package body Giant.Gsl_Dialog is
       --                    Fill => True, Padding => 0);
 
       -- buttons
---        Add_Button (Dialog, New_Button (-"Run",
---                                        On_Run_Button_Clicked'Access,
---                                        Dialog));
       Add_Button (Dialog, New_Stock_Button (Gtk.Stock.Stock_Execute,
                                             On_Run_Button_Clicked'Access,
-                                            Dialog));
-      Add_Button (Dialog, New_Stock_Button (Gtk.Stock.Stock_Save_As,
-                                            On_Save_As_Button_Clicked'Access,
-                                            Dialog));
-      Add_Button (Dialog, New_Stock_Button (Gtk.Stock.Stock_Open,
-                                            On_Open_Button_Clicked'Access,
                                             Dialog));
 
       Set_Default (Dialog, Dialog.Text_Area);
 
       Widget_Callback.Object_Connect
         (Dialog.Text_Area, "changed",
-         Widget_Callback.To_Marshaller
-         (On_Text_Area_Changed'Access), Dialog);
+         Widget_Callback.To_Marshaller (On_Text_Area_Changed'Access),
+         Dialog);
+
+      --  catch focus events to check if file was changed on disk
+      Widget_Boolean_Callback.Object_Connect
+        (Dialog.Text_Area, "focus_in_event",
+         Event_Marshaller.To_Marshaller (On_Focus'Access),
+         Dialog);
+      Gtk.Text.Add_Events (Dialog.Text_Area, Gdk.Event.Enter_Notify_Mask);
 
       --  connect close project
       Main_Window.Connect_Can_Close_Project
@@ -404,6 +401,7 @@ package body Giant.Gsl_Dialog is
    is
       Id : Gtk.Status_Bar.Message_Id;
    begin
+      Gtk.Status_Bar.Pop (Dialog.Filename_Bar, 1);
       Dialog.Filename
         := Ada.Strings.Unbounded.To_Unbounded_String (Filename);
       Id := Gtk.Status_Bar.Push (Dialog.Filename_Bar, 1, Filename);

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.65 $
---  $Author: keulsn $
---  $Date: 2003/09/12 20:30:12 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.66 $
+--  $Author: squig $
+--  $Date: 2003/09/20 20:27:36 $
 --
 
 with Ada.Exceptions;
@@ -663,7 +663,7 @@ package body Giant.Main_Window is
         := New_Stock_Menu_Item (Gtk.Stock.Stock_New, On_Project_New'Access);
       Gtk.Menu.Add (Menu, Project_New_Menu_Item);
       Project_Open_Menu_Item
-        := New_Menu_Item (-"Open...", On_Project_Open'Access);
+        := New_Stock_Menu_Item (Gtk.Stock.Stock_Open, On_Project_Open'Access);
       Gtk.Menu.Add (Menu, Project_Open_Menu_Item);
       Gtk.Menu.Add (Menu, New_Stock_Menu_Item (Gtk.Stock.Stock_Close,
                                                On_Project_Close'Access));

@@ -20,10 +20,10 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.ads,v $, $Revision: 1.22 $
+-- $RCSfile: giant-file_management.ads,v $, $Revision: 1.23 $
 
--- $Author: keulsn $
--- $Date: 2003/09/12 20:30:12 $
+-- $Author: squig $
+-- $Date: 2003/09/20 20:27:37 $
 --
 -- -----------------------------------------------
 --
@@ -33,11 +33,15 @@ with Ada.Text_IO;
 with Ada.Strings.Unbounded;
 -- with Ada.Command_Line;
 
-with GNAT.Os_Lib;
+with GNAT.OS_Lib;
 
 with String_Lists; -- from Bauhaus IML "Reuse.src"
 
 package Giant.File_Management is
+
+   ---------------------------------------------------------------------------
+   -- Wraps GNAT type.
+   subtype OS_Time is GNAT.OS_Lib.OS_Time;
 
    ---------------------------------------------------------------------------
    -- The system path separator.
@@ -180,6 +184,12 @@ package Giant.File_Management is
    --     - If you pass a relative path it will be expanded regarding
    --       the working directory of the current execution environment.
    procedure Create_Dir_Path (Dir_Path : in String);
+
+   ---------------------------------------------------------------------------
+   --  Returns the timestamp of Filename. Filename needs to be unopened.
+   function File_Time_Stamp
+     (Filename : String)
+      return OS_Time;
 
    ---------------------------------------------------------------------------
    -- For a given realtive Path to a file and a path to a directory there the
