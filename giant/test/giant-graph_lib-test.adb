@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.4 $
 --  $Author: koppor $
---  $Date: 2003/06/23 15:26:37 $
+--  $Date: 2003/06/24 17:57:08 $
 --
 
 with Ada.Text_IO;
@@ -35,11 +35,17 @@ with Giant.Logger;
 
 package body Giant.Graph_Lib.Test is
 
+   --------------------------------------------------------------------------
+   --  Parameters for the graph to use for testing
+   IML_Filename   : constant String  := "resources/rfg_examp.iml";
+   IML_Edge_Count : constant Integer := 646;
+   IML_Node_Count : constant Integer := 216;
+
    -------------------------------------
    --  Global variables and routines  --
    -------------------------------------
 
-   package Logger is new Giant.Logger("giant.graph_lib.test");
+   package Logger is new Giant.Logger("T:graph_lib");
 
    Root : Node_Id;
 
@@ -74,10 +80,9 @@ package body Giant.Graph_Lib.Test is
    procedure Init (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
    begin
-      Giant.Graph_Lib.Create ("resources/rfg_examp.iml");
+      Giant.Graph_Lib.Create (IML_FileName);
 
       Root := Get_Root_Node;
-
    end Init;
 
    procedure Output_RootNode (R : in out AUnit.Test_Cases.Test_Case'Class)
@@ -86,6 +91,41 @@ package body Giant.Graph_Lib.Test is
       Logger.Debug ("Root Node with ID: " & Node_Id_Image (Root));
       Output_Attributes (Root);
    end Output_RootNode;
+
+   procedure Check_Counts (R : in out AUnit.Test_Cases.Test_Case'Class)
+   is
+   begin
+      --  check count directly
+      --  n/a, since edges are not referenced directly
+
+      --  check count indirectly
+      declare
+         Set : Edge_Id_Set;
+      begin
+         Set := Giant.Graph_Lib.Get_All_Edges;
+         Logger.Debug ("Size: " & Integer'Image (Edge_Id_Sets.Size (Set)));
+         Assert (Edge_Id_Sets.Size (Set) = IML_Edge_Count, "All_Edges.Size");
+         Edge_Id_Sets.Destroy (Set);
+      end;
+
+      --  check count directly
+      Logger.Debug ("Size: " & Integer'Image
+                    (IML_Node_ID_Hashed_Mappings.Size (IML_Node_ID_Mapping)));
+      Assert (IML_Node_ID_Hashed_Mappings.Size (IML_Node_ID_Mapping) =
+              IML_Node_Count,
+              "All_Nodes.Size (via Mapping)");
+
+      --  check count indirectly
+      declare
+         Set : Node_Id_Set;
+      begin
+         Set := Giant.Graph_Lib.Get_All_Nodes;
+         Logger.Debug ("Size: " & Integer'Image (Node_Id_Sets.Size (Set)));
+         Assert (Node_Id_Sets.Size (Set) = IML_Node_Count, "All_Nodes.Size");
+         Node_Id_Sets.Destroy (Set);
+      end;
+
+   end Check_Counts;
 
    procedure Edge_Set_Test (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
@@ -113,6 +153,7 @@ package body Giant.Graph_Lib.Test is
    begin
       Register_Routine (T, Init'Access, "Init");
       Register_Routine (T, Output_RootNode'Access, "Output_RootNode");
+      Register_Routine (T, Check_Counts'Access, "Check_Counts");
       Register_Routine (T, Edge_Set_Test'Access, "Edge_Set_Test");
       Register_Routine (T, Done'Access, "Done");
    end Register_Tests;
