@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: load_store.tex,v $, $Revision: 1.6 $
-%  $Date: 2003/02/19 15:07:02 $
-%  $Author: schwiemn $
+%  $RCSfile: load_store.tex,v $, $Revision: 1.7 $
+%  $Date: 2003/02/28 11:47:35 $
+%  $Author: birdy $
 %
 %  Description: Use-Cases für Lade- und Speicherfunktionalität
 %
@@ -33,23 +33,24 @@
   
   \begin{proc}
     \step[1]
-    Der Benutzer startet den UseCase über das Hauptmenü.
-    !!!!!ENTSPRECHENDEN MENÜEINTAG NENNEN.
+    Der Benutzer startet den UseCase über das Hauptmenü
+    (\gq{New Project}) \ref{Main-Window-File}
   
-    \step[2] Der Benutzer wählt im Standard-Filechooser-Dialog eine
-    IML-Datei aus und bestätigt seine Eingabe mit OK.
+    \step[2] Der Benutzer wählt im Standard-Filechooser-Dialog
+    (\gq{Please Select IML File}) eine IML-Datei aus und
+    bestätigt seine Eingabe mit OK.
     
-    \step[3] Der Benutzer gibt im Standard-Filechooser-Dialog den Pfad, das
-    Projektverzeichnis und den Namen für die Projektdatei vor. 
-    Der Name der Projektdatei ist automatisch
-    auch der Name für das Projekt.\\
+    \step[3] Der Benutzer gibt im Standard-Filechooser-Dialog
+    den Pfad und Namen der Projektdatei (\gq{Please select Project
+    Path and Project File Name}). Der Name der Projektdatei ist
+    automatisch auch der Name für das Projekt.\\
     Dann bestätigt er seine Eingabe mit OK.\\
     Existiert die eingegbene Datei schon, erscheint eine Fehlermeldung.\\
     Existiert in dem Projektverzeichnis bereits eine andere Projektdatei, so 
     erscheint eine entsprechende Fehlermeldung.\\
     Das Verzeichnis in dem die Projektdatei liegt, wird automatisch zum 
     Projektverzeichnis (dort landen auch alle Verwaltungsdateien für das 
-    Projekt). 
+    Projekt).
     
     \step[4] Falls bereits ein Projekt geöffnet ist, erscheint eine Abfrage
     ob dieses gespeichert werden soll. Lehnt der Benutzer dies ab, gehen
