@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: martin_test.adb,v $, $Revision: 1.18 $
+--  $RCSfile: martin_test.adb,v $, $Revision: 1.19 $
 --  $Author: schwiemn $
---  $Date: 2003/07/18 19:18:02 $
+--  $Date: 2003/07/21 18:40:06 $
 --  
 with AUnit.Test_Suites; use AUnit.Test_Suites;
 with AUnit.Test_Runner;
@@ -35,6 +35,7 @@ with Giant.Node_Annotations.Test;
 with Giant.GSL_Support.Test;
 with Giant.Vis_Windows.Test;
 with Giant.Config.Class_Sets.Test;
+with Hashed_Mappings_Lazy_Init_Test;
 
 with Giant.Default_Logger;
 
@@ -48,9 +49,9 @@ procedure Martin_Test is
  --    Add_Test (Result, new Giant.Vis_Windows.Test.Test_Case); 
       
       
-      Add_Test (Result, new Giant.Projects.Test.Test_Case);
-       
-       
+ --    Add_Test (Result, new Giant.Projects.Test.Test_Case);
+      
+      Add_Test (Result, new Hashed_Mappings_Lazy_Init_Test.Test_Case);       
   
   --  Add_Test (Result, new Giant.Config.Vis_Styles.Test.Test_Case);
  

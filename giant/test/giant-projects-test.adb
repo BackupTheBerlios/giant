@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-projects-test.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-projects-test.adb,v $, $Revision: 1.15 $
 --  $Author: schwiemn $
---  $Date: 2003/07/18 19:18:02 $
+--  $Date: 2003/07/21 18:40:06 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -43,9 +43,7 @@ with Giant.Node_Annotations;
 with Giant.Projects;
 
 package body Giant.Projects.Test is
-
-   package Logger is new Giant.Logger("Giant.Projects.Test");
-
+  
    ---------------------------------------------------------------------------
    --  Deletes all files in the directory
    procedure Kill_Files_In_Dir (Directory : in String) is
@@ -1253,10 +1251,10 @@ package body Giant.Projects.Test is
        (T, Test_Initialize'Access, 
         "Inititialisation");
       Register_Routine 
-        (T, Basic_File_Mangement_Test'Access, 
+       (T, Basic_File_Mangement_Test'Access, 
          "Basic_File_Mangement_Test");      
       Register_Routine 
-        (T, Changing_Test_Only_Memory'Access, 
+       (T, Changing_Test_Only_Memory'Access, 
          "Changing_Test_Only_Memory"); 
       Register_Routine 
         (T, Vis_Window_Persistence_Status_Test'Access, 
