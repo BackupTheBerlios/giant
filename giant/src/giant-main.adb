@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.15 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.16 $
 --  $Author: squig $
---  $Date: 2003/06/23 16:15:41 $
+--  $Date: 2003/06/24 16:24:56 $
 --
 --
 ------------------------------------------------------------------------------
@@ -50,6 +50,9 @@ begin
 
    --  load config settings
    Config_Settings.Initialize_Config_Settings ("", Config_Filename);
+
+   Config_Settings.Initialize_Config_Settings ("", Config_Filename);
+
 
    -- read config
 --     Config.Vis_Styles.Initialize_Config_Vis_Styles

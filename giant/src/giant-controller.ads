@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.15 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.16 $
 --  $Author: squig $
---  $Date: 2003/06/23 17:33:34 $
+--  $Date: 2003/06/24 16:24:56 $
 --
 ------------------------------------------------------------------------------
 --
@@ -47,8 +47,8 @@ package Giant.Controller is
    --  See:
    --    Project_Management.Create_New_Empty_Project_For_File
    procedure Create_Project
-     (Filename           : in String;
-      IML_Graph_Filename : in String);
+     (Filename       : in String;
+      Graph_Filename : in String);
 
    ---------------------------------------------------------------------------
    --  Returns the currently open project.

@@ -69,4 +69,4 @@ fetch-iml :
 	tar -C $(TMP_PATH) -xzvf $(TMP_PATH)/iml_browser_030606.tar.gz
 
 sloc :
-	sloccount src/
+	PATH=/home/stsopra/giant/sloccount-2.22:$(PATH) sloccount src/

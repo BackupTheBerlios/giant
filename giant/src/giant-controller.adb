@@ -21,9 +21,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.19 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.20 $
 --  $Author: squig $
---  $Date: 2003/06/23 21:57:04 $
+--  $Date: 2003/06/24 16:24:56 $
 --
 
 with Ada.Strings.Unbounded;
@@ -72,22 +72,22 @@ package body Giant.Controller is
    end;
 
    procedure Create_Project
-     (Filename           : in String;
-      IML_Graph_Filename : in String)
+     (Filename       : in String;
+      Graph_Filename : in String)
    is
       Checksum : Integer;
    begin
       Close_Project;
 
       --  create graph
-      Giant.Graph_Lib.Create (IML_Graph_Filename);
+      Giant.Graph_Lib.Create (Graph_Filename);
       Checksum := Graph_Lib.Get_Graph_Hash;
 
       Logger.Info (-"Creating project " & Filename);
 
       --  create project
       Current_Project := Projects.Create_Empty_Project_For_File
-        (Filename, IML_Graph_Filename, Checksum);
+        (Filename, Graph_Filename, Checksum);
 
       --  update application
       Initialize_Project;
@@ -139,9 +139,18 @@ package body Giant.Controller is
    procedure Open_Project
      (Filename : in String)
    is
+      Graph_Filename : Ada.Strings.Unbounded.Unbounded_String;
+      Checksum : Integer;
    begin
       Logger.Info (-"Closing current project");
       Close_Project;
+
+      --  fix
+      Projects.Get_Bauhaus_IML_Graph_Data
+        (Filename, "", Graph_Filename, Checksum);
+
+      --  create graph
+      Giant.Graph_Lib.Create (Ada.Strings.Unbounded.To_String (Graph_Filename));
 
       Logger.Info (-"Opening project " & Filename);
       Current_Project := Projects.Load_Project_File (Filename);
