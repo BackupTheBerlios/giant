@@ -18,6 +18,10 @@ evolution :
 graphlib :
 	make -C ../ MAIN=test/graphlib_test EXEC=test/graphlib_test all
 
+matrix_layouts :
+	make -C ../ MAIN=test/matrix_layouts_test EXEC=test/matrix_layouts_test all
+
+
 all:
 	make -C ../ all
 
