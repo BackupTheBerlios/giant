@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.22 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.23 $
 --  $Author: keulsn $
---  $Date: 2003/07/21 19:01:06 $
+--  $Date: 2003/07/22 18:21:32 $
 --
 ------------------------------------------------------------------------------
 
@@ -32,7 +32,6 @@ with Ada.Unchecked_Conversion;
 with Gdk.Types;
 with Gdk.Drawable;
 with Gdk.Window;
-with Glib;
 
 with Giant.Graph_Lib.Node_Attribute_Filters;
 with Giant.Graph_Widgets.Settings;

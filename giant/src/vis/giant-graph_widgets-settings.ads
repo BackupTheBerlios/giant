@@ -20,14 +20,12 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.ads,v $, $Revision: 1.7 $
+--  $RCSfile: giant-graph_widgets-settings.ads,v $, $Revision: 1.8 $
 --  $Author: keulsn $
---  $Date: 2003/07/22 09:34:02 $
+--  $Date: 2003/07/22 18:21:32 $
 --
 ------------------------------------------------------------------------------
 
-
-with Glib;
 
 with Giant.Graph_Lib.Node_Attribute_Filters;
 

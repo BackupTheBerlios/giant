@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.16 $
+--  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.17 $
 --  $Author: keulsn $
---  $Date: 2003/07/22 09:34:02 $
+--  $Date: 2003/07/22 18:21:32 $
 --
 ------------------------------------------------------------------------------
 
@@ -33,7 +33,6 @@ with Ada.Unchecked_Deallocation;
 with Gdk.Bitmap;
 with Gdk.Pixmap;
 with Gdk.Window;
-with Glib;
 
 with Giant.Logger;
 

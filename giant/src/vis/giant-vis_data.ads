@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.23 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.24 $
 --  $Author: keulsn $
---  $Date: 2003/07/20 23:20:04 $
+--  $Date: 2003/07/22 18:21:33 $
 --
 ------------------------------------------------------------------------------
 --
@@ -382,6 +382,10 @@ package Giant.Vis_Data is
      (Edge      : in     Vis_Edge_Id;
       Point     : in     Vis.Absolute.Vector_2d);
 
+   procedure Set_Layer
+     (Edge      : in     Vis_Edge_Id;
+      Layer     : in     Layer_Type);
+
    ----------------------------------------------------------------------------
    --  Total ordering on Vis_Edge_Id
    --  Returns:
@@ -497,6 +501,10 @@ package Giant.Vis_Data is
    procedure Move_Node
      (Node   : in     Vis_Node_Id;
       Offset : in     Vis.Absolute.Vector_2d);
+
+   procedure Set_Layer
+     (Node   : in     Vis_Node_Id;
+      Layer  : in     Layer_Type);
 
    procedure Set_Annotated
      (Node   : in     Vis_Node_Id;
@@ -639,6 +647,13 @@ package Giant.Vis_Data is
      return Boolean;
 
    ----------------------------------------------------------------------------
+   --  Changes the layer of 'Edge' and adds the necessary pollution
+   procedure Change_Layer
+     (Manager   : in out Region_Manager;
+      Edge      : in     Vis_Edge_Id;
+      New_Layer : in     Layer_Type);
+
+   ----------------------------------------------------------------------------
    --  Inserts one node into the set of managed nodes. All content above the
    --  visual representation of that node and the visual representation
    --  itself are polluted.
@@ -669,6 +684,13 @@ package Giant.Vis_Data is
    function Has_Manager
      (Node    : in     Vis_Node_Id)
      return Boolean;
+
+   ----------------------------------------------------------------------------
+   --  Changes the layer of 'Node' and adds the necessary pollution
+   procedure Change_Layer
+     (Manager   : in out Region_Manager;
+      Node      : in     Vis_Node_Id;
+      New_Layer : in     Layer_Type);
 
    ----------------------------------------------------------------------------
    --  Pollutes all content above the visual representation of one edge

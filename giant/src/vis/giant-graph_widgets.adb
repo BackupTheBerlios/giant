@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.37 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.38 $
 --  $Author: keulsn $
---  $Date: 2003/07/20 23:20:04 $
+--  $Date: 2003/07/22 18:21:33 $
 --
 ------------------------------------------------------------------------------
 
@@ -1635,6 +1635,154 @@ package body Giant.Graph_Widgets is
    -------------
    -- Helpers --
    -------------
+
+   --  Either 'Edge' must not be part of selection or all edges in selection
+   --  must be raised in correct order as part of an atomic operation
+   procedure Raise_Edge
+     (Widget : access Graph_Widget_Record'Class;
+      Edge   : in     Vis_Data.Vis_Edge_Id) is
+
+      Is_Selected : Boolean := False;
+      Is_Locked   : Boolean := False;
+      Is_Unsized  : Boolean := False;
+      New_Layer   : Vis_Data.Layer_Type;
+   begin
+      --  if not Vis_Data.Can_Enlarge (Widget.Edge_Layers) then
+      --     Compactify_Edge_Layers (Widget);
+      --  end if;
+      Vis_Data.Enlarge_Pool (Widget.Edge_Layers);
+      New_Layer := Vis_Data.Get_Highest_Layer (Widget.Edge_Layers);
+
+      Vis_Edge_Sets.Remove_If_Exists
+        (A_Set   => Widget.Selected_Edges,
+         Element => Edge,
+         Found   => Is_Selected);
+
+      if Vis_Data.Has_Manager (Edge) then
+         Vis_Data.Change_Layer (Widget.Manager, Edge, New_Layer);
+      else
+         Vis_Edge_Sets.Remove_If_Exists
+           (A_Set   => Widget.Unsized_Edges,
+            Element => Edge,
+            Found   => Is_Unsized);
+
+         if not Is_Unsized then
+            Vis_Edge_Sets.Remove_If_Exists
+              (A_Set   => Widget.Locked_Edges,
+               Element => Edge,
+               Found   => Is_Locked);
+         end if;
+
+         Vis_Data.Set_Layer (Edge, New_Layer);
+         if Is_Unsized then
+            Vis_Edge_Sets.Insert (Widget.Unsized_Edges, Edge);
+         end if;
+         if Is_Locked then
+            Vis_Edge_Sets.Insert (Widget.Locked_Edges, Edge);
+         end if;
+      end if;
+
+      if Is_Selected then
+         Vis_Edge_Sets.Insert (Widget.Selected_Edges, Edge);
+      end if;
+   end Raise_Edge;
+
+   procedure Raise_Node
+     (Widget : access Graph_Widget_Record'Class;
+      Node   : in     Vis_Data.Vis_Node_Id) is
+
+      Is_Selected : Boolean := False;
+      Is_Locked   : Boolean := False;
+      Is_Unsized  : Boolean := False;
+      New_Layer   : Vis_Data.Layer_Type;
+   begin
+      --  if not Vis_Data.Can_Enlarge (Widget.Node_Layers) then
+      --     Compactify_Node_Layers (Widget);
+      --  end if;
+      Vis_Data.Enlarge_Pool (Widget.Node_Layers);
+      New_Layer := Vis_Data.Get_Highest_Layer (Widget.Node_Layers);
+
+      Vis_Node_Sets.Remove_If_Exists
+        (A_Set   => Widget.Selected_Nodes,
+         Element => Node,
+         Found   => Is_Selected);
+
+      if Vis_Data.Has_Manager (Node) then
+         Vis_Data.Change_Layer (Widget.Manager, Node, New_Layer);
+         pragma Assert
+           (not Vis_Node_Sets.Is_Member (Widget.Unsized_Nodes, Node));
+         pragma Assert
+           (not Vis_Node_Sets.Is_Member (Widget.Locked_Nodes, Node));
+      else
+         Vis_Node_Sets.Remove_If_Exists
+           (A_Set   => Widget.Unsized_Nodes,
+            Element => Node,
+            Found   => Is_Unsized);
+
+         pragma Assert
+           ((not Is_Unsized and not Is_Locked) or
+            (Is_Unsized xor Vis_Node_Sets.Is_Member
+              (Widget.Locked_Nodes, Node)));
+         if not Is_Unsized then
+            Vis_Node_Sets.Remove_If_Exists
+              (A_Set   => Widget.Locked_Nodes,
+               Element => Node,
+               Found   => Is_Locked);
+         end if;
+
+         Vis_Data.Set_Layer (Node, New_Layer);
+         if Is_Unsized then
+            Vis_Node_Sets.Insert (Widget.Unsized_Nodes, Node);
+         end if;
+         if Is_Locked then
+            Vis_Node_Sets.Insert (Widget.Locked_Nodes, Node);
+         end if;
+      end if;
+
+      if Is_Selected then
+         Vis_Node_Sets.Insert (Widget.Selected_Nodes, Node);
+      end if;
+   end Raise_Node;
+
+   procedure Raise_Floating
+     (Widget : access Graph_Widget_Record'Class) is
+
+      type Edge_Array_Type is array (Integer range <>) of Vis_Data.Vis_Edge_Id;
+      type Node_Array_Type is array (Integer range <>) of Vis_Data.Vis_Node_Id;
+
+      package Edge_Arrays is new Vis_Edge_Sets.Arrays
+        (Item_Array => Edge_Array_Type);
+      package Node_Arrays is new Vis_Node_Sets.Arrays
+        (Item_Array => Node_Array_Type);
+   begin
+      if States.Is_Drag_Current (Widget) then
+         declare
+            Nodes : Node_Array_Type := Node_Arrays.To_Array
+              (Widget.Selected_Nodes);
+         begin
+            Vis_Node_Sets.Destroy (Widget.Selected_Nodes);
+            Widget.Selected_Nodes := Vis_Node_Sets.Empty_Set;
+            for I in Nodes'Range loop
+               Raise_Node (Widget, Nodes (I));
+            end loop;
+            Vis_Node_Sets.Destroy (Widget.Selected_Nodes);
+            Widget.Selected_Nodes := Node_Arrays.To_Set (Nodes);
+         end;
+
+         declare
+            Edges : Edge_Array_Type := Edge_Arrays.To_Array
+              (Widget.Selected_Edges);
+         begin
+            Vis_Edge_Sets.Destroy (Widget.Selected_Edges);
+            Widget.Selected_Edges := Vis_Edge_Sets.Empty_Set;
+            for I in Edges'Range loop
+               Raise_Edge (Widget, Edges (I));
+            end loop;
+            Vis_Edge_Sets.Destroy (Widget.Selected_Edges);
+            Widget.Selected_Edges := Edge_Arrays.To_Set (Edges);
+         end;
+      end if;
+   end Raise_Floating;
 
    function Get_Floating_Nodes
      (Widget : access Graph_Widget_Record'Class)

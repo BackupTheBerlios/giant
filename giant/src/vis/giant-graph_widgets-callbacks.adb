@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.13 $
+--  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.14 $
 --  $Author: keulsn $
---  $Date: 2003/07/22 00:11:23 $
+--  $Date: 2003/07/22 18:21:31 $
 --
 ------------------------------------------------------------------------------
 
@@ -37,7 +37,6 @@ with Gdk.Window_Attr;
 with Gtk.Arguments;
 with Gtk.Enums;
 with Gtk.Handlers;
---with Gtk.Main;
 with Gtk.Style;
 
 with Giant.Graph_Widgets.Drawing;
@@ -94,19 +93,24 @@ package body Giant.Graph_Widgets.Callbacks is
       Mode            : in     Selection_Modify_Type;
       Restrict_Change : in     Boolean := False) is
 
-      Edge : Vis_Data.Vis_Edge_Id := States.Get_Click_Edge (Widget);
-      Node : Vis_Data.Vis_Node_Id := States.Get_Click_Node (Widget);
+      Edge     : Vis_Data.Vis_Edge_Id := States.Get_Click_Edge (Widget);
+      Node     : Vis_Data.Vis_Node_Id := States.Get_Click_Node (Widget);
+      Selected : Boolean;
    begin
       if Vis_Data."/=" (Node, null) then
-         if Mode /= Change or else
-          (not Restrict_Change or else not Is_Node_In_Selection (Widget, Node))
-         then
+         Selected := Is_Node_In_Selection (Widget, Node);
+         if Mode /= Change or else (not Restrict_Change or not Selected) then
+            if Mode = Change or Mode = Add or not Selected then
+               Raise_Node (Widget, Node);
+            end if;
             Modify_Selection_With_Node_And_Notify (Widget, Node, Mode);
          end if;
       elsif Vis_Data."/=" (Edge, null) then
-         if Mode /= Change or else
-          (not Restrict_Change or else not Is_Edge_In_Selection (Widget, Edge))
-         then
+         Selected := Is_Edge_In_Selection (Widget, Edge);
+         if Mode /= Change or else (not Restrict_Change or not Selected) then
+            if Mode = Change or Mode = Add or not Selected then
+               Raise_Edge (Widget, Edge);
+            end if;
             Modify_Selection_With_Edge_And_Notify (Widget, Edge, Mode);
          end if;
       else
@@ -163,6 +167,7 @@ package body Giant.Graph_Widgets.Callbacks is
    begin
       --  user has dropped some nodes
       Lock_All_Content (Widget, Lock);
+      Raise_Floating (Widget);
       Move_Nodes
         (Widget => Widget,
          Nodes  => Get_Floating_Nodes (Widget),

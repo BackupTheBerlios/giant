@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.35 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.36 $
 --  $Author: keulsn $
---  $Date: 2003/07/20 23:20:04 $
+--  $Date: 2003/07/22 18:21:33 $
 --
 ------------------------------------------------------------------------------
 --
@@ -1123,6 +1123,24 @@ private                    -- private part --
    -----------------------
    -- Private: Updating --
    -----------------------
+
+   ----------------------------------------------------------------------------
+   --  Raises 'Edge' on top of all other edges
+   procedure Raise_Edge
+     (Widget : access Graph_Widget_Record'Class;
+      Edge   : in     Vis_Data.Vis_Edge_Id);
+
+   ----------------------------------------------------------------------------
+   --  Raises 'Node' on top of all other nodes
+   procedure Raise_Node
+     (Widget : access Graph_Widget_Record'Class;
+      Node   : in     Vis_Data.Vis_Node_Id);
+
+   ----------------------------------------------------------------------------
+   --  Raises the floating selection on top of all other edges and nodes if
+   --  a floating selection exists.
+   procedure Raise_Floating
+     (Widget : access Graph_Widget_Record'Class);
 
    ----------------------------------------------------------------------------
    --  Returns the a reference to the set of all floating nodes. The Set must

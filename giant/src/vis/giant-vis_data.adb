@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.31 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.32 $
 --  $Author: keulsn $
---  $Date: 2003/07/22 09:34:02 $
+--  $Date: 2003/07/22 18:21:33 $
 --
 ------------------------------------------------------------------------------
 
@@ -531,6 +531,13 @@ package body Giant.Vis_Data is
       Edge.Right_Arrow_Point := Point;
    end Set_Right_Arrow_Point;
 
+   procedure Set_Layer
+     (Edge  : in     Vis_Edge_Id;
+      Layer : in     Layer_Type) is
+   begin
+      Edge.Layer := Layer;
+   end Set_Layer;
+
    function Is_Edge_Below
      (Left  : in     Vis_Edge_Id;
       Right : in     Vis_Edge_Id)
@@ -685,6 +692,13 @@ package body Giant.Vis_Data is
       pragma Assert (Region_Lists.IsEmpty (Node.Regions));
       Vis.Absolute.Move (Node.Extent, Offset);
    end Move_Node;
+
+   procedure Set_Layer
+     (Node   : in     Vis_Node_Id;
+      Layer  : in     Layer_Type) is
+   begin
+      Node.Layer := Layer;
+   end Set_Layer;
 
    procedure Add_Highlight_Color
      (Node   : in     Vis_Node_Id;
@@ -1432,6 +1446,23 @@ package body Giant.Vis_Data is
       return not Region_Lists.IsEmpty (Edge.Regions);
    end Has_Manager;
 
+   procedure Change_Layer
+     (Manager   : in out Region_Manager;
+      Edge      : in     Vis_Edge_Id;
+      New_Layer : in     Layer_Type) is
+
+      Iterator : Region_Lists.ListIter;
+      Region   : Region_Id;
+   begin
+      while Region_Lists.More (Iterator) loop
+         Region_Lists.Next (Iterator, Region);
+         Remove_Edge_From_Region (Region, Edge);
+         Set_Layer (Edge, New_Layer);
+         Add_Edge_To_Region (Region, Edge);
+      end loop;
+      Pollute_Edge (Manager, Edge);
+   end Change_Layer;
+
    procedure Drop_Edge
      (Manager : in out Region_Manager;
       Edge    : in     Vis_Edge_Id) is
@@ -1499,6 +1530,24 @@ package body Giant.Vis_Data is
    begin
       return not Region_Lists.IsEmpty (Node.Regions);
    end Has_Manager;
+
+   procedure Change_Layer
+     (Manager   : in out Region_Manager;
+      Node      : in     Vis_Node_Id;
+      New_Layer : in     Layer_Type) is
+
+      Iterator : Region_Lists.ListIter;
+      Region   : Region_Id;
+   begin
+      Iterator := Region_Lists.MakeListIter (Node.Regions);
+      while Region_Lists.More (Iterator) loop
+         Region_Lists.Next (Iterator, Region);
+         Remove_Node_From_Region (Region, Node);
+         Set_Layer (Node, New_Layer);
+         Add_Node_To_Region (Region, Node);
+      end loop;
+      Pollute_Node (Manager, Node);
+   end Change_Layer;
 
    procedure Drop_Node
      (Manager : in out Region_Manager;

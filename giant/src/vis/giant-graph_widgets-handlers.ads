@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-handlers.ads,v $, $Revision: 1.8 $
+--  $RCSfile: giant-graph_widgets-handlers.ads,v $, $Revision: 1.9 $
 --  $Author: keulsn $
---  $Date: 2003/07/20 23:20:04 $
+--  $Date: 2003/07/22 18:21:32 $
 --
 ------------------------------------------------------------------------------
 --
@@ -36,7 +36,6 @@ with Gtk.Arguments;
 with Gtk.Handlers;
 with Gtk.Object;
 with Gtkada.Types;
-with Glib;
 
 with Giant.Graph_Lib;
 
