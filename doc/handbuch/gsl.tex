@@ -65,8 +65,6 @@ So ist das auch nicht spezifiziert. Abhilfe:
 Wichtig ist hier, dass beide Zweige als Skripte implementiert
 sind. Siehe auch Frage \ref{if_eval}.
 
-\clearpage
-
 \subsection{If führt immer beide Zweige aus}
 \label{if_eval}
 Beispiel:
@@ -99,4 +97,21 @@ Richtig ist deshalb:
 Hier in den Zweigen nach der Auswertung und vor der \gq{Ausführung}
 von if Aktivierungsinformationen liegen. Und so wird nach der
 Entscheidung, welcher Zweig ausgewertet werden soll, die
-Aktivierungsinformationen zu Skripten ausgewertet.
+Aktivierungsinformationen zu Scripten ausgewertet.
+
+\subsection{Wie erzeuge ich einen neuen Subgraphen?}
+
+Folgendes Script erzeugt einen leeren Subgraphen NAME
+
+\begin{verbatim}
+[
+  set (+target_edges, empty_edge_set ());
+  set (+target_nodes, empty_node_set ());
+
+  set 
+    ('subgraph.NAME, 
+
+     (target_nodes, 
+      target_edges));
+]
+\end{verbatim}
