@@ -20,13 +20,14 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.13 $
---  $Author: squig $
---  $Date: 2003/09/09 15:31:25 $
+--  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.14 $
+--  $Author: keulsn $
+--  $Date: 2003/09/09 17:00:43 $
 --
 ------------------------------------------------------------------------------
 
 
+with Gtk.Widget;
 with Gdk.Window;
 
 package body Giant.Graph_Widgets.States is

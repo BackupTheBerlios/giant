@@ -20,15 +20,16 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.ads,v $, $Revision: 1.7 $
+--  $RCSfile: giant-graph_widgets-callbacks.ads,v $, $Revision: 1.8 $
 --  $Author: keulsn $
---  $Date: 2003/09/02 04:49:38 $
+--  $Date: 2003/09/09 17:00:43 $
 --
 ------------------------------------------------------------------------------
 
 
 with Gdk.Event;
 with Gtk.Adjustment;
+with Gtk.Widget;
 
 package Giant.Graph_Widgets.Callbacks is
 
