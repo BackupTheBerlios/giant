@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.ads,v $, $Revision: 1.5 $
+--  $RCSfile: giant-graph_widgets-settings.ads,v $, $Revision: 1.6 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 03:35:59 $
+--  $Date: 2003/07/07 18:39:23 $
 --
 ------------------------------------------------------------------------------
 
@@ -47,6 +47,13 @@ package Giant.Graph_Widgets.Settings is
    procedure Set_Style
      (Widget : access Graph_Widget_Record'Class;
       Style  : in     Config.Vis_Styles.Visualisation_Style_Access);
+
+   ---------------------------------------------------------------------------
+   --  Changes the node annotation pool. All nodes in a graph widget should
+   --  be updated to reflect the new pool.
+   procedure Set_Annotation_Pool
+     (Widget : access Graph_Widget_Record'Class;
+      Pool   : in     Node_Annotations.Node_Annotation_Access);
 
    ---------------------------------------------------------------------------
    --  Returns the style set in 'Widget'
@@ -135,6 +142,11 @@ package Giant.Graph_Widgets.Settings is
      (Widget       : access Graph_Widget_Record'Class;
       Node         : in     Vis_Data.Vis_Node_Id)
      return Gdk.Color.Gdk_Color;
+
+   function Has_Annotation
+     (Widget       : access Graph_Widget_Record'Class;
+      Node         : in     Vis_Data.Vis_Node_Id)
+     return Boolean;
 
    ---------------------------------------------------------------------------
    --  Gets the icon to be shown inside annotated nodes or 'Null_Pixmap'

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant_test-graph_widget.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant_test-graph_widget.adb,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/07/02 16:51:08 $
+--  $Date: 2003/07/07 18:39:23 $
 --
 ------------------------------------------------------------------------------
 
@@ -36,6 +36,7 @@ with Gtk.Button;
 with Gtk.Handlers;
 with Gtk.Label;
 with Gtk.Main;
+with Gtk.Scrolled_Window;
 with Gtk.Vbutton_Box;
 with Gtk.Window;
 
@@ -99,6 +100,7 @@ procedure Giant_Test.Graph_Widget is
    Resize_Button : Gtk.Button.Gtk_Button;
    Quit_Button   : Gtk.Button.Gtk_Button;
    Main_Window   : Gtk.Window.Gtk_Window;
+   Scroller      : Gtk.Scrolled_Window.Gtk_Scrolled_Window;
 begin
    Giant.Default_Logger.Init;
    Gdk.Threads.Init;
@@ -127,6 +129,9 @@ begin
      (Widget  => Mini_Map,
       Watched => Graph_Widget);
 
+   Gtk.Scrolled_Window.Gtk_New (Scroller);
+   Gtk.Scrolled_Window.Add (Scroller, Graph_Widget);
+
    Gtk.Button.Gtk_New (Move_Button, "Move Visual");
    Gtk.Button.Gtk_New (Resize_Button, "Resize");
    Gtk.Button.Gtk_New (Quit_Button, "Quit");
@@ -146,7 +151,7 @@ begin
      (Box     => Horiz_Box,
       Spacing => 5);
    Gtk.Box.Add (Horiz_Box, User_Box);
-   Gtk.Box.Add (Horiz_Box, Graph_Widget);
+   Gtk.Box.Add (Horiz_Box, Scroller);
 
    Gtk.Window.Gtk_New (Main_Window);
    Gtk.Window.Add (Main_Window, Horiz_Box);

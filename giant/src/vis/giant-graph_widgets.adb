@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.12 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.13 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 03:35:59 $
+--  $Date: 2003/07/07 18:39:23 $
 --
 ------------------------------------------------------------------------------
 
@@ -38,9 +38,9 @@ with Giant.Graph_Widgets.Notifications;
 with Giant.Graph_Widgets.Positioning;
 with Giant.Graph_Widgets.Settings;
 with Giant.Graph_Widgets.States;
+with Giant.Logger;
 
 package body Giant.Graph_Widgets is
-
 
    function "="
      (Left  : Vis_Data.Vis_Edge_Id;
@@ -51,6 +51,10 @@ package body Giant.Graph_Widgets is
      (Left  : Vis_Data.Vis_Node_Id;
       Right : Vis_Data.Vis_Node_Id)
      return Boolean renames Vis_Data."=";
+
+
+   package Graph_Widget_Logger is new Logger
+     (Name => "Giant.Graph_Widgets");
 
 
    -------------------------------
@@ -74,12 +78,13 @@ package body Giant.Graph_Widgets is
          Parameters                => Handlers.Get_Signal_Parameters,
          Scroll_Adjustments_Signal => Handlers.Get_Scroll_Adjustments_Signal);
 
-      Callbacks.Connect_All_Callbacks (Widget);
-
+      Vis_Data.Set_Up (Widget.Manager);
       Widget.Edge_Map := Edge_Id_Mappings.Create;
       Vis_Data.Reset_Pool (Widget.Edge_Layers);
       Widget.Node_Map := Node_Id_Mappings.Create;
       Vis_Data.Reset_Pool (Widget.Node_Layers);
+
+      Callbacks.Connect_All_Callbacks (Widget);
 
       States.Set_Up (Widget);
       Positioning.Set_Up (Widget, Default_Zoom_Level);
@@ -104,6 +109,7 @@ package body Giant.Graph_Widgets is
       Nodes : Node_Id_Mappings.Values_Iter;
       Node  : Vis_Data.Vis_Node_Id;
    begin
+      Vis_Data.Destroy (Widget.Manager);
       Positioning.Shut_Down (Widget);
       States.Shut_Down (Widget);
 
@@ -122,7 +128,8 @@ package body Giant.Graph_Widgets is
 
    procedure Read_Graph_Widget
      (Stream : in     Bauhaus_IO.In_Stream_Type;
-      Widget :    out Graph_Widget)  is
+      Widget :    out Graph_Widget;
+      Pool   : in     Node_Annotations.Node_Annotation_Access)  is
    begin
       raise Unimplemented;
    end Read_Graph_Widget;
@@ -138,6 +145,15 @@ package body Giant.Graph_Widgets is
    -------------------
    -- Configuration --
    -------------------
+
+   procedure Set_Node_Annotations
+     (Widget : access Graph_Widget_Record'Class;
+      Pool   : in     Node_Annotations.Node_Annotation_Access) is
+   begin
+      Settings.Set_Annotation_Pool (Widget, Pool);
+      --  Update on all nodes!
+      raise Unimplemented;
+   end Set_Node_Annotations;
 
    procedure Set_Default_Cursor
      (Widget : access Graph_Widget_Record'Class;
@@ -232,7 +248,6 @@ package body Giant.Graph_Widgets is
          end loop;
          Object_Sets.Destroy (Iterator);
          Remove_Set (Selection, Set);
-
          Object_Sets.Destroy (Known);
       end Remove_Known;
 
@@ -561,14 +576,14 @@ package body Giant.Graph_Widgets is
      (Widget     : access Graph_Widget_Record'Class)
      return Vis.Logic.Rectangle_2d is
    begin
-      return Vis.Logic.Combine_Rectangle (0.0, 0.0, 0.0, 0.0);
+      return Vis.Logic.Combine_Rectangle (0.0, 0.0, 500.0, 200.0);
    end Get_Logical_Area;
 
    function Get_Visible_Area
      (Widget     : access Graph_Widget_Record'Class)
      return Vis.Logic.Rectangle_2d is
    begin
-      return Vis.Logic.Combine_Rectangle (0.0, 0.0, 0.0, 0.0);
+      return Vis.Logic.Combine_Rectangle (10.0, -3.0, 50.0, 17.0);
    end Get_Visible_Area;
 
    function Get_Location
@@ -606,6 +621,61 @@ package body Giant.Graph_Widgets is
       ---------------------------------------------raise Unimplemented;
       null;
    end Resize_Graph_Widget;
+
+   procedure Find_Or_Create
+     (Widget     : access Graph_Widget_Record'Class;
+      Graph_Edge : in     Graph_Lib.Edge_Id;
+      Edge       :    out Vis_Data.Vis_Edge_Id) is
+
+      Source      : Vis_Data.Vis_Node_Id;
+      Target      : Vis_Data.Vis_Node_Id;
+      Inflections : Natural;
+   begin
+      Edge := Look_Up (Widget, Graph_Edge);
+      if Edge = null then
+         Source := Look_Up (Widget, Graph_Lib.Get_Source_Node (Graph_Edge));
+         Target := Look_Up (Widget, Graph_Lib.Get_Target_Node (Graph_Edge));
+         if Source /= null and then Target /= null then
+            if Source = Target then
+               Inflections := 4;
+            else
+               Inflections := 0;
+            end if;
+            Vis_Data.Enlarge_Pool (Widget.Edge_Layers);
+            Edge := Vis_Data.Create_Edge
+              (Graph_Edge  => Graph_Edge,
+               Source      => Source,
+               Target      => Target,
+               Layer       => Vis_Data.Get_Highest_Layer (Widget.Edge_Layers),
+               Inflections => Inflections);
+            Edge_Id_Mappings.Bind
+              (Map         => Widget.Edge_Map,
+               Key         => Graph_Edge,
+               Value       => Edge);
+         end if;
+      end if;
+   end Find_Or_Create;
+
+   procedure Find_Or_Create
+     (Widget     : access Graph_Widget_Record'Class;
+      Graph_Node : in     Graph_Lib.Node_Id;
+      Node       :    out Vis_Data.Vis_Node_Id) is
+   begin
+      Node := Look_Up (Widget, Graph_Node);
+      if Node = null then
+         Vis_Data.Enlarge_Pool (Widget.Node_Layers);
+         Node := Vis_Data.Create_Node
+           (Graph_Node  => Graph_Node,
+            Layer       => Vis_Data.Get_Highest_Layer (Widget.Node_Layers));
+         Vis_Data.Set_Annotated
+           (Node        => Node,
+            State       => Settings.Has_Annotation (Widget, Node));
+         Node_Id_Mappings.Bind
+           (Map         => Widget.Node_Map,
+            Key         => Graph_Node,
+            Value       => Node);
+      end if;
+   end Find_Or_Create;
 
    function Look_Up
      (Widget     : access Graph_Widget_Record'Class;

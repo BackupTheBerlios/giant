@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.11 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 03:35:59 $
+--  $Date: 2003/07/07 18:39:23 $
 --
 ------------------------------------------------------------------------------
 
@@ -240,6 +240,20 @@ package body Giant.Graph_Widgets.Settings is
       return Widget.Settings.Vis_Style;
    end Get_Style;
 
+   procedure Set_Annotation_Pool
+     (Widget : access Graph_Widget_Record'Class;
+      Pool   : in     Node_Annotations.Node_Annotation_Access) is
+   begin
+      Widget.Settings.Node_Annotation_Pool := Pool;
+   end Set_Annotation_Pool;
+
+   function Get_Annotation_Pool
+     (Widget : access Graph_Widget_Record'Class)
+     return Node_Annotations.Node_Annotation_Access is
+   begin
+      return Widget.Settings.Node_Annotation_Pool;
+   end Get_Annotation_Pool;
+
 
    -----------------------
    -- Color inspections --
@@ -371,19 +385,20 @@ package body Giant.Graph_Widgets.Settings is
      return Find (Widget, Node);
    end Get_Node_Text_Color;
 
-
-   ------------------
-   -- Nodes: Icons --
-   ------------------
-
-   function Can_Find_Annotation
+   function Has_Annotation
      (Widget       : access Graph_Widget_Record'Class;
       Node         : in     Vis_Data.Vis_Node_Id)
      return Boolean is
    begin
-      return False;
-      --Controller.Is_Node_Annotated (Vis_Data.Get_Graph_Node (Node));
-   end Can_Find_Annotation;
+      return Node_Annotations.Is_Annotated
+        (Widget.Settings.Node_Annotation_Pool,
+         Vis_Data.Get_Graph_Node (Node));
+   end Has_Annotation;
+
+
+   ------------------
+   -- Nodes: Icons --
+   ------------------
 
    procedure Get_Annotation_Icon
      (Widget       : access Graph_Widget_Record'Class;
@@ -602,9 +617,9 @@ package body Giant.Graph_Widgets.Settings is
                Colors   => Widget.Settings.All_Colors.all,
                Success  => Success,
                Result   => Result_Count);
-            if Glib."<" (Result_Count, Widget.Settings.All_Colors'Length) then
+            if Glib.">" (Result_Count, 0) then
                Settings_Logger.Error
-                 (Glib.Gint'Image (Glib."-" (Success'Length, Result_Count))
+                 (Glib.Gint'Image (Result_Count)
                   & " colors could not be allocated. Using default colors "
                   & "instead.");
                for I in Success'Range loop
@@ -646,11 +661,9 @@ package body Giant.Graph_Widgets.Settings is
             Name   => Color_Array_Access);
 
       begin
-         for I in Widget.Settings.All_Colors'Range loop
-            Gdk.Color.Free_Colors
-              (Get_Colormap (Widget), Widget.Settings.All_Colors.all);
-            Free (Widget.Settings.All_Colors);
-         end loop;
+         Gdk.Color.Free_Colors
+           (Get_Colormap (Widget), Widget.Settings.All_Colors.all);
+         Free (Widget.Settings.All_Colors);
       end Shut_Down_Color_Array;
 
    end Colors;

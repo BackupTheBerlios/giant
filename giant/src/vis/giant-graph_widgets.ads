@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.21 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.22 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 03:35:59 $
+--  $Date: 2003/07/07 18:39:23 $
 --
 ------------------------------------------------------------------------------
 --
@@ -82,6 +82,7 @@ with Giant.Config.Vis_Styles;
 with Giant.Graph_Lib;
 with Giant.Graph_Lib.Selections;
 with Giant.Graph_Lib.Subgraphs;
+with Giant.Node_Annotations;
 with Giant.Vis;
 with Giant.Vis_Data;
 
@@ -140,11 +141,13 @@ package Giant.Graph_Widgets is
    --  Parameters:
    --    Stream - The stream to read the state from
    --    Widget - Access to a new graph widget
+   --    Pool   - Pool of node annotations
    --  Raises
    --    ...
    procedure Read_Graph_Widget
      (Stream : in     Bauhaus_IO.In_Stream_Type;
-      Widget :    out Graph_Widget);
+      Widget :    out Graph_Widget;
+      Pool   : in     Node_Annotations.Node_Annotation_Access);
 
    ----------------------------------------------------------------------------
    --  Outputs a graph widget to 'Stream'. It can then be read into memory
@@ -168,6 +171,17 @@ package Giant.Graph_Widgets is
    --  Note that the greatest part of the configuration is obtained
    --  directly from the packages 'Giant.Config.*'.
    --  See 'Giant.Graph_Widgets.Settings' for more configuration.
+
+   ----------------------------------------------------------------------------
+   --  Sets the node annotation pool used for 'Widget'. Every node
+   --  in 'Widget' will retrieve its annotation info from this pool.
+   --
+   --  Parameters:
+   --    Widget - The graph widget
+   --    Pool   - The node annotation pool
+   procedure Set_Node_Annotations
+     (Widget : access Graph_Widget_Record'Class;
+      Pool   : in     Node_Annotations.Node_Annotation_Access);
 
    ----------------------------------------------------------------------------
    --  Sets the cursor used inside the graph widget during the time when
@@ -917,6 +931,19 @@ private                    -- private part --
      (Widget : access Graph_Widget_Record'Class;
       Size   : in     Vis.Absolute.Vector_2d);
 
+   --  looks up an existing edge or creates a new one if necessary.
+   --  if the nodes incident cannot be looked up, then sets 'Edge' to null.
+   procedure Find_Or_Create
+     (Widget     : access Graph_Widget_Record'Class;
+      Graph_Edge : in     Graph_Lib.Edge_Id;
+      Edge       :    out Vis_Data.Vis_Edge_Id);
+
+   --  looks up an existing node or creates a new one if necessary
+   procedure Find_Or_Create
+     (Widget     : access Graph_Widget_Record'Class;
+      Graph_Node : in     Graph_Lib.Node_Id;
+      Node       :    out Vis_Data.Vis_Node_Id);
+
    --  returns null if 'not Contains (Widget, Graph_Edge)'
    function Look_Up
      (Widget     : access Graph_Widget_Record'Class;
@@ -1024,6 +1051,8 @@ private                    -- private part --
 
    type Settings_Type is
       record
+         --  Pool of node annotations for some nodes
+         Node_Annotation_Pool   : Node_Annotations.Node_Annotation_Access;
          --  Visualisation style of a graph widget, used to configure
          --  colors and icons
          Vis_Style              : Config.Vis_Styles.Visualisation_Style_Access;
@@ -1060,10 +1089,10 @@ private                    -- private part --
          States      : States_Type;
 
          --  The following must not be used by any subpackage
-         Node_Map    : Node_Id_Mappings.Mapping;
-         Node_Layers : Vis_Data.Layer_Pool;
          Edge_Map    : Edge_Id_Mappings.Mapping;
          Edge_Layers : Vis_Data.Layer_Pool;
+         Node_Map    : Node_Id_Mappings.Mapping;
+         Node_Layers : Vis_Data.Layer_Pool;
          Manager     : Vis_Data.Region_Manager;
       end record;
 

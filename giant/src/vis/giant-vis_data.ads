@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.16 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.17 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 03:35:59 $
+--  $Date: 2003/07/07 18:39:23 $
 --
 ------------------------------------------------------------------------------
 --
@@ -46,10 +46,6 @@ with Giant.Simple_Priority_Queues;
 with Giant.Vis;
 
 package Giant.Vis_Data is
-
-
-   --  To be removed when implementation is done.
-   Unimplemented : exception;
 
 
    ------------
@@ -173,7 +169,7 @@ package Giant.Vis_Data is
    -----------
 
    type Flags_Enumeration_Type is
-     (Hidden,
+     (Hidden, Annotated,
       Current_Local, First_Local, Second_Local, Third_Local,
       First_Global, Second_Global, Third_Global);
 
@@ -455,6 +451,10 @@ package Giant.Vis_Data is
      (Node : in     Vis_Node_Id)
      return Boolean;
 
+   function Is_Annotated
+     (Node : in     Vis_Node_Id)
+     return Boolean;
+
    function Get_Highlighting
      (Node : in     Vis_Node_Id)
      return Flags_Type;
@@ -470,6 +470,10 @@ package Giant.Vis_Data is
    procedure Move_Node
      (Node   : in     Vis_Node_Id;
       Offset : in     Vis.Absolute.Vector_2d);
+
+   procedure Set_Annotated
+     (Node   : in     Vis_Node_Id;
+      State  : in     Boolean);
 
    ----------------------------------------------------------------------------
    --  Total ordering on Vis_Node_Id
@@ -507,17 +511,29 @@ package Giant.Vis_Data is
    --  to find intersection among them.
    --  Should be limited type, but is not in order to allow objects of this
    --  type to be fields in gtk-widget-types (which are not limited).
-   --  The Assignment is nevertheless forbidden and
-   --  will raise 'Region_Manager_Assignment_Unimplemented'
-   type Region_Manager is new Ada.Finalization.Controlled with private;
-
-   ----------------------------------------------------------------------------
-   --  Is raised in the Adjust subprogram for Region_Manager. Assignment
-   --  of Region_Manager instances is not implemented.
-   Region_Manager_Assignment_Unimplemented : exception;
+   --  The Assignment is nevertheless forbidden and can lead to undefined
+   --  behavior.
+   type Region_Manager is private;
 
    package Rectangle_2d_Lists is new Lists
      (ItemType => Vis.Absolute.Rectangle_2d);
+
+   ----------------------------------------------------------------------------
+   --  Must be called before the region manager can be used.
+   --
+   --  Parameters:
+   --    Manager - The object to initialize
+   procedure Set_Up
+     (Manager : in out Region_Manager);
+
+   ----------------------------------------------------------------------------
+   --  Frees all storage used by a region manager. Leaves the region manager
+   --  in an undefined state.
+   --
+   --  Parameters:
+   --    Manager - The object to destroy. Must not be used anymore
+   procedure Destroy
+     (Manager : in out Region_Manager);
 
    ----------------------------------------------------------------------------
    --  Initializes a managed graph display region. If at all then must be
@@ -529,10 +545,6 @@ package Giant.Vis_Data is
    --
    --  If this subprogram is not called then default values will be used.
    --
-   --  Note:
-   --    There is no 'Done_Region_Manager'. Any necessary finalization will
-   --    be handled implicitly since 'Region_Manager' is a descendant of
-   --    'Ada.Finalization.Controlled'.
    --  Parameters:
    --    Manager         - The object to initialize
    --    Size            - Estimate of the size of the display region
@@ -949,23 +961,5 @@ private
          --  be refreshed.
          Empty_Background_Polluted : Boolean;
       end record;
-
-   ----------------------------------------------------------------------------
-   --  Inherited from Ada.Finalization.Controlled
-   --  Must not be called by user.
-   procedure Initialize
-     (Manager : in out Region_Manager);
-
-   ----------------------------------------------------------------------------
-   --  Inherited from Ada.Finalization.Controlled
-   --  Must not be called by user.
-   procedure Adjust
-     (Manager : in out Region_Manager);
-
-   ----------------------------------------------------------------------------
-   --  Inherited from Ada.Finalization.Limited_Controlled
-   --  Must not be calles by user.
-   procedure Finalize
-     (Manager : in out Region_Manager);
 
 end Giant.Vis_Data;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.13 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.14 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 03:35:59 $
+--  $Date: 2003/07/07 18:39:23 $
 --
 ------------------------------------------------------------------------------
 
@@ -171,7 +171,8 @@ package body Giant.Vis_Data is
          Left_Arrow_Point  => Vis.Absolute.Zero_2d,
          Right_Arrow_Point => Vis.Absolute.Zero_2d,
          Regions           => Region_Lists.Create,
-         Flags             => (Hidden => False, Highlight_Type => False));
+         Flags             => (Hidden => False, Annotated => False,
+                               Highlight_Type => False));
    end Create_Edge;
 
    procedure Destroy
@@ -381,7 +382,8 @@ package body Giant.Vis_Data is
          Incoming_Edges => Vis_Edge_Lists.Create,
          Outgoing_Edges => Vis_Edge_Lists.Create,
          Regions        => Region_Lists.Create,
-         Flags          => (Hidden => False, Highlight_Type => False));
+         Flags          => (Hidden => False, Annotated => False,
+                            Highlight_Type => False));
    end Create_Node;
 
    procedure Destroy
@@ -459,6 +461,13 @@ package body Giant.Vis_Data is
       return Node.Flags (Hidden);
    end Is_Hidden;
 
+   function Is_Annotated
+     (Node : in     Vis_Node_Id)
+     return Boolean is
+   begin
+      return Node.Flags (Annotated);
+   end Is_Annotated;
+
    function Get_Highlighting
      (Node : in     Vis_Node_Id)
      return Flags_Type is
@@ -484,6 +493,13 @@ package body Giant.Vis_Data is
       pragma Assert (Region_Lists.IsEmpty (Node.Regions));
       Vis.Absolute.Move (Node.Extent, Offset);
    end Move_Node;
+
+   procedure Set_Annotated
+     (Node  : in     Vis_Node_Id;
+      State : in     Boolean) is
+   begin
+      Node.Flags (Annotated) := State;
+   end Set_Annotated;
 
    function Is_Node_Below
      (Left  : in     Vis_Node_Id;
@@ -800,6 +816,21 @@ package body Giant.Vis_Data is
    ---------------------
    -- Region_Managers --
    ---------------------
+
+   procedure Set_Up
+     (Manager : in out Region_Manager) is
+   begin
+      Manager.Region_Width := Default_Region_Width;
+      Manager.Region_Height := Default_Region_Height;
+      Manager.Regions := Region_Mappings.Create;
+      Manager.Empty_Background_Polluted := True;
+   end Set_Up;
+
+   procedure Destroy
+     (Manager : in out Region_Manager) is
+   begin
+      Region_Mappings.Destroy (Manager.Regions);
+   end Destroy;
 
    procedure Init_Region_Manager
      (Manager         : in out Region_Manager;
@@ -1448,28 +1479,6 @@ package body Giant.Vis_Data is
       Destroy_Clipping_Queue (Clipping);
       Node_Update_Iterators.Destroy (Nodes);
    end End_Node_Refresh;
-
-
-   procedure Initialize
-     (Manager : in out Region_Manager) is
-   begin
-      Manager.Region_Width := Default_Region_Width;
-      Manager.Region_Height := Default_Region_Height;
-      Manager.Regions := Region_Mappings.Create;
-      Manager.Empty_Background_Polluted := True;
-   end Initialize;
-
-   procedure Finalize
-     (Manager : in out Region_Manager) is
-   begin
-      Region_Mappings.Destroy (Manager.Regions);
-   end Finalize;
-
-   procedure Adjust
-     (Manager : in out Region_Manager) is
-   begin
-      raise Region_Manager_Assignment_Unimplemented;
-   end Adjust;
 
 
    -----------------------

@@ -6,22 +6,22 @@
 
    <!-- ................................................................. -->
    <global_settings
-      vis_window_background_color="RBG:AA/AA/AA"/> 
+      vis_window_background_color="white"/> 
 
    <!-- ................................................................. -->
 
    <default_node_setting
       icon         = "node_icon1.xpm"
-      text_color   = "RGB:AA/AA/AA"
-      border_color = "RGB:AA/AA/AA"
-      fill_color   = "RGB:AA/AA/AA"> 
+      text_color   = "black"
+      border_color = "red"
+      fill_color   = "blue"> 
    </default_node_setting>
 
 
    <!-- ................................................................. -->
    <default_edge_setting
-      line_color = "RGB:AA/AA/AA"     
-      text_color = "RGB:AA/AA/AA"     
+      line_color = "green"     
+      text_color = "black"     
       line_style = "dotted_line"      
       show_label = "yes" />  
       
