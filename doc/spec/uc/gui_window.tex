@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.28 $
-%  $Date: 2003/03/31 22:02:25 $
-%  $Author: squig $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.29 $
+%  $Date: 2003/04/02 12:08:05 $
+%  $Author: schulzgt $
 %
 %  Description: UseCases für die Fensterfunktionalität der GUI
 %
@@ -15,20 +15,13 @@
 Über diesen UseCase kann der Benutzer neue Anzeigefenster innerhalb eines
 Projektes anlegen.
 
-
   \begin{precond}
     \cond Ein Projekt ist geladen.
   \end{precond}
 
   \begin{postsuccess}
-    \cond 
-    Das neue, leere Anzeigefenster ist geöffnet.
-    
-    \cond
-    Das neue Anzeigefenster ist Bestandteil des Projektes. Eine
-    Verwaltungsdatei für das Anzeigefenster ist im Projektverzeichnis
-    angelegt.
-
+    \cond Das neue, leere Anzeigefenster ist geöffnet.
+    \cond Das neue Anzeigefenster ist Bestandteil des Projektes.
   \end{postsuccess}
 
   \begin{postfail}
@@ -38,39 +31,197 @@ Projektes anlegen.
   \begin{proc}    
     \step[1] 
     Der Benutzer startet den UseCase über das Popup Menü
-    \ref{WINDOW-LIST-POPUP} durch Auswahl von \gq{New Window}.
+    \ref{WINDOW-LIST-POPUP} durch Auswahl von \gq{New Window}.        
     
-    \step[2] 
-    GIANT öffnet den allgemeinen Texteingabedialog 
-    \gq{Enter Name For New Window} (siehe \ref{DIALOG-WINDOW}).
-      
-    \step[3] 
-    Der Benutzer gibt dort einen zulässigen Namen für das neue Anzeigefenster
-    ein und bestätigt seine Eingabe mit OK.
-    
-    \step[4]
+    \step[2]
     GIANT erzeugt ein neues Anzeigefenster (siehe  \ref{GUI Anzeigefenster})
-    und öffnet dies.
-  
+    mit einem Namen nach dem Schema ,,Unknown\_??'' und öffnet dies.
   \end{proc}
 
   \begin{aproc}
-    \astep{3} Der Benutzer bricht die Verarbeitung mit Cancel ab.
+    \ageneral Es sind keine alternativen Abläufe vorgesehen.
   \end{aproc}
-
-
 \end{uc}
 
 
+% ==============================================================================
+\begin{uc}[Anzeigefenster öffnen]{UC: Anzeigefenster öffnen}
+\index{Anzeigefenster!öffnen}
+
+Dient zum Öffnen eines Anzeigefensters des Projektes.
+
+  \begin{precond}
+    \cond Ein Projekt mit mindestens einem Anzeigefenster ist geladen.
+    \cond Es gibt mindestens ein nicht geöffnetes Anzeigefenster.
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond Das Anzeigefenster ist geöffnet.
+  \end{postsuccess}
+
+  \begin{postfail}
+    \cond Es sind keine Fehlerfälle vorgesehen.
+  \end{postfail}
+
+  \begin{proc}    
+    \step[1]
+    Der Benutzer führt einen Doppelklick auf ein nicht geöffnetes
+    Anzeigefenster in der Liste über die Anzeigefenster
+    (siehe \ref{WINDOW-LIST}) durch, oder wählt im zugehöhrigen Popup Menü
+    \ref{WINDOW-LIST-POPUP} den Eintrag ,,Open'' aus.
+   
+    \step[2]
+    GIANT öffnet das entsprechende Anzeigefenster.
+  \end{proc}  
+
+  \begin{aproc}
+    \ageneral Es sind keine alternativen Abläufe vorgesehen.
+  \end{aproc}
+\end{uc}
+
+% ==============================================================================
+\begin{uc}[Anzeigefenster umbenennen]{UC: Anzeigefenster umbenennen}
+\index{Anzeigefenster!umbenennen}
+
+Dient zum Umbenennen eines Anzeigefensters des Projektes.
+
+  \begin{precond}
+    \cond Ein Projekt mit mindestens einem Anzeigefenster ist geladen.
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond Das Anzeigefenster hat einen neuen Namen.
+  \end{postsuccess}
+
+  \begin{postfail}
+    \cond Es sind keine Fehlerfälle vorgesehen.
+  \end{postfail}
+
+  \begin{proc}    
+    \step[1]
+    Der Benutzer führt einen Rechtsklick auf ein Anzeigefenster in der Liste
+    über die Anzeigefenster (siehe \ref{WINDOW-LIST}) durch und wählt im
+    Popup Menü \ref{WINDOW-LIST-POPUP} den Eintrag ,,Rename'' aus.
+
+    \step[2] 
+    GIANT öffnet den allgemeinen Texteingabedialog 
+    \gq{Enter Name For Window} (siehe \ref{DIALOG-WINDOW}).
+
+    \step[3]
+    Der Benutzer gibt dort einen zulässigen Namen für das Anzeigefenster ein
+    und bestätigt seine Eingabe mit OK.
+    
+    \step[4]
+    GIANT benennt das Anzeigefenster (siehe \ref{GUI Anzeigefenster}) um.
+  \end{proc}  
+
+  \begin{aproc}
+    \ageneral Es sind keine alternativen Abläufe vorgesehen.
+  \end{aproc}
+\end{uc}
+
+
+% ==============================================================================
+\begin{uc}[Anzeigefenster speichern]{UC: Anzeigefenster speichern}
+\index{Anzeigefenster!speichern}
+
+Mit diesem UseCase wird ein Anzeigefenster gespeichert.
+Näheres zur Persistenz von Anzeigefenstern ist unter Abschnitt
+\ref{Project Persistenz der Projekte} spezifiziert.
+
+  \begin{precond}
+    \cond Ein Projekt mit mindestens einem Anzeigefenster ist geladen.
+  \end{precond}
+
+  \begin{postsuccess}  
+    \cond Nach dem letzten Speichern am Anzeigefenster vorgenommene
+    Modifikationen (neue Knoten eingefügt etc.) sind in der Verwaltungsdatei
+    (siehe \ref {Project Verwaltungsdateien für Anzeigefenster}) gespeichert.
+  \end{postsuccess}  
+
+  \begin{postfail}
+    \cond Es sind keine Fehlerfälle vorgesehen.
+  \end{postfail}
+
+  \begin{proc}
+    \step[1]
+    Der Benutzer führt einen Rechtsklick auf ein Anzeigefenster in der Liste
+    über die Anzeigefenster (siehe \ref{WINDOW-LIST}) durch und wählt im
+    Popup Menü \ref{WINDOW-LIST-POPUP} den Eintrag ,,Save'' aus.
+    
+    \step[2]
+    GIANT schreibt alle Änderungen in die Verwaltungsdatei des Anzeigefensters.
+  \end{proc}  
+
+  \begin{aproc}
+    \ageneral
+    Es sind keine alternativen Abläufe vorgesehen.
+  \end{aproc}
+\end{uc}
+
+
+% ==============================================================================
+\begin{uc}[Anzeigefenster schliessen]{UC: Anzeigefenster schlie\ss en}
+\index{Anzeigefenster!schlie\ss en}
+
+Mit diesem UseCase wird ein geöffnetes Anzeigefenster geschlossen.
+Näheres zur Persistenz von Anzeigefenstern ist unter Abschnitt
+\ref{Project Persistenz der Projekte} spezifiziert.
+
+  \begin{precond}
+    \cond Ein Projekt mit mindestens einem Anzeigefenster ist geladen.
+    \cond Es gibt mindestens ein geöffnetes Anzeigefenster.
+  \end{precond}
+
+  \begin{postsuccess}  
+    \cond Das Anzeigefenster ist geschlossen.    
+    \cond Nach dem letzten Speichern am Anzeigefenster vorgenommene
+    Modifikationen (neue Knoten eingefügt etc.) sind in der Verwaltungsdatei
+    (siehe \ref {Project Verwaltungsdateien für Anzeigefenster})
+    gespeichert oder nicht.
+  \end{postsuccess}  
+
+  \begin{postfail}
+    \cond Es sind keine Fehlerfälle vorgesehen.
+  \end{postfail}
+
+  \begin{proc}    
+    \step[1]
+    Der Benutzer schließt das Anzeigefenster (durch klicken auf das ''X''
+    Symbol rechts oben in der Titelleiste des Anzeigefensters).\\
+    Alternativ kann er das Anzeigefenster über das entsprechende
+    Popup-Menü \ref{WINDOW-LIST-POPUP} in der Liste über die
+    Anzeigefenster des Projektes (siehe \ref{WINDOW-LIST}) schließen.
+         
+    \step[2]
+    GIANT zeigt die allgemeine Sicherheitsabfrage 
+    (siehe \ref{Sicherheitsabfrage}) und fragt nach, ob eventuelle
+    Änderungen im Anzeigefenster gespeichert werden sollen oder nicht
+    \gq{The content has changed. Do you want to save the changes?}.
+    
+    \step[3]
+    Bestätigt der Benutzer mit YES, werden die Änderungen in die 
+    Verwaltungsdatei geschrieben. Anderenfalls gehen sämtliche 
+    nicht gespeicherten Änderungen am Anzeigefenster verloren.
+    
+    \step[4]
+    GIANT schließt das Anzeigefenster.
+  \end{proc}  
+
+  \begin{aproc}
+    \ageneral
+    Es sind keine alternativen Abläufe vorgesehen.
+  \end{aproc}
+\end{uc}
 
 
 % ==============================================================================
 \begin{uc}[Anzeigefenster löschen]{UC: Anzeigefenster löschen}
 \index{Anzeigefenster!löschen}
-Mit diesem UseCase werden bestehende Anzeigefenster aus dem Projekt 
-entfernt und gelöscht. Alle Informationen zu dem Anzeigefenster
-gehen hierbei unwiederbringlich verloren.
 
+Mit diesem UseCase werden bestehende Anzeigefenster aus dem Projekt entfernt
+und gelöscht. Alle Informationen zu dem Anzeigefenster gehen hierbei
+unwiederbringlich verloren.
 
   \begin{precond}
     \cond Ein Projekt mit mindestens einem Anzeigefenster ist geladen.
@@ -93,14 +244,13 @@ gehen hierbei unwiederbringlich verloren.
   
   \begin{proc}    
     \step[1]
-    Der Benutzer startet den UseCase über das Popup-Menü \ref{WINDOW-LIST-POPUP}.
+    Der Benutzer startet den UseCase über das
+    Popup-Menü \ref{WINDOW-LIST-POPUP}.
     
     \step[2] 
     GIANT zeigt die allgemeine Sicherheitsabfrage (siehe 
-    \ref{Sicherheitsabfrage})
-    und fragt nach, ob das
-    Anzeigefenster wirklich gelöscht werden soll.
-    \gq{Do you really want to delete the selected window?}
+    \ref{Sicherheitsabfrage}) und fragt nach, ob das Anzeigefenster wirklich
+    gelöscht werden soll. \gq{Do you really want to delete the selected window?}
       
     \step[3] 
     Der Benutzer bestätigt mit YES.
@@ -109,125 +259,11 @@ gehen hierbei unwiederbringlich verloren.
     GIANT entfernt das Anzeigefenster aus dem Projekt und löscht die 
     zugehörige Verwaltungsdatei (siehe auch   
     \ref {Project Verwaltungsdateien für Anzeigefenster}).
-  
   \end{proc}
 
   \begin{aproc}
     \astep{3} Der Benutzer bricht die Verarbeitung mit NO ab.
   \end{aproc}
-  
-\end{uc}
-
-
-% ==============================================================================
-\begin{uc}[Anzeigefenster öffnen]{UC: Anzeigefenster öffnen}
-\index{Anzeigefenster!öffnen}
-Dient zum Öffnen eines Anzeigefensters des Projektes.
-
-
-  \begin{precond}
-    \cond Ein Projekt mit mindestens einem Anzeigefenster ist geladen.
-    \cond Es gibt mindestens ein nicht geöffnetes Anzeigefenster.
-  \end{precond}
-
-  \begin{postsuccess}
-  
-    \cond Das Anzeigefenster ist geöffnet.
- 
-  \end{postsuccess}
-
-  \begin{postfail}
-
-    \cond 
-    Es sind keine Fehlerfälle vorgesehen.
-
-  \end{postfail}
-  
-
-  \begin{proc}    
-
-    \step[1]
-    Der Benutzer führt einen Rechtsklick auf ein nicht geöffnetes
-    Anzeigefenster in der Liste über die Anzeigefenster
-    (siehe \ref{WINDOW-LIST}) durch und wählt im
-    Popup Menü \ref{WINDOW-LIST-POPUP} den entsprechenden Eintrag aus.
-   
-    \step[2]
-    GIANT öffnet das entsprechende Anzeigefenster.
-  
-  \end{proc}  
-
-  \begin{aproc}
-    \ageneral
-    Es sind keine alternativen Abläufe vorgesehen.
-  \end{aproc}
-  
- 
-\end{uc}
-
-% ==============================================================================
-\begin{uc}[Anzeigefenster schliessen]{UC: Anzeigefenster schlie\ss en}
-\index{Anzeigefenster!schlie\ss en}
-Mit diesem UseCase wird ein geöffnetes Anzeigefenster geschlossen.
-Näheres zur Persistenz von Anzeigefenstern ist unter
-Abschnitt \ref{Project Persistenz der Projekte} spezifiziert.
-
-  \begin{precond}
-    \cond Ein Projekt mit mindestens einem Anzeigefenster ist geladen.
-    \cond Es gibt mindestens ein geöffnetes Anzeigefenster.
-  \end{precond}
-
-  \begin{postsuccess}
-  
-    \cond Das Anzeigefenster ist geschlossen.
-    
-    \cond Nach dem letzten Speichern am Anzeigefenster vorgenommene
-    Modifikationen (neue Knoten eingefügt etc.) sind in der Verwaltungsdatei
-    (siehe \ref {Project Verwaltungsdateien für Anzeigefenster})
-    gespeichert oder nicht.
- 
-  \end{postsuccess}  
-
-  \begin{postfail}
-
-    \cond 
-    Es sind keine Fehlerfälle vorgesehen.
-  \end{postfail}
-
-
-  \begin{proc}    
-    
-    \step[1] Der Benutzer schließt das Anzeigefenster (durch klicken
-    auf das ''X''
-    Symbol rechts oben in der Titelleiste des Anzeigefensters).\\
-    Alternativ kann er das Anzeigefenster über das entsprechende
-    Popup-Menü \ref{WINDOW-LIST-POPUP} in der Liste über die
-    Anzeigefenster des Projektes (siehe \ref{WINDOW-LIST}) schließen.
-         
-    \step[2]
-    GIANT zeigt die allgemeine Sicherheitsabfrage 
-    (siehe \ref{Sicherheitsabfrage}) und fragt nach, ob eventuelle
-    Änderungen im Anzeigefenster gespeichert werden sollen oder nicht
-    \gq{The content has changed. Do you want to save the changes?}.
-    
-    
-    \step[3]
-    Bestätigt der Benutzer mit YES, werden die Änderungen in die 
-    Verwaltungsdatei geschrieben. Anderenfalls gehen sämtliche 
-    nicht gespeicherten Änderungen am Anzeigefenster verloren.
-    
-    \step[4]
-    GIANT schließt das Anzeigefenster.
-  
-  \end{proc}  
-
-  \begin{aproc}
-    \ageneral
-    Es sind keine alternativen Abläufe vorgesehen.
-  \end{aproc}
-  
-
-
 \end{uc}
 
 
