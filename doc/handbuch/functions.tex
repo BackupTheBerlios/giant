@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: functions.tex,v $, $Revision: 1.20 $
-%  $Date: 2003/09/19 19:57:06 $
+%  $RCSfile: functions.tex,v $, $Revision: 1.21 $
+%  $Date: 2003/09/19 20:26:03 $
 %  $Author: birdy $
 %
 %  Description: 
@@ -70,8 +70,8 @@ IML-Teilgraphen des aktuell geöffneten Projektes (siehe
 Über Popup-Menüs können IML-Teilgraphen
 und Anzeigefenster manipuliert werden.
 
-Im Fenster befinden sich zwei Listen, Window List und
-Subgraph List.
+Im Fenster befinden sich zwei Listen, Window List (1) und
+Subgraph List (2).
 
 
   \subsection {Titelzeile}
@@ -187,7 +187,7 @@ Subgraph List.
   Statuszeile werden Informationen zum aktuellen Zustand von GIANT
   dargestellt.
 
-   \subsection {Window List}
+   \subsection {Window List (1)}
   
    Im Hauptfenster befindet sich zuoberst eine Liste \gq{Window List}, welche
    alle Anzeigefenster des Projektes (offen und geschlossen anzeigt).
@@ -224,7 +224,7 @@ Subgraph List.
 	     Löscht ein Fenster aus dem Projektverzeichnis, es wird auch aus der Window List gelöscht.
         \end{enumerate}
     
-  \subsection {Subgraph List}
+  \subsection {Subgraph List (2)}
   \label{GUI Subgraph List}
     
     Unter der Window List befindet sich eine Liste \gq{Subgraph List} mit
@@ -306,16 +306,16 @@ Subgraph List.
 
   In Anzeigefenstern (Visualization Windows) werden Teile des IML-Graphen
   visualisiert.  Sie erscheinen im großen quadratischen rechten Teil
-  (\gq{Vis Pane}) des Fensters. Die Vis Pane enthält den Anzeigeinhalt
+  (\gq{Vis Pane} (6)) des Fensters. Die Vis Pane enthält den Anzeigeinhalt
   des Fensters.  Im linken Teil des Fensters, der Toolbar
   (\gq{Vis Toolbar}) befinden sich untereinander die
-  MiniMap, Pinliste, Selektionsliste, die Stilauswahl-Combobox und die
-  Zoom-Kontrolle. Dieser Teil kann durch Verschieben des entsprechenden
-  Buttons unten an der Trennleiste in der Größe verändert werden.
+  MiniMap (1), Pinliste (2), Selektionsliste (3), die Stilauswahl-Combobox (4) und die
+  Zoom-Kontrolle (5). Dieser Teil kann durch Verschieben des entsprechenden
+  Buttons (7) unten an der Trennleiste in der Größe verändert werden.
   \index{Zoom-Kontrolle}
   \index{Visualisierungsstile!Stilauswahl-Combobox}
 
- \subsection {MiniMap} \label{GUI Minimap}
+ \subsection {MiniMap (1)} \label{GUI Minimap}
  \index{Minimap} 
  
  In der MiniMap wird der Anzeigeinhalt verkleinert dargestellt,
@@ -329,7 +329,7 @@ Subgraph List.
  Vergrößert sich die von Knoten bedeckte Fläche im Fenster, z.B. durch
  Einfügen von Teilgraphen, so verändert sich auch die Minimap entsprechend.
 
-  \subsection{Visualisierung der Knoten und Kanten}
+  \subsection{Visualisierung der Knoten und Kanten (6)}
 
     In der Vis Pane werden die Fenster-Knoten und Fenster-Kanten angezeigt.
  
@@ -430,7 +430,7 @@ Subgraph List.
 	      Kante bezogen ausgeführt werden, d.h. ihnen wird die ID der Kante
 	      als Parameter übergeben.
 
-  \subsection{Pins} \label{VIS-PANE-Pins}
+  \subsection{Pins (2)} \label{VIS-PANE-Pins}
   \index{Pins}
 
     In der Pinliste (\gq{Pin List}) können Pins angesprungen oder verändert werden.
@@ -448,7 +448,7 @@ Subgraph List.
             Mittels dieses Menüpunktes kann der Pin aus der Pinliste gelöscht werden.
     \end{enumerate}
 
-  \subsection{Selektionsauswahlliste} \label{Selektionsauswahlliste}
+  \subsection{Selektionsauswahlliste (3)} \label{Selektionsauswahlliste}
     Die Selektionsauswahlliste hat die Spalten \gq{Name} mit dem Namen der
     Selektion, \gq{Color} mit der Farbe der Selektion und \gq{Active}
     mit \gq{Yes} bei der aktiven Selektion.
@@ -585,14 +585,14 @@ Subgraph List.
     \end{enumerate}    
 
 
-  \subsection{Stilauswahl-Combobox}
+  \subsection{Stilauswahl-Combobox (4)}
   \label{GUI Stilauswahl-Combobox}   
 
     In der Stilauswahl-Combobox (\gq{Style Chooser}) kann ein 
     Visualisierungsstil (siehe auch \ref{Config Visualisierungsstile})
     ausgewählt werden.
 
-  \subsection{Zoom-Kontrolle} \label{GUI Zoom-Kontrolle}  
+  \subsection{Zoom-Kontrolle (5)} \label{GUI Zoom-Kontrolle}  
 
     Die Zoom-Kontrolle besteht aus folgenden Elementen:
     
@@ -612,7 +612,7 @@ Subgraph List.
   Mittels der Buttons \gq{+}und \gq{-} kann die Zoomstufe nach oben bzw. unten
   verändert werden, pro Klick verändert sie sich um einen bestimmten Betrag.
  
-    \subsection{Scrollbars}
+    \subsection{Scrollen}
     \label{Scrolleisten}
     
     Der sichtbare Anzeigeinhalt kann folgendermassen gescrollt werden:
@@ -639,11 +639,11 @@ Subgraph List.
     können nähere Informationen zu Fenster-Knoten angezeigt werden.\\
     
     Im Knoten-Informationsfenster wird die ID und die Knotenklasse des 
-    vom Fenster-Knoten repräsentierten IML-Knotens dargestellt,
+    vom Fenster-Knoten repräsentierten IML-Knotens dargestellt (1),
     darunter befindet sich die Liste \gq{Attributes} mit den Attributen
-    des Knotens.\\
+    des Knotens (2).\\
     
-    Unter der Liste befinden sich nebeneinander die Buttons
+    Unter der Liste (2) befinden sich nebeneinander die Buttons
     \gq{Pick}, \gq{Update}, \gq{Annotate} und \gq{Close}. 
     \gq{Pick} dient zur Auswahl eines anderen Fenster-Knotens 
     mittels des Fadenkreuzcursors, dazu wird nach Klicken von \gq{Pick}
@@ -738,22 +738,22 @@ TARGET := LEFT\_SOURCE <Operation> RIGHT\_SOURCE \\
 Bestandteile des Dialoges sind:
 \begin {enumerate}
 
- \item LEFT\_SOURCE Combobox\\
+ \item Left Source Combobox\\
  Soll eine Mengenoperation für Selektionen ausgeführt werden, so kann hier eine der
  Selektionen des entsprechenden Anzeigefensters ausgewählt werden.\\
  Bei einer Mengenoperation über IML-Teilgraphen, werden alle IML-Teilgraphen
  des Projektes angezeigt, von denen dann einer ausgewählt werden kann.
  
- \item <Operation> Combobox\\
+ \item Operation Combobox\\
  Mengenoperation, die ausgeführt werden soll; auswählbar sind: Union, Difference oder Intersection.
 
- \item RIGHT\_SOURCE Combobox\\
+ \item Right Source Combobox\\
  Soll eine Mengenoperation für Selektionen ausgeführt werden, so kann hier eine der
  Selektionen des entsprechenden Anzeigefensters ausgewählt werden.\\
  Bei einer Mengenoperation über IML-Teilgraphen, werden alle IML-Teilgraphen
  des Projektes angezeigt, von denen dann einer ausgewählt werden kann..
  
- \item TARGET Textfeld\\
+ \item Target Textfeld\\
  Name der neuen Selektion oder des neuen IML-Teilgraphen als Ergebnis
  der Mengenoperation.
  
@@ -777,9 +777,9 @@ Der Layoutalgorithmen Dialog (siehe Abbildung \ref{Layout-Algorithm-Dialog-Pic})
 wird über Popup-Menüs auf Selektionen aufgerufen und bietet folgende Möglichkeiten:
 
 \begin {enumerate} 
- \item Anzeige der zu layoutenden Selektion mit dem zu layoutenden Fenster
+ \item Anzeige der zu layoutenden Selektion mit dem zu layoutenden Fenster (1)
  \item {Auswahl des Layoutalgorithmus}\\
-       Über die Tabs im Fenster kann der Layoutalgorithmus ausgewählt werden,
+       Über die Tabs (4) im Fenster kann der Layoutalgorithmus ausgewählt werden,
        in der aktuellen Version stehen zur Auswahl: Matrix, Tree Layout,
        Other (für spätere Erweiterungen).\\
        Das Tree-Layout ordnet die Knoten als Baum an, dessen Wurzel anhand
@@ -788,8 +788,8 @@ wird über Popup-Menüs auf Selektionen aufgerufen und bietet folgende Möglichkeit
        werden kann) festgelegt wird.\\
        Das Matrix-Layout ordnet die Knoten in einer Matrix an.\\
        
- \item Ggf. Eingabefeld für die ID des Wurzelknotens bei Treelayouts
- \item {Ggf. Auswahl der für das Layout der Knoten zu berücksichtigenden Klassenmengen
+ \item Ggf. Eingabefeld für die ID des Wurzelknotens bei Treelayouts (2)
+ \item {Ggf. Auswahl der für das Layout der Knoten zu berücksichtigenden Klassenmengen (3)
         (class sets, siehe \ref{Config-Klassenmengen} und \ref{Klassenmenge}) bei semantischen Tree-Layouts.}\\
 	Nur Klassenmengen, die in der Liste per Mausklick markiert worden sind
 	(Mehrfachmarkierungen sind möglich), werden für das Layout berücksichtigt.
