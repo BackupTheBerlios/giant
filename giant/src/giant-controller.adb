@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.61 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.62 $
 --  $Author: squig $
---  $Date: 2003/07/18 15:40:31 $
+--  $Date: 2003/07/18 16:40:08 $
 --
 
 with Ada.Strings.Unbounded;
@@ -286,6 +286,10 @@ package body Giant.Controller is
      return Boolean
    is
    begin
+      if (not Project_Loaded) then
+         return True;
+      end if;
+
       if (not Gui_Manager.Close_Project (Ask_For_Confirmation)) then
          return False;
       end if;
@@ -293,12 +297,8 @@ package body Giant.Controller is
       Logger.Info (-"Closing current project");
 
       Project_Loaded := False;
-      --  FIX
-      --  Current_Project := Projects.Null_Project;
 
       Projects.Deallocate_Project_Deep (Current_Project);
-
-      --  FIX cont'd
       Current_Project := Projects.Null_Project;
 
       Graph_Lib.Unload;
@@ -311,6 +311,7 @@ package body Giant.Controller is
       Graph_Filename   : in String)
    is
       Checksum : Integer;
+      Closed : Boolean;
    begin
       --  check this now to avoid loading the graph
       if (Projects.Is_Already_A_Project_File_In_Directory
@@ -318,6 +319,13 @@ package body Giant.Controller is
           then
          raise Projects.Directory_Holds_Already_A_Project_File_Exception;
       end if;
+
+      --  create directory
+      File_Management.Create_Dir_Path
+        (File_Management.Get_Path (Project_Filename));
+
+      --  should not fail
+      Closed := Close_Project;
 
       --  create graph
       Graph_Lib.Load (Graph_Filename);
@@ -388,11 +396,15 @@ package body Giant.Controller is
    is
       Graph_Filename : String
         := Projects.Get_Bauhaus_IML_Graph_File (Filename);
+      Closed : Boolean;
    begin
       --  check this now to avoid loading the graph
       if (not Projects.Does_Project_Exist_File (Filename)) then
          raise Projects.Project_Does_Not_Exist_Exception;
       end if;
+
+      --  should not fail
+      Closed := Close_Project;
 
       --  create graph
       Logger.Info (-"Loading graph " & Graph_Filename);

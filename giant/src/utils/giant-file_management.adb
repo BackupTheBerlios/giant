@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.21 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.22 $
 -- $Author: squig $
--- $Date: 2003/07/18 15:59:50 $
+-- $Date: 2003/07/18 16:40:08 $
 --
 --
 
@@ -442,39 +442,23 @@ package body Giant.File_Management is
    function Return_Dir_Path_For_File_Path (File_Path : String)
                                           return String is
 
-      Path          : Ada.Strings.Unbounded.Unbounded_String;
       -- Position of last directory spearator in "File_Path"
       -- that separates the path from the file name;
-      Cut_Index     : Integer := 0;
       Dir_Separator : Character := GNAT.OS_Lib.Directory_Separator;
-      Path_Found    : Boolean := False;
-
    begin
-
       for I in reverse File_Path'Range loop
-
          if (File_Path(I) = Dir_Separator) then
-            Path_Found := True;
-            Cut_Index := I;
-
-            exit;
+            if (GNAT.OS_Lib.Is_Directory
+                (File_Path(File_Path'First .. I)) = False) then
+               raise Directory_Could_Not_Be_Calculated_Exception;
+            end if;
+            return File_Path(File_Path'First .. I);
          end if;
       end loop;
 
       -- Return current "working directory for the execution environment"
       -- if only a filename with no path (directory) was passed.
-      if (Path_Found = False) then
-
-         return GNAT.Directory_Operations.Get_Current_Dir;
-      end if;
-
-      if (GNAT.OS_Lib.Is_Directory
-          (File_Path(File_Path'First .. Cut_Index)) = False) then
-
-         raise Directory_Could_Not_Be_Calculated_Exception;
-      end if;
-
-      return File_Path(File_Path'First .. Cut_Index);
+      return GNAT.Directory_Operations.Get_Current_Dir;
    end Return_Dir_Path_For_File_Path;
 
    ---------------------------------------------------------------------------
@@ -686,5 +670,21 @@ package body Giant.File_Management is
 
       Execute (Ada.Strings.Unbounded.To_String (Parsed_Command_String));
    end Execute_External_Editor;
+
+   ---------------------------------------------------------------------------
+   function Get_Path
+     (Filename : in String)
+     return String
+   is
+      Path : Ada.Strings.Unbounded.Unbounded_String;
+      Dir_Separator : Character := GNAT.OS_Lib.Directory_Separator;
+   begin
+      for I in reverse Filename'Range loop
+         if (Filename (I) = Dir_Separator) then
+            return Filename (Filename'First .. I);
+         end if;
+      end loop;
+      return "";
+   end Get_Path;
 
 end Giant.File_Management;

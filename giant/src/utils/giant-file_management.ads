@@ -20,10 +20,10 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.ads,v $, $Revision: 1.16 $
+-- $RCSfile: giant-file_management.ads,v $, $Revision: 1.17 $
 
--- $Author: schwiemn $
--- $Date: 2003/07/15 11:57:48 $
+-- $Author: squig $
+-- $Date: 2003/07/18 16:40:08 $
 --
 -- -----------------------------------------------
 --
@@ -46,7 +46,7 @@ package Giant.File_Management is
    -- Raised if an not existing of incorrect directory is passed
    -- as parameter.
    Invalid_Directory_Exception : exception;
-   
+
    ---------------------------------------------------------------------------
    -- Returns file names from a Directory.
    -- Each returned unbounded String in the list corresponds
@@ -95,7 +95,7 @@ package Giant.File_Management is
       Filter         : in Boolean;
       Filter_String  : in String)
      return String_Lists.List;
-             
+
    ---------------------------------------------------------------------------
    -- This function tries to locate a file in a passed list holding
    -- absolute paths to directories (relative paths will be expanded
@@ -109,9 +109,9 @@ package Giant.File_Management is
    --
    -- Invalid / not existing directories in Directory_List will be
    -- ignored.
-   -- 
+   --
    -- Parameters:
-   --   Directory_List - A list holding paths to directories. 
+   --   Directory_List - A list holding paths to directories.
    --   File_Name - The name of a file (incl. ending).
    -- Returns:
    --   An absolute path to the file File_Name if it is found in one
@@ -121,7 +121,7 @@ package Giant.File_Management is
       (Directory_List : in String_Lists.List;
        File_Name      : in String)
       return String;
-      
+
    ---------------------------------------------------------------------------
    -- Raised if a file does not exist
    File_Does_Not_Exist_Exception : exception;
@@ -139,7 +139,7 @@ package Giant.File_Management is
    -- Raised if an existing directory path could not be calculated out
    -- of a path to a file name.
    Directory_Could_Not_Be_Calculated_Exception : exception;
-   
+
    ---------------------------------------------------------------------------
    -- Raised if no exsiting absolute path (to file or dir) could be
    -- calculated out of passed parameters.
@@ -165,7 +165,7 @@ package Giant.File_Management is
 
    ---------------------------------------------------------------------------
    -- For a passed path to a directory this subprogram will check whether
-   -- all directories that are part of the path exist, if not the missing 
+   -- all directories that are part of the path exist, if not the missing
    -- directories (at the ende of "Dir_Path") will be created.
    --
    -- Parameters:
@@ -255,22 +255,22 @@ package Giant.File_Management is
      (Start_Dir    : in String;
       Rel_Dir_Path : in String)
      return String;
-          
-   ----------------------------------------------------------------------------  
+
+   ----------------------------------------------------------------------------
    --  Tries to calculate absolute paths without differing between files
    --  and directories.
-   --  
+   --
    --  Directories are regarded as files by this subprogram therefore it
    --  is not garanted that this will work for other operating systems
    --  than Linux or Sun Solaris - use on your own risk.
    --
-   --  Parameters: 
+   --  Parameters:
    --    Start_Dir - The directory there the relative path
    --      "Rel_Dir_Path" begins. "Start_Dir" may also
    --      be a relative path - then the absolute path will
    --      be calculated based on the "current working directory
    --      of the execution environment".
-   --    Rel_Path - A relative path to a file or directory. 
+   --    Rel_Path - A relative path to a file or directory.
    --      If an absolute path is passed the path will not be changed.
    --  Raises:
    --    Abs_Path_Could_Not_Be_Calculated_Exception - Raised if
@@ -279,8 +279,8 @@ package Giant.File_Management is
    function Get_Absolute_Path_From_Relative
      (Start_Dir    : in String;
       Rel_Path : in String)
-     return String;  
-     
+     return String;
+
    ---------------------------------------------------------------------------
    -- This procedure changes the current working directory for the execution
    -- environment so that it matches the directory there the Executable
@@ -364,8 +364,8 @@ package Giant.File_Management is
    --Example Source => "*A* is *A* ..."
    --        Needle => "*A*"
    --        Fork   => "Life"
-   --    --> Result : "Life is Life ..."     
-   -- 
+   --    --> Result : "Life is Life ..."
+   --
    -- Paramters:
    --   Source - The String where Needle should be replaced.
    --   Needle - The Substring in Fork that should be replaced.
@@ -375,17 +375,17 @@ package Giant.File_Management is
    function Substitute_Sub_Strings
      (Source : in String;
       Needle : in String;
-      Fork   : in String) 
-     return String;              
-            
+      Fork   : in String)
+     return String;
+
 
    ---------------------------------------------------------------------------
    -- Calls an external editor.
    -- Parameters are not checked for correctness.
-   -- 
+   --
    -- Parameters:
-   --   Command - A command line call string for an 
-   --     editor holding vild cards for a filename ("%f"), 
+   --   Command - A command line call string for an
+   --     editor holding vild cards for a filename ("%f"),
    --     a column ("%c") and a line indication ("%l").
    --   Filename - An absolute path to a file thart should be opened
    --     (replaces "%f" in the Command parameter.
@@ -396,5 +396,12 @@ package Giant.File_Management is
       Filename : in String;
       Line     : in Natural;
       Column   : in Natural);
+
+   ---------------------------------------------------------------------------
+   --  Returns the directory portion of the Filename. If Filename does
+   --  contain a directory separator the empty is returned.
+   function Get_Path
+     (Filename : in String)
+     return String;
 
 end Giant.File_Management;

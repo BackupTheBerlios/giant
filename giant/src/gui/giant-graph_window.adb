@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.39 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.40 $
 --  $Author: squig $
---  $Date: 2003/07/18 15:40:31 $
+--  $Date: 2003/07/18 16:40:08 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -1002,7 +1002,6 @@ package body Giant.Graph_Window is
         := (Vis_Windows.Get_Current_Selection (Window.Visual_Window) = Name);
    begin
       if (Window.Styles (Vis_Windows.Color_1) = null) then
-         Logger.Warn ("initializing styles");
          Initialize_Styles (Window);
       end if;
 

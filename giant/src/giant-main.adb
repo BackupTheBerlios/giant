@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.34 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.35 $
 --  $Author: squig $
---  $Date: 2003/07/15 11:50:26 $
+--  $Date: 2003/07/18 16:40:08 $
 --
 --
 ------------------------------------------------------------------------------
@@ -180,24 +180,30 @@ is
 begin
    Default_Logger.Init ("debug.log");
 
-   --  load config settings
-   Config_Settings.Initialize_Config_Settings
-     ("dist/global_config.xml", Config_Filename);
+--     begin
+      --  load config settings
+      Config_Settings.Initialize_Config_Settings
+        ("dist/global_config.xml", Config_Filename);
 
-   Config.Global_Data.Initialize_Config_Data;
+      Config.Global_Data.Initialize_Config_Data;
 
-   Giant.Graph_Lib.Initialize;
+      Giant.Graph_Lib.Initialize;
 
-   Logger.Debug ("reading configuration");
-   Config.Vis_Styles.Initialize_Config_Vis_Styles
-     (Resources_Root_Dir     =>
-        Config.Global_Data.Get_Resources_Directory,
-      GIANT_VIS_Directory    => "dist/vis_styles_set_1",
-      User_Vis_Directory     => "",
-      Default_Vis_Style_File => "dist/vis_styles_set_1/Default.xml");
+      Logger.Debug ("reading configuration");
+      Config.Vis_Styles.Initialize_Config_Vis_Styles
+        (Resources_Root_Dir     =>
+           Config.Global_Data.Get_Resources_Directory,
+         GIANT_VIS_Directory    => "dist/vis_styles_set_1",
+         User_Vis_Directory     => "",
+         Default_Vis_Style_File => "dist/vis_styles_set_1/Default.xml");
 
-   Logger.Debug ("intializing class sets");
-   Config.Class_Sets.Initialize_Class_Sets ("dist/class_sets_set_1");
+      Logger.Debug ("intializing class sets");
+      Config.Class_Sets.Initialize_Class_Sets ("dist/class_sets_set_1");
+--     exception
+--       when E: others =>
+--          Logger.Warn ("Error during intialization");
+--          Logger.Error (E);
+--     end;
 
    Logger.Debug ("parsing command line arguments");
    Parse_Arguments;
