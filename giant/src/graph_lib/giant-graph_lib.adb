@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.31 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.32 $
 --  $Author: koppor $
---  $Date: 2003/06/28 18:16:48 $
+--  $Date: 2003/06/28 19:13:51 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -56,6 +56,9 @@ package body Giant.Graph_Lib is
    --  Created in "Create"
    --  Destroyed in "Destroy"
    IML_Graph : IML_Graphs.IML_Graph;
+   
+   package Edge_Id_Array_Routines is new Edge_Id_Sets.Arrays
+     (Item_Array => Edge_Id_Array);
 
    --------------------------------------
    --  Hashing for Node_Attribute_Ids  --
@@ -753,8 +756,12 @@ package body Giant.Graph_Lib is
          procedure Convert_Outgoing_Edges
            (All_Edges_Set : out Edge_Id_Sets.Set)
          is
-
-            Last_Internal_Id : Integer            := 0;
+	    
+	    --  up to now, we haven't used any index
+	    --  later, the index ist /first/ incremented and then set
+	    --  therefore it is started by one index before the first index
+	    --  of the All_Edges-Array.
+            Last_Internal_Id : Integer := All_Edges_First_Index - 1;
 
             -------------------------------------------------------------------
             --  Modifies "All_Edges_Set"
@@ -822,33 +829,6 @@ package body Giant.Graph_Lib is
             end loop;
          end Convert_Outgoing_Edges;
 
-         ----------------------------------------------------------------------
-         --  Convert set containing all edges to "public" array of all edges
-         function Convert_Edge_Set_To_Edge_Array
-           (Edges_Set : Edge_Id_Sets.Set)
-           return Edge_Id_Array_Access
-         is
-
-           Edge_Array         : Edge_Id_Array_Access;
-           Current_Edge_Index : Natural := 0;
-
-           procedure Execute (Edge : Edge_Id)
-           is
-           begin
-              Current_Edge_Index := Current_Edge_Index + 1;
-              Edge_Array (Current_Edge_Index) := Edge;
-           end Execute;
-
-           procedure Apply is new Edge_Id_Sets.Apply
-             (Execute => Execute);
-
-         begin
-            Edge_Array := new Edge_Id_Array
-              (1..Edge_Id_Sets.Size (Edges_Set));
-            Apply (Edges_Set);
-            return Edge_Array;
-         end Convert_Edge_Set_To_Edge_Array;
-
          ---------------------------------------------------------------------
          --  The structure of this routine is similar to the one of
          --    Convert_Outgoing_Edges
@@ -906,9 +886,24 @@ package body Giant.Graph_Lib is
             All_Edges_Set : Edge_Id_Sets.Set;
          begin
             Convert_Outgoing_Edges (All_Edges_Set);
-
-            -- All_Edges is the package-wide used array storing all edges
-            All_Edges := Convert_Edge_Set_To_Edge_Array (All_Edges_Set);
+	    
+	    --  Convert set containing all edges to "public" array of all edges
+	    -- 
+	    --  during this conversion, the used memory is twice the size of
+	    --    the set, since the array is allocated twice
+	    --  if this is too much, go back to Revision 1.31
+	    declare
+	       --  the conversion itself
+	       All_Edges_Array : Edge_Id_Array := 
+		 Edge_Id_Array_Routines.To_Array (All_Edges_Set);
+	    begin
+	       --  Convert conversion into public array
+	       All_Edges := new Edge_Id_Array 
+		 (All_Edges_First_Index .. 
+		  All_Edges_First_Index +
+		  All_Edges_Array'Last - All_Edges_Array'First);
+	       All_Edges.all := All_Edges_Array;
+	    end;
 
             Edge_Id_Sets.Destroy (All_Edges_Set);
          end;
@@ -1180,13 +1175,8 @@ package body Giant.Graph_Lib is
    function Get_All_Edges
      return Edge_Id_Set
    is
-      Res : Edge_Id_Sets.Set;
    begin
-      Res := Edge_Id_Sets.Empty_Set;
-      for I in All_Edges'Range loop
-         Edge_Id_Sets.Insert (Res, All_Edges (I));
-      end loop;
-      return Res;
+      return Edge_Id_Array_Routines.To_Set (All_Edges.all);
    end Get_All_Edges;
 
    ---------------------------------------------------------------------------
