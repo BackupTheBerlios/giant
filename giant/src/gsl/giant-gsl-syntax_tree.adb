@@ -20,9 +20,9 @@
 --
 -- First Author: Gerrit Schulz
 --
--- $RCSfile: giant-gsl-syntax_tree.adb,v $, $Revision: 1.1 $
+-- $RCSfile: giant-gsl-syntax_tree.adb,v $, $Revision: 1.2 $
 -- $Author: schulzgt $
--- $Date: 2003/06/02 11:30:06 $
+-- $Date: 2003/06/09 14:15:28 $
 --
 with Unchecked_Deallocation;
 
@@ -108,5 +108,23 @@ package body Giant.Gsl.Syntax_Tree is
    begin
       Node.Literal := Literal;
    end Set_Literal;
+	
+   ---------------------------------------------------------------------------
+   -- get the size of a Syntax_Node (Sequence or List)
+   function Get_Size
+     (Node : Syntax_Node)
+      return Natural is
+   begin
+      return Node.Size;
+   end Get_Size;
+
+   ---------------------------------------------------------------------------
+   -- set the size of a Syntax_Node (Sequence or List)
+   procedure Set_Size
+     (Node : Syntax_Node;
+      Size : Natural) is
+   begin
+      Node.Size := Size;
+   end Set_Size;
 	
 end Giant.Gsl.Syntax_Tree;

@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-syntax_tree.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/02 11:30:06 $
+-- $Date: 2003/06/09 14:15:28 $
 --
 -- This package implements the syntax tree used by GSL.
 --
@@ -71,5 +71,17 @@ package Giant.Gsl.Syntax_Tree is
    procedure Set_Literal
      (Node : Syntax_Node;
       Literal : Gsl_Type);
+
+   ---------------------------------------------------------------------------
+   -- get the size of a Syntax_Node (Sequence or List)
+   function Get_Size
+     (Node : Syntax_Node)
+      return Natural;
+
+   ---------------------------------------------------------------------------
+   -- set the size of a Syntax_Node (Sequennce or List)
+   procedure Set_Size
+     (Node : Syntax_Node;
+      Size : Natural);
 
 end Giant.Gsl.Syntax_Tree;
