@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.35 $
---  $Author: schwiemn $
---  $Date: 2003/08/19 13:33:33 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.36 $
+--  $Author: squig $
+--  $Date: 2003/09/01 22:09:11 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -253,17 +253,9 @@ package body Giant.Vis_Windows is
 
       Graph_Widgets.Read_Graph_Widget
         (Stream, Vis_Window.The_Graph_Widget, Config.Vis_Styles.Get_Default_Vis_Style, Annotations);
--- FIX: vvv remove vvv
-      --  Initialize new Graph_Widget
---        Graph_Widgets.Create
---          (Vis_Window.The_Graph_Widget,
---           Config.Vis_Styles.Get_Default_Vis_Style,
---           Annotations);
-
       --  Increases the GTK Reference Counter - needed to keep the graph
       --  widget persistent in this data structure
       Graph_Widgets.Ref (Vis_Window.The_Graph_Widget);
--- FIX: ^^^ remove ^^^
 
       --  Read the Set of all Pins
       Pin_Sets_Read (Stream, Vis_Window.Set_Of_All_Pins);
@@ -304,7 +296,6 @@ package body Giant.Vis_Windows is
         (Stream, Vis_Window.The_Visualisation_Style);
 
       --  Write the_Graph_Widget
-      --FIX:
       Graph_Widgets.Write_Graph_Widget (Stream, Vis_Window.The_Graph_Widget);
 
       --  Write the Set of all Pins

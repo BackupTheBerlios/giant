@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.25 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.26 $
 -- $Author: squig $
--- $Date: 2003/08/19 10:54:46 $
+-- $Date: 2003/09/01 22:09:11 $
 --
 --
 
@@ -35,6 +35,9 @@ with Ada.Command_Line;
 
 with GNAT.Directory_Operations;
 with GNAT.OS_Lib;
+
+with Giant.Config;
+with Giant.Config.Global_Data;
 
 package body Giant.File_Management is
 
@@ -554,6 +557,21 @@ package body Giant.File_Management is
    begin
       return User_Config_Path;
    end Get_User_Config_Path;
+
+   ---------------------------------------------------------------------------
+   function Get_Shared_Path
+     (Sub_Path : in String := "";
+      Resource : in String := "")
+     return String
+   is
+   begin
+      if (Resource /= "") then
+         return Config.Global_Data.Get_Resources_Directory & Sub_Path
+           & GNAT.OS_Lib.Directory_Separator & Resource;
+      else
+         return Config.Global_Data.Get_Resources_Directory & Sub_Path;
+      end if;
+   end Get_Shared_Path;
 
    ---------------------------------------------------------------------------
    procedure Deallocate_Argument_List_Content

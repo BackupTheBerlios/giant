@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.40 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.41 $
 --  $Author: squig $
---  $Date: 2003/08/19 10:54:45 $
+--  $Date: 2003/09/01 22:09:10 $
 --
 --
 ------------------------------------------------------------------------------
@@ -55,14 +55,22 @@ procedure Giant.Main
 is
    package Logger is new Giant.Logger("giant.main");
 
-   Version : constant String := "20030627";
    Start_Gui : Boolean := True;
+
+   --  can be overriden by parameter
+   Global_Config_Filename : Ada.Strings.Unbounded.String_Access
+     := new String' ("etc" & GNAT.OS_Lib.Directory_Separator
+                     & "global_config.xml");
+
+   User_Config_Filename : constant String
+     := File_Management.Get_User_Config_Path & "settings.xml";
+
 
    procedure Put_Help
    is
    begin
       Ada.Text_IO.Put_Line
-        ("usage: giant project-file [-g graph-file] [-e script-file] | -h | -v");
+        ("usage: giant project-file [-g graph-file] [-e script-file] [-c config-file] | -h | -v");
    end;
 
    procedure Evaluate_Arguments
@@ -112,12 +120,16 @@ is
       is
       begin
          case Switch is
+           when 'c' =>
+              --  "config-file"
+              Free (Global_Config_Filename);
+              Global_Config_Filename := new String'(GNAT.Command_Line.Parameter);
            when 'e' =>
               --  "execute"
               Free (Script_Filename);
               Script_Filename := new String'(GNAT.Command_Line.Parameter);
            when 'g' =>
-              --  "graph"
+              --  "graph-file"
               Free (Graph_Filename);
               Graph_Filename := new String'(GNAT.Command_Line.Parameter);
            when 'h' =>
@@ -143,7 +155,7 @@ is
 
       loop
          case GNAT.Command_Line.Getopt
-           ("e: g: h n v -execute: -graph: -help -nogui -version")
+           ("c: e: g: h n v -config: -execute: -graph: -help -nogui -version")
          is
            --  long option names
            when '-' =>
@@ -179,9 +191,6 @@ is
         GNAT.OS_Lib.OS_Exit (1);
    end Parse_Arguments;
 
-   Config_Filename : constant String
-     := File_Management.Get_User_Config_Path & "settings.xml";
-
 begin
    Default_Logger.Init ("debug.log");
 
@@ -191,7 +200,7 @@ begin
 
       --  load config settings
       Config_Settings.Initialize_Config_Settings
-        ("dist/global_config.xml", Config_Filename);
+        (Global_Config_Filename.all, User_Config_Filename);
 
       Config.Global_Data.Initialize_Config_Data;
 
@@ -199,24 +208,35 @@ begin
 
       Logger.Debug ("reading configuration");
       Config.Vis_Styles.Initialize_Config_Vis_Styles
-        (Resources_Root_Dir     =>
-           Config.Global_Data.Get_Resources_Directory,
-         GIANT_VIS_Directory    => "dist/vis_styles_set_1",
-         User_Vis_Directory     => "",
-         Default_Vis_Style_File => "dist/vis_styles_set_1/Default.xml");
+        (Resources_Root_Dir
+           => File_Management.Get_Shared_Path,
+         GIANT_VIS_Directory
+           => File_Management.Get_Shared_Path ("styles"),
+         User_Vis_Directory
+           => File_Management.Get_User_Config_Path & "styles",
+         Default_Vis_Style_File
+           => File_Management.Get_Shared_Path ("styles", "Default.xml"));
 
       Logger.Debug ("intializing class sets");
-      Config.Class_Sets.Initialize_Class_Sets ("dist/class_sets_set_1");
---     exception
---       when E: others =>
---          Logger.Warn ("Error during intialization");
---          Logger.Error (E);
+      Config.Class_Sets.Initialize_Class_Sets
+        (GIANT_Class_Sets_Directory
+           => File_Management.Get_Shared_Path ("class_sets"));
+
+   exception
+      when Config.Vis_Styles.Illegal_Default_Vis_Style_Exception =>
+         Ada.Text_IO.Put_Line
+           ("Default stlye not found: "
+            & File_Management.Get_Shared_Path ("styles", "Default.xml"));
+         GNAT.OS_Lib.OS_Exit (1);
+      when E: others =>
+         Logger.Warn ("Error during intialization");
+         Logger.Error (E);
    end;
 
    Logger.Debug ("Initializing GTK");
 
    Gtkada.Intl.Bind_Text_Domain
-     ("giant", Config.Global_Data.Get_Resources_Directory & "locale");
+     ("giant", File_Management.Get_Shared_Path ("locale"));
 
    Gtk.Main.Set_Locale;
    Gtk.Main.Init;
@@ -242,8 +262,8 @@ begin
    Giant.Graph_Lib.Destroy;
 
    --  store config settings
-   Logger.Debug ("storing config settings: " & Config_Filename);
-   Config_Settings.Store_User_Config_File (Config_Filename);
+   Logger.Debug ("storing config settings: " & User_Config_Filename);
+   Config_Settings.Store_User_Config_File (User_Config_Filename);
 
    Giant.Default_Logger.Close;
 end Giant.Main;

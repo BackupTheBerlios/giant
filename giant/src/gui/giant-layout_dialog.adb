@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-layout_dialog.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-layout_dialog.adb,v $, $Revision: 1.5 $
 --  $Author: squig $
---  $Date: 2003/08/25 16:06:25 $
+--  $Date: 2003/09/01 22:09:11 $
 --
 
 with Ada.Exceptions;
@@ -142,10 +142,14 @@ package body Giant.Layout_Dialog is
       Window_Name : constant String
         := Ada.Strings.Unbounded.To_String (Dialog.Window_Name);
    begin
+      if (Is_Modal (Dialog)) then
+         Gtk.Main.Main_Quit;
+      end if;
+
       if (Get_Response (Dialog) = Default_Dialog.Response_Okay) then
-         if (Is_Modal (Dialog)) then
-            Gtk.Main.Main_Quit;
-         end if;
+
+         -- XXX: should verify parameters now, otherwise error messages
+         -- are shown after user has selected position
 
          Gui_Manager.Actions.Set_Local_Action
            (Window_Name,
@@ -154,9 +158,11 @@ package body Giant.Layout_Dialog is
          --  do not destory dialog, yet, the action will take care of
          --  the disposal
          Gtk.Window.Hide_All (Gtk.Window.Gtk_Window (Dialog));
-         return False;
+      else
+         Destroy (Dialog);
       end if;
-      return True;
+
+      return False;
    end Can_Hide;
 
    procedure Apply_Layout
@@ -176,16 +182,16 @@ package body Giant.Layout_Dialog is
                                Selection_Name,
                                Position,
                                Get_Layout_Parameters (Container));
-      --Destroy (Dialog);
+      Destroy (Dialog);
    exception
      when E: Layout_Factory.Invalid_Format =>
-        Show_All (Dialog);
         Controller.Show_Error (-"Invalid layout parameter"
                                & " (" & Ada.Exceptions.Exception_Message (E)
                                & ").");
-     when Layout_Factory.Unknown_Algorithm =>
         Show_All (Dialog);
+     when Layout_Factory.Unknown_Algorithm =>
         Controller.Show_Error (-"Unknown layout algorithm.");
+        Show_All (Dialog);
    end Apply_Layout;
 
    procedure Show

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.58 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.59 $
 --  $Author: squig $
---  $Date: 2003/08/25 16:06:25 $
+--  $Date: 2003/09/01 22:09:11 $
 --
 
 with Ada.Exceptions;
@@ -229,10 +229,11 @@ package body Giant.Main_Window is
    is
    begin
       declare
-         --FIX: default directory
          Project_Filename : String := Gtkada.File_Selection.File_Selection_Dialog
-           (-"Enter New Project File", "test/resources/",
-            Dir_Only => False, Must_Exist => False);
+           (Title       => -"Enter New Project File",
+            Default_Dir => "",
+            Dir_Only    => False,
+            Must_Exist  => False);
       begin
          if (Project_Filename /= "") then
             if (Projects.Does_Project_Exist_File (Project_Filename)) then
@@ -244,8 +245,10 @@ package body Giant.Main_Window is
             declare
                Graph_Filename : String
                  := Gtkada.File_Selection.File_Selection_Dialog
-                 (-"Select IML File", Project_Filename & ".iml",
-                  Dir_Only => False, Must_Exist => False);
+                 (Title       => -"Select IML File",
+                  Default_Dir => Project_Filename & ".iml",
+                  Dir_Only    => False,
+                  Must_Exist  => False);
             begin
                if (Graph_Filename /= "") then
                   begin
@@ -266,10 +269,11 @@ package body Giant.Main_Window is
    is
    begin
       declare
-         --FIX: default directory
          Filename : String := Gtkada.File_Selection.File_Selection_Dialog
-           (-"Open Project", "test/resources/",
-            Dir_Only => False, Must_Exist => True);
+           (Title       => -"Open Project",
+            Default_Dir => "",
+            Dir_Only    => False,
+            Must_Exist  => True);
       begin
          if (Filename /= "") then
             begin

@@ -2,7 +2,10 @@ RELEASE
 
  * Create directory on New Project
 
-LATER
+NACHBESSERUNGSPHASE
 
  * Set cursor in action mode
+
+ * Port to Gtk 2.0
+
 

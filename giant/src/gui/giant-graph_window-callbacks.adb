@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.19 $
+--  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.20 $
 --  $Author: squig $
---  $Date: 2003/08/25 16:06:25 $
+--  $Date: 2003/09/01 22:09:11 $
 --
 
 with Ada.Unchecked_Conversion;
@@ -357,8 +357,10 @@ package body Giant.Graph_Window.Callbacks is
       Params : Gsl.Interpreters.Gsl_Params
         := Gsl.Interpreters.Create_Parameter_List;
    begin
-      --  FIX
-      --Gsl.Interpreters.Add_Parameter (Params, Get_Selected_Selection (Window));
+      Gsl.Interpreters.Add_Parameter
+        (List    => Params,
+         Param   => Get_Selected_Selection (Window),
+         Context => Get_Window_Name (Window));
 
       Controller.Execute_GSL
         (Script_Name => Event.Label,

@@ -20,10 +20,10 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.ads,v $, $Revision: 1.20 $
+-- $RCSfile: giant-file_management.ads,v $, $Revision: 1.21 $
 
 -- $Author: squig $
--- $Date: 2003/08/19 10:54:46 $
+-- $Date: 2003/09/01 22:09:11 $
 --
 -- -----------------------------------------------
 --
@@ -356,12 +356,19 @@ package Giant.File_Management is
      return String;
 
    ---------------------------------------------------------------------------
-   --  Returns the path where the user settings are stored. The
-   --  directory is created if it does not exists.
+   --  Returns the path where the user settings are stored.
    --
    --  A trailing directory separator is appended.
    --
    function Get_User_Config_Path
+     return String;
+
+   ---------------------------------------------------------------------------
+   --  Returns the path where the resources are located.
+   --
+   function Get_Shared_Path
+     (Sub_Path : in String := "";
+      Resource : in String := "")
      return String;
 
    ---------------------------------------------------------------------------

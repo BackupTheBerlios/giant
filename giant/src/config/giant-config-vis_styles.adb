@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.22 $
--- $Author: schwiemn $
--- $Date: 2003/07/15 20:31:30 $
+-- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.23 $
+-- $Author: squig $
+-- $Date: 2003/09/01 22:09:11 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -311,7 +311,7 @@ package body Giant.Config.Vis_Styles is
    -- Calculates all node class names from all <node_class> - subnodes
    -- for a passed node <node_class_specific_setting> and
    -- for all <super_node_class> nodes.
-   --   
+   --
    -- The passed node must be a <node_class_specific_setting> - node.
    function Get_All_Node_Class_Names
      (XML_Node_Setting_Node : in DOM.Core.Node) return String_Lists.List is
@@ -319,7 +319,7 @@ package body Giant.Config.Vis_Styles is
       The_List       : String_Lists.List := String_Lists.Create;
       XML_Nodes_List : DOM.Core.Node_List;
       XML_Node       : DOM.Core.Node;
-      
+
       Node_Class_Set      : Graph_Lib.Node_Class_Id_Set;
       Node_Class_Set_Iter : Graph_Lib.Node_Class_Id_Sets.Iterator;
       A_Node_Class_ID     : Graph_Lib.Node_Class_Id;
@@ -344,7 +344,7 @@ package body Giant.Config.Vis_Styles is
 
       end loop;
       DOM.Core.Free (XML_Nodes_List);
-            
+
       -- with inheritance
       -------------------
       XML_Nodes_List := DOM.Core.Elements.Get_Elements_By_Tag_Name
@@ -353,23 +353,23 @@ package body Giant.Config.Vis_Styles is
       for I in 0 ..  DOM.Core.Nodes.Length(XML_Nodes_List) - 1 loop
 
          XML_Node := DOM.Core.Nodes.Item (XML_Nodes_List, I);
-         
+
          -- get all inheriting node classes incl. super class
          Node_Class_Set :=
            IML_Class_Inheritance_Proc.Get_All_Sub_Node_Classes (XML_Node);
-         
+
          Node_Class_Set_Iter := Graph_Lib.Node_Class_Id_Sets.Make_Iterator
            (Node_Class_Set);
-           
+
          while Graph_Lib.Node_Class_Id_Sets.More (Node_Class_Set_Iter) loop
-         
-            Graph_Lib.Node_Class_Id_Sets.Next 
-              (Node_Class_Set_Iter, A_Node_Class_ID);         
-                          
+
+            Graph_Lib.Node_Class_Id_Sets.Next
+              (Node_Class_Set_Iter, A_Node_Class_ID);
+
             String_Lists.Attach
               (The_List,
                Ada.Strings.Unbounded.To_Unbounded_String
-                 (Graph_Lib.Get_Node_Class_Tag (A_Node_Class_ID)));        
+                 (Graph_Lib.Get_Node_Class_Tag (A_Node_Class_ID)));
          end loop;
 
          Graph_Lib.Node_Class_Id_Sets.Destroy (Node_Class_Set_Iter);
@@ -741,7 +741,7 @@ package body Giant.Config.Vis_Styles is
          -- create the filter for each node class and insert the setting
 
          -- 2.1 Get all node classes the actual setting should be used for
-         -----------------------------------------------------------------    
+         -----------------------------------------------------------------
          Node_Class_Names_List :=
            Get_All_Node_Class_Names (XML_Node_Top_Level);
 
@@ -914,10 +914,10 @@ package body Giant.Config.Vis_Styles is
 
          -- deallocate list of <edge_class> - nodes
          DOM.Core.Free(XML_Nodes_List_Edge_Classes);
-         
-         
+
+
          -- get all edge classes definitions the actual setting should be
-         -- taken for regarding inheritance         
+         -- taken for regarding inheritance
          XML_Nodes_List_Edge_Classes :=
            DOM.Core.Elements.Get_Elements_By_Tag_Name
            (XML_Node_Top_Level, "super_edge_class");
@@ -957,7 +957,7 @@ package body Giant.Config.Vis_Styles is
 
          -- deallocate list of <edge_class> - nodes
          DOM.Core.Free(XML_Nodes_List_Edge_Classes);
-         
+
       end loop; -- end for
 
       -- deallocate list of <edge_class_specific_setting> - nodes
@@ -1060,34 +1060,34 @@ package body Giant.Config.Vis_Styles is
       Global_Icon_Counter  := 1;
       Global_Color_Counter := 1;
 
+      File_List := String_Lists.Create;
+
       -- get all xml files from GIANT_Vis_Directory and User_Vis_Directory
       -- (not the default vis style "Default_Vis_Style_File"
       begin
-         File_List := String_Lists.Create;
-
          if (GIANT_Vis_Directory /= "") then
-
             -- Get all xml files in GIANT_Vis_Directory
             String_Lists.Attach
               (File_List,
                File_Management.Get_Filtered_Files_From_Directory
                (GIANT_Vis_Directory, True, ".xml"));
          end if;
+      exception
+         when File_Management.Invalid_Directory_Exception =>
+            null; --  ignore
+      end;
 
+      begin
          if (User_Vis_Directory /= "") then
-
             -- Get all xml files in User_Vis_Directory
             String_Lists.Attach
               (File_List,
                File_Management.Get_Filtered_Files_From_Directory
-               (User_Vis_Directory, True, ".xml"));                         
+               (User_Vis_Directory, True, ".xml"));
          end if;
-
       exception
          when File_Management.Invalid_Directory_Exception =>
-
-            String_Lists.Destroy (File_List);
-            raise Invalid_Directory_Exception;
+            null; --  ignore
       end;
 
       ------------------------------------------------
@@ -1105,7 +1105,7 @@ package body Giant.Config.Vis_Styles is
             String_Lists.Destroy (File_List);
             raise Illegal_Default_Vis_Style_Exception;
       end;
-      
+
       -- check for correct type of xml file
       if (XML_File_Access.Does_XML_Document_Belong_To_Type
           ("giant_vis_style_file",
@@ -1149,7 +1149,7 @@ package body Giant.Config.Vis_Styles is
 
          -- ignore not readable xml files
          begin
-        
+
             XML_File_Access.Load_XML_File_Validated
               (Ada.Strings.Unbounded.To_String (A_Vis_Style_File_Name),
                A_Vis_Style_Tree_Reader,
@@ -1161,7 +1161,7 @@ package body Giant.Config.Vis_Styles is
                  A_Vis_Style_XML_Document) = False) then
 
                Tree_Readers.Free(A_Vis_Style_Tree_Reader);
-               Ignore_File := True;              
+               Ignore_File := True;
             else
 
                -- calculate name
@@ -1251,7 +1251,7 @@ package body Giant.Config.Vis_Styles is
              (Default_Vis_Style_File),
             Global_Default_Vis_Style_Name);
 
-      exception   
+      exception
          when others =>
             raise Illegal_Default_Vis_Style_Exception;
       end;

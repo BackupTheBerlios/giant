@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-about_dialog.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-about_dialog.adb,v $, $Revision: 1.7 $
 --  $Author: squig $
---  $Date: 2003/08/05 21:12:44 $
+--  $Date: 2003/09/01 22:09:11 $
 --
 
 with Ada.IO_Exceptions;
@@ -121,7 +121,8 @@ package body Giant.About_Dialog is
       Scrolled_Window : Gtk.Scrolled_Window.Gtk_Scrolled_Window;
       Position : Glib.Gint := 0;
    begin
-      Default_Dialog.Initialize (Dialog, -"About GIANT",
+      Default_Dialog.Initialize (Dialog,
+                                 -"About GIANT" & " (Version " & VERSION & ")",
                                  Default_Dialog.Button_Close);
 
       --  logo and notebook

@@ -20,14 +20,17 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-layout_dialog-actions.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-layout_dialog-actions.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/08/25 16:06:25 $
+--  $Date: 2003/09/01 22:09:11 $
 --
 
 with Giant.Controller;
+with Giant.Logger;
 
 package body Giant.Layout_Dialog.Actions is
+
+   package Logger is new Giant.Logger("giant.layout_dialog.actions");
 
    ---------------------------------------------------------------------------
    --  Create Selection From Subgraph
@@ -48,6 +51,7 @@ package body Giant.Layout_Dialog.Actions is
      (Action : access Set_Position_Action_Type)
    is
    begin
+      Logger.Warn ("Destroying layout dialog.");
       Destroy (Action.Dialog);
    end Cancel;
 

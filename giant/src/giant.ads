@@ -20,18 +20,20 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant.ads,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/05/23 19:03:24 $
+--  $Date: 2003/09/01 22:09:10 $
 --
 ------------------------------------------------------------------------------
 --
---  Contains the empty root package.
+--  Contains the almost empty root package.
 --
---  Do not add any code.
+--  Defines a few constants. Do not add any code.
 --
 
 package Giant is
+
+   VERSION : constant String := "1.0.0";
 
    function "-" (S : String) return String;
 

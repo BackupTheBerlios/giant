@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.86 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.87 $
 --  $Author: squig $
---  $Date: 2003/08/26 16:07:16 $
+--  $Date: 2003/09/01 22:09:10 $
 --
 
 with Ada.Strings.Unbounded;
@@ -212,17 +212,12 @@ package body Giant.Controller is
 
    procedure Pre_Execute_Gsl
    is
-      Confirm : Boolean;
       use type Gsl.Interpreters.Interpreter;
    begin
       if (Gsl_Interpreter = null) then
          --  lazily instanciate
          Gsl_Interpreter := Gsl.Interpreters.Create_Interpreter;
       end if;
-
-      --  XXX: ?
-      Confirm := Config_Settings.Get_Setting_As_Boolean ("Confirm.Delete");
-      Config_Settings.Set_Setting ("Confirm.Delete", False);
    end Pre_Execute_Gsl;
 
    procedure Start_Interpreter
@@ -234,11 +229,7 @@ package body Giant.Controller is
          Started    => Started,
          Dialog     => Gui_Manager.Create_Progress_Dialog
          (-"Executing GSL Script", -"Script is running..."));
-      -- FIX: Evaluate started
-
-      --  XXX: ?
-      --FIX : Config_Settings.Set_Setting ("Confirm.Delete", Confirm);
-      Logger.Info ("Script finished");
+      -- XXX: Evaluate started: show error, if not started
    end Start_Interpreter;
 
    procedure Execute_GSL

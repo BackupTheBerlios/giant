@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-dialogs.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-dialogs.adb,v $, $Revision: 1.9 $
 --  $Author: squig $
---  $Date: 2003/06/27 11:33:22 $
+--  $Date: 2003/09/01 22:09:11 $
 --
 
 with Gtk.Box;
@@ -44,7 +44,6 @@ package body Giant.Dialogs is
       Check : Gtk.Check_Button.Gtk_Check_Button;
       Response : Default_Dialog.Response_Type;
    begin
-      --  FIX: query setting
       if (Config_Settings.Get_Setting_As_Boolean
            ("Confirm.Delete") = False) then
          return True;

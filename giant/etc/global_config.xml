@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE giant_config_file 
+  SYSTEM "giant_config_file.dtd">
+
+<giant_config_file>
+
+  <!-- <absolute_path_root root_directory  = "resources_dir" /> -->
+  			
+  <!-- Required Config Settings -->  
+  
+  <setting name="Resources_Directory" value="shared" />
+  
+  <setting name  = "Icon_For_Node_Annotations" value = "annotation.xpm" />
+  
+  <setting name="Actual_Selection_Highlight_Color" value="RGB:00/00/80" />
+					  
+  <setting name="Selection_Highlight_Color_1" value="RGB:FF/00/00" />
+  <setting name="Selection_Highlight_Color_2" value="RGB:00/FF/00"/>
+  <setting name="Selection_Highlight_Color_3" value="RGB:00/00/FF" />
+					  
+  <setting name="IML_Subgraph_Highlight_Color_1" value="RGB:00/FF/FF" />
+  <setting name="IML_Subgraph_Highlight_Color_2" value="RGB:FF/00/FF" />
+  <setting name="IML_Subgraph_Highlight_Color_3" value="RGB:FF/FF/00" />
+
+  <setting name="GSL.Include_Path" value="shared/gsl" />
+
+  <!-- Settings for scripts in menus -->
+  <setting name="GSL.No_Param" value="Open Entire Graph" />
+  <setting name="GSL.No_Param_Context" value="" />
+  <setting name="GSL.Node_Id_Param" value="Get Adjacent Nodes" />
+  <setting name="GSL.Edge_Id_Param" value="" />
+  <setting name="GSL.Subgraph_Param" value="To Window" />
+  <setting name="GSL.Selection_Param" value="" />
+
+</giant_config_file>
