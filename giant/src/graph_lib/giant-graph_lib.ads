@@ -20,13 +20,16 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.27 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.28 $
 --  $Author: koppor $
---  $Date: 2003/07/03 15:09:46 $
+--  $Date: 2003/07/04 15:11:26 $
 --
 --  TBD:
---    Write into comment, when the routine may be used
---      after create / load, not after unload / destroy
+--    * Write into comment, when the routine may be used
+--        after create / load, not after unload / destroy
+--    * Notify, that there is no possibility to distinguish between
+--        edge and node-attributes
+--    * Check, why there are no inspectors for Edge_Class_Ids
 
 with Giant.Constant_Ptr_Hashs;
 
@@ -474,11 +477,19 @@ package Giant.Graph_Lib is
 
    ---------------------------------------------------------------------------
    --  Returns:
-   --    <Attribute_Name>.<Number in list/set> if given Edge was created
-   --      from an list/set
-   --    <Attribute_Name> else
+   --    if given Edge was created from an list/set
+   --      <Attribute_Name>.<Number in list/set>
+   --    else
+   --      <Attribute_Name>
    function Get_Edge_Tag
       (Edge : Edge_Id)
+      return String;
+
+   ---------------------------------------------------------------------------
+   --  Returns:
+   --     <Source_Node_Class_Tag>.<Source_Node_Attribute_Tag>
+   function Get_Edge_Class_Tag
+      (Edge_Class : Edge_Class_Id)
       return String;
 
    ---------------------------------
