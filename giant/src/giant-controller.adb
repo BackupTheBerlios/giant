@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.82 $
---  $Author: squig $
---  $Date: 2003/08/15 16:37:18 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.83 $
+--  $Author: schulzgt $
+--  $Date: 2003/08/16 13:58:20 $
 --
 
 with Ada.Strings.Unbounded;
@@ -246,7 +246,7 @@ package body Giant.Controller is
    is
    begin
       Pre_Execute_Gsl;
-      Gsl.Interpreters.Execute_Script
+      Gsl.Interpreters.Execute_Gsl_File
         (Individual => Gsl_Interpreter,
          Name       => Filename,
          Context    => "");
