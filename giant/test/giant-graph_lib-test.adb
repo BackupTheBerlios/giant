@@ -20,17 +20,19 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.11 $
---  $Author: koppor $
---  $Date: 2003/07/06 02:44:27 $
+--  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.12 $
+--  $Author: keulsn $
+--  $Date: 2003/07/09 14:57:18 $
 --
 
 with Ada.Text_IO;
+with Ada.Unchecked_Conversion;
 
 with AUnit.Assertions; use AUnit.Assertions;
 with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
 
 with Giant.Graph_Lib; use Giant.Graph_Lib;
+with Giant.Graph_Lib.Selections;
 with Giant.Logger;
 
 package body Giant.Graph_Lib.Test is
@@ -264,6 +266,52 @@ package body Giant.Graph_Lib.Test is
       Giant.Graph_Lib.Destroy;
    end Done;
 
+
+   procedure Edge_Id_Null_Test (R : in out AUnit.Test_Cases.Test_Case'Class) is
+
+      Selection     : Giant.Graph_Lib.Selections.Selection;
+      Node          : Giant.Graph_Lib.Node_Id;
+      Second_Node   : Giant.Graph_Lib.Node_Id;
+      Edge          : Giant.Graph_Lib.Edge_Id;
+      Edge_Set      : Giant.Graph_Lib.Edge_Id_Sets.Set;
+      Iterator      : Giant.Graph_Lib.Edge_Id_Sets.Iterator;
+
+      function To_Integer is new Ada.Unchecked_Conversion
+        (Source => Giant.Graph_Lib.Edge_Id,
+         Target => Integer);
+   begin
+      Giant.Graph_Lib.Initialize;
+      Giant.Graph_Lib.Load ("resources/rfg_examp.iml");
+
+      Logger.Debug ("Create Funny_Selection");
+      Selection := Giant.Graph_Lib.Selections.Create ("Funny_Selection");
+      Node := Giant.Graph_Lib.Get_Root_Node;
+      Giant.Graph_Lib.Selections.Add_Node (Selection, Node);
+      Logger.Debug
+        ("Root node added, nodes count = " & Natural'Image
+         (Giant.Graph_Lib.Selections.Get_Node_Count (Selection)));
+
+      Edge_Set := Giant.Graph_Lib.Get_Outgoing_Edges (Node);
+      Iterator := Giant.Graph_Lib.Edge_Id_Sets.Make_Iterator (Edge_Set);
+      if Giant.Graph_Lib.Edge_Id_Sets.More (Iterator) then
+         Giant.Graph_Lib.Edge_Id_Sets.Next (Iterator, Edge);
+
+         Logger.Debug ("Edge_Id =" & Integer'Image (To_Integer (Edge)));
+         Giant.Graph_Lib.Selections.Add_Edge (Selection, Edge);
+
+         --  raises Constraint_Error
+         Second_Node := Giant.Graph_Lib.Get_Target_Node (Edge);
+
+         Giant.Graph_Lib.Selections.Add_Node (Selection, Second_Node);
+      end if;
+      Giant.Graph_Lib.Edge_Id_Sets.Destroy (Iterator);
+      Giant.Graph_Lib.Edge_Id_Sets.Destroy (Edge_Set);
+      Logger.Debug ("Destroy Funny_Selection.");
+      Giant.Graph_Lib.Selections.Destroy (Selection);
+   end Edge_Id_Null_Test;
+
+
+
    --------------------------------
    --  Routines from AUnit-Test  --
    --------------------------------
@@ -282,6 +330,7 @@ package body Giant.Graph_Lib.Test is
       Register_Routine (T, Edge_Set_Test'Access, "Edge_Set_Test");
       Register_Routine (T, All_Edges_Test'Access, "All Edges Test");
       Register_Routine (T, Done'Access, "Done");
+      Register_Routine (T, Edge_Id_Null_Test'Access, "Edge_Id = null Test");
    end Register_Tests;
 
    procedure Set_Up (T : in out Test_Case) is
