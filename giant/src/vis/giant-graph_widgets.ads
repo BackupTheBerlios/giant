@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.15 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.16 $
 --  $Author: keulsn $
---  $Date: 2003/06/30 16:22:49 $
+--  $Date: 2003/07/02 13:05:09 $
 --
 ------------------------------------------------------------------------------
 --
@@ -446,6 +446,55 @@ package Giant.Graph_Widgets is
      (Widget    : access Graph_Widget_Record'Class;
       Node      : in     Graph_Lib.Node_Id)
      return Vis.Logic.Vector_2d;
+
+   ----------------------------------------------------------------------------
+   --  Gets the maximum node width using the current settings and the current
+   --  detail level in 'Widget'.
+   --
+   --  Note:
+   --    * The value returned by this function may change at any point of time.
+   --      It may only be used as a general clue.
+   --    * There is no 'Get_Current_Maximum_Node_Height' because the height
+   --      is dependent on the number of attributes shown within each node.
+   --      Use 'Get_Current_Node_Height' instead.
+   --  Parameters:
+   --    Widget - The graph widget
+   --  Returns:
+   --    An estimate of the maximum width that will be assigned to a node in
+   --    'Widget'
+   function Get_Current_Maximum_Node_Width
+     (Widget    : access Graph_Widget_Record'Class)
+     return Vis.Logic_Float;
+
+   ----------------------------------------------------------------------------
+   --  Gets the current width of one node given the current settings and the
+   --  current detail level in 'Widget'.
+   --
+   --  Note:
+   --    The value returned by this function may change at any point of time.
+   --    It may only be used as a general clue.
+   --  Parameters:
+   --    Widget - The graph widget
+   --  Returns:
+   --    An estimate of the width that will be assigned to 'Node' in 'Widget'
+   function Get_Current_Node_Width
+     (Widget    : access Graph_Widget_Record'Class)
+     return Vis.Logic_Float;
+
+   ----------------------------------------------------------------------------
+   --  Gets the current height of one node given the current settings and the
+   --  current detail level in 'Widget'.
+   --
+   --  Note:
+   --    The value returned by this function may change at any point of time.
+   --    It may only be used as a general clue.
+   --  Parameters:
+   --    Widget - The graph widget
+   --  Returns:
+   --    An estimate of the height that will be assigned to 'Node' in 'Widget'
+   function Get_Current_Node_Height
+     (Widget    : access Graph_Widget_Record'Class)
+     return Vis.Logic_Float;
 
    ----------------------------------------------------------------------------
    --  Discards a lock previously acquired by 'Lock_All_Content' or

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.7 $
 --  $Author: keulsn $
---  $Date: 2003/06/29 13:56:08 $
+--  $Date: 2003/07/02 13:05:09 $
 --
 ------------------------------------------------------------------------------
 
@@ -221,6 +221,30 @@ package body Giant.Graph_Widgets is
       return Vis.Logic.Zero_2d;
    end Get_Top_Middle;
    pragma Inline (Get_Top_Middle);
+
+   function Get_Current_Maximum_Node_Width
+     (Widget    : access Graph_Widget_Record'Class)
+     return Vis.Logic_Float is
+   begin
+      raise Unimplemented;
+      return 0.0;
+   end Get_Current_Maximum_Node_Width;
+
+   function Get_Current_Node_Width
+     (Widget    : access Graph_Widget_Record'Class)
+     return Vis.Logic_Float is
+   begin
+      raise Unimplemented;
+      return 0.0;
+   end Get_Current_Node_Width;
+
+   function Get_Current_Node_Height
+     (Widget    : access Graph_Widget_Record'Class)
+     return Vis.Logic_Float is
+   begin
+      raise Unimplemented;
+      return 0.0;
+   end Get_Current_Node_Height;
 
    procedure Release_Lock
      (Widget    : access Graph_Widget_Record'Class;
