@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.9 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.10 $
 --  $Author: squig $
---  $Date: 2003/06/18 16:55:08 $
+--  $Date: 2003/06/19 16:38:06 $
 --
 ------------------------------------------------------------------------------
 --
@@ -55,6 +55,13 @@ package Giant.Controller is
    function Get_Project
      return Projects.Project_Access;
 
+   function Get_Unique_Name
+     (Name : in String := "Unknown")
+      return String;
+
+   function Is_Project_Loaded
+     return Boolean;
+
    procedure Open_Project
      (Filename : in String);
 
@@ -81,6 +88,22 @@ package Giant.Controller is
      return Boolean;
 
    ---------------------------------------------------------------------------
+   --  Subgraphs
+   ---------------------------------------------------------------------------
+
+   procedure Create_Subgraph
+     (Name : in String := "Unknown");
+
+   function Remove_Subgraph
+     (Name : in String;
+      Ask_For_Confirmation : in Boolean := True)
+     return Boolean;
+
+   procedure Rename_Subgraph
+     (Old_Name : in String;
+      New_Name : in String);
+
+   ---------------------------------------------------------------------------
    --  Windows
    ---------------------------------------------------------------------------
 
@@ -95,11 +118,18 @@ package Giant.Controller is
    procedure Open_Window
      (Name : in String);
 
-   procedure Remove_Window
-     (Name : in String);
+   function Remove_Window
+     (Name                 : in String;
+      Ask_For_Confirmation : in Boolean := True)
+     return Boolean;
+
+   procedure Rename_Window
+     (Old_Name : in String;
+      New_Name : in String);
 
 private
 
    Current_Project : Projects.Project_Access;
+   Project_Loaded : Boolean := False;
 
 end Giant.Controller;

@@ -18,14 +18,15 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.8 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.9 $
 -- $Author: squig $
--- $Date: 2003/06/18 16:55:09 $
+-- $Date: 2003/06/19 16:38:06 $
 --
 
 with Glib;
 with Gdk.Event;
 with Gdk.Types;
+with Gtk.Arguments;
 with Gtk.Enums; use Gtk.Enums;
 With Gtk.Frame;
 with Gtk.Label;
@@ -40,9 +41,22 @@ with Gtk.Window;
 
 package body Giant.Gui_Utils is
 
-   package Clist_User_Return_Callback is new
+   package Clist_Menu_Return_Callback is new
      Gtk.Handlers.User_Return_Callback (Gtk.Clist.Gtk_Clist_Record, Boolean,
                                         Gtk.Menu.Gtk_Menu);
+
+   package Clist_Menu_Callback is new
+     Gtk.Handlers.User_Callback (Gtk.Clist.Gtk_Clist_Record,
+                                 Gtk.Menu.Gtk_Menu);
+
+   Sensitive: Boolean;
+
+   procedure Set_Children_Sensitive
+     (Widget : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+   begin
+      Gtk.Widget.Set_Sensitive (Widget, Sensitive);
+   end;
 
    function On_Clist_Button_Press
      (Source : access Gtk.Clist.Gtk_Clist_Record'Class;
@@ -76,15 +90,66 @@ package body Giant.Gui_Utils is
       return False;
    end On_Clist_Button_Press;
 
+   procedure On_Clist_Click_Column
+     (List   : access Gtk.Clist.Gtk_Clist_Record'Class;
+      Args   : in     Gtk.Arguments.Gtk_Args)
+   is
+      Column : constant Glib.Gint := Gtk.Arguments.To_Gint (Args, 1);
+
+      use type Glib.Gint;
+      use type Gtk.Clist.Gtk_Sort_Type;
+   begin
+      if (Column = Gtk.Clist.Get_Sort_Column (List)
+          and then Gtk.Clist.Get_Sort_Type (List)
+          = Gtk.Clist.Ascending) then
+         Gtk.Clist.Set_Sort_Type (List, Gtk.Clist.Descending);
+      else
+         Gtk.Clist.Set_Sort_Type (List, Gtk.Clist.Ascending);
+      end if;
+
+      Gtk.Clist.Set_Sort_Column (List, Column);
+      Gtk.Clist.Sort (List);
+   end On_Clist_Click_Column;
+
+   procedure On_Clist_Select_Row
+     (List : access Gtk.Clist.Gtk_Clist_Record'Class;
+      Args : in     Gtk.Arguments.Gtk_Args;
+      Menu : in     Gtk.Menu.Gtk_Menu)
+   is
+   begin
+      Sensitive := True;
+      Gtk.Menu.Forall (Menu, Set_Children_Sensitive'Access);
+   end On_Clist_Select_Row;
+
+   procedure On_Clist_Unselect_Row
+     (List : access Gtk.Clist.Gtk_Clist_Record'Class;
+      Args : in     Gtk.Arguments.Gtk_Args;
+      Menu : in     Gtk.Menu.Gtk_Menu)
+   is
+   begin
+      Sensitive := False;
+      Gtk.Menu.Forall (Menu, Set_Children_Sensitive'Access);
+   end On_Clist_Unselect_Row;
+
    procedure Connect_Popup_Menu
      (List : access Gtk.Clist.Gtk_Clist_Record'Class;
       Menu : access Gtk.Menu.Gtk_Menu_Record'Class)
    is
    begin
-      Clist_User_Return_Callback.Connect
+      Clist_Menu_Return_Callback.Connect
         (List, "button_press_event",
-         Clist_User_Return_Callback.To_Marshaller
+         Clist_Menu_Return_Callback.To_Marshaller
          (On_Clist_Button_Press'Access), Gtk.Menu.Gtk_Menu (Menu));
+
+      Clist_Menu_Callback.Connect
+        (List, "select_row",
+         On_Clist_Select_Row'Access, Gtk.Menu.Gtk_Menu (Menu));
+      Clist_Menu_Callback.Connect
+        (List, "unselect_row",
+         On_Clist_Unselect_Row'Access, Gtk.Menu.Gtk_Menu (Menu));
+
+      Clist_Callback.Connect
+        (List, "click_column", On_Clist_Click_Column'Access);
    end Connect_Popup_Menu;
 
    function Get_Selected_Row
@@ -114,6 +179,15 @@ package body Giant.Gui_Utils is
         (Button, "clicked", Button_Callback.To_Marshaller (Callback));
       return Button;
    end New_Button;
+
+   function New_Hseperator
+     return Gtk.Separator.Gtk_Hseparator
+   is
+      Separator : Gtk.Separator.Gtk_HSeparator;
+   begin
+      Gtk.Separator.Gtk_New_Hseparator (Separator);
+      return Separator;
+   end New_Hseperator;
 
    function New_Label
      (Title : in String)
@@ -244,25 +318,5 @@ package body Giant.Gui_Utils is
       Gtk.Widget.Grab_Default (Widget);
       Result := Gtk.Window.Activate_Default (Window);
    end;
-
-   package body Clist_Row_Data is
-
-      function Find
-        (List  : access Gtk.Clist.Gtk_Clist_Record'Class;
-         Value : in     Data_Type)
-         return Glib.Gint
-      is
-         use type Glib.Gint;
-      begin
-         for I in 0 .. Gtk.Clist.Get_Rows (List) - 1 loop
-            if (Data.Get (List, I) = Value) then
-               return I;
-            end if;
-         end loop;
-
-         return Glib.Gint (-1);
-      end Find;
-
-   end Clist_Row_Data;
 
 end Giant.Gui_Utils;

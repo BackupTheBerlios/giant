@@ -20,39 +20,33 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-set_operation_dialog.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-set_operation_dialog.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/06/18 15:16:26 $
+--  $Date: 2003/06/19 16:38:06 $
 --
+
+with Ada.Strings.Unbounded;
 
 with Glib;
 with Gtk.Box;
 with Gtk.Enums; use Gtk.Enums;
+with Gtk.Misc;
+with Gtk.Table;
+with Gtk.Widget;
 with Gtk.Window;
 
+with String_Lists;
+
+with Giant.Controller;
 with Giant.Default_Dialog;
+with Giant.Projects;
 with Giant.Gui_Utils; use Giant.Gui_Utils;
 
 package body Giant.Set_Operation_Dialog is
 
-   procedure Create
-     (Dialog : out Set_Operation_Dialog_Access)
-   is
-   begin
-      Dialog := new Set_Operation_Dialog_Record;
-      Initialize (Dialog);
-   end Create;
-
-   procedure Initialize
-     (Dialog  : access Set_Operation_Dialog_Record'Class)
-   is
-      Box : Gtk.Box.Gtk_Vbox;
-   begin
-      Default_Dialog.Initialize (Dialog, -"Set Operation",
-                                 Default_Dialog.Button_Okay_Cancel);
-
-      Box := Default_Dialog.Get_Center_Box (Dialog);
-   end;
+   ---------------------------------------------------------------------------
+   --  Callbacks
+   ---------------------------------------------------------------------------
 
    function Can_Hide
      (Dialog : access Set_Operation_Dialog_Record)
@@ -74,4 +68,107 @@ package body Giant.Set_Operation_Dialog is
       return True;
    end Can_Hide;
 
+   ---------------------------------------------------------------------------
+   --  Initializers
+   ---------------------------------------------------------------------------
+
+   procedure Create
+     (Dialog : out Set_Operation_Dialog_Access)
+   is
+   begin
+      Dialog := new Set_Operation_Dialog_Record;
+      Initialize (Dialog);
+   end Create;
+
+   function Get_Subgraphs
+     return String_List.Glist
+   is
+      Source : String_Lists.List;
+      Target : String_List.Glist;
+      Iterator : String_Lists.ListIter;
+      Name : Ada.Strings.Unbounded.Unbounded_String;
+   begin
+      --  initialize main window data
+      Source := Projects.Get_All_Subgraphs (Controller.Get_Project);
+      Iterator := String_Lists.MakeListIter (Source);
+      while String_Lists.More (Iterator) loop
+         String_Lists.Next (Iterator, Name);
+         String_List.Append (Target, Ada.Strings.Unbounded.To_String (Name));
+      end loop;
+      String_Lists.Destroy (Source);
+
+      return Target;
+   end;
+
+   procedure Add_Row
+     (Table : in     Gtk.Table.Gtk_Table;
+      Row   : in     Glib.Guint;
+      Left  : access Gtk.Misc.Gtk_Misc_Record'Class;
+      Right : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+      use type Glib.Guint;
+   begin
+      --  right align
+      Gtk.Misc.Set_Alignment (Left, 1.0, 0.5);
+
+      Gtk.Table.Attach (Table, Left,
+                        Left_Attach => 0, Right_Attach => 1,
+                        Top_Attach => Row, Bottom_Attach => Row + 1);
+      Gtk.Table.Attach (Table, Right,
+                        Left_Attach => 1, Right_Attach => 2,
+                        Top_Attach => Row, Bottom_Attach => Row + 1);
+   end;
+
+   procedure Initialize
+     (Dialog  : access Set_Operation_Dialog_Record'Class)
+   is
+      use type Glib.Guint;
+
+      Table : Gtk.Table.Gtk_Table;
+      Operations : String_List.Glist;
+      Subgraphs : String_List.Glist := Get_Subgraphs;
+   begin
+      Default_Dialog.Initialize (Dialog, -"Set Operation",
+                                 Default_Dialog.Button_Okay_Cancel);
+
+      Gtk.Table.Gtk_New (Table, Rows => 5, Columns => 2, Homogeneous => False);
+      Gtk.Table.Set_Row_Spacings (Table, Glib.Guint (DEFAULT_SPACING));
+      Gtk.Table.Set_Col_Spacings (Table, Glib.Guint (DEFAULT_SPACING));
+      Default_Dialog.Set_Center_Widget (Dialog, Table);
+
+      --  left source
+      Gtk.Combo.Gtk_New (Dialog.Left_Source);
+      if (String_List.Length (Subgraphs) > 0) then
+         Gtk.Combo.Set_Popdown_Strings (Dialog.Left_Source, Subgraphs);
+      end if;
+      Add_Row (Table, 0, New_Label (-"Left Source"), Dialog.Left_Source);
+
+      --  operation
+      String_List.Append (Operations, -"Difference");
+      String_List.Append (Operations, -"Intersection");
+      String_List.Append (Operations, -"Union");
+
+      Gtk.Combo.Gtk_New (Dialog.Operation);
+      Gtk.Combo.Set_Popdown_Strings (Dialog.Operation, Operations);
+      Gtk.Combo.Set_Value_In_List (Dialog.Operation, 0, Ok_If_Empty => False);
+      Add_Row (Table, 1, New_Label (-"Operation"), Dialog.Operation);
+
+      --  left source
+      Gtk.Combo.Gtk_New (Dialog.Left_Source);
+      if (String_List.Length (Subgraphs) > 0) then
+         Gtk.Combo.Set_Popdown_Strings (Dialog.Left_Source, Subgraphs);
+      end if;
+      Add_Row (Table, 2, New_Label (-"Left Source"), Dialog.Left_Source);
+
+      --  separator
+      Gtk.Table.Attach (Table, New_Hseperator,
+                        Left_Attach => 1, Right_Attach => 2,
+                        Top_Attach => 3, Bottom_Attach => 4);
+
+      --  target
+      Gtk.Gentry.Gtk_New (Dialog.Target);
+      Add_Row (Table, 4, New_Label (-"Target"), Dialog.Target);
+   end;
+
 end Giant.Set_Operation_Dialog;
+

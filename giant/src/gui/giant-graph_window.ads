@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.5 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.6 $
 --  $Author: squig $
---  $Date: 2003/06/18 15:16:26 $
+--  $Date: 2003/06/19 16:38:06 $
 --
 ------------------------------------------------------------------------------
 --
@@ -65,6 +65,9 @@ package Giant.Graph_Window is
    function Get_Vis_Window
      (Window : access Graph_Window_Record'Class)
      return Vis_Windows.Visual_Window_Access;
+
+   procedure Update_Title
+     (Window : access Graph_Window_Record'Class);
 
 private
    type Graph_Window_Record is

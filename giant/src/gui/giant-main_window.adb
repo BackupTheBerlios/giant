@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.13 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.14 $
 --  $Author: squig $
---  $Date: 2003/06/18 18:40:37 $
+--  $Date: 2003/06/19 16:38:06 $
 --
 
 with Ada.Strings.Unbounded;
@@ -48,7 +48,9 @@ with Gtk.Tearoff_Menu_Item;
 with Gtkada.File_Selection;
 with Gtkada.Types;
 
+with Giant.Clists;
 with Giant.Controller;
+with Giant.Default_Dialog;
 with Giant.Default_Logger;
 with Giant.Gsl_Dialog;
 with Giant.Gui_Manager;
@@ -57,6 +59,16 @@ with Giant.Projects;
 with Giant.Set_Operation_Dialog;
 
 package body Giant.Main_Window is
+
+   procedure Update_Subgraph
+     (List : access String_Clists.Giant_Clist_Record;
+      Row  : in     Glib.Gint;
+      Name : in     String);
+
+   procedure Update_Window
+     (List : access String_Clists.Giant_Clist_Record;
+      Row  : in     Glib.Gint;
+      Name : in     String);
 
    --  main window instance
    Window : Gtk.Window.Gtk_Window;
@@ -68,15 +80,11 @@ package body Giant.Main_Window is
    Project_Open_Menu_Item : Gtk.Menu_Item.Gtk_Menu_Item;
    Project_Quit_Menu_Item : Gtk.Menu_Item.Gtk_Menu_Item;
 
-   package Window_List_Data is new
-     Gui_Utils.Clist_Row_Data (String);
    Window_List_Menu : Gtk.Menu.Gtk_Menu;
-   Window_List : Gtk.Clist.Gtk_Clist;
+   Window_List : String_Clists.Giant_Clist;
 
-   package Subgraph_List_Data is new
-     Gui_Utils.Clist_Row_Data (String);
    Subgraph_List_Menu : Gtk.Menu.Gtk_Menu;
-   Subgraph_List : Gtk.Clist.Gtk_Clist;
+   Subgraph_List : String_Clists.Giant_Clist;
 
    Status_Bar : Gtk.Status_Bar.Gtk_Status_Bar;
 
@@ -88,17 +96,19 @@ package body Giant.Main_Window is
      return String
    is
    begin
-      return Subgraph_List_Data.Data.Get
-        (Subgraph_List, Get_Selected_Row (Subgraph_List));
+      return String_Clists.Get_Selected_Item (Subgraph_List);
    end Get_Selected_Subgraph;
 
    function Get_Selected_Window
      return String
    is
    begin
-      return Window_List_Data.Data.Get
-        (Window_List, Get_Selected_Row (Window_List));
+      return String_Clists.Get_Selected_Item (Window_List);
    end Get_Selected_Window;
+
+   ---------------------------------------------------------------------------
+   --  Callbacks
+   ---------------------------------------------------------------------------
 
    function On_Delete
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
@@ -109,21 +119,6 @@ package body Giant.Main_Window is
       Closed := Controller.Hide_Gui;
       return True;
    end On_Delete;
-
-   procedure Update_Window (Row : Glib.Gint)
-   is
-      Name: String := Window_List_Data.Data.Get (Window_List, Row);
-   begin
-      Gtk.Clist.Set_Text (Window_List, Row, 0, Name);
-      if (Gui_Manager.Is_Window_Open (Name)) then
-         Gtk.Clist.Set_Text (Window_List, Row, 1, -"Open");
-      elsif (Projects.Is_Vis_Window_Memory_Loaded
-             (Controller.Get_Project, Name)) then
-         Gtk.Clist.Set_Text (Window_List, Row, 1, -"Loaded");
-      else
-         Gtk.Clist.Set_Text (Window_List, Row, 1, -"");
-      end if;
-   end Update_Window;
 
    ---------------------------------------------------------------------------
    --  Project Menu Callbacks
@@ -152,6 +147,9 @@ package body Giant.Main_Window is
             end;
          end if;
       end;
+   exception
+      when Projects.Directory_Holds_Already_A_Project_File_Exception =>
+         Default_Dialog.Show_Error_Dialog (-"The project could not be created. The directory already contains a project.");
    end On_Project_New;
 
    procedure On_Project_Open
@@ -168,6 +166,9 @@ package body Giant.Main_Window is
             Controller.Open_Project (Filename);
          end if;
       end;
+   exception
+      when Projects.Project_Does_Not_Exist_Exception =>
+         Default_Dialog.Show_Error_Dialog (-"The project could not be opened. One or more project files are missing.");
    end On_Project_Open;
 
    procedure On_Project_Save
@@ -243,16 +244,41 @@ package body Giant.Main_Window is
       Closed := Controller.Close_Window (Get_Selected_Window);
    end On_Window_List_Close;
 
+   procedure On_Window_List_Rename
+     (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
+   is
+      Old_Name : String := Get_Selected_Window;
+   begin
+      declare
+         New_Name : constant String
+           := Default_Dialog.Show_Input_Dialog (-"New name", -"Rename Window",
+                                                Old_Name);
+      begin
+
+         if (New_Name /= "" and then New_Name /= Old_Name) then
+            Controller.Rename_Window (Old_Name, New_Name);
+         end if;
+      end;
+   end On_Window_List_Rename;
+
    procedure On_Window_List_Delete
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
+      Removed : Boolean;
    begin
-      Controller.Remove_Window (Get_Selected_Window);
+      Removed := Controller.Remove_Window (Get_Selected_Window);
    end On_Window_List_Delete;
 
    ---------------------------------------------------------------------------
    --  Subgraph Menu Callbacks
    ---------------------------------------------------------------------------
+
+   procedure On_Subgraph_New
+     (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
+   is
+   begin
+      Controller.Create_Subgraph;
+   end On_Subgraph_New;
 
    procedure On_Subgraph_Set_Operation
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
@@ -278,10 +304,28 @@ package body Giant.Main_Window is
    procedure On_Subgraph_List_Delete
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
+      Removed : Boolean;
    begin
-      --Controller.Remove_Window (Get_Selected_Window);
-      null;
+      Removed := Controller.Remove_Subgraph (Get_Selected_Window);
    end On_Subgraph_List_Delete;
+
+   procedure On_Subgraph_List_Rename
+     (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
+   is
+      Old_Name : String := Get_Selected_Window;
+   begin
+      declare
+         New_Name : constant String
+           := Default_Dialog.Show_Input_Dialog (-"New name",
+                                                -"Rename Subgraph",
+                                                Old_Name);
+      begin
+
+         if (New_Name /= "" and then New_Name /= Old_Name) then
+            Controller.Rename_Subgraph (Old_Name, New_Name);
+         end if;
+      end;
+   end On_Subgraph_List_Rename;
 
    ---------------------------------------------------------------------------
    --  Status Bar Callbacks
@@ -312,7 +356,7 @@ package body Giant.Main_Window is
    begin
       Gtk.Menu_Bar.Gtk_New (Menu_Bar);
 
-      Gtk.Menu_item.Gtk_New (Item, -"Projekt");
+      Gtk.Menu_item.Gtk_New (Item, -"Project");
       Gtk.Menu_Bar.Add (Menu_Bar, Item);
       Project_Menu_Item := Item;
 
@@ -345,7 +389,9 @@ package body Giant.Main_Window is
 
       Menu := New_Sub_Menu (Menu_Bar, -"Subgraph");
       Gtk.Menu.Add (Menu, New_TearOff_Menu_Item);
-      Gtk.Menu.Add (Menu, New_Menu_Item (-"Set Operation",
+      Gtk.Menu.Add (Menu, New_Menu_Item (-"New", On_Subgraph_New'Access));
+      Gtk.Menu.Add (Menu, New_Menu_Separator);
+      Gtk.Menu.Add (Menu, New_Menu_Item (-"Set Operation...",
                                          On_Subgraph_Set_Operation'Access));
 
 
@@ -380,16 +426,19 @@ package body Giant.Main_Window is
                        New_Menu_Item (-"Close", On_Window_List_Close'Access));
       Gtk.Menu.Append (Window_List_Menu, New_Menu_Separator);
       Gtk.Menu.Append (Window_List_Menu,
+                       New_Menu_Item (-"Rename...",
+                                      On_Window_List_Rename'Access));
+      Gtk.Menu.Append (Window_List_Menu, New_Menu_Separator);
+      Gtk.Menu.Append (Window_List_Menu,
                        New_Menu_Item (-"Delete",
                                       On_Window_List_Delete'Access));
 
       --  window list
-      Gtk.Clist.Gtk_New (Window_List, 2);
-      Gtk.Clist.Set_Show_Titles (Window_List, True);
+      String_Clists.Create (Window_List, 2, Update_Window'Access);
       Connect_Popup_Menu (Window_List, Window_List_Menu);
 
-      Gtk.Clist.Set_Column_Title (Window_List, 0, -"Name");
-      Gtk.Clist.Set_Column_Title (Window_List, 1, -"Status");
+      String_Clists.Set_Column_Title (Window_List, 0, -"Name");
+      String_Clists.Set_Column_Title (Window_List, 1, -"Status");
 
       Gtk.Paned.Add (Pane, Add_Scrollbar_And_Frame (Window_List, -"Windows"));
 
@@ -401,18 +450,22 @@ package body Giant.Main_Window is
                                       On_Subgraph_List_Highlight'Access));
       Gtk.Menu.Append (Subgraph_List_Menu, New_Menu_Separator);
       Gtk.Menu.Append (Subgraph_List_Menu,
+                       New_Menu_Item (-"Rename...",
+                                      On_Subgraph_List_Rename'Access));
+      Gtk.Menu.Append (Subgraph_List_Menu, New_Menu_Separator);
+      Gtk.Menu.Append (Subgraph_List_Menu,
                        New_Menu_Item (-"Delete",
                                       On_Subgraph_List_Delete'Access));
 
       --  sub graph list
-      Gtk.Clist.Gtk_New (Subgraph_List, 4);
-      Gtk.Clist.Set_Show_Titles (Subgraph_List, True);
+      String_Clists.Create (Subgraph_List, 4, Update_Subgraph'Access);
+      String_Clists.Set_Show_Titles (Subgraph_List, True);
       Connect_Popup_Menu (Subgraph_List, Subgraph_List_Menu);
 
-      Gtk.Clist.Set_Column_Title (Subgraph_List, 0, -"Name");
-      Gtk.Clist.Set_Column_Title (Subgraph_List, 1, -"Nodes");
-      Gtk.Clist.Set_Column_Title (Subgraph_List, 2, -"Edges");
-      Gtk.Clist.Set_Column_Title (Subgraph_List, 3, -"Highlight Color");
+      String_Clists.Set_Column_Title (Subgraph_List, 0, -"Name");
+      String_Clists.Set_Column_Title (Subgraph_List, 1, -"Nodes");
+      String_Clists.Set_Column_Title (Subgraph_List, 2, -"Edges");
+      String_Clists.Set_Column_Title (Subgraph_List, 3, -"Highlight Color");
 
       Gtk.Paned.Add (Pane, Add_Scrollbar_And_Frame (Subgraph_List, -"Subgraphs"));
       --  status bar
@@ -431,50 +484,81 @@ package body Giant.Main_Window is
    --  Window Methods
    ---------------------------------------------------------------------------
 
+   procedure Update_Window
+     (List : access String_Clists.Giant_Clist_Record;
+      Row  : in     Glib.Gint;
+      Name : in     String)
+   is
+   begin
+      String_Clists.Set_Text (List, Row, 0, Name);
+      if (Gui_Manager.Is_Window_Open (Name)) then
+         String_Clists.Set_Text (List, Row, 1, -"Open");
+      elsif (Projects.Is_Vis_Window_Memory_Loaded
+             (Controller.Get_Project, Name)) then
+         String_Clists.Set_Text (List, Row, 1, -"Loaded");
+      else
+         String_Clists.Set_Text (List, Row, 1, -"");
+      end if;
+   end Update_Window;
+
    procedure Add_Window
      (Name : in String)
    is
-      use Gtkada.Types;
-
-      Row_Data : Gtkada.Types.Chars_Ptr_Array (0 .. 1);
-      Row : Glib.Gint;
    begin
-      for I in Row_Data'Range loop
-         Row_Data (I) := Interfaces.C.Strings.New_String ("");
-      end loop;
-      Row := Gtk.Clist.Append (Window_List, Row_Data);
-      Window_List_Data.Data.Set (Window_List, Row, Name);
-      Update_Window (Row);
-      Free (Row_Data);
+      String_Clists.Add (Window_List, Name);
    end Add_Window;
 
    procedure Update_Window
      (Name : in String)
    is
-      Row : Glib.Gint
-        := Window_List_Data.Find (Window_List, Name);
    begin
-      if (Row /= -1) then
-         Update_Window (Row);
-      end if;
+      String_Clists.Update (Window_List, Name);
    end Update_Window;
 
    procedure Remove_Window
      (Name : in String)
    is
-      Row : Glib.Gint
-        := Window_List_Data.Find (Window_List, Name);
    begin
-      if (Row /= -1) then
-         Gtk.Clist.Remove (Window_List, Row);
-      end if;
+      String_Clists.Remove (Window_List, Name);
    end Remove_Window;
 
    ---------------------------------------------------------------------------
    --  Subgraph Methods
    ---------------------------------------------------------------------------
 
+   procedure Update_Subgraph
+     (List : access String_Clists.Giant_Clist_Record;
+      Row  : in     Glib.Gint;
+      Name : in     String)
+   is
+   begin
+      String_Clists.Set_Text (List, Row, 0, Name);
+      -- FIX: fill in missing values
+      String_Clists.Set_Text (List, Row, 1, "FIX");
+      String_Clists.Set_Text (List, Row, 2, "FIX");
+      String_Clists.Set_Text (List, Row, 3, "FIX: Ask Martin");
+   end Update_Subgraph;
 
+   procedure Add_Subgraph
+     (Name : in String)
+   is
+   begin
+      String_Clists.Add (Subgraph_List, Name);
+   end Add_Subgraph;
+
+   procedure Update_Subgraph
+     (Name : in String)
+   is
+   begin
+      String_Clists.Update (Subgraph_List, Name);
+   end Update_Subgraph;
+
+   procedure Remove_Subgraph
+     (Name : in String)
+   is
+   begin
+      String_Clists.Remove (Subgraph_List, Name);
+   end Remove_Subgraph;
 
    ---------------------------------------------------------------------------
    --  Other Methods

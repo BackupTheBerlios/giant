@@ -20,14 +20,14 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.ads,v $, $Revision: 1.6 $
+--  $RCSfile: giant-main_window.ads,v $, $Revision: 1.7 $
 --  $Author: squig $
---  $Date: 2003/06/18 16:55:09 $
+--  $Date: 2003/06/19 16:38:06 $
 --
 --  Provides the main window. The main window is only instanciated once.
 --
 --  Pattern:
---    ADT
+--    ADO
 --
 
 with Giant.Vis_Windows;
@@ -39,11 +39,26 @@ package Giant.Main_Window is
    --  Window Methods
    ---------------------------------------------------------------------------
 
-   procedure Add_Window (Name : in String);
+   procedure Add_Window
+     (Name : in String);
 
-   procedure Update_Window (Name : in String);
+   procedure Update_Window
+     (Name : in String);
 
-   procedure Remove_Window (Name : in String);
+   procedure Remove_Window
+     (Name : in String);
+
+   ---------------------------------------------------------------------------
+   --  Subgraphs
+   ---------------------------------------------------------------------------
+   procedure Add_Subgraph
+     (Name : in String);
+
+   procedure Update_Subgraph
+     (Name : in String);
+
+   procedure Remove_Subgraph
+     (Name : in String);
 
    ---------------------------------------------------------------------------
    --  Other Methods

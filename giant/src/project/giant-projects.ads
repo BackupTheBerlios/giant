@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.22 $
--- $Author: schwiemn $
--- $Date: 2003/06/18 18:36:34 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.23 $
+-- $Author: squig $
+-- $Date: 2003/06/19 16:38:06 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -193,7 +193,7 @@ package Giant.Projects is
      (Project_Name : in String;
       Project_Directory : in String)
      return Project_Access;
-          
+
    ---------------------------------------------------------------------------
    -- Same functionality as "Load_Project" -> just a wrapper.
    --
@@ -351,8 +351,8 @@ package Giant.Projects is
    function Get_Project_Name
      (Project : in Project_Access)
      return String;
-          
-   --------------------------------------------------------------------------- 
+
+   ---------------------------------------------------------------------------
    -- Returns the full file name (incl. absolute path) of the project file
    -- (xml file).
    --
@@ -452,11 +452,11 @@ package Giant.Projects is
    -- Raised if a visualisation window that should be added to the
    -- project already exists.
    Visualisation_Window_Is_Already_Part_Of_Project_Exception : Exception;
-   
+
    ---------------------------------------------------------------------------
    -- Raised on access on not memory loaded vis windows
    Visualisation_Window_Is_Not_Memory_Loaded_Exception : Exception;
-   
+
    ---------------------------------------------------------------------------
    -- Raised on attempt of changing a name to a name that already exists.
    New_Vis_Window_Name_Does_Already_Exist_Exception : Exception;
@@ -557,7 +557,7 @@ package Giant.Projects is
      (Project         : in Project_Access;
       Vis_Window_Name : in String)
      return Vis_Windows.Visual_Window_Access;
-     
+
    ---------------------------------------------------------------------------
    --  Changes the name of a visualisation window in a project.
    --
@@ -590,8 +590,8 @@ package Giant.Projects is
    --   Visualisation_Window_Is_Not_Memory_Loaded_Exception
    --     Raised if "Vis_Window_Name" is not memory loaded.
    --   New_Vis_Window_Name_Does_Already_Exist_Exception
-   --     Raised if there is alread a vis window with 
-   --     "New_Vis_Window_Name". 
+   --     Raised if there is alread a vis window with
+   --     "New_Vis_Window_Name".
    procedure Change_Vis_Window_Name
      (Project             : in Project_Access;
       Vis_Window_Name     : in String;
@@ -660,7 +660,7 @@ package Giant.Projects is
    --
    -- This method does NOT write the data used for a visualisation
    -- window into the management file for that window.
-   --  
+   --
    -- A "Security Save File" (describing the actual status of the window)
    -- will be created (this file will be removed on execution of
    -- Store_Whole_Project).
@@ -761,11 +761,11 @@ package Giant.Projects is
    -- Raised if an Subgraph that should be added to the
    -- project already exists.
    Subgraph_Is_Already_Part_Of_Project_Exception : Exception;
-   
+
    ---------------------------------------------------------------------------
    -- Raised on attempt of changing a name to a name that already exists.
    New_Subgraph_Name_Does_Already_Exist_Exception : Exception;
-   
+
 
    ---------------------------------------------------------------------------
    -- Determines whether a subgraph with the given name exists.
@@ -829,7 +829,7 @@ package Giant.Projects is
    function Get_All_Subgraphs
      (Project : in Project_Access)
      return String_Lists.List;
-     
+
    ---------------------------------------------------------------------------
    --  Changes the name of a subgraph in a project.
    --
@@ -855,7 +855,7 @@ package Giant.Projects is
    --     "Subgraph_Name".
    --   New_Subgraph_Name_Does_Already_Exist_Exception
    --     Raised if there is already a subgraph with the name
-   --     "New_Subgraph_Name". 
+   --     "New_Subgraph_Name".
    procedure Change_Subgraph_Name
      (Project           : in Project_Access;
       Subgraph_Name     : in String;
@@ -900,9 +900,9 @@ package Giant.Projects is
    --
    --   The management file for the subgraph is removed too
    --   (if one exists).
-   --   
-   --   A "Security Save File" (describing the actual status of the 
-   --   subgraph) will be created (this file will be removed on 
+   --
+   --   A "Security Save File" (describing the actual status of the
+   --   subgraph) will be created (this file will be removed on
    --   execution of Store_Whole_Project).
    --
    --   After the call of that subprogram you may do what ever you want
@@ -923,9 +923,9 @@ package Giant.Projects is
    procedure Remove_Subgraph
       (Project       : in Project_Access;
        Subgraph_Name : in String);
-              
-   ---------------------------------------------------------------------------  
-   -- Determines the highlight status of a subgraph.    
+
+   ---------------------------------------------------------------------------
+   -- Determines the highlight status of a subgraph.
    --
    -- Parameters:
    --   Project - The instance of the ADT holding a project.
@@ -938,31 +938,31 @@ package Giant.Projects is
    --     parameter.
    --   Subgraph_Is_Not_Part_Of_Project_Exception - Raised if the
    --     project "Project" does not hold a subgraph with the name
-   --     "Subgraph_Name".   
+   --     "Subgraph_Name".
    function Get_Highlight_Status
      (Project       : in Project_Access;
-      Subgraph_Name : in String) 
+      Subgraph_Name : in String)
      return Subgraph_Highlight_Status;
-     
+
    ---------------------------------------------------------------------------
    -- Changes the highlightstatus of a subgraph.
    --
    -- Parameters:
    --   Project - The instance of the ADT holding a project.
    --   Subgraph_Name - The name of the subgraph.
-   --   New_Highlight_Status - The 
+   --   New_Highlight_Status - The
    -- Raises:
    --   Project_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Project_Access" is passed as
    --     parameter.
    --   Subgraph_Is_Not_Part_Of_Project_Exception - Raised if the
    --     project "Project" does not hold a subgraph with the name
-   --     "Subgraph_Name".  
+   --     "Subgraph_Name".
    procedure Change_Highlight_Status
      (Project              : in Project_Access;
       Subgraph_Name        : in String;
       New_Highlight_Status : in Subgraph_Highlight_Status);
-     
+
    ---------------------------------------------------------------------------
    -- D Node Annotations
    -- This part specifies the functionality needed to get access to the
@@ -1006,6 +1006,19 @@ package Giant.Projects is
      return Node_Annotations.Node_Annotation_Access;
 
 
+   ---------------------------------------------------------------------------
+   -- Returns true is Name exists in Project.
+   --
+   -- Parameters:
+   --   Project - The project
+   --   Name - The name
+   -- Returns:
+   --   True, if name exists; False, otherwise
+   function Exists_Name
+     (Project : in Project_Access;
+      Name    : in String)
+     return Boolean;
+
 ------------------------------------------------------------------------------
 private
 
@@ -1022,7 +1035,7 @@ private
       -- the management file for the visualisation window
       -- null string ("") if such a file does not exist yet
       Existing_Vis_Window_File : Ada.Strings.Unbounded.Unbounded_String;
-      
+
       Is_Memory_Loaded         : Boolean;
       -- null pointer / not initialized if Is_Memory_Loaded = False
       Vis_Window               : Vis_Windows.Visual_Window_Access;

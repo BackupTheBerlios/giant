@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.7 $
+--  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.8 $
 --  $Author: squig $
---  $Date: 2003/06/18 16:55:08 $
+--  $Date: 2003/06/19 16:38:06 $
 --
 --  Stores the window records. Handles the controller updates. Provides
 --  a facade for the gui.
@@ -56,6 +56,22 @@ package Giant.Gui_Manager is
      (Loaded : in Boolean);
 
    ---------------------------------------------------------------------------
+   --  Subgraphs
+   ---------------------------------------------------------------------------
+
+   procedure Add_Subgraph
+     (Name : in String);
+
+   function Remove_Subgraph
+     (Name : in String;
+      Ask_For_Confirmation : in Boolean := True)
+     return Boolean;
+
+   procedure Rename_Subgraph
+     (Old_Name : in String;
+      New_Name : in String);
+
+   ---------------------------------------------------------------------------
    --  Windows
    ---------------------------------------------------------------------------
 
@@ -77,8 +93,14 @@ package Giant.Gui_Manager is
    procedure Open
      (Visual_Window : Vis_Windows.Visual_Window_Access);
 
-   procedure Remove_Window
-     (Name : in String);
+   function Remove_Window
+     (Name : in String;
+      Ask_For_Confirmation : in Boolean := True)
+     return Boolean;
+
+   procedure Rename_Window
+     (Old_Name : in String;
+      New_Name : in String);
 
 end Giant.Gui_Manager;
 

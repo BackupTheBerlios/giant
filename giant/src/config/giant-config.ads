@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config.ads,v $, $Revision: 1.4 $
--- $Author: schwiemn $
--- $Date: 2003/06/17 14:03:02 $
+-- $RCSfile: giant-config.ads,v $, $Revision: 1.5 $
+-- $Author: squig $
+-- $Date: 2003/06/19 16:38:06 $
 --
 -- -----
 -- This package holds the functionality needed to access the
@@ -44,26 +44,26 @@ package Giant.Config is
    -- A List of setting identifiers. These settings must be known to
    -- the config ADO after parsing both config files
    -- (GIANT_Config_File, User_Config_File);
-   type Required_Settings_Type is array (integer range <>) 
+   type Required_Settings_Type is array (integer range <>)
      of Ada.Strings.Unbounded.Unbounded_String;
-     
+
    Required_Settings : constant Required_Settings_Type :=
-     (Ada.Strings.Unbounded.To_Unbounded_String 
+     (Ada.Strings.Unbounded.To_Unbounded_String
         ("Icon_For_Node_Annotations"),
-      Ada.Strings.Unbounded.To_Unbounded_String 
+      Ada.Strings.Unbounded.To_Unbounded_String
         ("Actual_Selection_Highlight_Color"),
-      Ada.Strings.Unbounded.To_Unbounded_String 
+      Ada.Strings.Unbounded.To_Unbounded_String
         ("Selection_Highlight_Color_1"),
-      Ada.Strings.Unbounded.To_Unbounded_String 
+      Ada.Strings.Unbounded.To_Unbounded_String
         ("Selection_Highlight_Color_2"),
-      Ada.Strings.Unbounded.To_Unbounded_String 
+      Ada.Strings.Unbounded.To_Unbounded_String
         ("Selection_Highlight_Color_3"),
-      Ada.Strings.Unbounded.To_Unbounded_String 
+      Ada.Strings.Unbounded.To_Unbounded_String
         ("IML_Subgraph_Highlight_Color_1"),
-      Ada.Strings.Unbounded.To_Unbounded_String 
+      Ada.Strings.Unbounded.To_Unbounded_String
         ("IML_Subgraph_Highlight_Color_2"),
-      Ada.Strings.Unbounded.To_Unbounded_String 
-        ("IML_Subgraph_Highlight_Color_2"));
+      Ada.Strings.Unbounded.To_Unbounded_String
+        ("IML_Subgraph_Highlight_Color_3"));
 
    ---------------------------------------------------------------------------
    -- A String Pointer used to describe a Color.
@@ -108,7 +108,7 @@ package Giant.Config is
    -- Raised if a passed config file could not be parsed as a
    -- valid xml file.
    Config_File_Not_Correct_Exception : exception;
-   
+
    ---------------------------------------------------------------------------
    -- Raised when a required config setting is not found after reading
    -- both config files.

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-default_dialog.ads,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/06/02 01:04:18 $
+--  $Date: 2003/06/19 16:38:06 $
 --
 ------------------------------------------------------------------------------
 --
@@ -100,10 +100,13 @@ package Giant.Default_Dialog is
       return Response_Type;
 
    procedure Show_Error_Dialog
-     (Message : in String);
+     (Message : in String;
+      Title   : in String := -"Giant Error");
 
    function Show_Input_Dialog
-     (Message  : in String)
+     (Message       : in String;
+      Title         : in String := -"Giant Input";
+      Default_Input : in String := "")
      return String;
 
 private

@@ -21,9 +21,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.11 $
 --  $Author: squig $
---  $Date: 2003/06/18 18:40:37 $
+--  $Date: 2003/06/19 16:38:06 $
 --
 
 with Ada.Strings.Unbounded;
@@ -31,6 +31,7 @@ with Ada.Strings.Unbounded;
 with String_Lists;
 
 with Giant.Graph_Lib;
+with Giant.Graph_Lib.Subgraphs;
 with Giant.Gui_Manager;
 With Giant.Logger;
 with Giant.Vis_Windows;
@@ -46,27 +47,19 @@ package body Giant.Controller is
    procedure Close_Project
    is
    begin
+      Project_Loaded := False;
+
       --FIX: Current_Project := null;
-      null;
+
+      Gui_Manager.Set_Project_Loaded (Project_Loaded);
    end;
 
    procedure Initialize_Project
    is
-      List : String_Lists.List;
-      Iterator : String_Lists.ListIter;
-      Name : Ada.Strings.Unbounded.Unbounded_String;
    begin
-      --  initialize main window data
-      List := Projects.Get_All_Visualisation_Window_Names
-        (Current_Project);
-      Iterator := String_Lists.MakeListIter (List);
-      while String_Lists.More (Iterator) loop
-         String_Lists.Next (Iterator, Name);
-         Gui_Manager.Add_Window (Ada.Strings.Unbounded.To_String (Name));
-      end loop;
-      String_Lists.Destroy (List);
+      Project_Loaded := True;
 
-      Gui_Manager.Set_Project_Loaded (True);
+      Gui_Manager.Set_Project_Loaded (Project_Loaded);
       Logger.Info (-"Project initialized");
    end;
 
@@ -99,6 +92,42 @@ package body Giant.Controller is
       return Current_Project;
    end;
 
+   function Get_Unique_Name
+     (Name : in String := "Unknown")
+      return String
+   is
+      I : Natural := 1;
+   begin
+      --  try the plain name first
+      if (not Projects.Exists_Name (Current_Project, Name)) then
+         return Name;
+      end if;
+
+      while (True) loop
+         declare
+            Unique_Name : String := Name & Integer'Image (I);
+         begin
+            Logger.Debug ("Get_Unique_Name: trying name " & Unique_Name);
+
+            if (not Projects.Exists_Name (Current_Project, Unique_Name)) then
+               return Unique_Name;
+            end if;
+         end;
+         I := I + 1;
+      end loop;
+
+      --  this can never happen, we will get a constrained error instead
+      --  when I runs out of bounds
+      return "";
+   end;
+
+   function Is_Project_Loaded
+     return Boolean
+   is
+   begin
+      return Project_Loaded;
+   end Is_Project_Loaded;
+
    procedure Open_Project
      (Filename : in String)
    is
@@ -108,12 +137,16 @@ package body Giant.Controller is
 
       Logger.Info (-"Opening project " & Filename);
       Current_Project := Projects.Load_Project_File (Filename);
+
+      --  update application
+      Initialize_Project;
    end;
 
    procedure Save_Project
    is
    begin
       Projects.Store_Whole_Project (Current_Project);
+      Logger.Info (-"Project saved");
    end Save_Project;
 
    procedure Save_Project
@@ -121,6 +154,7 @@ package body Giant.Controller is
    is
    begin
       Projects.Store_Whole_Project_As (Current_Project, Filename, "");
+      Logger.Info (-"Project saved");
    end Save_Project;
 
    ---------------------------------------------------------------------------
@@ -139,12 +173,6 @@ package body Giant.Controller is
    --  GUI
    ---------------------------------------------------------------------------
 
-   procedure Show_Gui
-   is
-   begin
-      Gui_Manager.Show;
-   end Show_Gui;
-
    function Hide_Gui
      (Ask_For_Confirmation: Boolean := True)
      return Boolean
@@ -153,13 +181,58 @@ package body Giant.Controller is
       return Gui_Manager.Hide (Ask_For_Confirmation);
    end Hide_Gui;
 
+   procedure Show_Gui
+   is
+   begin
+      Gui_Manager.Show;
+   end Show_Gui;
+
+   ---------------------------------------------------------------------------
+   --  Subgraphs
+   ---------------------------------------------------------------------------
+
+   procedure Create_Subgraph
+     (Name : in String := "Unknown")
+   is
+      Subgraph : Graph_Lib.Subgraphs.Subgraph;
+      Unique_Name : String := Get_Unique_Name (Name);
+   begin
+      Subgraph := Graph_Lib.Subgraphs.Create (Unique_Name);
+      Projects.Add_Subgraph (Current_Project, Subgraph);
+      Gui_Manager.Add_Subgraph (Unique_Name);
+   end Create_Subgraph;
+
+   function Remove_Subgraph
+     (Name                 : in String;
+      Ask_For_Confirmation : in Boolean := True)
+     return Boolean
+   is
+   begin
+      if (Gui_Manager.Remove_Subgraph (Name)) then
+         Projects.Remove_Subgraph (Current_Project, Name);
+         return True;
+      end if;
+      return False;
+   end Remove_Subgraph;
+
+   procedure Rename_Subgraph
+     (Old_Name : in String;
+      New_Name : in String)
+   is
+   begin
+      Projects.Change_Subgraph_Name
+        (Current_Project, Old_Name, New_Name);
+
+      Gui_Manager.Rename_Subgraph (Old_Name, New_Name);
+   end Rename_Subgraph;
+
    ---------------------------------------------------------------------------
    --  Windows
    ---------------------------------------------------------------------------
 
    function Close_Window
-     (Name : in String;
-      Ask_For_Confirmation: Boolean := True)
+     (Name                 : in String;
+      Ask_For_Confirmation : in Boolean := True)
      return Boolean
    is
    begin
@@ -170,26 +243,12 @@ package body Giant.Controller is
      (Name : in String := "Unknown")
    is
       Window : Vis_Windows.Visual_Window_Access;
-      I : Integer := 1;
+      Unique_Name : String := Get_Unique_Name (Name);
    begin
-      --  try to find a unique name for window
-      while (True) loop
-         declare
-            Custom_Name : String := Name & Integer'Image (I);
-         begin
-            Logger.Debug ("creating project: trying name " & Custom_Name);
-
-            if (not Projects.Does_Vis_Window_Exist
-                (Current_Project, Custom_Name)) then
-               Window := Vis_Windows.Create_New (Custom_Name);
-               Projects.Add_Visualisation_Window (Current_Project, Window);
-               Gui_Manager.Add_Window (Custom_Name);
-               Open_Window (Custom_Name);
-               return;
-            end if;
-         end;
-         I := I + 1;
-      end loop;
+      Window := Vis_Windows.Create_New (Unique_Name);
+      Projects.Add_Visualisation_Window (Current_Project, Window);
+      Gui_Manager.Add_Window (Unique_Name);
+      Open_Window (Unique_Name);
    end Create_Window;
 
    procedure Open_Window
@@ -201,21 +260,31 @@ package body Giant.Controller is
       Gui_Manager.Open (Window);
    end Open_Window;
 
-   procedure Remove_Window
-     (Name : in String)
+   function Remove_Window
+     (Name                 : in String;
+      Ask_For_Confirmation : in Boolean := True)
+     return Boolean
    is
    begin
-      if (Gui_Manager.Is_Window_Open (Name)) then
-         if (not Gui_Manager.Close (Name, Ask_For_Confirmation => False)) then
-            --  user has aborted close
-            return;
-         end if;
+      if (Gui_Manager.Remove_Window (Name)) then
+         Projects.Remove_Visualisation_Window
+           (Current_Project, Name);
+         return True;
       end if;
 
-      Gui_Manager.Remove_Window (Name);
-      Projects.Remove_Visualisation_Window
-        (Current_Project, Name);
+      return False;
    end Remove_Window;
+
+   procedure Rename_Window
+     (Old_Name : in String;
+      New_Name : in String)
+   is
+   begin
+      Projects.Change_Vis_Window_Name
+        (Current_Project, Old_Name, New_Name);
+
+      Gui_Manager.Rename_Window (Old_Name, New_Name);
+   end Rename_Window;
 
 end Giant.Controller;
 

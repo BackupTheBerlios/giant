@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-set_operation_dialog.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-set_operation_dialog.ads,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/06/18 15:16:26 $
+--  $Date: 2003/06/19 16:38:06 $
 --
 ------------------------------------------------------------------------------
 --
@@ -58,6 +58,8 @@ private
      new Default_Dialog.Default_Dialog_Record with record
         Left_Source : Gtk.Combo.Gtk_Combo;
         Right_Source : Gtk.Combo.Gtk_Combo;
+        Operation : Gtk.Combo.Gtk_Combo;
+        Target : Gtk.Gentry.Gtk_Entry;
      end record;
 
 end Giant.Set_Operation_Dialog;

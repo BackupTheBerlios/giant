@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.24 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.25 $
 --  $Author: squig $
---  $Date: 2003/06/18 21:22:16 $
+--  $Date: 2003/06/19 16:38:06 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -2277,6 +2277,16 @@ package body Giant.Projects is
 
       return Project.The_Node_Annotations;
    end Get_Node_Annotations;
+
+   function Exists_Name
+     (Project : in Project_Access;
+      Name    : in String)
+     return Boolean
+   is
+   begin
+      return Does_Vis_Window_Exist (Project, Name)
+        or else Projects.Does_Subgraph_Exist (Project, Name);
+   end Exists_Name;
 
 end Giant.Projects;
 

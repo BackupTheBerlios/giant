@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.6 $
+--  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.7 $
 --  $Author: squig $
---  $Date: 2003/06/16 21:48:30 $
+--  $Date: 2003/06/19 16:38:06 $
 --
 ------------------------------------------------------------------------------
 --
@@ -40,9 +40,12 @@ with Gtk.Menu;
 with Gtk.Menu_Bar;
 with Gtk.Menu_Item;
 with Gtk.Paned;
-With Gtk.Scrolled_Window;
+with Gtk.Scrolled_Window;
+with Gtk.Separator;
 with Gtk.Widget;
 with Gtk.Window;
+
+with Giant.Clists;
 
 package Giant.Gui_Utils is
 
@@ -77,6 +80,13 @@ package Giant.Gui_Utils is
    package Widget_Return_Callback is new
      Gtk.Handlers.Return_Callback (Gtk.Widget.Gtk_Widget_Record, Boolean);
 
+   ---------------------------------------------------------------------------
+   --  Generic Packages
+   ---------------------------------------------------------------------------
+
+   package String_Clists is new
+     Giant.Clists (String);
+
    ---------------
    --  Methods  --
    ---------------
@@ -108,6 +118,9 @@ package Giant.Gui_Utils is
      (Title : in String)
      return Gtk.Label.Gtk_Label;
 
+   function New_Hseperator
+     return Gtk.Separator.Gtk_Hseparator;
+
    function New_Label
      (Title : in String)
      return Gtk.Label.Gtk_Label;
@@ -134,19 +147,6 @@ package Giant.Gui_Utils is
    procedure Set_Default
      (Window : access Gtk.Window.Gtk_Window_Record'Class;
       Widget : access Gtk.Widget.Gtk_Widget_Record'Class);
-
-   generic
-      type Data_Type (<>) is private;
-   package Clist_Row_Data is
-
-      package Data is new Gtk.Clist.Row_Data (Data_Type);
-
-      function Find
-        (List : access Gtk.Clist.Gtk_Clist_Record'Class;
-         Value : in     Data_Type)
-         return Glib.Gint;
-
-   end Clist_Row_Data;
 
 end Giant.Gui_Utils;
 

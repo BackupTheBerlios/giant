@@ -20,15 +20,18 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.8 $
 --  $Author: squig $
---  $Date: 2003/06/18 16:55:08 $
+--  $Date: 2003/06/19 16:38:06 $
 --
+
+with Ada.Strings.Unbounded;
 
 with Gdk.Threads;
 with Gtk.Main;
 
 with Lists;
+with String_Lists;
 
 with Giant.Controller;
 with Giant.Main_Window;
@@ -37,7 +40,7 @@ with Giant.Projects;
 
 package body Giant.Gui_Manager is
 
-   Initialized : Boolean := False;
+   Gui_Initialized : Boolean := False;
 
    package Graph_Window_Lists is new Lists (Graph_Window.Graph_Window_Access);
    Open_Windows : Graph_Window_Lists.List := Graph_Window_Lists.Create;
@@ -58,6 +61,23 @@ package body Giant.Gui_Manager is
       return False;
    end Hide;
 
+   procedure Initialize_Project
+   is
+      List : String_Lists.List;
+      Iterator : String_Lists.ListIter;
+      Name : Ada.Strings.Unbounded.Unbounded_String;
+   begin
+      --  initialize main window data
+      List := Projects.Get_All_Visualisation_Window_Names
+        (Controller.Get_Project);
+      Iterator := String_Lists.MakeListIter (List);
+      while String_Lists.More (Iterator) loop
+         String_Lists.Next (Iterator, Name);
+         Add_Window (Ada.Strings.Unbounded.To_String (Name));
+      end loop;
+      String_Lists.Destroy (List);
+   end;
+
    procedure Show
    is
    begin
@@ -67,10 +87,16 @@ package body Giant.Gui_Manager is
 
       Gdk.Threads.Enter;
 
+      --  initialize windows
       Main_Window.Show;
-      Main_Window.Set_Project_Loaded (False);
 
+      --  initialize state
+      Set_Project_Loaded (Controller.Is_Project_Loaded);
+
+      -- main loop
+      Gui_Initialized := True;
       Gtk.Main.Main;
+      Gui_Initialized := False;
 
       Gdk.Threads.Leave;
    end Show;
@@ -79,8 +105,60 @@ package body Giant.Gui_Manager is
      (Loaded : in Boolean)
    is
    begin
+      if (not Gui_Initialized) then
+         return;
+      end if;
+
       Main_Window.Set_Project_Loaded (Loaded);
+
+      if (Loaded) then
+         Initialize_Project;
+      end if;
    end Set_Project_Loaded;
+
+   ---------------------------------------------------------------------------
+   --  Subgraphs
+   ---------------------------------------------------------------------------
+
+   procedure Add_Subgraph
+     (Name : in String)
+   is
+   begin
+      if (not Gui_Initialized) then
+         return;
+      end if;
+
+      Main_Window.Add_Subgraph (Name);
+   end Add_Subgraph;
+
+   function Remove_Subgraph
+     (Name                 : in String;
+      Ask_For_Confirmation : in Boolean := True)
+     return Boolean
+   is
+   begin
+      if (not Gui_Initialized) then
+         return True;
+      end if;
+
+      -- FIX: Ask for confirmation
+
+      Main_Window.Remove_Subgraph (Name);
+      return True;
+   end Remove_Subgraph;
+
+   procedure Rename_Subgraph
+     (Old_Name : in String;
+      New_Name : in String)
+   is
+   begin
+      if (not Gui_Initialized) then
+         return;
+      end if;
+
+      Main_Window.Remove_Subgraph (Old_Name);
+      Main_Window.Add_Subgraph (New_Name);
+   end Rename_Subgraph;
 
    ---------------------------------------------------------------------------
    --  Windows
@@ -90,6 +168,10 @@ package body Giant.Gui_Manager is
      (Name : in String)
    is
    begin
+      if (not Gui_Initialized) then
+         return;
+      end if;
+
       Main_Window.Add_Window (Name);
    end Add_Window;
 
@@ -98,10 +180,21 @@ package body Giant.Gui_Manager is
       Ask_For_Confirmation : in Boolean)
      return Boolean
    is
+      use type Graph_Window.Graph_Window_Access;
+
       Closed : Boolean;
       Window : Graph_Window.Graph_Window_Access;
    begin
+      if (not Gui_Initialized) then
+         return True;
+      end if;
+
       Window := Get_Open_Window (Name);
+      if (Window = Graph_Window.Null_Graph_Window) then
+         --  window is not open
+         return True;
+      end if;
+
       if (Ask_For_Confirmation) then
          Closed := Graph_Window.Close (Window);
       else
@@ -128,17 +221,19 @@ package body Giant.Gui_Manager is
       Iterator : Graph_Window_Lists.ListIter;
       Window : Graph_Window.Graph_Window_Access;
    begin
+      if (not Gui_Initialized) then
+         return Graph_Window.Null_Graph_Window;
+      end if;
+
       Iterator := Graph_Window_Lists.MakeListIter (Open_Windows);
       while Graph_Window_Lists.More (Iterator) loop
          Graph_Window_Lists.Next (Iterator, Window);
          if (Vis_Windows.Get_Name (Graph_Window.Get_Vis_Window (Window))
              = Name) then
-            --FIX: Graph_Window_Lists.Destroy (Iterator);
             return Window;
          end if;
       end loop;
 
-      -- FIX: Destroy (Iterator);
       return Graph_Window.Null_Graph_Window;
    end Get_Open_Window;
 
@@ -148,6 +243,10 @@ package body Giant.Gui_Manager is
    is
       use type Graph_Window.Graph_Window_Access;
    begin
+      if (not Gui_Initialized) then
+         return False;
+      end if;
+
       return (Get_Open_Window (Name) /= Graph_Window.Null_Graph_Window);
    end Is_Window_Open;
 
@@ -155,6 +254,14 @@ package body Giant.Gui_Manager is
    is
       Window : Graph_Window.Graph_Window_Access;
    begin
+      if (not Gui_Initialized) then
+         return;
+      end if;
+
+      if (Is_Window_Open (Vis_Windows.Get_Name (Visual_Window))) then
+         return;
+      end if;
+
       Graph_Window.Create (Window, Visual_Window);
       Graph_Window_Lists.Attach (Open_Windows, Window);
 
@@ -164,11 +271,42 @@ package body Giant.Gui_Manager is
       Main_Window.Update_Window (Vis_Windows.Get_Name (Visual_Window));
    end Open;
 
-   procedure Remove_Window
-     (Name : in String)
+   function Remove_Window
+     (Name                 : in String;
+      Ask_For_Confirmation : in Boolean := True)
+     return Boolean
    is
    begin
+      if (not Gui_Initialized) then
+         return True;
+      end if;
+
+      if (Is_Window_Open (Name)) then
+         if (Close (Name, Ask_For_Confirmation => Ask_For_Confirmation)) then
+            --  user has aborted close
+            return False;
+         end if;
+      end if;
+
       Main_Window.Remove_Window (Name);
+      return True;
    end Remove_Window;
+
+   procedure Rename_Window
+     (Old_Name : in String;
+      New_Name : in String)
+   is
+      Window : Graph_Window.Graph_Window_Access;
+   begin
+      if (not Gui_Initialized) then
+         return;
+      end if;
+
+      Main_Window.Remove_Window (Old_Name);
+      Main_Window.Add_Window (New_Name);
+
+      Window := Get_Open_Window (New_Name);
+      Graph_Window.Update_Title (Window);
+   end Rename_Window;
 
 end Giant.Gui_Manager;
