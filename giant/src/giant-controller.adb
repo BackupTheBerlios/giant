@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.90 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.91 $
 --  $Author: squig $
---  $Date: 2003/09/08 15:33:10 $
+--  $Date: 2003/09/09 21:32:03 $
 --
 
 with Ada.Strings.Unbounded;
@@ -1383,23 +1383,30 @@ package body Giant.Controller is
    --  Vis Styles
    ---------------------------------------------------------------------------
 
-   procedure Set_Vis_Style
-     (Window_Name : in String;
-      Name        : in String)
+   function Set_Vis_Style
+     (Window_Name    : in String;
+      Vis_Style_Name : in String)
+     return Boolean
    is
       Window : Vis_Windows.Visual_Window_Access
         := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
-      Style : Config.Vis_Styles.Visualisation_Style_Access
-        := Config.Vis_Styles.Initialize_Vis_Style_By_Name (Name);
+      Style : Config.Vis_Styles.Visualisation_Style_Access;
    begin
-      if Vis_Windows.Get_Vis_Style (Window) /= Name then
+      if not Config.Vis_Styles.Does_Vis_Style_Exist (Vis_Style_Name) then
+         return False;
+      end if;
+
+      if Vis_Windows.Get_Vis_Style (Window) /= Vis_Style_Name then
          Logger.Debug ("Setting vis style for " & Window_Name & ": "
-                       & Name);
-         Vis_Windows.Set_Vis_Style (Window, Name);
+                       & Vis_Style_Name);
+         Style
+           := Config.Vis_Styles.Initialize_Vis_Style_By_Name (Vis_Style_Name);
+         Vis_Windows.Set_Vis_Style (Window, Vis_Style_Name);
          Graph_Widgets.Set_Vis_Style (Vis_Windows.Get_Graph_Widget (Window),
                                       Style);
          Gui_Manager.Update_Vis_Style (Window_Name);
       end if;
+      return True;
    end Set_Vis_Style;
 
    ---------------------------------------------------------------------------

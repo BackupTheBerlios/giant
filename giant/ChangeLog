@@ -1,5 +1,8 @@
 2003-09-09  Steffen Pingel  <squig@users.sourceforge.net>
 
+	* src/giant-controller.adb: Check if Vis_Style exists in
+	Set_Vis_Style. 
+
 	* src/gui/giant-gui_manager.adb: Fixed focus request when opening
 	already open window.
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.50 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.51 $
 --  $Author: squig $
---  $Date: 2003/09/08 15:33:10 $
+--  $Date: 2003/09/09 21:32:03 $
 --
 ------------------------------------------------------------------------------
 --
@@ -515,10 +515,20 @@ package Giant.Controller is
    --  Vis Styles
    ---------------------------------------------------------------------------
 
-   procedure Set_Vis_Style
-     (Window_Name : in String;
-      Name        : in String);
-
+   ---------------------------------------------------------------------------
+   --  Sets the visualization style for window named Window_Name to
+   --  Vis_Style_Name.
+   --
+   --  Returns:
+   --    True, if style was changed or already active; False, if style
+   --    was not found
+   --  See:
+   --    Config.Vis_Styles.Initialize_Vis_Style_By_Name
+   --    Graph_Widgets.Set_Vis_Style
+   function Set_Vis_Style
+     (Window_Name    : in String;
+      Vis_Style_Name : in String)
+      return Boolean;
    ---------------------------------------------------------------------------
    --  Windows
    ---------------------------------------------------------------------------

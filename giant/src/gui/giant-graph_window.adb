@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.58 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.59 $
 --  $Author: squig $
---  $Date: 2003/09/09 15:31:24 $
+--  $Date: 2003/09/09 21:32:03 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -456,7 +456,11 @@ package body Giant.Graph_Window is
       Vis_Style_Name : String
         := Gtk.Gentry.Get_Text (Gtk.Combo.Get_Entry (Window.Vis_Style_Combo));
    begin
-      Controller.Set_Vis_Style (Get_Window_Name (Window), Vis_Style_Name);
+      if (not Controller.Set_Vis_Style
+          (Get_Window_Name (Window), Vis_Style_Name)) then
+
+         Controller.Show_Error (-"Please select a valid style.");
+      end if;
    end On_Vis_Style_Selected;
 
    ---------------------------------------------------------------------------
