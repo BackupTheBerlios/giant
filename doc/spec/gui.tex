@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.77 $
-%  $Date: 2003/04/18 00:50:12 $
-%  $Author: keulsn $
+%  $RCSfile: gui.tex,v $, $Revision: 1.78 $
+%  $Date: 2003/04/18 13:34:22 $
+%  $Author: birdy $
 %
 %  Description: 
 %
@@ -13,8 +13,7 @@
 
 \begin{enumerate}
   \item {GIANT besitzt eine graphische Benutzeroberfläche, die per Maus zu
-  bedienen ist. Ausgewählte Funktionen können auch per Tastatur ausgelöst
-  werden.}
+  bedienen ist.}
   \item {Die Interaktionssprache mit dem Benutzer ist Englisch.}
 \end{enumerate}
 
@@ -51,7 +50,7 @@ Subgraph List (4 Spalten).
   \subsection {Menüleiste (Main Window)}
   In der Menüleiste befinden sich folgende Einträge:
 
-    \subsubsection {Untermenü File } \label{Main-Window-File}
+    \subsubsection {Untermenü Project} \label{Main-Window-Project}
       \begin{enumerate}
          \item {New Project} % OK
          \item {Load Project}
@@ -199,7 +198,6 @@ Subgraph List (4 Spalten).
           \end{enumerate}
       \label{Change Node Annotation}
       \label{Delete Node Annotation}
-      \item Show Node Annotation \label{Show Node Annotation}
     \end{enumerate}
     
     Wenn in der Vis Pane mit der rechten Maustaste auf eine Stelle
@@ -228,7 +226,7 @@ Subgraph List (4 Spalten).
   \subsection{Selektionsauswahlliste} \label{Selektionsauswahlliste}
     Die Selektionsauswahlliste hat die Spalten \gq{Name} mit dem Namen der
     Selektion, \gq{Color} mit der Farbe der Selektion und \gq{State}
-    mit dem Status der Selektion (hervorgehoben oder nicht hervorgehoben).
+    mit dem Status der Selektion (eingeblendet oder ausgeblendet).
 
     Im Popup-Menü der Selektionsauswahlliste (\gq{Selection List} befinden
     sich folgende Einträge:
@@ -314,7 +312,7 @@ Subgraph List (4 Spalten).
     
     Unter den drei Listen befinden sich nebeneinander mittig zwei Buttons
     Pick und Close. Pick dient zum Auswählen eines anderen Knotens zur
-    Anzeige im dem Knoten-Informationsfenster.
+    Anzeige im Knoten-Informationsfenster mittels des Fadenkreuzcursors.
     
     \subsection{Liste Attributes}
     
@@ -326,9 +324,9 @@ Subgraph List (4 Spalten).
         \item Value
       \end{enumerate}
     
-    \subsection{Liste Successor Edges}
+    \subsection{Liste Successor Nodes}
     
-      Die Liste Successor Edges hat eine Zeile für jede vom Knoten abgehende
+      Die Liste Successor Nodes hat eine Zeile für jede vom Knoten abgehende
       Kante mit zwei Spalten:
     
     \begin{enumerate}
@@ -336,9 +334,9 @@ Subgraph List (4 Spalten).
       \item Type (ID des Knotens, zu dem sie führt)
     \end{enumerate}    
 
-    \subsection{Liste Predecessor Edges}
+    \subsection{Liste Predecessor Nodes}
       
-      Die Liste Predecessor Edges hat eine Zeile für jede vom Knoten abgehende
+      Die Liste Predecessor Nodes hat eine Zeile für jede vom Knoten abgehende
       Kante mit zwei Spalten:
 
       \begin{enumerate}
@@ -351,7 +349,7 @@ Subgraph List (4 Spalten).
     \begin{figure}[!htbp]
        \centering
        \includegraphics{gui/query_dialog}
-       \caption{Query-Dialog}
+       \caption{Skript-Dialog}
     \end{figure}
 
 Der Skriptdialog \gq{Query Dialog} hat zuoberst ein Textfeld Query Text,
@@ -393,7 +391,7 @@ und \gq{Cancel}.
 Dieser Dialog dient dazu, Mengenoperationen über Selektionen und
 IML-Teilgraphen durchzuführen.\\
 Die Mengenoperation lässt sich dann wie folgt beschreiben:
-LEFT\_SOURCE <op> RIGHT\_SOURCE := TARGET \\ \\
+LEFT\_SOURCE <op> RIGHT\_SOURCE =: TARGET \\ \\
 
 
 Bestandteile des Dialoges sind:
@@ -418,6 +416,10 @@ Bestandteile des Dialoges sind:
  Name der neuen Selektion oder des neuen IML-Teilgraphen als Ergebnis
  der Mengenoperation.
  
+ \item Buttons OK und Cancel\\
+ Mit den beiden Buttons OK und Cancel läßt sich die Operation starten bzw.
+ der Dialog ohne Ausführen der Operation verlassen.
+ 
 \end {enumerate}
 
 
@@ -433,7 +435,13 @@ Der Dialog Layoutalgorithmen bietet folgende Möglichkeiten:
 
 \begin {enumerate}
  \item Auswahl des Layoutalgorithmuses
- \item Eingabe der zu berücksichtigenden Kanten bei semantischen Layouts
+ \item {Eingabe der zu berücksichtigenden Kanten bei semantischen Layouts
+ 	Hierbei können mittels der Buttons >> und << die verfügbaren
+	definierten Listen von Knoten- und Kantentypen zwischen den beiden
+	Listen Available und Use For Layout hin und her geschoben werden.
+	Nur Kantenlisten, die sich in der Use For Layout Spalte befinden,
+	werden berücksichtigt.
+        }
  \item OK Button
  \item Cancel Button
 \end {enumerate}
@@ -499,19 +507,19 @@ die Information, die der  Benutzer zur Beantwortung der Sicherheitsabfrage
 benötigt.
 
 
-\section{Auswahl von Dateien}
-
-  \subsection {Der \gq{Standard-Filechooser-Dialog}}
-  \label {Standard-Filechooser-Dialog}
-
-    \begin{figure}[!htbp]
-       \centering
-       \includegraphics{gui/filechooser_dialog}
-       \caption{Filechooser-Window}
-    \end{figure}
-
-  Die Auswahl von Dateien (Laden/Speichern) passiert bei GIANT mittels
-  des Standard Filechooser-Dialogs von GTK.
+%\section{Auswahl von Dateien}
+%
+%  \subsection {Der \gq{Standard-Filechooser-Dialog}}
+%  \label {Standard-Filechooser-Dialog}
+%
+%    \begin{figure}[!htbp]
+%       \centering
+%       \includegraphics{gui/filechooser_dialog}
+%       \caption{Filechooser-Window}
+%    \end{figure}
+%
+%  Die Auswahl von Dateien (Laden/Speichern) passiert bei GIANT mittels
+%  des Standard Filechooser-Dialogs von GTK.
 
 
 \section{Fadenkreuz-Cursor}
@@ -534,8 +542,9 @@ laufender Berechnungen.  Jede Progressbar ist mit \gq{The system is
 
 \subsection{Progressbar-Runs}
 \label{Progressbar-Runs}
-     Fenster mit Anzeige eines Dialoges mit einem sich ständig leicht ändernden
-     Inhalt, so dass erkennbar ist, dass das System noch arbeitet.
+     Fenster mit Anzeige eines Dialoges mit einem sich bewegenden
+     Inhalts (z.B. ein Progress-Balken), so dass erkennbar ist, dass
+     das System noch arbeitet.
      \begin{figure}[!htbp]
       \centering
       \includegraphics{gui/progressbar_busy}
