@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-matrix_layouts-test.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-matrix_layouts-test.adb,v $, $Revision: 1.2 $
 --  $Author: koppor $
---  $Date: 2003/07/01 21:53:35 $
+--  $Date: 2003/07/13 00:31:37 $
 --
 
 with Ada.Text_IO;
@@ -36,8 +36,7 @@ with Giant.Logger;
 package body Giant.Matrix_Layouts.Test is
 
    --------------------------------------------------------------------------
-
-   package Logger is new Giant.Logger("T:graph_lib");
+   package Logger is new Giant.Logger("T:Matrix-Layouts");
 
    -----------------
    --  Testcases  --
