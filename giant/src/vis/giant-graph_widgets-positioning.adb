@@ -20,13 +20,14 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-positioning.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-graph_widgets-positioning.adb,v $, $Revision: 1.9 $
 --  $Author: keulsn $
---  $Date: 2003/07/20 23:20:04 $
+--  $Date: 2003/09/02 04:49:38 $
 --
 ------------------------------------------------------------------------------
 
 
+with Ada.Numerics;
 with Ada.Numerics.Generic_Elementary_Functions;
 
 with Giant.Graph_Widgets.Drawing;
@@ -52,10 +53,11 @@ package body Giant.Graph_Widgets.Positioning is
    ------------------
 
    function Calculate_Docking_Point_Not_Vertical
-     (Direction : in     Vis.Logic.Vector_2d;
-      Reversing : in     Boolean;
-      Extent    : in     Vis.Absolute.Rectangle_2d;
-      Spacing   : in     Vis.Absolute_Natural)
+     (Direction    : in     Vis.Logic.Vector_2d;
+      Reversing    : in     Boolean;
+      Extent       : in     Vis.Absolute.Rectangle_2d;
+      Spacing      : in     Vis.Absolute_Natural;
+      Displacement : in     Vis.Absolute_Int)
      return Vis.Absolute.Vector_2d is
 
       Sign          : Vis.Absolute_Int;
@@ -65,7 +67,20 @@ package body Giant.Graph_Widgets.Positioning is
       Gradient      : Float := Get_Y (Direction) / Get_X (Direction);
       Node_Gradient : Float := Vis.Logic_Float (Get_Height (Extent)) /
                                  Vis.Logic_Float (Get_Width (Extent));
+      Angle         : Float;
    begin
+      if Displacement /= 0 then
+         Angle := Trigonometry.Arctan (Gradient);
+         Angle := Angle + Float (Displacement) * Default_Displacement_Angle;
+         if abs (Angle - 0.5 * Ada.Numerics.Pi) < 0.000_01 then
+            Gradient := Float'Safe_Last;
+         elsif abs (Angle - 1.5 * Ada.Numerics.Pi) < 0.000_01 then
+            Gradient := Float'Safe_First;
+         else
+            Gradient := Trigonometry.Tan (Angle);
+         end if;
+      end if;
+
       if abs Gradient <= Node_Gradient then
          --  intersection with vertical line
          if Get_X (Direction) > 0.0 xor Reversing then
@@ -93,18 +108,21 @@ package body Giant.Graph_Widgets.Positioning is
    end Calculate_Docking_Point_Not_Vertical;
 
    function Calculate_Docking_Point_Vertical
-      (Direction : in     Vis.Logic.Vector_2d;
-       Reversing : in     Boolean;
-       Extent    : in     Vis.Absolute.Rectangle_2d;
-       Spacing   : in     Vis.Absolute_Natural)
-      return Vis.Absolute.Vector_2d is
+     (Direction    : in Vis.Logic.Vector_2d;
+      Reversing    : in Boolean;
+      Extent       : in Vis.Absolute.Rectangle_2d;
+      Spacing      : in Vis.Absolute_Natural;
+      Displacement : in Vis.Absolute_Int)
+     return Vis.Absolute.Vector_2d is
    begin
       if Get_Y (Direction) < 0.0 xor Reversing then
          return Get_Top_Center (Extent) -
-           Vis.Absolute.Combine_Vector (0, Spacing);
+           Vis.Absolute.Combine_Vector
+           (Displacement * Default_Displacement_Spacing, Spacing);
       else
          return Get_Bottom_Center (Extent) +
-           Vis.Absolute.Combine_Vector (0, Spacing);
+           Vis.Absolute.Combine_Vector
+           (Displacement * Default_Displacement_Spacing, Spacing);
       end if;
    end Calculate_Docking_Point_Vertical;
 
@@ -162,6 +180,80 @@ package body Giant.Graph_Widgets.Positioning is
          Spacing => Dock_Spacing,
          Radius  => Radius);
    end Update_Loop_Position;
+
+   function Calculate_Source_Displacement
+     (Edge   : in     Vis_Data.Vis_Edge_Id)
+     return Vis.Absolute_Int is
+
+      Iterator : Vis_Edge_Lists.ListIter;
+      Current  : Vis_Data.Vis_Edge_Id;
+      Source   : Vis_Data.Vis_Node_Id := Vis_Data.Get_Source (Edge);
+      Target   : Vis_Data.Vis_Node_Id := Vis_Data.Get_Target (Edge);
+      Count    : Natural := 0;
+      Offset   : Natural := 0;
+   begin
+      --  Outgoing edges towards 'Target'
+      Vis_Data.Make_Outgoing_Iterator (Source, Iterator);
+      while Vis_Data.Vis_Edge_Lists.More (Iterator) loop
+         Vis_Data.Vis_Edge_Lists.Next (Iterator, Current);
+         pragma Assert (Vis_Data."=" (Vis_Data.Get_Source (Current), Source));
+         if Vis_Data."=" (Vis_Data.Get_Target (Current), Target) then
+            Count := Count + 1;
+         end if;
+         if Vis_Data."=" (Current, Edge) then
+            Offset := Count;
+         end if;
+      end loop;
+
+      --  Incoming edges coming from 'Target'
+      Vis_Data.Make_Incoming_Iterator (Source, Iterator);
+      while Vis_Data.Vis_Edge_Lists.More (Iterator) loop
+         Vis_Data.Vis_Edge_Lists.Next (Iterator, Current);
+         pragma Assert (Vis_Data."=" (Vis_Data.Get_Target (Current), Source));
+         if Vis_Data."=" (Vis_Data.Get_Source (Current), Target) then
+            Count := Count + 1;
+         end if;
+      end loop;
+
+      return Offset - (Count + 1) / 2;
+   end Calculate_Source_Displacement;
+
+   function Calculate_Target_Displacement
+     (Edge   : in     Vis_Data.Vis_Edge_Id)
+     return Vis.Absolute_Int is
+
+      Iterator : Vis_Edge_Lists.ListIter;
+      Current  : Vis_Data.Vis_Edge_Id;
+      Source   : Vis_Data.Vis_Node_Id := Vis_Data.Get_Source (Edge);
+      Target   : Vis_Data.Vis_Node_Id := Vis_Data.Get_Target (Edge);
+      Count    : Natural := 0;
+      Offset   : Natural := 0;
+   begin
+      --  Outgoing edges towards 'Target'
+      Vis_Data.Make_Outgoing_Iterator (Source, Iterator);
+      while Vis_Data.Vis_Edge_Lists.More (Iterator) loop
+         Vis_Data.Vis_Edge_Lists.Next (Iterator, Current);
+         pragma Assert (Vis_Data."=" (Vis_Data.Get_Source (Current), Source));
+         if Vis_Data."=" (Vis_Data.Get_Target (Current), Target) then
+            Count := Count + 1;
+         end if;
+         if Vis_Data."=" (Current, Edge) then
+            Offset := Count;
+         end if;
+      end loop;
+
+      --  Incoming edges coming from 'Target'
+      Vis_Data.Make_Incoming_Iterator (Source, Iterator);
+      while Vis_Data.Vis_Edge_Lists.More (Iterator) loop
+         Vis_Data.Vis_Edge_Lists.Next (Iterator, Current);
+         pragma Assert (Vis_Data."=" (Vis_Data.Get_Target (Current), Source));
+         if Vis_Data."=" (Vis_Data.Get_Source (Current), Target) then
+            Count := Count + 1;
+         end if;
+      end loop;
+
+      return (Count - Offset + 1) - (Count + 1) / 2;
+   end Calculate_Target_Displacement;
 
 
    ----------------
@@ -329,28 +421,32 @@ package body Giant.Graph_Widgets.Positioning is
 
          if Get_X (Direction) /= 0.0 then
             Start_Point := Calculate_Docking_Point_Not_Vertical
-              (Direction => Direction,
-               Reversing => False,
-               Extent    => Source_Extent,
-               Spacing   => Dock_Spacing);
+              (Direction    => Direction,
+               Reversing    => False,
+               Extent       => Source_Extent,
+               Spacing      => Dock_Spacing,
+               Displacement => Calculate_Source_Displacement (Edge));
 
             End_Point := Calculate_Docking_Point_Not_Vertical
-              (Direction => Direction,
-               Reversing => True,
-               Extent    => Target_Extent,
-               Spacing   => Dock_Spacing);
+              (Direction    => Direction,
+               Reversing    => True,
+               Extent       => Target_Extent,
+               Spacing      => Dock_Spacing,
+               Displacement => Calculate_Target_Displacement (Edge));
          else
             Start_Point := Calculate_Docking_Point_Vertical
-              (Direction => Direction,
-               Reversing => False,
-               Extent    => Source_Extent,
-               Spacing   => Dock_Spacing);
+              (Direction    => Direction,
+               Reversing    => False,
+               Extent       => Source_Extent,
+               Spacing      => Dock_Spacing,
+               Displacement => Calculate_Source_Displacement (Edge));
 
             End_Point := Calculate_Docking_Point_Vertical
-              (Direction => Direction,
-               Reversing => True,
-               Extent    => Target_Extent,
-               Spacing   => Dock_Spacing);
+              (Direction    => Direction,
+               Reversing    => True,
+               Extent       => Target_Extent,
+               Spacing      => Dock_Spacing,
+               Displacement => Calculate_Target_Displacement (Edge));
          end if;
 
          Vis_Data.Set_Point

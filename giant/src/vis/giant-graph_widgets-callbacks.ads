@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.ads,v $, $Revision: 1.6 $
+--  $RCSfile: giant-graph_widgets-callbacks.ads,v $, $Revision: 1.7 $
 --  $Author: keulsn $
---  $Date: 2003/08/04 03:40:02 $
+--  $Date: 2003/09/02 04:49:38 $
 --
 ------------------------------------------------------------------------------
 
@@ -35,6 +35,9 @@ package Giant.Graph_Widgets.Callbacks is
    ----------------------------------------------------------------------------
    --  Connects all Callbacks 'Widget' needs
    procedure Connect_All_Callbacks
+     (Widget : access Graph_Widget_Record'Class);
+
+   procedure Update_Scrollbars
      (Widget : access Graph_Widget_Record'Class);
 
    ----------------------------------------------------------------------------
@@ -54,6 +57,14 @@ package Giant.Graph_Widgets.Callbacks is
       Motion_Position : in     Vis.Absolute.Vector_2d);
 
 private
+
+   procedure On_Horizontal_Scroll
+     (Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class;
+      Widget     : in     Graph_Widget);
+
+   procedure On_Vertical_Scroll
+     (Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class;
+      Widget     : in     Graph_Widget);
 
    procedure On_Realize
      (Widget : access Graph_Widget_Record'Class);

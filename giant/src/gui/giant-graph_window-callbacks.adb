@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.20 $
---  $Author: squig $
---  $Date: 2003/09/01 22:09:11 $
+--  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.21 $
+--  $Author: keulsn $
+--  $Date: 2003/09/02 04:49:38 $
 --
 
 with Ada.Unchecked_Conversion;
@@ -206,6 +206,7 @@ package body Giant.Graph_Window.Callbacks is
       pragma Assert
         (Graph_Widgets.Handlers."=" (Event.Pressed_On,
                                      Graph_Widgets.Handlers.On_Background));
+      Window.Current_Position := Event.Location;
       Gtk.Menu.Show_All (Window.Background_Menu);
       Gtk.Menu.Popup (Window.Background_Menu,
                       Button => Gdk.Event.Get_Button (Event.Event),

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.17 $
+--  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.18 $
 --  $Author: keulsn $
---  $Date: 2003/07/22 18:21:32 $
+--  $Date: 2003/09/02 04:49:38 $
 --
 ------------------------------------------------------------------------------
 
@@ -742,6 +742,7 @@ package body Giant.Graph_Widgets.Settings is
          Width  :    out Glib.Gint;
          Height :    out Glib.Gint) is
       begin
+         pragma Assert (Is_Set_Up);
          if Index in Icons'Range then
             Icon := Icons (Index).Icon;
             Width := Icons (Index).Width;
@@ -759,6 +760,7 @@ package body Giant.Graph_Widgets.Settings is
          Width  :    out Glib.Gint;
          Height :    out Glib.Gint) is
       begin
+         pragma Assert (Is_Set_Up);
          Icon := Icons (Icons'Last).Icon;
          Width := Icons (Icons'Last).Width;
          Height := Icons (Icons'Last).Height;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.adb,v $, $Revision: 1.16 $
+--  $RCSfile: giant-vectors.adb,v $, $Revision: 1.17 $
 --  $Author: keulsn $
---  $Date: 2003/08/04 03:40:02 $
+--  $Date: 2003/09/02 04:49:38 $
 --
 ------------------------------------------------------------------------------
 
@@ -44,6 +44,32 @@ package body Giant.Vectors is
       return Coord_Less_Equal (Left, Right) and Left /= Right;
    end "<";
    pragma Inline ("<");
+
+   function Min
+     (Left  : in Coordinate_Type;
+      Right : in Coordinate_Type)
+     return Coordinate_Type is
+   begin
+      if Coord_Less_Equal (Left, Right) then
+         return Left;
+      else
+         return Right;
+      end if;
+   end Min;
+   pragma Inline (Min);
+
+   function Max
+     (Left  : in Coordinate_Type;
+      Right : in Coordinate_Type)
+     return Coordinate_Type is
+   begin
+      if Coord_Less_Equal (Left, Right) then
+         return Right;
+      else
+         return Left;
+      end if;
+   end Max;
+   pragma Inline (Max);
 
 
    -------------
@@ -639,6 +665,18 @@ package body Giant.Vectors is
       end if;
       return Difference (1 .. Counter);
    end "-";
+
+   function Get_Surrounding
+     (Left  : in     Rectangle_2d;
+      Right : in     Rectangle_2d)
+     return Rectangle_2d is
+   begin
+      return Combine_Rectangle
+        (X_1 => Min (Get_Left (Left), Get_Left (Right)),
+         Y_1 => Min (Get_Top (Left), Get_Top (Right)),
+         X_2 => Max (Get_Right (Left), Get_Right (Right)),
+         Y_2 => Max (Get_Bottom (Left), Get_Bottom (Right)));
+   end Get_Surrounding;
 
    function Image
      (Rectangle : in     Rectangle_2d)

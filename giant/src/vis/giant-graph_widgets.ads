@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.41 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.42 $
 --  $Author: keulsn $
---  $Date: 2003/08/17 00:34:24 $
+--  $Date: 2003/09/02 04:49:38 $
 --
 ------------------------------------------------------------------------------
 --
@@ -69,6 +69,8 @@ with Gdk.GC;
 with Gdk.Pixmap;
 with Gdk.Types;
 with Glib;
+with Gtk.Adjustment;
+with Gtk.Handlers;
 with Gtk.Main;
 with Gtk.Widget;
 pragma Elaborate_All (Gtk.Widget);
@@ -777,10 +779,13 @@ package Giant.Graph_Widgets is
    --  Raises:
    --    * Unknown_Edge_Id if Precondition is not satisfied
    --    * Unknown_Node_Id if Precondition is not satisfied
-   procedure Set_Hidden
-     (Widget     : access Graph_Widget_Record'Class;
-      Selection  : in     Graph_Lib.Selections.Selection;
-      Hidden     : in     Boolean);
+   --
+   --  Note: UNIMPLEMENTED!
+   --
+--     procedure Set_Hidden
+--       (Widget     : access Graph_Widget_Record'Class;
+--        Selection  : in     Graph_Lib.Selections.Selection;
+--        Hidden     : in     Boolean);
 
    ----------------------------------------------------------------------------
    --  Unhides all nodes and all edges in 'Widget'.
@@ -792,8 +797,11 @@ package Giant.Graph_Widgets is
    --        'Contains (Widget, E)' ==> not 'Is_Hidden (Widget, E)'
    --    * For all N: Node_Id:
    --        'Contains (Widget, N)' ==> not 'Is_Hidden (Widget, N)'
-   procedure Unhide_All
-     (Widget     : access Graph_Widget_Record'Class);
+   --
+   --  Note: UNIMPLEMENTED!
+   --
+--     procedure Unhide_All
+--       (Widget     : access Graph_Widget_Record'Class);
 
    ----------------------------------------------------------------------------
    --  Must be called when an annotation is created or destroyed. Updates
@@ -876,6 +884,19 @@ package Giant.Graph_Widgets is
    procedure Zoom_To_Edge
      (Widget     : access Graph_Widget_Record'Class;
       Edge       : in     Graph_Lib.Edge_Id);
+
+   ----------------------------------------------------------------------------
+   --  Changes zoom level and location so that the rectangle 'Rectangle'
+   --  fills 'Widget'. If the zoom level needed for that purpose is too great,
+   --  then the maximum zoom level will be used and 'Rectangle's center
+   --  will be centered in 'Widget'.
+   --
+   --  Parameters:
+   --    Widget    - The graph widget
+   --    Rectangle - The rectangle to be shown inside widget
+   procedure Zoom_To_Rectangle
+     (Widget     : access Graph_Widget_Record'Class;
+      Rectangle  : in     Vis.Logic.Rectangle_2d);
 
    ----------------------------------------------------------------------------
    --  Changes zoom level and location so 'Selection' fills 'Widget'
@@ -1529,6 +1550,13 @@ private                    -- private part --
 
          Auto_Scroll_Handler     : Gtk.Main.Timeout_Handler_Id;
          Auto_Scroll_Connected   : Boolean := False;
+
+         Horizontal_Adjustment   : Gtk.Adjustment.Gtk_Adjustment :=
+           Gtk.Adjustment.Null_Adjustment;
+         Horizontal_Handler      : Gtk.Handlers.Handler_Id;
+         Vertical_Adjustment     : Gtk.Adjustment.Gtk_Adjustment :=
+           Gtk.Adjustment.Null_Adjustment;
+         Vertical_Handler        : Gtk.Handlers.Handler_Id;
       end record;
 
 

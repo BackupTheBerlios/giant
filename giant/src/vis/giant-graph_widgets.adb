@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.46 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.47 $
 --  $Author: keulsn $
---  $Date: 2003/08/19 12:51:46 $
+--  $Date: 2003/09/02 04:49:38 $
 --
 ------------------------------------------------------------------------------
 
@@ -57,6 +57,10 @@ package body Giant.Graph_Widgets is
 
    package Graph_Widget_Logger is new Logger
      (Name => "Giant.Graph_Widgets");
+
+
+   package Graph_Edge_Sets renames Graph_Lib.Edge_Id_Sets;
+   package Graph_Node_Sets renames Graph_Lib.Node_Id_Sets;
 
 
    ----------------------------------------------------------------------------
@@ -408,19 +412,11 @@ package body Giant.Graph_Widgets is
             Vis.Logic.Read_Vector (Stream, Location);
             Vis.Read_Zoom_Level (Stream, Level);
             Bauhaus_IO.Read_Natural (Stream, Node_Count);
-            Graph_Widget_Logger.Debug
-              ("Node_Count =" & Integer'Image (Node_Count));
             for I in 1 .. Node_Count loop
-               Graph_Widget_Logger.Debug
-                 ("Read node no." & Integer'Image (I));
                Read_Node;
             end loop;
             Bauhaus_IO.Read_Natural (Stream, Edge_Count);
-            Graph_Widget_Logger.Debug
-              ("Edge_Count =" & Integer'Image (Edge_Count));
             for I in 1 .. Edge_Count loop
-               Graph_Widget_Logger.Debug
-                 ("Read edge no." & Integer'Image (I));
                Read_Edge;
             end loop;
             Set_Location_And_Zoom_Level (Widget, Location, Level);
@@ -512,7 +508,9 @@ package body Giant.Graph_Widgets is
          Node_Iterator := Node_Id_Mappings.Make_Values_Iter (Widget.Node_Map);
          while Node_Id_Mappings.More (Node_Iterator) loop
             Node_Id_Mappings.Next (Node_Iterator, Node);
-            Vis_Node_Priority_Queues.Insert (Node_Queue.all, Node);
+            if not Vis_Data.Is_Obsolete (Node) then
+               Vis_Node_Priority_Queues.Insert (Node_Queue.all, Node);
+            end if;
          end loop;
 
          Bauhaus_IO.Write_Natural
@@ -536,7 +534,9 @@ package body Giant.Graph_Widgets is
          Edge_Iterator := Edge_Id_Mappings.Make_Values_Iter (Widget.Edge_Map);
          while Edge_Id_Mappings.More (Edge_Iterator) loop
             Edge_Id_Mappings.Next (Edge_Iterator, Edge);
-            Vis_Edge_Priority_Queues.Insert (Edge_Queue.all, Edge);
+            if not Vis_Data.Is_Obsolete (Edge) then
+               Vis_Edge_Priority_Queues.Insert (Edge_Queue.all, Edge);
+            end if;
          end loop;
 
          Bauhaus_IO.Write_Natural
@@ -680,11 +680,9 @@ package body Giant.Graph_Widgets is
       Selection : in     Graph_Lib.Selections.Selection;
       Lock      :    out Lock_Type) is
 
-      package Graph_Node_Sets renames Graph_Lib.Node_Id_Sets;
       Node_Iterator : Graph_Node_Sets.Iterator;
       Graph_Node    : Graph_Lib.Node_Id;
       Node          : Vis_Data.Vis_Node_Id;
-      package Graph_Edge_Sets renames Graph_Lib.Edge_Id_Sets;
       Edge_Iterator : Graph_Edge_Sets.Iterator;
       Graph_Edge    : Graph_Lib.Edge_Id;
       Edge          : Vis_Data.Vis_Edge_Id;
@@ -700,11 +698,12 @@ package body Giant.Graph_Widgets is
          --  In case the node was contained before and was queued for
          --  removal, that request must be dropped, but only after the
          --  removal request is propagated to all incident edges.
+         --  A node queued for removal is always on the unsized queue and
+         --  must not put onto it for a second time.
          if Vis_Data.Is_Obsolete (Node) then
             Mark_Incident_Obsolete (Widget, Node);
             Vis_Data.Set_Obsolete (Node, False);
-         end if;
-         if Vis_Data.Has_Manager (Node) then
+         elsif Vis_Data.Has_Manager (Node) then
             Add_Node_To_Locked (Widget, Node);
          else
             Move_Node_To_Unsized (Widget, Node);
@@ -859,9 +858,13 @@ package body Giant.Graph_Widgets is
 
    procedure Clear
      (Widget : access Graph_Widget_Record'Class) is
+
+      Selection : Graph_Lib.Selections.Selection;
    begin
-      --------------------------------raise Unimplemented;
-      null;
+      Selection := Graph_Lib.Subgraphs.Convert_To_Selection
+        (Get_Content (Widget));
+      Remove_Selection (Widget, Selection);
+      Graph_Lib.Selections.Destroy (Selection);
    end Clear;
 
 
@@ -982,12 +985,19 @@ package body Giant.Graph_Widgets is
       Vis_Node : Vis_Data.Vis_Node_Id := Look_Up (Widget, Node);
    begin
       if Vis_Node /= null then
-         if not Vis_Data.Is_Sized (Vis_Node) then
-            --  must set size
-            Drawing.Update_Node_Size (Widget, Vis_Node);
+         if Gtk.Widget.Realized_Is_Set (Widget) then
+            if not Vis_Data.Is_Sized (Vis_Node) then
+               --  must set size
+               Drawing.Update_Node_Size (Widget, Vis_Node);
+            end if;
+            return Positioning.Get_Logic
+              (Widget,
+               Vis.Absolute.Get_Width (Vis_Data.Get_Extent (Vis_Node)));
+         else
+            --  Cannot determine correct size, give an estimate.
+            return Positioning.Get_Logic
+              (Widget, Settings.Get_Node_Width (Widget));
          end if;
-         return Positioning.Get_Logic
-           (Widget, Vis.Absolute.Get_Width (Vis_Data.Get_Extent (Vis_Node)));
       else
          raise Unknown_Node_Id;
       end if;
@@ -1001,14 +1011,22 @@ package body Giant.Graph_Widgets is
       Vis_Node : Vis_Data.Vis_Node_Id := Look_Up (Widget, Node);
    begin
       if Vis_Node /= null then
-         if not Vis_Data.Is_Sized (Vis_Node) then
-            --  must set size
-            Drawing.Update_Node_Size (Widget, Vis_Node);
+         if Gtk.Widget.Realized_Is_Set (Widget) then
+            if not Vis_Data.Is_Sized (Vis_Node) then
+               --  must set size
+               Drawing.Update_Node_Size (Widget, Vis_Node);
+            end if;
+            return Positioning.Get_Logic
+              (Widget,
+               Vis.Absolute.Get_Height (Vis_Data.Get_Extent (Vis_Node))) +
+                 2.0 * Vis.Logic_Float
+                 (Drawing.Get_Maximum_Node_Highlight_Width (Widget));
+         else
+            --  Cannot determine correct size, give an estimate
+            return Positioning.Get_Logic
+              (Widget,
+               Settings.Get_Node_Attribute_Count (Widget, Vis_Node) * 16 + 99);
          end if;
-         return Positioning.Get_Logic
-           (Widget, Vis.Absolute.Get_Height (Vis_Data.Get_Extent (Vis_Node))) +
-           2.0 * Vis.Logic_Float
-             (Drawing.Get_Maximum_Node_Highlight_Width (Widget));
       else
          raise Unknown_Node_Id;
       end if;
@@ -1134,6 +1152,8 @@ package body Giant.Graph_Widgets is
    procedure Release_Lock
      (Widget    : access Graph_Widget_Record'Class;
       Lock      : in     Lock_Type) is
+
+      Must_Update_Scrollbars : Boolean := False;
    begin
       States.Destroy_Lock (Widget, Lock);
       if States.Must_Flush_Locked_Content (Widget) then
@@ -1142,11 +1162,16 @@ package body Giant.Graph_Widgets is
       if States.Must_Update_Logic_Area (Widget) then
          Notifications.Logical_Area_Changed (Widget, Widget.Logic_Area);
          States.Logic_Area_Updated (Widget);
+         Must_Update_Scrollbars := True;
       end if;
       if States.Must_Update_Visual_Area (Widget) then
          Notifications.Visible_Area_Changed
            (Widget, Get_Visible_Area (Widget));
          States.Visual_Area_Updated (Widget);
+         Must_Update_Scrollbars := True;
+      end if;
+      if Must_Update_Scrollbars then
+         Callbacks.Update_Scrollbars (Widget);
       end if;
    end Release_Lock;
 
@@ -1203,8 +1228,60 @@ package body Giant.Graph_Widgets is
       Center    : in     Vis.Logic.Vector_2d;
       Width     : in     Vis.Logic_Float;
       Height    : in     Vis.Logic_Float) is
+
+      use Vis.Logic;
+      Lock            : Lock_Type;
+      Graph_Node      : Graph_Lib.Node_Id;
+      Node_Iterator   : Node_Id_Mappings.Keys_Iter;
+      Corner_Gradient : Vis.Logic_Float;
+      Gradient        : Vis.Logic_Float;
+      F               : Vis.Logic_Float;
+      Position        : Vis.Logic.Vector_2d;
+      Distance        : Vis.Logic.Vector_2d;
+      Away            : Vis.Logic.Vector_2d;
    begin
-      null;  ---------------------------  raise Unimplemented;
+      if Width <= 0.0 or else Height <= 0.0 then
+         return;
+      end if;
+
+      Lock_All_Content (Widget, Lock);
+
+      Corner_Gradient := abs (Height / Width);
+
+      Node_Iterator := Node_Id_Mappings.Make_Keys_Iter (Widget.Node_Map);
+      while Node_Id_Mappings.More (Node_Iterator) loop
+         Node_Id_Mappings.Next (Node_Iterator, Graph_Node);
+
+         Position := Get_Top_Middle (Widget, Graph_Node);
+         Distance := Position - Center;
+         if Get_X (Distance) = 0.0 then
+            if Get_Y (Distance) >= 0.0 then
+               Away := Combine_Vector (0.0, Height / 2.0);
+            else
+               Away := Combine_Vector (0.0, -Height / 2.0);
+            end if;
+         elsif Get_Y (Distance) = 0.0 then
+            if Get_X (Distance) > 0.0 then
+               Away := Combine_Vector (Width / 2.0, 0.0);
+            else
+               Away := Combine_Vector (-Width / 2.0, 0.0);
+            end if;
+         else
+            Gradient := Get_Y (Distance) / Get_X (Distance);
+            if abs Gradient >= Corner_Gradient then
+               --  vertical
+               F := abs (Height / (2.0 * Get_Y (Distance)));
+            else
+               --  horizontal
+               F := abs (Width / (2.0 * Get_X (Distance)));
+            end if;
+            Away := F * Distance;
+         end if;
+
+         Set_Top_Middle (Widget, Graph_Node, Position + Away, Lock);
+      end loop;
+
+      Release_Lock (Widget, Lock);
    end Make_Room;
 
    procedure Move_Selection
@@ -1660,13 +1737,13 @@ package body Giant.Graph_Widgets is
       Selection  : in     Graph_Lib.Selections.Selection;
       Hidden     : in     Boolean) is
    begin
-      null;  -----------------------  raise Unimplemented;
+      raise Unimplemented;
    end Set_Hidden;
 
    procedure Unhide_All
      (Widget     : access Graph_Widget_Record'Class) is
    begin
-      null;  -------------------------  raise Unimplemented;
+      raise Unimplemented;
    end Unhide_All;
 
    procedure Change_Annotation_State
@@ -1697,8 +1774,20 @@ package body Giant.Graph_Widgets is
    function Get_Maximum_Zoom_Level
      (Widget     : access Graph_Widget_Record'Class)
      return Vis.Zoom_Level is
+
+      Target_Rect : Vis.Absolute.Rectangle_2d;
+      Lesser      : Vis.Absolute_Int;
    begin
-      return Vis.Logic_Float'Safe_Last;
+      Lesser := (Vis.Absolute_Int'Last / 3) * 2;
+      Target_Rect := Vis.Absolute.Combine_Rectangle
+         (X_1 => Vis.Absolute_Int'First + Lesser,
+          Y_1 => Vis.Absolute_Int'First + Lesser,
+          X_2 => Vis.Absolute_Int'Last - Lesser,
+          Y_2 => Vis.Absolute_Int'Last - Lesser);
+      return Vis.Get_Zoom_Level
+        (Vis.Get_Transformation_Rect_Into_Rect_Centered
+         (Source => Get_Logical_Area (Widget),
+          Target => Target_Rect));
    end Get_Maximum_Zoom_Level;
 
    function Get_Zoom_Level
@@ -1718,24 +1807,84 @@ package body Giant.Graph_Widgets is
          Zoom     => Zoom);
    end Set_Zoom_Level;
 
+   procedure Zoom_To_Rectangle
+     (Widget     : access Graph_Widget_Record'Class;
+      Rectangle  : in     Vis.Logic.Rectangle_2d) is
+
+      Transformation : Vis.Transformation_Type;
+   begin
+      Transformation := Vis.Get_Transformation_Rect_Into_Rect_Centered
+        (Source => Rectangle,
+         Target => Drawing.Get_Visible_Area (Widget));
+      Set_Location_And_Zoom_Level
+        (Widget   => Widget,
+         Location => Vis.Logic.Get_Center (Rectangle),
+         Zoom     => Vis.Get_Zoom_Level (Transformation));
+   end Zoom_To_Rectangle;
+
    procedure Zoom_To_Edge
      (Widget     : access Graph_Widget_Record'Class;
       Edge       : in     Graph_Lib.Edge_Id) is
+
+      Rectangle      : Vis.Absolute.Rectangle_2d;
+      Transformation : Vis.Transformation_Type;
+      Vis_Edge       : Vis_Data.Vis_Edge_Id := Look_Up (Widget, Edge);
    begin
-      null;  ------------------------  raise Unimplemented;
+      if Vis_Data."/=" (Vis_Edge, null) then
+         Rectangle := Vis.Absolute.Get_Surrounding
+           (Left  => Vis_Data.Get_Extent (Vis_Data.Get_Source (Vis_Edge)),
+            Right => Vis_Data.Get_Extent (Vis_Data.Get_Target (Vis_Edge)));
+         Zoom_To_Rectangle
+           (Widget,
+            Positioning.Get_Logic (Widget, Rectangle));
+      else
+         raise Unknown_Edge_Id;
+      end if;
    end Zoom_To_Edge;
 
    procedure Zoom_To_Selection
      (Widget     : access Graph_Widget_Record'Class;
       Selection  : in     Graph_Lib.Selections.Selection) is
+
+
+      Rectangle  : Vis.Absolute.Rectangle_2d;
+      Iterator   : Graph_Node_Sets.Iterator;
+      Node       : Vis_Data.Vis_Node_Id;
+      Graph_Node : Graph_Lib.Node_Id;
+      Nodes      : Graph_Node_Sets.Set :=
+        Graph_Lib.Selections.Get_All_Nodes (Selection);
    begin
-      null;  --------------------------  raise Unimplemented;
+      Iterator := Graph_Node_Sets.Make_Iterator (Nodes);
+      if Graph_Node_Sets.More (Iterator) then
+         Graph_Node_Sets.Next (Iterator, Graph_Node);
+         Node := Look_Up (Widget, Graph_Node);
+         if Vis_Data."/=" (Node, null) then
+            Rectangle := Vis_Data.Get_Extent (Node);
+
+            while Graph_Node_Sets.More (Iterator) loop
+               Graph_Node_Sets.Next (Iterator, Graph_Node);
+               Node := Look_Up (Widget, Graph_Node);
+               if Vis_Data."/=" (Node, null) then
+                  Rectangle := Vis.Absolute.Get_Surrounding
+                    (Rectangle, Vis_Data.Get_Extent (Node));
+               else
+                  raise Unknown_Node_Id;
+               end if;
+            end loop;
+
+            Zoom_To_Rectangle
+              (Widget,
+               Positioning.Get_Logic (Widget, Rectangle));
+         else
+            raise Unknown_Node_Id;
+         end if;
+      end if;
    end Zoom_To_Selection;
 
    procedure Zoom_To_All
      (Widget     : access Graph_Widget_Record'Class) is
    begin
-      null;  ----------------------------  raise Unimplemented;
+      Zoom_To_Rectangle (Widget, Get_Logical_Area (Widget));
    end Zoom_To_All;
 
    function Get_Logical_Area
@@ -1783,12 +1932,6 @@ package body Giant.Graph_Widgets is
 
       Make_Edges_Appear (Widget, Old_Area);
 
-      if States.Must_Update_Visual_Area (Widget) then
-         Notifications.Visible_Area_Changed
-           (Widget => Widget,
-            Area   => Get_Visible_Area (Widget));
-         States.Visual_Area_Updated (Widget);
-      end if;
       Release_Lock (Widget, Lock);
    end Set_Visible_Center;
 
@@ -1804,12 +1947,15 @@ package body Giant.Graph_Widgets is
       Location   : in     Vis.Logic.Vector_2d;
       Zoom       : in     Vis.Zoom_Level) is
 
-      Lock : Lock_Type;
+      Lock        : Lock_Type;
+      Actual_Zoom : Vis.Zoom_Level;
+      Max_Zoom    : Vis.Zoom_Level := Get_Maximum_Zoom_Level (Widget);
    begin
+      Actual_Zoom := Vis.Zoom_Level'Min (Zoom, Max_Zoom);
       Lock_All_Content (Widget, Lock);
       Move_All_Nodes_To_Unsized (Widget);
       --  Move_All_Edges_To_Unsized (Widget);
-      Positioning.Set_Zoom (Widget, Zoom);
+      Positioning.Set_Zoom (Widget, Actual_Zoom);
       Set_Location (Widget, Location);
       Release_Lock (Widget, Lock);
    end Set_Location_And_Zoom_Level;
@@ -2121,7 +2267,9 @@ package body Giant.Graph_Widgets is
       Node   : in     Vis_Data.Vis_Node_Id) is
    begin
       Vis_Data.Set_Obsolete (Node, True);
-      Move_Node_To_Unsized (Widget, Node);
+      if Vis_Data.Is_Sized (Node) then
+         Move_Node_To_Unsized (Widget, Node);
+      end if;
    end Mark_Node_Obsolete;
 
    procedure Mark_Incident_Obsolete
@@ -2457,6 +2605,7 @@ package body Giant.Graph_Widgets is
       if Vis_Data.Has_Manager (Edge) then
          Vis_Data.Drop_Edge (Widget.Manager, Edge);
       end if;
+      --  Multiple insertions are avoided by 'Vis_Edge_Sets'-implementation
       Vis_Edge_Sets.Insert (Widget.Unsized_Edges, Edge);
    end Move_Edge_To_Unsized;
 
@@ -2579,6 +2728,7 @@ package body Giant.Graph_Widgets is
    begin
       Drawing.Resize_Display (Widget);
       Make_Edges_Appear (Widget, Old_Area);
+      Callbacks.Update_Scrollbars (Widget);
    end Resize_Graph_Widget;
 
    procedure Find_Or_Create

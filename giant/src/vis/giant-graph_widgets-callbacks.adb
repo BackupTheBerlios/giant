@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.18 $
+--  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.19 $
 --  $Author: keulsn $
---  $Date: 2003/08/19 12:21:25 $
+--  $Date: 2003/09/02 04:49:38 $
 --
 ------------------------------------------------------------------------------
 
@@ -36,7 +36,6 @@ with Gdk.Window;
 with Gdk.Window_Attr;
 with Gtk.Arguments;
 with Gtk.Enums;
-with Gtk.Handlers;
 with Gtk.Style;
 
 with Giant.Graph_Widgets.Drawing;
@@ -68,6 +67,126 @@ package body Giant.Graph_Widgets.Callbacks is
      Gdk.Types.Pointer_Motion_Mask or
      Gdk.Types.Enter_Notify_Mask or
      Gdk.Types.Leave_Notify_Mask;
+
+
+   ----------------
+   -- Scrollbars --
+   ----------------
+
+   procedure Update_Scrollbars
+     (Widget : access Graph_Widget_Record'Class) is
+
+      Logic   : Vis.Logic.Rectangle_2d;
+      Visible : Vis.Logic.Rectangle_2d;
+      Area    : Vis.Logic.Rectangle_2d;
+      use Vis.Logic;
+      package Adj renames Gtk.Adjustment;
+   begin
+      Logic := Get_Logical_Area (Widget);
+      Visible := Get_Visible_Area (Widget);
+      Area := Get_Surrounding (Logic, Visible);
+
+      if Adj."/="
+        (Widget.Callbacks.Horizontal_Adjustment, Adj.Null_Adjustment) then
+
+         Gtk.Handlers.Handler_Block
+           (Obj => Widget.Callbacks.Horizontal_Adjustment,
+            Id  => Widget.Callbacks.Horizontal_Handler);
+         Adj.Set_Lower
+           (Widget.Callbacks.Horizontal_Adjustment,
+            Glib.Gfloat (Get_Left (Area)));
+         Adj.Set_Upper
+           (Widget.Callbacks.Horizontal_Adjustment,
+            Glib.Gfloat (Get_Right (Area)));
+         Adj.Set_Page_Size
+           (Widget.Callbacks.Horizontal_Adjustment,
+            Glib.Gfloat (Get_Width (Visible)));
+         Adj.Set_Page_Increment
+           (Widget.Callbacks.Horizontal_Adjustment,
+            Glib.Gfloat (0.9 * Get_Width (Visible)));
+         Adj.Set_Step_Increment
+           (Widget.Callbacks.Horizontal_Adjustment,
+            Glib.Gfloat (0.05 * Get_Width (Visible)));
+         Adj.Changed (Widget.Callbacks.Horizontal_Adjustment);
+         Adj.Set_Value
+           (Widget.Callbacks.Horizontal_Adjustment,
+            Glib.Gfloat (Get_Left (Visible)));
+         Gtk.Handlers.Handler_Unblock
+           (Obj => Widget.Callbacks.Horizontal_Adjustment,
+            Id  => Widget.Callbacks.Horizontal_Handler);
+      end if;
+      if Adj."/="
+        (Widget.Callbacks.Vertical_Adjustment, Adj.Null_Adjustment) then
+
+         Gtk.Handlers.Handler_Block
+           (Obj => Widget.Callbacks.Vertical_Adjustment,
+            Id  => Widget.Callbacks.Vertical_Handler);
+         Adj.Set_Lower
+           (Widget.Callbacks.Vertical_Adjustment,
+            Glib.Gfloat (Get_Top (Area)));
+         Adj.Set_Upper
+           (Widget.Callbacks.Vertical_Adjustment,
+            Glib.Gfloat (Get_Bottom (Area)));
+         Adj.Set_Page_Size
+           (Widget.Callbacks.Vertical_Adjustment,
+            Glib.Gfloat (Get_Height (Visible)));
+         Adj.Set_Page_Increment
+           (Widget.Callbacks.Vertical_Adjustment,
+            Glib.Gfloat (0.9 * Get_Height (Visible)));
+         Adj.Set_Step_Increment
+           (Widget.Callbacks.Vertical_Adjustment,
+            Glib.Gfloat (0.05 * Get_Height (Visible)));
+         Adj.Changed (Widget.Callbacks.Vertical_Adjustment);
+         Adj.Set_Value
+           (Widget.Callbacks.Vertical_Adjustment,
+            Glib.Gfloat (Get_Top (Visible)));
+         Gtk.Handlers.Handler_Unblock
+           (Obj => Widget.Callbacks.Vertical_Adjustment,
+            Id  => Widget.Callbacks.Vertical_Handler);
+      end if;
+   end Update_Scrollbars;
+
+   procedure On_Horizontal_Scroll
+     (Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class;
+      Widget     : in     Graph_Widget) is
+
+      Current : Vis.Logic.Vector_2d;
+      Left    : Vis.Logic_Float;
+   begin
+      Current := Get_Location (Widget);
+      Left := Vis.Logic_Float (Gtk.Adjustment.Get_Value (Adjustment));
+      Vis.Logic.Set_X
+        (Current,
+         Left + Vis.Logic.Get_Width (Get_Visible_Area (Widget)) / 2.0);
+      Set_Location (Widget, Current);
+      --  Must clear queue because 'Set_Location' might update the value of
+      --  'Adjustment' thus emitting a new "value_changed" signal leading
+      --  into an infinite recursion.
+      Gtk.Handlers.Emit_Stop_By_Name
+        (Object => Widget.Callbacks.Horizontal_Adjustment,
+         Name   => "value_changed");
+   end On_Horizontal_Scroll;
+
+   procedure On_Vertical_Scroll
+     (Adjustment : access Gtk.Adjustment.Gtk_Adjustment_Record'Class;
+      Widget     : in     Graph_Widget) is
+
+      Current : Vis.Logic.Vector_2d;
+      Top     : Vis.Logic_Float;
+   begin
+      Current := Get_Location (Widget);
+      Top := Vis.Logic_Float (Gtk.Adjustment.Get_Value (Adjustment));
+      Vis.Logic.Set_Y
+        (Current,
+         Top + Vis.Logic.Get_Height (Get_Visible_Area (Widget)) / 2.0);
+      Set_Location (Widget, Current);
+      --  Must clear queue because 'Set_Location' might update the value of
+      --  'Adjustment' thus emitting a new "value_changed" signal leading
+      --  into an infinite recursion.
+      Gtk.Handlers.Emit_Stop_By_Name
+        (Object => Widget.Callbacks.Vertical_Adjustment,
+         Name   => "value_changed");
+   end On_Vertical_Scroll;
 
 
    --------------------
@@ -374,6 +493,11 @@ package body Giant.Graph_Widgets.Callbacks is
    package Leave_Notify_Event_Cbs renames Graph_Widget_Boolean_Callback;
 
 
+   package Adjustment_Cbs is new Gtk.Handlers.User_Callback
+     (Widget_Type => Gtk.Adjustment.Gtk_Adjustment_Record,
+      User_Type   => Graph_Widget);
+
+
    package Realize_Handling is new Gtk.Widget.Realize_Handling
      (Widget_Type  => Graph_Widget_Record,
       Realize_Proc => On_Realize);
@@ -512,6 +636,7 @@ package body Giant.Graph_Widgets.Callbacks is
       end if;
       Grab_Default (Widget);
       States.Realized (Widget);
+      Update_Scrollbars (Widget);
    end After_Realize;
 
    procedure On_Unrealize
@@ -526,6 +651,8 @@ package body Giant.Graph_Widgets.Callbacks is
       while Widget.Callbacks.Mouse_Grab_Count > 0 loop
          Ungrab_Mouse (Widget, 0);
       end loop;
+      Widget.Callbacks.Horizontal_Adjustment := Gtk.Adjustment.Null_Adjustment;
+      Widget.Callbacks.Vertical_Adjustment := Gtk.Adjustment.Null_Adjustment;
    end On_Unrealize;
 
    procedure On_Destroy
@@ -539,9 +666,43 @@ package body Giant.Graph_Widgets.Callbacks is
      (Widget     : access Graph_Widget_Record'Class;
       Horizontal : in     Gtk.Adjustment.Gtk_Adjustment;
       Vertical   : in     Gtk.Adjustment.Gtk_Adjustment) is
+
+      package Adj renames Gtk.Adjustment;
    begin
-      -----------------------------------raise Unimplemented;
-      null;
+      if Adj."/="
+        (Widget.Callbacks.Horizontal_Adjustment, Adj.Null_Adjustment) then
+
+         Gtk.Handlers.Disconnect
+           (Object => Widget.Callbacks.Horizontal_Adjustment,
+            Id     => Widget.Callbacks.Horizontal_Handler);
+      end if;
+      Widget.Callbacks.Horizontal_Adjustment := Horizontal;
+      if Adj."/=" (Horizontal, Adj.Null_Adjustment) then
+         Widget.Callbacks.Horizontal_Handler := Adjustment_Cbs.Connect
+           (Widget    => Horizontal,
+            Name      => "value_changed",
+            Marsh     => Adjustment_Cbs.To_Marshaller
+                           (On_Horizontal_Scroll'Access),
+            User_Data => Graph_Widget (Widget));
+      end if;
+
+      if Adj."/="
+        (Widget.Callbacks.Vertical_Adjustment, Adj.Null_Adjustment) then
+
+         Gtk.Handlers.Disconnect
+           (Object => Widget.Callbacks.Vertical_Adjustment,
+            Id     => Widget.Callbacks.Vertical_Handler);
+      end if;
+      Widget.Callbacks.Vertical_Adjustment := Vertical;
+      if Adj."/=" (Vertical, Adj.Null_Adjustment) then
+         Widget.Callbacks.Vertical_Handler := Adjustment_Cbs.Connect
+           (Widget    => Vertical,
+            Name      => "value_changed",
+            Marsh     => Adjustment_Cbs.To_Marshaller
+                           (On_Vertical_Scroll'Access),
+            User_Data => Graph_Widget (Widget));
+      end if;
+      Update_Scrollbars (Widget);
    end On_Set_Scroll_Adjustments;
 
    procedure On_Size_Request

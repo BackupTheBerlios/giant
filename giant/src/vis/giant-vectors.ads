@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.ads,v $, $Revision: 1.12 $
+--  $RCSfile: giant-vectors.ads,v $, $Revision: 1.13 $
 --  $Author: keulsn $
---  $Date: 2003/08/02 16:27:43 $
+--  $Date: 2003/09/02 04:49:38 $
 --
 ------------------------------------------------------------------------------
 
@@ -382,6 +382,11 @@ package Giant.Vectors is
      (Left      : in     Rectangle_2d;
       Right     : in     Rectangle_2d)
      return Rectangle_2d_Array;
+
+   function Get_Surrounding
+     (Left      : in     Rectangle_2d;
+      Right     : in     Rectangle_2d)
+     return Rectangle_2d;
 
    --  Read from Stream
    procedure Read_Rectangle

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.28 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.29 $
 --  $Author: keulsn $
---  $Date: 2003/08/17 00:34:24 $
+--  $Date: 2003/09/02 04:49:38 $
 --
 ------------------------------------------------------------------------------
 
@@ -1476,10 +1476,10 @@ package body Giant.Graph_Widgets.Drawing is
      (Widget : access Graph_Widget_Record'Class) is
 
       Window : Gdk.Window.Gdk_Window := Get_Window (Widget);
-      White  : Gdk.Color.Gdk_Color := Gdk.Color.White (Get_Colormap (Widget));
    begin
       Gdk.GC.Gdk_New (Widget.Drawing.Rectangle_Gc, Window);
-      Gdk.GC.Set_Foreground (Widget.Drawing.Rectangle_Gc, White);
+      Gdk.GC.Set_Foreground
+        (Widget.Drawing.Rectangle_Gc, Settings.Get_Background_Color (Widget));
       Gdk.GC.Set_Function (Widget.Drawing.Rectangle_Gc, Gdk.Types.Invert);
    end Set_Up_Rectangle_Gc;
 
