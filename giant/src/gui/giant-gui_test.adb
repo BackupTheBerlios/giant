@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_test.adb,v $, $Revision: 1.11 $
+-- $RCSfile: giant-gui_test.adb,v $, $Revision: 1.12 $
 -- $Author: squig $
--- $Date: 2003/06/12 13:58:14 $
+-- $Date: 2003/06/13 12:47:58 $
 --
 with Gtk.Main;
 
@@ -76,6 +76,7 @@ begin
    Graph_Window.Create (My_Graph_Window);
    Graph_Window.Show_All (My_Graph_Window);
 
+   Graph_Lib.Create ("../../../src/vis_test/rfg_examp.iml");
    Node_Access := Graph_Lib.Get_Root_Node;
 
    Node_Annotation_Dialog.Create (My_Node_Annotation_Dialog, Node_Access);
