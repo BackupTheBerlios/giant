@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.26 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.27 $
 --  $Author: koppor $
---  $Date: 2003/06/26 14:08:02 $
+--  $Date: 2003/06/26 15:54:26 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -557,8 +557,6 @@ package body Giant.Graph_Lib is
          end loop;
 
       end loop;
-
-      Edge_Id_Locator.Initialize;
    end Initialize;
 
    ---------------------------------------------------------------------------
@@ -568,7 +566,6 @@ package body Giant.Graph_Lib is
       --  Destroy_Node_Class_Id_Mapping
       --  TBD: deep-destroy!
       null;
-      Edge_Id_Locator.Destroy;
    end Destroy;
 
    -----------------------------------------------------------
@@ -1020,6 +1017,8 @@ package body Giant.Graph_Lib is
       end;
 
       Iml_Node_Mapper.Destroy;
+
+      Edge_Id_Locator.Initialize;
    end Load;
 
    ---------------------------------------------------------------------------
@@ -1060,6 +1059,8 @@ package body Giant.Graph_Lib is
       end DestroyAllNodes;
 
    begin
+      Edge_Id_Locator.Destroy;
+
       DestroyAllNodes;
 
       IML_Node_ID_Hashed_Mappings.Destroy (IML_Node_ID_Mapping);
