@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.35 $
---  $Author: schwiemn $
---  $Date: 2003/06/30 14:57:37 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.36 $
+--  $Author: koppor $
+--  $Date: 2003/06/30 18:35:17 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -456,8 +456,8 @@ package body Giant.Graph_Lib is
             Edge.Attribute_Element_Number := Attribute_Element_Number;
 
             --  make it known to connected nodes
-            Edge_Lists.Attach (Edge_Target.Edges_In, Edge);
-            Edge_Lists.Attach (Edge_Source.Edges_Out, Edge);
+            Edge_Lists.Attach (Edge, Edge_Target.Edges_In);
+            Edge_Lists.Attach (Edge, Edge_Source.Edges_Out);
          end Create_Edge;
 
          function Create_Node
@@ -555,11 +555,15 @@ package body Giant.Graph_Lib is
       ------------------------------------------------------------------------
       --  Parameters:
       --    Queue' : All generated nodes will be stored there
-      procedure ConvertIMLGraphToTempStructure
+      procedure Convert_IML_Graph_To_Temp_Structure
         (Queue : out Load_Nodes.Node_Queue)
       is
 
-         procedure ProcessQueue is
+         procedure Process_Queue is
+
+            --  used for getting a much better performance
+            --    at Node_Queues.Attach
+            Queue_Tail    : Load_Nodes.Node_Queues.List;
 
             --  Does all necessary things, if there's an edge from
             --    a Node to an IML_Node
@@ -571,11 +575,22 @@ package body Giant.Graph_Lib is
 
                Created     : Boolean;
                Target_Node : Load_Nodes.Node_Access;
+
+               New_Queue_Tail : Load_Nodes.Node_Queues.List;
+
             begin
+               --  My_Logger.Debug ("Begin: Process_Edge");
+
                IML_Node_Mapper.Get (Target, Target_Node,  Created);
 
+               --  My_Logger.Debug ("Fetched Target_Node");
+
                if Created then
-                  Load_Nodes.Node_Queues.Attach (Queue, Target_Node);
+                  New_Queue_Tail := Load_Nodes.Node_Queues.MakeList
+                    (Target_Node);
+                  Load_Nodes.Node_Queues.Attach (Queue_Tail, New_Queue_Tail);
+                  Queue_Tail := New_Queue_Tail;
+                  --  My_Logger.Debug ("Attached Target_Node");
                end if;
 
                Load_Nodes.Create_Edge
@@ -583,6 +598,10 @@ package body Giant.Graph_Lib is
                   Target_Node,
                   Attribute,
                   Attribute_Element_Number);
+
+               --  My_Logger.Debug ("Edge created");
+
+               --  My_Logger.Debug ("End: Process_Edge");
             end Process_Edge;
 
             Node  : Load_Nodes.Node_Access;
@@ -593,6 +612,8 @@ package body Giant.Graph_Lib is
 
                Target : Storables.Storable;
             begin
+               --  My_Logger.Debug ("Begin: Process_Attribute");
+
                if Attribute.all in IML_Reflection.Edge_Field'Class then
                   declare
                      IML_Edge : IML_Reflection.Edge_Field
@@ -651,6 +672,8 @@ package body Giant.Graph_Lib is
                   My_Logger.Error (Attribute.Name);
                   My_Logger.Error ("Unknown IML_Reflection.Field");
                end if;
+
+               --  My_Logger.Debug ("End: Process_Attribute");
             end Process_Attribute;
 
             Iter      : Load_Nodes.Node_Queues.ListIter;
@@ -661,8 +684,14 @@ package body Giant.Graph_Lib is
          begin
             Iter := Load_Nodes.Node_Queues.MakeListIter (Queue);
 
+            Queue_Tail := Queue;
+
             while Load_Nodes.Node_Queues.More (Iter) loop
                Node := Load_Nodes.Node_Queues.CellValue (Iter);
+
+               --  My_Logger.Debug ("Processing: " &
+               --                     IML_Node_Ids.Image
+               --        (Storables.Get_Node_Id (Node.IML_Node)));
 
                if Node.IML_Node.all in IML_Roots.IML_Root_Class'Class then
                   --  we process only nodes below IML_Root and no other
@@ -679,13 +708,15 @@ package body Giant.Graph_Lib is
                end if;
                Load_Nodes.Node_Queues.Forward (Iter);
             end loop;
-         end ProcessQueue;
+         end Process_Queue;
 
          Root_Node : Storables.Storable;
          Created   : Boolean;
          Node      : Load_Nodes.Node_Access;
 
       begin
+         My_Logger.Debug ("Begin: Convert_IML_Graph_To_Temp_Structure");
+
          Queue := Load_Nodes.Node_Queues.Create;
 
          Root_Node := Storables.Storable
@@ -695,8 +726,8 @@ package body Giant.Graph_Lib is
 
          Load_Nodes.Node_Queues.Attach (Queue, Node);
 
-         ProcessQueue;
-      end ConvertIMLGraphToTempStructure;
+         Process_Queue;
+      end Convert_IML_Graph_To_Temp_Structure;
 
       -------------------------------------------------------------------------
       --  Converts generated temporary structure to the structure
@@ -878,6 +909,8 @@ package body Giant.Graph_Lib is
          end Convert_Incoming_Edges;
 
       begin
+         My_Logger.Debug ("Begin: Convert_Temp_Structure_To_Used_Structure");
+
          Convert_Nodes (IML_Node_ID_Mapping);
 
          --  all nodes are existing now
@@ -915,7 +948,7 @@ package body Giant.Graph_Lib is
       --  Destroys the temporary structure,
       --  frees all memory
       --  Queue is deallocated, too
-      procedure DestroyTempStructure
+      procedure Destroy_Temp_Structure
         (Queue : in out Load_Nodes.Node_Queue) is
 
          procedure Dispose
@@ -928,8 +961,9 @@ package body Giant.Graph_Lib is
            Load_Nodes.Node_Queues.DestroyDeep (Dispose => Dispose);
 
       begin
+         My_Logger.Debug ("Begin: Destroy_Temp_Structure");
          DestroyDeep_Nodes (Queue);
-      end DestroyTempStructure;
+      end Destroy_Temp_Structure;
 
    begin
       --  Load Graph into memory
@@ -945,9 +979,9 @@ package body Giant.Graph_Lib is
       declare
          Queue : Load_Nodes.Node_Queue;
       begin
-         ConvertIMLGraphToTempStructure (Queue);
+         Convert_IML_Graph_To_Temp_Structure (Queue);
          Convert_Temp_Structure_To_Used_Structure (Queue);
-         DestroyTempStructure (Queue);
+         Destroy_TEmp_Structure (Queue);
       end;
 
       Iml_Node_Mapper.Destroy;
@@ -1142,13 +1176,13 @@ package body Giant.Graph_Lib is
       end;
 
       IML_Node_ID := IML_Node_IDs.Make_Node_ID (P);
-      
+
       --  Fixed by Martin: ensures that "Node_Does_Not_Exist" will be raised
-      --  if the node id is not part of the hash map.      
+      --  if the node id is not part of the hash map.
       if not IML_Node_ID_Hashed_Mappings.Is_Bound
         (IML_Node_ID_Mapping,
          IML_Node_ID) then
-         
+
          raise Node_Does_Not_Exist;
       end if;
 
