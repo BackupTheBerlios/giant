@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.8 $
 --  $Author: koppor $
---  $Date: 2003/06/30 18:54:45 $
+--  $Date: 2003/07/01 16:38:47 $
 --
 
 with Ada.Text_IO;
@@ -37,19 +37,25 @@ package body Giant.Graph_Lib.Test is
 
    --------------------------------------------------------------------------
    --  Parameters for the graph to use for testing
-   IML_Filename   : constant String :=
-     "/home/stsopra/giant/graphs/wget.iml";
-   IML_Edge_Count : constant Integer := 1274794;
-   IML_Node_Count : constant Integer := 472583;
+
+     IML_Filename   : constant String :=
+       "/home/stsopra/giant/graphs/httpd.iml";
+     IML_Edge_Count : constant Integer := 2316410;
+     IML_Node_Count : constant Integer := 797777;
+
+--     IML_Filename   : constant String :=
+--       "/home/stsopra/giant/graphs/wget.iml";
+--     IML_Edge_Count : constant Integer := 1274794;
+--     IML_Node_Count : constant Integer := 472583;
 
 --     IML_Filename   : constant String :=
 --       "/home/stsopra/giant/graphs/concept_analysis.iml";
 --     IML_Edge_Count : constant Integer := 156072;
 --     IML_Node_Count : constant Integer := 646;
 
-   --  IML_Filename   : constant String  := "resources/rfg_examp.iml";
-   --  IML_Edge_Count : constant Integer := 646;
-   --  IML_Node_Count : constant Integer := 216;
+--     IML_Filename   : constant String  := "resources/rfg_examp.iml";
+--     IML_Edge_Count : constant Integer := 646;
+--     IML_Node_Count : constant Integer := 216;
 
    -------------------------------------
    --  Global variables and routines  --
