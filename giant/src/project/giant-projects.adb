@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.37 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.38 $
 --  $Author: schwiemn $
---  $Date: 2003/06/26 15:06:07 $
+--  $Date: 2003/06/26 17:18:46 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -45,7 +45,7 @@ with Giant.Logger;
 
 package body Giant.Projects is
 
-   package Logger is new Giant.Logger("giant.logger");
+   package Logger is new Giant.Logger("giant.projects");
 
    ---------------------------------------------------------------------------
    -- Note:
@@ -251,6 +251,8 @@ package body Giant.Projects is
       Ada_Stream         : Ada.Streams.Stream_IO.Stream_Access;
       Bauhaus_Out_Stream : Bauhaus_IO.Out_Stream_Type;
    begin
+
+     Logger.Debug("Sec File: " & File_Path);
 
       -- test if file exists, create new one if necessary      
       begin 
@@ -499,6 +501,7 @@ package body Giant.Projects is
             (The_Project.Abs_Project_Directory),
            Ada.Strings.Unbounded.To_String 
             (The_Project.Abs_Bauhaus_IML_Graph_File))); 
+            
                 
       Ada.Text_IO.Put_Line
         ("    iml_graph_file_path = """
@@ -644,9 +647,6 @@ package body Giant.Projects is
 
       -- check whether the xml file is a file that describes project
       begin
-         Logger.Debug ("reading project file "
-                       & Ada.Strings.Unbounded.To_String
-                       (Absolute_Project_File_Name));
 
          XML_File_Access.Load_XML_File_Validated
            (Ada.Strings.Unbounded.To_String
@@ -1711,7 +1711,7 @@ package body Giant.Projects is
 
 
       --  Check if already loaded and return the instance if that is the case
-      if (Is_Vis_Window_Memory_Loaded (Project, Vis_Window_Name) = True) then
+      if (Is_Vis_Window_Memory_Loaded (Project, Vis_Window_Name)) then
 
          return Known_Vis_Windows_Hashs.Fetch
            (Project.All_Vis_Windows,
@@ -1719,6 +1719,15 @@ package body Giant.Projects is
             (Vis_Window_Name)).Vis_Window;
          --  load vis window into main memory
       else
+      
+         Vis_Window_Data := Known_Vis_Windows_Hashs.Fetch
+           (Project.All_Vis_Windows,
+            Ada.Strings.Unbounded.To_Unbounded_String
+            (Vis_Window_Name));
+
+
+         Logger.Debug ("Load file" & Ada.Strings.Unbounded.To_String
+            (Vis_Window_Data.Existing_Vis_Window_File));
 
          New_Vis_Window_Inst := Load_Vis_Window_Into_Main_Memory
            (Ada.Strings.Unbounded.To_String
@@ -1918,6 +1927,7 @@ package body Giant.Projects is
       A_Vis_Window_Data_Element.Is_File_Linked := True;
       A_Vis_Window_Data_Element.Existing_Vis_Window_File :=
         A_Vis_Window_File_Name;
+        
       Known_Vis_Windows_Hashs.Update_Value
         (Project.All_Vis_Windows,
          A_Vis_Window_Data_Element.Vis_Window_Name,
@@ -1981,6 +1991,13 @@ package body Giant.Projects is
         (Project.All_Vis_Windows,
          A_Vis_Window_Data_Element.Vis_Window_Name,
          A_Vis_Window_Data_Element);
+         
+         
+      Logger.Debug ("File nach Free : " & Ada.Strings.Unbounded.To_String 
+        (Known_Vis_Windows_Hashs.Fetch
+        (Project.All_Vis_Windows,
+         Ada.Strings.Unbounded.To_Unbounded_String (Vis_Window_Name)).
+         Existing_Vis_Window_File));
    end Free_Memory_For_Vis_Window;
 
    ---------------------------------------------------------------------------

@@ -20,15 +20,15 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.14 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.15 $
 -- $Author: schwiemn $
--- $Date: 2003/06/26 15:06:07 $
+-- $Date: 2003/06/26 17:18:46 $
 --
 --
 with Ada.Streams;
 with Ada.Streams.Stream_IO;
 
-with GNAT.OS_Lib; use GNAT.OS_Lib;
+with GNAT.OS_Lib;
 
 
 package body Giant.File_Management is
@@ -466,8 +466,8 @@ package body Giant.File_Management is
      (Command : in String)
    is
 --      Args   : GNAT.OS_Lib.Argument_List_Access;
-  --    Pid    : GNAT.OS_Lib.Process_Id;
-    --  Prog   : GNAT.OS_Lib.String_Access;
+--      Pid    : GNAT.OS_Lib.Process_Id;
+--      Prog   : GNAT.OS_Lib.String_Access;
    begin
 --      Args := Argument_String_To_List (Command);
 --      Prog := Locate_Exec_On_Path (Args (Args'First).all);
@@ -492,7 +492,7 @@ null;
    ---------------------------------------------------------------------------
   procedure Execute_External_Editor
      (Command  : in String;
-     Filename : in String;
+      Filename : in String;
       Line     : in Natural;
       Column   : in Natural)
    is
