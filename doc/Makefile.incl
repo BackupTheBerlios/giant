@@ -32,7 +32,3 @@
 	psnup -2 $*.book.ps > $*.booklet.ps
 	@echo -e "\a\n\n now type rlp -p duesentrieb --duplex=short $*.booklet.ps \n"
 	@echo -e "\n on PS-Pool type p -pD $*.booklet.ps \n"
-
-
-
-
