@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.71 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.72 $
 --  $Author: koppor $
---  $Date: 2003/09/18 15:37:14 $
+--  $Date: 2003/09/18 16:58:47 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -39,6 +39,7 @@ with IML_Classes;
 with IML_Graphs;
 with IML.IO;
 with IML_Reflection;
+with Literal_Types;
 with Lists;
 
 --  from Giant
@@ -1564,9 +1565,8 @@ package body Giant.Graph_Lib is
    is
       List : Node_Id_List;
    begin
-      if Get_Node_Attribute_Class_Id (Attribute) /= Class_Node_Id_List then
-         raise Wrong_Attribute_Type;
-      end if;
+      pragma Assert
+        (Get_Node_Attribute_Class_Id (Attribute) = Class_Node_Id_List);
 
       List := Node_Id_Lists.Create;
 
@@ -1606,9 +1606,8 @@ package body Giant.Graph_Lib is
       return Boolean
    is
    begin
-      if Get_Node_Attribute_Class_Id (Attribute) /= Class_Boolean then
-         raise Wrong_Attribute_Type;
-      end if;
+      pragma Assert
+        (Get_Node_Attribute_Class_Id (Attribute) = Class_Boolean);
 
       return IML_Reflection.Boolean_Field (Attribute.all).Get_Value
         (Node.IML_Node);
@@ -1660,6 +1659,14 @@ package body Giant.Graph_Lib is
       if Node_Attribute.all in IML_Reflection.Identifier_Field then
          return Class_Identifier;
 
+         --  special case for types of literal_types.ads
+      elsif Node_Attribute.all in Literal_Types.Char_Literal_Field or
+        Node_Attribute.all in Literal_Types.Int_Literal_Field or
+        Node_Attribute.all in Literal_Types.Real_Literal_Field then
+         --  literals are completly handled as strings, because
+         --  GSL can't handle Integers and Reals
+         return Class_Invalid; -- FIXME! Convert to string
+
          --  Edges to other nodes
       elsif Node_Attribute.all in IML_Reflection.Edge_Field'Class then
          return Class_Node_Id;
@@ -1693,9 +1700,8 @@ package body Giant.Graph_Lib is
       return Natural
    is
    begin
-      if Get_Node_Attribute_Class_Id (Attribute) /= Class_Natural then
-         raise Wrong_Attribute_Type;
-      end if;
+      pragma Assert
+        (Get_Node_Attribute_Class_Id (Attribute) /= Class_Natural);
 
       return IML_Reflection.Natural_Field (Attribute.all).Get_Value
         (Node.IML_Node);
@@ -1709,9 +1715,8 @@ package body Giant.Graph_Lib is
    is
       Set : Node_Id_Set;
    begin
-      if Get_Node_Attribute_Class_Id (Attribute) /= Class_Node_Id_Set then
-         raise Wrong_Attribute_Type;
-      end if;
+      pragma Assert
+        (Get_Node_Attribute_Class_Id (Attribute) = Class_Node_Id_Set);
 
       Set := Node_Id_Sets.Empty_Set;
 
@@ -1751,9 +1756,7 @@ package body Giant.Graph_Lib is
    is
       Res_Node : Node_Id;
    begin
-      if Get_Node_Attribute_Class_Id (Attribute) /= Class_Node_Id then
-         raise Wrong_Attribute_Type;
-      end if;
+      pragma Assert (Get_Node_Attribute_Class_Id (Attribute) = Class_Node_Id);
 
       declare
           IML_Edge : IML_Reflection.Edge_Field
@@ -1788,9 +1791,7 @@ package body Giant.Graph_Lib is
      return SLocs.Sloc
    is
    begin
-      if Get_Node_Attribute_Class_Id (Attribute) /= Class_SLoc then
-         raise Wrong_Attribute_Type;
-      end if;
+      pragma Assert (Get_Node_Attribute_Class_Id (Attribute) = Class_SLoc);
 
       return IML_Reflection.SLoc_Field (Attribute.all).Get_Value
         (Node.IML_Node);
@@ -1803,9 +1804,7 @@ package body Giant.Graph_Lib is
       return Natural
    is
    begin
-      if Get_Node_Attribute_Class_Id (Attribute) /= Class_SLoc then
-         raise Wrong_Attribute_Type;
-      end if;
+      pragma Assert (Get_Node_Attribute_Class_Id (Attribute) = Class_SLoc);
 
       return SLocs.Get_Column
         (Get_Node_Attribute_SLoc_Value (Node, Attribute));
@@ -1818,9 +1817,7 @@ package body Giant.Graph_Lib is
       return String
    is
    begin
-      if Get_Node_Attribute_Class_Id (Attribute) /= Class_SLoc then
-         raise Wrong_Attribute_Type;
-      end if;
+      pragma Assert (Get_Node_Attribute_Class_Id (Attribute) = Class_SLoc);
 
       return SLocs.Get_Filename
         (Get_Node_Attribute_SLoc_Value (Node, Attribute));
@@ -1833,9 +1830,7 @@ package body Giant.Graph_Lib is
       return Natural
    is
    begin
-      if Get_Node_Attribute_Class_Id (Attribute) /= Class_SLoc then
-         raise Wrong_Attribute_Type;
-      end if;
+      pragma Assert (Get_Node_Attribute_Class_Id (Attribute) = Class_SLoc);
 
       return SLocs.Get_Line
         (Get_Node_Attribute_SLoc_Value (Node, Attribute));
@@ -1848,9 +1843,7 @@ package body Giant.Graph_Lib is
       return String
    is
    begin
-      if Get_Node_Attribute_Class_Id (Attribute) /= Class_SLoc then
-         raise Wrong_Attribute_Type;
-      end if;
+      pragma Assert (Get_Node_Attribute_Class_Id (Attribute) = Class_SLoc);
 
       return SLocs.Get_Path
         (Get_Node_Attribute_SLoc_Value (Node, Attribute));
@@ -1863,9 +1856,7 @@ package body Giant.Graph_Lib is
       return String
    is
    begin
-      if Get_Node_Attribute_Class_Id (Attribute) /= Class_String then
-         raise Wrong_Attribute_Type;
-      end if;
+      pragma Assert (Get_Node_Attribute_Class_Id (Attribute) = Class_String);
 
       declare
          Enum       : IML_Reflection.Enumerator_Field :=
