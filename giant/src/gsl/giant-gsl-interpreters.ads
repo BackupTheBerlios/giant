@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/01 10:25:23 $
+-- $Date: 2003/07/07 12:05:06 $
 --
 -- This package implements the Gsl interpreter.
 --
@@ -108,6 +108,17 @@ package Giant.Gsl.Interpreters is
      (Name            : String;
       Value           : Gsl_Type);
 
+   ---------------------------------------------------------------------------
+   --
+   procedure Set_Activation_Record
+     (AR : Activation_Record);
+
+   ---------------------------------------------------------------------------
+   --
+   function Create_Activation_Record
+     (Parent : Activation_Record)
+      return Activation_Record;
+   
 private
 
    ---------------------------------------------------------------------------
@@ -122,12 +133,6 @@ private
    --
    procedure Script_Exec_Cmd;
 
-   ---------------------------------------------------------------------------
-   --
-   function Create_Activation_Record
-     (Parent : Activation_Record)
-      return Activation_Record;
-   
    ---------------------------------------------------------------------------
    --
    procedure Destroy_Activation_Record

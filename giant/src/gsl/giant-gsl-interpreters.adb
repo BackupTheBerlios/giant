@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/03 13:46:34 $
+-- $Date: 2003/07/07 12:05:06 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -247,7 +247,18 @@ package body Giant.Gsl.Interpreters is
                  (Current_Interpreter.Activation_Records,
                   Current_Interpreter.Current_Activation_Record);
 
-            when Script_Loop => null;
+            when Script_Loop =>
+               Result_Stacks.Pop (Current_Interpreter.Result_Stack, Res1);
+               if Res1 = Gsl_Null then
+                  Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
+                    "Runtime Error - Gsl_Null!");
+               elsif Res1'Tag = Gsl_Boolean_Record'Tag then
+                  Default_Logger.Debug
+                    ("Interpreter: Loop correct.", "Giant.Gsl");
+               else
+                  Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
+                    "Runtime Error - Gsl_Boolean expected!");
+               end if;
 
             when Result_Pop =>
                Result_Stacks.Pop (Current_Interpreter.Result_Stack, Res1);
@@ -278,41 +289,35 @@ package body Giant.Gsl.Interpreters is
    -- step 1 of a Gsl Script execution
    procedure Script_Activation_Cmd is
 
+      use Giant.Gsl.Compilers;
+
       Script : Gsl_Type;
       Params : Gsl_Type;
    begin
       Result_Stacks.Pop (Current_Interpreter.Result_Stack, Params);
       Result_Stacks.Pop (Current_Interpreter.Result_Stack, Script);
       if (Script = Gsl_Null) or (Params = Gsl_Null) then
-         Ada.Exceptions.Raise_Exception
-           (Gsl_Runtime_Error'Identity, "Runtime Error!");
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
+           "Runtime Error!");
       elsif Script'Tag = Gsl_Script_Reference_Record'Tag then
          if Params'Tag = Gsl_List_Record'Tag then
             case Get_Script_Type (Gsl_Script_Reference (Script)) is
-               when Gsl_Script =>
-                  Default_Logger.Debug
-                    ("Interpreter: --- GSL Script ---", "Giant.Gsl");
+               when Giant.Gsl.Types.Gsl_Script =>
                   -- set the new activation record and push the old one
                   -- to the activation record stack
-                  Activation_Record_Stacks.Push
-                    (Current_Interpreter.Activation_Records,
-                     Current_Interpreter.Current_Activation_Record);
-                  Current_Interpreter.Current_Activation_Record :=
-                    Create_Activation_Record
-                      (Get_Activation_Record (Gsl_Script_Reference (Script)));
+                  Set_Activation_Record (Create_Activation_Record
+                    (Get_Activation_Record (Gsl_Script_Reference (Script))));
 
                   Execution_Stacks.Push (Current_Interpreter.Execution_Stack,
-                    Giant.Gsl.Compilers.Get_Execution_Stack
-                      (Current_Interpreter.Gsl_Compiler,
+                    Get_Execution_Stack (Current_Interpreter.Gsl_Compiler,
                        Giant.Gsl.Syntax_Tree.Create_Node (Script_Exec,
                          Null_Node, Null_Node)));
 
                   -- push the code for the parameter list to the
-                  -- Execution Stack
+                  -- execution stack
                   -- (get the Syntax_Node from the Gsl_Script_Reference)
                   Execution_Stacks.Push (Current_Interpreter.Execution_Stack,
-                    Giant.Gsl.Compilers.Get_Execution_Stack
-                      (Current_Interpreter.Gsl_Compiler,
+                    Get_Execution_Stack (Current_Interpreter.Gsl_Compiler,
                        Get_Parameter_List (Gsl_Script_Reference (Script))));
 
                   Result_Stacks.Push
@@ -320,24 +325,29 @@ package body Giant.Gsl.Interpreters is
                   Result_Stacks.Push
                     (Current_Interpreter.Result_Stack, Params);
 
-               when Gsl_Runtime =>
+               when Giant.Gsl.Types.Gsl_Runtime =>
+                  -- call runtime function, and push the result
                   Result_Stacks.Push (Current_Interpreter.Result_Stack,
-                  Get_Gsl_Runtime (Gsl_Script_Reference (Script))
-                    (Gsl_List (Params)));
+                    Get_Gsl_Runtime (Gsl_Script_Reference (Script))
+                                       (Gsl_List (Params)));
+                  -- free the parameter
+                  -- Destroy_Gsl_Type (Params);
                end case;
          else
-            Ada.Exceptions.Raise_Exception
-              (Gsl_Runtime_Error'Identity, "Gsl_List expected!");
+            Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
+              "Gsl_List expected.");
          end if;
       else
-         Ada.Exceptions.Raise_Exception
-           (Gsl_Runtime_Error'Identity, "Gsl_Script_Reference expected!");
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Gsl_Script_Reference expected.");
       end if;
    end Script_Activation_Cmd;
 
    --------------------------------------------------------------------------
    -- step 2 of a Gsl Script execution
    procedure Script_Exec_Cmd is
+
+      use Giant.Gsl.Compilers;
 
       Script : Gsl_Type;
       Params : Gsl_Type;
@@ -352,6 +362,7 @@ package body Giant.Gsl.Interpreters is
          Ada.Exceptions.Raise_Exception
            (Gsl_Runtime_Error'Identity, "Wrong number of parameters.");
       else
+         -- process the parameter list
          for i in 1 .. Get_List_Size (Gsl_List (Formal)) loop
             Ref := Get_Value_At (Gsl_List (Formal), i);
             if Ref'Tag = Gsl_Var_Reference_Record'Tag then
@@ -362,21 +373,19 @@ package body Giant.Gsl.Interpreters is
                   (Gsl_Runtime_Error'Identity, "Gsl_Var_Reference expected.");
              end if;
          end loop;
+         -- free the parameter
+         -- Destroy_Gsl_Type (Params); 
          -- destroy Activation Record when Script completed
          Execution_Stacks.Push (Current_Interpreter.Execution_Stack,
-           Giant.Gsl.Compilers.Get_Execution_Stack
-             (Current_Interpreter.Gsl_Compiler,
-              Giant.Gsl.Syntax_Tree.Create_Node (Script_Finish,
-                Null_Node, Null_Node)));
+           Get_Execution_Stack (Current_Interpreter.Gsl_Compiler,
+             Giant.Gsl.Syntax_Tree.Create_Node (Script_Finish,
+                                                Null_Node, Null_Node)));
 
          -- push the code of the script
          Execution_Stacks.Push (Current_Interpreter.Execution_Stack,
-           Giant.Gsl.Compilers.Get_Execution_Stack
-             (Current_Interpreter.Gsl_Compiler,
-              Get_Script_Node (Gsl_Script_Reference (Script))));
+           Get_Execution_Stack (Current_Interpreter.Gsl_Compiler,
+             Get_Script_Node (Gsl_Script_Reference (Script))));
       end if;
-      --Result_Stacks.Push (Current_Interpreter.Result_Stack, Gsl_Null);
-
    end Script_Exec_Cmd;
 
    ---------------------------------------------------------------------------
@@ -418,8 +427,21 @@ package body Giant.Gsl.Interpreters is
       end loop;
    end Log_Result_Stack;
 
------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- functions for Activation_Records
+
+   ---------------------------------------------------------------------------
+   -- sets the current activation record
+   procedure Set_Activation_Record
+     (AR : Activation_Record) is
+   begin
+      -- save the current activation record on the stack
+      Activation_Record_Stacks.Push
+        (Current_Interpreter.Activation_Records,
+         Current_Interpreter.Current_Activation_Record);
+      -- set the current activation record
+      Current_Interpreter.Current_Activation_Record := AR;
+   end Set_Activation_Record;
 
    ---------------------------------------------------------------------------
    -- creates a new Activation_Record with Parent as
