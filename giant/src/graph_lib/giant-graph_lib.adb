@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.5 $
 --  $Author: koppor $
---  $Date: 2003/06/09 21:24:19 $
+--  $Date: 2003/06/09 22:08:53 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -74,7 +74,7 @@ package body Giant.Graph_Lib is
    ---------------------------------------------------------------------------
    package Node_Attribute_Id_Hash_Functions is
       new Constant_Ptr_Hashs
-     (T          => Node_Attribute,
+     (T          => IML_Reflection.Field'Class,
       T_Ptr      => Node_Attribute_Id,
       Range_Size => Node_Attribute_Id_Hash_Range_Size);
 
@@ -97,7 +97,7 @@ package body Giant.Graph_Lib is
    ---------------------------------------------------------------------------
    package Node_Class_Id_Hash_Functions is
       new Constant_Ptr_Hashs
-     (T          => Node_Class,
+     (T          => IML_Reflection.Abstract_Class'Class,
       T_Ptr      => Node_Class_Id,
       Range_Size => Node_Class_Id_Hash_Range_Size);
 
@@ -161,7 +161,7 @@ package body Giant.Graph_Lib is
       return Boolean
    is
    begin
-      return (Left.all.all.Name < Right.all.all.Name);
+      return (Left.Name < Right.Name);
    end "<";
 
    ---------------------------------------------------------------------------
@@ -203,7 +203,7 @@ package body Giant.Graph_Lib is
       return Boolean
    is
    begin
-      return (Left.all.all.Name < Right.all.all.Name);
+      return (Left.Name < Right.Name);
    end "<";
 
    function "="
@@ -212,7 +212,7 @@ package body Giant.Graph_Lib is
       return Boolean
    is
    begin
-      return (Left.all.all.Name = Right.all.all.Name);
+      return (Left.Name = Right.Name);
    end "=";
 
    function Convert_Node_Attribute_Id_To_Name
@@ -220,7 +220,7 @@ package body Giant.Graph_Lib is
       return String
    is
    begin
-      return Node_Attribute.all.all.Name;
+      return Node_Attribute.Name;
    end Convert_Node_Attribute_Id_To_Name;
 
    ---------------------------------------------------------------------------
@@ -241,7 +241,7 @@ package body Giant.Graph_Lib is
          Node_Class : Node_Class_Id;
       begin
          Node_Class := Convert_Node_Class_Name_To_Id (Node_Class_Name);
-         IML_Class  := IML_Reflection.Class_ID (Node_Class.all);
+         IML_Class  := Node_Class;
       end;
 
       declare
@@ -260,7 +260,7 @@ package body Giant.Graph_Lib is
          end if;
       end;
 
-      if Node_Attrib = Invalid_Node_Attribute_Id then
+      if IML_Reflection."=" (Node_Attrib, Invalid_Node_Attribute_Id) then
          raise Node_Attribute_Does_Not_Exist;
       end if;
 
@@ -325,8 +325,12 @@ package body Giant.Graph_Lib is
          type Node_Access is access all Node_Record;
 
          type Edge_Record is record
-            Source : Node_Access;
-            Target : Node_Access;
+            Source     : Node_Access;
+            Target     : Node_Access;
+
+            --  like in "outer" Edge_Record
+            Attribute                : Node_Attribute_Id;
+            Attribute_Element_Number : Natural;
          end record;
 
          type Edge_Access is access Edge_Record;
@@ -347,7 +351,9 @@ package body Giant.Graph_Lib is
          --  Creates an edge in the internal structure
          procedure Create_Edge
            (Edge_Source : in Node_Access;
-            Edge_Target : in Node_Access);
+            Edge_Target : in Node_Access;
+            Attribute   : in Node_Attribute_Id;
+            Attribute_Element_Number : in Natural);
 
          --  Creates a node in the internal structure
          --  they are NOT collected in an internal list
@@ -369,12 +375,16 @@ package body Giant.Graph_Lib is
 
          procedure Create_Edge
            (Edge_Source : in Node_Access;
-            Edge_Target : in Node_Access) is
+            Edge_Target : in Node_Access;
+            Attribute   : in Node_Attribute_Id;
+            Attribute_Element_Number : in Natural) is
 
             Edge : Edge_Access := new Edge_Record;
          begin
             Edge.Source := Edge_Source;
             Edge.Target := Edge_Target;
+            Edge.Attribute := Attribute;
+            Edge.Attribute_Element_Number := Attribute_Element_Number;
 
             Edge_Lists.Attach (Edge_Target.Edges_In, Edge);
             Edge_Lists.Attach (Edge_Source.Edges_Out, Edge);
@@ -485,7 +495,9 @@ package body Giant.Graph_Lib is
             --    a Node to an IML_Node
             procedure Process_Edge
               (Source_Node : in Load_Nodes.Node_Access;
-               Target      : in Storables.Storable) is
+               Target      : in Storables.Storable;
+               Attribute   : in Node_Attribute_Id;
+               Attribute_Element_Number : in Natural) is
 
                Created     : Boolean;
                Target_Node : Load_Nodes.Node_Access;
@@ -496,57 +508,77 @@ package body Giant.Graph_Lib is
                   Load_Nodes.Node_Queues.Attach (Queue, Target_Node);
                end if;
 
-               Load_Nodes.Create_Edge (Source_Node, Target_Node);
+               Load_Nodes.Create_Edge
+                 (Source_Node,
+                  Target_Node,
+                  Attribute,
+                  Attribute_Element_Number);
             end Process_Edge;
 
             Node  : Load_Nodes.Node_Access;
 
-            ------------------------------------------------------------------
-            --  Processes an edge-attribute
             procedure Process_Attribute
               (IML_Node  : in Storables.Storable;
-               Attribute : in IML_Reflection.Edge_Field) is
+               Attribute : in IML_Reflection.Field_ID) is
 
                Target : Storables.Storable;
             begin
-               Target := Attribute.Get_Target (IML_Roots.IML_Root (IML_Node));
-               if Storables."/=" (Target, null) then
-                  Process_Edge (Node, Target);
+               if Attribute.all in IML_Reflection.Edge_Field'Class then
+                  declare
+                     IML_Edge : IML_Reflection.Edge_Field
+                       := IML_Reflection.Edge_Field (Attribute.all);
+                  begin
+                     Target   := IML_Edge.Get_Target
+                       (IML_Roots.IML_Root (IML_Node));
+                     if Storables."/=" (Target, null) then
+                        Process_Edge (Node, Target, Attribute, 0);
+                     else
+                        My_Logger.Info ("Edge_Field with null target ignored");
+                     end if;
+                  end;
+               elsif Attribute.all in IML_Reflection.List_Field'Class then
+                  declare
+                     IML_List  : IML_Reflection.List_Field
+                       := IML_Reflection.List_Field (Attribute.all);
+                     Iter      : IML_Reflection.List_Iterator;
+                     Target    : Storables.Storable;
+                     I         : Natural := 0;
+                  begin
+                     Iter     := IML_List.Make_Iterator (IML_Node);
+
+                     while IML_Reflection.More (Iter) loop
+                        IML_Reflection.Next (Iter, Target);
+                        I := I+1;
+
+                        Process_Edge (Node, Target, Attribute, I);
+                     end loop;
+                  end;
+               elsif Attribute.all in IML_Reflection.Set_Field'Class then
+                  declare
+                     IML_Set : IML_Reflection.Set_Field
+                       := IML_Reflection.Set_Field (Attribute.all);
+                     Iter    : IML_Reflection.Set_Iterator;
+                     Target  : Storables.Storable;
+                     I       : Natural := 0;
+                  begin
+                     Iter    := IML_Set.Make_Iterator (IML_Node);
+
+                     while IML_Reflection.More (Iter) loop
+                        IML_Reflection.Next (ITer, Target);
+                        I := I+1;
+
+                        Process_Edge (Node, Target, Attribute, I);
+                     end loop;
+                  end;
+               elsif
+                 (Attribute.all in
+                  IML_Reflection.Identifier_Field'Class) or
+                 (Attribute.all in
+                  IML_Reflection.Builtin_Field'Class) then
+                  null;
                else
-                  My_Logger.Info ("Edge_Field with null target ignored");
+                  My_Logger.Error ("Unknown IML_Reflection.Field");
                end if;
-            end Process_Attribute;
-
-            ------------------------------------------------------------------
-            --  Processes a list-attribute
-            procedure Process_Attribute
-              (IML_Node  : in Storables.Storable;
-               Attribute : in IML_Reflection.List_Field) is
-
-               Iter   : IML_Reflection.List_Iterator;
-               Target : Storables.Storable;
-            begin
-               Iter := Attribute.Make_Iterator (IML_Node);
-               while IML_Reflection.More (Iter) loop
-                  IML_Reflection.Next (Iter, Target);
-                  Process_Edge (Node, Target);
-               end loop;
-            end Process_Attribute;
-
-            ------------------------------------------------------------------
-            --  Processes a set-attribute
-            procedure Process_Attribute
-              (IML_Node  : in Storables.Storable;
-               Attribute : in IML_Reflection.Set_Field) is
-
-               Iter   : IML_Reflection.Set_Iterator;
-               Target : Storables.Storable;
-            begin
-               Iter := Attribute.Make_Iterator (IML_Node);
-               while IML_Reflection.More (Iter) loop
-                  IML_Reflection.Next (ITer, Target);
-                  Process_Edge (Node, Target);
-               end loop;
             end Process_Attribute;
 
             Iter      : Load_Nodes.Node_Queues.ListIter;
@@ -569,28 +601,7 @@ package body Giant.Graph_Lib is
 
                   for I in Class.Fields'Range loop
                      Attribute := Class.Fields (I);
-                     if Attribute.all in IML_Reflection.Edge_Field'Class then
-                        Process_Attribute
-                          (Node.IML_Node,
-                           IML_Reflection.Edge_Field (Attribute.all));
-                     elsif Attribute.all in
-                       IML_Reflection.List_Field'Class then
-                        Process_Attribute
-                          (Node.IML_Node,
-                           IML_Reflection.List_Field (Attribute.all));
-                     elsif Attribute.all in
-                       IML_Reflection.Set_Field'Class then
-                        Process_Attribute
-                          (Node.IML_Node,
-                           IML_Reflection.Set_Field (Attribute.all));
-                     elsif (Attribute.all in
-                            IML_Reflection.Identifier_Field'Class) or
-                       (Attribute.all in
-                        IML_Reflection.Builtin_Field'Class) then
-                        null;
-                     else
-                        My_Logger.Error ("Unknown IML_Reflection.Field");
-                     end if;
+                     Process_Attribute (Node.IML_Node, Attribute);
                   end loop;
 
                end if;
@@ -642,6 +653,9 @@ package body Giant.Graph_Lib is
                TargetArray (I) := new Edge_Record;
                TargetArray (I).Source_Node := CurEdge.Source.Internal_Node;
                TargetArray (I).Target_Node := CurEdge.Target.Internal_Node;
+               TargetArray (I).Attribute   := CurEdge.Attribute;
+               TargetArray (I).Attribute_Element_Number :=
+                 CurEdge.Attribute_Element_Number;
             end loop;
          end ConvertEdges;
 
@@ -1119,7 +1133,7 @@ package body Giant.Graph_Lib is
          when Class_SLoc =>
             declare
                SLoc_StoredInIML : IML_Reflection.SLoc_Field
-                 := IML_Reflection.SLoc_Field (Attribute.all.all);
+                 := IML_Reflection.SLoc_Field (Attribute.all);
                SLoc             : SLocs.SLoc;
             begin
                SLoc := SLoc_StoredInIML.Get_Value (Node.Iml_Node);

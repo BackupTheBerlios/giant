@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.4 $
 --  $Author: koppor $
---  $Date: 2003/06/09 21:24:37 $
+--  $Date: 2003/06/09 22:09:14 $
 --
 
 --  Bauhaus / IML
@@ -60,33 +60,24 @@ package Giant.Graph_Lib is
    --  Node_Id_Image is invariant over multiple runs of GIANT
    type Node_Id is access Node_Record;
 
-   ---------------------------------------------------------------------------
-   type Node_Class is limited private;
 
    ---------------------------------------------------------------------------
    --  unique Id of one class to which a node is belonging to
    --  ("type of the node")
    --
-   --  Following thing was removed to avoid problems with "=".
    --    'Node_Class_Id' is declared as a subtype only to simplify the
    --    implementation of the package. It is to be considered a private type.
    --    Used for casting complete arrays
-   --  subtype Node_Class_Id is IML_Reflection.Class_ID;
-   type Node_Class_Id is access constant Node_Class;
-
-   ---------------------------------------------------------------------------
-   type Node_Attribute is limited private;
+   subtype Node_Class_Id is IML_Reflection.Class_ID;
 
    ---------------------------------------------------------------------------
    --  Unique id of one single attribute which appears in one or more nodes
    --    ("name of the attribute")
    --
-   --  Following thing was removed to avoid problems with "=".
    --    'Node_Attribute_Id' is declared as a subtype only to simplify
    --    implementation of the package. It is to be considered a private type.
    --    Used for casting complete arrays
-   --  subtype Node_Attribute_Id is IML_Reflection.Field_ID;
-   type Node_Attribute_Id is access constant Node_Attribute;
+   subtype Node_Attribute_Id is IML_Reflection.Field_ID;
 
    ---------------------------------------------------------------------------
    --  Id of one class to which an attribute may belong to
@@ -688,16 +679,6 @@ package Giant.Graph_Lib is
 private
 
    ---------------------------------------------------------------------------
-   --  Field_Id is also a pointer, but we need this two-pointer concecpt,
-   --    to avoid "premature use of private type"
-   type Node_Attribute is new IML_Reflection.Field_ID;
-
-   ---------------------------------------------------------------------------
-   --  Class_Id is also a pointer, but we need this two-pointer concecpt,
-   --    to avoid "premature use of private type"
-   type Node_Class is new IML_Reflection.Class_ID;
-
-   ---------------------------------------------------------------------------
    --  Needed for Node_Record, used to store incoming and outgoing edges
    type Edge_Id_Array is array (Positive range <>) of Edge_Id;
 
@@ -724,7 +705,7 @@ private
 
         --   =0 : n/a
         --  /=0 : element# of list/set where attribute was included
-        Node_Attribute_Element_Number : Natural;
+        Attribute_Element_Number     : Natural;
      end record;
 
    type Edge_Id is access Edge_Record;
