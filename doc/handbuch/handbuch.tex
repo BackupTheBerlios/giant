@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: handbuch.tex,v $, $Revision: 1.9 $
-%  $Date: 2003/08/09 20:15:05 $
+%  $RCSfile: handbuch.tex,v $, $Revision: 1.10 $
+%  $Date: 2003/09/01 18:38:12 $
 %  $Author: birdy $
 %
 %  Description: Master Datei des Handbuchs
@@ -11,7 +11,7 @@
 
 \documentclass[a4paper,titlepage,11pt,german,twoside]{scrbook}
 
-
+\clearpage
 \makeatletter
 
 %koma uses \chapter*, but we want to use \chapter
@@ -40,7 +40,7 @@
 % subsubsections nummerieren
 \setcounter{secnumdepth}{3}
 
-\newcommand\version{Version 1.1\xspace}
+\newcommand\version{Version 1.1 (Vorabversion)\xspace}
 %\newcommand\version{\today\xspace}
 
 %\graphicspath{{gui-pictures/}} %OK: it MAY work with graphics. With graphicx, it surely doesn't
@@ -70,9 +70,9 @@ Studienprojekt A -- IML Browser\\
   \vspace{.5cm}
   {\Large\version}\\
   \vspace{3cm}
-  \includegraphics[scale=.78]{../logo}
+  \includegraphics[scale=.5]{../logo}
 \end{center}
-\newpage
+%\newpage
 
 \MakeShortVerb{\°}
 
@@ -93,6 +93,7 @@ Studienprojekt A -- IML Browser\\
 %
 % Inhaltsverzeichnis
 %
+\newpage
 \setcounter{tocdepth}{1}
 \tableofcontents
 
