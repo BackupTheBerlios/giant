@@ -22,15 +22,18 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/13 13:09:50 $
+-- $Date: 2003/06/16 15:01:34 $
 --
 -- This package implements the datatypes used in GSL.
 --
 
+with Ada.Tags;
+use  Ada.Tags;
 with Ada.Strings.Unbounded;
 
 with Giant.Default_Logger;
 with Giant.Gsl.Types;
+use  Giant.Gsl.Types;
 with Giant.Gsl.Syntax_Tree;
 
 package body Giant.Gsl.Interpreters is
@@ -43,8 +46,6 @@ package body Giant.Gsl.Interpreters is
       Individual : Interpreter;
    begin
       Individual := new Interpreter_Record;
-      --Individual.Execution_Stack := null;
-      --Individual.Result_Stack := null;
       Individual.Main_Activation_Record := null;
       Individual.Current_Activation_Record := null;
       Individual.Gsl_Compiler := Giant.Gsl.Compilers.Create_Compiler;
@@ -78,6 +79,13 @@ package body Giant.Gsl.Interpreters is
       Individual.Main_Activation_Record := Create_Activation_Record (null);
       Individual.Current_Activation_Record := 
         Individual.Main_Activation_Record;
+      
+      Default_Logger.Debug
+        ("Interpreter: Register runtime functions.", "Giant.Gsl");
+      Register_Runtime (Individual, Runtime_Set'Access, "set");
+      Register_Runtime (Individual, Runtime_If'Access, "if");
+      Register_Runtime (Individual, Runtime_Loop'Access, "loop");
+
       Default_Logger.Debug
         ("Interpreter: Initilize Evolution.", "Giant.Gsl");
       Initialize (Individual, 0);
@@ -89,8 +97,11 @@ package body Giant.Gsl.Interpreters is
      (Individual  : access Interpreter_Record;
       Next_Action : out    Giant.Evolutions.Evolution_Action) is
 
-      Cmd : Syntax_Node;
-      Lit : Gsl_Type;
+      Cmd      : Syntax_Node;
+      Res1     : Gsl_Type;
+      Res2     : Gsl_Type;
+      Lit      : Gsl_Type;
+      Res_List : Gsl_List;
    begin
       if Execution_Stacks.Is_Empty (Individual.Execution_Stack) then
          Next_Action := Giant.Evolutions.Finish;
@@ -110,22 +121,71 @@ package body Giant.Gsl.Interpreters is
                   Lit := Copy (Lit);
                   Result_Stacks.Push (Individual.Result_Stack, Lit);
                else
-                  Result_Stacks.Push (Individual.Result_Stack, Lit);
+                  Result_Stacks.Push (Individual.Result_Stack, Gsl_Null);
                end if;
 
             when Visible_Var =>
                Lit := Giant.Gsl.Syntax_Tree.Get_Literal (Cmd);
-               Lit := Get_Var (Individual, Giant.Gsl.Types.Get_Ref_Name
-                 (Giant.Gsl.Types.Gsl_Var_Reference (Lit)));
-               Result_Stacks.Push (Individual.Result_Stack, Lit);
+               Lit := Get_Var (Individual,
+                 Get_Ref_Name (Gsl_Var_Reference (Lit)));
+               if Lit /= Gsl_Null then
+                  Lit := Copy (Lit);
+                  Result_Stacks.Push (Individual.Result_Stack, Lit);
+               else
+                  Result_Stacks.Push (Individual.Result_Stack, Gsl_Null);
+               end if;
 
             when Var_Creation =>
                Lit := Giant.Gsl.Syntax_Tree.Get_Literal (Cmd);
                Create_Var
-                 (Individual, Giant.Gsl.Types.Get_Ref_Name 
-                   (Giant.Gsl.Types.Gsl_Var_Reference (Lit)));
+                 (Individual, Get_Ref_Name (Gsl_Var_Reference (Lit)));
                Result_Stacks.Push (Individual.Result_Stack, Lit);
-  
+
+            when List =>
+               Res_List := Create_Gsl_List
+                 (Giant.Gsl.Syntax_Tree.Get_Size (Cmd));
+               Result_Stacks.Push 
+                 (Individual.Result_Stack, Gsl_Type (Res_List));
+ 
+            when Script_Activation =>
+               Result_Stacks.Pop (Individual.Result_Stack, Res2);
+               Result_Stacks.Pop (Individual.Result_Stack, Res1);
+               if Res1 = Gsl_Null then
+                Default_Logger.Debug
+                    ("Interpreter: Gsl_Script_Reference expected but Gsl_Null.",
+                     "Giant.Gsl");
+
+               elsif Res1'Tag = Gsl_Script_Reference_Record'Tag then
+                  Default_Logger.Debug
+                    ("Interpreter: Gsl_Script_Reference found.", 
+                     "Giant.Gsl");
+               end if;
+
+               if Res1'Tag = Gsl_Script_Reference_Record'Tag then
+                  if Res2'Tag = Gsl_List_Record'Tag then
+                     case Get_Script_Type (Gsl_Script_Reference (Res1)) is
+                        when Gsl_Script =>
+                           null;
+
+                        when Gsl_Runtime =>
+                           Result_Stacks.Push (Individual.Result_Stack,
+                             Get_Gsl_Runtime (Gsl_Script_Reference (Res1)) 
+                               (Gsl_List (Res2)));
+                     end case;
+
+                  else
+                     Default_Logger.Debug
+                       ("Interpreter: Gsl_List expected.",
+                        "Giant.Gsl");
+                     Next_Action := Giant.Evolutions.Finish;
+                  end if;
+               else
+                  Default_Logger.Debug
+                    ("Interpreter: Gsl_Script_Reference expected.", 
+                     "Giant.Gsl");
+                    Next_Action := Giant.Evolutions.Finish;
+               end if;
+
             when others =>
                null;
 
@@ -151,6 +211,18 @@ package body Giant.Gsl.Interpreters is
    begin
       null;
    end Finish;
+
+   procedure Register_Runtime
+     (Individual : access Interpreter_Record;
+      Runtime    : Runtime_Function;
+      Name       : String) is
+
+      Script : Gsl_Script_Reference;
+   begin
+      Script := Create_Gsl_Script_Reference (Runtime);
+      Create_Var (Individual, Name);
+      Set_Var (Individual, Name, Gsl_Type (Script));
+   end Register_Runtime;
 
 -----------------------------------------------------------------------------
 -- functions for Activation_Records
@@ -186,7 +258,6 @@ package body Giant.Gsl.Interpreters is
 
       AR : Activation_Record;
    begin
-      Default_Logger.Debug ("Interpreter: create var " & Name, "Giant.Gsl");
       AR := Gsl_Interpreter.Current_Activation_Record;
       if Gsl_Var_Hashed_Mappings.Is_Bound
         (AR.Vars, Ada.Strings.Unbounded.To_Unbounded_String (Name)) then
@@ -209,7 +280,6 @@ package body Giant.Gsl.Interpreters is
       AR : Activation_Record;
    begin
       -- start in the current Activation_Record
-      Default_Logger.Debug ("Interpreter: Looking for " & Name, "Giant.Gsl");
       AR := Gsl_Interpreter.Current_Activation_Record;
       while AR /= null loop
          if Gsl_Var_Hashed_Mappings.Is_Bound
@@ -238,9 +308,13 @@ package body Giant.Gsl.Interpreters is
       while AR /= null loop
          if Gsl_Var_Hashed_Mappings.Is_Bound 
            (AR.Vars, Ada.Strings.Unbounded.To_Unbounded_String (Name)) then
+            Gsl_Var_Hashed_Mappings.Unbind
+              (AR.Vars, Ada.Strings.Unbounded.To_Unbounded_String (Name));
             Gsl_Var_Hashed_Mappings.Bind
               (AR.Vars, Ada.Strings.Unbounded.To_Unbounded_String (Name), 
                Value);
+            -- success, leave procedure here
+            return;
          end if;
          -- next iteration look in the parent Activation_Record
          AR := AR.Parent;
@@ -248,5 +322,32 @@ package body Giant.Gsl.Interpreters is
       -- variable was not found, raise Exception
       raise Var_Not_Found;
    end Set_Var;
+
+-----------------------------------------------------------------------------
+-- some basic Runtime Functions
+
+   function Runtime_Set
+     (Parameter : Gsl_List)
+      return Gsl_Type is
+   begin
+      Default_Logger.Debug ("Interpreter: Runtime_Set called.", "Giant.Gsl");
+      return Gsl_Null;
+   end Runtime_Set;
+
+   function Runtime_If
+     (Parameter : Gsl_List)
+      return Gsl_Type is
+   begin
+      Default_Logger.Debug ("Interpreter: Runtime_If called.", "Giant.Gsl");
+      return Gsl_Null;
+   end Runtime_If;
+
+   function Runtime_Loop
+     (Parameter : Gsl_List)
+      return Gsl_Type is
+   begin
+      Default_Logger.Debug ("Interpreter: Runtime_Loop called.", "Giant.Gsl");
+      return Gsl_Null;
+   end Runtime_Loop;
 
 end Giant.Gsl.Interpreters;

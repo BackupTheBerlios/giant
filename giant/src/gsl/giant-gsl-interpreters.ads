@@ -22,12 +22,14 @@
 --
 -- $RCSfile: giant-gsl-interpreters.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/13 13:09:50 $
+-- $Date: 2003/06/16 15:01:34 $
 --
 -- This package implements the datatypes used in GSL.
 --
 with Giant.Evolutions;
 with Giant.Gsl.Compilers;
+with Giant.Gsl.Types;
+use  Giant.Gsl.Types;
 
 package Giant.Gsl.Interpreters is
 
@@ -52,6 +54,11 @@ package Giant.Gsl.Interpreters is
      (Individual : access Interpreter_Record;
       Canceled   : in     Boolean); 
 
+   procedure Register_Runtime
+     (Individual : access Interpreter_Record;
+      Runtime    : Runtime_Function;
+      Name       : String);
+
 private 
 
    function Create_Activation_Record
@@ -74,6 +81,20 @@ private
      (Gsl_Interpreter : access Interpreter_Record;
       Name            : String;
       Value           : Gsl_Type);
+
+   ---------------------------------------------------------------------------
+   --
+   function Runtime_Set
+     (Parameter : Gsl_List)
+      return Gsl_Type; 
+
+   function Runtime_If
+     (Parameter : Gsl_List)
+      return Gsl_Type;
+
+   function Runtime_Loop
+     (Parameter : Gsl_List)
+      return Gsl_Type;
 
    ---------------------------------------------------------------------------
    -- the GSL interpreter, inherits Iterative_Evolution 
