@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/29 13:47:23 $
+-- $Date: 2003/08/03 20:41:18 $
 --
 -- This package implements the Gsl Runtime Library 
 --
@@ -271,6 +271,12 @@ package Giant.Gsl.Runtime is
    ---------------------------------------------------------------------------
    --
    function Runtime_Get_Type
+     (Parameter : Gsl_List)
+      return Gsl_Type;
+
+   ---------------------------------------------------------------------------
+   --
+   function Runtime_Instance_Of
      (Parameter : Gsl_List)
       return Gsl_Type;
 
