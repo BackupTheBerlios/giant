@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/19 11:02:30 $
+-- $Date: 2003/08/26 14:01:03 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -165,7 +165,8 @@ package body Giant.Gsl.Interpreters is
       Default_Logger.Debug
         ("Interpreter: Register runtime functions.", "Giant.Gsl.Interpreter");
       -- assignment (ref. GIANT Scripting Language Specification 1.5.1.1)
-      Register_Runtime (Runtime_Set'Access, "set");
+      Register_Runtime (Runtime_Set'Access,   "set");
+      Register_Runtime (Runtime_Deref'Access, "deref");
       -- control (ref. GIANT Scripting Language Specification 1.5.1.2)
       Register_Runtime (Runtime_If'Access,    "if");
       Register_Runtime (Runtime_Loop'Access,  "loop");
@@ -183,8 +184,8 @@ package body Giant.Gsl.Interpreters is
       -- sets and lists (ref. GIANT Scripting Language Specification 1.5.1.5)
       Register_Runtime (Runtime_Empty_Node_Set'Access, "empty_node_set");
       Register_Runtime (Runtime_Empty_Edge_Set'Access, "empty_edge_set");
-      Register_Runtime (Runtime_Is_In'Access,          "is_in");
       Register_Runtime (Runtime_Get_First'Access,      "get_first");
+      Register_Runtime (Runtime_Is_In'Access,          "is_in");
       Register_Runtime (Runtime_Size_Of'Access,        "size_of");
       Register_Runtime (Runtime_Get_Entry'Access,      "get_entry");
       -- types (ref. GIANT Scripting Language Specification 1.5.1.6)
