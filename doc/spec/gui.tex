@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.52 $
-%  $Date: 2003/03/29 16:39:28 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.53 $
+%  $Date: 2003/03/29 16:48:37 $
 %  $Author: birdy $
 %
 %  Description: 
@@ -488,17 +488,13 @@ Jede Progressbar ist mit \gq{Working, please wait.} beschriftet.
      Fenster mit Anzeige eines Dialoges mit einem sich ständig leicht ändernden
      Inhalt, so dass erkennbar ist, dass das System noch arbeitet.
 
-\subsection{Progressbar-Percent}  
-\label{Progressbar-Percent}   
-     Fenster Anzeige eines Progressbars, der darstellt, welcher Anteil der
-     Gesamtberechnung in Prozent bereits erledigt ist.
-
 \subsection{Progressbar-Modale}
 \label{Progressbar-Status} 
      Fenster mit Anzeige eines Progressbars, der über den aktuellen Fortschritt
      einer Berechnung informiert, ohne dabei den Gesamtaufwand zu 
      kennen. Dabei wird kontinuierlich die Anzahl der schon bearbeiteten
-     Datensätze ausgegeben.
+     Datensätze ausgegeben, und, sofern Bekannt, die Prozentzahl der schon
+     Bearbeiteten Datensätze als Text.
      Während dieser Dialog sichtbar ist, ist der Rest der GUI von GIANT
      gesperrt.
      Im Fenster existiert ein Button \gq{Cancel Calculation} , der die momentane
