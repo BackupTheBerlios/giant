@@ -20,15 +20,15 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/06/01 19:12:28 $
+--  $Date: 2003/06/01 22:06:52 $
 --
 ------------------------------------------------------------------------------
---
 
 
 with Ada.Unchecked_Deallocation;
+with Ada.Tags;
 
 with Gdk.Main;
 with Gdk.Threads;
@@ -39,15 +39,64 @@ with Hashed_Mappings;
 pragma Elaborate_All (Hashed_Mappings);
 with Ptr_Hashs;
 pragma Elaborate_All (Ptr_Hashs);
+with Ptr_Ops;
 
 with Giant.Fixed_Priority_Queues;
+with Giant.Logger;
 
 package body Giant.Evolutions is
+
+
+   package Evolution_Logger is new Giant.Logger
+     (Name => "Giant.Evolutions");
+
 
    -------------------------------
    -- Driver_Controller         --
    -- for concurrent evolutions --
    -------------------------------
+
+   --  Mapping Button --> Driver
+   package Button_Hashs is new Ptr_Hashs
+     (T     => Gtk.Button.Gtk_Button_Record,
+      T_Ptr => Gtk.Button.Gtk_Button);
+   package Button_Mappings is new Hashed_Mappings
+     (Key_Type   => Gtk.Button.Gtk_Button,
+      Hash       => Button_Hashs.Integer_Hash,
+      Value_Type => Driver_Id_Type);
+
+   --  Cancel_Button handling
+   package Button_Cb is new Gtk.Handlers.Callback
+     (Widget_Type => Gtk.Button.Gtk_Button_Record);
+   procedure Cancel_Callback
+     (Button : access Gtk.Button.Gtk_Button_Record'Class);
+
+
+   --  Reflect priority ordering on driver states to ids of driver states
+   function Has_Higher_Priority_Id
+     (Left  : in Driver_Id_Type;
+      Right : in Driver_Id_Type)
+     return Boolean;
+
+   procedure Set_Position
+     (Driver_Id : in     Driver_Id_Type;
+      Position  : in     Natural);
+
+   function Get_Position
+     (Driver_Id : in Driver_Id_Type)
+     return Natural;
+
+   --  Priority queues to handle updates of drivers
+   package Driver_State_Queues is new Giant.Fixed_Priority_Queues
+     (Max_Size            => Number_Of_Slots,
+      Item_Type           => Driver_Id_Type,
+      Has_Higher_Priority => Has_Higher_Priority_Id,
+      Set_Position        => Set_Position,
+      Get_Position        => Get_Position);
+
+   --  Stores all manageable Drivers
+   type Driver_Array is array (Driver_Id_Type) of Driver_State_Type;
+
 
    --  Protected unit used for Driver control.
    protected Driver_Controller is
@@ -85,6 +134,19 @@ package body Giant.Evolutions is
       function Is_Canceled
         (Driver_Id       : in     Driver_Id_Type)
         return Boolean;
+
+   private
+
+      --  All managed drivers is implemented as a global variable to simplify
+      --  usage of Update_Queue.
+      --  Drivers : Driver_Array
+
+      --  Updates are done in order of 'Update_Queue'. All managed Drivers are
+      --  in that queue at any point of time.
+      Update_Queue : Driver_State_Queues.Queue_Type;
+
+      --  Mapping Cancel_Button --> Driver_Id
+      Cancel_Mapping : Button_Mappings.Mapping := Button_Mappings.Create;
 
    end Driver_Controller;
 
@@ -216,6 +278,7 @@ package body Giant.Evolutions is
    begin
       if Parent /= null then
          Add_Child_Progress (Parent, Get_Progress_Count (Individual));
+         Set_Child (Parent, null);
       end if;
       Finish (Individual, Canceled);
    end Done;
@@ -223,8 +286,26 @@ package body Giant.Evolutions is
    procedure Set_Next_Action
      (Individual  : access Evolution'Class;
       Next_Action : in     Evolution_Action) is
+
+      package Evolution_Ptr_Ops is new Ptr_Ops
+        (T     => Evolution,
+         T_Ptr => Evolution_Class_Access);
+
    begin
-      Individual.Next_Action := Next_Action;
+      --  If bound checks are disabled then Next_Action may be out of
+      --  range.
+      if Next_Action in Evolution_Action then
+         Individual.Next_Action := Next_Action;
+      else
+         Evolution_Logger.Error
+           ("Individual"
+            & Evolution_Ptr_Ops.Image (Evolution_Class_Access (Individual))
+            & " of type " & Ada.Tags.External_Tag (Individual'Tag)
+            & " requested an illegal Next_Action (Pos ="
+            & Integer'Image (Evolution_Action'Pos (Next_Action))
+            & "). Use Cancel instead.");
+         Individual.Next_Action := Cancel;
+      end if;
    end Set_Next_Action;
 
    function Get_Next_Action
@@ -520,53 +601,9 @@ package body Giant.Evolutions is
    -- Driver_Controller implementation --
    --------------------------------------
 
-   --  Reflect priority ordering on driver states to ids of driver states
-   function Has_Higher_Priority_Id
-     (Left  : in Driver_Id_Type;
-      Right : in Driver_Id_Type)
-     return Boolean;
-
-   procedure Set_Position
-     (Driver_Id : in     Driver_Id_Type;
-      Position  : in     Natural);
-
-   function Get_Position
-     (Driver_Id : in Driver_Id_Type)
-     return Natural;
-
-   --  Priority queues to handle updates of drivers
-   package Driver_State_Queues is new Giant.Fixed_Priority_Queues
-     (Max_Size            => Number_Of_Slots,
-      Item_Type           => Driver_Id_Type,
-      Has_Higher_Priority => Has_Higher_Priority_Id,
-      Set_Position        => Set_Position,
-      Get_Position        => Get_Position);
-
-   --  Mapping Button --> Driver
-   package Button_Hashs is new Ptr_Hashs
-     (T     => Gtk.Button.Gtk_Button_Record,
-      T_Ptr => Gtk.Button.Gtk_Button);
-   package Button_Mappings is new Hashed_Mappings
-     (Key_Type   => Gtk.Button.Gtk_Button,
-      Hash       => Button_Hashs.Integer_Hash,
-      Value_Type => Driver_Id_Type);
-
-   --  Cancel_Button handling
-   package Button_Cb is new Gtk.Handlers.Callback
-     (Widget_Type => Gtk.Button.Gtk_Button_Record);
-   procedure Cancel_Callback
-     (Button : access Gtk.Button.Gtk_Button_Record'Class);
-
    --  All managed Drivers
-   Drivers : array (Driver_Id_Type) of Driver_State_Type :=
+   Drivers : Driver_Array :=
      (others => No_Driver_State);
-
-   --  Updates are done in order of 'Update_Queue'. All managed Drivers are
-   --  in that queue at any point of time.
-   Update_Queue : Driver_State_Queues.Queue_Type;
-
-   --  Mapping Cancel_Button --> Driver_Id
-   Cancel_Mapping : Button_Mappings.Mapping := Button_Mappings.Create;
 
 
    function Has_Higher_Priority_Id
@@ -577,14 +614,12 @@ package body Giant.Evolutions is
       return Has_Higher_Priority (Drivers (Left), Drivers (Right));
    end Has_Higher_Priority_Id;
 
-
    procedure Set_Position
      (Driver_Id : in     Driver_Id_Type;
       Position  : in     Natural) is
    begin
       Drivers (Driver_Id).Position := Position;
    end Set_Position;
-
 
    function Get_Position
      (Driver_Id : in Driver_Id_Type)
@@ -594,128 +629,126 @@ package body Giant.Evolutions is
    end Get_Position;
 
 
-   --  'Update_Queue' must not be accessed during call.
-   procedure Set_State
-     (Driver_Id : in     Driver_Id_Type;
-      State     : in     Driver_Action_Type) is
-   begin
-      Drivers (Driver_Id).Current_State := State;
-      Drivers (Driver_Id).State_Change := Ada.Real_Time.Clock;
-      Driver_State_Queues.Update_Item (Update_Queue, Driver_Id);
-   end Set_State;
-
-
-   --  no global variable must be accessed during call.
    --  must be run between Gdk.Threads.Enter and Gdk.Threads.Leave
    procedure Begin_Concurrent_Updates;
+
+   --  must be run between Gdk.Threads.Enter and Gdk.Threads.Leave
    procedure End_Concurrent_Updates;
 
-   --  no global variable must be accessed during call.
-   --  must be run with Gdk.Threads-lock enabled
-   procedure Initialize_Driver
-     (Driver_Id       : in     Driver_Id_Type;
-      Individual      : access Concurrent_Evolution'Class;
-      Progress_Dialog : in     Gtk.Dialog.Gtk_Dialog;
-      Progress_Bar    : in     Gtk.Progress_Bar.Gtk_Progress_Bar;
-      Progress_Text   : in     Gtk.Label.Gtk_Label;
-      Progress_Cancel : in     Gtk.Button.Gtk_Button) is
-   begin
-      Drivers (Driver_Id) :=
-        (Driver          => new Concurrent_Driver
-                                  (Driver_Id, Individual),
-         Individual      => Concurrent_Evolution_Class_Access (Individual),
-         Current_State   => Running,
-         State_Change    => Ada.Real_Time.Clock,
-         Cancel_Request  => False,
-         Position        => 0,
-         Cancel_Handler  => 0,
-         Progress_Dialog => Progress_Dialog,
-         Progress_Bar    => Progress_Bar,
-         Progress_Text   => Progress_Text,
-         Progress_Cancel => Progress_Cancel);
-
-      if Driver_State_Queues.Is_Empty (Update_Queue) then
-         Begin_Concurrent_Updates;
-      end if;
-      Driver_State_Queues.Insert (Update_Queue, Driver_Id);
-
-      if Gtk.Progress_Bar."/=" (Progress_Bar, null) then
-         Gtk.Progress_Bar.Ref (Progress_Bar);
-      end if;
-     if Gtk.Label."/=" (Progress_Text, null) then
-         Gtk.Label.Ref (Progress_Text);
-      end if;
-      if Gtk.Button."/=" (Progress_Cancel, null) then
-         Gtk.Button.Ref (Progress_Cancel);
-         Button_Mappings.Bind
-           (Cancel_Mapping, Progress_Cancel, Driver_Id);
-         Drivers (Driver_Id).Cancel_Handler := Button_Cb.Connect
-           (Widget => Progress_Cancel,
-            Name   => "clicked",
-            Marsh  => Button_Cb.To_Marshaller
-            (Cancel_Callback'Access));
-      end if;
-      if Gtk.Dialog."/=" (Progress_Dialog, null) then
-         Gtk.Dialog.Ref (Progress_Dialog);
-         Gtk.Dialog.Show_All (Progress_Dialog);
-      end if;
-   end Initialize_Driver;
-
-
-   --  no global variable must be accessed during call.
-   --  must be run with Gdk.Threads-lock enabled
-   procedure Shutdown_Driver
-     (Driver_Id : in     Driver_Id_Type) is
-
-      procedure Free is new Ada.Unchecked_Deallocation
-        (Object => Concurrent_Driver,
-         Name   => Concurrent_Driver_Access);
-
-   begin
-      Driver_State_Queues.Remove_Item (Update_Queue, Driver_Id);
-      if Driver_State_Queues.Is_Empty (Update_Queue) then
-         End_Concurrent_Updates;
-      end if;
-
-      Free (Drivers (Driver_Id).Driver);
-
-      --  Drivers (Driver_Id).Individual must not be touched
-
-      if Gtk.Progress_Bar."/=" (Drivers (Driver_Id).Progress_Bar, null) then
-         Gtk.Progress_Bar.Unref (Drivers (Driver_Id).Progress_Bar);
-      end if;
-      if Gtk.Label."/=" (Drivers (Driver_Id).Progress_Text, null) then
-         Gtk.Label.Unref (Drivers (Driver_Id).Progress_Text);
-      end if;
-      if Gtk.Button."/=" (Drivers (Driver_Id).Progress_Cancel, null) then
-         Gtk.Handlers.Disconnect
-           (Object => Drivers (Driver_Id).Progress_Cancel,
-            Id     => Drivers (Driver_Id).Cancel_Handler);
-         Button_Mappings.Unbind
-           (Cancel_Mapping, Drivers (Driver_Id).Progress_Cancel);
-         Gtk.Button.Unref (Drivers (Driver_Id).Progress_Cancel);
-      end if;
-      if Gtk.Dialog."/=" (Drivers (Driver_Id).Progress_Dialog, null) then
-         Gtk.Dialog.Destroy (Drivers (Driver_Id).Progress_Dialog);
-         Gtk.Dialog.Unref (Drivers (Driver_Id).Progress_Dialog);
-      end if;
-
-      Drivers (Driver_Id) := No_Driver_State;
-   end Shutdown_Driver;
-
-
-   --  'Drivers' must not be accessed during call.
-   --  must be run with Gdk.Threads-lock enabled
-   procedure Update_Visuals
-     (Driver_Id : in     Driver_Id_Type) is
-   begin
-      Update_Visuals
-        (Individual    => Drivers (Driver_Id).Individual,
-         Progress_Bar  => Drivers (Driver_Id).Progress_Bar,
-         Progress_Text => Drivers (Driver_Id).Progress_Text);
-   end Update_Visuals;
 
    protected body Driver_Controller is
+
+      procedure Set_State
+        (Driver_Id : in     Driver_Id_Type;
+         State     : in     Driver_Action_Type) is
+      begin
+         Drivers (Driver_Id).Current_State := State;
+         Drivers (Driver_Id).State_Change := Ada.Real_Time.Clock;
+         Driver_State_Queues.Update_Item (Update_Queue, Driver_Id);
+      end Set_State;
+
+      --  must be run between Gdk.Threads.Enter and Gdk.Thread.Leave.
+      procedure Initialize_Driver
+        (Driver_Id       : in     Driver_Id_Type;
+         Individual      : access Concurrent_Evolution'Class;
+         Progress_Dialog : in     Gtk.Dialog.Gtk_Dialog;
+         Progress_Bar    : in     Gtk.Progress_Bar.Gtk_Progress_Bar;
+         Progress_Text   : in     Gtk.Label.Gtk_Label;
+         Progress_Cancel : in     Gtk.Button.Gtk_Button) is
+      begin
+         Drivers (Driver_Id) :=
+           (Driver          => new Concurrent_Driver
+                                     (Driver_Id, Individual),
+            Individual      => Concurrent_Evolution_Class_Access (Individual),
+            Current_State   => Running,
+            State_Change    => Ada.Real_Time.Clock,
+            Cancel_Request  => False,
+            Position        => 0,
+            Cancel_Handler  => 0,
+            Progress_Dialog => Progress_Dialog,
+            Progress_Bar    => Progress_Bar,
+            Progress_Text   => Progress_Text,
+            Progress_Cancel => Progress_Cancel);
+
+         if Driver_State_Queues.Is_Empty (Update_Queue) then
+            Begin_Concurrent_Updates;
+         end if;
+         Driver_State_Queues.Insert (Update_Queue, Driver_Id);
+
+         if Gtk.Progress_Bar."/=" (Progress_Bar, null) then
+            Gtk.Progress_Bar.Ref (Progress_Bar);
+         end if;
+         if Gtk.Label."/=" (Progress_Text, null) then
+            Gtk.Label.Ref (Progress_Text);
+         end if;
+         if Gtk.Button."/=" (Progress_Cancel, null) then
+            Gtk.Button.Ref (Progress_Cancel);
+            Button_Mappings.Bind
+              (Cancel_Mapping, Progress_Cancel, Driver_Id);
+            Drivers (Driver_Id).Cancel_Handler := Button_Cb.Connect
+              (Widget => Progress_Cancel,
+               Name   => "clicked",
+               Marsh  => Button_Cb.To_Marshaller
+               (Cancel_Callback'Access));
+         end if;
+         if Gtk.Dialog."/=" (Progress_Dialog, null) then
+            Gtk.Dialog.Ref (Progress_Dialog);
+            Gtk.Dialog.Show_All (Progress_Dialog);
+         end if;
+      end Initialize_Driver;
+
+
+      --  must be run between Gdk.Threads.Enter and Gdk.Threads.Leave
+      procedure Shutdown_Driver
+        (Driver_Id : in     Driver_Id_Type) is
+
+         procedure Free is new Ada.Unchecked_Deallocation
+           (Object => Concurrent_Driver,
+            Name   => Concurrent_Driver_Access);
+
+      begin
+         Driver_State_Queues.Remove_Item (Update_Queue, Driver_Id);
+         if Driver_State_Queues.Is_Empty (Update_Queue) then
+            End_Concurrent_Updates;
+         end if;
+
+         Free (Drivers (Driver_Id).Driver);
+
+         --  Drivers (Driver_Id).Individual must not be touched
+
+         if Gtk.Progress_Bar."/=" (Drivers (Driver_Id).Progress_Bar, null) then
+            Gtk.Progress_Bar.Unref (Drivers (Driver_Id).Progress_Bar);
+         end if;
+         if Gtk.Label."/=" (Drivers (Driver_Id).Progress_Text, null) then
+            Gtk.Label.Unref (Drivers (Driver_Id).Progress_Text);
+         end if;
+         if Gtk.Button."/=" (Drivers (Driver_Id).Progress_Cancel, null) then
+            Gtk.Handlers.Disconnect
+              (Object => Drivers (Driver_Id).Progress_Cancel,
+               Id     => Drivers (Driver_Id).Cancel_Handler);
+            Button_Mappings.Unbind
+              (Cancel_Mapping, Drivers (Driver_Id).Progress_Cancel);
+            Gtk.Button.Unref (Drivers (Driver_Id).Progress_Cancel);
+         end if;
+         if Gtk.Dialog."/=" (Drivers (Driver_Id).Progress_Dialog, null) then
+            Gtk.Dialog.Destroy (Drivers (Driver_Id).Progress_Dialog);
+            Gtk.Dialog.Unref (Drivers (Driver_Id).Progress_Dialog);
+         end if;
+
+         Drivers (Driver_Id) := No_Driver_State;
+      end Shutdown_Driver;
+
+
+      --  must be run between Gdk.Threads.Enter and Gdk.Threads.Leave
+      procedure Update_Visuals
+        (Driver_Id : in     Driver_Id_Type) is
+      begin
+         Update_Visuals
+           (Individual    => Drivers (Driver_Id).Individual,
+            Progress_Bar  => Drivers (Driver_Id).Progress_Bar,
+            Progress_Text => Drivers (Driver_Id).Progress_Text);
+      end Update_Visuals;
+
 
       --  must be called between Gdk.Thread.Enter and Gdk.Threads.Leave
       procedure Start_Driver

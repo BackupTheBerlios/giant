@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-logger.ads,v $, $Revision: 1.4 $
---  $Author: squig $
---  $Date: 2003/05/23 19:03:25 $
+--  $RCSfile: giant-logger.ads,v $, $Revision: 1.5 $
+--  $Author: keulsn $
+--  $Date: 2003/06/01 22:06:52 $
 --
 ------------------------------------------------------------------------------
 --
@@ -47,6 +47,8 @@ generic
    Name : String;
 
 package Giant.Logger is
+
+   pragma Elaborate_Body;
 
    ---------------------------------------------------------------------------
    --  See:

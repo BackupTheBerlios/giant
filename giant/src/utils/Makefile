@@ -5,7 +5,7 @@ evolutions :
 	make -C ../../ MAIN=src/utils/giant-evolutions all
 
 tasking_test :
-	make -C ../../ MAIN=src/utils/tasking_test EXEC=tasking_test all
+	make -C ../../ MAIN=src/utils/tasking_test EXEC=src/utils/tasking_test all
 
 all : 
 	make -C ../../ all
