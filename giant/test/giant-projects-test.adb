@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-projects-test.adb,v $, $Revision: 1.12 $
+--  $RCSfile: giant-projects-test.adb,v $, $Revision: 1.13 $
 --  $Author: schwiemn $
---  $Date: 2003/07/15 23:40:17 $
+--  $Date: 2003/07/16 20:09:57 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -107,7 +107,6 @@ package body Giant.Projects.Test is
 
       -- add vis windows
       A_Vis_Window := Giant.Vis_Windows.Create_New ("Vis_Window_1");
-      
       Giant.Projects.Add_Visualisation_Window
         (Test_Project_1, A_Vis_Window);
         
@@ -131,6 +130,9 @@ package body Giant.Projects.Test is
      (Project : in Giant.Projects.Project_Access) is 
    
      Test_List : String_Lists.List;
+     
+     Annotats : Node_Annotations.Node_Annotation_Access;
+     Nod_List : Graph_Lib.Node_Id_Lists.List;
    begin
    
       -- check project status
@@ -144,15 +146,15 @@ package body Giant.Projects.Test is
          "Check whether Sub_Graph_1 exits");
          
       Assert (Projects.Does_Subgraph_Exist
-        (Project, "Sub_Graph_1"),
+        (Project, "Sub_Graph_2"),
          "Check whether Sub_Graph_2 exits");
          
       Assert (Projects.Does_Subgraph_Exist
-        (Project, "Sub_Graph_1"),
+        (Project, "Sub_Graph_3"),
          "Check whether Sub_Graph_3 exits");
          
       Assert (Projects.Does_Subgraph_Exist
-        (Project, "Sub_Graph_1"),
+        (Project, "Sub_Graph_4"),
          "Check whether Sub_Graph_4 exits");
 
       Assert (not Projects.Does_Subgraph_Exist
@@ -192,6 +194,14 @@ package body Giant.Projects.Test is
       Assert (String_Lists.Length (Test_List) = 4,
               "Test Lenght of Vis Window Names list");
       String_Lists.Destroy (Test_List);
+
+      Annotats := 
+        Projects.Get_Node_Annotations (Project);
+        
+      Nod_List := Giant.Node_Annotations.Get_All_Annotated_Nodes (Annotats);
+      Assert (Graph_Lib.Node_Id_Lists.Length (Nod_List) = 0,
+              "Test whether node annotations are empty");
+      Graph_Lib.Node_Id_Lists.Destroy (Nod_List);
    
    end Check_Test_Project_1;
    
@@ -209,7 +219,8 @@ package body Giant.Projects.Test is
          "");
       Assert 
         (String_Lists.Length (Test_List) = 12,
-         "Test correct ammount of files in dir_1 - new project created");
+         "Gen Test correct ammount of files in " 
+         & Dir);
       String_Lists.Destroy (Test_List);   
       
       -- project files
@@ -284,10 +295,6 @@ package body Giant.Projects.Test is
    
    end Check_Whether_All_T_Project_1_Files_Written;
 
-
-
-
-
    ---------------------------------------------------------------------------
    procedure Test_Initialize
       (R : in out AUnit.Test_Cases.Test_Case'Class) is
@@ -302,13 +309,15 @@ package body Giant.Projects.Test is
       Projects.Deallocate_Project_Deep (Test_Project_1);
    end Test_Initialize;
 
-
    ---------------------------------------------------------------------------
    procedure Basic_File_Mangement_Test
       (R : in out AUnit.Test_Cases.Test_Case'Class) is
 
       Test_Project_1 : Giant.Projects.Project_Access;
-      Test_List      : String_Lists.List;      
+      Test_List      : String_Lists.List; 
+      
+      Bauhaus_IML_Graph_File : Ada.Strings.Unbounded.Unbounded_String;
+      Bauhaus_IML_Graph_File_Checksum : Integer;     
 
    begin
    
@@ -373,15 +382,69 @@ package body Giant.Projects.Test is
        "resources/test_project_directory/dir_2/");      
       Check_Whether_All_T_Project_1_Files_Written
         ("resources/test_project_directory/dir_2/");   
-        
+
       Check_Whether_All_T_Project_1_Files_Written
         ("resources/test_project_directory/dir_1/");
-        
-        
-        
+                      
+      -- check load store
+      -------------------
+      Projects.Deallocate_Project_Deep (Test_Project_1);            
+      Test_Project_1 := Projects.Load_Project_File
+        ("resources/test_project_directory/dir_2/Test_Project_1.xml");
+      Check_Test_Project_1 (Test_Project_1);
+      
+      Kill_Files_In_Dir ("resources/test_project_directory/dir_3");      
+      Projects.Store_Whole_Project_As_For_File
+      (Test_Project_1,
+       "resources/test_project_directory/dir_3/Test_Project_3");
+             
+      -- Project_Does_Not_Exist_Exception
+      begin       
+         Test_Project_1 := Projects.Load_Project_File
+           ("resources/test_project_directory/dir_2/Test_Project_3.xml");  
+         Assert 
+           (False,
+            "Check Load_Project_File - Project_Does_Not_Exist_Exception");                     
+      exception
+         when Project_Does_Not_Exist_Exception =>
+            null;
+      end;
+      
+      -- Invalid_Project_Directory_Excpetion
+      begin       
+         Test_Project_1 := Projects.Load_Project_File
+           ("resources/test_project_directory/dir_5/Test_Project_3.xml");  
+         Assert 
+           (False,
+            "Check Load_Project_File - Invalid_Project_Directory_Excpetion");                     
+      exception
+         when Invalid_Project_Directory_Excpetion =>
+            null;
+      end;
+                    
+      Projects.Deallocate_Project_Deep (Test_Project_1);            
+      Test_Project_1 := Projects.Load_Project_File
+        ("resources/test_project_directory/dir_3/Test_Project_3.xml");      
+      
+      Assert 
+        (Projects.Get_Project_Name (Test_Project_1) = "Test_Project_3",
+         "Check project renamed correctly");
+      
+      Kill_Files_In_Dir ("resources/test_project_directory/dir_2");      
+      Projects.Store_Whole_Project_As_For_File
+      (Test_Project_1,
+       "resources/test_project_directory/dir_2/Test_Project_1");
+      Check_Whether_All_T_Project_1_Files_Written
+        ("resources/test_project_directory/dir_2/");  
+  
+      Projects.Deallocate_Project_Deep (Test_Project_1);            
+      Test_Project_1 := Projects.Load_Project_File
+        ("resources/test_project_directory/dir_2/Test_Project_1.xml"); 
+      Check_Test_Project_1 (Test_Project_1);        
+                                                
       -- check project directoty content test                              
       Projects.Deallocate_Project_Deep (Test_Project_1);
-      
+            
       Kill_Files_In_Dir ("resources/test_project_directory/dir_1");
       Test_Project_1 := Create_Test_Project_1;            
       Check_Test_Project_1 (Test_Project_1);
@@ -397,9 +460,64 @@ package body Giant.Projects.Test is
            "resources/test_project_directory/dir_1"),
          "Check Procedure Does_Project_Exist - project found");
 
+      Assert 
+        (Projects.Is_Already_A_Project_File_In_Directory
+          ("resources/test_project_directory/dir_1"),
+         "Check Procedure Is_Already_A_Project_File_In_Directory "
+         &" - project found");
 
-
+      -- Directory_Holds_Already_A_Project_File_Exception
+      begin 
+         Projects.Store_Whole_Project_As
+           (Test_Project_1,
+            "Test_Project_1",
+            "resources/test_project_directory/dir_1/");     
+         Assert 
+           (False,
+            "Check Store_Whole_Project_As "
+            & "Directory_Holds_Already_A_Project_File_Exception");
+      exception
+         when Directory_Holds_Already_A_Project_File_Exception =>
+         Assert 
+           (True,
+            "Check Store_Whole_Project_As "
+            & "Directory_Holds_Already_A_Project_File_Exception");                                   
+      end;
+            
+      Assert 
+        (Projects.Get_Bauhaus_IML_Graph_File 
+          ("resources/test_project_directory/dir_1/Test_Project_1.xml") =
+         File_Management.Get_Absolute_Path_To_File_From_Relative
+           (".", "resources/rfg_examp.iml"),
+         "Check whether correct iml graph file retrieved - 1");
          
+      Projects.Get_Bauhaus_IML_Graph_Data_For_File
+        ("resources/test_project_directory/dir_1/Test_Project_1.xml",
+         Bauhaus_IML_Graph_File,
+         Bauhaus_IML_Graph_File_Checksum);
+      
+      Assert (Ada.Strings.Unbounded.To_String (Bauhaus_IML_Graph_File)
+        = File_Management.Get_Absolute_Path_To_File_From_Relative
+            (".", "resources/rfg_examp.iml"),
+         "Check whether correct iml graph file retrieved - 2");
+      
+      Assert
+        (Bauhaus_IML_Graph_File_Checksum = Giant.Graph_Lib.Get_Graph_Hash,
+         "Check whether coorect IML Graph Checksum is stored in Project");
+         
+      Assert 
+        (Projects.Get_Project_File_Name (Test_Project_1)
+         = File_Management.Get_Absolute_Path_To_File_From_Relative
+           (".", "resources/test_project_directory/dir_1/Test_Project_1.xml"),
+         "Check correct project file name returned");
+
+      Assert 
+        (Projects.Get_Project_Directory (Test_Project_1)
+         = File_Management.Get_Absolute_Path_To_Directory_From_Relative
+           (".", "resources/test_project_directory/dir_1"),
+         "Check correct project directory is returned");
+      
+      -----   
       File_Management.Delete_File  
         ("resources/test_project_directory/dir_1/Test_Project_1.xml");
         
@@ -407,12 +525,310 @@ package body Giant.Projects.Test is
         (not Projects.Does_Project_Exist
           ("Test_Project_1",
            "resources/test_project_directory/dir_1"),
-         "Check Procedure Does_Project_Exist - project notfound");
+         "Check Procedure Does_Project_Exist - project not found");
+              
+      Assert 
+        (not Projects.Is_Already_A_Project_File_In_Directory
+          ("resources/test_project_directory/dir_1"),
+         "Check Procedure Is_Already_A_Project_File_In_Directory "
+         &" - project not found");
       
       Projects.Deallocate_Project_Deep (Test_Project_1);   
          
    end Basic_File_Mangement_Test;
    
+   ---------------------------------------------------------------------------
+   procedure Changing_Test_Only_Memory
+      (R : in out AUnit.Test_Cases.Test_Case'Class) is
+
+      Test_Project_1 : Giant.Projects.Project_Access;
+      Test_List      : String_Lists.List; 
+      
+      A_Subgraph     : Giant.Graph_Lib.Subgraphs.Subgraph;  
+      A_Vis_Window   : Giant.Vis_Windows.Visual_Window_Access;
+   begin
+   
+      Kill_Files_In_Dir ("resources/test_project_directory/dir_1");
+      Test_Project_1 := Create_Test_Project_1;            
+      Check_Test_Project_1 (Test_Project_1);
+      
+       -- check dir
+      Test_List := File_Management.Get_Filtered_Files_From_Directory
+        ("resources/test_project_directory/dir_1",
+         False,
+         "");
+      Assert 
+        (String_Lists.Length (Test_List) = 4,
+         "Test correct ammount of files in dir_1 - before changing");
+      String_Lists.Destroy (Test_List); 
+      
+      -- do some changes 
+      ------------------     
+      Projects.Change_Vis_Window_Name
+        (Test_Project_1,
+         "Vis_Window_1",
+         "Vis_Window_1_New_Name");
+         
+      Projects.Change_Subgraph_Name
+        (Test_Project_1,
+         "Sub_Graph_1",
+         "Sub_Graph_1_New_Name");   
+                   
+      -- New_Vis_Window_Name_Does_Already_Exist_Exception
+      begin 
+         Projects.Change_Vis_Window_Name
+           (Test_Project_1,
+            "Vis_Window_2",
+            "Vis_Window_3");     
+         Assert 
+           (False,
+            "Check Change_Vis_Window_Name "
+            & "New_Vis_Window_Name_Does_Already_Exist_Exception");
+      exception
+         when New_Vis_Window_Name_Does_Already_Exist_Exception =>
+           null;                                
+      end;   
+
+      -- Visualisation_Window_Is_Already_Part_Of_Project_Exception
+      begin
+         A_Vis_Window := Giant.Vis_Windows.Create_New ("Vis_Window_2");
+         Projects.Add_Visualisation_Window
+           (Test_Project_1, A_Vis_Window);
+         Assert 
+           (False,
+            "Check Add_Visualisation_Window "
+            & "Visualisation_Window_Is_Already_Part_Of_Project_Exception");
+      exception
+         when Visualisation_Window_Is_Already_Part_Of_Project_Exception =>
+           null;                                
+      end;  
+      
+      -- New_Subgraph_Name_Does_Already_Exist_Exception
+      begin 
+         Projects.Change_Subgraph_Name
+           (Test_Project_1,
+            "Sub_Graph_2",
+            "Sub_Graph_3");     
+         Assert 
+           (False,
+            "Check Change_Subgraph_Name "
+            & "New_Subgraph_Name_Does_Already_Exist_Exception");
+      exception
+         when New_Subgraph_Name_Does_Already_Exist_Exception =>
+           null;                                
+      end;
+      
+      -- Subgraph_Is_Already_Part_Of_Project_Exception
+      begin       
+         A_Subgraph := Giant.Graph_Lib.Subgraphs.Create ("Sub_Graph_2");
+         Giant.Projects.Add_Subgraph (Test_Project_1, A_Subgraph);       
+         Assert 
+           (False,
+            "Check A_Subgraph "
+            & "Subgraph_Is_Already_Part_Of_Project_Exception");
+      exception
+         when Subgraph_Is_Already_Part_Of_Project_Exception =>
+           null;                                
+      end;
+                        
+      Projects.Remove_Visualisation_Window 
+        (Test_Project_1, "Vis_Window_2");
+        
+      Projects.Remove_Subgraph
+        (Test_Project_1, "Sub_Graph_4");
+      
+      -- check status after changes
+      -----------------------------
+      Assert (not Projects.Does_Vis_Window_Exist
+        (Test_Project_1, "Vis_Window_1"),
+         "Check Vis_Window_1 renamed correctly - 1");
+         
+      Assert (Projects.Does_Vis_Window_Exist
+        (Test_Project_1, "Vis_Window_1_New_Name"),
+         "Check Vis_Window_1 renamed correctly - 2");
+
+      A_Vis_Window := Projects.Get_Visualisation_Window
+        (Test_Project_1, "Vis_Window_1_New_Name");
+
+      Assert 
+        (Vis_Windows.Get_Name (A_Vis_Window) = "Vis_Window_1_New_Name",
+         "Check Vis_Window_1 renamed correctly - 3");
+         
+      -- Visualisation_Window_Is_Not_Part_Of_Project_Exception
+      begin
+         A_Vis_Window := Projects.Get_Visualisation_Window
+           (Test_Project_1, "Vis_Window_1");
+         Assert 
+           (False,
+            "Check Get_Visualisation_Window "
+            & "Visualisation_Window_Is_Not_Part_Of_Project_Exception - 1");
+      exception
+         when Visualisation_Window_Is_Not_Part_Of_Project_Exception =>
+           null;                                
+      end;
+      
+      -- Visualisation_Window_Is_Not_Part_Of_Project_Exception
+      begin
+         A_Vis_Window := Projects.Get_Visualisation_Window
+           (Test_Project_1, "Vis_Window_2");
+         Assert 
+           (False,
+            "Check Get_Visualisation_Window "
+            & "Visualisation_Window_Is_Not_Part_Of_Project_Exception - 2");
+      exception
+         when Visualisation_Window_Is_Not_Part_Of_Project_Exception =>
+           null;                                
+      end;
+      
+      Assert (not Projects.Does_Vis_Window_Exist
+        (Test_Project_1, "Vis_Window_2"),
+         "Check Vis_Window_2 removed correctly");
+      
+         
+      Assert (not Projects.Does_Subgraph_Exist
+        (Test_Project_1, "Sub_Graph_1"),
+         "Check whether Sub_Graph_1 renamed correctly - 1");  
+         
+      Assert (Projects.Does_Subgraph_Exist
+        (Test_Project_1, "Sub_Graph_1_New_Name"),
+         "Check whether Sub_Graph_1 renamed correctly - 2");           
+         
+      A_Subgraph := Get_Subgraph
+        (Test_Project_1, "Sub_Graph_1_New_Name");        
+      Assert 
+        (Graph_Lib.Subgraphs.Get_Name (A_Subgraph) = "Sub_Graph_1_New_Name",
+         "Check whether Sub_Graph_1 renamed correctly - 3"); 
+         
+      Assert (not Projects.Does_Subgraph_Exist
+        (Test_Project_1, "Sub_Graph_4"),
+         "Check whether Sub_Graph_4 removed correctly");          
+                  
+      -- Subgraph_Is_Not_Part_Of_Project_Exception
+      begin
+         A_Subgraph := Projects.Get_Subgraph
+           (Test_Project_1, "Sub_Graph_1");
+         Assert 
+           (False,
+            "Check Get_Subgraph "
+            & "Subgraph_Is_Not_Part_Of_Project_Exception - 1");
+      exception
+         when Subgraph_Is_Not_Part_Of_Project_Exception =>
+           null;                                
+      end;
+      
+      -- Subgraph_Is_Not_Part_Of_Project_Exception
+      begin
+         A_Subgraph := Projects.Get_Subgraph
+           (Test_Project_1, "Sub_Graph_4");
+         Assert 
+           (False,
+            "Check Get_Subgraph "
+            & "Subgraph_Is_Not_Part_Of_Project_Exception - 2");
+      exception
+         when Subgraph_Is_Not_Part_Of_Project_Exception =>
+           null;                                
+      end;   
+
+      -- redo all changes
+      -------------------
+      Projects.Change_Vis_Window_Name
+        (Test_Project_1,
+         "Vis_Window_1_New_Name",
+         "Vis_Window_1");
+                  
+      A_Vis_Window := Giant.Vis_Windows.Create_New ("Vis_Window_2");
+        Giant.Projects.Add_Visualisation_Window
+          (Test_Project_1, A_Vis_Window);         
+                  
+      Projects.Change_Subgraph_Name
+        (Test_Project_1,
+         "Sub_Graph_1_New_Name",
+         "Sub_Graph_1");
+              
+      A_Subgraph := Giant.Graph_Lib.Subgraphs.Create ("Sub_Graph_4");
+      Giant.Projects.Add_Subgraph (Test_Project_1, A_Subgraph);        
+         
+
+      -- check dir
+      Test_List := File_Management.Get_Filtered_Files_From_Directory
+        ("resources/test_project_directory/dir_1",
+         False,
+         "");
+      Assert 
+        (String_Lists.Length (Test_List) = 6,
+         "Test correct ammount of files in dir_1 - after changing");
+      String_Lists.Destroy (Test_List); 
+      
+      -- test emergency files
+      Assert
+        (Gnat.OS_Lib.Is_Regular_File
+          ("resources/test_project_directory/dir_1/"
+           & "Vis_Window_2.viswin~"),
+         "Emergency file on deleting Vis_Window_2 created correctly");
+      Assert
+        (Gnat.OS_Lib.Is_Regular_File
+          ("resources/test_project_directory/dir_1/"
+           & "Sub_Graph_4.subgraph~"),
+         "Emergency file on deleting Sub_Graph_4 created correctly"); 
+           
+      -- status checks
+      Check_Test_Project_1 (Test_Project_1); 
+      
+      Projects.Store_Whole_Project (Test_Project_1);     
+      Check_Whether_All_T_Project_1_Files_Written
+        ("resources/test_project_directory/dir_1/");
+                
+      Kill_Files_In_Dir ("resources/test_project_directory/dir_2");      
+      Projects.Store_Whole_Project_As_For_File
+      (Test_Project_1,
+       "resources/test_project_directory/dir_2/Test_Project_1.xml");      
+      Check_Whether_All_T_Project_1_Files_Written
+        ("resources/test_project_directory/dir_2/");
+        
+      -- check removal of emergency files 
+      Assert
+        (not Gnat.OS_Lib.Is_Regular_File
+          ("resources/test_project_directory/dir_1/"
+           & "Vis_Window_2.viswin~"),
+         "Emergency file for Vis_Window_2 removed correctly");
+      Assert
+        (not Gnat.OS_Lib.Is_Regular_File
+          ("resources/test_project_directory/dir_1/"
+           & "Sub_Graph_4.subgraph~"),
+         "Emergency file for Sub_Graph_4 removed correctly");   
+                    
+      Projects.Deallocate_Project_Deep (Test_Project_1);            
+   end Changing_Test_Only_Memory;   
+
+
+   ---------------------------------------------------------------------------
+   procedure Test_Highlight_Status
+      (R : in out AUnit.Test_Cases.Test_Case'Class) is
+
+      Test_Project_1 : Giant.Projects.Project_Access;
+      Test_List      : String_Lists.List; 
+      
+      A_Subgraph     : Giant.Graph_Lib.Subgraphs.Subgraph;  
+      A_Vis_Window   : Giant.Vis_Windows.Visual_Window_Access;
+   begin
+   
+      Kill_Files_In_Dir ("resources/test_project_directory/dir_1");
+      Test_Project_1 := Create_Test_Project_1;            
+      Check_Test_Project_1 (Test_Project_1);
+      
+      
+      
+      
+      
+      
+      --
+  --    Projects.Deallocate_Project_Deep (Test_Project_1);   
+      -- Test_Project_1
+
+
+      Check_Test_Project_1 (Test_Project_1);
+      Projects.Deallocate_Project_Deep (Test_Project_1);            
+   end Test_Highlight_Status;  
 
    ---------------------------------------------------------------------------
    function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is
@@ -425,7 +841,10 @@ package body Giant.Projects.Test is
       Register_Routine (T, Test_Initialize'Access, "Inititialisation");
       Register_Routine 
         (T, Basic_File_Mangement_Test'Access, "Basic_File_Mangement_Test");      
-                  
+      Register_Routine 
+        (T, Changing_Test_Only_Memory'Access, "Changing_Test_Only_Memory");   
+      Register_Routine 
+        (T, Test_Highlight_Status'Access, "Test_Highlight_Status");                       
    end Register_Tests;
 
    procedure Set_Up (T : in out Test_Case) is
@@ -451,12 +870,7 @@ package body Giant.Projects.Test is
       File_Management.Create_Dir_Path 
         ("resources/test_project_directory/dir_2");                 
       File_Management.Create_Dir_Path 
-        ("resources/test_project_directory/dir_3");       
-        
-      Kill_Files_In_Dir ("resources/test_project_directory/dir_1");
-      Kill_Files_In_Dir ("resources/test_project_directory/dir_2");
-      Kill_Files_In_Dir ("resources/test_project_directory/dir_3");
-        
+        ("resources/test_project_directory/dir_3");                      
    end Set_Up;
 
    procedure Tear_Down (T : in out Test_Case) is

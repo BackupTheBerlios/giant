@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.44 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.45 $
 --  $Author: schwiemn $
---  $Date: 2003/07/15 23:40:17 $
+--  $Date: 2003/07/16 20:09:57 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -855,6 +855,9 @@ package body Giant.Projects is
            File_Management.Calculate_Name_For_File (Project_File_Name),
          Project_Directory =>
            File_Management.Return_Dir_Path_For_File_Path (Project_File_Name));
+   exception        
+      when File_Management.Directory_Could_Not_Be_Calculated_Exception =>
+         raise Invalid_Project_Directory_Excpetion;           
    end Load_Project_File;
 
    ---------------------------------------------------------------------------
@@ -1529,13 +1532,11 @@ package body Giant.Projects is
          Ada.Strings.Unbounded.To_String
          (Abs_Node_Annotations_File));
 
-      -- Kill all Security save files (only if project is not migrated)
-      --------------------------------------
-      if not Change_Project_Files then
-         Kill_All_Security_Files
-           (Ada.Strings.Unbounded.To_String
-            (Project.Abs_Project_Directory));
-      end if;
+      -- Kill all Security save files
+      -------------------------------
+      Kill_All_Security_Files
+        (Ada.Strings.Unbounded.To_String
+          (Project.Abs_Project_Directory));
 
       -- Update Project XML File (MUST happen at the end - not before)
       ---------------------------
@@ -2218,7 +2219,7 @@ package body Giant.Projects is
          raise Subgraph_Is_Not_Part_Of_Project_Exception;
       end if;
 
-      if Does_Vis_Window_Exist
+      if Does_Subgraph_Exist
         (Project, New_Subgraph_Name) then
          raise New_Subgraph_Name_Does_Already_Exist_Exception;
       end if;
