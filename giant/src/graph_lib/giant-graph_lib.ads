@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.14 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.15 $
 --  $Author: koppor $
---  $Date: 2003/06/24 17:13:07 $
+--  $Date: 2003/06/24 17:53:44 $
 --
 
 --  Bauhaus / IML
@@ -31,12 +31,16 @@ with Storables;
 with SLocs; --  used at private part
 
 --  Bauhaus / Reuse
---  with String_Lists;
 with Ordered_Sets;
 with Lists;
 
-pragma Elaborate_All (Ordered_Sets);
+--  Bauhaus / Reuse (only used at private part)
+with Hashed_Mappings;
+with IML_Node_IDs;
+
 pragma Elaborate_All (Lists);
+pragma Elaborate_All (Hashed_Mappings);
+pragma Elaborate_All (Ordered_Sets);
 
 package Giant.Graph_Lib is
 
@@ -759,6 +763,20 @@ private
    function Get_Node_Attribute_SLoc_Value
      (Node      : in     Node_Id;
       Attribute : in     Node_Attribute_Id)
-      return SLocs.Sloc;
+     return SLocs.Sloc;
+
+   ---------------------------------------------------------------------------
+   --  Following could also be in .adb, but is listed here, since it is needed
+   --    for testing
+
+   ---------------------------------------------------------------------------
+   package IML_Node_ID_Hashed_Mappings is
+      new Hashed_Mappings
+     (Key_Type   => IML_Node_IDs.Node_ID,
+      Value_Type => Node_Id,
+      Hash       => IML_Node_IDs.Hash);
+
+   --  Contains all IML-nodes
+   IML_Node_ID_Mapping : IML_Node_ID_Hashed_Mappings.Mapping;
 
 end Giant.Graph_Lib;
