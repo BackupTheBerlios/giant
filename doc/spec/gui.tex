@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.5 $
-%  $Date: 2003/02/16 20:54:57 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.6 $
+%  $Date: 2003/02/16 22:30:27 $
 %  $Author: birdy $
 %
 %  Description:
@@ -291,7 +291,66 @@ ein zusätzliches fehlerfenster Fenster Dieser Name existiert schon angezeigt.
 
 \subsection{Anzeigefenster}
 
-In Anzeigefenstern (DISPLAY\_WINDOW) werden Graphen visualisiert.
+In Anzeigefenstern (DISPLAY\_WINDOW) werden Graphen visualisiert,
+im grossen quadratischen rechten Teil (VIS\_PANE) des Fensters.
+Im linken Viertel des Fensters, der Toolbar (DISPLAY\_WINDOW\_TOOLBAR)
+befinden sich untereinander die MiniMap (MINIMAP), Pinliste (PIN\_LIST)
+mit darunterliegenden Buttons, und Selektionsliste (SELECTION\_LIST),
+die Zoom-Kontrolle, die Stilauswahl-Combobox (STYLE\_COMBO) und
+ein Button zum Ausblenden der Toolbar (TOOLBAR\_HIDE).
+
+\subsubsection{MiniMap}
+
+In der MiniMap wird der gesamte IML-Teilgraph, der im Fenster
+visualisiert ist, durch einen grauen Kasten repräsentiert.
+Dabei repräsentiert der graue Kasten die Ausdehnung des gesamten
+Graphen inklusive der z.Z. nicht im Fenster sichtbaren Bereiche.
+Der im Fenster sichtbare Bereich wird in der MiniMap durch einen
+Rahmen angezeigt. Je nach Zoomstufe ist der sichtbare Bereich
+größer oder kleiner.
+Durch Klicks in die Minimap kann die linke obere Ecke des
+sichtbaren Bereiches versetzt werden, der in VIS\_PANE angezeigte
+Bereich wird dann entsprechend angepaßt.
+
+\subsubsection{Pins}
+
+In der Pinliste (PIN\_LIST) können Pins festgelegt werden.
+Unter der Pinliste befinden sich drei Buttons:
+Neuer Pin (PIN\_NEW), Zu Pin springen (PIN\_JUMP),
+Pin löschen (PIN\_DELETE).
+Dazu ist auf den untersten Eintrag, <NEUER PIN>, zu klicken.
+Daraufhin geht ein Fenster PIN\_NAME mit dem Text
+Pinname eingeben und einem Texteingabefeld, in den der Pinname
+eingegeben werden kann, auf. Zwei Buttons, beschriftet
+mit Knoten für Pin auswählen (PIN\_NEW\_OK) und
+Abbruch (PIN\_NEW\_CANCEL), werden zum Bestätigen oder Abbrechen
+verwendet.
+Nach dem Klick auf PIN\_NEW\_OK verwandelt sich der Mauszeiger
+in ein Fadenkreuz, und es kann ein Knoten ausgewählt werden.
+Zu diesem Knoten kann man durch Klicken von PIN\_JUMP
+zurückspringen, er ist dann relativ gesehen an derselben
+Stelle des Fensters wie bei seiner Erstellung.
+Bei PIN\_DELETE wird nach einer Sicherheitsabfrage
+der Pin aus der Liste gelöscht.
+
+
+
+\subsubsection{Selektionen}
+
+
+
+\subsubsection{Zoom-Kontrolle}
+
+Die Zoom-Kontrolle ist eine Combobox mit einigen vorgefertigten
+Zoomstufen in Prozent, es können auch eigene Zoomstufen in
+Prozent eingetragen werden.
+Durch Klicken des Buttons Display wird die jeweilige Zoomstufe
+eingestellt.
+Klicken der Buttons Zoom+ und Zoom- wirkt wie Erhöhung/Verminderung
+der Zoom-Prozentzahl um 5 mit anschließendem Klicken von Display.
+
+\subsubsection{Stilauswahl-Combobox}
+
 
 
 \subsection{Knoten-Informationsfenster}
