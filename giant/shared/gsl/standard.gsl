@@ -1,6 +1,6 @@
 // ===========================================================================
-//  $RCSfile: standard.gsl,v $ $Revision: 1.5 $
-//  $Date: 2003/09/17 15:06:30 $
+//  $RCSfile: standard.gsl,v $ $Revision: 1.6 $
+//  $Date: 2003/09/18 15:07:41 $
 //  $Author: koppor $
 //
 //  File:         GSL-Library standard.gsl
@@ -102,10 +102,15 @@
   set
    (+while,
     { (+b, +c)
-      if
-       (b (),
-        {() loop ({() [c (); b ();]})},
-        null)
+      [
+        if
+         (is_script (b),
+          {() set (+start_cond, b ())},
+          {() set (+start_cond, b   )});
+        if
+         (start_cond,
+          {() loop ({() [c (); b ();]})},
+          null)
     });
 
   set
