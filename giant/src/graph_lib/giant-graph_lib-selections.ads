@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.10 $
+--  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.11 $
 --  $Author: koppor $
---  $Date: 2003/06/23 18:07:39 $
+--  $Date: 2003/06/25 16:39:26 $
 --
 ------------------------------------------------------------------------------
 --
@@ -98,14 +98,13 @@ package Giant.Graph_Lib.Selections is
    --  cp. Barnes p543
    --  Maybe u have to use "for Selection'Write use Selection_Write"
    procedure Selection_Write
-      (Stream             : in Bauhaus_Io.Out_Stream_Type;
-       Selection_To_Write : in Selection);
+      (Stream : in Bauhaus_Io.Out_Stream_Type;
+       Sel    : in Selection);
 
    ---------------------------------------------------------------------------
    procedure Selection_Read
-      (Stream            : in     Bauhaus_Io.In_Stream_Type;
-       Selection_To_Read :    out Selection);
-
+      (Stream  : in     Bauhaus_Io.In_Stream_Type;
+       Sel     :    out Selection);
 
    -----------------------
    --  Routines to add  --
