@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.4 $
-%  $Date: 2003/08/01 18:09:05 $
+%  $RCSfile: config.tex,v $, $Revision: 1.5 $
+%  $Date: 2003/08/01 19:37:41 $
 %  $Author: birdy $
 %
 %  Description:
@@ -290,23 +290,23 @@ Für die Visualisierungsstile gelten die folgenden Konventionen:
   mittels eines Platzhalters auch auf mehrere:
 
   \begin{enumerate}
-    \item Der Benutzer kann mittels des Platzhalters \gq{*}
+    \item {Der Benutzer kann mittels des Platzhalters \gq{*}
           eine klassenspezifische Einstellung für
           alle Kanten, deren Start-Knoten zu einer bestimmten
           Knotenklasse gehört, 
-          vornehmen -- also \gq{Start-Knotenklasse.*}.
+          vornehmen -- also \gq{Start-Knotenklasse.*}.}
 
-   \item  Der Benutzer kann mittels des Platzhalters \gq{*}
+   \item  {Der Benutzer kann mittels des Platzhalters \gq{*}
           eine klassenspezifische Einstellung für
           alle Kanten, bei denen das sie repräsentierende Attribut
           den gleichen Namen hat,
-          vornehmen -- also \gq{*.Attributname}.
+          vornehmen -- also \gq{*.Attributname}.}
  
   \end{enumerate}
 
-\clearpage
 
- \subsection {Config-Dateien für Visualisierungsstile}
+
+\subsection{Config-Dateien f"ur Visualisierungsstile}
 
 Jeder Visualisierungsstil wird durch eine XML-Datei beschrieben.
 Der Aufbau der XML-Dateien ist wie folgt durch die Datei
@@ -314,6 +314,86 @@ giant\_vis\_style\_file.dtd spezifiziert:
 
 \verbatiminput{giant_vis_style_file.dtd}
 
+
+Hier ein konkretes Beispiel einer solchen Datei (Beispiel 1):
+
+\verbatiminput{test_vis_style_4_edges.xml}
+
+In jeder Datei wird die Hintergrundfarbe durch \\
+\hspace{10mm}<global\_settings vis\_window\_background\_color="RGB:20/20/20"/>\\
+festgelegt.\\
+
+Jede Knotendefinition, ob für einen oder mehrere Knoten, besteht
+aus folgenden Elementen:
+\begin{itemize}
+  \item{icon}\\
+     Der Dateiname des Icons, durch das der Knoten dargestellt wird
+   \item{text\_color}\\
+     Die Farbe des Textes
+   \item{border\_color}\\
+     Die Farbe des Randes des Knoten
+   \item{fill\_color}\\
+     Die Farbe des Hintergrundes des Knoten
+\end{itemize}
+
+Alle Knoten, die nicht später behandelt werden, werden durch\\
+\hspace{10mm}<default\_node\_setting>\\
+\hspace{15mm}    icon         = "test\_node\_icon\_default\_1.xpm"\\
+\hspace{15mm}    text\_color   = "RGB:AA/AA/AA"\\
+\hspace{15mm}   border\_color = "RGB:AA/AA/AA"\\
+\hspace{15mm}    fill\_color   = "white">\\
+\hspace{10mm}</default\_node\_setting>\\
+genauer festgelegt.\\
+
+Im Folgenden können einzelne Knoten vom default\_node\_setting
+abweichend festgelegt werden. Dies geht durch folgendes Konstrukt.\\
+\hspace{10mm}  <node\_class\_specific\_setting \\
+\hspace{15mm}    icon         = "test\_node\_icon\_blue\_1.xpm"\\
+\hspace{15mm}    text\_color   = "blue"\\
+\hspace{15mm}    border\_color = "blue"\\
+\hspace{15mm}    fill\_color   = "white">\\ 
+
+Dies sind soweit die schon bekannten Einstellungen zur Darstellung.
+Nun kommt noch optional dazu, welche Attribute darzustellen sind.
+Hier können auch mehrere Attribute angegeben werden.\\
+
+\hspace{15mm}    <node\_attribute attribute\_name  = "SLoc"/> \\
+
+Es wird hier also das Attribut SLoc im Knoten sichtbar dargestellt.\\
+
+Nun können wir festlegen, für welche Knoten diese Einstellungen gelten.
+Die Einstellungen gelten für jegliche Knoten, die im Folgenden
+durch eine oder mehrere Beschreibungen getroffen werden
+(ODER-Verknüpfung). Hier zunächst einige Auswahlen anhand des
+Knotenklassennamens:\\
+
+°<node\_class     node\_class\_name = "IML\_Root"/>°\\
+°<node\_class     node\_class\_name = "HPGNode"/>°\\
+°<node\_class     node\_class\_name = "OC\_Parameter"/>°\\        
+°<node\_class     node\_class\_name = "TC\_Boolean"/>°\\
+
+Nun ist der <node\_class\_specific\_setting> Block zuende und
+wird mittels\\
+\hspace{10mm}  </node\_class\_specific\_setting>\\
+geschlossen.\\
+
+Es können weitere solche Blöcke folgen, z.B. wie folgt:\\
+
+\hspace{10mm}  <node\_class\_specific\_setting \\
+\hspace{15mm}    icon         = "test\_node\_icon\_red\_1.xpm"\\
+\hspace{15mm}   text\_color   = "red"\\
+\hspace{15mm}    border\_color = "red"\\
+\hspace{15mm}    fill\_color   = "white">\\ 
+    
+\hspace{15mm}    <node\_attribute attribute\_name  = "SLoc"/>\\    
+\hspace{15mm}   <node\_attribute attribute\_name  = "Type\_Size"/>\\        
+\hspace{15mm}   <node\_class     node\_class\_name = "TC\_Boolean"/>\\      
+\hspace{10mm}  </node\_class\_specific\_setting>\\
+
+Beispiel 2:
+
+
+\verbatiminput{test_vis_style_5_inheritance.xml}
 
 
   
