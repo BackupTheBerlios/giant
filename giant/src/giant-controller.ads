@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.47 $
---  $Author: squig $
---  $Date: 2003/08/15 16:37:18 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.48 $
+--  $Author: schulzgt $
+--  $Date: 2003/08/26 13:43:01 $
 --
 ------------------------------------------------------------------------------
 --
@@ -167,6 +167,16 @@ package Giant.Controller is
      (Script_Name : in String;
       Context     : in String;
       Parameter   : in Gsl.Interpreters.Gsl_Params);
+
+   ---------------------------------------------------------------------------
+   -- Only a wrapper function for the gsl runtime library to get 
+   -- the content of a vis_window.
+   --
+   -- See:
+   --   Gsl.Runtime.Runtime_Get_Window_Content
+   function Gsl_Get_Window_Content
+     (Window_Name : in String)
+      return Graph_Lib.Subgraphs.Subgraph;
 
    ---------------------------------------------------------------------------
    --  Layout

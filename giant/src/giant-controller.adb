@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.84 $
---  $Author: squig $
---  $Date: 2003/08/19 13:09:14 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.85 $
+--  $Author: schulzgt $
+--  $Date: 2003/08/26 13:43:01 $
 --
 
 with Ada.Strings.Unbounded;
@@ -271,6 +271,17 @@ package body Giant.Controller is
        Show_Error ("The file " & Script_Name & ".gsl could not be "
                    & "found in the include path.");
    end Execute_GSL;
+
+   function Gsl_Get_Window_Content
+     (Window_Name : in String)
+      return Graph_Lib.Subgraphs.Subgraph is
+
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+   begin
+      return Graph_Widgets.Get_Content
+        (Vis_Windows.Get_Graph_Widget (Window));
+   end Gsl_Get_Window_Content;
 
    ---------------------------------------------------------------------------
    --  Layout
