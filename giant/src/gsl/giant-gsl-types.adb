@@ -20,9 +20,9 @@
 --
 -- First Author: Gerrit Schulz
 --
--- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.7 $
+-- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.8 $
 -- $Author: schulzgt $
--- $Date: 2003/06/30 16:01:49 $
+-- $Date: 2003/07/07 12:05:50 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Tags;
@@ -409,6 +409,9 @@ package body Giant.Gsl.Types is
         (Gsl_List_Record, Gsl_List);
 
    begin
+      for i in 1 .. Object.List_Size loop
+         Destroy_Gsl_Type (Object.Value (i));
+      end loop;
       Free (Object);
    end Destroy;
 
