@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+  <!-- internal DTD - external DTD also possible -->
+<!DOCTYPE giant_global_config_file [
+
+  <!-- Top Level Node of a global config file.
+       As "xmlada-0.7.1" has difficulities in accessing
+       the DTD assigned to a ducument duiring runtime
+       the xml file is identified by the top level node --> 
+  <!ELEMENT giant_global_config_file (defined_settings)>
+
+  <!-- The part where optional free-definded settings may
+       be stored. This part exspecially realizes the extensibility
+       of further config settings.
+	   
+	   You may add further settings "a_setting"-nodes without affecting
+	   the program.
+	   
+	   You may not remove already added settings 
+	   
+	   Do NOT USED THAT NODE TO HANDLE relative Paths -->
+  <!ELEMENT defined_settings ((a_path_setting)*, (a_setting)*)>
+
+    <!-- A optinal setting -->
+    <!ELEMENT a_setting EMPTY>
+
+      <!-- "Setting_Name" A unique identifier for a config setting, note that
+           xmlada-0.7.1 is not able to enforce uniqueness 
+           duiring validation process -->
+      <!-- "Value" The value of that config setting -->
+    <!ATTLIST a_setting
+      setting_name ID    #REQUIRED
+      value        CDATA #REQUIRED
+    >
+	
+	
+	<!-- Only use it to hande absolute and relative paths (incl. files).
+	     Relative paths will be interpreted as absolute paths:
+	     "path to the dirctory of this config file" & "relative path" -->
+    <!ELEMENT a_path_setting EMPTY>
+
+      <!-- "Setting_Name" A unique identifier for a config setting, note that
+           xmlada-0.7.1 is not able to enforce uniqueness
+           duiring validation process -->
+      <!-- "Path_Value" The value that describes a path. Relative paths
+	       are allowed - then the directory there this config file is
+		   located will be regarded as the root of a relative path -->
+    <!ATTLIST a_path_setting
+      setting_name ID    #REQUIRED
+      path_value        CDATA #REQUIRED
+    >	
+
+]>
+
+
+<giant_global_config_file>
+
+  <defined_settings>
+  
+  
+    <!-- Here a relative path (starting with the directory where this
+         config file is loacted) or a absolute path is required -->	    
+    <a_path_setting setting_name="Icon_For_Node_Annotations" 
+	                  path_value="../a_dummy_icon.xpm" />
+					  
+  
+
+    <!-- Some Free Config Settings -->
+    <a_setting setting_name="Reiche Ente" value="Dagobert Duck" />
+    <a_setting setting_name="Schlaue Ente" value="Daniel Duesentrieb" />
+    <a_setting setting_name="Arme Ente" value="Donald Duck" />
+			
+    <!--Required Config Settings -->
+    <a_setting setting_name="Actual_Selection_Highlight_Color" 
+	                  value="RGB:AA/AA/AA" />
+					  
+    <a_setting setting_name="Selection_Highlight_Color_1" 
+	                  value="RGB:AA/AA/AA" />
+					  
+    <a_setting setting_name="Selection_Highlight_Color_2" 
+	                  value="RGB:AA/AA/AA"/>
+					  
+    <a_setting setting_name="Selection_Highlight_Color_3" 
+	                  value="RGB:AA/AA/AA" />
+					  
+    <a_setting setting_name="IML_Subgraph_Highlight_Color_1" 
+	                  value="RGB:AA/AA/AA" />
+					   
+    <a_setting setting_name="IML_Subgraph_Highlight_Color_2" 
+	                  value="RGB:AA/AA/AA" />
+	
+    <a_setting setting_name="IML_Subgraph_Highlight_Color_3" 
+	                  value="RGB:AA/AA/AA" />
+		
+  </defined_settings>
+
+  
+</giant_global_config_file>
+
