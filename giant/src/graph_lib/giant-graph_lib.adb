@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.53 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.54 $
 --  $Author: koppor $
---  $Date: 2003/07/14 17:51:47 $
+--  $Date: 2003/07/14 18:45:53 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -1054,13 +1054,33 @@ package body Giant.Graph_Lib is
 
    ---------------------------------------------------------------------------
    function Does_Node_Attribute_Exist
+     (Node_Class          : in Node_Class_Id;
+      Node_Attribute_Name : in String)
+      return Boolean
+   is
+      Attribute : Node_Attribute_Id;
+   begin
+      begin
+         Attribute := Convert_Node_Attribute_Name_To_Id
+           (Node_Class,
+            Node_Attribute_Name);
+
+         --  No exception: Attribute exists
+         return True;
+      exception
+         when Node_Attribute_Does_Not_Exist =>
+            return False;
+      end;
+   end Does_Node_Attribute_Exist;
+
+   ---------------------------------------------------------------------------
+   function Does_Node_Attribute_Exist
      (Node_Class_Name     : in String;
       Node_Attribute_Name : in String)
       return Boolean
    is
+      Attribute : Node_Attribute_Id;
    begin
-      declare
-         Attribute : Node_Attribute_Id;
       begin
          Attribute := Convert_Node_Attribute_Name_To_Id
            (Node_Class_Name,
@@ -1108,7 +1128,7 @@ package body Giant.Graph_Lib is
       is
       begin
          for I in All_Node_Classes'Range loop
-            if All_Node_Classes (I) = Node_Class.Super then
+            if All_Node_Classes (I).Super = Node_Class then
                Node_Class_Id_Sets.Insert (Res, All_Node_Classes (I));
                Get_Inherited_Classes (All_Node_Classes (I), Res);
             end if;
