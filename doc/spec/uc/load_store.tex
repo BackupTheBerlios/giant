@@ -1,46 +1,93 @@
 % ==============================================================================
-%  $RCSfile: load_store.tex,v $, $Revision: 1.4 $
-%  $Date: 2003/02/13 19:38:13 $
+%  $RCSfile: load_store.tex,v $, $Revision: 1.5 $
+%  $Date: 2003/02/13 21:57:01 $
 %  $Author: schulzgt $
 %
 %  Description: Use-Cases für Lade- und Speicherfunktionalität
 %
 % ==============================================================================
 
-\begin{uc}[Label]{UC: Neues Projekt}
-  Erstellen eines neuen GIANT Projekts.
-
+\begin{uc}[Neues Projekt]{UC: Neues Projekt}
+  Erstellt eines neuen GIANT Projekt. Ein eventuell vorhandenes Projekt wird 
+  dabei überladen, wobei Änderungen am bisherigen Projekt auf Nachfrage 
+  gespeichert werden.
+  
   \begin{precond}
     \cond Das Programm ist gestartet
   \end{precond}
 
   \begin{postsuccess}
-    \cond Ein neues GIANT Projekt ist erstellt und geöffnet.
+    \cond Ein neues GIANT Projekt ist erstellt und geladen.
+    \cond Eine IML-Datei ist geladen.
+    \cond Änderungen an einem bisherigen Projekt sind gespeichert
+    oder verworfen.
   \end{postsuccess}
 
   \begin{postfail}
-    \cond Ein neues GIANT Projekt ist erstellt und geöffnet.
+    \cond Das System bleibt im bisherigen Zustand.
   \end{postfail}
   
   \begin{proc}
     \step[1] Der Benutzer wählt in einem Dialog ein Verzeichnis und eine
     IML-Datei aus und vergibt einen Projektnamen.
     \step[2] Der Benutzer bestätigt seine Eingaben mit OK.
+    \step[3] Falls bereits ein Projekt geöffnet ist erscheint eine Abfrage
+    ob dieses gespeichert werden soll. Der Benutzer bestätigt mit SAVE.
   \end{proc}
 
   \begin{aproc}
     \astep{2} Der Benutzer bricht die Verarbeitung mit Cancel ab.
+    \astep{3} Der Benutzer verwirft eventuelle Änderungen mit DISCARD.
   \end{aproc}
 \end{uc}
 
-\begin{uc}[Label]{UC: Projekt laden}
+% ==============================================================================
+
+\begin{uc}[Projekt öffnen]{UC: Projekt öffnen}
+  Öffnet ein GIANT Projekt. Ein eventuell vorhandenes Projekt wird dabei 
+  überladen, wobei Änderungen am bisherigen Projekt auf Nachfrage gespeichert 
+  werden.
+
+  \begin{precond}
+    \cond Das Programm ist gestartet
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond Ein vorhandenes GIANT Projekt ist geladen.
+    \cond Eine IML-Datei ist geladen.
+    \cond Änderungen an einem bisherigen Projekt sind gespeichert
+    oder verworfen.
+  \end{postsuccess}
+
+  \begin{postfail}
+    \cond Das System bleibt im bisherigen Zustand.
+  \end{postfail}
+  
+  \begin{proc}
+    \step[1] Der Benutzer wählt in einem Dialog eine GIANT Projektdatei aus.
+    \step[2] Der Benutzer bestätigt seine Eingaben mit OK.
+    \step[3] Falls die dem Projekt zugeordnete IML-Datei nicht gefunden wird
+    wird der Benutzer in einem Dialog aufgefordert eine IML-Datei anzugeben.
+    Er bestätigt mit OK.
+  \end{proc}
+
+  \begin{aproc}
+    \astep{2} Der Benutzer bricht die Verarbeitung mit Cancel ab.
+    \astep{3} Der Benutzer bricht die Verarbeitung mit Cancel ab.
+  \end{aproc}
 \end{uc}
+
+% ==============================================================================
 
 \begin{uc}[Label]{UC: Projekt speichern}
 \end{uc}
 
+% ==============================================================================
+
 \begin{uc}[Label]{UC: Anzeigefenster importieren}
 \end{uc}
+
+% ==============================================================================
 
 \begin{uc}[Label]{UC: Anzeigefenster exportieren}
 \end{uc}
