@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.28 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.29 $
 --  $Author: keulsn $
---  $Date: 2003/07/12 03:33:56 $
+--  $Date: 2003/07/12 16:19:27 $
 --
 ------------------------------------------------------------------------------
 --
@@ -1007,6 +1007,10 @@ private                    -- private part --
      (Widget : access Graph_Widget_Record'Class;
       Edges  : in     Vis_Edge_Sets.Set;
       Nodes  : in     Vis_Node_Sets.Set);
+
+   --  enqueus a redraw event, if necessary.
+   procedure Redraw
+     (Widget : access Graph_Widget_Record'Class);
 
    ----------------------------------------------------------------------------
    --  Default size of a graph widget

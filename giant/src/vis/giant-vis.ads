@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis.ads,v $, $Revision: 1.9 $
+--  $RCSfile: giant-vis.ads,v $, $Revision: 1.10 $
 --  $Author: keulsn $
---  $Date: 2003/07/12 03:33:56 $
+--  $Date: 2003/07/12 16:19:27 $
 --
 ------------------------------------------------------------------------------
 
@@ -148,6 +148,16 @@ package Giant.Vis is
      return Logic_Float;
 
    function Transform
+     (Size           : in     Logic_Float;
+      Zoom           : in     Zoom_Level)
+     return Absolute_Int;
+
+   function Transform_Backward
+     (Size           : in     Absolute_Int;
+      Zoom           : in     Zoom_Level)
+     return Logic_Float;
+
+   function Transform
      (Point          : in     Logic.Vector_2d;
       Origin         : in     Logic.Vector_2d;
       Zoom           : in     Zoom_Level)
@@ -158,6 +168,16 @@ package Giant.Vis is
       Origin         : in     Logic.Vector_2d;
       Zoom           : in     Zoom_Level)
      return Logic.Vector_2d;
+
+   function Transform
+     (Transformation : in     Transformation_Type;
+      Size           : in     Logic_Float)
+     return Absolute_Int;
+
+   function Transform_Backward
+     (Transformation : in     Transformation_Type;
+      Size           : in     Absolute_Int)
+     return Logic_Float;
 
    function Transform
      (Transformation : in     Transformation_Type;

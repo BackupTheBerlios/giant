@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.24 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.25 $
 --  $Author: keulsn $
---  $Date: 2003/07/12 03:33:56 $
+--  $Date: 2003/07/12 16:19:27 $
 --
 ------------------------------------------------------------------------------
 
@@ -194,9 +194,7 @@ package body Giant.Graph_Widgets is
             States.Changed_Visual (Widget);
          end if;
       end loop;
-      if States.Has_Display_Changed (Widget) then
-         Queue_Draw (Widget);
-      end if;
+      Redraw (Widget);
    end Set_Node_Annotations;
 
    procedure Set_Default_Cursor
@@ -482,26 +480,40 @@ package body Giant.Graph_Widgets is
      (Widget    : access Graph_Widget_Record'Class)
      return Vis.Logic_Float is
    begin
-      --FIX: raise Unimplemented;
-      return 100.0;
+      return Positioning.Get_Logic
+        (Widget,
+         Settings.Get_Node_Width (Widget) +
+           2 * Drawing.Get_Maximum_Node_Highlight_Width (Widget));
    end Get_Current_Maximum_Node_Width;
 
    function Get_Current_Node_Width
      (Widget : access Graph_Widget_Record'Class;
       Node   : in     Graph_Lib.Node_Id)
      return Vis.Logic_Float is
+
+      Vis_Node : Vis_Data.Vis_Node_Id := Look_Up (Widget, Node);
    begin
-      --FIX: raise Unimplemented;
-      return 100.0;
+      if Vis_Node /= null then
+         return Positioning.Get_Logic
+           (Widget, Vis.Absolute.Get_Width (Vis_Data.Get_Extent (Vis_Node)));
+      else
+         raise Unknown_Node_Id;
+      end if;
    end Get_Current_Node_Width;
 
    function Get_Current_Node_Height
      (Widget : access Graph_Widget_Record'Class;
       Node   : in     Graph_Lib.Node_Id)
      return Vis.Logic_Float is
+
+      Vis_Node : Vis_Data.Vis_Node_Id := Look_Up (Widget, Node);
    begin
-      --FIX: raise Unimplemented;
-      return 100.0;
+      if Vis_Node /= null then
+         return Positioning.Get_Logic
+           (Widget, Vis.Absolute.Get_Height (Vis_Data.Get_Extent (Vis_Node)));
+      else
+         raise Unknown_Node_Id;
+      end if;
    end Get_Current_Node_Height;
 
    procedure Update_Size
@@ -576,7 +588,7 @@ package body Giant.Graph_Widgets is
       Position_And_Insert (Widget.Unsized_Edges, Widget.Unsized_Nodes);
       Position_And_Insert (Widget.Locked_Edges, Widget.Locked_Nodes);
 
-      Queue_Draw (Widget);
+      Redraw (Widget);
    end Flush_Locked;
 
    procedure Release_Lock
@@ -631,9 +643,10 @@ package body Giant.Graph_Widgets is
      (Widget     : access Graph_Widget_Record'Class;
       Style      : in     Config.Vis_Styles.Visualisation_Style_Access) is
    begin
-      Settings.Set_Style (Widget, Style);
-      raise Unimplemented;
-      --  General redraw
+      --  Settings.Set_Style (Widget, Style);
+      --  Drawing.Pollute_Everything (Widget);
+      --  not sufficient, size may change!
+      Redraw (Widget);
    end Set_Vis_Style;
 
 
@@ -727,8 +740,21 @@ package body Giant.Graph_Widgets is
    procedure Change_Annotation_State
      (Widget     : access Graph_Widget_Record'Class;
       Node       : in     Graph_Lib.Node_Id) is
+
+      Old_State : Boolean;
+      New_State : Boolean;
+      Vis_Node  : Vis_Data.Vis_Node_Id := Look_Up (Widget, Node);
    begin
-      raise Unimplemented;
+      if Vis_Node /= null then
+         Old_State := Vis_Data.Is_Annotated (Vis_Node);
+         New_State := Settings.Has_Annotation (Widget, Vis_Node);
+         if Old_State /= New_State then
+            Vis_Data.Set_Annotated (Vis_Node, New_State);
+            Vis_Data.Pollute_Node (Widget.Manager, Vis_Node);
+            States.Changed_Visual (Widget);
+         end if;
+         Redraw (Widget);
+      end if;
    end Change_Annotation_State;
 
 
@@ -815,15 +841,20 @@ package body Giant.Graph_Widgets is
             Area   => Get_Visible_Area (Widget));
          States.Visual_Area_Updated (Widget);
       end if;
-      Queue_Draw (Widget);
+      Redraw (Widget);
    end Set_Location;
 
    procedure Set_Location_And_Zoom_Level
      (Widget     : access Graph_Widget_Record'Class;
       Location   : in     Vis.Logic.Vector_2d;
       Zoom       : in     Vis.Zoom_Level) is
+
+      Lock : Lock_Type;
    begin
-      raise Unimplemented;
+      Lock_All_Content (Widget, Lock);
+      Set_Zoom_Level (Widget, Zoom);
+      Set_Location (Widget, Location);
+      Release_Lock (Widget, Lock);
    end Set_Location_And_Zoom_Level;
 
 
@@ -1098,5 +1129,13 @@ package body Giant.Graph_Widgets is
       Adjust_Nodes_Ports (Widget, Nodes);
       Adjust_Arrows (Widget, Edges);
    end Update_Positioning;
+
+   procedure Redraw
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      if States.Has_Display_Changed (Widget) then
+         Queue_Draw (Widget);
+      end if;
+   end Redraw;
 
 end Giant.Graph_Widgets;

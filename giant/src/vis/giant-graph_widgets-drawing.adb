@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.17 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.18 $
 --  $Author: keulsn $
---  $Date: 2003/07/12 03:36:46 $
+--  $Date: 2003/07/12 16:19:26 $
 --
 ------------------------------------------------------------------------------
 
@@ -58,6 +58,15 @@ package body Giant.Graph_Widgets.Drawing is
       return Vis.Absolute_Int (Gdk.Font.Get_Ascent (Font)) +
         Vis.Absolute_Int (Gdk.Font.Get_Descent (Font));
    end Get_Height;
+
+   function Get_Maximum_Number_Of_Global_Lights
+     return Natural is
+   begin
+      return Vis_Data.Global_Highlight_Type'Pos
+        (Vis_Data.Global_Highlight_Type'Last) -
+        Vis_Data.Global_Highlight_Type'Pos
+        (Vis_Data.Global_Highlight_Type'First) + 1;
+   end Get_Maximum_Number_Of_Global_Lights;
 
    function Get_Number_Of_Global_Lights
      (Node : Vis_Data.Vis_Node_Id)
@@ -467,6 +476,16 @@ package body Giant.Graph_Widgets.Drawing is
 
 
    --  NOTE: Must be synced with 'Draw_Node'
+   function Get_Maximum_Node_Highlight_Width
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis.Absolute_Natural is
+   begin
+      return Get_Maximum_Number_Of_Global_Lights *
+        Default_Node_Light_Thickness;
+   end Get_Maximum_Node_Highlight_Width;
+
+
+   --  NOTE: Must be synced with 'Draw_Node'
    procedure Update_Node_Size
      (Widget : access Graph_Widget_Record'Class;
       Node   : in     Vis_Data.Vis_Node_Id) is
@@ -518,7 +537,8 @@ package body Giant.Graph_Widgets.Drawing is
       Vis_Data.Set_Node_Size (Node, Combine_Vector (Width, Height));
    end Update_Node_Size;
 
-   --  NOTE: Must be synced with 'Draw_Node'
+   --  NOTE: Must be synced with 'Draw_Node' and
+   --  'Get_Maximum_Node_Highlight_Width
    function Get_Node_Border_Top_Center
      (Widget : access Graph_Widget_Record'Class;
       Node   : in     Vis_Data.Vis_Node_Id)
@@ -1302,6 +1322,15 @@ package body Giant.Graph_Widgets.Drawing is
          Queue_Draw (Widget);
       end if;
    end Resize_Display;
+
+
+   procedure Pollute_Everything
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Vis_Data.Pollute_Area (Widget.Manager, Widget.Drawing.Buffer_Area);
+      States.Changed_Visual (Widget);
+   end Pollute_Everything;
+
 
    ----------------------------------------------------------------------------
    --  Sets up the 'Background' gc

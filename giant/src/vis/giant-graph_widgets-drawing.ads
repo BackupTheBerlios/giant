@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.ads,v $, $Revision: 1.7 $
+--  $RCSfile: giant-graph_widgets-drawing.ads,v $, $Revision: 1.8 $
 --  $Author: keulsn $
---  $Date: 2003/07/12 03:33:56 $
+--  $Date: 2003/07/12 16:19:27 $
 --
 ------------------------------------------------------------------------------
 --
@@ -77,6 +77,13 @@ package Giant.Graph_Widgets.Drawing is
       Node   : in     Vis_Data.Vis_Node_Id);
 
    ----------------------------------------------------------------------------
+   --  Returns the maximum number of points drawn around the node rectangle
+   --  if a node is highlighted in all colors.
+   function Get_Maximum_Node_Highlight_Width
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis.Absolute_Natural;
+
+   ----------------------------------------------------------------------------
    --  Returns the top center point of the actual border of 'Node'. This
    --  might not be equal to the extent of 'Node' (obtained by calling
    --  Vis_Data.Get_Extent), because 'Node's highlighting might be drawn
@@ -104,6 +111,11 @@ package Giant.Graph_Widgets.Drawing is
    --  Resizes the display. Must be called after the size of a graph window
    --  has changed.
    procedure Resize_Display
+     (Widget : access Graph_Widget_Record'Class);
+
+   ----------------------------------------------------------------------------
+   --  Pollutes all buffers and calls 'States.Changed_Display (Widget)'
+   procedure Pollute_Everything
      (Widget : access Graph_Widget_Record'Class);
 
 private

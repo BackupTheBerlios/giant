@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-positioning.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_widgets-positioning.ads,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/07/12 03:33:56 $
+--  $Date: 2003/07/12 16:19:27 $
 --
 ------------------------------------------------------------------------------
 --
@@ -89,6 +89,11 @@ package Giant.Graph_Widgets.Positioning is
      (Widget : access Graph_Widget_Record'Class;
       Point  : in     Vis.Logic.Vector_2d)
      return Vis.Absolute.Vector_2d;
+
+   function Get_Logic
+     (Widget : access Graph_Widget_Record'Class;
+      Size   : in     Vis.Absolute_Int)
+     return Vis.Logic_Float;
 
    function Get_Logic
      (Widget : access Graph_Widget_Record'Class;

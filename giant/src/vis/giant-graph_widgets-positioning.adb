@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-positioning.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-graph_widgets-positioning.adb,v $, $Revision: 1.6 $
 --  $Author: keulsn $
---  $Date: 2003/07/12 03:33:56 $
+--  $Date: 2003/07/12 16:19:27 $
 --
 ------------------------------------------------------------------------------
 
@@ -203,6 +203,14 @@ package body Giant.Graph_Widgets.Positioning is
    begin
       return Vis.Transform (Widget.Positioning.Transformation, Point);
    end Get_Absolute;
+
+   function Get_Logic
+     (Widget : access Graph_Widget_Record'Class;
+      Size   : in     Vis.Absolute_Int)
+     return Vis.Logic_Float is
+   begin
+      return Vis.Transform_Backward (Widget.Positioning.Transformation, Size);
+   end Get_Logic;
 
    function Get_Logic
      (Widget : access Graph_Widget_Record'Class;

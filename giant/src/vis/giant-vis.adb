@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-vis.adb,v $, $Revision: 1.11 $
 --  $Author: keulsn $
---  $Date: 2003/07/12 03:33:56 $
+--  $Date: 2003/07/12 16:19:27 $
 --
 ------------------------------------------------------------------------------
 
@@ -170,6 +170,26 @@ package body Giant.Vis is
    end Intersects_Line_Horizontal_Line_X;
 
    function Transform
+     (Size           : in     Logic_Float;
+      Zoom           : in     Zoom_Level)
+     return Absolute_Int is
+   begin
+      return Absolute_Int (Zoom * Size);
+   end Transform;
+
+   function Transform_Backward
+     (Size           : in     Absolute_Int;
+      Zoom           : in     Zoom_Level)
+     return Logic_Float is
+   begin
+      if Zoom > 0.0 then
+         return Logic_Float (Size) / Zoom;
+      else
+         return 0.0;
+      end if;
+   end Transform_Backward;
+
+   function Transform
      (Point          : in     Logic.Vector_2d;
       Origin         : in     Logic.Vector_2d;
       Zoom           : in     Zoom_Level)
@@ -189,6 +209,22 @@ package body Giant.Vis is
       else
          return Logic.Zero_2d;
       end if;
+   end Transform_Backward;
+
+   function Transform
+     (Transformation : in     Transformation_Type;
+      Size           : in     Logic_Float)
+     return Absolute_Int is
+   begin
+      return Transform (Size, Transformation.Zoom);
+   end Transform;
+
+   function Transform_Backward
+     (Transformation : in     Transformation_Type;
+      Size           : in     Absolute_Int)
+     return Logic_Float is
+   begin
+      return Transform_Backward (Size, Transformation.Zoom);
    end Transform_Backward;
 
    function Transform
