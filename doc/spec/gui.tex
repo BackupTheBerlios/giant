@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.42 $
-%  $Date: 2003/03/20 19:49:18 $
-%  $Author: stupro $
+%  $RCSfile: gui.tex,v $, $Revision: 1.43 $
+%  $Date: 2003/03/28 01:31:37 $
+%  $Author: schwiemn $
 %
 %  Description: Bis zu Revision 1.6 sind UseCase-artige Beschreibungen enthalten,
 %  die für UseCases nützlich sein könnten. 
@@ -165,7 +165,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
   die Zoom-Kontrolle, die Stilauswahl-Combobox (STYLE\_COMBO) und
   ein Button zum Ausblenden der Toolbar (TOOLBAR\_HIDE).
 
- \subsection {Minimap}
+ \subsection {Minimap} \label{GUI Minimap}
 
     In der MiniMap wird der gesamte IML-Teilgraph, der im Fenster
     visualisiert ist, durch einen grauen Kasten repräsentiert.
@@ -190,6 +190,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     \subsubsection{Node-Popup-Menü}\label{Node-Popup-Menü}
     \begin{enumerate}
       \item Show Node Info Window
+      \item Show Corresponding Source Code
       \item Annotate Node \label{Annotate Node}
       \item Change Node Annotation \label{Change Node Annotation}
       \item Delete Node Annotation \label{Delete Node Annotation}
@@ -222,6 +223,12 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     \begin{enumerate}
       \item New Selection
       \item Add Nodes to this Selection
+     
+      \item Fade out Selection
+      \item Fade in Selection
+
+      \item Layout Selection
+
       \item Create New IML Subgraph from this Selection % ?
       
       \item Highlight Selection  Color1 [gemäß Einstellung in Config Datei] % OK
@@ -266,7 +273,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     An den beiden Scrolleisten (links/rechts und oben/unten) in jedem Anzeigefenster
     kann der im Fenster sichtbare Bereich des Graphen verschoben werden.
 
-\section{Knoten-Informationsfenster}
+\section{Knoten-Informationsfenster} \label{Knoten-Informationsfenster}
 
     In Knoten-Informationsfenstern (NODE\_INFO) können nähere Informationen
     zu Knoten angezeigt werden.

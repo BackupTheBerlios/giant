@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: afa.tex,v $, $Revision: 1.4 $
-%  $Date: 2003/03/27 07:14:46 $
-%  $Author: stupro $
+%  $RCSfile: afa.tex,v $, $Revision: 1.5 $
+%  $Date: 2003/03/28 01:31:37 $
+%  $Author: schwiemn $
 %
 %  Description: Beschreibung allgemeiner funktionaler Anforderungen - UseCase
 %  übergreifend.
@@ -9,7 +9,7 @@
 % ==============================================================================
 
 
-\section{Fehlerverhalten}
+\section{Fehlerverhalten} \index{Fehlerverhalten}
 
 \begin {enumerate}
   \item
@@ -32,7 +32,9 @@
 
 \end{enumerate}
 
-  \subsection {Ungültige oder unvollständige Eingaben bei Dialogen}
+  \subsection {Ungültige oder unvollständige Eingaben bei Dialogen} 
+  \index{Fehlerverhalten!Eingabefehler in Dialogen}
+
   \begin {enumerate}
     \item
     Eingaben in Dialogen werden immer dann geprüft, wenn der Benutzer
@@ -54,11 +56,13 @@
   \end {enumerate}
 
   \subsection {Ungültige oder unvollständige Eingaben bei Kommandozeilenaufruf}
+  \index{Fehlerverhalten!Kommandozeilenaufruf}
   Der Start von GIANT wird abgebrochen. Auf der Kommandozeile wird eine
   Meldung mit Hinweisen zur Fehlerursache ausgegeben.
 
   \subsection {Fehler beim Einlesen von Dateien}
-  
+  \index{Fehlerverhalten!Einlesen von Dateien}  
+
   \begin{enumerate}
     \item Können zum Betrieb von GIANT nötige Dateien nicht an der 
           dafür vorgesehenen Position gefunden werden, so wird das 
@@ -91,7 +95,7 @@
 
 
 
-\section {Grundlegendes Feedbackverhalten}
+\section {Grundlegendes Feedbackverhalten} \index{Feedbackverhalten}
 
 
    \subsection{\gq{I am busy Feedback}}
@@ -114,7 +118,7 @@
 
 
    
-\section {Zulässige Eingaben}
+\section {Zulässige Eingaben} \index{Eingaben!zulässige}
 Hier wird beschrieben, welche Eingaben für Namen etc. innerhalb
 von GIANT (z.B. bei den entsprechenden Texteingabedialogen) zulässig sind.
 Unzulässige Namen werden generell abgelehnt und führen zu einer Fehlermeldung.
@@ -162,11 +166,16 @@ Unzulässige Namen werden generell abgelehnt und führen zu einer Fehlermeldung.
   \end {enumerate}
  
   
-\section {Allgemeine Bedienkonzepte}
+\section {Allgemeine Bedienkonzepte} \index{Allgemeine Bedienkonzepte}
 Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
 
   \subsection {Selektieren von Fenster-Knoten und Fenster-Kanten in 
                Anzeigefenstern}
+  \label {Selektieren von Fenster-Knoten und Fenster-Kanten in 
+               Anzeigefenstern} 
+  \index {selektieren}
+
+
   \begin{enumerate}
   
    \item Selektieren durch Anklicken mit linker Maustaste.\\
@@ -181,6 +190,7 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
    Falls bereits selektiert wird der Fenster-Knoten oder die Fenster-Kante 
    aus der aktuellen Selektion entfernt.
    
+   \index {Rahmen}
    \item Selektieren durch Aufziehen eines Rahmens mittes gedrückter 
    linker Maustaste.\\
    Alle Fenster-Knoten und Fenster-Kanten innerhalb des Rahmens werden 
@@ -201,7 +211,10 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
 
     
   \subsection {Aktuelle Selektion vs.\ Selektionen} 
-               \label{Aktuelle Selektion vs Selektionen}	       
+               \label{Aktuelle Selektion vs Selektionen}
+
+  \index{Selektionen!Aktuelle Selektion}
+	       
   Abgesehen von den hier beschriebenen Punkten, verhält sich die aktuelle
   Selektion wie jede andere Selektion. Falls nicht expilzit anders 
   spezifiziert, ist insbesondere jeder UseCase für Selektionen auch auf die 
@@ -242,7 +255,7 @@ in Anzeigefenster}
   \label{Verhalten beim Einfügen von IML-Teilgraphen und Selektionen
          in Anzeigefenster}
 
-   \subsection {Vorgabe der Zielposition}
+   \subsection {Vorgabe der Zielposition} \index{Zielposition}
      \label{Vorgabe der Zielposition}
    Für bestimmte UseCases (siehe z.B.\ 
    \ref{IML-Teilgraph in Anzeigefenster einfügen})
@@ -280,6 +293,8 @@ in Anzeigefenster}
    
    \subsection{Einfügen von Selektionen in Anzeigefenster}
       \label{Einfügen von Selektionen in Anzeigefenster}
+   \index{Selektionen!Einfügen in Anzeigefenster}
+
    Hier wird das grundlegende Verhalten beim Einfügen von Selektionen
    in Anzeigefenster (Kopieren einer Selektion aus einem Anzeigefenster
    in ein anderes) beschrieben.
@@ -310,6 +325,8 @@ in Anzeigefenster}
   
    \subsection{Einfügen von IML-Teilgraphen in Anzeigefenster}
      \label{Einfügen von IML-Teilgraphen in Anzeigefenster}
+   \index{IML-Teilgraphen!Einfügen in Anzeigefenster}
+
    Hier wird das grundlegende Verhalten beim Einfügen von IML-Teilgraphen
    in Anzeigefenster (Kopieren einer Selektion aus einem Anzeigefenster
    in ein anderes) beschrieben.
@@ -332,14 +349,19 @@ in Anzeigefenster}
 % ==============================================================================  
 \section {Verhalten bei Umwandeln von Selektionen und IML-Teilgraphen}
   \label{Verhalten bei Umwandeln von Selektionen und IML-Teilgraphen}
-  
+
+  \index{Umwandeln von Selektionen und IML-Teilgraphen}
+
+
   Dieser Abschnitt beschreibt grundlegende Konventionen für die
   Umwandlung von IML-Teilgraphen in Selektionen und anders herum.
 
 
   \subsection {Selektion aus IML-Teilgraphen ableiten}
     \label{Selektion aus IML-Teilgraphen ableiten}
-  
+
+  \index{Selektionen!Ableiten aus IML-Teilgraphen}
+
   \begin {enumerate}
   
     \item
@@ -361,7 +383,9 @@ in Anzeigefenster}
   
   \subsection {IML-Teilgraph aus Selektion ableiten}
     \label{IML-Teilgraphen aus Selektion ableiten}
-  
+
+   \index{IML-Teilgraphen!Ableiten aus Selektionen}
+
   \begin {enumerate}
   
     \item
@@ -378,6 +402,10 @@ in Anzeigefenster}
 
 \section {Verhalten beim Entfernen von Fenster-Knoten und Fenster-Kanten}
   \label{Verhalten beim Entfernen von Fenster-Knoten und Fenster-Kanten}
+
+  \index {Fenster-Knoten!entfernen}
+  \index {Fenster-Kanten!entfernen}
+
   
   Beim \gq{Entfernen} von Fenster-Knoten und Fenster-Kanten aus einem
   Anzeigefenster werden nur die Grafischen repäsentationen der Knoten und
@@ -389,6 +417,8 @@ in Anzeigefenster}
  
   \subsection {Entfernen aller Knoten und Kanten einer Selektionen}
     \label {Entfernen aller Knoten und Kanten einer Selektionen}
+
+    \index{Selektionen!Entfernen von Knoten und Kanten}
   
   \begin {enumerate}
   
@@ -413,6 +443,9 @@ in Anzeigefenster}
 
 \section {Auseinanderschieben von Fenster-Knoten}
   \label {Auseinanderschieben von Fenster-Knoten}
+
+  \index {Fenster-Knoten!auseinanderschieben}
+  \index {auseinanderschieben}
   
 Sollen Fenster-Knoten auf dem Anzeigeinhalt automatisch
 auseinandergeschoben werden, so geschieht dies nach dem folgenden

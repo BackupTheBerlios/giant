@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.19 $
-%  $Date: 2003/03/19 19:55:05 $
-%  $Author: stupro $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.20 $
+%  $Date: 2003/03/28 01:31:37 $
+%  $Author: schwiemn $
 %
 %  Description: Use-Cases für die Fensterfunktionalität der GUI
 %
@@ -124,6 +124,13 @@ Dient zum Öffnen eines Anzeigefensters des Projektes.
  
   \end{postsuccess}
 
+  \begin{postfail}
+
+    \cond 
+    Es sind keine Fehlerfälle vorgesehen.
+
+  \end{postfail}
+  
 
   \begin{proc}    
 
@@ -135,7 +142,13 @@ Dient zum Öffnen eines Anzeigefensters des Projektes.
     \step[2]
     GIANT öffnet das entsprechende Anzeigefenster.
   
-  \end{proc}
+  \end{proc}  
+
+  \begin{aproc}
+    \ageneral
+    Es sind keine alternativen Abläufe vorgesehen.
+  \end{aproc}
+  
  
 \end{uc}
 
@@ -156,7 +169,13 @@ Mit diesem UseCase wird ein geöffnetes Anzeigefenster geschlossen.
     Modifikationen (neue Knoten eingefügt etc.) sind in der Verwaltungsdatei
     gespeichert oder nicht.
  
-  \end{postsuccess}
+  \end{postsuccess}  
+
+  \begin{postfail}
+
+    \cond 
+    Es sind keine Fehlerfälle vorgesehen.
+  \end{postfail}
 
 
   \begin{proc}    
@@ -182,7 +201,13 @@ Mit diesem UseCase wird ein geöffnetes Anzeigefenster geschlossen.
     \step[4]
     GIANT schließt das Anzeigefenster.
   
-  \end{proc}
+  \end{proc}  
+
+  \begin{aproc}
+    \ageneral
+    Es sind keine alternativen Abläufe vorgesehen.
+  \end{aproc}
+  
 
 
 \end{uc}
@@ -441,7 +466,7 @@ Siehe auch
 \end{uc}
 
 % ==============================================================================
-\begin{uc}[Anzeigefensters scrollen]{UC: Anzeigefensters scrollen}
+\begin{uc}[Anzeigefenster scrollen]{UC: Anzeigefenster scrollen}
 Verändert die Position des sichtbaren Anzeigeinhaltes.
 
   \begin{precond}
@@ -717,7 +742,8 @@ Siehe hierzu auch \ref{Auseinanderschieben von Fenster-Knoten}.
     Fläche in der VIS\_PANE und Auswahl von Make Room.
     
     \step[2]
-    GIANT zeigt in der Statuszeile im Hauptfenster \gq{Select Position in Display Window
+    GIANT zeigt in der Statuszeile im Hauptfenster 
+    \gq{Select Position in Display Window
     for Making of Room}
     Der Benutzer gibt den Punkt um den herum die Fenster-Knoten (und damit
     automatisch auch die Fenster-Kanten) auseinander geschoben werden

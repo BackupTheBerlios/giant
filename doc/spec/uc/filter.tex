@@ -1,20 +1,112 @@
 % ==============================================================================
-%  $RCSfile: filter.tex,v $, $Revision: 1.1 $
-%  $Date: 2003/02/03 01:17:27 $
-%  $Author: schulzgt $
+%  $RCSfile: filter.tex,v $, $Revision: 1.2 $
+%  $Date: 2003/03/28 01:31:37 $
+%  $Author: schwiemn $
 %
 %  Description: Use-Cases für Filter
 %
 % ==============================================================================
 
 \begin{uc}[Label]{UC: Selektionen ausblenden}
+Mit diesem UseCase können Selektionen innerhalb
+eines Anzeigefensters ausgeblendet werden.
+
+  \begin{precond}
+    \cond Es gibt ein geöffnetes Anzeigefenster mit einer Selektion.
+  \end{precond}
+
+  \begin{postsuccess}
+
+    \cond Alle zu der Selektion gehörende Fenster-Knoten und
+          Fenster-Kanten sind ausgeblendet, d.h. sie sind
+          im Anzeigefenster nicht mehr sichtbar. Dies trifft
+          auch für Fenster-Knoten und Fenster-Kanten, die
+          noch zu weiteren Selektionen, gehören zu.
+    
+    \cond Die ausgeblendeten Selektionen können nicht 
+          zur aktuellen Selektion gemacht werden (siehe 
+          \ref {Selektion zur aktuellen Selektion machen} und damit
+          nicht mehr direkt bearbeitet werden, 
+          d.h. die Menge der selektierten 
+          Fenster-Knoten und Fenster-Kanten kann nicht
+          mehr abgeändert werden (siehe hierzu \ref {Selektieren von 
+          Fenster-Knoten und Fenster-Kanten in Anzeigefenstern}.
+
+
+    \cond Die Fenster-Knoten und Fenster-Kanten sind aber immernoch 
+          Bestandteil des Anzeigefensters und können über den folgenden
+          UseCase (siehe \ref{Selektionen einblenden}) wieder zur Anzeige
+          gebracht werden.
+    
+  \end{postsuccess}
+
+   
+  \begin{proc}
+
+    \step[1] 
+    Der Benutzer führt einen Rechtsklick mit der Maus auf
+    die auszublende Selektion in der Selektionsauswahlliste 
+    (siehe \ref{Selektionsauswahlliste}) durch 
+    und wählt im Popup-Menü den Eintrag \gq{Fade out Selection}
+    aus. Diese Funktionalität kann nicht auf die aktuelle
+    Selektion angewendet werden 
+    (siehe \ref{Aktuelle Selektion vs Selektionen}).
+
+    \step[2]
+    GIANT blendet die Selektion aus.
+ 
+  \end{proc}
+
 \end{uc}
 
-\begin{uc}[Label]{UC: Selektionen einblenden}
+
+
+\begin{uc}[Selektionen einblenden]{UC: Selektionen einblenden}
+Mit diesem UseCase können ausgeblendete Selektionen
+wieder eingeblendet werden.
+
+  \begin{precond}
+    \cond Es gibt ein geöffnetes Anzeigefenster mit einer 
+          ausgeblendeten Selektion.
+  \end{precond}
+
+  \begin{postsuccess}
+
+    \cond 
+    Die Selektion ist wieder eingeblendet, alle zu ihr gehörenden 
+    Fenster-Knoten und Fenster-Kanten sind wieder
+    im Anzeigeinhalt sichtbar dargestellt.
+    
+  \end{postsuccess}
+
+   
+  \begin{proc}
+
+    \step[1] 
+    Der Benutzer führt einen Rechtsklick mit der Maus auf
+    eine ausgeblendete Selektion in der Selektionsauswahlliste 
+    (siehe \ref{Selektionsauswahlliste}) durch 
+    und wählt im Popup-Menü den Eintrag \gq{Fade in Selection}
+    aus. 
+
+    \step[2]
+    GIANT blendet die Selektion ein.
+ 
+  \end{proc}
+
 \end{uc}
+
 
 \begin{uc}[Label]{UC: Detailfilter für ein Anzeigefenster}
+<<<<<<<Martin: BIN MIR NICHT GANZ SICHER
+ICH GLAUBE DIESE ANFORDERUNG WURDE GECANCELT>>>>>>>>>>>>>>>
+
+
+
 \end{uc}
 
 \begin{uc}[Label]{UC: Detailfilter für eine Selektion}
+<<<<<<<Martin: BIN MIR NICHT GANZ SICHER - MARTIN
+ICH GLAUBE DIESE ANFORDERUNG WURDE GECANCELT>>>>>>>>>>>>>>>
+
 \end{uc}

@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: project.tex,v $, $Revision: 1.21 $
-%  $Date: 2003/03/27 07:14:46 $
-%  $Author: stupro $
+%  $RCSfile: project.tex,v $, $Revision: 1.22 $
+%  $Date: 2003/03/28 01:31:37 $
+%  $Author: schwiemn $
 %
 %  Description:
 %
@@ -9,7 +9,7 @@
 
 
 %===================
-\section {Persistenz der Projekte}
+\section {Persistenz der Projekte}\index{Persistenz} \index {Projekte}
 
 GIANT speichert persistente Informationen in sogenannten Projekten.
 \begin {enumerate}
@@ -23,7 +23,7 @@ GIANT speichert persistente Informationen in sogenannten Projekten.
   IML-Graphen zur Laufzeit laden und bereits geladene IML-Graphen zur
   Laufzeit aus dem Speicher entfernen zu können.
     
-  \item
+  \item 
   Zur sicheren Identifikation der IML-Graph Datei, 
   die zu einem Projekt gehört, muss über die Reflektion eine eindeutige
   Prüfsumme für jeden IML-Graphen berechnet werden können.
@@ -55,7 +55,7 @@ GIANT speichert persistente Informationen in sogenannten Projekten.
 \end {enumerate}
 
 
-  \subsection {Das Projektverzeichnis}
+  \subsection {Das Projektverzeichnis} \index{Projekte!Projektverzeichnis}
   \begin {enumerate}
 
     \item  
@@ -68,7 +68,7 @@ GIANT speichert persistente Informationen in sogenannten Projekten.
   \end {enumerate}    
 
 
-  \subsection {Die Projektdatei}
+  \subsection {Die Projektdatei} \index{Projekte!Projektdatei}
   \begin {enumerate}
 
     \item
@@ -93,7 +93,8 @@ GIANT speichert persistente Informationen in sogenannten Projekten.
   \end {enumerate}
   
  
-  \subsection {Prüfung der IML-Graph Datei}
+  \subsection {Prüfung der IML-Graph Datei} 
+  \index{IML-Graph Datei!Identifikation}
   Beim Laden eines Projektes wird überprüft, 
   ob die in der Projektdatei gespeicherte Prüfsumme
   der Prüfsumme der zu ladenden IML-Graph Datei entspricht. 
@@ -103,7 +104,9 @@ GIANT speichert persistente Informationen in sogenannten Projekten.
 
 
   \subsection {Verwaltungsdateien für Anzeigefenster}
- 
+  \index{Projekte!Verwaltungsdateien für Anzeigefenster}
+  \index{Verwaltungsdateien für Anzeigefenster}
+
   \begin {enumerate}
   
     \item
@@ -137,7 +140,11 @@ GIANT speichert persistente Informationen in sogenannten Projekten.
   in diesem Fall wird dann ein \gq{Standard-Stil} verwendet.
 
 
-  \subsection {Verwaltungsdateien für IML-Teilgraphen}
+  \subsection {Verwaltungsdateien für IML-Teilgraphen}  
+
+  \index{Projekte!Verwaltungsdateien für IML-Teilgraphen}
+  \index{Verwaltungsdateien für IML-Teilgraphen}
+
   \begin {enumerate}
   
     \item
@@ -153,7 +160,11 @@ GIANT speichert persistente Informationen in sogenannten Projekten.
   \end{enumerate}
   
   
-  \subsection {Die Verwaltungsdatei für Knoten-Annotationen}
+  \subsection {Die Verwaltungsdatei für Knoten-Annotationen}  
+  \index{Projekte!Verwaltungsdateien für Knoten-Annotationen}
+  \index{Verwaltungsdateien für Knoten-Annotationen}
+  \index{Knoten-Annotationen}
+
   \begin {enumerate}
   
    \item
@@ -169,7 +180,7 @@ GIANT speichert persistente Informationen in sogenannten Projekten.
  
 %===================
 \section {Grundlegendes Verhalten von GIANT beim Speichern von Projekten} 
-  
+\index{Projekte!Speichern von Projekten}  
 
   \subsection{\gq{Alles Speichern}}\label{Alles Speichern}
   Diese Funktionalität wird von entsprechenden UseCases genutzt. 
@@ -186,6 +197,8 @@ GIANT speichert persistente Informationen in sogenannten Projekten.
 
   %===
   \subsection {Persistenz von Anzeigefenstern}
+  \index{Persistenz!Anzeigefenster}
+
   \begin {enumerate}
 
     \item 
@@ -207,7 +220,7 @@ GIANT speichert persistente Informationen in sogenannten Projekten.
       Die Position der Fenster-Knoten und Fenster-Kanten des 
       Anzeigefensters.
 
-    \item
+    \item  \index{Persistenz!Visualosoerungsstile}
     Für den gewählten Visualisierungsstil des Anzeigefensters wird
     nur der Name gespeichert, da die Visualisierungstile über
     die Konfigurationsdateien beliebig editiert
@@ -248,6 +261,8 @@ GIANT speichert persistente Informationen in sogenannten Projekten.
 
   %===
   \subsection {Persistenz von IML-Teilgraphen}
+  \index{Persistenz!IML-Teilgraphen}
+
   \begin {enumerate}
 
     \item
@@ -278,7 +293,9 @@ GIANT speichert persistente Informationen in sogenannten Projekten.
   
   
   
-\subsection {Persistenz von Knoten-Annotationen}
+\subsection {Persistenz von Knoten-Annotationen}  
+\index{Persistenz!Knoten-Annotationen}
+
   \begin {enumerate}
   
    \item

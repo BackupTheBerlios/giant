@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: product.tex,v $, $Revision: 1.28 $
-%  $Date: 2003/03/27 07:14:46 $
-%  $Author: stupro $
+%  $RCSfile: product.tex,v $, $Revision: 1.29 $
+%  $Date: 2003/03/28 01:31:37 $
+%  $Author: schwiemn $
 %
 %  Description: Beschreibung des Produktes. Übersicht über die Funktionen
 %  und allgemeine Bedienkonzepte.
@@ -10,7 +10,7 @@
 
 
 % ==============================================================================
-\section{GIANT Projekte}
+\section{GIANT Projekte} \index{Projekte}
 
 Innerhalb eines Projektes fasst GIANT Informationen, 
 wie erzeugte Anzeigefenster (mit Selektionen etc.) und
@@ -26,7 +26,7 @@ Die Zusammenfassung zu Projekten soll der
 Hinsichtlich der logischen Zusammenfassung von Knoten und Kanten unterscheidet
 GIANT IML-Teilgraphen und Selektionen.
 
-  \subsection{IML-Teilgraphen}
+  \subsection{IML-Teilgraphen} \index{IML-Teilgraphen}
   Ein IML-Teilgraph beschreibt eine Knoten- und Kantenmenge aus dem IML-Graphen,
   bei der jede Kante einen Start- und einen Zielknoten hat.
   Die Knoten und Kanten von IML-Teilgraphen können in Anzeigefenstern
@@ -36,7 +36,7 @@ GIANT IML-Teilgraphen und Selektionen.
   Die IML-Teilgraphen sind aber völlig unabhängig von den Anzeigefenstern und
   enthalten insbesondere keine Layoutinformationen für ihre Knoten und Kanten.
 
-  \subsection{Selektionen}
+  \subsection{Selektionen} \index{Selektionen}
   Selektionen stellen die lokale Variante von Knoten- und Kantenmengen dar.
   Sie sind immer einem festen Anzeigefenster zugeordnet.
   Selektionen können bliebige Knoten und Kanten umfassen, ohne dass diese einen
@@ -45,13 +45,13 @@ GIANT IML-Teilgraphen und Selektionen.
   als Fenster-Knoten oder Fenster-Kante vorhanden sein.
 
 % ==============================================================================
-\section{Anzeigefenster}
+\section{Anzeigefenster} \index{Anzeigefenster}
 Anzeigefenster sind die Fenster von GIANT, in denen eine benutzerdefinierte
 Auswahl von Knoten und Kanten visualisiert wird. Es kann beliebig viele
 Anzeigefenster geben und jedes Anzeigefenster kann beliebig viele Selektionen
 haben.
 
-  \subsection{Pins}
+  \subsection{Pins} \index{Anzeigefenster!Pins} \index{Pins}
   Da bei großen Graphen selten alle zu einem Anzeigeinhalt 
   gehörenden Fenster-Knoten und Fenster-Kanten gemeinsam auf dem Bildschirm
   sichtbar dargestellt werden können, kann sich der
@@ -60,7 +60,7 @@ haben.
   gespeichert, so dass zu beliebigen Zeitpunkten die Position des sichtbaren
   Anzeigeinhalts rekonstruiert werden kann.
 
-  \subsection{Visualisierungsstile}
+  \subsection{Visualisierungsstile} \index{Visualisierungsstile}
   Mittels sogenannter Visualisierungsstile kann der Benutzer die Darstellung
   von Fenster-Kanten und Fenster-Knoten (z.B. welche Attribute dargestellt
   werden sollen) auch während der Laufzeit von GIANT beeinflussen.
@@ -68,14 +68,14 @@ haben.
   Visualisierungsstile definiert werden können, kann GIANT so
   an spezifische Problemstellungen angepasst werden.
 
-\section{Knoten-Annotationen}
+\section{Knoten-Annotationen} \index{Knoten-Annotationen}
 Jeder Knoten kann mit einer textuellen Annotation versehen werden. Diese
 Annotation kann in einem Fenster außerhalb des Anzeigefensters
 zur Anzeige gebracht und bearbeitet werden.
 
 
 % ==============================================================================
-\section{Anfragen}
+\section{Anfragen} \index{GQSL} \index{Anfragesprache}
 Eine vielseitige Anfragesprache -- die GIANT Query and Scripting Language GQSL --
 stellt nahezu die gesamte Funktionalität von GIANT zur Verfügung und kann 
 insbesondere auch zum Aufruf via Kommandozeile
@@ -85,7 +85,7 @@ einen Schlag} erledigt werden.
 
 
 % ==============================================================================
-\section{Drei-Stufen-Konzept}
+\section{Drei-Stufen-Konzept} \index{Drei-Stufen-Konzept}
 
 Die im Folgenden beschriebenen drei Schritte sollen dem Benutzer die Möglichkeit
 bieten, von den Knoten und Kanten des IML-Graphen ausgehend geeignete
@@ -99,7 +99,7 @@ ausgeführt, dies ist aber nicht zwingend nötig.
   Kanten aus dem IML-Graphen mittels der Anfragesprache.
   
   \item Einfügen dieser IML-Teilgraphen in ein Anzeigefenster unter Anwendung
-  eines Layoutalgorithmus. 
+  eines Layoutalgorithmus \index{Layoutalgorithmen}. 
   
   \item Weitere Bearbeitung der Fenster-Knoten und Fenster-Kanten (wie z.B.
   Verschieben, Annotieren und Erzeugen von Selektionen).

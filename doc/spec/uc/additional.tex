@@ -1,28 +1,273 @@
 % ==============================================================================
-%  $RCSfile: additional.tex,v $, $Revision: 1.2 $
-%  $Date: 2003/02/05 14:01:12 $
-%  $Author: schulzgt $
+%  $RCSfile: additional.tex,v $, $Revision: 1.3 $
+%  $Date: 2003/03/28 01:31:37 $
+%  $Author: schwiemn $
 %
 %  Description: Sonstige Use-Cases
 %
 % ==============================================================================
 
-\begin{uc}[Label]{UC: Verfolgen von Kanten}
-Wird über mitgelieferte Anfragen implementiert.
-Dann kein eigener UC mehr.
-\end{uc}
 
 \begin{uc}[Label]{UC: Layout auf Selektion anwenden}
+
+Mittels dieses UseCase können Selektionen innerhalb
+eines Anzeigefensters layoutet werden.
+
+
+  \begin{precond}
+    \cond Es gibt ein geöffnetes Anzeigefenster mit
+          einer Selektion.
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond 
+    Die Position der Fenster-Knoten der Selektion wurde gemäß
+    den Vorgaben des Layoutalgorithmus geändert. 
+
+    \cond
+    Alle anderen Fenster-Knoten bleiben unverändert.
+
+  \end{postsuccess}
+
+  \begin{postfail}
+    \cond Das System bleibt im bisherigen Zustand.
+
+    \cond Hat der Benutzer einen Layoutalgorithmus während der
+    Berechnung des Layouts abgebrochen, 
+    so bleiben die Positionen aller Fenster-Knoten des Anzeigefensters
+    unverändert.
+      
+  \end{postfail}
+  
+  \begin{proc}
+
+    \step[1]
+    Der Benutzer wählt aus der
+    Selektionsauswahlliste (SELECTION\_LIST -- siehe hierzu 
+    \ref{Selektionsauswahlliste}) die Selektion aus, deren
+    Fenster-Knoten layoutet werden sollen. Hierzu führt er
+    einen Rechtsklick auf die Selektion durch und wählt im
+    PopUp-Menü den Eintrag \gq{Layout Selection} aus.
+
+    \step[2]
+    GIANT zeigt einen Dialog zur Auswahl und Konfiguration des
+    gewünschten Layoutalgorithmus 
+    (siehe hierzu \ref{Layoutalgorithmen-Dialog}).
+
+    \step[3]
+    Der Benutzer wählt in diesem Dialog den gewünschten Layoutalgorithmus
+    aus.
+
+    \step[4]
+    Falls der gewählte Layoutalgorithmus dies unterstützt, kann der
+    Benutzer in diesem Dialog die Typen von IML-Kanten, die beim
+    Layout berücksichtigt werden sollen, vorgeben; alle anderen
+    IML-Kanten werden dann für das Layout ignoriert.
+
+    \step[5]
+    Der Benutzer bestätigt seine Eingaben mit OK.
+
+    \step[6]
+    !!!!!!!!!!! VERWEIS GUI - DER PRGRESSBAR MIT LYOUT CANCEL FUNKTION
+    !!!!!!!!!!!!!!
+    GIANT berechnet das Layout und zeigt einen Progressbar an. 
+    Während der Berechnung des Layouts kann der Benutzer keinerlei
+    Aktionen durchführen (GUI von GIANT ist gesperrt).
+         
+  \end{proc}
+
+  \begin{aproc}
+    \astep{3} Der Benutzer bricht die Verarbeitung mit Cancel ab.  
+    \astep{4} Der Benutzer bricht die Verarbeitung mit Cancel ab.
+
+    !!!!!!!!!VERWEIS GUI!!!!!!!!!!!!!!!!
+    \astep{6} Der Benutzer kann die Berechnung eines Layouts jeder
+    Zeit durch drücken des \gq{Cancel Buttons} auf dem Progressbar
+    abbrechen.
+  \end{aproc}
+
+
 \end{uc}
 
-\begin{uc}[Label]{UC: Knoteninformation über Tooltip anzeigen}
+
+\begin{uc}[Label]{UC: Details zu Knoten in einem neuen Informationsfenster
+anzeigen}
+
+Dieser UseCase ermöglicht es dem Kunde, sich alle verfügbaren
+Informationen zu einem Fenster-Knoten (Kanten und Attribute des
+zugehörigen IML-Knoten) anzeigen zu lassen. Mit diesem UseCase
+kann der Benutzer beliebig viele Knoten-Informationsfenster 
+(siehe \ref{Knoten-Informationsfenster}) öffnen.
+
+
+  \begin{precond}
+    \cond Es gibt ein geöffnetes Anzeigefenster mit
+          einem Fenster-Knoten.
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond 
+    Die Daten über den Fenster-Knoten werden in einem neuen
+    Knoten-Informationsfenster angezeigt. 
+
+  \end{postsuccess}
+
+  
+  \begin{proc}    
+
+    \step[1]
+    Der Benutzer wählt im entsprechenden Anzeigefenster den 
+    gewünschten Fenster-Knoten aus und führt einen Rechtsklick
+    auf diesen Knoten aus. Im darauf angezeigten Popup-Menü
+    (siehe \ref{Node-Popup-Menü}) wählt der Benutzer dann 
+    den Eintrag \gq{Show Node Info Window} aus.
+
+    \step[2]
+    GIANT öffnet ein neues Knoten-Informationsfenster
+    (siehe \ref{Knoten-Informationsfenster}) und zeigt alle
+    Verfügbaren Informationen zu dem IML-Knoten an.
+    
+  \end{proc}
+
 \end{uc}
 
-\begin{uc}[Label]{UC: Knoteninformation im Infofenster anzeigen}
+
+
+
+\begin{uc}[Label]{UC: Details zu Knoten in einem bestehenden
+Informationsfenster anzeigen}
+
+Dieser UseCase ermöglicht es dem Kunden, sich alle verfügbaren
+Informationen zu einem Fenster-Knoten (Kanten und Attribute des
+zugehörigen IML-Knoten) innerhalb eines bereits geöffneten
+Knoten-Informationsfensters (siehe \ref{Knoten-Informationsfenster})
+anzeigen zu lassen.
+
+
+  \begin{precond}
+    \cond Es gibt ein geöffnetes Anzeigefenster mit
+          einem Fenster-Knoten.
+
+    \cond Es gibt ein offenes Knoten-Informationsfenster.
+
+  \end{precond}
+
+  \begin{postsuccess}
+
+    \cond 
+    Anstatt der Daten, die zuvor in dem Knoten-Informationsfenster
+    angezeigt wurden, werden dort nun die Informationen zu dem 
+    gewählten Fenster-Knoten angezeigt.
+
+  \end{postsuccess}
+
+  
+  \begin{proc}    
+
+    \step[1]
+    Der Benutzer betätigt in einem geöffneten Knoten-Informationsfenster
+    den Button \gq{Pick} (siehe \ref{Knoten-Informationsfenster}).
+
+    \step[2]
+    Daraufhin fordert GIANT den Benutzer auf einen Fenster-Knoten
+    auszuwählen.
+
+    \step[3]
+    Der Benutzer wählt den gewünschten Fensterknoten dadurch aus, dass
+    er innerhalb des Anzeigeinhaltes eines Anzeigefensterts mittels
+    eines Fadenkreuzes den Fenster-Knoten als Zielposition
+    vorgibt. Das Verfahren zur Vorgabe der Zielposition ist im
+    Detail unter \ref{Vorgabe der Zielposition} beschrieben.
+
+    \step[4]
+    GIANT stellt die verfügbaren Informationen zu dem ausgewählten
+    Fenster-Knoten im Knoten-Informationsfenster dar.
+    
+  \end{proc}
+
 \end{uc}
+
+
+
 
 \begin{uc}[Label]{UC: Anzeige des Quellcodes eines Knotes in externem Editor}
+
+Mittels dieses UseCases kann der zu einem IML-Knoten korrespondierende
+Quellcode innerhalb eines Editors zur Anzeige gebracht werden.
+
+
+  \begin{precond}
+    \cond Es gibt ein geöffnetes Anzeigefenster mit
+          einem Fenster-Knoten.
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond 
+    Der zu dem IML-Knoten korrespondierende Quellcode wird in
+    dem über die Konfigurationsdatei vorgegebenen Editor
+    angezeigt (siehe auch \ref{Konfig Editor zur Anzeige des Quellcodes}).
+    Der Cursor des Editors ist auf die dem IML-Knoten
+    entsprechende Position innerhalb des Quelltextes gesetzt, also
+    z.B. auf einen Bezeichnernamen, den der IML-Knoten repräsentiert.
+ 
+  \end{postsuccess}
+
+  
+  \begin{proc}    
+
+    \step[1]
+    Der Benutzer wählt in einem Anzeigefenster den 
+    gewünschten Fenster-Knoten aus und führt einen Rechtsklick
+    auf diesen Knoten durch. Im darauf angezeigten Popup-Menü
+    (siehe \ref{Node-Popup-Menü}) wählt der Benutzer dann 
+    den Eintrag \gq{Show Corresponding Source Code} aus.
+
+    \step[2]
+    GIANT öffnet die Quellcode Datei für den IML-Knoten in
+    einen Editor (vi oder Emacs) und hebt die zum Knoten
+    korrespondierenden Text hervor.
+    
+  \end{proc}
+
+
 \end{uc}
 
-\begin{uc}[Label]{UC: Verschieben des sichtbaren Bereichs über Minimap}
+
+
+
+\begin{uc}[Label]{UC: Verschieben des sichtbaren Anzeigeinhaltes 
+über die Minimap}
+
+Der Benutzer kann mittels der Minimap (siehe auch \ref{GUI Minimap})
+den sichtbaren Anzeigeinhalt scrollen.
+
+
+ \begin{precond}
+
+    \cond Es gibt ein geöffnetes Anzeigefenster.
+
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond 
+    Der sichtbare Anzeigeinhalt ist auf den Bereich des
+    Anzeigefensters gesetzt, der dem Punkt welcher auf der
+    Minimap angeklickt wurde, entspricht.
+
+  \end{postsuccess}
+
+  
+  \begin{proc}    
+
+    \step[1]
+    Der Benutzer klickt mit der linken Maustaste auf einen
+    Punkt auf der Minimap.
+
+    \step[2]
+    GIANT setzt den sichtbaren Anzeigeinhalt des Anzeigefensters 
+    auf den vorgegebenen Punkt.
+    
+  \end{proc}
+
+
 \end{uc}
