@@ -1,7 +1,7 @@
 % =============================================================================
-%  $RCSfile: fa.tex,v $, $Revision: 1.34 $
-%  $Date: 2003/04/18 00:50:12 $
-%  $Author: keulsn $
+%  $RCSfile: fa.tex,v $, $Revision: 1.35 $
+%  $Date: 2003/04/18 19:43:26 $
+%  $Author: schwiemn $
 %
 %  Description:
 %
@@ -114,11 +114,16 @@ die folgenden Optionen.
     GIANT startet und zeigt das Main Window an. 
     Es ist noch kein Projekt geladen.
     
-    \item Eingabe von: \verb+giant --newproject=/home/projekt/sample.giant --iml=sample.iml+\\
-    Ein neues Projekt wird geöffnet und erhält den Namen der Projektdatei.
+    \item Eingabe von:\\ 
+    \verb+giant --newproject=/home/projekt/my_project_file.giant\\
+    \verb+      --iml=sample.iml+\\
+
+    Ein neues Projekt wird geöffnet und erhält den Namen der Projektdatei
+    \gq{my_project_file.giant} (ohne die Erweiterung).
+    Das Verzeichnis \gq {/home/projekt} wird zum Projektverzeichnis
     \label{Kommandozeile_neus}
 
-    \item Eingabe von: \verb+giant --loadproject=sample.giant+\\
+    \item Eingabe von: \verb+giant --loadproject=my_project_file.giant+\\
     Das angegebene Projekt wird geöffnet.
     \label{Kommandozeile_altes}
     
@@ -183,7 +188,7 @@ werden hier beschrieben.
 
 \chapter{Filter}
 Hier werden die Filter zum Aus- und Einblenden von Fenster-Knoten
-und Fenster-Kanten beschrieben,
+und Fenster-Kanten beschrieben.
 
 
 \input{uc/filter}

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: afa.tex,v $, $Revision: 1.18 $
-%  $Date: 2003/04/17 22:44:58 $
+%  $RCSfile: afa.tex,v $, $Revision: 1.19 $
+%  $Date: 2003/04/18 19:43:26 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung allgemeiner funktionaler Anforderungen - UseCase
@@ -142,14 +142,14 @@ Unzulässige Namen werden generell abgelehnt und führen zu einer Fehlermeldung.
     \subsubsection {Der String \gq{STANDARD NAME}}
     \label{afa Standard Name} 
     Hier wird ein String spezifiziert, der nur die im Folgenden 
-    beschriebenen Zeichen enthalten darf.\\
+    beschriebenen Zeichen enthalten darf.
     Zulässige Zeichen sind:
     \begin {enumerate}
   
       \item
       Die lateinischen Groß- und Kleinbuchstaben; nicht zulässig sind
       Umlaute und das Zeichen ''"s''. Zulässig sind also nur die 
-      ASCII-Zeichen 65 bis 90 und 97 bis 122 (gemäß Definition 
+      ASCII-Zeichen 65 bis 90 und 97 bis 122 (gemäß Spezifikation
       der ISO-8859-Zeichensätze).
    
       \item
@@ -356,14 +356,14 @@ in Anzeigefenster}
      \item
      Die Position von Fenster-Knoten der einzufügenden Selektion, 
      die bereits in dem Anzeigefenster visualisiert sind,
-     bleibt falls nicht an entsprechender Stelle anders
-     spezifiziert unverändert.
+     bleibt, falls nicht an entsprechender Stelle anders
+     spezifiziert, unverändert.
      
      \item
      Fenster-Kanten der Selektion werden nur eingefügt, 
-     falls ihr Start- und Zielknoten
-     ebenfalls Bestandteil der Selektion ist oder bereits im Anzeigefenster
-     visualisiert ist. 
+     falls ihr Start- und ihr Zielknoten
+     ebenfalls Bestandteil der Selektion sind oder bereits im Anzeigefenster
+     visualisiert sind. 
      
      \item
      Die neu eingefügte Selektion ist in dem entsprechenden 
@@ -402,7 +402,7 @@ in Anzeigefenster}
 
 
   Dieser Abschnitt beschreibt grundlegende Konventionen für die
-  Umwandlung von IML-Teilgraphen in Selektionen und anders herum.
+  Umwandlung von IML-Teilgraphen in Selektionen und umgekehrt.
 
 
   \subsection {Selektion aus IML-Teilgraphen ableiten}
@@ -482,7 +482,7 @@ in Anzeigefenster}
             
     \item 
     Andere Selektionen des Anzeigefensters werden entsprechend aktualisiert, 
-    die betroffenen Fenster-Knoten und Fenster-Kanten werden also auch aus 
+    die betroffenen Fenster-Knoten und Fenster-Kanten werden auch aus 
     diesen Selektionen entfernt.
 
   \end{enumerate}
@@ -507,7 +507,7 @@ von GIANT diesbezüglich unterstützen.
 \begin {enumerate}
 
   \item
-  Es gibt einen fixen Punkt von dem aus alle Fenster-Knoten weggeschoben
+  Es gibt einen fixen Punkt, von dem aus alle Fenster-Knoten weggeschoben
   werden.
   
   \item 

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.40 $
-%  $Date: 2003/04/17 22:44:59 $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.41 $
+%  $Date: 2003/04/18 19:43:26 $
 %  $Author: schwiemn $
 %
 %  Description: UseCases für die Fensterfunktionalität der GUI
@@ -90,8 +90,8 @@ Dient dem Umbenennen eines Anzeigefensters des Projektes.
     Popup-Menü (siehe \ref{WINDOW-LIST-POPUP}) \gq{Rename Window} aus.
 
     \step[2] 
-    GIANT öffnet den allgemeinen Texteingabedialog (siehe \ref{DIALOG-WINDOW})
-    \gq{Enter Name For Window}.
+    GIANT öffnet den allgemeinen Texteingabedialog 
+    (siehe \ref{DIALOG-WINDOW}).
 
     \step[3]
     Der Benutzer gibt dort einen zulässigen Namen für das Anzeigefenster ein
@@ -184,7 +184,11 @@ Näheres zur Persistenz von Anzeigefenstern ist unter Abschnitt
     \step[1]
     Der Benutzer führt einen Rechtsklick auf ein Anzeigefenster in der Liste
     über die Anzeigefenster (siehe \ref{WINDOW-LIST}) durch und wählt im
-    Popup-Menü (siehe \ref{WINDOW-LIST-POPUP}) \gq{Close Window} aus.
+    Popup-Menü (siehe \ref{WINDOW-LIST-POPUP}) \gq{Close Window} aus.\\
+    Natürlich kann der Benutzer diesen UseCase auch starten, indem
+    er das Anzeigfenster mit den vom jeweiligen Window-Manager bereit
+    gestellten Mitteln (z.B. der typische \gq{X} Button oben rechts
+    in der Kopfleiste eines Fensters) schlie\ss t).
 
     \step[2]
     GIANT zeigt die allgemeine Sicherheitsabfrage 
@@ -427,13 +431,15 @@ Ziel-Anzeigefenster unter Beibehaltung des Layouts kopiert werden
     an der die neuen Fenster-Knoten und Fenster-Kanten eingefügt werden 
     sollen (siehe auch \ref{Fadenkreuzcursor}).
     Die mit dem Fadenkreuzcursor vorgegebene Position entspricht hierbei
-    in etwa dem Punkt, an dem der Mittelpunkt eines die zu kopierende
+    in etwa dem Punkt, an dem der Mittelpunkt eines die eingefügte
     Selektion umspannenden Rechtecks dann im Ziel-Anzeigefenster liegt.
 
     
     \step[3]
     GIANT kopiert die Fenster-Knoten und Fenster-Kanten der 
-    Selektion in das Ziel-Anzeigefenster. 
+    Selektion in das Ziel-Anzeigefenster. Bei neu eingefügten 
+    Fenster-Knoten bleibt das Layout, welches diese in der
+    Quell-Selektion relativ zueinander haben, erhalten.\\
     Je nachdem, welchen Eintrag der Benutzer im Popup-Menü ausgewählt hat,
     geschieht mit den bereits im Ziel-Anzeigefenster vorhandenen 
     Fenster-Knoten der Selektion folgendes:
@@ -734,7 +740,8 @@ sichtbar ist.
 \end{uc}
 
 % ==============================================================================
-\begin{uc}[Zoomen auf den Anzeigeinhalt]{UC: Zoomen auf gesamten Inhalt eines Anzeigefensters}
+\begin{uc}[Zoomen auf den Anzeigeinhalt]
+{UC: Zoomen auf gesamten Inhalt eines Anzeigefensters}
 \index{zoomen auf gesamten Anzeigeinhalt}
 Wählt die passende Zoomstufe und scrollt den sichtbaren Anzeigeinhalt so, 
 dass der Anzeigeinhalt vollständig im sichtbaren Anzeigeinhalt

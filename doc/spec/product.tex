@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: product.tex,v $, $Revision: 1.41 $
-%  $Date: 2003/04/18 00:50:12 $
-%  $Author: keulsn $
+%  $RCSfile: product.tex,v $, $Revision: 1.42 $
+%  $Date: 2003/04/18 19:43:26 $
+%  $Author: schwiemn $
 %
 %  Description: Beschreibung des Produktes. Übersicht über die Funktionen
 %               und allgemeine Bedienkonzepte.
@@ -14,8 +14,8 @@
 % ==============================================================================
 \section{GIANT Projekte} \index{Projekte} \index{Persistenz}
 
-Innerhalb eines Projektes fasst GIANT Informationen, wie
-Anzeigefenster und IML-Teilgraphen für einen vorgegebenen IML-Graphen,
+Innerhalb eines Projektes fasst GIANT Informationen wie
+Anzeigefenster und IML-Teilgraphen für einen vorgegebenen IML-Graphen
 zusammen und speichert diese persistent. Die Zusammenfassung zu
 Projekten soll der Übersicht dienen und den Austausch von
 Teilergebnissen,
@@ -44,13 +44,13 @@ GIANT IML-Teilgraphen und Selektionen.
   Layoutinformationen.
 
   \subsection{Selektionen} \index{Selektionen}
-  Selektionen stellen die lokale Variante von Knoten- und Kantenmengen dar.
-  Sie sind immer einem festen Anzeigefenster zugeordnet.
-  Selektionen können beliebige Knoten und Kanten 
-  umfassen, ohne dass diese 
-  einen Teilgraphen bilden müssen.
-  Jeder Knoten und jede Kante einer Selektion muss auch im Anzeigefenster
-  als Fenster-Knoten oder Fenster-Kante vorhanden sein.
+  Selektionen stellen eine Menge von Fenster-Knoten und Fenster-Kanten
+  dar. Selektionen sind immer einem festen Anzeigefenster zugeordnet
+  und umfassen nur Fenster-Knoten und Fenster-Kanten des
+  Anzeigeinhaltes dieses Anzeigefensters.
+  Die Fenster-Knoten und Fenster-Kanten einer Selektion müssen keinen
+  Teilgraphen bilden, sie dürfen also auch Fenster-Kanten ohnen die
+  zugehörigen Start- und Zielknoten umfassen.
 
 % ==============================================================================
 \section{Anzeigefenster} \index{Anzeigefenster}

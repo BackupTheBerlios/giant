@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.31 $
-%  $Date: 2003/04/18 16:13:56 $
-%  $Author: birdy $
+%  $RCSfile: config.tex,v $, $Revision: 1.32 $
+%  $Date: 2003/04/18 19:43:26 $
+%  $Author: schwiemn $
 %
 %  Description:
 %
@@ -14,8 +14,9 @@
 \begin {enumerate}
 
   \item
-  Sämtliche konfigurierbaren Einstellungen werden in XML-Dateien vorgenommen,
-  entsprechende Dokumenttyp-Definitionen (DTDs) werden erstellt.
+  Sämtliche konfigurierbaren Einstellungen werden in XML-Dateien vorgenommen.
+  Für die verschiedenen Dateitypen werden auch
+  Dokumenttyp-Definitionen (DTDs) erstellt.
   
   \item \label{config-allgemeines-punkt2}
   \index{Konfigurationsdatei!globale}
@@ -154,11 +155,15 @@ Für die Visualisierungsstile gelten die folgenden Konventionen:
   Knotentypen angewendet wird, für die nichts anderes definiert ist.
   \begin{enumerate}  
   
-    \item Ein Icon für die Knotentyp (Verweis auf eine entsprechende 
-          Bilddatei). Das Icon muss im Pixmap Format Pixel
+
+    \item Ein Icon für die Knotenklasse (Verweis auf eine entsprechende 
+          Bilddatei). Das Icon muss im Pixmap-Format 
           vorliegen. Die Größe des Icons ist beliebig, bei zu großen
-          Icons wird abgeschnitten.
-    \item Eine Liste der Attribute der Knotentyp, welche direkt innerhalb 
+          Icons wird abgeschnitten. Es wird garantiert, dass Icons
+          bis zu einer Grö\ss e von 32*32 Pixel komplett dargestellt werden
+          können.
+
+    \item Eine Liste der Attribute der Knotenklasse, welche direkt innerhalb 
           des Anzeigefensters in dem \gq{Rechteck} für den Knoten dargestellt 
           werden sollen.
     \item Die Farbe der Schrift, mit der die Informationen innerhalb
