@@ -20,9 +20,9 @@
 --
 --  First Author: <unkown>
 --
---  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/05/31 19:23:40 $
+--  $Date: 2003/06/01 11:08:31 $
 --
 
 with Ada.Text_Io; use Ada.Text_Io;
@@ -162,7 +162,9 @@ package body Giant.Default_Dialog is
       Gtk.Hbutton_Box.Gtk_New (Dialog.Button_Box);
       Gtk.Hbutton_Box.Set_Spacing (Dialog.Button_Box, BUTTON_SPACING);
       Gtk.Hbutton_Box.Set_Layout (Dialog.Button_Box, Buttonbox_Spread);
-      Gtk.Box.Add (Dialog.Center_Box, Dialog.Button_Box);
+      Gtk.Box.Pack_Start (Dialog.Center_Box, Dialog.Button_Box,
+                          Expand => False, Fill => True,
+                          Padding => DEFAULT_SPACING);
 
       if (Buttons = Button_Close) then
          Gtk.Hbutton_Box.Add (Dialog.Button_Box,
