@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.18 $
--- $Author: keulsn $
--- $Date: 2003/09/12 20:30:11 $
+-- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.19 $
+-- $Author: schwiemn $
+-- $Date: 2003/09/15 18:35:27 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Strings.Fixed;
@@ -487,16 +487,16 @@ package body Giant.Config_Settings is
 
       -- 1. try expansion regarding abs_path_root
       begin
-
+                     
          return File_Management.Get_Absolute_Path_From_Relative
            (Abs_Path_Root,
             Unexpanded_Path);
       exception
          when File_Management.Abs_Path_Could_Not_Be_Calculated_Exception =>
-            null;
+            null;            
       end;
 
-      -- 2. try expansion regarding directory of config file
+      -- 2. try expansion regarding directory of config file      
       begin
 
           return File_Management.Get_Absolute_Path_From_Relative

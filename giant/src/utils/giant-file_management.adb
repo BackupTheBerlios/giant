@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.27 $
--- $Author: squig $
--- $Date: 2003/09/02 19:51:16 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.28 $
+-- $Author: schwiemn $
+-- $Date: 2003/09/15 18:35:27 $
 --
 --
 
@@ -39,7 +39,13 @@ with GNAT.OS_Lib;
 with Giant.Config;
 with Giant.Config.Global_Data;
 
+with Giant.Logger;          -- from GIANT
+pragma Elaborate_All (Giant.Logger);
+
 package body Giant.File_Management is
+
+   -- logging functionality
+   package Logger is new Giant.Logger ("Giant.File_Management");
 
    ---------------------------------------------------------------------------
    function Get_Filtered_Files_From_Directory
@@ -396,6 +402,12 @@ package body Giant.File_Management is
    is
       -- store "working directory for the execution environment"
       Old_Exec_Dir : String := GNAT.Directory_Operations.Get_Current_Dir;
+      
+      -- needed to calculate an absolute path
+      ADA_Text_IO_File_or_Dir : ADA.Text_IO.File_Type;
+
+      Abs_Path : Ada.Strings.Unbounded.Unbounded_String;
+      
    begin
       if (GNAT.OS_Lib.Is_Directory (Start_Dir) = False) then
          -- if an invalid start directory is passed the file
@@ -404,22 +416,30 @@ package body Giant.File_Management is
       end if;
 
       GNAT.Directory_Operations.Change_Dir (Start_Dir);
-      GNAT.Directory_Operations.Change_Dir (Rel_Path);
-
-      declare
-         Abs_Path : constant String
-           := GNAT.Directory_Operations.Get_Current_Dir;
+   
       begin
-         -- switch back to old
-         -- "working directory for the execution environment"
-         GNAT.Directory_Operations.Change_Dir (Old_Exec_Dir);
+         ADA.Text_IO.Open
+           (File => ADA_Text_IO_File_or_Dir,
+            Mode => ADA.Text_IO.In_File,
+            Name => Rel_Path);
 
-         return Abs_Path;
+         Abs_Path := Ada.Strings.Unbounded.To_Unbounded_String
+           (ADA.Text_IO.Name(ADA_Text_IO_File_or_Dir));
+
+         ADA.Text_IO.Close(ADA_Text_IO_File_or_Dir);
+      exception
+
+         when ADA.Text_IO.Name_Error =>
+           raise Abs_Path_Could_Not_Be_Calculated_Exception;
       end;
+
+      GNAT.Directory_Operations.Change_Dir (Old_Exec_Dir);
+
+      return Ada.Strings.Unbounded.To_String (Abs_Path);
    exception
-      when others =>
+      when E : others =>
          GNAT.Directory_Operations.Change_Dir (Old_Exec_Dir);
-         raise Abs_Path_Could_Not_Be_Calculated_Exception;
+         Ada.Exceptions.Reraise_Occurrence (E);
    end Get_Absolute_Path_From_Relative;
 
    ---------------------------------------------------------------------------

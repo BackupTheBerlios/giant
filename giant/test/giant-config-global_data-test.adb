@@ -20,14 +20,15 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-config-global_data-test.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-config-global_data-test.adb,v $, $Revision: 1.4 $
 --  $Author: schwiemn $
---  $Date: 2003/09/15 17:39:45 $
+--  $Date: 2003/09/15 18:35:27 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
 with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
 
+with Giant.File_Management;
 with Giant.Config_Settings;
 
 with Giant.Logger;
@@ -41,7 +42,7 @@ package body Giant.Config.Global_Data.Test is
    is
    begin
    
-      Logger.Debug ("Test - AAAA");
+      Logger.Debug ("Teste - Path Expansion for Annotations Icon");
       Giant.Config_Settings.Initialize_Config_Settings
         ("./resources/config_glob_test/global_config.xml",
          "");
@@ -59,11 +60,43 @@ package body Giant.Config.Global_Data.Test is
           "Check correct Icon_For_Node_Annotations path in config file");
           
       -----------
-      Logger.Debug ("Annotations_Icon_Path: "
+      -- Loactes Annotations Icon using path relative to config file pos
+      Assert 
+        ((Giant.Config_Settings.Get_Setting_With_Path_Expanded
+           ("Icon_For_Node_Annotations")
+          = File_Management.Get_Absolute_Path_To_File_From_Relative
+             ("./",
+              "./resources/config_glob_test/annotation_dir/document.xpm")),
+         "check annotations icon rekative to config file 1");          
+      Assert 
+        ((Giant.Config.Global_Data.Get_Node_Annotations_Icon
+          = File_Management.Get_Absolute_Path_To_File_From_Relative
+            ("./",
+             "./resources/config_glob_test/annotation_dir/document.xpm")),
+         "check annotations icon relative to config file 2"); 
+                                    
+      Logger.Debug ("Annotations_Icon_Path_Global: "
         & Giant.Config.Global_Data.Get_Node_Annotations_Icon);
+        
+      -----------
+      -- Loactes Annotations Icon using absolute_path_root setting
+      Assert 
+        ((Giant.Config_Settings.Get_Setting_With_Path_Expanded
+           ("Icon_relative_to_aps_path_root")
+          = File_Management.Get_Absolute_Path_To_File_From_Relative
+             ("./",
+              "./resources/config_glob_test/annotation_dir/document.xpm")),
+         "check annotations icon relative to absolute_path_root node");          
+        
+        
+      ---------------------  
+      -- Check for empty paths
+      Assert 
+        ((Giant.Config_Settings.Get_Setting_With_Path_Expanded
+           ("Icon_should_not_be_found")
+          = ""),
+         "check empty path for not existing icon"); 
 
-      --Config.Initialize_Config_Data ("resources/global_config.xml", "");
---      Assert (Config_Settings.Does_Setting_Exist ("Test_Setting"), "Test_Setting");
    end Test_Icons;
 
    
