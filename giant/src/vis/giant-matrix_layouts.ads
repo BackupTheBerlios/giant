@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-matrix_layouts.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-matrix_layouts.ads,v $, $Revision: 1.2 $
 --  $Author: koppor $
---  $Date: 2003/07/01 21:50:30 $
+--  $Date: 2003/07/01 23:16:36 $
 --
 ------------------------------------------------------------------------------
 --
@@ -89,6 +89,11 @@ package Giant.Matrix_Layouts is
 
 private
    type Matrix_Layout_Record is
-     new Evolutions.Concurrent_Evolution with null record;
+     new Evolutions.Concurrent_Evolution with record
+        Widget          : Giant.Graph_Widgets.Graph_Widget;
+        Widget_Lock     : Giant.Graph_Widgets.Lock_Type;
+        The_Selection   : Giant.Graph_Lib.Selections.Selection;
+        Target_Position : Giant.Vis.Logic.Vector_2d;
+     end record;
 
 end Giant.Matrix_Layouts;
