@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.13 $
+--  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.14 $
 --  $Author: koppor $
---  $Date: 2003/06/27 15:51:26 $
+--  $Date: 2003/06/28 18:21:25 $
 
 with Untagged_Ptr_Ops;
 
@@ -330,11 +330,13 @@ package body Giant.Graph_Lib.Selections is
         (Read_Element => Read_Edge_Id);
 
    begin
+      --  read name
       Bauhaus_Io.Read_Natural (Stream, Len);
       Sel := new Selection_Record (Name_Length => Len);
       Bauhaus_Io.Read_String (Stream, Sel.Name);
 
-      -- TBD: FIX: graph_lib Read_Edge_Id_Set (Stream, Sel.Edges);
+      --  read contained edges and nodes
+      Read_Edge_Id_Set (Stream, Sel.Edges);
       Read_Node_Id_Set (Stream, Sel.Nodes);
    end Selection_Read;
 
@@ -381,9 +383,12 @@ package body Giant.Graph_Lib.Selections is
         (Write_Element => Write_Edge_Id);
 
    begin
+      --  write name
       Bauhaus_Io.Write_Natural (Stream, Sel.Name'Length);
       Bauhaus_Io.Write_String  (Stream, Sel.Name);
-      --  TBD: FIXME: Write_Edge_Id_Set (Stream, Sel.Edges);
+
+      --  write contained edges and nodes
+      Write_Edge_Id_Set (Stream, Sel.Edges);
       Write_Node_Id_Set (Stream, Sel.Nodes);
    end Selection_Write;
 
