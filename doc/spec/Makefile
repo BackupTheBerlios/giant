@@ -14,7 +14,7 @@ view: ps
 
 spec.pdf: base_pdf spec-pdf.pdf
 
-spec-pdf.pdf:
+spec-pdf.pdf: step1
 	pdflatex $*
 	pdflatex $*
 	makeindex $*
@@ -24,14 +24,14 @@ spec-pdf.pdf:
 	mv spec-pdf.pdf spec.pdf
 
 ps: base_ps spec.ps
-pdf: spec.pdf
+pdf: spec-pdf.pdf
 
-step1: *.tex
-	rm -f spec.dvi spec.ps spec.pdf
+step1: *.tex *.png
+	rm -f spec.dvi spec.ps spec.pdf spec-pdf.pdf
 
 base_ps: step1 pics spec.ind
 base_pdf: step1
 
 clean:
-	rm -f *~ *.aux *.dvi *.eps *.ilg *.ind *.dix *.log *.toc spec.pdf
+	rm -f *~ *.aux *.dvi *.eps *.ilg *.ind *.dix *.log *.toc spec.pdf spec-pdf.pdf
 
