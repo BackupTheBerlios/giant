@@ -18,23 +18,20 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.3 $
 --  $Author: koppor $
---  $Date: 2003/06/10 09:24:23 $
+--  $Date: 2003/06/14 08:32:37 $
 
 package body Giant.Graph_Lib.Selections is
 
-   ---------
-   -- "<" --
-   ---------
-
+   ---------------------------------------------------------------------------
    function "<"
      (Left  : in Selection;
       Right : in Selection)
       return Boolean
    is
    begin
-      return "<" (Left, Right);
+      return False;
    end "<";
 
    --------------
@@ -94,19 +91,20 @@ package body Giant.Graph_Lib.Selections is
       return Selection
    is
    begin
-      return Clone (Selection_To_Clone);
+      --  TBD
+      return new Selection_Record (Name_Length => 1);
    end Clone;
 
-   ------------
-   -- Create --
-   ------------
-
+   ---------------------------------------------------------------------------
+   --  Creates a new Selection with no nodes and no edges
+   --
    function Create
      (Name : in    Valid_Names.Standard_Name)
       return Selection
    is
    begin
-      return Create (Name);
+      --  TBD
+      return new Selection_Record (Name_Length => 1);
    end Create;
 
    -------------
@@ -129,7 +127,8 @@ package body Giant.Graph_Lib.Selections is
       return String
    is
    begin
-      return Get_Name (Selection_To_Read);
+      --  TBD
+      return "";
    end Get_Name;
 
    ------------------
@@ -142,7 +141,8 @@ package body Giant.Graph_Lib.Selections is
       return Selection
    is
    begin
-      return Intersection (Left, Right);
+      --  TBD
+      return new Selection_Record (Name_Length => 1);
    end Intersection;
 
    -----------------
@@ -169,63 +169,72 @@ package body Giant.Graph_Lib.Selections is
       null;
    end Remove_Edge_Set;
 
-   -----------------
-   -- Remove_Node --
-   -----------------
-
+   ----------------------------------------------------------------------------
    procedure Remove_Node
      (Selection_To_Modify : in out Selection;
       Node                : in     Node_Id)
    is
    begin
-      null;
+      begin
+         Node_Id_Sets.Remove (Selection_To_Modify.Nodes,
+                              Node);
+      exception
+         when Node_Id_Sets.No_Member =>
+            raise Node_Does_Not_Exist;
+      end;
    end Remove_Node;
 
-   ---------------------
-   -- Remove_Node_Set --
-   ---------------------
-
+   ----------------------------------------------------------------------------
    procedure Remove_Node_Set
      (Selection_To_Modify : in out Selection;
       Node_Set            : in     Node_Id_Set)
    is
+      procedure Execute (Node : in Node_Id) is
+      begin
+         Remove_Node (Selection_To_Modify,
+                      Node);
+      end Execute;
+
+      procedure Apply is new Node_Id_Sets.Apply (Execute => Execute);
+
    begin
-      null;
+      Apply (Node_Set);
    end Remove_Node_Set;
 
-   ------------
-   -- Rename --
-   ------------
-
+   ----------------------------------------------------------------------------
    procedure Rename
      (Selection_To_Rename : in out Selection;
       New_Name            : in     Valid_Names.Standard_Name)
    is
+      Res  : Selection;
+      Name : String := Valid_Names.To_String (New_Name);
    begin
-      null;
+      Res       := new Selection_Record (Name_Length => Name'Length);
+      Res.Name  := Name;
+      Res.Edges := Selection_To_Rename.Edges;
+      Res.Nodes := Selection_To_Rename.Nodes;
+
+      Destroy (Selection_To_Rename);
+      Selection_To_Rename := Res;
    end Rename;
 
-   --------------------
-   -- Selection_Read --
-   --------------------
-
+   ----------------------------------------------------------------------------
    procedure Selection_Read
-     (Stream            : in Bauhaus_Io.In_Stream_Type;
-      Selection_To_Read : in Selection)
+     (Stream            : in      Bauhaus_Io.In_Stream_Type;
+      Selection_To_Read :     out Selection)
    is
    begin
-      null;
+      --  TBD
+      Selection_To_Read := new Selection_Record (Name_Length => 1);
    end Selection_Read;
 
-   ---------------------
-   -- Selection_Write --
-   ---------------------
-
+   ----------------------------------------------------------------------------
    procedure Selection_Write
      (Stream             : in Bauhaus_Io.Out_Stream_Type;
       Selection_To_Write : in Selection)
    is
    begin
+      --  TBD
       null;
    end Selection_Write;
 
@@ -239,20 +248,21 @@ package body Giant.Graph_Lib.Selections is
       return Selection
    is
    begin
-      return Symetric_Difference (Left, Right);
+      --  TBD
+      return new Selection_Record (Name_Length => 1);
    end Symetric_Difference;
 
-   -----------
-   -- Union --
-   -----------
-
+   ----------------------------------------------------------------------------
    function Union
      (Left  : in Selection;
       Right : in Selection)
       return Selection
    is
+      Res : Selection;
    begin
-      return Union (Left, Right);
+      --  TBD
+      Res := new Selection_Record (Name_Length => 1);
+      return Res;
    end Union;
 
 end Giant.Graph_Lib.Selections;
