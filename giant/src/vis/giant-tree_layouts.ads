@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.ads,v $, $Revision: 1.15 $
+--  $RCSfile: giant-tree_layouts.ads,v $, $Revision: 1.16 $
 --  $Author: koppor $
---  $Date: 2003/08/25 10:19:13 $
+--  $Date: 2003/09/02 13:38:42 $
 --
 ------------------------------------------------------------------------------
 --
@@ -236,6 +236,10 @@ private
         Root_Node        : Graph_Lib.Node_Id;
         Meta_Class_Set   : Config.Class_Sets.Meta_Class_Set_Access;
         State            : Layout_State;
+
+        --  used at finish to distinguish different cases
+        --   (0, 1 or more nodes to layout)
+        Count_Nodes_To_Layout : Natural;
 
         ----------------------------------------
         --  Init by Step / Synchronized_Step  --

@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.20 $
+--  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.21 $
 --  $Author: koppor $
---  $Date: 2003/08/31 12:03:47 $
+--  $Date: 2003/09/02 13:38:24 $
 --
 ------------------------------------------------------------------------------
 --  Variables are named according to the paper
@@ -124,8 +124,6 @@ package body Giant.Tree_Layouts is
       is
 
       begin
-         Graph_Lib.Node_Id_Sets.Destroy (Layout.Nodes_To_Layout);
-
          Remove_Node_Layout_Data;
 
          Node_Layout_Data_Lists.Destroy (Layout.Queue);
@@ -139,6 +137,7 @@ package body Giant.Tree_Layouts is
 
    begin
       Graph_Widgets.Release_Lock (Layout.Widget, Layout.Widget_Lock);
+      Graph_Lib.Node_Id_Sets.Destroy (Layout.Nodes_To_Layout);
 
       if Canceled then
          case Layout.State is
@@ -163,7 +162,13 @@ package body Giant.Tree_Layouts is
 
          end case;
       else
-         Clean_Everything_Up;
+         if Layout.Count_Nodes_To_Layout > 1 then
+            --  0, 1 nodes: trivial layout
+            --  2 or more nodes: non-trivial algorithm used
+            --    data structures were allocated etc.
+            --    they have to be destroyed
+            Clean_Everything_Up;
+         end if;
       end if;
    end Finish;
 
@@ -409,7 +414,9 @@ package body Giant.Tree_Layouts is
             --  Depending on the amount of nodes to layout,
             --    we can do it now (0, 1) or we have to a non-trivial layout
             --    (>=2)
-            case Graph_Lib.Node_Id_Sets.Size (Layout.Nodes_To_Layout) is
+            Layout.Count_Nodes_To_Layout :=
+              Graph_Lib.Node_Id_Sets.Size (Layout.Nodes_To_Layout);
+            case Layout.Count_Nodes_To_Layout is
                when 0 =>
                   Next_Action := Evolutions.Finish;
                when 1 =>
