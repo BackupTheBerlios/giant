@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.6 $
+-- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.7 $
 -- $Author: schwiemn $
--- $Date: 2003/06/23 15:24:18 $
+-- $Date: 2003/06/23 17:09:00 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Text_IO;
@@ -652,6 +652,49 @@ package body Giant.Config_Settings is
    end Get_User_Config_File;
 
    ---------------------------------------------------------------------------
+   procedure Write_DTD_File (File_Name : in String) is 
+   
+      DTD_File : Ada.Text_IO.File_Type;
+   begin
+   
+      --  create the file
+      -------------------
+      Ada.Text_IO.Create
+        (DTD_File,
+         Ada.Text_IO.Out_File,
+         File_Name);
+         
+      Ada.Text_IO.Set_Output (DTD_File);
+         
+      Ada.Text_IO.Put_Line
+        ("<!ELEMENT giant_config_file (absolute_path_root?, (setting)*)>");
+
+      Ada.Text_IO.Put_Line
+        ("  <!ELEMENT absolute_path_root EMPTY>");
+        
+      Ada.Text_IO.Put_Line 
+        ("  <!ATTLIST absolute_path_root");
+      Ada.Text_IO.Put_Line
+        ("    root_directory  CDATA  #REQUIRED");        
+      Ada.Text_IO.Put_Line
+        ("  >");
+      Ada.Text_IO.Put_Line 
+        ("  <!ELEMENT setting EMPTY>");
+      Ada.Text_IO.Put_Line 
+        ("  <!ATTLIST setting");
+      Ada.Text_IO.Put_Line 
+        ("    name   CDATA  #REQUIRED");
+      Ada.Text_IO.Put_Line 
+        ("    value  CDATA  #REQUIRED");
+      Ada.Text_IO.Put_Line 
+        ("  >");
+                
+      --  close down resources
+      Ada.Text_IO.Set_Output (Ada.Text_IO.Standard_Output);
+      Ada.Text_IO.Close (DTD_File);      
+   end Write_DTD_File;
+
+   ---------------------------------------------------------------------------
    procedure Store_User_Config_File (File_Name : in String) is
 
       Config_File : Ada.Text_IO.File_Type;
@@ -663,7 +706,7 @@ package body Giant.Config_Settings is
 
       if not ADO_Initialized then
          raise Config_Settings_ADO_Not_Initialized_Exception;
-      end if;
+      end if;      
 
       --  create the file
       -------------------
@@ -722,6 +765,14 @@ package body Giant.Config_Settings is
       --  close down resources
       Ada.Text_IO.Set_Output (Ada.Text_IO.Standard_Output);
       Ada.Text_IO.Close (Config_File);
+      
+      
+      -- write DTD File into the same directory
+      Write_DTD_File 
+        (File_Management.Get_Absolute_Path_To_File_From_Relative
+          (File_Management.Return_Dir_Path_For_File_Path (File_Name),
+           "giant_config_file.dtd"));
+                          
    end Store_User_Config_File;
 
 end Giant.Config_Settings;

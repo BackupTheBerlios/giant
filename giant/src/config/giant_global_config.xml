@@ -16,9 +16,9 @@
   <setting name="Resources_Directory" value="." />
   
   <!-- Relative Paths in all config files are regarded as relative -->
-  <!-- towards the "Resources_Directory" if you change the standard
-  <!-- Resource dirctory in a user defined config file then 
-  <!-- all relative paths in the standard config file of giant will
+  <!-- towards the "Resources_Directory" if you change the standard -->
+  <!-- Resource dirctory in a user defined config file then -->
+  <!-- all relative paths in the standard config file of giant will -->
   <!-- also be regarded as realtive towards this path -->
   <setting name="Icon_For_Node_Annotations" value="./test_bild.xpm" />
   
