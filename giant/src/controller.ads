@@ -18,50 +18,43 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  First Author: <unknown>
+--  First Author: Steffen Pingel
 --
---  $RCSfile: template.ads,v $, $Revision: 1.2 $
+--  $RCSfile: controller.ads,v $, $Revision: 1.1 $
 --  $Author: squig $
 --  $Date: 2003/06/03 22:05:21 $
 --
 ------------------------------------------------------------------------------
 --
---  Contains the GIANT source template.
+--  Contains the controller. The controller is responsible for maintaing
+--  data consistency. All operations that modify global data must be
+--  included in this package.
 --
 
-with Giant.Controller;
+with Giant.Project_Management;
 
-package Giant.Template is
-
-   ---------------------------------------------------------------------------
-   --  Stores a foo bar.
-   type Coordinate is private record;
+package Giant.Controller is
 
    ---------------------------------------------------------------------------
-   --  Raised on attempt show already visible window.
-   Already_Visible_Exception : exception;
-
-   ---------------------------------------------------------------------------
-   --  Makes W visible on screen.
+   --  Creates a new project.
    --
-   --  Parameters:
-   --    W - The Window
-   --  Returns:
-   --    True, if successful; False, otherwise
-   --  Raises:
-   --    Already_Visible_Exception - raised if W is already visible
-   function Show_Window
-     (W : in Coordinate)
-     return Booolean;
+   --  See:
+   --    Project_Management.Create_New_Empty_Project
+   function New_Project
+     (Name                            : in String;
+      Project_Directory               : in String;
+      Bauhaus_IML_Graph_File          : in String;
+      Bauhaus_IML_Graph_File_Checksum : in Integer)
+     return Project_Access;
+
+   ---------------------------------------------------------------------------
+   --  Returns the currently open project.
+   --
+   function Get_Project
+     return Project_Access;
 
 private
 
-   type Coordinate is record
-      --  X Coordinate
-      X : Float;
-      --  Y Coordinate
-      Y : Float;
-   end record;
+   Current_Project : Project_Access;
 
-
-end Giant.Template;
+end Giant.Controller;

@@ -18,42 +18,44 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  First Author: <unkown>
+--  First Author: Steffen Pingel
 --
---  $RCSfile: template.adb,v $, $Revision: 1.2 $
+--  $RCSfile: controller.adb,v $, $Revision: 1.1 $
 --  $Author: squig $
 --  $Date: 2003/06/03 22:05:21 $
 --
 
-with Giant.Controller;
-with Giant.Logger;
+with Giant.Valid_Names;
 
-package body Giant.Template is
+package body Giant.Controller is
 
-   Window_Count : Integer;
-   MAX_WINDOW   : constant Integer := 5;
-
-   function Show_Window
-     (W : in Coordinate)
-      return Booolean is
+   ---------------------------------------------------------------------------
+   --  Creates a new project.
+   --
+   --  See:
+   --    Project_Management.Create_New_Empty_Project
+   function New_Project
+     (Name							  : in String;
+	  Project_Directory				  : in String;
+	  Bauhaus_IML_Graph_File		  : in String;
+	  Bauhaus_IML_Graph_File_Checksum : in Integer)
+	 return Project_Access
+   is
    begin
-      if Is_Visible (W) then
-         raise Already_Visible_Exception;
-      elsif (Window_Count == MAX_WINDOW) then
-         raise Constraint_Exception;
-      end if;
+	  Current_Project := Project_Management.Create_New_Empty_Project
+		(Valid_Names.To_Standard_Name (Name),
+		 Project_Directory,
+		 Bauhaus_IML_Graph_File,
+		 Bauhaus_IML_Graph_File_Checksum);
+	  return Current_Project;
+   end New_Project;
 
-      for I in 1 .. MAX_WINDOW loop
-         case I is
-            when 1 =>
-               Foo_Bar;
-            when others =>
-               Bar_Foo;
-         end case;
-      end loop;
+   function Get_Project
+	 return Project_Access
+   is
+   begin
+     return Current_Project;
+   end;
 
-      Put_Line (-"User visible string.");
-   end Show_Window;
-
-end Giant.Template;
+end Giant.Controller;
 

@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_test.adb,v $, $Revision: 1.8 $
+-- $RCSfile: giant-gui_test.adb,v $, $Revision: 1.9 $
 -- $Author: squig $
--- $Date: 2003/06/03 19:20:59 $
+-- $Date: 2003/06/03 22:05:21 $
 --
 with Gtk.Main;
 
@@ -31,8 +31,10 @@ with Giant.Default_Logger;
 with Giant.Main_Window;
 with Giant.Graph_Window;
 with Giant.Gsl_Dialog;
+with Giant.Node_Annotation_Dialog;
 with Giant.Progress_Dialog;
 with Giant.Main_Window;
+with Giant.Graph_Lib;
 with Giant.Logger;
 --with Config;
 
@@ -40,7 +42,10 @@ procedure Giant.Gui_Test
 is
 --     My_Gsl_Dialog : Gsl_Dialog.Gsl_Dialog_Access;
 --     My_Progress_Dialog : Progress_Dialog.Progress_Dialog_Access;
-   My_Graph_Window : Graph_Window.Graph_Window_Access;
+--     My_Graph_Window : Graph_Window.Graph_Window_Access;
+   My_Node_Annotation_Dialog :
+     Node_Annotation_Dialog.Node_Annotation_Dialog_Access;
+   Node_Access : Giant.Graph_Lib.Node_Id;
 begin
    Default_Logger.Init;
    --Config.Initialize_Config_Data ("/etc/giant/giantrc", ".giantrc");
@@ -66,8 +71,13 @@ begin
 --     Progress_Dialog.Set_Value (My_Progress_Dialog, 10.0);
 --     Progress_Dialog.Show_All (My_Progress_Dialog);
 
-   Graph_Window.Create (My_Graph_Window);
-   Graph_Window.Show_All (My_Graph_Window);
+--     Graph_Window.Create (My_Graph_Window);
+--     Graph_Window.Show_All (My_Graph_Window);
+
+   Node_Access := Graph_Lib.Get_Root_Node;
+
+   Node_Annotation_Dialog.Create (My_Node_Annotation_Dialog, Node_Access);
+   Node_Annotation_Dialog.Show_All (My_Node_Annotation_Dialog);
 
 --     Main_Window.Show;
 

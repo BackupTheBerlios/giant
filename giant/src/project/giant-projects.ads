@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.2 $
--- $Author: schwiemn $
--- $Date: 2003/06/02 17:00:52 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.3 $
+-- $Author: squig $
+-- $Date: 2003/06/03 22:05:21 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -30,12 +30,12 @@
 -- This components are visualisation windows, node annotations and
 -- iml subgraphs.
 --
--- This package controls the management files for every component 
--- of a project and the project file itself. 
--- Therefore this package is solely responisble for the persistence of 
+-- This package controls the management files for every component
+-- of a project and the project file itself.
+-- Therefore this package is solely responisble for the persistence of
 -- projects - not any other package.
 --
--- In order to avoid a cyclic package dependency some functionality 
+-- In order to avoid a cyclic package dependency some functionality
 -- regarding the node_annotations has been put into the package
 -- "Node_Annotation_Management".
 --
@@ -50,7 +50,7 @@ with Giant.Node_Annotation_Management; -- from GIANT
 
 with String_Lists; -- from Bauhaus IML "Reuse.src"
 
-package Giant.Project_Management is
+package Giant.Projects is
 
    ---------------------------------------------------------------------------
    -- This ADT realizes a GIANT project
@@ -58,7 +58,7 @@ package Giant.Project_Management is
    -- a project.
    -- It is implemented as a pointer - Aliasing effects are possible
    type Project_Access is private;
-      
+
    ---------------------------------------------------------------------------
    -- Describes the highlight status of an iml subgraph
    type IML_Subgraph_Highlight_Status : exception;
@@ -87,8 +87,8 @@ package Giant.Project_Management is
    ---------------------------------------------------------------------------
    -- Raised if a project with the passed name does not exist.
    Project_Does_Not_Exist_Exception : exception;
-   
-      
+
+
    ---------------------------------------------------------------------------
    -- Determines whether a project exists.
    --
@@ -114,7 +114,7 @@ package Giant.Project_Management is
    -- Parameters:
    --   Project_Directory - A directory.
    -- Returns:
-   --   True, if "Project_Directory" already holds a project file; 
+   --   True, if "Project_Directory" already holds a project file;
    --   False, otherwise.
    -- Raises:
    --   Invalid_Project_Directory_Excpetion - Raised if the passed directory
@@ -134,8 +134,8 @@ package Giant.Project_Management is
    --     (project directory).
    -- Returns:
    --   A pointer to a new instance of the ADT describing a project.
-   -- Raises:   
-   --   Project_Does_Not_Exist_Exception - Raised if the project 
+   -- Raises:
+   --   Project_Does_Not_Exist_Exception - Raised if the project
    --     "Project_Name" is not found in the given directory.
    --   Invalid_Project_Directory_Excpetion - Raised if the passed directory
    --     "Project_Directory" is not found.
@@ -157,7 +157,7 @@ package Giant.Project_Management is
    --   Bauhaus_IML_Graph_File_Checksum - A checksum for the
    --     Bauhaus_IML_Graph_File.
    -- Returns:
-   --   A pointer to a new instance of the ADT describing a project.  
+   --   A pointer to a new instance of the ADT describing a project.
    -- Raises:
    --   Invalid_Project_Directory_Excpetion - Raised if the passed directory
    --     "Project_Directory" is not found.
@@ -171,49 +171,49 @@ package Giant.Project_Management is
      return Project_Access;
 
    ----------------------------------------------------------------------------
-   -- Deallocates a Project. 
+   -- Deallocates a Project.
    --
    -- Note
    --   This procedure performs a DEEP DEALLOCATION
-   --   all visualisation windows (including their Selections), the 
+   --   all visualisation windows (including their Selections), the
    --   node annotations
    --   and all IML_Subgraphs of the project are deallocated too.
-   --   As IML_Subraphs, Node Annotations and Visualisation_Windows 
+   --   As IML_Subraphs, Node Annotations and Visualisation_Windows
    --   and Selections are pointers you should beware of dangling pointers.
    --
    --   The Project file and all managements files are not affected
    --   by the call of this subprogramm.
    --
-   -- Parameters: 
+   -- Parameters:
    --   Project - The instance of the ADT that should be deallocated.
    -- Raises:
    --   Project_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Project_Access" is passed as 
+   --     initialized instance of "Project_Access" is passed as
    --     parameter.
    procedure Deallocate_Project_Deep (Project : in out Project_Access);
 
    ----------------------------------------------------------------------------
    -- Writes all data describing a project into its project file and
    -- the according management files for visualisations windows,
-   -- iml-subgraphs and node-annotations. 
+   -- iml-subgraphs and node-annotations.
    --
    -- After the execution of this method the state of the project (loaded
    -- into the main memory) exactly corresponds to the state of
    -- the project files.
    --
-   -- Parameters: 
+   -- Parameters:
    --   Project - The instance of the ADT that should be written into
    --     its project files.
    -- Raises:
    --   Project_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Project_Access" is passed as 
+   --     initialized instance of "Project_Access" is passed as
    --     parameter.
    procedure Store_Whole_Project (Project : in Project_Access);
 
    ----------------------------------------------------------------------------
    -- Writes all data describing a project into a new project file (incl.
    -- the according management files for visualisations windows,
-   -- iml-subgraphs and node-annotations). 
+   -- iml-subgraphs and node-annotations).
    --
    -- After the execution of this method the state of the project (loaded
    -- into the main memory) exactly corresponds to the state of
@@ -236,7 +236,7 @@ package Giant.Project_Management is
    --   Project_Directory - The new project directory.
    -- Raises:
    --   Project_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Project_Access" is passed as 
+   --     initialized instance of "Project_Access" is passed as
    --     parameter;
    --   Directory_Holds_Already_A_Project_File_Exception -- Raised if
    --     "Project_Directory" already holds a project file.
@@ -244,7 +244,7 @@ package Giant.Project_Management is
       (Project           : in Project_Access;
        Project_Name      : in Valid_Names.Standard_Name;
        Project_Directory : in String);
-       
+
    ---------------------------------------------------------------------------
    -- Returns the name of a project
    --
@@ -254,7 +254,7 @@ package Giant.Project_Management is
    --   The name of the project.
    -- Raises
    --   Project_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Project_Access" is passed as 
+   --     initialized instance of "Project_Access" is passed as
    --     parameter;
    function Get_Project_Name
       (Project : in Project_Access)
@@ -270,43 +270,43 @@ package Giant.Project_Management is
    --   The path to a project directory.
    -- Raises
    --   Project_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Project_Access" is passed as 
+   --     initialized instance of "Project_Access" is passed as
    --     parameter.
    function Get_Project_Directory
      (Project : in Project_Access)
      return Ada.Strings.Unbounded.Unbounded_String;
-     
-    
+
+
    ---------------------------------------------------------------------------
    -- A.1
    -- The Bauhaus IML Graph
    ---------------------------------------------------------------------------
-      
+
    --------------------------------------------------------------------------
    -- Returns the data necessary to identify the IML_Subgraph underlying
    -- this project.
    --
    --  Note
    --   The out Parameters are not checked in any way.
-   --   The "consumer" has to check whether is data is correct.  
+   --   The "consumer" has to check whether is data is correct.
    --
    -- Parameters:
    --   Project - A instance of the ADT that describes a project.
    --   Bauhaus_IML_Graph_File - The file of the Bauhaus IML-Graph
    --   Bauhaus_IML_Graph_File_Checksum - A checksum that may be used
-   --     to check whether "Bauhaus_IML_Graph_File" holds the 
+   --     to check whether "Bauhaus_IML_Graph_File" holds the
    --     correct IML Graph.
    -- Raises
    --   Project_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Project_Access" is passed as 
+   --     initialized instance of "Project_Access" is passed as
    --     parameter.
-   Get_Bauhaus_IML_Graph_File_Data 
+   Get_Bauhaus_IML_Graph_File_Data
      (Project                         : in Project_Access
       Bauhaus_IML_Graph_File          :
         out Ada.Strings.Unbounded.Unbounded_String;
       Bauhaus_IML_Graph_File_Checksum :    out Integer)
-     
-  
+
+
    ---------------------------------------------------------------------------
    -- B
    -- Visualisation Windows
@@ -329,7 +329,7 @@ package Giant.Project_Management is
    --
    -- 1. Memory_Loaded
    -- All data describing the visual window is loaded into the main memory
-   -- 
+   --
    -- - There is no management file for the visualisation window.
    --
    -- - Heap is allocated for an Instance of
@@ -385,11 +385,11 @@ package Giant.Project_Management is
    --   Vis_Window_Name - The name (unique inside a project) of a
    --     visualisation window.
    -- Returns:
-   --   True, if the project has a visualisation window with passed name 
+   --   True, if the project has a visualisation window with passed name
    --     "Vis_Window_Name"; False, otherwise.
    -- Raises:
    --   Project_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Project_Access" is passed as 
+   --     initialized instance of "Project_Access" is passed as
    --     parameter.
    function Does_Visualisation_Window_Exist
      (Project         : in Project_Access;
@@ -397,7 +397,7 @@ package Giant.Project_Management is
      return Boolean;
 
    ---------------------------------------------------------------------------
-   -- Returns the names of all visualisation windows of the project. 
+   -- Returns the names of all visualisation windows of the project.
    --
    -- The returned List is sorted in ascending alphabetical order
    -- If the project has no visualisation windows a empty list will
@@ -409,8 +409,8 @@ package Giant.Project_Management is
    --   The names of all visualisation windows of the project.
    -- Raises:
    --   Project_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Project_Access" is passed as 
-   --     parameter.   
+   --     initialized instance of "Project_Access" is passed as
+   --     parameter.
    function Get_All_Visualisation_Window_Names_Sorted
       (Project : in Project_Access)
       return String_Lists.List;
@@ -419,10 +419,10 @@ package Giant.Project_Management is
    -- Returns a visualisation window of a project.
    --
    -- Note
-   --   The instance of the ADT describing a visualisation window 
+   --   The instance of the ADT describing a visualisation window
    --   ("Vis_Window_Management.Visual_Window_Access") is a pointer
    --   into the internal data structure of "Project_Access".
-   --   You may change the content of a visualisation window, 
+   --   You may change the content of a visualisation window,
    --   but UNDER NO CIRCUMSTANCES you may DEALLOCATE the returned
    --   instance before the visualisation window is removed from the
    --   project.
@@ -433,7 +433,7 @@ package Giant.Project_Management is
    -- State Changes:
    --   Memory_Loaded_File_Linked  --> Memory_Loaded_File_Linked
    --   File_Linked                --> Memory_Loaded_File_Linked
-   -- 
+   --
    -- Parameters:
    --   Project - The instance of the ADT holding a project.
    --   Vis_Window_Name - The name (unique inside a project) of a
@@ -445,8 +445,8 @@ package Giant.Project_Management is
    --     if no visualisation window with the name "Vis_Window_Name"
    --     exists.
    --  Project_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Project_Access" is passed as 
-   --     parameter.   
+   --     initialized instance of "Project_Access" is passed as
+   --     parameter.
    function Get_Visualisation_Window
      (Project         : in Project_Access;
       Vis_Window_Name : in Valid_Names.Standard_Name)
@@ -458,9 +458,9 @@ package Giant.Project_Management is
    -- Note
    --   Afterwards the datastructure describing a visualisation window
    --   ("Vis_Window_Management.Visual_Window_Access") is part of
-   --   the internal datastructure of "Project_Access". 
+   --   the internal datastructure of "Project_Access".
    --   You may change the content of the window, but you may NOT
-   --   DEALLOCATE the visualisation window before it is removed 
+   --   DEALLOCATE the visualisation window before it is removed
    --   from the project.
    --
    -- State Changes:
@@ -475,8 +475,8 @@ package Giant.Project_Management is
    --     there is already a visualisation window with the same name
    --     as "Vis_Window" part of the project.
    --   Project_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Project_Access" is passed as 
-   --     parameter.  
+   --     initialized instance of "Project_Access" is passed as
+   --     parameter.
    --   Vis_Window_Management.Vis_Window_Data_Access_
    --     Not_Initialized_Exception
    --     - Raised if "Vis_Window" is not initialized.
@@ -485,7 +485,7 @@ package Giant.Project_Management is
      Vis_Window : in Vis_Window_Management.Visual_Window_Access);
 
    ---------------------------------------------------------------------------
-   -- Writes the data of a single visualisation window into 
+   -- Writes the data of a single visualisation window into
    -- the project file for that visualisation window.
    -- That should be done before the visualisation window is closed
    -- inside the project ("procedure Close_Window_In_Project").
@@ -501,8 +501,8 @@ package Giant.Project_Management is
    --   Visualisation_Window_Is_Not_Part_Of_Project - Raised
    --     if "Project" has no visualisation window with "Vis_Window_Name".
    --   Project_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Project_Access" is passed as 
-   --     parameter.  
+   --     initialized instance of "Project_Access" is passed as
+   --     parameter.
    procedure Store_Single_Project_Visualisation_Window
      (Project         : in Project_Access;
       Vis_Window_Name : in Valid_Names.Standard_Name);
@@ -528,7 +528,7 @@ package Giant.Project_Management is
    --  >"Close_Window_In_Project(Project_A, My_Window_X)"
    --
    --
-   -- For a visualisation window that is not loaded into the 
+   -- For a visualisation window that is not loaded into the
    -- main memory (Status: File_Linked) nothing will happen.
    --
    -- State Changes:
@@ -545,27 +545,27 @@ package Giant.Project_Management is
    --   Visualisation_Window_Is_Not_Part_Of_Project - Raised
    --     if "Project" has no visualisation window with "Vis_Window_Name".
    --   Project_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Project_Access" is passed as 
-   --     parameter.  
+   --     initialized instance of "Project_Access" is passed as
+   --     parameter.
    procedure Close_Window_In_Project
      (Project         : in Project_Access;
       Vis_Window_Name : in Valid_Names.Standard_Name);
 
 
    ---------------------------------------------------------------------------
-   -- Removes the visualisation window with the name "Vis_Window_Name" 
+   -- Removes the visualisation window with the name "Vis_Window_Name"
    -- from the project.
    --
    -- Note
-   --   The visualisation window is only removed from "Project"'s 
-   --   internal data structure, but NOT deallocated. 
-   --   
+   --   The visualisation window is only removed from "Project"'s
+   --   internal data structure, but NOT deallocated.
+   --
    --   Take care to avoid memory leaks as the corresponding instance
    --   of Vis_Window_Management.Visual_Window_Data_Access has
    --   to be deallocated separately.
    --
    --   After the call of this subprogram you may deallocate the cooreponding
-   --   instance of the visualisation window 
+   --   instance of the visualisation window
    --   ("Vis_Window_Management.Visual_Window_Data_Access")
    --   without affecting the internal datastructure of "Project".
    --
@@ -582,8 +582,8 @@ package Giant.Project_Management is
    --     if no visualisation window with the name "Vis_Window_Name"
    --     exists.
    --  Project_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Project_Access" is passed as 
-   --     parameter.   
+   --     initialized instance of "Project_Access" is passed as
+   --     parameter.
    procedure Remove_Vis_Window_From_Project;
      (Project         : in Project_Access;
       Vis_Window_Name : in Valid_Names.Standard_Name);
@@ -616,8 +616,8 @@ package Giant.Project_Management is
    --   True, if the iml subgraph exists; False, otherwise.
    -- Raises:
    --  Project_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Project_Access" is passed as 
-   --     parameter.   
+   --     initialized instance of "Project_Access" is passed as
+   --     parameter.
    function Does_IML_Subgraph_Exist
      (Project           : in Project_Access;
       IML_Subgraph_Name : in Valid_Names.Standard_Name)
@@ -629,12 +629,12 @@ package Giant.Project_Management is
    -- Note !!!
    --   The returned ATD is a pointer into the internal data structure
    --   of "Project".
-   --   You man NOT DEALLOCATE the returned iml subgraph 
+   --   You man NOT DEALLOCATE the returned iml subgraph
    --   before it is removed from the Project.
    --
    --   Several calls of this function with the same parameters will
    --   cause ALIASES.
-   --     
+   --
    -- Parameters:
    --   Project - The instance of the ADT holding a project.
    --   IML_Subgraph_Name - The name of an iml subgraph.
@@ -642,8 +642,8 @@ package Giant.Project_Management is
    --    The ADT describing an iml subgraph.
    -- Raises:
    --   Project_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Project_Access" is passed as 
-   --     parameter.  
+   --     initialized instance of "Project_Access" is passed as
+   --     parameter.
    --   IML_Subgraph_Is_Not_Part_Of_Project_Exception - Raised if
    --   "Project" has no iml subgraph with the name "IML_Subgraph_Name".
    function Get_IML_Subgraph
@@ -663,14 +663,14 @@ package Giant.Project_Management is
    --   A list containing the names of all iml subgraphs of this project.
    -- Raises:
    --   Project_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Project_Access" is passed as 
-   --     parameter. 
+   --     initialized instance of "Project_Access" is passed as
+   --     parameter.
    function Get_All_IML_Sungraphs_Sorted
      (Project : in Project_Access)
      return String_Lists.List;
 
    ---------------------------------------------------------------------------
-   -- Adds an iml subgraph to a project. 
+   -- Adds an iml subgraph to a project.
    --
    -- Note !!!
    --   The instance of the ADT "Graph_Lib.IML_Subgraphs.IML_Subgraph_Access"
@@ -687,8 +687,8 @@ package Giant.Project_Management is
    --   IML_Subgraph - The new iml subgraph.
    -- Raises:
    --   Project_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Project_Access" is passed as 
-   --     parameter. 
+   --     initialized instance of "Project_Access" is passed as
+   --     parameter.
    --   IML_Subgraph_Is_Already_Part_Of_Project_Exception - Raised if
    --     the project already has an iml subgraph with the same name
    --     as "IML_Subgraph".
@@ -701,11 +701,11 @@ package Giant.Project_Management is
    --
    -- Note!
    --   The IML_Subgraph is only removed from the project
-   --   no deep deallocation is done (the corresponding instance 
+   --   no deep deallocation is done (the corresponding instance
    --   of Graph_Lib.IML_Subgraphs.IML_Subgraph_Access is not
    --   deallocated).
    --   Beware of memory leacks!
-   -- 
+   --
    --   After the call of that subprogram you may do what ever you want
    --   with the removed iml subgraph without affecting the internal
    --   datastructure of "Project".
@@ -714,10 +714,10 @@ package Giant.Project_Management is
    --   Project - The instance of the ADT holding a project.
    --   IML_Subgraph_Name - The name of the iml subgraph that should be
    --     removed from the "Project".
-   -- Raises: 
+   -- Raises:
    --   Project_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Project_Access" is passed as 
-   --     parameter. 
+   --     initialized instance of "Project_Access" is passed as
+   --     parameter.
    --   IML_Subgraph_Is_Not_Part_Of_Project_Exception - Raised if the
    --     project "Project" does not hold a iml subgraph with the name
    --     "IML_Subgraph_Name".
@@ -760,7 +760,7 @@ package Giant.Project_Management is
    --   An instance of the ADT holding all node annotations of this
    --   project.
    -- Raises
-   !!!!!!!!!!!!! 
+   !!!!!!!!!!!!!
    function Get_Node_Annotations_Of_Project
      (Project : in Project_Access)
      return Node_Annotation_Management.Node_Annotation_Access;
@@ -774,7 +774,7 @@ private
    ---------------------------------------------------------------------------
 
    -- not Used for persistence
-   package Memory_Loaded_Vis_Window_Sets is new Ordered_Sets 
+   package Memory_Loaded_Vis_Window_Sets is new Ordered_Sets
      (Item_Type => Vis_Window_Management.Visual_Window_Data_Access,
       "="       => Vis_Window_Management.Equal
       "<"       => Vis_Window_Management.Less_Than);
@@ -783,7 +783,7 @@ private
    ---------------------------------------------------------------------------
    -- Management of IML_Subgraphs
    ---------------------------------------------------------------------------
-  
+
    type IML_Subgraph_Data_Elemet is record
      IML_Subgraph : Graph_Lib.IML_Subgraphs.IML_Subgraph_Access;
      Selection_Highlight_Status : IML_Subgraph_Highlight_Status;
@@ -807,7 +807,7 @@ private
      (Stream       : access Root_Stream_Type'Class;
       IML_Subgraph : out IML_Subgraph_Data_Elemet);
 
-   package IML_Subgraph_Data_Sets is new Ordered_Sets 
+   package IML_Subgraph_Data_Sets is new Ordered_Sets
      (Item_Type => IML_Subgraph_Data_Elemet,
       "="       => IML_Subgraph_Data_Elemet_Equal,
       "<"       => IML_Subgraph_Data_Elemet_Less_Than,
@@ -838,10 +838,10 @@ private
     -- management file for node annatations) describing the
     -- whole project has to be located.
     Project_Dirctory : Ada.Strings.Unbounded.Unbounded_String;
-        
+
     -- The file holding the Bauhaus IML-Graph
     Bauhaus_IML_Graph_File : String;
-    
+
     -- Checksum of the IML_Subgraph
     Bauhaus_IML_Graph_File_Checksum : Integer;
 
@@ -861,6 +861,6 @@ private
 
   end record;
 
-end Giant.Project_Management;
+end Giant.Projects;
 
 

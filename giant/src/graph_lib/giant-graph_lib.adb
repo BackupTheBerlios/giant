@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.2 $
---  $Author: koppor $
---  $Date: 2003/06/01 13:38:16 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.3 $
+--  $Author: squig $
+--  $Date: 2003/06/03 22:05:21 $
 --
 
 --  from Bauhaus
@@ -683,6 +683,7 @@ package body Giant.Graph_Lib is
       return Node_Id
    is
    begin
+      -- FIX: return the real root
       return Get_Root_Node;
    end Get_Root_Node;
 

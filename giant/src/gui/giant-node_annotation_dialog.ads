@@ -18,50 +18,49 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  First Author: <unknown>
+--  First Author: Steffen Pingel
 --
---  $RCSfile: template.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-node_annotation_dialog.ads,v $, $Revision: 1.1 $
 --  $Author: squig $
 --  $Date: 2003/06/03 22:05:21 $
 --
 ------------------------------------------------------------------------------
 --
---  Contains the GIANT source template.
+-- Provides a dialog that can open save and executes GSL scripts.
 --
 
-with Giant.Controller;
+with Ada.Strings.Unbounded;
 
-package Giant.Template is
+with Gtk.Text;
+with Gtk.Window;
 
-   ---------------------------------------------------------------------------
-   --  Stores a foo bar.
-   type Coordinate is private record;
+with Giant.Default_Dialog;
+with Giant.Graph_Lib;
 
-   ---------------------------------------------------------------------------
-   --  Raised on attempt show already visible window.
-   Already_Visible_Exception : exception;
+package Giant.Node_Annotation_Dialog is
 
-   ---------------------------------------------------------------------------
-   --  Makes W visible on screen.
-   --
-   --  Parameters:
-   --    W - The Window
-   --  Returns:
-   --    True, if successful; False, otherwise
-   --  Raises:
-   --    Already_Visible_Exception - raised if W is already visible
-   function Show_Window
-     (W : in Coordinate)
-     return Booolean;
+   type Node_Annotation_Dialog_Record is
+     new Default_Dialog.Default_Dialog_Record with private;
+
+   type Node_Annotation_Dialog_Access is 
+	  access all Node_Annotation_Dialog_Record'Class;
+
+   function Can_Hide
+     (Dialog : access Node_Annotation_Dialog_Record)
+     return Boolean;
+
+   procedure Create
+     (Dialog :    out Node_Annotation_Dialog_Access;
+	  Node	 : in     Graph_Lib.Node_Id);
+
+   procedure Initialize
+     (Dialog : access Node_Annotation_Dialog_Record'class);
 
 private
+   type Node_Annotation_Dialog_Record is
+     new Default_Dialog.Default_Dialog_Record with record
+        Text_Area : Gtk.Text.Gtk_Text;
+		Node : Graph_Lib.Node_Id;
+     end record;
 
-   type Coordinate is record
-      --  X Coordinate
-      X : Float;
-      --  Y Coordinate
-      Y : Float;
-   end record;
-
-
-end Giant.Template;
+end Giant.Node_Annotation_Dialog;

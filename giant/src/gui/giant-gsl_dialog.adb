@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/06/02 01:04:18 $
+--  $Date: 2003/06/03 22:05:21 $
 --
 
 with Ada.IO_Exceptions;
@@ -76,7 +76,7 @@ package body Giant.Gsl_Dialog is
       when others =>
          Default_Dialog.Show_Error_Dialog(-"Could not read file: " & Filename);
          return False;
-   end;
+   end Read;
 
    ---------------------------------------------------------------------------
    --  Returns:
@@ -102,11 +102,11 @@ package body Giant.Gsl_Dialog is
 
       Dialog.Text_Has_Changed := False;
       return True;
---     exception
---        when others =>
---           Default_Dialog.Show_Error_Dialog(-"Could not write file: " & Filename);
---           return False;
-   end;
+   exception
+      when others =>
+         Default_Dialog.Show_Error_Dialog(-"Could not write file: " & Filename);
+         return False;
+   end Write;
 
    ---------------------------------------------------------------------------
    --  Returns:
@@ -231,9 +231,6 @@ package body Giant.Gsl_Dialog is
          null;
       end if;
 
-      -- FIX: free the filename
-      --Ada.Strings.Unbounded.Free (Dialog.Filename);
-
       return True;
    end Can_Hide;
 
@@ -272,8 +269,7 @@ package body Giant.Gsl_Dialog is
                           New_Button (-"Save As...",
                                       On_Save_As_Button_Clicked'Access));
 
-      Set_Default (Gtk.Window.Gtk_Window (Dialog),
-                   Gtk.Widget.Gtk_Widget (Dialog.Text_Area));
+      Set_Default (Dialog, Dialog.Text_Area);
 
       Editable_Callback.Connect
         (Dialog.Text_Area, "changed",
