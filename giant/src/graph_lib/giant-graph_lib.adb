@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.61 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.62 $
 --  $Author: koppor $
---  $Date: 2003/08/12 09:59:55 $
+--  $Date: 2003/08/25 09:57:32 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -1947,13 +1947,14 @@ package body Giant.Graph_Lib is
             --    i.e. (Get_Node_Attribute_Node_Id_Value returns null)
             --    Therefore this case has to be catched before
             --      the call to Get_Node_Attribute_Node_Id_Value
-            if Attribute.all in IML_Reflection.Identifier_Field then
-               return IML_Reflection.Identifier_Field
-                 (Attribute.all).Get_Name (Node.IML_Node);
-            else
+--  FIXME
+--            if Attribute.all in IML_Reflection.Identifier_Field then
+--               return IML_Reflection.Identifier_Field
+--                 (Attribute.all).Get_Name (Node.IML_Node);
+--            else
                return Node_Id_Image (Get_Node_Attribute_Node_Id_Value
                                      (Node, Attribute));
-            end if;
+--            end if;
 
          when Class_Node_Id_List =>
             return Convert_Node_Id_List_To_String
