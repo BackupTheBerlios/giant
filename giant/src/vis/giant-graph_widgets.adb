@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.50 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.51 $
 --  $Author: keulsn $
---  $Date: 2003/09/09 16:10:25 $
+--  $Date: 2003/09/10 23:34:24 $
 --
 ------------------------------------------------------------------------------
 
@@ -260,6 +260,17 @@ package body Giant.Graph_Widgets is
      (Widget       : access Graph_Widget_Record'Class;
       Style        : in     Config.Vis_Styles.Visualisation_Style_Access;
       Pool         : in     Node_Annotations.Node_Annotation_Access) is
+
+      --  Needed since GNAT 3.15p. In 3.13p and 3.14p "or" worked on
+      --  any two constants declared like
+      --  Some_Constant : constant := 2**3;
+      --  In 3.15p this was removed, thus must import the operation from 'Glib'
+      function "or"
+        (Left  : in     Glib.Guint32;
+         Right : in     Glib.Guint32)
+        return Glib.Guint32
+        renames Glib."or";
+
    begin
       Gtk.Drawing_Area.Initialize (Widget);
       Gtk.Object.Initialize_Class_Record
