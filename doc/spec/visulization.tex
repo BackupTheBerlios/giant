@@ -1,13 +1,15 @@
 % ==============================================================================
-%  $RCSfile: visulization.tex,v $, $Revision: 1.6 $
-%  $Date: 2003/02/17 18:22:50 $
+%  $RCSfile: visulization.tex,v $, $Revision: 1.7 $
+%  $Date: 2003/02/18 06:45:46 $
 %  $Author: schwiemn $
 %
 %  Description:
 %
 % ==============================================================================
 
-Genaue Beschreibung der Visualisierung des Graphen in einem Anzeigefenster.
+Beschreibung der Visualisierung von Teilgraphen des IML-Graphen
+in einem Anzeigefenster. Insbeondere soll hier die Darstellung von
+Fenster-Knoten und Fenster-Kanten erläutert werden.
 
 
 \section{Visualisierungsstiele}
@@ -59,11 +61,11 @@ stark von der aktuellen Zoomstufe und dem gewählten Visualisierungsstiel ab.
   \subsection {Knoten-Icon}
   Jeder Knoten kann über ein vordefiniertes Icon verfügen, 
   welches im linken oberen Eck des Knoten-Rechtecks dargestellt wird. 
-  Alle Knoten für die kein Icon definiert wurde,haben ein \gq{Default-Icon}.
+  Alle Knoten für die kein Icon definiert wurde, haben ein \gq{Default-Icon}.
 
   \subsection {Klassenname und ID}
   Die ID eines Knotens wird innerhalb des Knoten-Rechtecks rechts oben 
-  angezeigt.\\  Der Name der Knotenlklasse wird bei den Attributen angezeigt.
+  angezeigt.\\  Der Name der Knotenklasse wird bei den Attributen angezeigt.
 
   \subsection {Attribute des Knoten}
   Innerhalb des Knoten-Rechtecks können auch Attribute dargestellt werden 
@@ -89,7 +91,7 @@ stark von der aktuellen Zoomstufe und dem gewählten Visualisierungsstiel ab.
 
   \subsection{Kantenknickpunkte}
   Der Benutzer kann bei jeder Kante manuell beliebig viele Kantenknickpunkte 
-  hinzufügen.Die Kante selbst besteht dann aus mehreren geraden Linien vom 
+  hinzufügen. Die Kante selbst besteht dann aus mehreren geraden Linien vom 
   Startknoten über beliebig viele Kantenknickpunkt hinweg zum Zielknoten.\\
 
   \subsection{Vorhandene Kanten nicht anzeigen}
@@ -116,7 +118,7 @@ unterschiedbar hervorgehoben werden.
 
   \subsection {Hervorheben von Selektionen und der aktuelle Selektion}
   Beim Hervorheben von Knoten und Kanten von Selektionen werden diese 
-  mittels einer definierbaren Farbe eingefärbt.
+  mittels einer konfigurierbaren Farbe eingefärbt.
 
     \begin {enumerate} 
       \item 
@@ -125,13 +127,13 @@ unterschiedbar hervorgehoben werden.
 
       \item
       Gehört ein Knoten zu mehreren Selektionen, die hervorgehoben sind,
-      so werden die Knoten-Rechtecke entsprechend mehrfarbig gefüllt.
+      so wird das Knoten-Rechteck entsprechend mehrfarbig eingefärbt.
 
 
       \item 
       Jede Kante wird dadurch hervorgehoben, dass ihre Linie entsprechend
-      dicker gezeichnet wird, wobei die der Teil, um den die Kante verbreitert
-      wird entsprechend eingefärbt wird.
+      dicker gezeichnet wird, wobei der Teil, um den die Kante verbreitert
+      wird jeweils entsprechend eingefärbt wird.
 
       \item
       Gerhört eine Kante zu mehreren Selektionen, die hervorgehoben werden,
@@ -171,7 +173,7 @@ unterschiedbar hervorgehoben werden.
 \begin {enumerate}
 
   \item
-  Beim Herauszoomen müssen also Details abstrahiert werden, 
+  Beim Herauszoomen müssen Details abstrahiert werden, 
   dies geschieht bei GIANT in mehreren Stufen.
 
   \item
@@ -188,7 +190,7 @@ unterschiedbar hervorgehoben werden.
 
 \end {enumerate}
 
-Es wird hierzu in etwa die folgenden Detailstufen geben:
+Es wird in etwa die folgenden Detailstufen geben.
 
   \subsection {Maximale Details}
   Bei maximaler bis hoher Zoomstufe (nahe ans Bild herangezoomt).\\

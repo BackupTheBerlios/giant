@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: product.tex,v $, $Revision: 1.8 $
-%  $Date: 2003/02/17 17:32:29 $
+%  $RCSfile: product.tex,v $, $Revision: 1.9 $
+%  $Date: 2003/02/18 06:45:46 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung des Produktes. Übersicht über die Funktionen
@@ -11,17 +11,25 @@
 \section{Allgemeine Bedienkonzepte}
 
 % ==============================================================================
-\section{GIANT Projekt}
-Erläuterungen zu Projekten.
+\section{GIANT Projekte}
+
+Innerhalb eines Projektes fasst GIANT Informationen, 
+wie erzeugte Anzeigefenster (mit Selektionen etc.) und
+erzeugte IML-Teilgraphen zu einem gegebenen IML-Graphen, zusammen
+und speichert diese Persistent. \\
+Die Zusammenfassung zu Projekten soll hierbei primär der 
+Übersicht dienen und den Austausch von Teilergebnissen 
+(wie z.B. einzelne Anzeigefenster) erleichtern.
+
 
 % ==============================================================================
 \section{IML-Teilgraphen und Selektionen}
 Hinsichtlich der logischen Zusammenfassung von Knoten und Kanten unterscheidet
-GIANT IML-Teilgraphen Selektionen.
+GIANT IML-Teilgraphen und Selektionen.
 
   \subsection{IML-Teilgraphen}
   Ein IML-Teilgraph beschreibt eine Knoten und Kantenmenge aus dem IML-Graphen,
-  bei der jede Kante hat einen Start- und einen Zielknoten hat.\\
+  bei der jede Kante einen Start- und einen Zielknoten hat.\\
   Die Knoten und Kanten von IML-Teilgraphen können in Anzeigefenstern
   hervorgehoben werden, des weiteren können die Knoten und Kanten von
   IML-Teilgraphen in Anzeigefenstern layouted und dargestellt werden.\\
@@ -53,7 +61,14 @@ haben.
 
   \subsection{Visualisierungsstiele}
   Mittels sogenannter Visualisierungsstiele kann der Benutzer die Darstellung
-  von 
+  von Fenster-Kanten und Fenster-Knoten (welche Attribute sollen dargestellt
+  werden etc.) auch während der Laufzeit von GIANT beeinflussen.
+  Da über entsprechende XML-Dateien beliebig viele verschiedene 
+  Visualisierungsstiele definiert werden können, kann GIANT so
+  an spezifische Problemstellungen angepasst werden. Die Visualisierungsstiele
+  sind natürlich beliebig austauschbar.
+
+
 % ==============================================================================
 \section{Anfragen}
 Eine vielseitige Anfragesprache stellt nahezu die gesamte Funktionalität
@@ -89,29 +104,40 @@ ausgeführt, dies ist aber nicht zwingend nötig.
 % EVENTUELL EIGENES KAPITEL
 % DIREKT VOR USECASES UND NACH GUI
 \section{Fehlerverhalten}
-
-Fehlermeldungen werden grundsätzlich über den STANDARD-FEHLERDIOLOG
-ausgegeben. Ist dies nicht möglich, wird eine entsprechende Fehlermeldung
-über Kommandozeile ausgegeben.
-GIANT soll sich bezüglich der Fehlerbehandlung konsistent verhalten.
-Das im folgenden beschriebene Fehlervarhalten gilt daher pauschal für
-das gesamte System, Abweichungen von diesem Verhalten werden
-gegebenenfalls an der entsprechenden Stelle (z.B.\ bei dem jeweiligen
-UseCase) explizit spezifiziert.\\
+\begin {enumerate}
+  \item
+  Fehlermeldungen werden grundsätzlich über den STANDARD-FEHLERDIOLOG
+  ausgegeben. Ist dies nicht möglich, wird eine entsprechende Fehlermeldung
+  über die Kommandozeile ausgegeben.
+  \item
+  GIANT soll sich bezüglich der Fehlerbehandlung konsistent verhalten.
+  Das im Folgenden beschriebene Fehlervarhalten gilt daher pauschal für
+  das gesamte System. 
+  \item
+  Abweichungen von diesem Verhalten werden gegebenenfalls an der 
+  entsprechenden Stelle (z.B.\ bei dem jeweiligen UseCase) explizit 
+  spezifiziert.
+\end{enumerate}
 
   \subsection {Ungültige oder unvollständige Eingaben bei Dialogen}
-  Eingaben in Dialoge etc. werden immer dann geprüft, wenn der Benutzer
-  die Eingaben in dem gesamten Dialogfenster z.B. durch klicken auf einen
-  \gq{OK-Button} bestätigt.\\ 
-  Stellt das System dann eine unzulässige oder fehlende Eingabe fest, so
-  erscheint der STANDARD-FEHLERDIALOG mit einer entsprechenden Mitteilung
-  zur Fehlerursache.\\
-  Nach Schließen des STANDARD-FEHLERDIALOGES kehrt das System zu Stelle
-  im Ablauf zurück, die dem Zustand vor der Fehlerprüfung entspricht, also
-  typischerweise zu dem Dialog in dem die fehlerhafte Eingabe getätigt 
-  wurde.\\
-  Die zuvor in den entsprechenden Dialogen getätigten Eingaben des Benutzers
-  (die Eingaben die den Fehler verursacht haben) bleiben erhalten.
+  \begin {enumerate}
+    \item
+    Eingaben in Dialoge etc. werden immer dann geprüft, wenn der Benutzer
+    die Eingaben in dem gesamten Dialogfenster z.B. durch klicken auf einen
+    \gq{OK-Button} bestätigt.
+
+    \item
+    Stellt das System dann eine unzulässige oder fehlende Eingabe fest, so
+    erscheint der STANDARD-FEHLERDIALOG mit einer entsprechenden Mitteilung
+    zur Fehlerursache.
+  
+    \item
+    Nach Schließen des STANDARD-FEHLERDIALOGES kehrt das System zu der Stelle
+    im Ablauf zurück, die dem Zustand vor der Fehlerprüfung entspricht, also
+    typischerweise zu dem Dialog in dem die fehlerhafte Eingabe getätigt 
+    wurde.\\
+    Die zuvor in den entsprechenden Dialogen getätigten Eingaben des Benutzers
+    (die Eingabedaten, die den Fehler verursacht haben) bleiben erhalten.
 
   \subsection {Ungültige oder unvollständige Eingaben bei Kommandozeilenaufruf}
   Der Start von GIANT wird abgeborchen. Auf der Kommandozeile wird eine
@@ -127,13 +153,13 @@ UseCase) explizit spezifiziert.\\
           dafür vorgesehenen Position gefunden werden, so wird das 
           System mit einer entsprechenden Fehlermeldung beendet.
 
-    \item Das Verhalten bei anderen möglichen Fehlern ( 
-          fehlende Zugriffsrechte, defekte Sektoren etc.) ist 
+    \item Das Verhalten bei anderen möglichen Fehlern (fehlende 
+          Zugriffsrechte, defekte Sektoren etc.) ist 
           undefiniert.
   \end{enumerate} 
 
 
-  \subsection {Einlesen unzulässiger Daten über Dateien}
+  \subsection {Einlesen unzulässiger Daten aus Dateien}
 
   \begin {enumerate}
     \item

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: project.tex,v $, $Revision: 1.12 $
-%  $Date: 2003/02/17 17:32:29 $
+%  $RCSfile: project.tex,v $, $Revision: 1.13 $
+%  $Date: 2003/02/18 06:45:46 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -99,10 +99,12 @@ GIANT speichert persistente Informationen in so genannten Projekten.
  
   \end {enumerate}
  
-  Der gewählte Visualisierungsstiel wird aber nicht gespeichert, 
-  da die Viualisierungsstiele völlig unabhängig von den Projekten über
-  Konfigurationsdateien realisiert werden.
-
+  Der für das Anzeigefenster gewählte Visualisierungsstiel wird zwar mit 
+  gespeichert, da die Viualisierungsstiele völlig unabhängig von den 
+  Projekten über Konfigurationsdateien realisiert werden, 
+  kann nicht gerantiert werden, dass der gewünschte Stiel beim Laden 
+  des Projektes auch wieder gefunden wird,
+  in diesem Fall wird dann ein \gq{Default-Stiel} verwendet.
 
 
   \subsection {Verwaltungsdateien für IML-Teilgraphen}
