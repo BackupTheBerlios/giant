@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/31 09:13:34 $
+-- $Date: 2003/08/02 20:41:43 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -265,6 +265,13 @@ package body Giant.Gsl.Runtime is
          Ada.Exceptions.Raise_Exception
            (Gsl_Runtime_Error'Identity, "Script 'run': Gsl_String expected.");
       end if;
+
+      exception
+         when GSL_Support. GSL_Script_Not_Found_Exception =>
+            Ada.Exceptions.Raise_Exception
+              (Gsl_Runtime_Error'Identity, 
+               "Script 'run': Gsl library " & Get_Value (Gsl_String (Name)) & 
+               " not found.");
    end Runtime_Run;
 
 ------------------------------------------------------------------------------
