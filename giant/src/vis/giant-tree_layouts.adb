@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.29 $
+--  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.30 $
 --  $Author: koppor $
---  $Date: 2003/10/06 18:24:04 $
+--  $Date: 2003/10/07 14:37:53 $
 --
 ------------------------------------------------------------------------------
 --  Variables are named according to the paper
@@ -197,6 +197,8 @@ package body Giant.Tree_Layouts is
          The_Selection := Graph_Lib.Selections.Create ("tmp");
          Graph_Lib.Selections.Add_Node_Set
            (The_Selection, Layout.Nodes_To_Layout);
+
+--           Logger.Debug ("Matrix: " & Natural'Image (Graph_Lib.Selections.Get_Node_Count (The_Selection)));
 
          Matrix_Target_Position :=
            Vis.Logic.Combine_Vector
