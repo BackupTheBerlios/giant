@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/06/17 20:28:40 $
+--  $Date: 2003/06/17 21:56:25 $
 --
 ------------------------------------------------------------------------------
 --
@@ -79,7 +79,7 @@ private
         Zoom_Combo : Gtk.Combo.Gtk_Combo;
         Zoom_Entry : Gtk.Gentry.Gtk_Entry;
 
-        Is_Dirty : Boolean := False;
+        Is_Dirty : Boolean := True;
 
         --  the data record from projects
         Visual_Window : Vis_Windows.Visual_Window_Access;

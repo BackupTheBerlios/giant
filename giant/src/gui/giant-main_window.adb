@@ -20,12 +20,13 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.10 $
 --  $Author: squig $
---  $Date: 2003/06/17 20:28:40 $
+--  $Date: 2003/06/17 21:56:25 $
 --
 
 with Ada.Strings.Unbounded;
+with Interfaces.C.Strings;
 
 with Gdk.Event;
 with Gdk.Types;
@@ -42,10 +43,11 @@ with Gtk.Widget;
 with Gtk.Window;
 with Gtk.Paned;
 with Gtk.Tearoff_Menu_Item;
+with Gtkada.File_Selection;
 with Gtkada.Types;
-with Interfaces.C.Strings;
 
 with Giant.Controller;
+with Giant.Gsl_Dialog;
 with Giant.Gui_Manager;
 with Giant.Gui_Utils; use Giant.Gui_Utils;
 with Giant.Projects;
@@ -75,6 +77,68 @@ package body Giant.Main_Window is
       return True;
    end On_Delete;
 
+   procedure On_Project_New
+     (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
+   is
+   begin
+      declare
+         Filename : String := Gtkada.File_Selection.File_Selection_Dialog
+           (-"New Project", "",
+            Dir_Only => False, Must_Exist => False);
+      begin
+         if (Filename /= "") then
+            declare
+               IML_Filename : String
+                 := Gtkada.File_Selection.File_Selection_Dialog
+                 (-"Select IML File", "",
+                  Dir_Only => False, Must_Exist => False);
+            begin
+               if (Filename /= "") then
+                  Controller.Create_Project
+                    ("", Filename, IML_Filename);
+               end if;
+            end;
+         end if;
+      end;
+   end On_Project_New;
+
+   procedure On_Project_Open
+     (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
+   is
+   begin
+      declare
+         Filename : String := Gtkada.File_Selection.File_Selection_Dialog
+           (-"Open Project", "",
+            Dir_Only => False, Must_Exist => True);
+      begin
+         if (Filename /= "") then
+            Controller.Open_Project (Filename);
+         end if;
+      end;
+   end On_Project_Open;
+
+   procedure On_Project_Save
+     (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
+   is
+   begin
+      Controller.Save_Project;
+   end On_Project_Save;
+
+   procedure On_Project_Save_As
+     (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
+   is
+   begin
+      declare
+         Filename : String := Gtkada.File_Selection.File_Selection_Dialog
+           (-"Save Project", "",
+            Dir_Only => False, Must_Exist => False);
+      begin
+         if (Filename /= "") then
+            Controller.Save_Project (Filename);
+         end if;
+      end;
+   end On_Project_Save_As;
+
    procedure On_Project_Quit
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
@@ -82,12 +146,14 @@ package body Giant.Main_Window is
       Quit;
    end On_Project_Quit;
 
-   procedure On_Project_New
+   procedure On_Tools_Execute_GSL_Script
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
+      Dialog : Gsl_Dialog.Gsl_Dialog_Access;
    begin
-      null;
-   end On_Project_New;
+      Gsl_Dialog.Create (Dialog);
+      Gsl_Dialog.Show_All (Dialog);
+   end On_Tools_Execute_GSL_Script;
 
    procedure On_Window_New
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
@@ -143,8 +209,18 @@ package body Giant.Main_Window is
       Menu := New_Sub_Menu (Menu_Bar, -"Projekt");
       Gtk.Menu.Add (Menu, New_TearOff_Menu_Item);
       Gtk.Menu.Add (Menu, New_Menu_Item (-"New", On_Project_New'Access));
+      Gtk.Menu.Add (Menu, New_Menu_Item (-"Open...", On_Project_Open'Access));
+      Gtk.Menu.Add (Menu, New_Menu_Separator);
+      Gtk.Menu.Add (Menu, New_Menu_Item (-"Save", On_Project_Save'Access));
+      Gtk.Menu.Add (Menu, New_Menu_Item (-"Save As...",
+                                         On_Project_Save_As'Access));
       Gtk.Menu.Add (Menu, New_Menu_Separator);
       Gtk.Menu.Add (Menu, New_Menu_Item (-"Quit", On_Project_Quit'Access));
+
+      Menu := New_Sub_Menu (Menu_Bar, -"Tools");
+      Gtk.Menu.Add (Menu, New_TearOff_Menu_Item);
+      Gtk.Menu.Add (Menu, New_Menu_Item (-"Execute GSL Script..",
+                                         On_Tools_Execute_GSL_Script'Access));
 
       Menu := New_Sub_Menu (Menu_Bar, -"Window");
       Gtk.Menu.Add (Menu, New_TearOff_Menu_Item);

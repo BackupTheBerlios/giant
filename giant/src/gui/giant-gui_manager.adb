@@ -20,18 +20,23 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.5 $
 --  $Author: squig $
---  $Date: 2003/06/17 20:28:40 $
+--  $Date: 2003/06/17 21:56:25 $
 --
+
+with Ada.Strings.Unbounded;
 
 with Gdk.Threads;
 with Gtk.Main;
 
 with Lists;
+with String_Lists;
 
+with Giant.Controller;
 with Giant.Main_Window;
 with Giant.Graph_Window;
+with Giant.Projects;
 
 package body Giant.Gui_Manager is
 
@@ -48,6 +53,9 @@ package body Giant.Gui_Manager is
 
    procedure Show
    is
+      List : String_Lists.List;
+      Iterator : String_Lists.ListIter;
+      Name : Ada.Strings.Unbounded.Unbounded_String;
    begin
       Gtk.Main.Set_Locale;
       Gtk.Main.Init;
@@ -56,6 +64,19 @@ package body Giant.Gui_Manager is
       Gdk.Threads.Enter;
 
       Main_Window.Show;
+
+      --  initialize main windwo data
+      List := Projects.Get_All_Visualisation_Window_Names
+        (Controller.Get_Project);
+      Iterator := String_Lists.MakeListIter (List);
+      while String_Lists.More (Iterator) loop
+         String_Lists.Next (Iterator, Name);
+         Main_Window.Add_Window (Ada.Strings.Unbounded.To_String (Name));
+      end loop;
+
+      -- FIX: String_Lists.Destroy (Iterator);
+      String_Lists.Destroy (List);
+
       Gtk.Main.Main;
 
       Gdk.Threads.Leave;
@@ -69,14 +90,20 @@ package body Giant.Gui_Manager is
    end Add_Window;
 
    function Close
-     (Visual_Window : Vis_Windows.Visual_Window_Access)
+     (Name                 : in String;
+      Ask_For_Confirmation : in Boolean)
      return Boolean
    is
       Closed : Boolean;
       Window : Graph_Window.Graph_Window_Access;
    begin
-      Window := Get_Open_Window (Vis_Windows.Get_Name (Visual_Window));
-      Closed := Graph_Window.Close (Window);
+      Window := Get_Open_Window (Name);
+      if (Ask_For_Confirmation) then
+         Closed := Graph_Window.Close (Window);
+      else
+         Graph_Window.Hide (Window);
+         Closed := True;
+      end if;
 
       if (Closed) then
          Graph_Window_Lists.DeleteItem (Open_Windows, Window);
@@ -85,7 +112,7 @@ package body Giant.Gui_Manager is
          Graph_Window.Destroy (Window);
 
          --  update status
-         Main_Window.Update_Window (Vis_Windows.Get_Name (Visual_Window));
+         Main_Window.Update_Window (Name);
       end if;
 
       return Closed;
@@ -98,7 +125,6 @@ package body Giant.Gui_Manager is
       Window : Graph_Window.Graph_Window_Access;
    begin
       Iterator := Graph_Window_Lists.MakeListIter (Open_Windows);
-
       while Graph_Window_Lists.More (Iterator) loop
          Graph_Window_Lists.Next (Iterator, Window);
          if (Vis_Windows.Get_Name (Graph_Window.Get_Vis_Window (Window))

@@ -21,9 +21,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.7 $
 --  $Author: squig $
---  $Date: 2003/06/17 20:28:40 $
+--  $Date: 2003/06/17 21:56:25 $
 --
 
 with Giant.Graph_Lib;
@@ -64,14 +64,33 @@ package body Giant.Controller is
       return Current_Project;
    end;
 
+   procedure Open_Project
+     (Filename : in String)
+   is
+   begin
+      -- FIX: close Current_Project
+      Current_Project := Projects.Load_Project (Filename, "");
+   end;
+
+   procedure Save_Project
+   is
+   begin
+      Projects.Store_Whole_Project (Current_Project);
+   end Save_Project;
+
+   procedure Save_Project
+     (Filename : in String)
+   is
+   begin
+      Projects.Store_Whole_Project_As (Current_Project, Filename, "");
+   end Save_Project;
+
    function Close_Window
      (Name : in String)
      return Boolean
    is
-      Window : Vis_Windows.Visual_Window_Access;
    begin
-      Window := Projects.Get_Visualisation_Window (Current_Project, Name);
-      return Gui_Manager.Close (Window);
+      return Gui_Manager.Close (Name, Ask_For_Confirmation => True);
    end Close_Window;
 
    procedure Create_Window
@@ -113,10 +132,16 @@ package body Giant.Controller is
      (Name : in String)
    is
    begin
+      if (Gui_Manager.Is_Window_Open (Name)) then
+         if (not Gui_Manager.Close (Name, Ask_For_Confirmation => False)) then
+            --  user has aborted close
+            return;
+         end if;
+      end if;
+
       Gui_Manager.Remove_Window (Name);
       Projects.Remove_Visualisation_Window
         (Current_Project, Name);
-      null;
    end Remove_Window;
 
    procedure Show

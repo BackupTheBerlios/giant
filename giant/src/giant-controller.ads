@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.6 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.7 $
 --  $Author: squig $
---  $Date: 2003/06/17 20:28:40 $
+--  $Date: 2003/06/17 21:56:25 $
 --
 ------------------------------------------------------------------------------
 --
@@ -35,6 +35,10 @@ with Giant.Projects;
 with Giant.Valid_Names;
 
 package Giant.Controller is
+
+   ---------------------------------------------------------------------------
+   --  Projects
+   ---------------------------------------------------------------------------
 
    ---------------------------------------------------------------------------
    --  Creates a new project.
@@ -52,6 +56,18 @@ package Giant.Controller is
    function Get_Project
      return Projects.Project_Access;
 
+   procedure Open_Project
+     (Filename : in String);
+
+   procedure Save_Project;
+
+   procedure Save_Project
+     (Filename : in String);
+
+   ---------------------------------------------------------------------------
+   --  Windows
+   ---------------------------------------------------------------------------
+
    function Close_Window
      (Name : in String)
      return Boolean;
@@ -64,6 +80,10 @@ package Giant.Controller is
 
    procedure Remove_Window
      (Name : in String);
+
+   ---------------------------------------------------------------------------
+   --  GUI
+   ---------------------------------------------------------------------------
 
    procedure Show;
 

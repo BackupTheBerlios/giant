@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.4 $
+--  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.5 $
 --  $Author: squig $
---  $Date: 2003/06/17 20:28:40 $
+--  $Date: 2003/06/17 21:56:25 $
 --
 --  Stores the window records. Handles the controller updates. Provides
 --  a facade for the gui.
@@ -50,7 +50,8 @@ package Giant.Gui_Manager is
      (Name : in String);
 
    function Close
-     (Visual_Window : Vis_Windows.Visual_Window_Access)
+     (Name                 : in String;
+      Ask_For_Confirmation : in Boolean)
      return Boolean;
 
    function Get_Open_Window (Name : in String)
