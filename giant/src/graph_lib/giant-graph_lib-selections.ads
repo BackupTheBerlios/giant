@@ -20,19 +20,17 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.4 $
 --  $Author: koppor $
---  $Date: 2003/06/05 18:03:11 $
+--  $Date: 2003/06/10 09:25:22 $
 --
 ------------------------------------------------------------------------------
 --
 --  Contains the Selections
 
---  from Ada
-with Ada.Streams;
-
 --  from Bauhaus
 with Lists;
+with Bauhaus_Io;
 
 --  from GIANT
 with Giant.Valid_Names;
@@ -85,13 +83,13 @@ package Giant.Graph_Lib.Selections is
    --  cp. Barnes p543
    --  Maybe u have to use "for Selection'Write use Selection_Write"
    procedure Selection_Write
-      (Stream             : access Ada.Streams.Root_Stream_Type'Class;
+      (Stream             : in Bauhaus_Io.Out_Stream_Type;
        Selection_To_Write : in Selection);
 
    ---------------------------------------------------------------------------
    procedure Selection_Read
-      (Stream             : access Ada.Streams.Root_Stream_Type'Class;
-       Selection_To_Read  : in Selection);
+      (Stream            : in Bauhaus_Io.In_Stream_Type;
+       Selection_To_Read : in Selection);
 
 
    -----------------------
