@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/22 22:53:23 $
+-- $Date: 2003/06/29 18:15:54 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -137,11 +137,11 @@ package body Giant.Gsl is
       if Var = Gsl_Null then
          return "Gsl_Null";
       elsif Var'Tag = Gsl_String_Record'Tag then
-         return "Gsl_String";
+         return "Gsl_String - " & Get_Value (Gsl_String (Var));
       elsif Var'Tag = Gsl_Boolean_Record'Tag then
-         return "Gsl_Boolean";
+         return "Gsl_Boolean - " & Get_Value (Gsl_Boolean (Var))'Img;
       elsif Var'Tag = Gsl_Natural_Record'Tag then
-         return "Gsl_Natural";
+         return "Gsl_Natural - " & Get_Value (Gsl_Natural (Var))'Img;
       elsif Var'Tag = Gsl_List_Record'Tag then
          return "Gsl_List";
       elsif Var'Tag = Gsl_Var_Reference_Record'Tag then
