@@ -20,12 +20,15 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-node_annotation_dialog.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-node_annotation_dialog.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/06/05 11:08:50 $
+--  $Date: 2003/06/12 13:58:14 $
 --
 
 with Glib;
+with Gtk.Button;
+with Gtk.Scrolled_Window;
+with Gtk.Widget;
 with Gtk.Enums; use Gtk.Enums;
 
 with Giant.Gui_Utils; use Giant.Gui_Utils;

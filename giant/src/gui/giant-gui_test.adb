@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_test.adb,v $, $Revision: 1.10 $
+-- $RCSfile: giant-gui_test.adb,v $, $Revision: 1.11 $
 -- $Author: squig $
--- $Date: 2003/06/05 11:08:50 $
+-- $Date: 2003/06/12 13:58:14 $
 --
 with Gtk.Main;
 
@@ -32,10 +32,10 @@ with Giant.Main_Window;
 with Giant.Graph_Window;
 with Giant.Gsl_Dialog;
 with Giant.Make_Room_Dialog;
---  with Giant.Node_Annotation_Dialog;
+with Giant.Node_Annotation_Dialog;
 with Giant.Progress_Dialog;
 with Giant.Main_Window;
---  with Giant.Graph_Lib;
+with Giant.Graph_Lib;
 with Giant.Logger;
 --with Config;
 
@@ -44,9 +44,9 @@ is
 --     My_Gsl_Dialog : Gsl_Dialog.Gsl_Dialog_Access;
 --     My_Progress_Dialog : Progress_Dialog.Progress_Dialog_Access;
    My_Graph_Window : Graph_Window.Graph_Window_Access;
---     My_Node_Annotation_Dialog :
---       Node_Annotation_Dialog.Node_Annotation_Dialog_Access;
---     Node_Access : Giant.Graph_Lib.Node_Id;
+   My_Node_Annotation_Dialog :
+     Node_Annotation_Dialog.Node_Annotation_Dialog_Access;
+   Node_Access : Giant.Graph_Lib.Node_Id;
    My_Make_Room_Dialog : Make_Room_Dialog.Make_Room_Dialog_Access;
 begin
    Default_Logger.Init;
@@ -76,10 +76,10 @@ begin
    Graph_Window.Create (My_Graph_Window);
    Graph_Window.Show_All (My_Graph_Window);
 
---     Node_Access := Graph_Lib.Get_Root_Node;
+   Node_Access := Graph_Lib.Get_Root_Node;
 
---     Node_Annotation_Dialog.Create (My_Node_Annotation_Dialog, Node_Access);
---     Node_Annotation_Dialog.Show_All (My_Node_Annotation_Dialog);
+   Node_Annotation_Dialog.Create (My_Node_Annotation_Dialog, Node_Access);
+   Node_Annotation_Dialog.Show_All (My_Node_Annotation_Dialog);
 
    Make_Room_Dialog.Create (My_Make_Room_Dialog);
    Make_Room_Dialog.Show_All (My_Make_Room_Dialog);
