@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.25 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.26 $
 --  $Author: koppor $
---  $Date: 2003/06/26 13:56:36 $
+--  $Date: 2003/06/26 14:08:02 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -56,41 +56,6 @@ package body Giant.Graph_Lib is
    --  Created in "Create"
    --  Destroyed in "Destroy"
    IML_Graph : IML_Graphs.IML_Graph;
-
-   --------------------------------------------
-   --  Edge_Id_Locator                       --
-   --    Hashed mapping to speed up reading  --
-   --------------------------------------------
-
-   package Edge_Id_Locator is
-
-      ------------------------------------------------------------------------
-      --  Has to be called after Giant.Graph_Lib.Load
-      --    and before any use of Selection_Read
-      procedure Initialize;
-
-      ------------------------------------------------------------------------
-      --  Raises:
-      --    No_Edge_Found - if belonging edge can't be located
-      function Locate
-        (Source_Node              : in Node_Id;
-         Target_Node              : in Node_Id;
-         Attribute                : in Node_Attribute_Id;
-         Attribute_Element_Number : in Natural)
-        return Edge_Id;
-
-      ------------------------------------------------------------------------
-      --  Has to be called before Giant.Graph_Lib.Destroy
-      --    and after any use of Selection_Read
-      procedure Destroy;
-
-      ------------------------------------------------------------------------
-      --  Risen, if duplicate edges have to be inserted
-      Duplicate_Edge : exception;
-
-      No_Edge_Found  : exception;
-
-   end Edge_Id_Locator;
 
    package body Edge_Id_Locator is
 
