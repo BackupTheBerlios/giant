@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config.ads,v $, $Revision: 1.7 $
+-- $RCSfile: giant-config.ads,v $, $Revision: 1.8 $
 -- $Author: schwiemn $
--- $Date: 2003/06/20 20:33:57 $
+-- $Date: 2003/06/23 16:34:41 $
 --
 -- -----
 -- This package holds the functionality needed to access the
@@ -68,8 +68,8 @@ package Giant.Config is
 
    ---------------------------------------------------------------------------
    -- There are also three different colors used to highlight
-   -- IML_Subgrapghs.
-   type IML_Subgraph_High_Light_ID is (Color_1, Color_2, Color_3);
+   -- Subgrapghs.
+   type Subgraph_High_Light_ID is (Color_1, Color_2, Color_3);
 
    ---------------------------------------------------------------------------
    -- Icons are asked for very frequently and the character array
@@ -132,28 +132,20 @@ package Giant.Config is
    -- B
    -- Access to processed config data.
    ---------------------------------------------------------------------------
-   
+     
    ---------------------------------------------------------------------------
-   -- Raised if the Resource Directory Could not be calculated.
-   Invalid_Resource_Directory_Exception : exception;
-   
-   ---------------------------------------------------------------------------
-   -- Returns an absolute path for the resources directory. If the
-   --   corresponding setting in  Giant.Config_Settings holds an
-   --   realtive path (that is NOT RECOMMENDED) this path will
-   --   be expanded using "Root_Path".
+   -- Returns an absolute path for the resources directory setting.
+   --
+   -- May return an empty String ("") if the setting is not correctly
+   -- defined.
    --
    -- Returns:
    --   An absolute path that ends with a directory separator
    --   (e.g. "/home/donald/resources/").
-
    -- Raises:
    --   Config_ADO_Not_Initialized_Exception - raised if this subprogram
    --     is called before "Initialize_Config_Data"
-   --   Invalid_Resource_Directory_Exception - raised if
-   --     if (e.g. due to an not correct path entry in the config file) 
-   --     such a path could not be calculated.
-   function Get_Resources_Directory (Root_Path : in String) return String;
+   function Get_Resources_Directory return String;
 
    ---------------------------------------------------------------------------
    -- C
@@ -216,7 +208,7 @@ package Giant.Config is
      return Color_Access;
 
    ---------------------------------------------------------------------------
-   -- This function returns the color used to highlight selections.
+   -- This function returns the color used to highlight subgraphs.
    -- As this function is not supposed to be used frequently, the
    -- implementation is not very performant.
    --
@@ -233,8 +225,8 @@ package Giant.Config is
    -- Raises:
    --   Config_ADO_Not_Initialized_Exception - raised if this subprogram
    --     is called before "Initialize_Config_Data".
-   function Return_Highlight_Color_For_IML_Subgraph
-     (Highlight_ID : in IML_Subgraph_High_Light_ID)
+   function Return_Highlight_Color_For_Subgraph
+     (Highlight_ID : in Subgraph_High_Light_ID)
      return Color_Access;
 
    ---------------------------------------------------------------------------
