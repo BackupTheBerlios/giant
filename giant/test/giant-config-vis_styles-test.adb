@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-config-vis_styles-test.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-config-vis_styles-test.adb,v $, $Revision: 1.3 $
 --  $Author: schwiemn $
---  $Date: 2003/06/24 20:21:05 $
+--  $Date: 2003/06/25 16:13:26 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -43,15 +43,13 @@ package body Giant.Config.Vis_Styles.Test is
      
    begin
       
-      for i in 1 .. 50000 loop
+      for i in 1 .. 1 loop
       
         Giant.Config.Vis_Styles.Initialize_Config_Vis_Styles
-          ("/home/schwiemn/giant/schwiemn/CVS_Hpro/giant/test/resources/"
-           & "vis_styles/resources_dir",
+          ("resources/vis_styles/resources_dir",
            "",
            "", 
-           "/import/sirius/stupro/giant/schwiemn/CVS_Hpro/giant/"
-           & "test/resources/vis_styles/only_defaults_giant_vis_style.xml");
+           "resources/vis_styles/only_defaults_giant_vis_style.xml");
       
     --    Assert (Giant.Config.Vis_Styles.Get_Number_Of_Known_Vis_Styles = 1,
       --          "Test whether ammount of loaded vis styles is correct");
