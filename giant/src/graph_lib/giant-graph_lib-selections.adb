@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.11 $
+--  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.12 $
 --  $Author: koppor $
---  $Date: 2003/06/26 14:05:08 $
+--  $Date: 2003/06/26 16:01:42 $
 
 with Untagged_Ptr_Ops;
 with Ada.Unchecked_Deallocation;
@@ -145,6 +145,15 @@ package body Giant.Graph_Lib.Selections is
 
       Free_Selection (Selection_To_Destroy);
    end Destroy;
+
+   ---------------------------------------------------------------------------
+   function Get_All_Nodes
+     (Sel : in Selection)
+     return Node_Id_Set
+   is
+   begin
+      return Sel.Nodes;
+   end Get_All_Nodes;
 
    ---------------------------------------------------------------------------
    function Get_Edge_Count
@@ -355,7 +364,7 @@ package body Giant.Graph_Lib.Selections is
       Sel := new Selection_Record (Name_Length => Len);
       Bauhaus_Io.Read_String (Stream, Sel.Name);
 
-      Read_Edge_Id_Set (Stream, Sel.Edges);
+      -- TBD: FIX: graph_lib Read_Edge_Id_Set (Stream, Sel.Edges);
       Read_Node_Id_Set (Stream, Sel.Nodes);
    end Selection_Read;
 
@@ -418,7 +427,7 @@ package body Giant.Graph_Lib.Selections is
    begin
       Bauhaus_Io.Write_Natural (Stream, Sel.Name'Length);
       Bauhaus_Io.Write_String  (Stream, Sel.Name);
-      Write_Edge_Id_Set (Stream, Sel.Edges);
+      --  TBD: FIXME: Write_Edge_Id_Set (Stream, Sel.Edges);
       Write_Node_Id_Set (Stream, Sel.Nodes);
    end Selection_Write;
 
