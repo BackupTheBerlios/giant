@@ -1,5 +1,7 @@
 2003-10-09  Oliver Kopp  <koppor@studi.informatik.uni-stuttgart.de>
 
+	* test/resources/rfg_examp.iml: made with new iml-version
+
 	* etc/global_config.xml: Added Create Complete Subgraph to Menu
 
 	* shared/gsl/Create Create Complete Subgraph.gsl: added
