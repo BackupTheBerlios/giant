@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: layouts.tex,v $, $Revision: 1.5 $
-%  $Date: 2003/04/02 22:36:40 $
+%  $RCSfile: layouts.tex,v $, $Revision: 1.6 $
+%  $Date: 2003/04/07 08:23:39 $
 %  $Author: koppor $
 %
 %  Description: Beschreibung der Layouts
@@ -15,32 +15,32 @@ derer das Layout von Fenster-Knoten innerhalb von Anzeigefenstern
 automatisch berechnet werden kann.
 
 \product bietet zwei verschiedene Layoutalgorithmen an:
-\begin{itemize}
+\begin{enumerate}
   \item Treelayout
   \item Matrixlayout
-\end{itemize}
-
-Alle Knoten werden beim Layouten als gleich gro\"s betrachtet. Diese Gr\"osse ist konstant und betr\"agt 120x100 Pixel.
+\end{enumerate}
 
 \section{Treelayout}
 \subsection{Parameter}
-\begin{itemize}
+\begin{enumerate}
   \item \textbf{IML-Teilgraph}\\
-Der IML-Teilgraph, der layoutet werden soll
+Der IML-Teilgraph, der layoutet werden soll.
   \item \textbf{Kantenklassen}\\
-Die Kantenklassen, die beachtet werden sollen. Werden keine angegeben, werden alle ber\"ucksichtigt
+Zu beachtete Kantenklassen k\"onnen angegeben werden. Ist dies nicht der Fall, werden alle ber\"ucksichtigt.
   \item \textbf{Zielposition}\\
 Die Position, an die der Mittelpunkt des Wurzelknotens des Baums positioniert werden soll.
-\end{itemize}
+\end{enumerate}
 
 \subsection{Beschreibung}
 Das Treelayout basiert auf Walkers Algorithmus. Dabei werden folgende Eigenschaften erreicht:
-\begin{itemize}
+\begin{enumerate}
    \item Alle Kinder eines Knotens sind auf der gleichen Ebene
    \item Alle Kinder eines Knotens haben den gleichen horizontalen Abstand zueinander
-\end{itemize}
+\end{enumerate}
 
-Als Wurzelknoten wird der erste Knoten des \"ubergebenen IML-Teilgraphen gew\"ahlt. Die Reihenfolge der Kinder von der \texttt{IML\_Reflection} \"ubernommen. In der Grundfunktionalit\"at werden alle Kanten betrachtet.
+Als Wurzelknoten wird der erste Knoten des \"ubergebenen IML-Teilgraphen gew\"ahlt. Die Reihenfolge der Kinder von der \texttt{IML\_Reflection}\xspace\"ubernommen. In der Grundfunktionalit\"at werden alle Kanten betrachtet.
+
+Der vertikale Abstand von Ebene zu Ebene richtet sich nach der H\"ohe des h\"ochsten Knotens (siehe \ref{Visualization-Knoten-Rechteck}).
 
 Falls der \"ubergebene IML-Teilgraph keinen Baum darstellt, werden die Knoten in die Ebene eingegliedert, die bei einer Tiefensuche als erstes erreicht wird.
 
@@ -52,14 +52,15 @@ Im zweiten Lauf werden Knoten, die durch die gegebenen Kanten nicht erreicht wer
 \section{Matrixlayout}
 \label{Matrixlayout}
 \subsection{Parameter}
-\begin{itemize}
+\begin{enumerate}
   \item \textbf{IML-Teilgraph}\\
 Der IML-Teilgraph, der layoutet werden soll
   \item \textbf{Zielposition}\\
 Die Position, an der die linke obere Ecke des Quadrats liegen soll.
-\end{itemize}
+\end{enumerate}
 
 \subsection{Beschreibung}
 Im Matrixlayout werden die Knoten in einem Quadrat ausgerichtet.
-Dabei werden die Knoten mittels einer Breitensuche besucht und in dieser Besuchsreihenfolge in das Quadrat eingef\"ugt.
+Dabei werden die Knoten mittels einer Breitensuche besucht und in dieser Besuchsreihenfolge in das Quadrat eingef\"ugt. 
+Der vertikale Abstand von Ebene zu Ebene richtet sich nach der H\"ohe des h\"ochsten Knotens (siehe \ref{Visualization-Knoten-Rechteck}).
 
