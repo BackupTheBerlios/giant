@@ -21,22 +21,14 @@
 --
 -- $RCSfile: giant-gsl-types.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/22 22:51:27 $
+-- $Date: 2003/06/25 16:08:27 $
 --
 -- This package implements the datatypes used in GSL.
 --
 
---with Graph_Lib;
---use  Graph_Lib;
+with Giant.Graph_Lib;
 
 package Giant.Gsl.Types is
-
-   ---------------------------------------------------------------------------
-   -- only temporary
-   type Node_Id is new Integer;
-   type Edge_Id is new Integer;
-   type Node_Set is new Integer;
-   type Edge_Set is new Integer;
 
    ---------------------------------------------------------------------------
    -- gsl types (ref. GIANT Scripting Language Specification: 1.3.1)
@@ -50,11 +42,11 @@ package Giant.Gsl.Types is
   
    function Get_Value
      (Var : Gsl_Node_Id)
-      return Node_Id;
+      return Giant.Graph_Lib.Node_Id;
 
    procedure Set_Value
      (Var   : Gsl_Node_Id;
-      Value : Node_Id);
+      Value : Giant.Graph_Lib.Node_Id);
  
    function Copy
      (Object : access Gsl_Node_Id_Record)
@@ -72,11 +64,11 @@ package Giant.Gsl.Types is
 
    function Get_Value
      (Var : Gsl_Edge_Id)
-      return Edge_Id;
+      return Giant.Graph_Lib.Edge_Id;
 
    procedure Set_Value
      (Var   : Gsl_Edge_Id;
-      Value : Edge_Id);
+      Value : Giant.Graph_Lib.Edge_Id);
 
    function Copy
      (Object : access Gsl_Edge_Id_Record)
@@ -94,11 +86,11 @@ package Giant.Gsl.Types is
 
    function Get_Value
      (Var : Gsl_Node_Set)
-      return Node_Set;
+      return Giant.Graph_Lib.Node_Id_Set;
 
    procedure Set_Value
      (Var   : Gsl_Node_Set;
-      Value : Node_Set);
+      Value : Giant.Graph_Lib.Node_Id_Set);
 
    function Copy
      (Object : access Gsl_Node_Set_Record)
@@ -116,11 +108,11 @@ package Giant.Gsl.Types is
 
    function Get_Value
      (Var : Gsl_Edge_Set)
-      return Edge_Set;
+      return Giant.Graph_Lib.Edge_Id_Set;
 
    procedure Set_Value
      (Var   : Gsl_Edge_Set;
-      Value : Edge_Set);
+      Value : Giant.Graph_Lib.Edge_Id_Set);
 
    function Copy
      (Object : access Gsl_Edge_Set_Record)
@@ -320,28 +312,28 @@ private
    -- Gsl_Node_Id
    type Gsl_Node_Id_Record is new Gsl_Type_Record with
       record
-         Value : Node_Id;
+         Value : Giant.Graph_Lib.Node_Id;
       end record;
    
    ---------------------------------------------------------------------------
    -- Gsl_Edge_Id
    type Gsl_Edge_Id_Record is new Gsl_Type_Record with
       record
-         Value : Edge_Id;
+         Value : Giant.Graph_Lib.Edge_Id;
       end record;
    
    ---------------------------------------------------------------------------
    -- Gsl_Node_Set
    type Gsl_Node_Set_Record is new Gsl_Type_Record with
       record
-         Value : Node_Set;
+         Value : Giant.Graph_Lib.Node_Id_Set;
       end record;
 
    ---------------------------------------------------------------------------
    -- Gsl_Edge_Set
    type Gsl_Edge_Set_Record is new Gsl_Type_Record with
       record
-         Value : Edge_Set;
+         Value : Giant.Graph_Lib.Edge_Id_Set;
       end record;
 
    ---------------------------------------------------------------------------

@@ -20,9 +20,9 @@
 --
 -- First Author: Gerrit Schulz
 --
--- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.5 $
+-- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.6 $
 -- $Author: schulzgt $
--- $Date: 2003/06/22 22:51:27 $
+-- $Date: 2003/06/25 16:08:27 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -40,16 +40,16 @@ package body Giant.Gsl.Types is
 
    function Get_Value
      (Var : Gsl_Node_Id)
-      return Node_Id is
+      return Giant.Graph_Lib.Node_Id is
    begin
       return Var.Value;
    end Get_Value;
 
    procedure Set_Value
      (Var   : Gsl_Node_Id;
-      Value : Node_Id) is
+      Value : Giant.Graph_Lib.Node_Id) is
    begin
-      null;
+      Var.Value := Value;
    end Set_Value;
 
    function Copy
@@ -84,16 +84,16 @@ package body Giant.Gsl.Types is
 
    function Get_Value
      (Var : Gsl_Edge_Id)
-      return Edge_Id is
+      return Giant.Graph_Lib.Edge_Id is
    begin
       return Var.Value;
    end Get_Value;
 
    procedure Set_Value
      (Var   : Gsl_Edge_Id;
-      Value : Edge_Id) is
+      Value : Giant.Graph_Lib.Edge_Id) is
    begin
-      null;
+      Var.Value := Value;
    end Set_Value;
 
    function Copy
@@ -125,16 +125,16 @@ package body Giant.Gsl.Types is
 
    function Get_Value
      (Var : Gsl_Node_Set)
-      return Node_Set is
+      return Giant.Graph_Lib.Node_Id_Set is
    begin
       return Var.Value;
    end Get_Value;
 
    procedure Set_Value
      (Var   : Gsl_Node_Set;
-      Value : Node_Set) is
+      Value : Giant.Graph_Lib.Node_Id_Set) is
    begin
-      null;
+      Var.Value := Value;
    end Set_Value;
 
    function Copy
@@ -166,16 +166,16 @@ package body Giant.Gsl.Types is
 
    function Get_Value
      (Var : Gsl_Edge_Set)
-      return Edge_Set is
+      return Giant.Graph_Lib.Edge_Id_Set is
    begin
       return Var.Value;
    end Get_Value;
 
    procedure Set_Value
      (Var   : Gsl_Edge_Set;
-      Value : Edge_Set) is
+      Value : Giant.Graph_Lib.Edge_Id_Set) is
    begin
-      null;
+      Var.Value := Value;
    end Set_Value;
 
    function Copy
