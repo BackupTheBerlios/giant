@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.29 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.30 $
 --  $Author: keulsn $
---  $Date: 2003/07/15 09:49:16 $
+--  $Date: 2003/07/15 09:51:58 $
 --
 ------------------------------------------------------------------------------
 
@@ -522,7 +522,8 @@ package body Giant.Graph_Widgets is
       if Vis_Node /= null then
          return Positioning.Get_Logic
            (Widget, Vis.Absolute.Get_Height (Vis_Data.Get_Extent (Vis_Node))) +
-           2 * Drawing.Get_Maximum_Node_Highlight_Width (Widget);
+           2.0 * Vis.Logic_Float
+             (Drawing.Get_Maximum_Node_Highlight_Width (Widget));
       else
          raise Unknown_Node_Id;
       end if;
