@@ -1,23 +1,24 @@
 % ==============================================================================
-%  $RCSfile: selection.tex,v $, $Revision: 1.11 $
-%  $Date: 2003/03/29 12:59:27 $
-%  $Author: schwiemn $
+%  $RCSfile: selection.tex,v $, $Revision: 1.12 $
+%  $Date: 2003/03/31 16:29:39 $
+%  $Author: squig $
 %
-%  Description: Use-Cases für die Selektionen
+%  Description: UseCases für die Selektionen
 %
+%  Last-Ispelled-Revision: 1.11
 %
 % ==============================================================================
 
 
 \begin{uc}[Selektion zur aktuellen Selektion machen]
           {UC: Selektion zur aktuellen Selektion machen}
-	  
+          
 Dieser UseCase dient dazu, eine Selektion zur aktuellen Selektion zu machen.
 Dies ist nötig, da nur die aktuelle Selektion mittels der Maus
 modifiziert werden kann. 
 Siehe hierzu auch Abschnitt \ref{Aktuelle Selektion vs Selektionen}. 
-	  
-	 
+          
+         
   \begin{precond}
     \cond Es gibt ein Anzeigefenster mit mindestens einer Selektion.
   \end{precond}
@@ -26,7 +27,7 @@ Siehe hierzu auch Abschnitt \ref{Aktuelle Selektion vs Selektionen}.
     \cond Die vorherige aktuelle Selektion ist nicht mehr aktuell.
     \cond Die entsprechende Selektion ist nun die aktuelle Selektion und
           als solche erkennbar angezeigt und hervorgehoben, auch mittels
-	  einer Hervorhebung in der Selektionsauswahlliste des Fensters.
+          einer Hervorhebung in der Selektionsauswahlliste des Fensters.
     
   \end{postsuccess}
  
@@ -39,20 +40,20 @@ Siehe hierzu auch Abschnitt \ref{Aktuelle Selektion vs Selektionen}.
     \step[2]
     GIANT macht die entsprechende Selektion zur aktuellen Selektion.  
   \end{proc}
-	  
+          
 \end{uc}
 
 
 % ==============================================================================
 \begin{uc}[Aktuelle Selektion zurück stufen]
           {UC: Aktuelle Selektion zurück stufen}
-	  
+          
 Siehe hierzu auch Abschnitt \ref{Aktuelle Selektion vs Selektionen}. 
 Mit diesem UseCase kann
 eine aktuelle Selektion auf den Status einer \gq{normalen} Selektion
 zurückgestuft werden.
-	  
-	 
+          
+         
   \begin{precond}
     \cond Es gibt ein Anzeigefenster mit einer aktuellen Selektion.
   \end{precond}
@@ -79,7 +80,7 @@ zurückgestuft werden.
 % ==============================================================================
 \begin{uc}[Selektion graphisch hervorheben]
           {UC: Selektion graphisch hervorheben}
-	  
+          
 Dieser UseCase dient zum Hervorheben von Selektionen innerhalb eines
 Anzeigefensters (siehe hierzu auch 
 auch \ref {hervorheben von Knoten und Kanten}).
@@ -105,7 +106,7 @@ auch \ref {hervorheben von Knoten und Kanten}).
     Der Benutzer startet den UseCase mit einem Rechtsklick 
     auf die gewünschte Selektion in der
     Selektionsauswahlliste (siehe \ref{Selektionsauswahlliste})
-    und wählt im zugehörigen PopUp Menü den Eintrag
+    und wählt im zugehörigen Popup-Menü den Eintrag
     \gq{Highlight Selection  Color 1 (2,3)} aus.
   
     \step[2]
@@ -145,7 +146,7 @@ Anzeigefensters aufzuheben.
     Der Benutzer startet den UseCase mit einem Rechtsklick 
     auf die gewünschte Selektion in der
     Selektionsauswahlliste (siehe \ref{Selektionsauswahlliste})
-    und wählt im zugehörigen PopUp Menü den Eintrag
+    und wählt im zugehörigen Popup-Menü den Eintrag
     \gq{Unhighlight Selection} aus.
   
     \step[2]
@@ -168,7 +169,7 @@ Mit diesem UseCase können neue, leere Selektionen angelegt werden.
   \begin{postsuccess}
     \cond Eine neue Selektion mit entsprechendem Namen
          ist angelegt und erscheint in der Liste der Selektionen 
-	 (siehe \ref{Selektionsauswahlliste}).
+         (siehe \ref{Selektionsauswahlliste}).
     \cond Diese neue Selektion hat keinen Inhalt (selektierte Knoten und
           Kanten).
 
@@ -235,7 +236,7 @@ Anzeigefensters (nicht zum Kopieren in ein anderes Anzeigefenster).
     \step[1]
     Der Benutzer startet den UseCase durch Rechtsklick auf die zu kopierende
     Selektion in der Selektionsauswahlliste (\ref{Selektionsauswahlliste})
-    und wählt aus dem PopUp Menü den Eintrag \gq{Copy Selection}.
+    und wählt aus dem Popup-Menü den Eintrag \gq{Copy Selection}.
     
     \step[2] 
     GIANT öffnet den allgemeinen Texteingabedialog 
@@ -279,7 +280,7 @@ unverändert.
     \cond 
     Die Fenster-Knoten und Fenster-Kanten, 
     die zu dieser Selektion gehörten, werden nicht gelöscht.
-	  
+          
     \cond War die Selektion hervorgehoben, so wird die entsprechende
     Hervorhebung der Fenster-Knoten und Fenster-Kanten aufgehoben.
     
@@ -293,7 +294,7 @@ unverändert.
     \step[1]
     Der Benutzer startet den UseCase durch Rechtsklick auf die zu löschende
     Selektion in der Selektionsauswahlliste \ref{Selektionsauswahlliste}
-    und wählt aus dem PopUp Menü den Eintrag \gq{Delete Selection} aus.
+    und wählt aus dem Popup-Menü den Eintrag \gq{Delete Selection} aus.
 
       
     \step[2]
@@ -306,7 +307,7 @@ unverändert.
 %===============================================================================
 \begin{uc}[Selektion manuell modifizieren]
          {UC: Selektionen manuell modifizieren}
-	 
+         
 Jeweils die aktuelle Selektion kann mittels der Maus modifiziert 
 werden (siehe auch  \ref{Aktuelle Selektion vs Selektionen}).  
 
@@ -347,7 +348,7 @@ werden (siehe auch  \ref{Aktuelle Selektion vs Selektionen}).
 %===============================================================================
 \begin{uc}[Selektion aus IML-Teilgraph erzeugen]
          {UC: Selektion aus IML-Teilgraph erzeugen}
-	 
+         
 Leitet eine Selektion aus einem IML-Teilgraphen ab
 (siehe hierzu \ref{Selektion aus IML-Teilgraphen ableiten}).
 
@@ -379,13 +380,13 @@ Leitet eine Selektion aus einem IML-Teilgraphen ab
     Der Benutzer führt einen Rechtsklick auf den Quell-IML-Teilgraphen 
     in der entsprechenden Liste im Hauptfenster 
     (siehe \ref{GUI Subgraph List}) aus
-    und wählt im dazugehörigen PopUp Menü 
-    (siehe \ref{PopUp Menü Subgraph List})
+    und wählt im dazugehörigen Popup-Menü 
+    (siehe \ref{Popup-Menü Subgraph List})
     den Eintrag \gq{Create Window Selection from IML Subgraph} aus.
      
     \step[2]
     GIANT zeigt den allgemeinen Texteingabedialog \ref{DIALOG-WINDOW}.
-      	    
+            
     \step[3]
     Der Benutzer gibt einen Namen für die neu zu erstellende Selektion ein
     und bestätigt mit OK (gültige Namen siehe \ref{afa Zulaessige Namen}).
@@ -424,7 +425,7 @@ Leitet eine Selektion aus einem IML-Teilgraphen ab
 %===============================================================================
 \begin{uc}[Mengenoperationen auf 2 Selektionen]
 {UC: Mengenoperationen auf 2 Selektionen}
-Zusätzlich zu den Möglichkeiten der Anfragsprache GQSL (siehe
+Zusätzlich zu den Möglichkeiten der Anfragesprache GQSL (siehe
 \ref {GIANT Query Skripting Language}) kann der Benutzer
 die gängigen Mengenoperationen, wie Mengenvereinigung, Schnitt und Differenz,
 auch direkt über einen entsprechenden Dialog 
@@ -472,7 +473,7 @@ Das Vorgehen ist analog zu dem UseCase
     \step[1]
     Der Benutzer startet den UseCase über durch Auswahl des
     Menüpunktes Selection Set Operation (Union/Difference/Intersection) 
-    aus dem PopUp Menü in der Selektionsauswahlliste (siehe
+    aus dem Popup-Menü in der Selektionsauswahlliste (siehe
     \label{Selektionsauswahlliste}).
     
     \step[2] 

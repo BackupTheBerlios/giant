@@ -1,9 +1,11 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.19 $
-%  $Date: 2003/03/29 12:59:26 $
-%  $Author: schwiemn $
+%  $RCSfile: config.tex,v $, $Revision: 1.20 $
+%  $Date: 2003/03/31 16:29:39 $
+%  $Author: squig $
 %
 %  Description:
+%
+%  Last-Ispelled-Revision: 1.19
 %
 % ==============================================================================
 
@@ -36,7 +38,7 @@
 Diese Datei ist in XML verfasst. In Ihr können die anschließend beschriebenen
 Einstellungen vorgenommen werden.
 
-%EVENTUELL FÜR JEDEN BENUTZER EIGENE KONFIG-DATEI VORSEHEN.
+%EVENTUELL FÜR JEDEN BENUTZER EIGENE KONFIGURATIONS-DATEI VORSEHEN.
 
   \subsection {Verweise auf GQSL-Skript-Makros} 
   \index{Makros}
@@ -44,7 +46,7 @@ Einstellungen vorgenommen werden.
   Es können GQSL-Skript-Makros definiert werden. Jeder Makro wird durch 
   einen eindeutigen Namen und durch einen Verweis
   auf die Datei, welche das GQSL-Skript enthält, spezifiziert.
-  Der Makro kann dann aus einem PopUp Menü heraus aufgerufen werden, wobei
+  Der Makro kann dann aus einem Popup Menü heraus aufgerufen werden, wobei
   dann das in der Datei stehende GQSL Skript ausgeführt wird.
 
   \subsection {Farbe von Hervorhebungen}
@@ -65,13 +67,10 @@ Einstellungen vorgenommen werden.
 
   Der Benutzer legt in der globalen Konfigurationsdatei fest, 
   mit welchem Editor der zu IML-Knoten korrespondierende
-  Quellcode automatisch angezeigt wird. Er hat die Wahl
-  zwischen Emacs und vi.
-
-
+  Quellcode automatisch angezeigt wird. 
 
 \section {Visualisierungsstile} \label{Config Visualisierungsstile}
-\index{Visulisierungsstile!Konfiguration}
+\index{Visualisierungsstile!Konfiguration}
 \index{Konfiguration!Visualisierungsstile}
 
 Der Benutzer kann beliebig viele Visualisierungsstile definieren.
@@ -106,7 +105,7 @@ Für die Visualisierungsstile gelten die folgenden Konventionen:
 
   \item
   Wird eine Kanten- oder eine Knotenklasse innerhalb eines
-  Visualisierungsstieles mehreren klassenspezifischen Einstellungen zugeordnet,   
+  Visualisierungsstils mehreren klassenspezifischen Einstellungen zugeordnet,   
   führt dies zu keinem Fehler, es bleibt aber unspezifiziert, 
   welche Einstellung tatsächlich genommen wird.
 
@@ -117,7 +116,7 @@ Für die Visualisierungsstile gelten die folgenden Konventionen:
 
   \item \index{Visualisierungsstile!Standard-Visualisierungsstil}
   Es gibt immer einen von GIANT fest
-  vorgegeben Standard-Visualisierungsstil. Dieser Visualisierungsstiel
+  vorgegeben Standard-Visualisierungsstil. Dieser Visualisierungsstil
   wird für neu erzeugte Anzeigefenster genommen. 
   Kann GIANT den einem Anzeigefenster zugewiesenen Visualisierungsstil
   nicht finden (falls die zugehörige XML-Datei fehlt) wird ebenfalls
@@ -127,8 +126,8 @@ Für die Visualisierungsstile gelten die folgenden Konventionen:
 
 
   \subsection {Name des Visualisierungsstils}
-  Jeder Visualisierungsstiel erhält einen Namen. Unter diesem Namen ist der 
-  Visualisierungsstiel für jedes Anzeigefenster einzeln auswählbar.
+  Jeder Visualisierungsstil erhält einen Namen. Unter diesem Namen ist der 
+  Visualisierungsstil für jedes Anzeigefenster einzeln auswählbar.
  
   \subsection {Einstellungen innerhalb des Visualisierungsstils}
     \begin{enumerate}

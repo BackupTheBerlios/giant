@@ -1,9 +1,11 @@
 % ==============================================================================
-%  $RCSfile: nfa.tex,v $ 
-%  $Date: 2003/03/29 12:59:26 $
-%  $Author: schwiemn $ 
+%  $RCSfile: nfa.tex,v $, $Revision: 1.8 $
+%  $Date: 2003/03/31 16:29:39 $
+%  $Author: squig $ 
 %
 %  Description: Nichtfunktionale Anforderungen
+%
+%  Last-Ispelled-Revision: 
 %
 % ==============================================================================
 
@@ -22,14 +24,13 @@ auszeichnen. Erreicht werden soll dies durch die folgenden Grundsätze.
 \begin {enumerate}
 
   \item
-  Wartbarkeit und Erweiterbarkeit gehen über Performance.
+  Wartbarkeit und Erweiterbarkeit gehen über Performanz.
   
-  \item
-  Entsprechende Kapselung und Strukturierung des Entwurfes 
-  (Informationhiding, hohe Lokalität ect.).
+  \item Strukturierung des Entwurfes nach Kriterien des
+  Software-Engineerings.
 
   \item
-  Strikte Trennung von GUI und Funktionalität
+  Strikte Trennung von GUI und Funktionalität.
 
   \item
   Einsatz von XML für alle editierbaren Konfigurationsdateien.
@@ -47,12 +48,11 @@ auszeichnen. Erreicht werden soll dies durch die folgenden Grundsätze.
 \begin {enumerate}
 
   \item
-  Generell soll GIANT betriebssystemunabhängig entworfen und Implementiert 
+  Generell soll GIANT Betriebssystem unabhängig entworfen und Implementiert 
   werden.
-
-  \item
-  Weitere implementierungstechnischen Maßnahmen zur expliziten Unterstützung 
-  der Portabilität sind nicht vorgesehen.
+  
+  \item Weitere Maßnahmen zur expliziten Unterstützung der Portabilität
+  sind nicht vorgesehen.
 
 \end {enumerate}
 
@@ -93,10 +93,10 @@ auszeichnen. Erreicht werden soll dies durch die folgenden Grundsätze.
   Insbesondere bei Fehlern, die mit dem Überschreiten der verfügbaren
   Hauptspeicherkapazität in Zusammenhang stehen, kann solch ein robustes 
   Verhalten nicht garantiert werden.
-
-  \item
-  Speicherlecks können im Falle Abbruchs einer Aktion im Fehlerfalle
-  (insb.\ bei Storrage-Errors) nicht ausgeschlossen werden.
+  
+  \item 
+  Speicherlecks können im Falle Abbruchs einer Aktion im
+  Fehlerfalle nicht ausgeschlossen werden.
 
 \end {enumerate}
 

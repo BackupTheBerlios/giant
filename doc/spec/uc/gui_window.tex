@@ -1,9 +1,11 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.25 $
-%  $Date: 2003/03/30 21:03:26 $
-%  $Author: birdy $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.26 $
+%  $Date: 2003/03/31 16:29:39 $
+%  $Author: squig $
 %
-%  Description: Use-Cases für die Fensterfunktionalität der GUI
+%  Description: UseCases für die Fensterfunktionalität der GUI
+%
+%  Last-Ispelled-Revision: 1.25
 %
 % ==============================================================================
 
@@ -35,13 +37,13 @@ Projektes anlegen.
   
   \begin{proc}    
     \step[1]
-    Der Benutzer startet den UseCase über das PopUp 
+    Der Benutzer startet den UseCase über das Popup 
      Menü \ref{WINDOW-LIST-POPUP}
     durch Auswahl von \gq{New Window}
     
     \step[2] 
     GIANT öffnet den allgemeinen Texteingabedialog 
-    \gq{Enter Name for new Window} (siehe \ref{DIALOG-WINDOW}).
+    \gq{Enter Name for New Window} (siehe \ref{DIALOG-WINDOW}).
       
     \step[3] 
     Der Benutzer gibt dort einen zulässigen Namen für das neue Anzeigefenster
@@ -92,7 +94,7 @@ gehen hierbei unwiederbringlich verloren.
   
   \begin{proc}    
     \step[1]
-    Der Benutzer startet den UseCase über das PopUp Menü \ref{WINDOW-LIST-POPUP}
+    Der Benutzer startet den UseCase über das Popup-Menü \ref{WINDOW-LIST-POPUP}
     
     \step[2] 
     GIANT zeigt die allgemeine Sicherheitsabfrage (siehe 
@@ -105,7 +107,7 @@ gehen hierbei unwiederbringlich verloren.
     Der Benutzer bestätigt mit YES.
     
     \step[4]
-    GIANT entfernt das Anziegefenster aus dem Projekt und löscht die 
+    GIANT entfernt das Anzeigefenster aus dem Projekt und löscht die 
     zugehörige Verwaltungsdatei (siehe auch   
     \ref {Project Verwaltungsdateien für Anzeigefenster}).
   
@@ -165,7 +167,7 @@ Dient zum Öffnen eines Anzeigefensters des Projektes.
 \end{uc}
 
 % ==============================================================================
-\begin{uc}[Anzeigefenster schliessen ]{UC: Anzeigefenster schlie\ss en}
+\begin{uc}[Anzeigefenster schliessen]{UC: Anzeigefenster schlie\ss en}
 \index{Anzeigefenster!schlie\ss en}
 Mit diesem UseCase wird ein geöffnetes Anzeigefenster geschlossen.
 Näheres zur Persistenz von Anzeigefenstern ist unter
@@ -195,18 +197,18 @@ Abschnitt \ref{Project Persistenz der Projekte} spezifiziert.
 
 
   \begin{proc}    
-
-    \step[1]
-    Der Benutzer schließt das Anzeigefenster (durch klicken auf das ''X''
+    
+    \step[1] Der Benutzer schließt das Anzeigefenster (durch klicken
+    auf das ''X''
     Symbol rechts oben in der Titelleiste des Anzeigefensters).\\
-    Alternativ kann er das Anzeigefenster über das entsprechende PopUp
-    Menü \ref{WINDOW-LIST-POPUP} in der Liste über die
+    Alternativ kann er das Anzeigefenster über das entsprechende
+    Popup-Menü \ref{WINDOW-LIST-POPUP} in der Liste über die
     Anzeigefenster des Projektes (siehe \ref{WINDOW-LIST}) schließen.
          
     \step[2]
     GIANT zeigt die allgemeine Sicherheitsabfrage 
     (siehe \ref{Sicherheitsabfrage}) und fragt nach, ob eventuelle
-    Änderungen im Anziegefenster gespeichert werden sollen oder nicht
+    Änderungen im Anzeigefenster gespeichert werden sollen oder nicht
     \gq{Do you want to save changes made to Window xy before closing it?}.
     
     
@@ -241,7 +243,7 @@ Siehe hierzu auch
 \ref{Verhalten beim Einfügen von IML-Teilgraphen und Selektionen 
 in Anzeigefenster} und
 insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
-	  
+          
 
   \begin{precond}
     \cond Ein Projekt mit mindestens einem geöffneten 
@@ -272,7 +274,7 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
   
   \begin{proc}    
     \step[1]
-    Der Benutzer startet den UseCase über das PopUp Menü 
+    Der Benutzer startet den UseCase über das Popup-Menü 
     \ref{SUBGRAPH-LIST-POPUP}
     im Hauptfenster \gq{Insert IML Subgraph}.
     Hierdurch wird der einzufügende IML-Teilgraph bestimmt (immer
@@ -332,7 +334,7 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
 \begin{uc}[Selektion in Anzeigefenster einfügen]
           {UC: Selektion in Anzeigefenster einfügen}
 \index{Selektionen!in Anzeigefenster einfügen}
-	  
+          
 Mit diesem UseCase kann eine Selektion aus einem Anzeigefenster
 in ein anderes Anzeigefenster unter Beibehaltung des Layouts
 der Quell-Selektion kopiert werden (
@@ -370,8 +372,8 @@ und Selektionen in Anzeigefenster} und
  
   \begin{proc}    
     \step[1]
-    Der Benutzer startet den UseCase über das PopUp Menü
-    \ref{PopUp Menü Subgraph List} in der Subgraph Liste im Hauptfenster.
+    Der Benutzer startet den UseCase über das Popup-Menü
+    \ref{Popup-Menü Subgraph List} in der Subgraph Liste im Hauptfenster.
     Durch Auswahl eines der beiden Menüeinträge 
     \gq{Copy Selection keep existing layout} oder 
     \gq{Copy Selection change existing layout}.
@@ -392,7 +394,7 @@ und Selektionen in Anzeigefenster} und
     \step[3]
     GIANT kopiert die Knoten und Kanten der 
     Quell-Selektion in das Ziel-Anzeigefenster.
-    Je nachdem, welchen Eintrag der Benutzer im PopUp Menü ausgewählt hat,
+    Je nachdem, welchen Eintrag der Benutzer im Popup-Menü ausgewählt hat,
     geschieht mit den bereits im Ziel-Anzeigefenster vorhandenen 
     Fenster-Knoten der Quell-Selektion folgendes:
     \begin {enumerate}
@@ -419,8 +421,8 @@ und Selektionen in Anzeigefenster} und
            Anzeigefenster löschen}
 \index{Fenster-Knoten!löschen}
 \index{Fenster-Kanten!löschen}
-	  	  
-Mittels dieses UseCases können alle Fenster-Knoten und Fenser-Kanten
+                  
+Mittels dieses UseCases können alle Fenster-Knoten und Fenster-Kanten
 einer Selektion aus einem Anzeigefenster gelöscht werden
 (siehe hierzu auch \ref{Verhalten beim Entfernen von Fenster-Knoten und 
 Fenster-Kanten}).
@@ -462,7 +464,7 @@ Fenster-Kanten}).
     \step[1]
     Der User führt einen Rechtsklick auf die entsprechende Selektion in der
     Selektionsauswahlliste durch (siehe \ref{Selektionsauswahlliste})
-    und wählt im entsprechenden PopUp Menü den Eintrag \gq{Delete Selection}
+    und wählt im entsprechenden Popup-Menü den Eintrag \gq{Delete Selection}
     aus.
       
     
@@ -526,7 +528,7 @@ Visualisierungsstile (siehe auch \ref{Config Visualisierungsstile}) ändern.
   \begin{proc}    
   
     \step[1]
-    Der Benutzer ändert den Visualisierungsstiel eines Anzeigefensters
+    Der Benutzer ändert den Visualisierungsstil eines Anzeigefensters
     dadurch, dass er in der Stilauswahl-Combobox 
     des Anzeigefensters (siehe \ref{GUI Stilauswahl-Combobox}) einen 
     anderen Visualisierungsstil einstellt.
@@ -567,9 +569,9 @@ Verändert die Position des sichtbaren Anzeigeinhaltes.
     \begin {enumerate}
       \item
       Der Benutzer scrollt den sichtbaren Anzeigefokus mittels der horizontalen
-      und vertikalen Scrollleisten des Anzeigefensters (siehe    
+      und vertikalen Bildlaufleisten des Anzeigefensters (siehe    
       \ref{Scrolleisten}). Dies geschieht mittels
-      der Maus gemäß der gängigen Konventionen aus GTK/Ada für Scrollleisten.
+      der Maus gemäß der gängigen Konventionen aus GTK/Ada für Bildlaufleisten.
       
       \item
       Gemäß der gängigen intuitiven Konventionen kann auch 
@@ -602,7 +604,7 @@ Verändert den Maßstab der Darstellung von Knoten und Kanten (relativ).
     \cond
     Der angezeigte Bereich des sichtbaren Anzeigeinhalts wurde entsprechend
     vergrößert oder verkleinert.
-    Der Detaillierungslevel (siehe \ref{Visualization Detailstufen})
+    Die Detailstufe (siehe \ref{Visualization Detailstufen})
     wurde ggf. automatisch angepasst.
     
   \end{postsuccess}
@@ -612,7 +614,7 @@ Verändert den Maßstab der Darstellung von Knoten und Kanten (relativ).
     \step[1]
     \begin {enumerate}
       \item
-      Der Benutzer gibt in der Zoomkontroll-Combobox 
+      Der Benutzer gibt in der Zoom-Kontrolle-Combobox 
       (siehe \ref{GUI Zoom-Kontrolle})
       des Anzeigefensters einen
       neuen Zoomwert ein, wählt darin einen der vorgefertigten Werte aus oder 
@@ -655,7 +657,7 @@ sichtbar ist.
     vergrößert oder verkleinert, dass die gesamte ausgewählte Selektion 
     sichtbar
     ist, ggf. wurde auch entsprechend gescrollt.
-    Der Detaillierungslevel (siehe \ref{Visualization Detailstufen})
+    Die Detailstufe (siehe \ref{Visualization Detailstufen})
     wurde ggf. automatisch angepasst.
         
   \end{postsuccess}
@@ -692,7 +694,7 @@ dass der gesamte Fensterinhalt im Anzeigefenster sichtbar ist.
     Der angezeigte Bereich des sichtbaren Anzeigeinhalts wurde so
     vergrößert oder verkleinert, dass der gesamte Anzeigeinhalt im sichtbaren
     Anzeigeinhalt dargestellt ist, ggf. wurde auch entsprechend gescrollt.
-    Der Detaillierungslevel (siehe \ref{Visualization Detailstufen}) 
+    Die Detailstufe (siehe \ref{Visualization Detailstufen}) 
     wurde ggf. automatisch angepasst.
     
   \end{postsuccess}
@@ -732,7 +734,7 @@ sichtbaren Anzeigeinhalt liegt.
     Der angezeigte Bereich des sichtbaren Anzeigeinhalts wurde so
     vergrößert oder verkleinert, dass die gewünschte Kante komplett
     sichtbar ist, ggf. wurde auch entsprechend gescrollt.
-    Der Detaillierungslevel wurde ggf. automatisch angepasst.
+    Die Detailstufen wurde ggf. automatisch angepasst.
     
   \end{postsuccess}
 
@@ -753,7 +755,7 @@ sichtbaren Anzeigeinhalt liegt.
     Daraufhin erscheint in der Statuszeile von GIANT im Hauptfenster
     der Text 
     \gq{Select Edge in Window (Fenstername) to be zoomed onto} und
-    der Fadenkreuzcursor (siehe \ref{Fadenkreuzcursor}) wird
+    der Fadenkreuz-Cursor (siehe \ref{Fadenkreuzcursor}) wird
     angezeigt, wenn der Mauscursor über den sichtbaren Anzeigeinhalt
     eines Anzeigefensters bewegt wird.
        
@@ -847,7 +849,7 @@ Anzeigeinhalt verschoben werden. Dieses Verschieben geschieht mittels
     nicht verlassen).
 
     \step[3]
-    Der Benutzer klickt mit dem Fadenkreuzkursor (linke Maustaste)
+    Der Benutzer klickt mit dem Fadenkreuz-Cursor (linke Maustaste)
     an eine beliebige Stelle innerhalb des sichtbaren Anzeigeinhaltes
     des Anzeigefensters.
 
@@ -959,8 +961,7 @@ Siehe hierzu auch Abschnitt \ref{Auseinanderschieben von Fenster-Knoten}.
     
     \step[2]
     GIANT zeigt in der Statuszeile im Hauptfenster 
-    \gq{Select Position in Display Window
-    for Making of Room}.
+    \gq{Select Position in Display Window}.
     Der Benutzer gibt den Punkt um den herum die Fenster-Knoten (und damit
     automatisch auch die Fenster-Kanten) auseinander geschoben werden
     sollen über das Fadenkreuz vor (siehe \ref{Fadenkreuzcursor}).
@@ -1022,7 +1023,7 @@ Mit diesem UseCase kann ein neuer Pin
     \step[1]
     
     Der Benutzer führt einen Rechtklick auf den Anzeigeinhalt eines
-    Anzeigefensters durch und wählt aus dem PopUp-Menü 
+    Anzeigefensters durch und wählt aus dem Popup-Menü 
     (siehe \ref{Empty Vis Pane Right click}) den Eintrag \gq{New Pin} aus.
     Der später erstellte Pin verweist dann auf die Stelle im Anzeigeinhalt
     auf die der Rechtklick durchgeführt wurde.
@@ -1083,7 +1084,7 @@ Position des sichtbaren Anzeigeinhaltes wieder her.
       in der Pinliste (siehe \ref{VIS-PANE-Pins}) aus.
          
       \item
-      Der Benutzer öffnet ein PopUp-Menü durch
+      Der Benutzer öffnet ein Popup-Menü durch
       Rechtsklick auf den anzuspringenden Pin 
       in der Pinliste (siehe \ref{VIS-PANE-Pins}) und wählt den Eintrag
       \gq{Focus Pin} aus.
@@ -1123,7 +1124,7 @@ Löscht einen Pin (siehe auch \index{Pins}).
   
   \begin{proc}    
     \step[1]
-    Der Benutzer öffnet das  PopUp-Menü der Pinliste (siehe \ref{VIS-PANE-Pins}  
+    Der Benutzer öffnet das  Popup-Menü der Pinliste (siehe \ref{VIS-PANE-Pins}  
     durch Rechtsklick auf den Pin  und wählt den Eintrag \gq{Delete Pin} aus.
 
      
@@ -1133,3 +1134,7 @@ Löscht einen Pin (siehe auch \index{Pins}).
   \end{proc}
 
 \end{uc}
+
+%%% Local Variables: 
+%%% TeX-master: "../spec"
+%%% End: 
