@@ -1,6 +1,7 @@
 2003-10-06  Oliver Kopp  <koppor@studi.informatik.uni-stuttgart.de>
 
 	* handbuch/gsl.tex: added parameters for treelayout
+	(subsection{Wie erzeuge ich einen neuen Subgraphen?}): added
 
 2003-09-21  Steffen Keul  <keulsn@studi.informatik.uni-stuttgart.de>
 
