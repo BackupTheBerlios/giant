@@ -1,0 +1,21 @@
+GIANT NEWS file
+
+This file contains short descriptions of what has changed between
+GIANT releases. Only major changes are included here, see ChangeLog
+in the source directory for details.
+
+Version 1.1.0 (2003-09-02)
+
+ * Ported GUI code to Gtk2 Fixed elaboration code for compilation with
+   GNAT 3.15p 
+ * Added progress dialogs when creating or opening project.
+ * Used GTK2 stock items to make GIANT look sexier items when
+   possible. Tweaked some GUI oddnesses.
+ * Patched IMLlib to compile on Windows
+ * Fixed exception when "Pick Node" was selected twice in node
+   information dialog
+ * Added missing script menu to graph window background popup.
+
+Version 1.0.0 (2003-09-02)
+
+ * Initial Release
