@@ -20,15 +20,19 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.ads,v $, $Revision: 1.4 $
+--  $RCSfile: giant-tree_layouts.ads,v $, $Revision: 1.5 $
 --  $Author: koppor $
---  $Date: 2003/07/04 17:33:11 $
+--  $Date: 2003/07/07 11:22:44 $
 --
 ------------------------------------------------------------------------------
 --
 --  Contains the treelayout-algorithm
 --
 
+with Lists;
+pragma Elaborate_All (Lists);
+
+with Giant.Config.Class_Sets;
 with Giant.Evolutions;
 with Giant.Graph_Lib;
 with Giant.Graph_Lib.Selections;
@@ -75,6 +79,12 @@ package Giant.Tree_Layouts is
    --    Root:
    --      Root of the selection to be layouted
    --
+   --    Meta_Class_Set_To_Layout:
+   --      Meta_Class_Set containing node- and edge_classes to include in
+   --      the tree-layout
+   --      This Meta_Class_Set is NOT destroyed after usage, the caller has
+   --        to take care for the unloading
+   --
    --  Returns:
    --    derived Evolutions-Object to do the layout
    --
@@ -86,11 +96,12 @@ package Giant.Tree_Layouts is
    --    Root_Node is in Selection_To_Layout.Get_All_Nodes
    --
    function Initialize
-     (Widget              : in Giant.Graph_Widgets.Graph_Widget;
-      Widget_Lock         : in Giant.Graph_Widgets.Lock_Type;
-      Selection_To_Layout : in Giant.Graph_Lib.Selections.Selection;
-      Target_Position     : in Giant.Vis.Logic.Vector_2d;
-      Root_Node           : in Giant.Graph_Lib.Node_Id)
+     (Widget                   : in Graph_Widgets.Graph_Widget;
+      Widget_Lock              : in Graph_Widgets.Lock_Type;
+      Selection_To_Layout      : in Graph_Lib.Selections.Selection;
+      Target_Position          : in Vis.Logic.Vector_2d;
+      Root_Node                : in Graph_Lib.Node_Id;
+      Meta_Class_Set_To_Layout : in Config.Class_Sets.Meta_Class_Set_Access)
      return Tree_Layout;
 
    -------------------
@@ -133,13 +144,16 @@ private
       Left_Silbling     : Node_Layout_Data;
 
       --  for checking, if v is a silbling of w
+      --  null if n/a
       Right_Silbling    : Node_Layout_Data;
 
       Leftmost_Child    : Node_Layout_Data;
 
       Rightmost_Child   : Node_Layout_Data;
 
-      LMod              : Integer;
+      Silbling_Number   : Positive;
+
+      Modf              : Integer;
       Prelim            : Integer;
       Change            : Integer;
       Shift             : Integer;
@@ -152,14 +166,19 @@ private
    end record;
 
    ---------------------------------------------------------------------------
+   package Node_Layout_Data_Lists is new
+     Lists (ItemType => Node_Layout_Data);
+
+   ---------------------------------------------------------------------------
    type Tree_Layout_Record is
      new Evolutions.Concurrent_Evolution with record
         --  Init by Initialize
-        Widget           : Giant.Graph_Widgets.Graph_Widget;
-        Widget_Lock      : Giant.Graph_Widgets.Lock_Type;
+        Widget           : Graph_Widgets.Graph_Widget;
+        Widget_Lock      : Graph_Widgets.Lock_Type;
         Nodes_To_Layout  : Graph_Lib.Node_Id_Set;
-        Target_Position  : Giant.Vis.Logic.Vector_2d;
-        Root_Node        : Giant.Graph_Lib.Node_Id;
+        Target_Position  : Vis.Logic.Vector_2d;
+        Root_Node        : Graph_Lib.Node_Id;
+        Meta_Class_Set   : Config.Class_Sets.Meta_Class_Set_Access;
         State            : Layout_State;
 
         ----------------------------------------
@@ -171,8 +190,10 @@ private
         --  Used at conversion of Nodes_To_Layout to Layout_Tree
         --  Layout_Queue_Last is for speed optimization
         --    since Node_Id_Lists.Last has O(n) and gets O(1) with this "hack"
-        Layout_Queue_Last : Graph_Lib.Node_Id_Lists.List;
-        Layout_Queue      : Graph_Lib.Node_Id_Lists.List;
+        --
+        --  Layout_Queue may never be empty during the usage
+        Layout_Queue_Last : Node_Layout_Data_Lists.List;
+        Layout_Queue      : Node_Layout_Data_Lists.List;
 
      end record;
 
