@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.ads,v $, $Revision: 1.11 $
---  $Author: keulsn $
---  $Date: 2003/09/12 20:30:12 $
+--  $RCSfile: giant-evolutions.ads,v $, $Revision: 1.12 $
+--  $Author: squig $
+--  $Date: 2003/09/24 15:29:16 $
 --
 ------------------------------------------------------------------------------
 --
@@ -78,7 +78,7 @@ package Giant.Evolutions is
    --  Delay time between two updates of a progress dialog. At each update
    --  only one window will be updated, so each process has a delay time
    --  of this constant multiplyed by the number of running processes.
-   Poll_Delay_Milli_Seconds : constant := 500;
+   Poll_Delay_Milli_Seconds : constant := 1000;
 
    ---------------------------------------------------------------------------
    --  There seem to be some problems with idle signals emitted by GtkAda.

@@ -39,9 +39,10 @@ LIBS            = -largs $(IMLLIB_LIBS) $(shell $(GTKADA_CONFIG) --libs)
 
 CFLAGS          = -g 
 #-O2 -funroll-loops
-GNAT_FLAGS      = -gnatX -gnata -gnatf -gnatwl -gnato -fstack-check
-                  #-fprofile-arcs -ftest-coverage
-                  #-gnaty3abcefhiklmprt #-gnatys 
+GNAT_FLAGS      = -gnatX -gnata -gnatf -gnatwl -gnato 
+#-fstack-check
+#-fprofile-arcs -ftest-coverage
+#-gnaty3abcefhiklmprt #-gnatys 
 ALL_CFLAGS      = $(CFLAGS) $(TARGET_CFLAGS) $(GNAT_FLAGS) $(INCLUDES) $(CUSTOM_CFLAGS)
 ALL_LFLAGS      = $(LFLAGS) $(TARGET_LFLAGS) $(LIBS)
 
@@ -73,6 +74,9 @@ all:
 	test -x $(OUT_PATH) || mkdir $(OUT_PATH)
 	cd $(OUT_PATH) && \
 	gnatmake -m $(ALL_CFLAGS) $(GIANT_PATH)/$(MAIN) -o $(GIANT_PATH)/$(EXEC) $(GNATMAKE_FLAGS) $(ALL_LFLAGS) -bargs -static -E -largs 
+
+profile :
+	make CFLAGS="-fprofile-arcs -ftest-coverage -pg -g" all
 
 static :
 	make LIBS="$(shell gtkada --static)" all

@@ -21,8 +21,8 @@
 -- First Author: Gerrit Schulz
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
--- $Author: schulzgt $
--- $Date: 2003/09/23 17:20:36 $
+-- $Author: squig $
+-- $Date: 2003/09/24 15:29:16 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -393,7 +393,7 @@ package body Giant.Gsl.Interpreters is
 
       Cmd      : Syntax_Node;
       End_Time : Ada.Real_Time.Time := Ada.Real_Time."+"
-        (Ada.Real_Time.Clock, Ada.Real_Time.Milliseconds (100));
+        (Ada.Real_Time.Clock, Ada.Real_Time.Milliseconds (500));
    begin
       loop
         if Execution_Stacks.Is_Empty (Current_Interpreter.Execution_Stack)
@@ -603,7 +603,7 @@ package body Giant.Gsl.Interpreters is
       return Natural is
 
       Count : Natural := 0;
-      AR    : Activation_Record := 
+      AR    : Activation_Record :=
               Current_Interpreter.Current_Activation_Record;
    begin
       while AR /= null loop
@@ -649,7 +649,7 @@ package body Giant.Gsl.Interpreters is
      (Name : in String) is
 
       use Ada.Strings.Unbounded;
-      AR    : Activation_Record := 
+      AR    : Activation_Record :=
               Current_Interpreter.Current_Activation_Record;
    begin
       while AR /= null loop
@@ -672,7 +672,7 @@ package body Giant.Gsl.Interpreters is
       return Gsl_Type is
 
       use Ada.Strings.Unbounded;
-      AR    : Activation_Record := 
+      AR    : Activation_Record :=
               Current_Interpreter.Current_Activation_Record;
    begin
       while AR /= null loop
@@ -696,7 +696,7 @@ package body Giant.Gsl.Interpreters is
       Value : in Gsl_Type) is
 
       use Ada.Strings.Unbounded;
-      AR    : Activation_Record := 
+      AR    : Activation_Record :=
               Current_Interpreter.Current_Activation_Record;
    begin
       while AR /= null loop

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.20 $
---  $Author: keulsn $
---  $Date: 2003/09/12 20:30:12 $
+--  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.21 $
+--  $Author: squig $
+--  $Date: 2003/09/24 15:29:16 $
 --
 ------------------------------------------------------------------------------
 
@@ -947,7 +947,7 @@ package body Giant.Evolutions is
       Started    :    out Boolean;
       Dialog     : in     Progress_Dialog.Progress_Dialog_Access) is
 
-      Dead : Boolean;
+      Dead : Boolean := False;
    begin
       Started := Driver_State = No_Iterative_Driver_State;
       if Started then
@@ -970,9 +970,8 @@ package body Giant.Evolutions is
          end if;
 
          loop
-            while Gtk.Main.Events_Pending loop
+            while not Dead and then Gtk.Main.Events_Pending loop
                Dead := Gtk.Main.Main_Iteration;
-               pragma Assert (not Dead);
             end loop;
 
             exit when not Step_Iterative_Driver;
