@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/24 14:42:46 $
+-- $Date: 2003/07/24 16:59:43 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -1079,6 +1079,9 @@ package body Giant.Gsl.Runtime is
                   return Gsl_Type (Create_Gsl_Natural
                     (Get_Node_Attribute_Natural_Value
                       (Get_Value (Gsl_Node_Id (n)), attrib_id)));
+
+               when Class_Invalid =>
+                  return Gsl_Null;
 
             end case;
          end if;
