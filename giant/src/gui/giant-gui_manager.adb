@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/06/16 15:27:58 $
+--  $Date: 2003/06/17 16:58:34 $
 --
 
 with Gdk.Threads;
@@ -37,13 +37,8 @@ package body Giant.Gui_Manager is
 
    Initialized : Boolean := False;
 
-   type Window_Record is record
-      Visual_Window : Vis_Windows.Visual_Window_Access;
-      Graph : Graph_Window.Graph_Window_Access;
-   end record;
-
-   package Window_Lists is new Lists (Window_Record);
-   Window_List : Window_Lists.List := Window_Lists.Create;
+   package Graph_Window_Lists is new Lists (Graph_Window.Graph_Window_Access);
+   Open_Windows : Graph_Window_Lists.List := Graph_Window_Lists.Create;
 
    procedure Quit
    is
@@ -59,19 +54,41 @@ package body Giant.Gui_Manager is
       Gdk.Threads.Init;
 
       Gdk.Threads.Enter;
+
       Main_Window.Show;
       Gtk.Main.Main;
+
       Gdk.Threads.Leave;
    end Show;
 
-   procedure Add (Visual_Window : Vis_Windows.Visual_Window_Access)
+   procedure Add_Window
+     (Name : in String)
    is
-      Window : Window_Record;
    begin
-      Window.Visual_Window := Visual_Window;
-      Graph_Window.Create (Window.Graph);
+      Main_Window.Add_Window (Name);
+   end Add_Window;
 
-      Window_Lists.Attach (Window_List, Window);
-   end Add;
+   procedure Close (Visual_Window : Vis_Windows.Visual_Window_Access)
+   is
+   begin
+      null;
+   end Close;
+
+   procedure Open (Visual_Window : Vis_Windows.Visual_Window_Access)
+   is
+      Window : Graph_Window.Graph_Window_Access;
+   begin
+      Graph_Window.Create (Window, Visual_Window);
+      Graph_Window_Lists.Attach (Open_Windows, Window);
+
+      Graph_Window.Show_All (Window);
+   end Open;
+
+   procedure Remove_Window
+     (Name : in String)
+   is
+   begin
+      Main_Window.Remove_Window (Name);
+   end Remove_Window;
 
 end Giant.Gui_Manager;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.8 $
 --  $Author: squig $
---  $Date: 2003/06/17 15:05:37 $
+--  $Date: 2003/06/17 16:58:34 $
 --
 
 with Ada.Strings.Unbounded;
@@ -51,7 +51,7 @@ with Giant.Gui_Utils; use Giant.Gui_Utils;
 package body Giant.Main_Window is
 
    package Window_List_Data is new
-     Gui_Utils.Clist_Row_Data (Valid_Names.Standard_Name);
+     Gui_Utils.Clist_Row_Data (String);
 
    --  main window instance
    Window : Gtk.Window.Gtk_Window;
@@ -113,12 +113,9 @@ package body Giant.Main_Window is
 
    procedure Update_Window (Row : Glib.Gint)
    is
-      Window_Name: Valid_Names.Standard_Name;
+      Name: String := Window_List_Data.Data.Get (Window_List, Row);
    begin
-      Window_Name := Window_List_Data.Data.Get (Window_List, Row);
-
-      Gtk.Clist.Set_Text (Window_List, Row, 0,
-                          Valid_Names.To_String(Window_Name));
+      Gtk.Clist.Set_Text (Window_List, Row, 0, Name);
    end Update_Window;
 
    function Initialize_Menu
@@ -186,7 +183,8 @@ package body Giant.Main_Window is
          Widget_Return_Callback.To_Marshaller (On_Delete'Access));
    end Initialize;
 
-   procedure Add (Window_Name : Valid_Names.Standard_Name)
+   procedure Add_Window
+     (Name : in String)
    is
       use Gtkada.Types;
 
@@ -197,30 +195,32 @@ package body Giant.Main_Window is
          Row_Data (I) := Interfaces.C.Strings.New_String ("");
       end loop;
       Row := Gtk.Clist.Append (Window_List, Row_Data);
-      Window_List_Data.Data.Set (Window_List, Row, Window_Name);
+      Window_List_Data.Data.Set (Window_List, Row, Name);
       Update_Window (Row);
       Free (Row_Data);
-   end Add;
+   end Add_Window;
 
-   procedure Update (Window_Name : Valid_Names.Standard_Name)
+   procedure Update_Window
+     (Name : in String)
    is
       Row : Glib.Gint
-        := Window_List_Data.Find (Window_List, Window_Name);
+        := Window_List_Data.Find (Window_List, Name);
    begin
       if (Row /= -1) then
          Update_Window (Row);
       end if;
-   end Update;
+   end Update_Window;
 
-   procedure Remove (Window_Name : Valid_Names.Standard_Name)
+   procedure Remove_Window
+     (Name : in String)
    is
       Row : Glib.Gint
-        := Window_List_Data.Find (Window_List, Window_Name);
+        := Window_List_Data.Find (Window_List, Name);
    begin
       if (Row /= -1) then
          Gtk.Clist.Remove (Window_List, Row);
       end if;
-   end Remove;
+   end Remove_Window;
 
    procedure Quit
    is

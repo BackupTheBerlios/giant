@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/03 19:20:59 $
+--  $Date: 2003/06/17 16:58:34 $
 --
 ------------------------------------------------------------------------------
 --
@@ -41,6 +41,8 @@ with Gtk.Option_Menu;
 with Gtk.Paned;
 with Gtk.Window;
 
+with Giant.Vis_Windows;
+
 package Giant.Graph_Window is
 
    type Graph_Window_Record is
@@ -49,7 +51,8 @@ package Giant.Graph_Window is
    type Graph_Window_Access is access all Graph_Window_Record'Class;
 
    procedure Create
-     (Window : out Graph_Window_Access);
+     (Window        :    out Graph_Window_Access;
+      Visual_Window : in     Vis_Windows.Visual_Window_Access);
 
    procedure Initialize
      (Window : access Graph_Window_Record'Class);
@@ -57,14 +60,17 @@ package Giant.Graph_Window is
 private
    type Graph_Window_Record is
      new Gtk.Window.Gtk_Window_Record with record
-		Split_Pane : Gtk.Paned.Gtk_Hpaned;
-		Pin_List : Gtk.Clist.Gtk_Clist;
-		Pin_Popup_Menu : Gtk.Menu.Gtk_Menu;
-		Selection_List : Gtk.Clist.Gtk_Clist;
-		Selection_Popup_Menu : Gtk.Menu.Gtk_Menu;
-		Vis_Style_Menu : Gtk.Option_Menu.Gtk_Option_Menu;
-		Zoom_Combo : Gtk.Combo.Gtk_Combo;
-		Zoom_Entry : Gtk.Gentry.Gtk_Entry;
+        Split_Pane : Gtk.Paned.Gtk_Hpaned;
+        Pin_List : Gtk.Clist.Gtk_Clist;
+        Pin_Popup_Menu : Gtk.Menu.Gtk_Menu;
+        Selection_List : Gtk.Clist.Gtk_Clist;
+        Selection_Popup_Menu : Gtk.Menu.Gtk_Menu;
+        Vis_Style_Menu : Gtk.Option_Menu.Gtk_Option_Menu;
+        Zoom_Combo : Gtk.Combo.Gtk_Combo;
+        Zoom_Entry : Gtk.Gentry.Gtk_Entry;
+
+        --  the data record from projects
+        Visual_Window : Vis_Windows.Visual_Window_Access;
      end record;
 
 end Giant.Graph_Window;

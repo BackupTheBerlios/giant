@@ -21,16 +21,19 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.5 $
 --  $Author: squig $
---  $Date: 2003/06/17 15:05:37 $
+--  $Date: 2003/06/17 16:58:34 $
 --
 
 with Giant.Graph_Lib;
 with Giant.Gui_Manager;
+With Giant.Logger;
 with Giant.Vis_Windows;
 
 package body Giant.Controller is
+
+   package Logger is new Giant.Logger("giant.controller");
 
    ---------------------------------------------------------------------------
    --  Creates a new project.
@@ -65,19 +68,44 @@ package body Giant.Controller is
      (Name : in String := "Unknown")
    is
       Window : Vis_Windows.Visual_Window_Access;
+      I : Integer := 1;
    begin
-      Window := Vis_Windows.Create_New (Name);
-      Projects.Add_Visualisation_Window (Current_Project, Window);
-      Gui_Manager.Add (Window);
+      --  try to find a unique name for window
+      while (True) loop
+         declare
+            Custom_Name : String := Name & Integer'Image (I);
+         begin
+            Logger.Debug ("creating project: trying name " & Custom_Name);
+
+            if (not Projects.Does_Vis_Window_Exist
+                (Current_Project, Custom_Name)) then
+               Window := Vis_Windows.Create_New (Custom_Name);
+               Projects.Add_Visualisation_Window (Current_Project, Window);
+               Gui_Manager.Add_Window (Custom_Name);
+               Open_Window (Custom_Name);
+               return;
+            end if;
+         end;
+         I := I + 1;
+      end loop;
    end Create_Window;
 
+   procedure Open_Window
+     (Name : in String)
+   is
+      Window : Vis_Windows.Visual_Window_Access;
+   begin
+      Window := Projects.Get_Visualisation_Window (Current_Project, Name);
+      Gui_Manager.Open (Window);
+   end Open_Window;
+
    procedure Remove_Window
-     (Name : in Valid_Names.Standard_Name)
+     (Name : in String)
    is
    begin
-      --Gui_Manager.Remove (Window);
-      --Projects.Remove_Visualisation_Window
-      --  (Current_Project, Vis_Windows.Get_Name (Window));
+      Gui_Manager.Remove_Window (Name);
+      Projects.Remove_Visualisation_Window
+        (Current_Project, Name);
       null;
    end Remove_Window;
 
