@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: layouts.tex,v $, $Revision: 1.7 $
-%  $Date: 2003/04/08 12:31:13 $
-%  $Author: koppor $
+%  $RCSfile: layouts.tex,v $, $Revision: 1.8 $
+%  $Date: 2003/04/17 17:48:19 $
+%  $Author: schwiemn $
 %
 %  Description: Beschreibung der Layouts
 %
@@ -23,10 +23,24 @@ automatisch berechnet werden kann.
 \section{Treelayout}
 \subsection{Parameter}
 \begin{enumerate}
-  \item \textbf{IML-Teilgraph}\\
-Der IML-Teilgraph, der layoutet werden soll.
-  \item \textbf{Kantenklassen}\\
-Zu beachtete Kantenklassen k\"onnen angegeben werden. Ist dies nicht der Fall, werden alle ber\"ucksichtigt.
+  \item \textbf{Selektion}\\
+  Die Selektion, die layoutet werden soll.
+
+  \item \textbf{Wuzelknoten}\\
+  Der Benutzer wählt den Wuzelknoten des zu erstellenden Baumes
+  durch Eingabe der ID des Knotens.
+  Sollte die Selektion aus mehreren disjunkten Bäumen bestehen,
+  so werden die weiteren Wurzelknoten automatisch ermittelt.
+ 
+  \item \textbf{Klassenmengen}\\ 
+  Wie auch im Begriffslexion beschrieben werden 
+  Knotenklassen und Kantenklassen zu Klassenmengen zusammengefasst.
+  Der Benutzer kann angeben, welche Klassenmengen für das Layout
+  berücksichtigt werden sollen. Der Layoutalgorithmus berückstichtigt
+  dann nur die Kantenklassen, die zu den gewählten Klassenmengen gehören.
+  Werden keine Klassenmengen vorgegeben, so werden alle Kantenklassen 
+  für das Layout berücksichtigt.
+
   \item \textbf{Zielposition}\\
 Die Position, an die der Mittelpunkt des Wurzelknotens des Baums positioniert werden soll.
 \end{enumerate}
@@ -38,13 +52,16 @@ Das Treelayout basiert auf Walkers Algorithmus. Dabei werden folgende Eigenschaf
    \item Alle Kinder eines Knotens haben den gleichen horizontalen Abstand zueinander
 \end{enumerate}
 
-Als Wurzelknoten wird der erste Knoten des \"ubergebenen IML-Teilgraphen gew\"ahlt. Die Reihenfolge der Kinder von der \texttt{IML\_Reflection}\xspace\"ubernommen. In der Grundfunktionalit\"at werden alle Kanten betrachtet.
+Die Reihenfolge der Kinder von der \texttt{IML\_Reflection}\xspace\"ubernommen. 
+In der Grundfunktionalit\"at werden alle Kanten betrachtet.
 
 Der vertikale Abstand von Ebene zu Ebene richtet sich nach der H\"ohe des h\"ochsten Knotens (siehe \ref{Visualization-Knoten-Rechteck}).
 
-Falls der \"ubergebene IML-Teilgraph keinen Baum darstellt, werden die Knoten in die Ebene eingegliedert, die bei einer Tiefensuche als erstes erreicht wird.
+Falls der \"ubergebene IML-Teilgraph keinen Baum darstellt, werden die Knoten in die Ebene 
+eingegliedert, die bei einer Tiefensuche als erstes erreicht wird.
 
 Zerf\"allt der IML-Teilgraph in nicht-zusammenh\"angede Komponenten, so wird das Layout f\"ur jede dieser Komponente durchgef\"uhrt.
+Die disjkunkten Bäume werden dann horizontal nebeneinander angeordnet.
 
 Als Erweiterung kann der Algorithmus nur bestimmte Kanten betrachten. Dabei werden im ersten Lauf nur die Knoten betrachtet, die durch die gegebenen Kanten erreicht werden k\"onnen.
 Im zweiten Lauf werden Knoten, die durch die gegebenen Kanten nicht erreicht werden konnten, im Matrixlayout (siehe \ref{Matrixlayout}) rechts von dem letzten Baum angeordnet.

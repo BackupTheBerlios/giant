@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: project.tex,v $, $Revision: 1.30 $
-%  $Date: 2003/04/08 13:28:24 $
-%  $Author: squig $
+%  $RCSfile: project.tex,v $, $Revision: 1.31 $
+%  $Date: 2003/04/17 17:48:19 $
+%  $Author: schwiemn $
 %
 %  Description:
 %
@@ -19,7 +19,7 @@ GIANT speichert persistente Informationen in sogenannten Projekten.
 Ein Projekt fasst alle Arbeitsergebnisse, die der Benutzer mittels
 GIANT für einen IML-Graphen erzeugen kann, wie z.B. Anzeigefenster und
 IML-Teilgraphen, logisch zusammen.
-\\Hierbei sind die anschließend beschriebenen Konventionen zu beachten:
+\\Wichtige Vorrausetzungen:
 \begin {enumerate}
 
   \item
@@ -35,6 +35,12 @@ IML-Teilgraphen, logisch zusammen.
   Zur sicheren Identifikation der IML-Graph Datei, 
   die zu einem Projekt gehört, muss über die Reflektion eine eindeutige
   Prüfsumme für jeden IML-Graphen berechnet werden können.
+
+\end {enumerate}
+
+Konventionen der Projektverwaltung:
+
+\begin {enumerate}
 
   \item 
   Wird während des Betriebs von GIANT ein neues Projekt angelegt, so erhält 
@@ -87,15 +93,37 @@ IML-Teilgraphen, logisch zusammen.
 \end {enumerate}
 
 
+  \subsection {Überblick über die Struktur eines Projektes}
+
+  Dieser Abschnitt liefert einen kurzen Überblick über die Struktur 
+  eines Projektes.\\
+  Jedes Projekt besteht aus den folgenden Dateien:
+
+  \begin {enumerate}  
+
+     \item Genau eine Projektdatei (siehe \ref{Project Die Projektdatei}).
+  
+     \item Verwaltungsdateien für Anzeigefenster. Jedes zum Projekt 
+           gehörende Anzeigefenster hat seine eigene Verwaltungsdatei. 
+           Siehe hierzu auch 
+           \ref {Project Verwaltungsdateien für Anzeigefenster}.
+
+     \item Verwaltungsdateien für IML-Teilgraphen. Jeder IML-Teilgraph 
+           des Projektes hat seine eigene Verwaltungsdatei
+           (siehe \ref {Project Verwaltungsdateien für IML-Teilgraphen}).
+
+     \item Genau eine Verwaltungsdatei für alle Knoten-Annotationen
+           (siehe \ref {Project Verwaltungsdatei für Knoten-Annotationen}).
+
+  \end {enumerate}
+
+
   \subsection {Das Projektverzeichnis} \index{Projekte!Projektverzeichnis}
   \label{Project Das Projektverzeichnis} 
   \begin {enumerate}
 
     \item  
-    Sämtliche Dateien, die zu einem Projekt gehörige Informationen  
-    enthalten,
-    befinden sich in diesem Verzeichnis. GIANT speichert alle
-    Verwaltungsdateien (siehe 
+    GIANT speichert alle Verwaltungsdateien (siehe 
     \ref {Project Verwaltungsdatei für Knoten-Annotationen},
     \ref {Project Verwaltungsdateien für Anzeigefenster} und
     \ref {Project Verwaltungsdateien für IML-Teilgraphen}) automatisch

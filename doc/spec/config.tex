@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.26 $
-%  $Date: 2003/04/17 00:29:17 $
+%  $RCSfile: config.tex,v $, $Revision: 1.27 $
+%  $Date: 2003/04/17 17:48:19 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -14,7 +14,8 @@
 \begin {enumerate}
 
   \item
-  Sämtliche konfigurierbaren Einstellungen werden in XML-Dateien vorgenommen.
+  Sämtliche konfigurierbaren Einstellungen werden in XML-Dateien vorgenommen,
+  entsprechende Dokumenttyp-Definitionen (DTDs) werden erstellt.
   
   \item \label{config-allgemeines-punkt2}
   \index{Konfigurationsdatei!globale}
@@ -154,12 +155,15 @@ Für die Visualisierungsstile gelten die folgenden Konventionen:
   \begin{enumerate}  
   
     \item Ein Icon für die Knotenklasse (Verweis auf eine entsprechende 
-          Bilddatei). Das Icon muss im Pixmap Format bei 16*16 Pixel
-          vorliegen.
+          Bilddatei). Das Icon muss im Pixmap Format Pixel
+          vorliegen. Die Größe des Icons ist beliebig, bei zu großen
+          Icons wird abgeschnitten.
     \item Eine Liste der Attribute der Knotenklasse, welche direkt innerhalb 
           des Anzeigefensters in dem \gq{Rechteck} für den Knoten dargestellt 
           werden sollen.
-    \item Die Füllfarbe des \gq{Rechtecks} in welchem die Attribute zu dem 
+    \item Die Farbe der Schrift, mit der die Informationen innerhalb
+          des Knoten-Rechtecks dargestellt werden.
+     \item Die Füllfarbe des \gq{Rechtecks} in welchem die Attribute zu dem 
           Knoten dargestellt werden.
     \item Die Rahmenfarbe des \gq{Rechtecks}.
     
@@ -172,18 +176,41 @@ Für die Visualisierungsstile gelten die folgenden Konventionen:
   Kantenklassen angewendet wird, für die nichts anderes definiert ist.
   \begin{enumerate}
     \item Die Farbe der Kante.
+    \item Die Farbe der Kantenbeschriftungen.
     \item Die Art der Linie der Kante (normal, gestrichelt).
     \item Ob die Kante mit ihrer Kantenklasse beschriftet werden soll oder 
           nicht.
   \end{enumerate}
 
+  Eine Kantenklasse wird durch die Knotenklasse des Start-Knotens 
+  und druch den Namen des Attribtes, welches die Kante darstellt, 
+  eindeutig festgelegt (siehe Begriffslexikon). 
+  Will der Benutzer nun Einstellungen für
+  Kantenklassen vornehmen kann er sich entweder auf genau eine 
+  Kantenklasse \gq{Start-Knotenklasse.Attributname} beziehen oder
+  mittels eines Platzhalters auch auf mehrere:
 
+  \begin{enumerate}
+    \item Der Benutzer kann mittels des Platzhalters \gq{*}
+          eine klassenspezifische Einstellung für
+          alle Kanten, deren Start-Knoten zu einer bestimmten
+          Knotenklasse gehört, 
+          vornehmen -- also \gq{Start-Knotenklasse.*}.
+
+   \item  Der Benutzer kann mittels des Platzhalters \gq{*}
+          eine klassenspezifische Einstellung für
+          alle Kanten, bei denen das sie repräsentierende Attribut
+          den gleichen Namen hat,
+          vornehmen -- also \gq{*.Attributname}.
+ 
+  \end{enumerate}
+
+  
 \section {Skript-Dateien} 
 \label {Config Anfrage-Dateien}
 \index{GQSL!Skriptdateien} \index{Skriptdateien}
 
 Eine Textdatei, die genau ein GQSL Skript enthält 
--- also genau ein gemäß der Grammatik zulässiges Wort. 
 Auf diese Art und Weise können komplexe Skripte gespeichert und 
 wiederverwendet werden.\\
 Geladen werden können solche Dateien beim Kommandozeilenaufruf 

@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: nomenclature.tex,v $, $Revision: 1.16 $
-%  $Date: 2003/04/06 21:14:54 $
-%  $Author: squig $
+%  $RCSfile: nomenclature.tex,v $, $Revision: 1.17 $
+%  $Date: 2003/04/17 17:48:19 $
+%  $Author: schwiemn $
 %
 %  Description: Begriffslexikon
 %
@@ -54,19 +54,36 @@
   
   \term{Kantenklasse}{Edge Class}{Die Einteilung der Kanten des
     IML-Graphen in verschiedene Klassen, wie sie sich aus der
-    IML-Graph-Bibliothek von Bauhaus ergibt.}
-  
+    IML-Graph-Bibliothek von Bauhaus ergibt.
+    Innerhalb dieser Spezifikation ist der Begriff Kantenklasse so
+    zu verstehen, dass jede Kante eindeutig zu genau einer Kantenklasse
+    gehört, eine Vererbungshierarchie existiert nicht. Die Zuordnung
+    einer Kante zu einer Kantenklasse wird durch die Knotenklasse
+    des Start-Knotens und den Namen des Attributes
+    (aus dem Bauhaus-IML-Graphen), welches die Kante
+    beschreibt, festgelegt. Jede vorkommende Kombination aus der
+    Knoten-Klasse eines Start-Knotens und dem Namen eines Attributes,
+    welches eine Kante beschreibt, ist somit eine eigene Kantenklasse}
+
+  \term{Klassenmenge}{Class Set}{Eine durch die IML-Graph Bibliothek
+    vorgegebene Zusammenfassung von Kantenklassen und Knotenklassen.
+    Es kann mehrere Klassenmengen geben. Knotenklassen und Kantenklassen
+    können gleichzeitig zu mehreren Klassenmengen gehören.
+
   \term{Knoten-Annotationen}{Node Annotation}{Eine textuelle
     Beschreibung zu einem bestimmten Knoten des IML-Graphen.}
   
   \term{Knotenklasse}{Node Class}{Die Einteilung der Knoten des
     IML-Graphen in verschiedene Klassen, wie sie sich aus der
-    IML-Graph-Bibliothek von Bauhaus ergibt.}
+    IML-Graph-Bibliothek von Bauhaus ergibt.
+    Im Sinne der Verwendung dieses Begriffes innerhalb der Spezifikation
+    liegt den Knotenklassen keine Vererbungshierarchie zu Grunde, jeder
+    Knoten gehört also eindeutig zu genau einer Knotenklasse}
   
   \term{Layout}{Layout}{Die zweidimensionale räumliche Anordnung von
     Fenster-Knoten und Fenster-Kanten innerhalb eines Anzeigefensters
     auf dem sogenannten Anzeigeinhalt.}
-  
+ 
   \term{Reflektion}{Reflection Model}{Die Schnittstelle zum Zugriff
     auf den IML-Graphen.}
   
