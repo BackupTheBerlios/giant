@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.15 $
-%  $Date: 2003/09/05 22:01:08 $
+%  $RCSfile: config.tex,v $, $Revision: 1.16 $
+%  $Date: 2003/09/09 22:12:40 $
 %  $Author: birdy $
 %
 %  Description:
@@ -125,7 +125,7 @@ Die Farbe Nr. 3 für die Hervorhebung von IML-Teilgraphen:
 	 
 Hier kann eine Menge von Pfaden, ggf. getrennt durch den Path Seperator des
 Betriebssystems, angegeben werden, diese Pfade geben die Positionen der
-vordefinierten GSL Skripte an, z.B. shared/gsl/:
+vordefinierten GSL Skripte an, eingesetzt werden kann hier z.B. shared/gsl/ :\\
 
 °  <setting name = "GSL.Include_Paths" value="." />°\\
                 
@@ -154,11 +154,85 @@ Funktion zum Anzeigen des Quelltextes durch die Zeilennummer ersetzt,
 betreffenden Datei. So kann bei den meisten Editoren dafür gesorgt
 werden, daß durch den Aufruf die Datei geladen wird und der Editor
 mit dem Cursor an die richtige Stelle in der Datei springt.
-GIANT spawned einen neuen Prozeß, in dem der Editor abläuft.
+GIANT spawned einen neuen Prozeß, in dem der Editor abläuft.\\
 
 °  <setting name = "Editor.Source" value="/usr/bin/emacs +%l:%c %f" />°\\
 
+\label{Config-GSL-Context-Scripts}
 
+Nun folgen einige Einstellungen zu den Kontextmenüs von GIANT. Mit den folgenden
+Einstellungen können die GSL-Skripte, die über die Kontext ausgewählten
+Knoten/Kante/Subgraph angestoßen werden können, festgelegt werden.
+Jedem Skript wird dabei ggf. auch ein Parameter übergeben.\\
+
+Die Skripte werden anhand ihres Dateinamens (ggf. auch mit Leerzeichen im
+Dateinamen) mit der hinzugefügten Endung .gsl in den weiter oben schon
+definierten GSL.Include\_Paths gesucht.\\
+
+Bei Angabe von mehreren Skripten sind diese durch das Zeichen : voneinander
+zu trennen, dies gilt für alle folgenden \gq{GSL.}-Knoten\\
+
+Mit der folgenden Zeile kann festgelegt werden, welche GSL-Scripts im
+Pulldown-Menü \gq{Script} des GIANT-Hauptfensters auftauchen.
+Diese Scripts werden beim Auswählen des jeweils dazugehörigen Menüpunktes
+ohne Parameter gestartet.
+
+°  <setting name = "GSL.No_Param value="" />°\\
+
+Mit der folgenden Zeile kann festgelegt werden, welche GSL-Scripts im
+Kontext-Menü bei Drücken der rechten Maustaste, wenn der Mauszeiger
+sich im Inhalt des Anzeigefensters, jedoch nicht über einem Knoten,
+befindet, ausgeführt werden. Jedes Script ergibt eine mögliche Auswahl
+im Kontextmenü.\\ 
+
+Diese Scripts werden beim Auswählen des jeweils dazugehörigen Menüpunktes
+jeweils ohne Parameter gestartet.
+
+°  <setting name = "GSL.No_Param_Context value="" />°\\
+
+Mit der folgenden Zeile kann festgelegt werden, welche GSL-Scripts im
+Kontext-Menü bei Drücken der rechten Maustaste, wenn der Mauszeiger
+sich im Inhalt des Anzeigefensters über einem Knoten, befindet,
+ausgeführt werden. Jedes Script ergibt eine mögliche Auswahl im
+Kontextmenü.\\
+
+Den Scripts wird dabei die ID des Knotens als
+Parameter übergeben.\\ 
+
+°  <setting name = "GSL.Node_Id_Param value="" />°\\
+
+Mit der folgenden Zeile kann festgelegt werden, welche GSL-Scripts im
+Kontext-Menü bei Drücken der rechten Maustaste, wenn der Mauszeiger
+sich im Inhalt des Anzeigefensters über einer Kante befindet,
+ausgeführt werden. Jedes Script ergibt eine mögliche Auswahl im
+Kontextmenü.\\
+
+Den Scripts wird dabei die ID der Kante als
+Parameter übergeben.\\ 
+
+°  <setting name = "GSL.Edge_Id_Param value="" />°\\
+
+Mit der folgenden Zeile kann festgelegt werden, welche GSL-Scripts im
+Kontext-Menü bei Drücken der rechten Maustaste, wenn der Mauszeiger
+sich in der Liste der IML-Teilgraphen (\gq{Subgraph}-Liste) im
+GIANT-Hauptfenster befindet, ausgeführt werden.
+Jedes Script ergibt eine mögliche Auswahl im Kontextmenü.\\
+
+Den Scripts wird dabei der IML-Teilgraph als
+Parameter übergeben.\\ 
+
+°  <setting name = "GSL.Subgraph_Param value="" />°\\
+
+Mit der folgenden Zeile kann festgelegt werden, welche GSL-Scripts im
+Kontext-Menü bei Drücken der rechten Maustaste, wenn der Mauszeiger
+sich in der Liste der Selektionen (\gq{Selections}) in
+einem GIANT-Anzeigefenster befindet, ausgeführt werden.
+Jedes Script ergibt eine mögliche Auswahl im Kontextmenü.\\
+
+Den Scripts wird dabei die Selektion als
+Parameter übergeben.\\ 
+
+°  <setting name = "GSL.Selection_Param value="" />°\\
 
 Hier nun ein Beispiel-Configfile (global\_config.xml). Wie man sieht,
 müssen nicht alle möglichen Einstellungen zugewiesen werden.
