@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-config-class_sets-test.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-config-class_sets-test.adb,v $, $Revision: 1.3 $
 --  $Author: schwiemn $
---  $Date: 2003/07/10 21:57:33 $
+--  $Date: 2003/07/11 15:05:28 $
 --
 with Ada.Strings.Unbounded;
 
@@ -247,7 +247,7 @@ package body Giant.Config.Class_Sets.Test is
 
       Empty_Class_Set_List := Class_Sets_Lists.Create;
       
-      for i in 1 .. 50_000_000 loop
+      for i in 1 .. 1 loop
          
          Meta_1 := Config.Class_Sets.Build 
            (Elements => (S_Set_1, S_Set_2, S_Set_3, S_Set_4));

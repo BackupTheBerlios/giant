@@ -2,7 +2,7 @@
   (associated_node_classes, associated_edge_classes)>
 
   <!-- ................................................................... -->
-  <!ELEMENT associated_node_classes (node_class)*>
+  <!ELEMENT associated_node_classes (node_class)*, (super_node_class)*>
 
     <!-- GIANT will ignore node classes that are not known
          by the IML Graph Reflection.
@@ -12,9 +12,14 @@
     <!ATTLIST node_class
       node_class_name CDATA #REQUIRED
     >
+    
+    <!ELEMENT super_node_class EMPTY>   
+    <!ATTLIST super_node_class
+      super_node_class_name CDATA #REQUIRED
+    > 
 
   <!-- ................................................................... -->
-  <!ELEMENT associated_edge_classes (edge_class)*>
+  <!ELEMENT associated_edge_classes (edge_class)*, (super_edge_class)*>
 
     <!-- GIANT will ignore edge classe that are not known
          by the IML Graph Reflection.
@@ -38,4 +43,10 @@
     <!ATTLIST edge_class
       start_node_class CDATA #REQUIRED
       attribute_name   CDATA #REQUIRED
+    >
+    
+    <!ELEMENT super_edge_class EMPTY>
+    <!ATTLIST super_edge_class
+      super_start_node_class CDATA #REQUIRED
+      attribute_name         CDATA #REQUIRED
     >

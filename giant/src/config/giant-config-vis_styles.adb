@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.18 $
+-- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.19 $
 -- $Author: schwiemn $
--- $Date: 2003/07/10 21:11:04 $
+-- $Date: 2003/07/11 15:05:28 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -33,10 +33,11 @@ with DOM.Core.Elements;  -- from xmlada
 with DOM.Core.Nodes;     -- from xmlada
 with Tree_Readers;
 
-with Giant.XML_File_Access; -- from GIANT
-with Giant.File_Management; -- from GIANT
-with GIANT.Edge_Class_Proc; -- from GIANT
-with GIANT.Logger;          -- from GIANT
+with Giant.XML_File_Access;            -- from GIANT
+with Giant.File_Management;            -- from GIANT
+with GIANT.Edge_Class_Proc;            -- from GIANT
+with GIANT.IML_Class_Inheritance_Proc; -- from GIANT
+with GIANT.Logger;                     -- from GIANT
 
 package body Giant.Config.Vis_Styles is
 
@@ -308,8 +309,9 @@ package body Giant.Config.Vis_Styles is
 
    ---------------------------------------------------------------------------
    -- Calculates all node class names from all <node_class> - subnodes
-   -- for a passed node <node_class_specific_setting>.
-   --
+   -- for a passed node <node_class_specific_setting> and
+   -- for all <super_node_class> nodes.
+   --   
    -- The passed node must be a <node_class_specific_setting> - node.
    function Get_All_Node_Class_Names
      (XML_Node_Setting_Node : in DOM.Core.Node) return String_Lists.List is
@@ -317,9 +319,15 @@ package body Giant.Config.Vis_Styles is
       The_List       : String_Lists.List := String_Lists.Create;
       XML_Nodes_List : DOM.Core.Node_List;
       XML_Node       : DOM.Core.Node;
+      
+      Node_Class_Set      : Graph_Lib.Node_Class_Id_Set;
+      Node_Class_Set_Iter : Graph_Lib.Node_Class_Id_Sets.Iterator;
+      A_Node_Class_ID     : Graph_Lib.Node_Class_Id;
 
    begin
 
+      -- No inheritance
+      -----------------
       XML_Nodes_List := DOM.Core.Elements.Get_Elements_By_Tag_Name
         (XML_Node_Setting_Node, "node_class");
 
@@ -327,7 +335,7 @@ package body Giant.Config.Vis_Styles is
 
          XML_Node := DOM.Core.Nodes.Item (XML_Nodes_List, I);
 
-         -- get name of attribute and add it to the list
+         -- get name of class name attribute and add it to the list
          String_Lists.Attach
            (The_List,
             Ada.Strings.Unbounded.To_Unbounded_String
@@ -335,7 +343,38 @@ package body Giant.Config.Vis_Styles is
              (XML_Node, "node_class_name")));
 
       end loop;
+      DOM.Core.Free (XML_Nodes_List);
+            
+      -- with inheritance
+      -------------------
+      XML_Nodes_List := DOM.Core.Elements.Get_Elements_By_Tag_Name
+        (XML_Node_Setting_Node, "super_node_class");
 
+      for I in 0 ..  DOM.Core.Nodes.Length(XML_Nodes_List) - 1 loop
+
+         XML_Node := DOM.Core.Nodes.Item (XML_Nodes_List, I);
+         
+         -- get all inheriting node classes incl. super class
+         Node_Class_Set :=
+           IML_Class_Inheritance_Proc.Get_All_Sub_Node_Classes (XML_Node);
+         
+         Node_Class_Set_Iter := Graph_Lib.Node_Class_Id_Sets.Make_Iterator
+           (Node_Class_Set);
+           
+         while Graph_Lib.Node_Class_Id_Sets.More (Node_Class_Set_Iter) loop
+         
+            Graph_Lib.Node_Class_Id_Sets.Next 
+              (Node_Class_Set_Iter, A_Node_Class_ID);         
+                          
+            String_Lists.Attach
+              (The_List,
+               Ada.Strings.Unbounded.To_Unbounded_String
+                 (Graph_Lib.Get_Node_Class_Tag (A_Node_Class_ID)));        
+         end loop;
+
+         Graph_Lib.Node_Class_Id_Sets.Destroy (Node_Class_Set_Iter);
+         Graph_Lib.Node_Class_Id_Sets.Destroy (Node_Class_Set);
+      end loop;
       DOM.Core.Free (XML_Nodes_List);
 
       return The_List;
@@ -677,7 +716,7 @@ package body Giant.Config.Vis_Styles is
       DOM.Core.Free (XML_Nodes_List_Top_Level);
 
 
-      -- Step 2 process all node class specifc settings
+      -- Step 2 process all node class specific settings
       -- Entries from Step 1 will be overwritten
       ------------------------------------------------------------------------
       XML_Nodes_List_Top_Level :=
@@ -701,8 +740,8 @@ package body Giant.Config.Vis_Styles is
 
          -- create the filter for each node class and insert the setting
 
-         -- get all node classes the actual setting should be
-         -- taken for
+         -- 2.1 Get all node classes the actual setting should be used for
+         ------------------------------------------ ----------------------    
          Node_Class_Names_List :=
            Get_All_Node_Class_Names (XML_Node_Top_Level);
 
@@ -836,6 +875,8 @@ package body Giant.Config.Vis_Styles is
          -- get all edge classes definitions the actual setting should be
          -- taken for (each definition may represent several edge classes
          -- by using the vildcard "*");
+         --
+         -- does not regard inheritance
          XML_Nodes_List_Edge_Classes :=
            DOM.Core.Elements.Get_Elements_By_Tag_Name
            (XML_Node_Top_Level, "edge_class");
@@ -873,14 +914,56 @@ package body Giant.Config.Vis_Styles is
 
          -- deallocate list of <edge_class> - nodes
          DOM.Core.Free(XML_Nodes_List_Edge_Classes);
+         
+         
+         -- get all edge classes definitions the actual setting should be
+         -- taken for regarding inheritance         
+         XML_Nodes_List_Edge_Classes :=
+           DOM.Core.Elements.Get_Elements_By_Tag_Name
+           (XML_Node_Top_Level, "super_edge_class");
 
+         for I in 0 ..
+           DOM.Core.Nodes.Length(XML_Nodes_List_Edge_Classes) - 1 loop
+
+            -- a <super_edge_class> node
+            XML_Node_Edge_Class := DOM.Core.Nodes.Item
+              (XML_Nodes_List_Edge_Classes, I);
+
+            -- calculate set of edge classes specified by this node
+            -- regarding inheritance hierarchy
+            A_Edge_Class_ID_Set :=
+              IML_Class_Inheritance_Proc.Get_All_Sub_Edge_Classes
+                (XML_Node_Edge_Class);
+
+            -- check whether returned set is empty
+            if Graph_Lib.Edge_Class_Id_Sets.Is_Empty
+              (A_Edge_Class_ID_Set) then
+
+               Graph_Lib.Edge_Class_Id_Sets.Destroy
+                 (A_Edge_Class_ID_Set);
+            else
+
+               -- insert settings for edge classes into vis style
+               -- the already existing setting for affected edge classes
+               -- wille be overwritten
+               Insert_Edge_Class_Id_Data_From_Set_Into_Vis_Style
+                 (New_Vis_Style_Access, A_Edge_Class_Id_Set, Edge_Setting);
+
+               -- deallocate returned edge class id set
+               Graph_Lib.Edge_Class_Id_Sets.Destroy
+                 (A_Edge_Class_ID_Set);
+            end if;
+         end loop;  -- end for
+
+         -- deallocate list of <edge_class> - nodes
+         DOM.Core.Free(XML_Nodes_List_Edge_Classes);
+         
       end loop; -- end for
 
       -- deallocate list of <edge_class_specific_setting> - nodes
       DOM.Core.Free (XML_Nodes_List_Top_Level);
 
       -- now all data describing a visualisation style is read
-
       return New_Vis_Style_Access;
    end Process_XML_Vis_Style;
 

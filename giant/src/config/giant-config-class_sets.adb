@@ -20,13 +20,14 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.9 $
+-- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.10 $
 -- $Author: schwiemn $
--- $Date: 2003/07/08 13:41:31 $
+-- $Date: 2003/07/11 15:05:28 $
 --
-with Giant.File_Management;  -- from GIANT
-with Giant.XML_File_Access;  -- from GIANT
-with Giant.Edge_Class_Proc;  -- from GIANT
+with Giant.File_Management;             -- from GIANT
+with Giant.XML_File_Access;             -- from GIANT
+with Giant.Edge_Class_Proc;             -- from GIANT
+with Giant.IML_Class_Inheritance_Proc;  -- from GIANT
 
 with Unbounded_String_Hash; -- from Bauhaus IML "Reuse.src"
 
@@ -75,6 +76,65 @@ package body Giant.Config.Class_Sets is
       -- deallocate class set itself
       Free_Class_Set_Access (Class_Set);
    end Deallocate_Class_Set;
+   
+   
+   ------------------------------------------------------------------------
+   -- insert all edge classes from a edge class id set into the class set
+   procedure Insert_Edge_Class_Id_Set_Into_Class_Set
+     (The_Class_Set_Access : in Class_Set_Access;
+      Edge_Class_Id_Set : in Graph_Lib.Edge_Class_Id_Set) is
+
+      -- insert the element into the class set if it not already
+      -- exists
+      procedure Process_Element (Item : in Graph_Lib.Edge_Class_Id) is
+
+      begin
+
+         if not Edge_Class_Look_Up_Hashed_Mappings.Is_Bound
+           (The_Class_Set_Access.Edge_Classes, Item) then
+
+            Edge_Class_Look_Up_Hashed_Mappings.Bind
+              (The_Class_Set_Access.Edge_Classes, Item, Item);
+         end if;
+      end Process_Element;
+
+      procedure Add_All_Elements_To_Class_Set is new
+        Graph_Lib.Edge_Class_Id_Sets.Apply
+        (Execute => Process_Element);
+
+   begin
+
+      Add_All_Elements_To_Class_Set (Edge_Class_Id_Set);
+   end Insert_Edge_Class_Id_Set_Into_Class_Set;
+   
+   ------------------------------------------------------------------------
+   -- insert all node classes from a edge class id set into the class set
+   procedure Insert_Node_Class_Id_Set_Into_Class_Set
+     (The_Class_Set_Access : in Class_Set_Access;
+      Node_Class_Id_Set : in Graph_Lib.Node_Class_Id_Set) is
+
+      -- insert the element into the class set if it not already
+      -- exists
+      procedure Process_Element (Item : in Graph_Lib.Node_Class_Id) is
+
+      begin
+
+         if not Node_Class_Look_Up_Hashed_Mappings.Is_Bound
+           (The_Class_Set_Access.Node_Classes, Item) then
+
+            Node_Class_Look_Up_Hashed_Mappings.Bind
+              (The_Class_Set_Access.Node_Classes, Item, Item);
+         end if;
+      end Process_Element;
+
+      procedure Add_All_Elements_To_Class_Set is new
+        Graph_Lib.Node_Class_Id_Sets.Apply
+        (Execute => Process_Element);
+
+   begin
+
+      Add_All_Elements_To_Class_Set (Node_Class_Id_Set);
+   end Insert_Node_Class_Id_Set_Into_Class_Set;
 
 
    ---------------------------------------------------------------------------
@@ -88,36 +148,6 @@ package body Giant.Config.Class_Sets is
    --   - Class_Sets_Map;
    procedure Initialize_Class_Sets 
      (GIANT_Class_Sets_Directory : in String) is
-
-      ------------------------------------------------------------------------
-      -- insert all edge classes from a edge class id set into the class set
-      procedure Insert_Edge_Class_Id_Set_Into_Class_Set
-        (The_Class_Set_Access : in Class_Set_Access;
-         Edge_Class_Id_Set : in Graph_Lib.Edge_Class_Id_Set) is
-
-         -- insert the element into the class set if it not already
-         -- exists
-         procedure Process_Element (Item : in Graph_Lib.Edge_Class_Id) is
-
-         begin
-
-            if not Edge_Class_Look_Up_Hashed_Mappings.Is_Bound
-              (The_Class_Set_Access.Edge_Classes, Item) then
-
-               Edge_Class_Look_Up_Hashed_Mappings.Bind
-                 (The_Class_Set_Access.Edge_Classes, Item, Item);
-            end if;
-         end Process_Element;
-
-         procedure Add_All_Elements_To_Class_Set is new
-           Graph_Lib.Edge_Class_Id_Sets.Apply
-           (Execute => Process_Element);
-
-      begin
-
-         Add_All_Elements_To_Class_Set (Edge_Class_Id_Set);
-      end Insert_Edge_Class_Id_Set_Into_Class_Set;
-
 
       -- needed to insert new class sets
       New_Class_Set_Access : Class_Set_Access := null;
@@ -134,7 +164,8 @@ package body Giant.Config.Class_Sets is
       XML_Nodes_List : DOM.Core.Node_List;
       XML_Node : DOM.Core.Node;
 
-      A_Node_Class_ID : Graph_Lib.Node_Class_Id;
+      A_Node_Class_ID     : Graph_Lib.Node_Class_Id;
+      A_Node_Class_ID_Set : Graph_Lib.Node_Class_Id_Set;
 
       A_Edge_Class_ID_Set : Graph_Lib.Edge_Class_Id_Set;
 
@@ -224,7 +255,8 @@ package body Giant.Config.Class_Sets is
 
             -- process node classes
             ------------------------------------------------------------------
-            -- Get_All_Node_Classes
+            
+            -- Get_All_Node_Classes (only one class)
             XML_Nodes_List :=
               DOM.Core.Documents.Get_Elements_By_Tag_Name
               (The_XML_Document, "node_class");
@@ -258,10 +290,52 @@ package body Giant.Config.Class_Sets is
             end loop;            
 
             DOM.Core.Free (XML_Nodes_List);
+            
+            -- Get_All_Node_Classes regarding inheritance hierarchy
+            XML_Nodes_List :=
+              DOM.Core.Documents.Get_Elements_By_Tag_Name
+              (The_XML_Document, "super_node_class");
 
-            -- process edge classes
+            for I in 0 .. DOM.Core.Nodes.Length (XML_Nodes_List) - 1 loop
+
+               XML_Node := DOM.Core.Nodes.Item (XML_Nodes_List, I);
+
+               -- IGNORE node classes not known by the IML Reflection
+               if Graph_Lib.Does_Node_Class_Exist
+                 (DOM.Core.Elements.Get_Attribute
+                  (XML_Node, "super_node_class_name")) then
+             
+                  -- get all inheriting sub classes incl. the super class
+                  A_Node_Class_ID_Set := 
+                    IML_Class_Inheritance_Proc.Get_All_Sub_Node_Classes
+                      (XML_Node);
+                     
+                  -- check whether returned set is empty
+                  if Graph_Lib.Node_Class_Id_Sets.Is_Empty
+                    (A_Node_Class_ID_Set) then
+                    
+                     Graph_Lib.Edge_Class_Id_Sets.Destroy 
+                       (A_Edge_Class_ID_Set);
+              
+                  else  
+                     -- insert all node class id's from the calculated set 
+                     -- into the class set
+                     Insert_Node_Class_Id_Set_Into_Class_Set
+                       (New_Class_Set_Access, A_Node_Class_ID_Set);
+
+                     -- deallocate returned node class id set
+                     Graph_Lib.Node_Class_Id_Sets.Destroy 
+                       (A_Node_Class_ID_Set);    
+                  end if;
+               end if;
+            end loop;            
+
+            DOM.Core.Free (XML_Nodes_List);
+            
+  
+            -- process edge classes 
             ------------------------------------------------------------------
-            -- get all entries for edge classes
+            -- get all entries for edge classes (no inheritance)
             XML_Nodes_List :=
               DOM.Core.Documents.Get_Elements_By_Tag_Name
               (The_XML_Document, "edge_class");
@@ -298,6 +372,43 @@ package body Giant.Config.Class_Sets is
             end loop;
 
             DOM.Core.Free (XML_Nodes_List);
+            
+            -- get all entries for edge classes regarding inheritance
+            XML_Nodes_List :=
+              DOM.Core.Documents.Get_Elements_By_Tag_Name
+              (The_XML_Document, "super_edge_class");
+
+            for I in 0 .. DOM.Core.Nodes.Length (XML_Nodes_List) - 1 loop
+
+               XML_Node := DOM.Core.Nodes.Item (XML_Nodes_List, I);
+
+               -- calculate set of edge classes specified by this node
+               A_Edge_Class_ID_Set := 
+                 IML_Class_Inheritance_Proc.
+                   Get_All_Sub_Edge_Classes (XML_Node);
+
+               -- check whether returned set is empty
+               if Graph_Lib.Edge_Class_Id_Sets.Is_Empty
+                 (A_Edge_Class_ID_Set) then
+
+                  Graph_Lib.Edge_Class_Id_Sets.Destroy 
+                    (A_Edge_Class_ID_Set);              
+               else
+
+                  -- insert all edge class id's from the calculated set into
+                  -- the class set
+                  Insert_Edge_Class_Id_Set_Into_Class_Set
+                    (New_Class_Set_Access, A_Edge_Class_ID_Set);
+
+                  -- deallocate returned edge class id set
+                  Graph_Lib.Edge_Class_Id_Sets.Destroy 
+                    (A_Edge_Class_ID_Set);                 
+               end if;    
+                
+            end loop;
+
+            DOM.Core.Free (XML_Nodes_List);            
+            
 
             -- Free memory needed for the xml dom tree
             Tree_Readers.Free(The_Tree_Reader);
