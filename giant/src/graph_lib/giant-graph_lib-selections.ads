@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.16 $
+--  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.17 $
 --  $Author: koppor $
---  $Date: 2003/06/28 22:19:10 $
+--  $Date: 2003/07/04 16:18:54 $
 --
 ------------------------------------------------------------------------------
 --
@@ -100,7 +100,7 @@ package Giant.Graph_Lib.Selections is
    --  RESULT MAY NOT BE MODIFIED
    --  Returns:
    --    All Nodes included in selection
-   --  TBD: refactoring!
+   --  TBD: refactoring! - see below @ Get_All_Edges
    function Get_All_Nodes
      (Sel : in Selection)
      return Node_Id_Set;
