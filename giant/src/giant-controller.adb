@@ -21,9 +21,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.15 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.16 $
 --  $Author: squig $
---  $Date: 2003/06/22 23:03:18 $
+--  $Date: 2003/06/23 12:40:58 $
 --
 
 with Ada.Strings.Unbounded;
@@ -35,6 +35,7 @@ with Giant.Graph_Lib.Selections;
 with Giant.Graph_Lib.Subgraphs;
 with Giant.Gui_Manager;
 With Giant.Logger;
+With Giant.Node_Annotations;
 with Giant.Vis_Windows;
 
 package body Giant.Controller is
@@ -193,6 +194,55 @@ package body Giant.Controller is
       Gui_Manager.Show;
    end Show_Gui;
 
+   ---------------------------------------------------------------------------
+   --  Node Annotations
+   ---------------------------------------------------------------------------
+
+   function Get_Node_Annotation
+     (Node : in Graph_Lib.Node_Id)
+     return String
+   is
+   begin
+      if (Is_Node_Annotated (Node)) then
+         return Node_Annotations.Get_Annotation_Text
+           (Projects.Get_Node_Annotations (Current_Project), Node);
+      else
+         return "";
+      end if;
+   end;
+
+   function Is_Node_Annotated
+     (Node : in Graph_Lib.Node_Id)
+     return Boolean
+   is
+   begin
+      return Node_Annotations.Is_Annotated
+        (Projects.Get_Node_Annotations (Current_Project), Node);
+   end;
+
+   procedure Set_Node_Annotation
+     (Node : in Graph_Lib.Node_Id;
+      Text : in String)
+   is
+   begin
+      if (Is_Node_Annotated (Node)) then
+         Node_Annotations.Change_Node_Annotation
+           (Projects.Get_Node_Annotations (Current_Project), Node, Text);
+      else
+         Node_Annotations.Add_Node_Annotation
+           (Projects.Get_Node_Annotations (Current_Project), Node, Text);
+      end if;
+   end;
+
+   procedure Remove_Node_Annotation
+     (Node : in Graph_Lib.Node_Id)
+   is
+   begin
+      if (Is_Node_Annotated (Node)) then
+         Node_Annotations.Remove_Node_Annotation
+           (Projects.Get_Node_Annotations (Current_Project), Node);
+      end if;
+   end;
 
    ---------------------------------------------------------------------------
    --  Selections

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.ads,v $, $Revision: 1.7 $
+--  $RCSfile: giant-default_dialog.ads,v $, $Revision: 1.8 $
 --  $Author: squig $
---  $Date: 2003/06/23 11:30:45 $
+--  $Date: 2003/06/23 12:40:58 $
 --
 ------------------------------------------------------------------------------
 --
@@ -97,6 +97,12 @@ package Giant.Default_Dialog is
    function Get_Response
      (Dialog : access Default_Dialog_Record)
      return Response_Type;
+
+   ---------------------------------------------------------------------------
+   --  Called by the button callbacks.
+   procedure Hide
+     (Source   : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Response : in     Response_Type);
 
    procedure Set_Center_Widget
      (Dialog : access Default_Dialog_Record;

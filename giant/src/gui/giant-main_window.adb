@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.23 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.24 $
 --  $Author: squig $
---  $Date: 2003/06/23 11:30:45 $
+--  $Date: 2003/06/23 12:40:58 $
 --
 
 with Ada.Strings.Unbounded;
@@ -672,7 +672,7 @@ package body Giant.Main_Window is
    end Remove_Subgraph;
 
    ---------------------------------------------------------------------------
-   --  Other Methods
+   --  Public Methods
    ---------------------------------------------------------------------------
 
    function Hide

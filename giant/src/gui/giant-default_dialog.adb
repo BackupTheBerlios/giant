@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.12 $
+--  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.13 $
 --  $Author: squig $
---  $Date: 2003/06/23 11:30:45 $
+--  $Date: 2003/06/23 12:40:58 $
 --
 
 with Ada.Text_Io; use Ada.Text_Io;
@@ -43,25 +43,6 @@ package body Giant.Default_Dialog is
    ---------------------------------------------------------------------------
    --  Helpers
    ---------------------------------------------------------------------------
-
-   ---------------------------------------------------------------------------
-   --  Called by the button callbacks.
-   procedure Hide
-     (Source   : access Gtk.Widget.Gtk_Widget_Record'Class;
-      Response : in     Response_Type)
-   is
-      Dialog : Default_Dialog_Access;
-   begin
-      Dialog := Default_Dialog_Access (Gtk.Widget.Get_Toplevel (Source));
-      Dialog.Response := Response;
-
-      if (Can_Hide (Default_Dialog_Access (Dialog))) then
-         Hide (Dialog);
-         if (Dialog.Is_Modal) then
-            Gtk.Main.Main_Quit;
-         end if;
-      end if;
-   end;
 
    ---------------------------------------------------------------------------
    --  Callbacks
@@ -269,6 +250,23 @@ package body Giant.Default_Dialog is
    begin
       return Dialog.Response;
    end Get_Response;
+
+   procedure Hide
+     (Source   : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Response : in     Response_Type)
+   is
+      Dialog : Default_Dialog_Access;
+   begin
+      Dialog := Default_Dialog_Access (Gtk.Widget.Get_Toplevel (Source));
+      Dialog.Response := Response;
+
+      if (Can_Hide (Default_Dialog_Access (Dialog))) then
+         Hide (Dialog);
+         if (Dialog.Is_Modal) then
+            Gtk.Main.Main_Quit;
+         end if;
+      end if;
+   end;
 
    procedure Set_Center_Widget
      (Dialog : access Default_Dialog_Record;

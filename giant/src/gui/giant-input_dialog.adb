@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-input_dialog.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-input_dialog.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/22 21:54:21 $
+--  $Date: 2003/06/23 12:40:58 $
 --
 
 with Gtk.Button;
@@ -32,10 +32,10 @@ with Gtk.Widget;
 package body Giant.Input_Dialog is
 
    procedure Create
-     (Dialog		  :    out Input_Dialog_Access;
-	  Title			  : in     String;
-	  Message		  : in     String;
-	  Input_Validator : in     Input_Validator_Type)
+     (Dialog          :    out Input_Dialog_Access;
+      Title           : in     String;
+      Message         : in     String;
+      Input_Validator : in     Input_Validator_Type)
    is
    begin
       Dialog := new Input_Dialog_Record;
@@ -43,17 +43,17 @@ package body Giant.Input_Dialog is
    end Create;
 
    procedure Initialize
-     (Dialog		  : access Input_Dialog_Record'class;
-	  Title			  : in     String;
-	  Message		  : in     String;
-	  Input_Validator : in     Input_Validator_Type)
+     (Dialog          : access Input_Dialog_Record'class;
+      Title           : in     String;
+      Message         : in     String;
+      Input_Validator : in     Input_Validator_Type)
    is
       Box : Gtk.Box.Gtk_Hbox;
    begin
-      Default_Dialog.Initialize (Dialog, Title, 
-								 Default_Dialog.Button_Okay_Cancel);
+      Default_Dialog.Initialize (Dialog, Title,
+                                 Default_Dialog.Button_Okay_Cancel);
 
-	  Dialog.Input_Validator := Input_Validator;
+      Dialog.Input_Validator := Input_Validator;
 
       Box := Add_Icon_Box (Dialog, "gnome-question.xpm", Message);
 
@@ -72,26 +72,26 @@ package body Giant.Input_Dialog is
    begin
       if (Get_Response (Dialog)
           = Default_Dialog.Response_Okay) then
-		 if (Dialog.Input_Validator /= null) then
-			return Dialog.Input_Validator (Get_Text (Dialog));
-		 end if;
-	  end if;
+         if (Dialog.Input_Validator /= null) then
+            return Dialog.Input_Validator (Get_Text (Dialog));
+         end if;
+      end if;
 
-	  return True;
+      return True;
    end Can_Hide;
 
    function Get_Text
      (Dialog : access Input_Dialog_Record)
      return String
    is
-	  Text : constant String := Gtk.Gentry.Get_Text (Dialog.Input);
+      Text : constant String := Gtk.Gentry.Get_Chars (Dialog.Input);
    begin
-	  return Text;
+      return Text;
    end Get_Text;
 
    procedure Set_Text
      (Dialog : access Input_Dialog_Record;
-	  Text	 : in     String)
+      Text   : in     String)
    is
    begin
       Gtk.Gentry.Set_Text (Dialog.Input, Text);

@@ -20,30 +20,30 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-node_annotation_dialog.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-node_annotation_dialog.adb,v $, $Revision: 1.6 $
 --  $Author: squig $
---  $Date: 2003/06/23 11:30:45 $
+--  $Date: 2003/06/23 12:40:58 $
 --
 
 with Glib;
 with Gtk.Button;
+with Gtk.Gentry;
 with Gtk.Scrolled_Window;
 with Gtk.Widget;
 with Gtk.Enums; use Gtk.Enums;
 
-with Giant.Gui_Utils; use Giant.Gui_Utils;
+with Giant.Controller;
+with Giant.Gui_Utils;
 
 package body Giant.Node_Annotation_Dialog is
 
-   procedure Set_Text
-     (Dialog   : access Node_Annotation_Dialog_Record'Class;
-      Text : String)
-   is
-      Position : Glib.Gint := 0;
-   begin
-      Gtk.Text.Delete_Text (Dialog.Text_Area);
-      Gtk.Text.Insert_Text (Dialog.Text_Area, Text, Position);
-   end Set_Text;
+   ---------------------------------------------------------------------------
+   --  Helpers
+   ---------------------------------------------------------------------------
+
+   ---------------------------------------------------------------------------
+   --  Callbacks
+   ---------------------------------------------------------------------------
 
    procedure On_Delete_Button_Clicked
      (Source : access Gtk.Button.Gtk_Button_Record'Class)
@@ -51,8 +51,10 @@ package body Giant.Node_Annotation_Dialog is
       Dialog : Node_Annotation_Dialog_Access;
    begin
       Dialog := Node_Annotation_Dialog_Access (Gtk.Widget.Get_Toplevel
-                                   (Gtk.Widget.Gtk_Widget (Source)));
-      -- FIX: delete annotation
+                                               (Gtk.Widget.Gtk_Widget
+                                                (Source)));
+      Controller.Remove_Node_Annotation (Dialog.Node);
+      Default_Dialog.Hide (Source, Default_Dialog.Response_Close);
    end On_Delete_Button_Clicked;
 
    function Can_Hide
@@ -62,27 +64,33 @@ package body Giant.Node_Annotation_Dialog is
       use type Default_Dialog.Response_Type;
    begin
       if (Get_Response (Dialog) = Default_Dialog.Response_Okay) then
-         -- the okay button was pressed
-         -- FIX: save annotation
-         null;
+         declare
+            Text : constant String := Gtk.Text.Get_Chars (Dialog.Text_Area);
+         begin
+            Controller.Set_Node_Annotation (Dialog.Node, Text);
+         end;
       end if;
 
       return True;
    end Can_Hide;
 
+   ---------------------------------------------------------------------------
+   --  Initializers
+   ---------------------------------------------------------------------------
+
    procedure Create
-     (Dialog :    out Node_Annotation_Dialog_Access;
-      Node   : in     Graph_Lib.Node_Id)
+     (Dialog :    out Node_Annotation_Dialog_Access)
    is
    begin
       Dialog := new Node_Annotation_Dialog_Record;
-      Dialog.Node := Node;
       Initialize (Dialog);
    end Create;
 
    procedure Initialize
      (Dialog : access Node_Annotation_Dialog_Record'class)
    is
+      use Giant.Gui_Utils;
+
       Scrolled_Window : Gtk.Scrolled_Window.Gtk_Scrolled_Window;
    begin
       Default_Dialog.Initialize (Dialog,
@@ -101,21 +109,38 @@ package body Giant.Node_Annotation_Dialog is
       Set_Center_Widget (Dialog, Scrolled_Window);
       Set_Default (Dialog, Dialog.Text_Area);
 
-      -- FIX: set node annotation
-      Set_Text (Dialog, "Annotation");
-
       -- buttons
       Add_Button (Dialog,
                   New_Button (-"Delete", On_Delete_Button_Clicked'Access));
    end;
+
+   ---------------------------------------------------------------------------
+   --  Public Methods
+   ---------------------------------------------------------------------------
+
+   procedure Set_Node
+     (Dialog : access Node_Annotation_Dialog_Record'Class;
+      Node   : in     Graph_Lib.Node_Id)
+   is
+      Position : Glib.Gint := 0;
+   begin
+      Dialog.Node := Node;
+
+      Gtk.Text.Delete_Text (Dialog.Text_Area);
+      Gtk.Text.Insert_Text (Dialog.Text_Area,
+                            Controller.Get_Node_Annotation (Node),
+                            Position);
+   end Set_Node;
 
    procedure Show
      (Node : in Graph_Lib.Node_Id)
    is
       Dialog : Node_Annotation_Dialog_Access;
    begin
-      Create (Dialog, Node);
-      Show_All (Dialog);
+      Create (Dialog);
+      Set_Node (Dialog, Node);
+      Show_Modal (Dialog);
+      Destroy (Dialog);
    end Show;
 
 end Giant.Node_Annotation_Dialog;

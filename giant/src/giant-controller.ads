@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.13 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.14 $
 --  $Author: squig $
---  $Date: 2003/06/22 23:03:18 $
+--  $Date: 2003/06/23 12:40:58 $
 --
 ------------------------------------------------------------------------------
 --
@@ -31,6 +31,7 @@
 --  included in this package.
 --
 
+with Giant.Graph_Lib;
 with Giant.Projects;
 with Giant.Valid_Names;
 
@@ -86,6 +87,25 @@ package Giant.Controller is
    function Hide_Gui
      (Ask_For_Confirmation : in Boolean := True)
      return Boolean;
+
+   ---------------------------------------------------------------------------
+   --  Node Annotations
+   ---------------------------------------------------------------------------
+
+   function Get_Node_Annotation
+     (Node : in Graph_Lib.Node_Id)
+     return String;
+
+   function Is_Node_Annotated
+     (Node : in Graph_Lib.Node_Id)
+     return Boolean;
+
+   procedure Set_Node_Annotation
+     (Node : in Graph_Lib.Node_Id;
+      Text : in String);
+
+   procedure Remove_Node_Annotation
+     (Node : in Graph_Lib.Node_Id);
 
    ---------------------------------------------------------------------------
    --  Selections

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-node_annotation_dialog.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-node_annotation_dialog.ads,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/06/23 11:30:45 $
+--  $Date: 2003/06/23 12:40:58 $
 --
 ------------------------------------------------------------------------------
 --
@@ -44,16 +44,19 @@ package Giant.Node_Annotation_Dialog is
    type Node_Annotation_Dialog_Access is
       access all Node_Annotation_Dialog_Record'Class;
 
+   procedure Create
+     (Dialog :    out Node_Annotation_Dialog_Access);
+
+   procedure Initialize
+     (Dialog : access Node_Annotation_Dialog_Record'Class);
+
    function Can_Hide
      (Dialog : access Node_Annotation_Dialog_Record)
      return Boolean;
 
-   procedure Create
-     (Dialog :    out Node_Annotation_Dialog_Access;
+   procedure Set_Node
+     (Dialog : access Node_Annotation_Dialog_Record'Class;
       Node   : in     Graph_Lib.Node_Id);
-
-   procedure Initialize
-     (Dialog : access Node_Annotation_Dialog_Record'Class);
 
    procedure Show
      (Node : in Graph_Lib.Node_Id);

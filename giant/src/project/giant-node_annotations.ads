@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-node_annotations.ads,v $, $Revision: 1.7 $
---  $Author: schwiemn $
---  $Date: 2003/06/10 12:34:46 $
+--  $RCSfile: giant-node_annotations.ads,v $, $Revision: 1.8 $
+--  $Author: squig $
+--  $Date: 2003/06/23 12:40:58 $
 ------------------------------------------------------------------------------
 --  This package overs the functionality needed to handle node annotations.
 --
@@ -195,14 +195,14 @@ package Giant.Node_Annotations is
    --  Parameters:
    --    Node_Annotations - The Instance of the ADT whose annotated nodes
    --      should be returned.
-   --  Returns: 
+   --  Returns:
    --    A list holding the ID's of all nodes that are annotated
    --    (a empty list may be returned if there are no annotated nodes).
    --  Raises:
    --    Node_Annotation_Access_Not_Initialized_Exception - Raised
    --      if the parameter "Node_Annotations" was not initialized.
-   function Get_All_Annotated_Nodes 
-     (Node_Annotations : in Node_Annotation_Access) 
+   function Get_All_Annotated_Nodes
+     (Node_Annotations : in Node_Annotation_Access)
      return Graph_Lib.Node_Id_Lists.List;
 
 
@@ -264,31 +264,31 @@ package Giant.Node_Annotations is
    procedure Remove_Node_Annotation
      (Node_Annotations : in Node_Annotation_Access;
       Node             : in Graph_Lib.Node_Id);
-      
-      
+
+
    ---------------------------------------------------------------------------
-   --  D 
+   --  D
    --  Iterators
    --
    --  Note
    --    During an Iteration you may not change the ADT holding the
-   --    node annotations. 
+   --    node annotations.
    --
-   --  Use the Iterator in the following way in order to "catch" all 
+   --  Use the Iterator in the following way in order to "catch" all
    --  annotated nodes:
    --
    --    My_Iter := Make_Node_ID_Iter (My_Node_Annotations_ADT);
-   --   
+   --
    --    while More (My_Iter) loop
-   --       Next (My_Iter, Node);        
+   --       Next (My_Iter, Node);
    --       Do samething funny or not funny with "Node";
    --   end loop;
    ---------------------------------------------------------------------------
-   
-   ---------------------------------------------------------------------------     
+
+   ---------------------------------------------------------------------------
    --  An iterator over all annotated nodes.
    type Node_ID_Iter is private;
-     
+
    ---------------------------------------------------------------------------
    --  Builds an Iterator over all annotated nodes. The iterator initially
    --  points to the first annotated node.
@@ -298,7 +298,7 @@ package Giant.Node_Annotations is
    --      should be build.
    --  Raises:
    --    Node_Annotation_Access_Not_Initialized_Exception - Raised
-   --      if the passed ADT "Node_Annotations" was not initialized.  
+   --      if the passed ADT "Node_Annotations" was not initialized.
    function Make_Node_ID_Iter
      (Node_Annotations : in Node_Annotation_Access)
      return Node_ID_Iter;
@@ -311,13 +311,13 @@ package Giant.Node_Annotations is
    --  Parameters:
    --    Iter - The Iterator.
    --  Returns:
-   --    True if the iterator has not been exhausted; False, otherwise.   
+   --    True if the iterator has not been exhausted; False, otherwise.
    function More (Iter : in Node_ID_Iter) return Boolean;
-   
+
    ---------------------------------------------------------------------------
    --  Returns the element the iterator currently points to and advances
    --  the iterator by one step.
-   -- 
+   --
    --  Paramters:
    --    Iter - The iterator.
    --    Node - The Node the iterator pointed to before the execution
@@ -328,7 +328,7 @@ package Giant.Node_Annotations is
    procedure Next
      (Iter : in out Node_ID_Iter;
       Node :    out Graph_Lib.Node_Id);
-   
+
 ------------------------------------------------------------------------------
 private
 
@@ -350,7 +350,7 @@ private
 
       Annotations : Node_Annotation_Hashed_Mappings.Mapping;
    end record;
-   
+
    type Node_ID_Iter is new Node_Annotation_Hashed_Mappings.Keys_Iter;
 
 end Giant.Node_Annotations;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-set_operation_dialog.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-set_operation_dialog.adb,v $, $Revision: 1.7 $
 --  $Author: squig $
---  $Date: 2003/06/22 21:54:21 $
+--  $Date: 2003/06/23 12:40:58 $
 --
 
 with Ada.Strings.Unbounded;
@@ -53,7 +53,7 @@ package body Giant.Set_Operation_Dialog is
      return String
    is
    begin
-      return Gtk.Gentry.Get_Text (Gtk.Combo.Get_Entry (Dialog.Left_Source));
+      return Gtk.Gentry.Get_Chars (Gtk.Combo.Get_Entry (Dialog.Left_Source));
    end;
 
    function Get_Right_Source
@@ -61,7 +61,7 @@ package body Giant.Set_Operation_Dialog is
      return String
    is
    begin
-      return Gtk.Gentry.Get_Text (Gtk.Combo.Get_Entry (Dialog.Left_Source));
+      return Gtk.Gentry.Get_Chars (Gtk.Combo.Get_Entry (Dialog.Left_Source));
    end;
 
    function Get_Target
@@ -69,7 +69,7 @@ package body Giant.Set_Operation_Dialog is
      return String
    is
    begin
-      return Gtk.Gentry.Get_Text (Dialog.Target);
+      return Gtk.Gentry.Get_Chars (Dialog.Target);
    end;
 
    ---------------------------------------------------------------------------
@@ -97,7 +97,7 @@ package body Giant.Set_Operation_Dialog is
          declare
             Input : Gtk.Gentry.Gtk_Entry
               := Gtk.Combo.Get_Entry (Dialog.Operation);
-            Operation : String := Gtk.Gentry.Get_Text (Input);
+            Operation : String := Gtk.Gentry.Get_Chars (Input);
          begin
             if (Operation = -"Difference") then
                Controller.Subgraph_Difference (Get_Left_Source (Dialog),

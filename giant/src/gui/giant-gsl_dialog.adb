@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.7 $
 --  $Author: squig $
---  $Date: 2003/06/22 21:54:21 $
+--  $Date: 2003/06/23 12:40:58 $
 --
 
 with Ada.IO_Exceptions;
@@ -239,7 +239,7 @@ package body Giant.Gsl_Dialog is
       if (Get_Response (Dialog) = Default_Dialog.Response_Okay) then
          -- the okay button was pressed
          declare
-            Script : String := Gtk.Text.Get_Text (Dialog.Text_Area);
+            Script : String := Gtk.Text.Get_Chars (Dialog.Text_Area);
          begin
             Controller.Execute_GSL (Script);
          end;
