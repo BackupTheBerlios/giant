@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-matrix_layouts.adb,v $, $Revision: 1.8 $
---  $Author: squig $
---  $Date: 2003/07/10 16:26:35 $
+--  $RCSfile: giant-matrix_layouts.adb,v $, $Revision: 1.9 $
+--  $Author: koppor $
+--  $Date: 2003/07/10 16:44:57 $
 --
 
 with Ada.Numerics.Generic_Elementary_Functions;
@@ -90,45 +90,20 @@ package body Giant.Matrix_Layouts is
          Layout.Current_Row_Height := 0.0;
          Layout.Max_Node_Width     :=
            Graph_Widgets.Get_Current_Maximum_Node_Width (Layout.Widget);
+         Layout.X_Distance := Layout.Max_Node_Width * (X_Distance);
       end Init_Calculation;
 
       procedure Do_Calculation
       is
 
-         function Min
-           (A : in Natural;
-            B : in Natural)
-           return Natural
-         is
-         begin
-            if A < B then
-               return A;
-            else
-               return B;
-            end if;
-         end Min;
-
-         function Max
-           (A : in Float;
-            B : in Float)
-           return Float
-         is
-         begin
-            if A > B then
-               return A;
-            else
-               return B;
-            end if;
-         end Max;
-
          Number_Nodes_To_Layout : Natural;
          Node                   : Graph_Lib.Node_Id;
 
       begin
-         Number_Nodes_To_Layout := Min
+         Number_Nodes_To_Layout := Natural'Min
            (Layout.Matrix_Width - Layout.Current_Column + 1,
             Max_Nodes_In_One_Run);
-         Number_Nodes_To_Layout := Min
+         Number_Nodes_To_Layout := Natural'Min
            (Number_Nodes_To_Layout,
             Graph_Lib.Node_Id_Sets.Size (Layout.Nodes_To_Layout));
 
@@ -146,7 +121,7 @@ package body Giant.Matrix_Layouts is
                Layout.Widget_Lock);
 
             --  determine height of current row
-            Layout.Current_Row_Height := Max
+            Layout.Current_Row_Height := Float'Max
               (Layout.Current_Row_Height,
                Graph_Widgets.Get_Current_Node_Height
                (Layout.Widget, Node));
@@ -157,7 +132,7 @@ package body Giant.Matrix_Layouts is
               (Layout.Current_Position,
                Vis.Logic.Get_X (Layout.Current_Position) +
                Layout.Max_Node_Width +
-               X_Distance);
+               Layout.X_Distance);
          end loop;
 
          if Layout.Current_Column > Layout.Matrix_Width then
@@ -181,7 +156,6 @@ package body Giant.Matrix_Layouts is
       end Do_Calculation;
 
    begin
-      Logger.Warn ("Matrix Layout");
       case Layout.State is
          when Init =>
             case Graph_Lib.Node_Id_Sets.Size (Layout.Nodes_To_Layout) is
