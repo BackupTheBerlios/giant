@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-evolutions.ads,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/05/23 16:39:04 $
+--  $Date: 2003/06/01 19:12:28 $
 --
 ------------------------------------------------------------------------------
 --
@@ -56,7 +56,12 @@
 --    is still able to receive the cancel hit-event.
 --
 
+
+with Ada.Real_Time;
+
+with Gtk.Button;
 with Gtk.Dialog;
+with Gtk.Handlers;
 with Gtk.Label;
 with Gtk.Progress_Bar;
 
@@ -189,9 +194,10 @@ package Giant.Evolutions is
    --  one is provided. The 'Progress_Bar' will be updated frequently
    --  if one is provided and the complexity of 'Individual' is known.
    --  the Text in 'Progress_Text' if 'Progress_Text' is provided will be
-   --  set to 'Get_Step_Count (Individual)' if the complexity is unknown
-   --  or to 'Get_Step_Count (Individual)' "of" 'Get_Complexity (Individual)'
-   --  if the complexity is known. If 'Progress_Dialog' is provided then
+   --  set to 'Get_Progress_Count (Individual)' if the complexity is unknown
+   --  or to 'Get_Progress_Count (Individual)' "of"
+   --  'Get_Complexity (Individual)' if the complexity is known.
+   --  If 'Progress_Dialog' is provided then
    --  'Gtk.Dialog.Destroy (Progress_Dialog)' will be called after the
    --  evolution has been canceled or has finished.
    --
@@ -206,6 +212,7 @@ package Giant.Evolutions is
    --                      null
    --    Progress_Text   - Text that will be updated frequently to inform
    --                      the user of the progress or null
+   --    Progress_Cancel - A button the user can click to stop the evolution
    --    Started         - Set to True if the evolution of 'Individual'
    --                      started, set to False if there are not enough
    --                      resources to start the evolution.
@@ -214,6 +221,7 @@ package Giant.Evolutions is
       Progress_Dialog : in     Gtk.Dialog.Gtk_Dialog             := null;
       Progress_Bar    : in     Gtk.Progress_Bar.Gtk_Progress_Bar := null;
       Progress_Text   : in     Gtk.Label.Gtk_Label               := null;
+      Progress_Cancel : in     Gtk.Button.Gtk_Button             := null;
       Started         :    out Boolean) is abstract;
 
    ---------------------------------------------------------------------------
@@ -223,11 +231,11 @@ package Giant.Evolutions is
    --
    --  If the complexity is set to a value different to 0 then the complexity
    --  should at any given point of time be greater or equal to the progress
-   --  counter accessed through 'Advance_Steps'.
+   --  counter accessed through 'Advance_Progress'.
    --
    --  The complexity is interrogated from a multi-tasking environment without
    --  synchronization. Each Individual must through the order of calls to
-   --  'Set_Complexity' and 'Advance_Steps' ensure that the combination of
+   --  'Set_Complexity' and 'Advance_Progress' ensure that the combination of
    --  progress counter and complexity is meaningful to the user at any
    --  point of time.
    --
@@ -246,16 +254,16 @@ package Giant.Evolutions is
    --  Parameters:
    --    Individual - Subject of the evolution progress
    --    Progress   - Number of items recently processed
-   procedure Advance_Steps
+   procedure Advance_Progress
      (Individual : access Evolution'Class;
       Progress   : in     Natural);
 
    ---------------------------------------------------------------------------
    --  Returns the number of processed items stored in the progress counter.
    --  Initially the progress counter is 0 and will be increased during
-   --  calculation through calls to 'Advance_Steps'.
-   function Get_Step_Count
-     (Evolver      : access Evolution'Class)
+   --  calculation through calls to 'Advance_Progress'.
+   function Get_Progress_Count
+     (Individual   : access Evolution'Class)
       return Natural;
 
    ---------------------------------------------------------------------------
@@ -263,9 +271,9 @@ package Giant.Evolutions is
    --  of items to be processed. If the complexity is unknown, than this
    --  function returns 0.
    --  If the complexity is non-zero then the calculation might finish
-   --  when 'Get_Step_Counter = Get_Complexity' although this is NOT assured.
+   --  when 'Get_Progress_Count = Get_Complexity' although this is NOT assured.
    function Get_Complexity
-     (Evolver      : access Evolution'Class)
+     (Individual   : access Evolution'Class)
       return Natural;
 
 
@@ -310,6 +318,7 @@ package Giant.Evolutions is
    --                      null
    --    Progress_Text   - Text that will be updated frequently to inform
    --                      the user of the progress or null
+   --    Progress_Cancel - A button the user can click to stop the evolution
    --    Started         - Set to True if the evolution of 'Individual'
    --                      started, set to False if there are not enough
    --                      resources to start the evolution.
@@ -318,6 +327,7 @@ package Giant.Evolutions is
       Progress_Dialog : in     Gtk.Dialog.Gtk_Dialog             := null;
       Progress_Bar    : in     Gtk.Progress_Bar.Gtk_Progress_Bar := null;
       Progress_Text   : in     Gtk.Label.Gtk_Label               := null;
+      Progress_Cancel : in     Gtk.Button.Gtk_Button             := null;
       Started         :    out Boolean);
 
    ---------------------------------------------------------------------------
@@ -367,6 +377,7 @@ package Giant.Evolutions is
    type Iterative_Evolution_Class_Access is
      access all Iterative_Evolution'Class;
 
+
    ---------------------------------------------------------------------------
    --  Derived from 'Evolution'. Starts an 'Iterative_Evolution' in
    --  single-tasking mode.
@@ -382,6 +393,7 @@ package Giant.Evolutions is
    --                      null
    --    Progress_Text   - Text that will be updated frequently to inform
    --                      the user of the progress or null
+   --    Progress_Cancel - A button the user can click to stop the evolution
    --    Started         - Set to True if the evolution of 'Individual'
    --                      started, set to False if there are not enough
    --                      resources to start the evolution.
@@ -390,6 +402,7 @@ package Giant.Evolutions is
       Progress_Dialog : in     Gtk.Dialog.Gtk_Dialog             := null;
       Progress_Bar    : in     Gtk.Progress_Bar.Gtk_Progress_Bar := null;
       Progress_Text   : in     Gtk.Label.Gtk_Label               := null;
+      Progress_Cancel : in     Gtk.Button.Gtk_Button             := null;
       Started         :    out Boolean);
 
    ---------------------------------------------------------------------------
@@ -431,6 +444,183 @@ package Giant.Evolutions is
 private                       -- Private Part --
                               ------------------
 
+   -----------------------------------
+   -- Private primitive subprograms --
+   -- for Evolution                 --
+   -----------------------------------
+
+   procedure Update_Visuals
+     (Individual    : access Evolution'Class;
+      Progress_Bar  : in     Gtk.Progress_Bar.Gtk_Progress_Bar := null;
+      Progress_Text : in     Gtk.Label.Gtk_Label               := null);
+
+
+   procedure Add_Child_Progress
+     (Individual    : access Evolution'Class;
+      Progress      : in     Natural);
+
+
+   procedure Done
+     (Individual    : access Evolution'Class;
+      Canceled      : in     Boolean);
+
+
+   procedure Set_Next_Action
+     (Individual  : access Evolution'Class;
+      Next_Action : in     Evolution_Action);
+
+   function Get_Next_Action
+     (Individual  : access Evolution'Class)
+     return Evolution_Action;
+
+
+   procedure Set_Parent
+     (Individual : access Evolution'Class;
+      Parent     : Evolution_Class_Access);
+
+   function Get_Parent
+     (Individual : access Evolution'Class)
+     return Evolution_Class_Access;
+
+   function Has_Parent
+     (Individual : access Evolution'Class)
+     return Boolean;
+
+
+   procedure Set_Child
+     (Individual : access Evolution'Class;
+      Child      : in     Evolution_Class_Access);
+
+   function Get_Child
+     (Individual : access Evolution'Class)
+     return Evolution_Class_Access;
+
+   function Has_Child
+     (Individual : access Evolution'Class)
+     return Boolean;
+
+
+   -----------------------------------
+   -- Private primitive subprograms --
+   -- for Concurrent_Evolution      --
+   -----------------------------------
+
+   procedure Set_Concurrent_Child
+     (Individual : access Concurrent_Evolution'Class;
+      Child      : in     Concurrent_Evolution_Class_Access);
+
+   function Get_Concurrent_Child
+     (Individual : access Concurrent_Evolution'Class)
+     return Concurrent_Evolution_Class_Access;
+
+   procedure Set_Concurrent_Parent
+     (Individual : access Concurrent_Evolution'Class;
+      Parent     : in     Concurrent_Evolution_Class_Access);
+
+   function Get_Concurrent_Parent
+     (Individual : access Concurrent_Evolution'Class)
+     return Concurrent_Evolution_Class_Access;
+
+   ---------------
+   -- Framework --
+   ---------------
+
+   subtype Driver_Position is Positive range 1 .. Number_Of_Slots;
+   type Driver_Id_Type is new Driver_Position;
+
+   --  States a driver can be in. MUST be ordered to reflect a priority of
+   --  drivers.
+   type Driver_Action_Type is
+     (Waiting_On_Sync, Dead, Running);
+
+
+   -----------------------
+   -- Concurrent_Driver --
+   -----------------------
+
+   task type Concurrent_Driver
+     (Id                 : Driver_Id_Type;
+      Driven_Calculation : access Concurrent_Evolution'Class) is
+
+      entry Synchronize;
+   end Concurrent_Driver;
+
+   type Concurrent_Driver_Access is access Concurrent_Driver;
+
+   type Driver_State_Type;
+   type Driver_State_Access is access Driver_State_Type;
+   type Driver_State_Type is
+      record
+         Driver          : Concurrent_Driver_Access;
+         --  Evolution instance, set to null after 'Driver' has died
+         Individual      : Concurrent_Evolution_Class_Access;
+         --  Position in 'Priority_Queue'
+         Position        : Natural;
+         --  State 'Driver' is currently in
+         Current_State   : Driver_Action_Type;
+         --  Point of time when 'Driver' last changed its state
+         State_Change    : Ada.Real_Time.Time;
+         --  Set to True if and only if the user has requested the evolution
+         --  to be cancelled
+         Cancel_Request  : Boolean;
+         Progress_Dialog : Gtk.Dialog.Gtk_Dialog;
+         Progress_Bar    : Gtk.Progress_Bar.Gtk_Progress_Bar;
+         Progress_Text   : Gtk.Label.Gtk_Label;
+         Progress_Cancel : Gtk.Button.Gtk_Button;
+         Cancel_Handler  : Gtk.Handlers.Handler_Id;
+      end record;
+
+   No_Driver_State : constant Driver_State_Type :=
+     (Driver          => null,
+      Individual      => null,
+      Position        => 0,
+      Current_State   => Running,
+      State_Change    => Ada.Real_Time.Time_Last,
+      Cancel_Request  => False,
+      Progress_Dialog => null,
+      Progress_Bar    => null,
+      Progress_Text   => null,
+      Progress_Cancel => null,
+      Cancel_Handler  => 0);
+
+   --  Priority ordering of 'Driver_State_Type's. Orders according to
+   --  'Current_State', if equal then earlier 'State_Change' will decide.
+   function Has_Higher_Priority
+     (Left  : in Driver_State_Type;
+      Right : in Driver_State_Type)
+     return Boolean;
+
+
+   ----------------------
+   -- Iterative_Driver --
+   ----------------------
+
+   type Iterative_Driver_State_Type is
+      record
+         --  Evolution instance, set to null after 'Driver' has died
+         Individual      : Evolution_Class_Access;
+         --  Point of time when visuals were last updated
+         Update_Time     : Ada.Real_Time.Time;
+         --  Set to True if and only if the user has requested the evolution
+         --  to be cancelled
+         Cancel_Request  : Boolean;
+         Progress_Dialog : Gtk.Dialog.Gtk_Dialog;
+         Progress_Bar    : Gtk.Progress_Bar.Gtk_Progress_Bar;
+         Progress_Text   : Gtk.Label.Gtk_Label;
+         Progress_Cancel : Gtk.Button.Gtk_Button;
+         Cancel_Handler  : Gtk.Handlers.Handler_Id;
+      end record;
+
+   No_Iterative_Driver_State : constant Iterative_Driver_State_Type :=
+     (Individual      => null,
+      Update_Time     => Ada.Real_Time.Time_Last,
+      Cancel_Request  => True,
+      Progress_Dialog => null,
+      Progress_Bar    => null,
+      Progress_Text   => null,
+      Progress_Cancel => null,
+      Cancel_Handler  => 0);
+
 
    ----------------------------------
    -- Type declaration completions --
@@ -439,14 +629,24 @@ private                       -- Private Part --
    type Evolution is abstract tagged limited
       record
          --  Number of items processed
-         Progress_Counter : Natural;
-         --  Estimate of the maximum value 'Progress_Counter' will ever reach
-         --  does not need to be precise, 0 if unknown
+         Progress_Count   : Natural;
+         --  Estimate of the maximum value 'Progress_Count' will ever reach.
+         --  Does not need to be precise, 0 if unknown
          Complexity       : Natural;
+         --  Number of items processed in sub-calculations
+         Child_Progress   : Natural;
+         --  next action this evolution needs to perform. Must be set
+         --  via 'Set_Next_Action'.
+         Next_Action      : Evolution_Action := Cancel;
+         --  Parent evolution to be continued after this has finished or null
+         Parent           : Evolution_Class_Access;
+         --  Child evolution to be evolved before this can continue or null
+         Child            : Evolution_Class_Access;
       end record;
 
    type Concurrent_Evolution is abstract new Evolution with null record;
 
    type Iterative_Evolution is abstract new Evolution with null record;
+
 
 end Giant.Evolutions;
