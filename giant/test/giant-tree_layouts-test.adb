@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts-test.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-tree_layouts-test.adb,v $, $Revision: 1.2 $
 --  $Author: koppor $
---  $Date: 2003/07/13 00:30:54 $
+--  $Date: 2003/07/14 17:59:22 $
 --
 
 with Ada.Text_IO;
@@ -30,13 +30,38 @@ with Ada.Text_IO;
 with AUnit.Assertions; use AUnit.Assertions;
 with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
 
+with Giant.Graph_Widgets;
 with Giant.Graph_Lib; use Giant.Graph_Lib;
 with Giant.Logger;
 
 package body Giant.Tree_Layouts.Test is
 
+   type Graph_Data_Record (Len : Natural) is record
+      Filename   : String (1..Len);
+      Edge_Count : Natural;
+      Node_Count : Natural;
+   end record;
+   type Graph_Data is access constant Graph_Data_Record;
+
+   Rfg_Example : aliased constant Graph_Data_Record :=
+     (Len => 23,
+      Filename => "resources/rfg_examp.iml",
+      Edge_Count => 631,  --  with all: 646
+      Node_Count => 202); --  with all: 216
+
+   Graphs : constant array (1..1) of Graph_Data :=
+     ( 1 => Rfg_Example'Access );
+
+   --------------------------------------------------------------------------
+   --  Index in Graphs of graph to test with
+   --  TBD: extention, that all graphs are tested with the same test cases
+   Test_Graph_Number : constant := 1;
+
    --------------------------------------------------------------------------
    package Logger is new Giant.Logger("T:Tree-Layouts");
+
+   --------------------------------------------------------------------------
+   Widget : Graph_Widgets.Graph_Widget;
 
    -----------------
    --  Testcases  --
@@ -46,13 +71,19 @@ package body Giant.Tree_Layouts.Test is
    procedure Init (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
    begin
-      null;
+      Giant.Graph_Lib.Initialize;
+      Giant.Graph_Lib.Load (Graphs (Test_Graph_Number).FileName);
+
+      Graph_Widgets.Create (Widget);
    end Init;
 
    procedure Done (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
    begin
-      null;
+      --  TBD: destroy widget
+
+      Giant.Graph_Lib.Unload;
+      Giant.Graph_Lib.Destroy;
    end Done;
 
    --------------------------------
