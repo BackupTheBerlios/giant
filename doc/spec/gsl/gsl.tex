@@ -1,6 +1,6 @@
 % =============================================================================
-%  $RCSfile: gsl.tex,v $ $Revision: 1.10 $
-%  $Date: 2003/05/03 16:24:18 $
+%  $RCSfile: gsl.tex,v $ $Revision: 1.11 $
+%  $Date: 2003/06/24 21:20:50 $
 %  $Author: keulsn $
 %
 %  Description: Spezifikation der GIANT Scripting Language
@@ -1053,22 +1053,24 @@ enthält, so ist das Ergebnis \toknull.
 
 \begin{enumerate}
 \item Die \nexpression wird ausgewertet und hat als Ergebnis den Wert $I$.
+\item Die \nlist wird ausgewertet.
 \item $I$ muss vom Typ \tscriptreference sein.
 Andernfalls führt die Auswertung zu einem Laufzeitfehler. $I$ enthält einen
 Zugriffspfad auf das Skript $S$.
-  \item Die \nlist wird ausgewertet.
-  \item Es wird eine neue Aktivierungsumgebung $A$ erzeugt. $A$ beerbt die
+\item Es wird eine neue Aktivierungsumgebung $A$ erzeugt. $A$ beerbt die
   in $I$ angegebene zulässige Aktivierungsumgebung
   (siehe \ref{script_decl}, \ref{activation_preconds}). \label{new_activation}
-  \item $A$ wird aktuelle Aktivierungsumgebung.
-  \item Die Parameterliste $P$ von $S$ wird ausgewertet. Falls einer der Werte
-  in $P$ nicht vom Typ \tvarreference ist, so ist dies ein Laufzeitfehler.
-  \item $P$ muss genauso viele Werte enthalten wie \nlist, andernfalls ist
+\item $A$ wird aktuelle Aktivierungsumgebung.
+\item Die Parameterliste $P$ von $S$ wird ausgewertet.
+\item $P$ muss genauso viele Werte enthalten wie \nlist, andernfalls ist
   dies ein Laufzeitfehler.
-  \item Den \tvarreference in $P$ werden die Werte der Einträge des Werts von
+\item Falls einer der Werte
+  in $P$ nicht vom Typ \tvarreference ist, so ist dies ein Laufzeitfehler.
+\item Den \tvarreference in $P$ werden die Werte der Einträge des Werts von
   \nlist zugewiesen
   (genaue Beschreibung siehe \ref{parameter_passing}).
-  \item Die \nexpression wird ausgewertet und hat den Wert $R$ als Ergebnis.
+\item Der \nscriptbody der durch $I$ referenziert wird, wird
+ ausgewertet und hat den Wert $R$ als Ergebnis.
   $R$ darf ein Wert eines beliebigen Typs sein mit den Einschränkungen:
     \begin{enumerate}
     \item Ist $R$ vom Typ \tvarreference, dann ist $R$ ein Zugriffspfad
@@ -1088,11 +1090,11 @@ Zugriffspfad auf das Skript $S$.
     Aktivierungsumgebung $A$ erfordert.
     \end{enumerate}
   \label{script_result}
-  \item $A$ wird zerstört. Alle Objekte, die von lokalen Variablen in $A$
+\item $A$ wird zerstört. Alle Objekte, die von lokalen Variablen in $A$
   gebunden wurden dürfen zerstört werden.
-  \item Die Aktivierungsumgebung, die zuvor (bis zum Schritt
+\item Die Aktivierungsumgebung, die zuvor (bis zum Schritt
    \ref{new_activation}) aktuell war, wird wieder aktuell.
-  \item Falls kein Laufzeitfehler aufgetreten ist, so ist das Ergebnis der
+\item Falls kein Laufzeitfehler aufgetreten ist, so ist das Ergebnis der
   Auswertung der Wert $R$ (siehe Punkt \ref{script_result}).
 \end{enumerate}
 
@@ -1182,7 +1184,7 @@ könnte sonst eintreten nachdem eine Aktivierungsumgebung zerstört wurde.}
 \sparam{condition}{\tboolean oder \tscriptreference}{Ein Wert vom Typ
 \tboolean oder die Aktivierungsinformation für ein parameterloses Script,
 dessen Ergebnis
-ein Wert vom Typ \tboolean ist.}
+ein Wert vom Typ \tboolean oder \tscriptreference ist.}
 \sparam{true\_branch}{jeder Typ}{Falls der Typ \tscriptreference ist, so muss
 true\_branch die Aktivierunginformation für ein parameterloses Script sein,
 dessen Ergebnis beliebigen Typs sein darf.}
@@ -1191,8 +1193,12 @@ false\_branch die Aktivierunginformation für ein parameterloses Script sein,
 dessen Ergebnis beliebigen Typs sein darf.}
 \sresult{von Argumenten abhängig}{Siehe Beschreibung}
 \saction{Falls condition eine Aktivierungsinformation ist, so wird das
-entsprechende Script ohne Argumente aktiviert. Ergebnis ist der Wert $b$ vom
-Typ \tboolean. Falls condition vom Typ \tboolean ist, so ist
+entsprechende Script ohne Argumente aktiviert. Ist das Ergebnis wieder
+eine Aktivierungsinformation, so wird das so referenzierte Script
+aktiviert. Dieser Schritt wird iteriert solange bis das Ergebnis ein
+Wert $b$ vom Typ \tboolean ist.
+
+ Falls condition vom Typ \tboolean ist, so ist
 $b =$ condition.
 
 Falls $b$ erfüllt ist, so ist $c = $ true\_branch, andernfalls
