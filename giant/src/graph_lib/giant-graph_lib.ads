@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.37 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.38 $
 --  $Author: koppor $
---  $Date: 2003/07/22 09:35:13 $
+--  $Date: 2003/07/24 15:35:28 $
 --
 --  TBD:
 --    * Write into comment, when the routine may be used
@@ -112,7 +112,10 @@ package Giant.Graph_Lib is
 
        Class_SLoc,
        Class_Boolean,
-       Class_Natural);
+       Class_Natural,
+
+       --  used to deal with unknown classes
+       Class_Invalid);
 
    ---------------------------
    --  Basic-Types          --
@@ -363,8 +366,8 @@ package Giant.Graph_Lib is
    --  Raises:
    --    Node_Attribute_Does_Not_Exist
    function Convert_Node_Attribute_Id_To_Name
-      (Node_Attribute : in Node_Attribute_Id)
-      return String;
+     (Node_Attribute : in Node_Attribute_Id)
+     return String;
 
    ---------------------------------------------------------------------------
    --  Returns:
@@ -390,6 +393,13 @@ package Giant.Graph_Lib is
      (Node_Class          : in Node_Class_Id;
       Node_Attribute_Name : in String)
      return Node_Attribute_Id;
+
+   ---------------------------------------------------------------------------
+   --  Returns:
+   --    The name belonging to given Node_Attribute_Class
+   function Convert_Node_Attribute_Class_Id_To_Name
+     (Node_Attribute_Class : in Node_Attribute_Class_Id)
+     return String;
 
    ---------------------------------------------------------------------------
    --  Returns:
