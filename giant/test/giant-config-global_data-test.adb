@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-config-global_data-test.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-config-global_data-test.adb,v $, $Revision: 1.2 $
 --  $Author: schwiemn $
---  $Date: 2003/09/15 17:15:19 $
+--  $Date: 2003/09/15 17:27:25 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -42,6 +42,13 @@ package body Giant.Config.Global_Data.Test is
    begin
    
       Logger.Debug ("Test - AAAA");
+      Giant.Config_Settings.Initialize_Config_Settings
+        ("./resources/config_glob_test/global_config.xml",
+         "");
+      Assert 
+        (Giant.Config_Settings.Does_Setting_Exist 
+          ("Icon_For_Node_Annotations"),
+         "Check whether Icon_For_Node_Annotations setting exists");
 
       --Config.Initialize_Config_Data ("resources/global_config.xml", "");
 --      Assert (Config_Settings.Does_Setting_Exist ("Test_Setting"), "Test_Setting");
