@@ -1,6 +1,7 @@
+
 % ==============================================================================
-%  $RCSfile: project.tex,v $, $Revision: 1.9 $
-%  $Date: 2003/02/13 13:53:41 $
+%  $RCSfile: project.tex,v $, $Revision: 1.10 $
+%  $Date: 2003/02/13 15:06:44 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -26,9 +27,11 @@ von der Reflektion zum IML-Graphen unterstützt wird.
 
   \subsection {Das Projektverzeichnis}
   In dem Projektverzeichnis liegt die Projektdatei, der Name des Projektverzeichnisses ist beliebig.
-  Im Projektverzeichnis befindet sich auch die Datei für jedes gespeicherte Anzeigefenster und 
-  für jeden gespeicherten IML-Teilgraphen. In jedem Projektverzeichnis darf nur ein Projekt 
-  gespeichert werden.
+  Im Projektverzeichnis befinden sich ein Unterverzeichnis für Verwaltungsdateien für Anzeigefenster
+  und ein Unterverzeichnis  für alle zum Projekt gehörenden 
+
+.\\
+  In jedem Projektverzeichnis darf nur ein Projekt gespeichert werden.
 
   \subsection {Die Projektdatei}
   Die Projektdatei befindet sich im Projektverzeichnis und enthält Informationen, 
@@ -36,13 +39,12 @@ von der Reflektion zum IML-Graphen unterstützt wird.
   Der Name der Projektdatei entspricht dem Namen des Projektes.
 
   \subsection {Der zugehörige IML-Graph}
-  Der absolute oder realtive Pfad zu der Datei, die den IML-Graphen enthält, ist in der
-  Projektdatei gespeichert. Alternativ dazu kann der Benutzer den Pfad zur IML-Graph Datei auch
-  selbst eingeben.
+  Der Pfad zu der Datei, die den IML-Graphen enthält, ist in der Projektdatei gespeichert. 
+  Alternativ dazu kann der Benutzer den Pfad zur IML-Graph Datei auch selbst eingeben.
  
   \subsection {Prüfung der IML-Graph Datei}
   Die Reflektion muss für jede IML-Graph Datei eine möglichst eindeutige Prüfsumme berechnen können.
-  Bei Laden eines Projektes wird überprüft, ob die in der Projektdatei gespeicherte Prüfsumme
+  Beim Laden eines Projektes wird überprüft, ob die in der Projektdatei gespeicherte Prüfsumme
   der Prüfsumme der zu ladenen IML-Graph Datei entspricht. 
   Das Verhalten von GIANT für den Fall, dass eine IML-Graph Datei geladen wird, 
   die zwar die passende Prüfsumme hat, aber nicht den IML-Graphen enthält, 
@@ -64,15 +66,12 @@ von der Reflektion zum IML-Graphen unterstützt wird.
   Die VISUALISIERUNGSSTIELE (für jedes Anzeigefenster kann ein VISUALISIERUNGSSTIEL ausgewählt werden)
   werden aber nicht gespeichert, da sie von der Konfiguartionsdatei vorgegeben werden.
 
-  \subsection{Verwaltungsdateien für IML-Teilgraphen}
+  \subsection {Verwaltungsdateien für IML-Teilgraphen}
   Sämtliche erzeugten IML-Teilgraphen werden ebenfalls in Verwaltungsdateien gespeichert. 
   Für jeden IML-Teilgraphen gibt es eine eigene Verwaltungsdatei deren Namen dem des 
   IML-Teilgraphen entspricht.
  
-  \subsection {Verwaltungsdatei für Anfragen}
-  KANN er auch SELBER mittels Paste und Copy im Emacs machen.
-  SOLLTEN WIR NICHT UNBEDINGT IN DER SPEZ ZUSAGEN.
-
+ 
 %===================
 \section {Grundlegendes Verhalten von GIANT beim Speichern von Projekten} 
   
