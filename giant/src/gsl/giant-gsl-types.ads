@@ -21,7 +21,7 @@
 --
 -- $RCSfile: giant-gsl-types.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/25 16:08:27 $
+-- $Date: 2003/06/30 16:01:49 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -32,6 +32,11 @@ package Giant.Gsl.Types is
 
    ---------------------------------------------------------------------------
    -- gsl types (ref. GIANT Scripting Language Specification: 1.3.1)
+
+   ---------------------------------------------------------------------------
+   -- destroys any Gsl_Type and frees all memory used by this type
+   procedure Destroy_Gsl_Type 
+     (Var : in out Gsl_Type);
 
    --------------------------------------------------------------------------
    -- Gsl_Node_Id
@@ -53,7 +58,7 @@ package Giant.Gsl.Types is
       return Gsl_Type;
 
    procedure Destroy
-     (Object : out Gsl_Node_Id);
+     (Object : in out Gsl_Node_Id);
 
    ---------------------------------------------------------------------------
    -- Gsl_Edge_Id
@@ -75,7 +80,7 @@ package Giant.Gsl.Types is
       return Gsl_Type;
 
    procedure Destroy
-     (Object : out Gsl_Edge_Id);
+     (Object : in out Gsl_Edge_Id);
 
    ---------------------------------------------------------------------------
    -- Gsl_Node_Set
@@ -97,7 +102,7 @@ package Giant.Gsl.Types is
       return Gsl_Type;
 
    procedure Destroy
-     (Object : out Gsl_Node_Set);
+     (Object : in out Gsl_Node_Set);
 
    ---------------------------------------------------------------------------
    -- Gsl_Edge_Set
@@ -119,7 +124,7 @@ package Giant.Gsl.Types is
       return Gsl_Type;
 
    procedure Destroy
-     (Object : out Gsl_Edge_Set);
+     (Object : in out Gsl_Edge_Set);
 
    ---------------------------------------------------------------------------
    -- Gsl_String
@@ -144,7 +149,7 @@ package Giant.Gsl.Types is
       return Gsl_Type;
 
    procedure Destroy
-     (Object : out Gsl_String);
+     (Object : in out Gsl_String);
 
    ---------------------------------------------------------------------------
    -- Gsl_Boolean
@@ -168,7 +173,7 @@ package Giant.Gsl.Types is
       return Gsl_Type;
 
    procedure Destroy
-     (Object : out Gsl_Boolean);
+     (Object : in out Gsl_Boolean);
 
    ---------------------------------------------------------------------------
    -- Gsl_Natural
@@ -190,7 +195,7 @@ package Giant.Gsl.Types is
       return Gsl_Type;
 
    procedure Destroy
-     (Object : out Gsl_Natural);
+     (Object : in out Gsl_Natural);
 
    ---------------------------------------------------------------------------
    -- Gsl_List
@@ -220,7 +225,7 @@ package Giant.Gsl.Types is
       return Gsl_Type;
 
    procedure Destroy
-     (Object : out Gsl_List);
+     (Object : in out Gsl_List);
 
    ---------------------------------------------------------------------------
    -- Gsl_Var_Reference 
@@ -248,7 +253,7 @@ package Giant.Gsl.Types is
       return Gsl_Type;
 
    procedure Destroy
-     (Object : out Gsl_Var_Reference);
+     (Object : in out Gsl_Var_Reference);
 
    ---------------------------------------------------------------------------
    -- Gsl_Script_Reference
@@ -302,7 +307,7 @@ package Giant.Gsl.Types is
       return Gsl_Type;
 
    procedure Destroy
-     (Object : out Gsl_Script_Reference);
+     (Object : in out Gsl_Script_Reference);
       
 ------------------------------------------------------------------------------
 -- private part 

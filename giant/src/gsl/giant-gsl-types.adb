@@ -20,13 +20,37 @@
 --
 -- First Author: Gerrit Schulz
 --
--- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.6 $
+-- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.7 $
 -- $Author: schulzgt $
--- $Date: 2003/06/25 16:08:27 $
+-- $Date: 2003/06/30 16:01:49 $
 --
 with Ada.Unchecked_Deallocation;
+with Ada.Tags;
+use  Ada.Tags;
 
 package body Giant.Gsl.Types is
+
+   procedure Destroy_Gsl_Type
+     (Var : in out Gsl_Type) is
+   begin
+      if Var = Gsl_Null then
+         null;
+      elsif Var'Tag = Gsl_String_Record'Tag then
+         Destroy (Gsl_String (Var));
+      elsif Var'Tag = Gsl_Boolean_Record'Tag then
+         Destroy (Gsl_Boolean (Var));
+      elsif Var'Tag = Gsl_Natural_Record'Tag then
+         Destroy (Gsl_Natural (Var));
+      elsif Var'Tag = Gsl_List_Record'Tag then
+         Destroy (Gsl_List (Var));
+      elsif Var'Tag = Gsl_Var_Reference_Record'Tag then
+         Destroy (Gsl_Var_Reference (Var));
+      elsif Var'Tag = Gsl_Script_Reference_Record'Tag then
+         Destroy (Gsl_Script_Reference (Var));
+      else
+         null;
+      end if;
+   end Destroy_Gsl_Type;
 
    ---------------------------------------------------------------------------
    -- Gsl_Node_Id
@@ -63,7 +87,7 @@ package body Giant.Gsl.Types is
    --  (Gsl_Node_Id_Record, Gsl_Node_Id);
 
    procedure Destroy
-     (Object : out Gsl_Node_Id) is
+     (Object : in out Gsl_Node_Id) is
 
       procedure Free is new Ada.Unchecked_Deallocation
         (Gsl_Node_Id_Record, Gsl_Node_Id);
@@ -104,7 +128,7 @@ package body Giant.Gsl.Types is
    end Copy;
 
    procedure Destroy
-     (Object : out Gsl_Edge_Id) is
+     (Object : in out Gsl_Edge_Id) is
 
       procedure Free is new Ada.Unchecked_Deallocation
         (Gsl_Edge_Id_Record, Gsl_Edge_Id);
@@ -145,7 +169,7 @@ package body Giant.Gsl.Types is
    end Copy;
 
    procedure Destroy
-     (Object : out Gsl_Node_Set) is
+     (Object : in out Gsl_Node_Set) is
 
       procedure Free is new Ada.Unchecked_Deallocation
         (Gsl_Node_Set_Record, Gsl_Node_Set);
@@ -186,7 +210,7 @@ package body Giant.Gsl.Types is
    end Copy;
 
    procedure Destroy
-     (Object : out Gsl_Edge_Set) is
+     (Object : in out Gsl_Edge_Set) is
 
       procedure Free is new Ada.Unchecked_Deallocation
         (Gsl_Edge_Set_Record, Gsl_Edge_Set);
@@ -234,7 +258,7 @@ package body Giant.Gsl.Types is
    end Copy;
 
    procedure Destroy
-     (Object : out Gsl_String) is
+     (Object : in out Gsl_String) is
 
       procedure Free is new Ada.Unchecked_Deallocation
         (Gsl_String_Record, Gsl_String);
@@ -280,7 +304,7 @@ package body Giant.Gsl.Types is
    end;
       
    procedure Destroy
-     (Object : out Gsl_Boolean) is
+     (Object : in out Gsl_Boolean) is
 
       procedure Free is new Ada.Unchecked_Deallocation
         (Gsl_Boolean_Record, Gsl_Boolean);
@@ -326,7 +350,7 @@ package body Giant.Gsl.Types is
    end Copy;
 
    procedure Destroy
-     (Object : out Gsl_Natural) is
+     (Object : in out Gsl_Natural) is
    
       procedure Free is new Ada.Unchecked_Deallocation
         (Gsl_Natural_Record, Gsl_Natural);
@@ -379,7 +403,7 @@ package body Giant.Gsl.Types is
    end Copy;
 
    procedure Destroy
-     (Object : out Gsl_List) is
+     (Object : in out Gsl_List) is
 
       procedure Free is new Ada.Unchecked_Deallocation
         (Gsl_List_Record, Gsl_List);
@@ -429,7 +453,7 @@ package body Giant.Gsl.Types is
    end Copy;
 
    procedure Destroy
-     (Object : out Gsl_Var_Reference) is
+     (Object : in out Gsl_Var_Reference) is
 
       procedure Free is new Ada.Unchecked_Deallocation
         (Gsl_Var_Reference_Record, Gsl_Var_Reference);
@@ -521,7 +545,7 @@ package body Giant.Gsl.Types is
    end Copy;
    
    procedure Destroy
-     (Object : out Gsl_Script_Reference) is
+     (Object : in out Gsl_Script_Reference) is
 
       procedure Free is new Ada.Unchecked_Deallocation
         (Gsl_Script_Reference_Record, Gsl_Script_Reference);
