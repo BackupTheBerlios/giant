@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.64 $
-%  $Date: 2003/04/03 14:22:48 $
-%  $Author: squig $
+%  $RCSfile: gui.tex,v $, $Revision: 1.65 $
+%  $Date: 2003/04/03 19:48:44 $
+%  $Author: birdy $
 %
 %  Description: 
 %
@@ -21,15 +21,12 @@
 
 \section{Über dieses Kapitel}    
 
-Diese Beschreibung beschreibt alle Elemente der GUI. Sofern nicht anders
+Hier werden alle Elemente der GUI beschrieben. Sofern nicht anders
 angegeben, sind hintereinander angegebene Elemente (z.B. Listeneinträge)
 immer von links nach rechts oder von oben nach unten beschrieben.
-Sofern nicht anders angegeben, sind alle Ausgaben immer linksbündig
-formatiert.
-Jedes Hauptmenü und jedes Popup-Menü bekommt in dieser Spezifikation einen
-eindeutigen Namen.
-Jedes Untermenü (horizontal) heißt MENÜNAME-UNTERMENÜNAME
-Jeder Eintag (vertikal) heißt MENÜNAME-UNTERMENÜNAME-EINTRAGSNAME
+Alle Ausgaben sind immer linksbündig formatiert, sofern nicht anders
+vermerkt.
+
 
 \section {Main Window}
 
@@ -39,18 +36,17 @@ Jeder Eintag (vertikal) heißt MENÜNAME-UNTERMENÜNAME-EINTRAGSNAME
    \caption{Main-Window}
 \end{figure}
 
-Im Hauptfenster (MAIN\_WINDOW), welches es nur einmal gleichzeitig
-gibt, werden vorhandene Anzeigefenster und vorhandene IML-Teilgraphen
-angezeigt. Über Popup-Menüs können IML-Teilgraphen und Anzeigefenster
-manipuliert werden.
+Jede Instanz von GIANT hat genau ein Hauptfenster.
+Im Hauptfenster (MAIN\_WINDOW) werden vorhandene Anzeigefenster und
+IML-Teilgraphen angezeigt. Über Popup-Menüs können IML-Teilgraphen
+und Anzeigefenster manipuliert werden.
 
-Eine Statuszeile befindet sich ganz oben im Fenster. Darunter im
-Fenster befinden sich zwei Listen, WINDOW\_LIST (2 Spalten), und
+Im Fenster befinden sich zwei Listen, WINDOW\_LIST (2 Spalten), und
 SUBGRAPH\_LIST (4 Spalten).
 
 
   \subsection {Kopfzeile}
-  In der Kopfzeile wird \gq{GIANT : <Projektname>} dargestellt.
+  In der Kopfzeile wird \gq{GIANT - <Projektname>} dargestellt.
  
   \subsection {Menüleiste (Main Window)}
   In der Menüleiste befinden sich folgende Einträge:
@@ -79,13 +75,10 @@ SUBGRAPH\_LIST (4 Spalten).
 
   \subsection {Statuszeile}
   \label{Statuszeile}
+   Die Statuszeile befindet sich ganz unten im Fenster.
    
-   In der Statuszeile befindet sich die Information:
-   GIANT -- IML Graph: <Dateiname> , Windows: <Fensteranzahl> , IML Nodes: <Knotenanzahl>, IML Edges: <Kantenanzahl> \\
-   Gegebenenfalls werden dort auch andere Informationen zum aktuellen
-   Zustand von GIANT dargestellt. Fensteranzahl, Kantenanzahl und
-   Knotenanzahl beschreiben hierbei die Anzahl aller Knoten, Fenster
-   oder Kanten, ob sichtbar oder unsichtbar/geschlossen.
+   Gegebenenfalls werden in der Statustzeile Informationen zum aktuellen
+   Zustand von GIANT dargestellt.
 
    \subsection {Window List}
   
@@ -95,7 +88,7 @@ SUBGRAPH\_LIST (4 Spalten).
    \subsubsection {Inhalt Window List}
    \label{WINDOW-LIST}
    
-   WINDOW\_LIST hat die Spalten WINDOW\_NAME und WINDOW\_OPEN. In
+   WINDOW\_LIST hat die Spalten WINDOW\_NAME \gq{Visualisation Windows} und WINDOW\_OPEN \gq{Open}. In
    WINDOW\_NAME wird der Name aller Anzeigefenster dargestellt, in
    WINDOW\_OPEN befindet sich entweder ein Strich-Symbol (Fenster
    nicht geöffnet) oder ein Häkchensymbol (Fenster geöffnet).
@@ -141,28 +134,14 @@ SUBGRAPH\_LIST (4 Spalten).
       sich ein Popup-Menü mit folgenden Menüpunkten:
         \label{SUBGRAPH-LIST-POPUP}
         \begin{enumerate}
-          \item Highlight With Color 1
-          \item Highlight With Color 2
-          \item Highlight With Color 3
+          \item Highlight  Color 1 / Color 2 / Color 3 (drei Untermenüs)
           \item Unhighlight In All Windows
           \item Copy IML Subgraph
-          \item Create Window Selection From IML Subgraph % OK
-          \item Rename IML Subgraph
+          \item Create Window Selection % OK
           \item Delete IML Subgraph
           \item IML Subgraph Set Operation 
         \end{enumerate}   
         
-    
-  \subsection {Zugehörige Dialoge}
-  
-        \begin{enumerate}
-                \label{WINDOW-LIST-NEW-WINDOW}
-              \item WINDOW\_LIST/NEW\_WINDOW Dieser Dialog ermöglicht,
-                ein neues Fenster anzulegen, und ist ein allgemeiner
-                Texteingabedialog.  Er hat ein Textfeld mit der
-                Beschriftung \gq{Name}, und Buttons OK und Cancel.
-                \item SUBGRAPH\_LIST        
-        \end{enumerate}
 
 \section {Anzeigefenster} \label{GUI Anzeigefenster}
 \index{Anzeigefenster}
@@ -202,7 +181,7 @@ SUBGRAPH\_LIST (4 Spalten).
 
   \subsection{Visualisierung der Knoten}
 
-    In der VIS\_PANE werden die Knoten und Kanten angezeigt.
+    In der VIS\_PANE werden die Fenster-Knoten und Fenster-Kanten angezeigt.
     
     Wenn auf einem Knoten die rechte Maustaste geklickt wird, öffnet sich
     folgendes Popup-Menü:
@@ -210,11 +189,10 @@ SUBGRAPH\_LIST (4 Spalten).
     \subsubsection{Node-Popup-Menü}\label{Node-Popup-Menü}
     \begin{enumerate}
       \item Show Node Info Window
-      \item Move Node
       \item Show Corresponding Source Code
-      \item Annotate Node \label{Annotate Node}
-      \item Change Node Annotation \label{Change Node Annotation}
-      \item Delete Node Annotation \label{Delete Node Annotation}
+      \item Annotation Add / Change / Delete (drei Untermenüs)
+      \label{Change Node Annotation}
+      \label{Delete Node Annotation}
       \item Show Node Annotation \label{Show Node Annotation}
     \end{enumerate}
     
@@ -254,16 +232,14 @@ SUBGRAPH\_LIST (4 Spalten).
 
       \item Move Selection
      
-      \item Fade Out Selection
-      \item Fade In Selection
+      \item Show Selection % war: Fade In Selection
+      \item Hide Selection % war: Fade Out Selection
 
       \item Layout Selection
 
       \item Create New IML Subgraph From This Selection % 
       
-      \item Highlight Selection Color1 [gemäß Einstellung in Config Datei] % OK
-      \item Highlight Selection Color2 [gemäß Einstellung in Config Datei] % OK
-      \item Highlight Selection Color3 [gemäß Einstellung in Config Datei] % OK
+      \item Highlight Selection Color1 / Color 2 / Color 3 (drei Untermenüs) % OK
       
       \item Zoom To Make Selection Fill Window % OK
      
@@ -320,8 +296,6 @@ SUBGRAPH\_LIST (4 Spalten).
 
     In Knoten-Informationsfenstern (NODE\_INFO) können nähere Informationen
     zu Knoten angezeigt werden.
-    Es kann beliebig viele Knoten-Informationsfenster geben, jedoch maximal
-    eines pro Knoten.
 
     Im Fenster wird die Knotentyp und Knoten-ID dargestellt
     (TYPE und ID), Format: "Node: TYPE, ID: ID), darunter befinden sich
@@ -409,7 +383,7 @@ mit den Beschriftungen \gq{OK} und \gq{Cancel}.
 Dieser Dialog dient dazu, Mengenoperationen über Selektionen und
 IML-Teilgraphen durchzuführen.\\
 Die Mengenoperation lässt sich dann wie folgt beschreiben:
-TARGET := LEFT\_SOURCE <op> RIGHT\_SOURCE.\\ \\
+LEFT\_SOURCE <op> RIGHT\_SOURCE := TARGET \\ \\
 
 
 Bestandteile des Dialoges sind:
@@ -423,16 +397,16 @@ Bestandteile des Dialoges sind:
  
  \item <OP> Combobox\\
  Mengenoperation, die ausgeführt werden soll: Union, Difference oder Intersection.
+
+ \item RIGHT\_SOURCE Combobox\\
+ Soll eine Mengenoperation für Selektionen ausgeführt werden, so können hier
+ alle Selektionen des entsprechenden Anzeigefensters ausgewählt werden.\\
+ Bei einer Mengenoperation über IML-Teilgraphen, werden alle IML-Teilgraphen
+ des Projektes angezeigt.
  
  \item TARGET Textfield\\
  Name der neuen Selektion oder des neuen IML-Teilgraphen als Ergebnis
  der Mengenoperation.
-  
- \item Ein OK Button: OK\\
- Entsprechende Mengenoperation wird ausgeführt.
- 
- \item Ein Cancel Button: CANCEL\\
- Bricht die Eingabe ab.
  
 \end {enumerate}
 
@@ -530,21 +504,17 @@ mit \gq{No}.
     \end{figure}
 
   Die Auswahl von Dateien (Laden/Speichern) passiert bei GIANT mittels
-  des Standard Filechooser-Dialogs. Filter mit Platzhaltern für Dateinamen
-  werden dabei von GIANT gesetzt.
+  des Standard Filechooser-Dialogs von GTK.
 
 
 \section{Fadenkreuz-Cursor}
 \label{Fadenkreuzcursor}
         Der Cursor verwandelt sich nach Auswahl bestimmter
-        Funktionen in ein Fadenkreuz, rechts unten im Fadenkreuz ist
-        entweder NODE, EDGE oder POS zu sehen, um zu zeigen, dass entweder ein
-        Knoten, eine Kante oder eine Position im Fenster auszuwählen ist.
-        Falls beides möglich ist, erscheint dieser Text nicht. Durch Rechtsklick
-        auf einen
-        Knoten/eine Kante/leere Position in einem Fenster wird dieser Knoten/diese
-        Kante/Position für die jeweilige Funktion ausgewählt. Der Cursor verwandelt
+        Funktionen in ein Fadenkreuz.
+        Durch Linksklick auf einen Knoten, eine Kante oder leere Position in einem
+	Fenster wird diese(r) für die jeweilige Funktion ausgewählt. Der Cursor verwandelt
         sich dann wieder in den Standard-Cursor.
+	Durch Rechtsklick läßt sich die ausgewählte Funktion abbrechen.
 
 
 \section{Fortschrittsanzeige}
