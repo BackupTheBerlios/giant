@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.49 $
---  $Author: squig $
---  $Date: 2003/09/09 15:31:25 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.50 $
+--  $Author: keulsn $
+--  $Date: 2003/09/09 16:10:25 $
 --
 ------------------------------------------------------------------------------
 
@@ -33,6 +33,8 @@ with System;
 with Glib;
 with Glib.Object;
 with Gtk.Object;
+with Gtk.Widget;
+pragma Elaborate_All (Gtk.Widget);
 
 with Giant.Graph_Widgets.Callbacks;
 with Giant.Graph_Widgets.Drawing;
@@ -257,8 +259,7 @@ package body Giant.Graph_Widgets is
    procedure Initialize
      (Widget       : access Graph_Widget_Record'Class;
       Style        : in     Config.Vis_Styles.Visualisation_Style_Access;
-      Pool         : in     Node_Annotations.Node_Annotation_Access)
-   is
+      Pool         : in     Node_Annotations.Node_Annotation_Access) is
    begin
       Gtk.Drawing_Area.Initialize (Widget);
       Gtk.Object.Initialize_Class_Record

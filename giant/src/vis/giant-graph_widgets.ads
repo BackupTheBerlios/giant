@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.44 $
---  $Author: squig $
---  $Date: 2003/09/09 15:31:25 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.45 $
+--  $Author: keulsn $
+--  $Date: 2003/09/09 16:10:25 $
 --
 ------------------------------------------------------------------------------
 --
@@ -73,8 +73,6 @@ with Glib;
 with Gtk.Adjustment;
 with Gtk.Handlers;
 with Gtk.Main;
-with Gtk.Widget;
-pragma Elaborate_All (Gtk.Widget);
 
 with Bauhaus_IO;
 with Hashed_Mappings;

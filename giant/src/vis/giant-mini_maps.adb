@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-mini_maps.adb,v $, $Revision: 1.8 $
---  $Author: squig $
---  $Date: 2003/09/09 15:31:25 $
+--  $RCSfile: giant-mini_maps.adb,v $, $Revision: 1.9 $
+--  $Author: keulsn $
+--  $Date: 2003/09/09 16:10:25 $
 --
 ------------------------------------------------------------------------------
 
@@ -44,6 +44,8 @@ with Gtk.Container;
 with Gtk.Enums;
 with Gtk.Object;
 with Gtk.Style;
+with Gtk.Widget;
+pragma Elaborate_All (Gtk.Widget);
 with Gtk.Window;
 with Gtkada.Types;
 
