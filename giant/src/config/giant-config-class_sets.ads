@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-class_sets.ads,v $, $Revision: 1.3 $
+-- $RCSfile: giant-config-class_sets.ads,v $, $Revision: 1.4 $
 -- $Author: schwiemn $
--- $Date: 2003/07/01 21:42:55 $
+-- $Date: 2003/07/02 11:51:31 $
 --
 -- ----------------
 -- This package provides the functionality needed to handle
@@ -43,7 +43,7 @@ package Giant.Config.Class_Sets is
    ---------------------------------------------------------------------------
    -- describes a class set
    type Class_Set_Access is private;
-
+     
    ---------------------------------------------------------------------------
    -- Thrown if an invalid directory is given as paramter.
    Invalid_Class_Set_Directory_Exception : exception;
@@ -170,8 +170,7 @@ package Giant.Config.Class_Sets is
    --     no class set with the name "Class_Set_Name".
    function Get_Class_Set_Access (Class_Set_Name : in String)
      return Class_Set_Access;
-
-
+     
    ---------------------------------------------------------------------------
    -- D
    -- Queries to class sets.
@@ -216,6 +215,30 @@ package Giant.Config.Class_Sets is
      (Class_Set  : in Class_Set_Access;
       Edge_Class : in Graph_Lib.Edge_Class_Id)
      return Boolean;
+     
+     
+     
+   ---------------------------------------------------------------------------
+   -- F
+   -- Meta Class Sets
+   --
+   -- Meta Class Sets describe a union of class sets if you have to
+   -- consider several class sets for an algorithm you may use them
+   -- in the following way:
+   --
+   -- 1. Create a Meta_Class_Set over all needed Class Sets
+   -- 2. Instead of asking each single class set ask the meta class set
+   -- 3. Destroy the Meta Class set when it is now longer needed   
+   ---------------------------------------------------------------------------   
+   
+   type Meta_Class_Set_Access is private;
+   
+   type Class_Set_Array is array (integer range <>) of Class_Set_Access;
+  
+  
+                 
+     
+     
 
 ------------------------------------------------------------------------------
 private
@@ -238,5 +261,7 @@ private
    end record;
 
    type Class_Set_Access is access Class_Set_Data;
+
+   type Meta_Class_Set_Access is new Class_Set_Access;
 
 end Giant.Config.Class_Sets;

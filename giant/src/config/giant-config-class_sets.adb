@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.4 $
+-- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.5 $
 -- $Author: schwiemn $
--- $Date: 2003/07/01 21:42:55 $
+-- $Date: 2003/07/02 11:51:31 $
 --
 with Giant.File_Management;  -- from GIANT
 with Giant.XML_File_Access;  -- from GIANT
@@ -86,7 +86,7 @@ package body Giant.Config.Class_Sets is
    ---------------------------------------------------------------------------
    -- Side Effect - Changed global variables:
    --   - Class_Sets_Map;
-   procedure Get_Class_Sets 
+   procedure Initialize_Class_Sets 
      (GIANT_Class_Sets_Directory : in String) is
 
       ------------------------------------------------------------------------
@@ -338,7 +338,7 @@ package body Giant.Config.Class_Sets is
       String_Lists.Destroy (File_List);
 
       ADO_Initialized := True;
-   end Get_Class_Sets;
+   end Initialize_Class_Sets;
 
    ---------------------------------------------------------------------------
    procedure Clear_Class_Sets is
@@ -426,7 +426,7 @@ package body Giant.Config.Class_Sets is
    end Does_Class_Set_Exist;
 
    ---------------------------------------------------------------------------
-   function Initialize_Class_Set_Access
+   function Get_Class_Set_Access
      (Class_Set_Name : in String)
      return Class_Set_Access is
 
@@ -443,7 +443,7 @@ package body Giant.Config.Class_Sets is
       return Class_Sets_Hashed_Mappings.Fetch
         (Class_Sets_Map,
          Ada.Strings.Unbounded.To_Unbounded_String(Class_Set_Name));
-   end Initialize_Class_Set_Access;
+   end Get_Class_Set_Access;
 
 
    ---------------------------------------------------------------------------
