@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.94 $
-%  $Date: 2003/04/20 21:40:36 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.95 $
+%  $Date: 2003/04/21 01:13:30 $
 %  $Author: schwiemn $
 %
 %  Description: 
@@ -40,7 +40,7 @@ vermerkt.
 
 %Ergänzungen by Martin
 Jede Instanz von GIANT hat genau ein Hauptfenster. \index{Hauptfenster}
-Im Hauptfenster (Main Window, \ref{Main-Window-Pic}) werden die
+Im Hauptfenster (siehe Abbildung \ref{Main-Window-Pic}) werden die
 Anzeigefenster und
 IML-Teilgraphen des aktuell geöffneten Projektes (siehe  
 \ref{Project Persistenz der Projekte}) in Listen angezeigt. 
@@ -131,9 +131,9 @@ Subgraph List (4 Spalten).
         \item Highlighted
       \end{enumerate}
     
-      In der Spalte Name stehen die Namen der existierenden Subgraphen,
-      in Nodes die Anzahl der Graph-Knoten des Subgraphen, in Edges die
-      Anzahl der Graph-Kanten und in Highlighted befindet sich
+      In der Spalte Name stehen die Namen der existierenden IML-Teilgraphen,
+      in Nodes die Anzahl der Graph-Knoten des jeweiligen IML-Teilgraphen, 
+      in Edges die Anzahl der Graph-Kanten und in Highlighted befindet sich
       ein Kästchen in der
       Farbe, die für die Hervorhebung des IML-Teilgraphen verwendet wird
       (siehe hierzu auch \ref{hervorheben von Knoten und Kanten}).
@@ -173,11 +173,10 @@ Subgraph List (4 Spalten).
      \label{Graph-Window-Pic}
   \end{figure}
 
-  Im Programm kann es mehrere Anzeigefenster geben. 
-  Ein Anzeigefenster (\ref{Graph-Window-Pic}) besteht
-  aus folgenden Elementen:
+  Im Programm kann es mehrere Anzeigefenster 
+  (siehe Abbildung \ref{Graph-Window-Pic}) geben. 
   
-  \label{GUI Stilauswahl-Combobox} 
+
   In Anzeigefenstern (Visualization Windows) werden Teile des IML-Graphen
   visualisiert.  Sie erscheinen im großen quadratischen rechten Teil
   (\gq{Vis Pane}) des Fensters. Die Vis Pane enthält den Anzeigeinhalt
@@ -293,11 +292,13 @@ Subgraph List (4 Spalten).
       
     \end{enumerate}    
 
-     
+
   \subsection{Stilauswahl-Combobox}
+  \label{GUI Stilauswahl-Combobox}   
 
     In der Stilauswahl-Combobox (\gq{Style Chooser}) kann ein 
-    Visualisierungsstil ausgewählt werden.
+    Visualisierungsstil (siehe auch \ref{Config Visualisierungsstile})
+    ausgewählt werden.
 
   \subsection{Zoom-Kontrolle} \label{GUI Zoom-Kontrolle}  
 
@@ -327,10 +328,12 @@ Subgraph List (4 Spalten).
        \centering
        \includegraphics{gui/node_information_dialog}
        \caption{Node-Info-Window}
+       \label{Node-Info-Window-Pic}
     \end{figure}
 
-    In Knoten-Informationsfenstern (\gq{Node Info}) können nähere Informationen
-    zu Fenster-Knoten angezeigt werden.
+    In Knoten-Informationsfenstern (siehe Abbildung 
+    \ref{Node-Info-Window-Pic}) 
+    können nähere Informationen zu Fenster-Knoten angezeigt werden.
     
     Im Knoten-Informationsfenster wird die ID und die Knotenklasse des 
     vom Fenster-Knoten repräsentierten IML-Knotens dargestellt,
@@ -362,8 +365,10 @@ Subgraph List (4 Spalten).
       Kante mit zwei Spalten:
     
     \begin{enumerate}
-      \item ID (die ID des Nachfolger-Knotens)
-      \item Class (die Kantenklasse der abgehenden Kante)
+      \item ID (die ID des Nachfolger-Knotens)  
+      %Changed by Martin Class -> Type da sonst Inkonsistent zu Abbildung
+      %Eigentlich hätte die Grafik geändert werden müssen
+      \item Type (die Kantenklasse der abgehenden Kante)
     \end{enumerate}    
 
     \subsection{Liste Predecessor Nodes}
@@ -373,21 +378,24 @@ Subgraph List (4 Spalten).
 
       \begin{enumerate}
         \item ID (die ID des Vorgänger-Knotens)
-        \item Class (die Kantenklasse der eingehenden Kante)
+        %Changed by Martin Class -> Type da sonst Inkonsistent zu Abbildung
+        %Eigentlich hätte die Grafik geändert werden müssen
+        \item Type (die Kantenklasse der eingehenden Kante)
       \end{enumerate}
 
 \clearpage
 \section{Skriptdialog} \label{GUI Anfragedialog}
 
-
     \begin{figure}[!htbp]
        \centering
        \includegraphics{gui/query_dialog}
        \caption{Skript-Dialog}
+       \label{Skript-Dialog-Pic} 
     \end{figure}
 
-Der Skriptdialog \gq{Query Dialog} hat zuoberst ein Textfeld \gq{Query Text},
-in ein GSL Skript eingegeben werden kann.
+Der Skriptdialog \gq{Query Dialog} (siehe Abbildung \ref{Skript-Dialog-Pic})
+hat zuoberst ein Textfeld \gq{Query Text},
+in das ein GSL Skript eingegeben werden kann.
 
 Unter Query Text befinden sich folgende Buttons:
 
@@ -409,12 +417,13 @@ Unter Query Text befinden sich folgende Buttons:
        \label{Dialog-Window-Pic}
     \end{figure}
 
-Ein allgemeiner Texteingabedialog ist ein Fenster Dialog Window (\ref{Dialog-Window-Pic}) mit dem
+Ein allgemeiner Texteingabedialog ist ein Fenster Dialog Window 
+(siehe Abbildung \ref{Dialog-Window-Pic}) mit dem
 Titel \gq{Input}. Im Fenster ist ein einzeiliges Textfeld
 mit einem Prompt-Text, zwei Buttons mit den Beschriftungen \gq{OK}
 und \gq{Cancel}.
 
-\clearpage
+%\clearpage
 \section{Set-Operation-Dialog}
 \label{Common-Set-Operation-Dialog}
 
@@ -426,11 +435,12 @@ und \gq{Cancel}.
     \end{figure}
 
 
-Der Set-Operation-Dialog (\ref{Set-Operation-Dialog-Pic}) dient dazu, Mengenoperationen über 
+Der Set-Operation-Dialog (siehe Abbildung \ref{Set-Operation-Dialog-Pic}) 
+dient dazu, Mengenoperationen über 
 Selektionen und
-IML-Teilgraphen durchzuführen.\\
-Die Mengenoperation lässt sich dann wie folgt beschreiben:
-TARGET := LEFT\_SOURCE <op> RIGHT\_SOURCE \\ \\
+IML-Teilgraphen durchzuführen.
+Die Mengenoperation lässt sich wie folgt beschreiben:\\
+TARGET := LEFT\_SOURCE <op> RIGHT\_SOURCE \\
 
 
 Bestandteile des Dialoges sind:
@@ -471,13 +481,14 @@ Bestandteile des Dialoges sind:
        \label{Layout-Algorithm-Dialog-Pic}
     \end{figure}
 
-Der Layoutalgorithmen Dialog (\ref{Layout-Algorithm-Dialog-Pic}) bietet folgende Möglichkeiten:
+Der Layoutalgorithmen Dialog (siehe Abbildung \ref{Layout-Algorithm-Dialog-Pic}) 
+bietet folgende Möglichkeiten:
 
 \begin {enumerate}
- \item Auswahl des Layoutalgorithmuses
+ \item Auswahl des Layoutalgorithmus
  \item Ggf. Anzeige der zu layoutenden Selektion
  \item Ggf. Eigabefeld für die ID des Wurzelknotens bei Treelayouts
- \item {Eingabe der zu berücksichtigenden Klassenmengen bei semantischen Layouts
+ \item {Eingabe der zu berücksichtigenden Klassenmengen bei semantischen Layouts,
  	Hierbei können mittels der Buttons \gq{>>} und \gq{<<} die 
         verfügbaren
 	definierten Klassenmengen zwischen den beiden
@@ -504,7 +515,8 @@ Beschreibung von verschiedenen GUI Elementen zur Eingabe von Daten.
        \label{Node-Annotation-Dialog-Pic}
     \end{figure}
   
-Der Knoten-Annotations-Dialog (\ref{Node-Annotation-Dialog-Pic}) besteht aus einem Fenster mit einem
+Der Knoten-Annotations-Dialog (siehe Abbildung 
+\ref{Node-Annotation-Dialog-Pic}) besteht aus einem Fenster mit einem
 Label, welches die ID des Knotens anzeigt, und einem Textfeld für den Annotationstext.
 Mittels der beiden Buttons OK und Cancel können die Änderungen im
 Textfeld übernommen oder verworfen werden.  
@@ -522,9 +534,11 @@ Textfeld übernommen oder verworfen werden.
        \label{Make-Room-Dialog-Pic}
     \end{figure}
 
-Im Dialogfenster Make Room (\ref{Make-Room-Dialog-Pic}) wird in einem Textfeld als Zahl 
+Im Dialogfenster Make Room (siehe Abbildung \ref{Make-Room-Dialog-Pic}) 
+wird in einem Textfeld als Zahl 
 eingegeben, um wie viel
-Pixel die Fenster-Knoten an einer vorher markierten Stelle auseinandergeschoben werden sollen.
+Pixel die Fenster-Knoten an einer vorher markierten Stelle auseinandergeschoben 
+werden sollen.
 Mit dem Button OK kann bestätigt werden, mit dem Button Cancel abgebrochen werden.
 
 \clearpage
@@ -538,9 +552,11 @@ Mit dem Button OK kann bestätigt werden, mit dem Button Cancel abgebrochen werde
        \label{Error-Window-Pic}
     \end{figure}
 
-Ein allgemeiner Fehlerdialog (\ref{Error-Window-Pic}) ist ein Fenster \gq{Error Window}
+Ein allgemeiner Fehlerdialog (siehe Abbildung \ref{Error-Window-Pic}) 
+ist ein Fenster \gq{Error Window}
 mit dem Titel \gq{Error}. Im Fenster befindet sich ein Label zur
-Ausgabe der Fehlermeldung und ein Button mit der standardmäßigen Beschriftung \gq{OK}. 
+Ausgabe der Fehlermeldung und ein Button mit der standardmäßigen 
+Beschriftung \gq{OK}. 
 Für weitere Informationen zum allgemeinen Fehlerverhalten von GIANT siehe auch
 Abschnitt \ref{afa Fehlerverhalten}.
 
@@ -554,8 +570,8 @@ Abschnitt \ref{afa Fehlerverhalten}.
        \label{Confirmation-Window-Pic}
     \end{figure}
     
-Eine allgemeine Sicherheitsabfrage (\ref{Confirmation-Window-Pic}) ist ein Fenster 
-(\gq{Confirmation Window}) mit dem
+Eine allgemeine Sicherheitsabfrage (siehe Abbildung \ref{Confirmation-Window-Pic}) 
+ist ein Fenster (\gq{Confirmation Window}) mit dem
 Titel \gq{Confirmation}. Im Fenster ist
 ein Fragetext und ein Button mit der standardmäßigen Beschriftung
 Beschriftung \gq{Yes}, sowie ein Button mit der standardmäßigen Beschriftung
@@ -574,11 +590,12 @@ benötigt.
        \centering
        \includegraphics{gui/filechooser_dialog}
        \caption{Filechooser-Window}
+       \label{Filechooser-Window-Pic}
     \end{figure}
 
 Die Auswahl von Dateien (Laden/Speichern) passiert bei GIANT mittels
-des Standard-Filechooser-Dialogs. Dieser Dialog ist Bestandteil der
-Widget-Bibliothek von GTK.
+des Standard-Filechooser-Dialogs (siehe Abbildung \ref{Filechooser-Window-Pic}). 
+Dieser Dialog ist Bestandteil der Widget-Bibliothek von GTK.
 
 
 \section{Fadenkreuz-Cursor}
@@ -588,7 +605,8 @@ Widget-Bibliothek von GTK.
         Durch Linksklick auf einen Fenster-Knoten oder eine 
         Fenster-Kante in einem Anzeigefenster  
         wird diese(r) für die jeweilige Funktion ausgewählt. 
-        Der Fadenkreuz-Cursor wird auch zur Vorgabe von Positionen
+        Der Fadenkreuz-Cursor wird auch zur Vorgabe von Positionen,
+        an denen dann z.B. neue Fenster-Knoten eigefügt werden,
         verwendet.
         Nach dem Linksklick  verwandelt
         sich der Fadenkreuz-Cursor wieder in den Standard-Cursor.
@@ -619,9 +637,10 @@ busy. Please be patient.} beschriftet.
 
      Hierbei handelt es sich um ein Fenster mit einem sich bewegenden bzw. sich ständig 
      änderndem Inhalt (z.B. ein Progress-Balken), so dass für den Benutzer erkennbar ist, 
-     dass das System noch arbeitet (beispielhafte Grafik siehe \ref{Progressbar-Runs-Pic}).
+     dass das System noch arbeitet 
+     (beispielhafte Grafik siehe Abbildung \ref{Progressbar-Runs-Pic}).
   
-\clearpage
+%\clearpage
 \subsection{Progressbar-Modal}
 \label{Progressbar-Modale}      
      \begin{figure}[!htbp]
@@ -630,12 +649,13 @@ busy. Please be patient.} beschriftet.
       \caption{Progressbar-Modal}
       \label{Progressbar-Modal-Pic}
      \end{figure}
-     Der \gq{Progressbar-Modal} ist ein Fenster (\ref{Progressbar-Modal-Pic}), 
+     Der \gq{Progressbar-Modal}
+     (siehe Abbildung \ref{Progressbar-Modal-Pic}) ist ein Fenster, 
      dass über den aktuellen Fortschritt
-     einer Berechnung informiert, ohne dabei den Gesamtaufwand zu 
-     kennen. Hierzu wird kontinuierlich die Anzahl der schon bearbeiteten
-     Datensätze ausgegeben, und, sofern bekannt, die Prozentzahl der schon
-     bearbeiteten Datensätze als Text.
+     einer Berechnung informiert, wobei der Gesamtaufwand unbekannt sein kann. 
+     Hierzu wird kontinuierlich die Anzahl der schon bearbeiteten
+     Datensätze textuell ausgegeben, und, sofern bekannt, die Prozentzahl der schon
+     bearbeiteten Datensätze im Verhältnis zur gesamten Datenmenge.
      Während dieser Dialog sichtbar ist, ist der Rest der GUI von GIANT
      gesperrt.
      Im Fenster existiert ein Button \gq{Cancel} \label{Progressbar-Modale-Cancel}, 

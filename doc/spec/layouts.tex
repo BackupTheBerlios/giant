@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: layouts.tex,v $, $Revision: 1.12 $
-%  $Date: 2003/04/18 23:28:09 $
+%  $RCSfile: layouts.tex,v $, $Revision: 1.13 $
+%  $Date: 2003/04/21 01:13:30 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung der Layouts
@@ -13,6 +13,7 @@
 Hier werden die Layoutalgorithmen von \product beschrieben, mittels
 derer das Layout von Fenster-Knoten innerhalb von Anzeigefenstern
 automatisch berechnet werden kann.
+\index{Layoutalgorithmen}
 
 \product bietet zwei verschiedene Layoutalgorithmen an:
 \begin{enumerate}
@@ -21,6 +22,11 @@ automatisch berechnet werden kann.
 \end{enumerate}
 
 \section{Treelayout}
+\index{Layoutalgorithmen!Treelayout}
+
+Dieser Layoutalgorithmus ordnet Fenster-Knoten baumförmig auf dem
+Anzeigeinhalt an.
+
 \subsection{Parameter}
 \begin{enumerate}
   \item \textbf{Selektion}\\
@@ -77,6 +83,12 @@ im Matrixlayout (siehe \ref{Matrixlayout}) rechts von dem letzten Baum angeordne
 
 \section{Matrixlayout}
 \label{Matrixlayout}
+\index{Layoutalgorithmen!Matrixlayout}
+
+
+Ein relativ simpler Layoutalgorithmus, der die Fenster-Knoten matrixförmig nahe
+beieinander auf dem Anzeigeinhalt anordnet.
+
 \subsection{Parameter}
 \begin{enumerate}
   \item \textbf{Selektion}\\

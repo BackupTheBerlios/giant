@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: selection.tex,v $, $Revision: 1.22 $
-%  $Date: 2003/04/20 21:40:36 $
+%  $RCSfile: selection.tex,v $, $Revision: 1.23 $
+%  $Date: 2003/04/21 01:13:31 $
 %  $Author: schwiemn $
 %
 %  Description: UseCases für die Selektionen
@@ -202,8 +202,9 @@ Mit diesem UseCase können neue, leere Selektionen angelegt werden.
     (siehe \ref{DIALOG-WINDOW}).
       
     \step[3] 
-    Der Benutzer gibt dort einen zulässigen Namen für die neue Selektion 
-    ein und bestätigt mit OK (siehe \ref{afa Zulaessige Namen}). \\
+    Der Benutzer gibt dort einen zulässigen Namen 
+    (siehe \ref{afa Zulaessige Namen}) für die neue Selektion 
+    ein und bestätigt mit OK. \\
     Hat bereits eine andere Selektion innerhalb des Anzeigefensters den selben
     Namen, erscheint eine Fehlermeldung.
     
@@ -247,8 +248,9 @@ Anzeigefensters.
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase durch Rechtsklick auf die zu kopierende
-    Selektion in der Selektionsauswahlliste (siehe \ref{Selektionsauswahlliste})
-    und wählt aus dem Popup-Menü den Eintrag \gq{Copy Selection}.
+    Quell-Selektion in der 
+    Selektionsauswahlliste (siehe \ref{Selektionsauswahlliste})
+    und wählt in dem Popup-Menü den Eintrag \gq{Copy Selection} aus.
     
     \step[2] 
     GIANT öffnet den allgemeinen Texteingabedialog 
@@ -261,7 +263,7 @@ Anzeigefensters.
     Namen erscheint eine Fehlermeldung.
     
     \step[4]
-    GIANT kopiert die Quellselektion und legt eine neue Selektion an.
+    GIANT kopiert die Quell-Selektion und legt eine neue Selektion an.
   
   \end{proc}
 
@@ -454,7 +456,7 @@ Leitet eine Selektion aus einem IML-Teilgraphen ab
 %===============================================================================
 \begin{uc}[Mengenoperationen auf 2 Selektionen]
 {UC: Mengenoperationen auf 2 Selektionen}
-Zusätzlich zu den Möglichkeiten der Anfragesprache GSL (siehe
+Zusätzlich zu den Möglichkeiten der Anfragesprache GSL (siehe Kapitel
 \ref {GIANT Scripting Language}) kann der Benutzer
 die gängigen Mengenoperationen, wie Mengenvereinigung, Schnitt und Differenz,
 auch direkt über einen entsprechenden Dialog 

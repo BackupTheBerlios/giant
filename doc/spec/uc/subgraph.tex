@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: subgraph.tex,v $, $Revision: 1.19 $
-%  $Date: 2003/04/18 23:28:10 $
+%  $RCSfile: subgraph.tex,v $, $Revision: 1.20 $
+%  $Date: 2003/04/21 01:13:31 $
 %  $Author: schwiemn $
 %
 %  Description: UseCases für IML-Teilgraphen
@@ -12,8 +12,8 @@
 \begin{uc}[IML-Teilgraph graphisch hervorheben]
       {UC: IML-Teilgraph graphisch hervorheben}
 \index{IML-Teilgraph!hervorheben}         
-Dieser UseCase dient zum Hervorheben von IML-Teilgraphen innerhalb der
-Anzeigefenster (siehe auch \ref {hervorheben von Knoten und Kanten}).
+Dieser UseCase dient zum Hervorheben von IML-Teilgraphen innerhalb von
+Anzeigefenstern (siehe auch \ref{vis Hervorheben von IML-Teilgraphen}).
 
   \begin{precond}
     \cond Es gibt mindestens einen IML-Teilgraphen.
@@ -102,7 +102,7 @@ aufgehoben werden.
   \index{IML-Teilgraph!aus Selektion erzeugen} 
   
   Leitet einen neuen IML-Teilgraphen aus einer Quell-Selektion ab
-  (siehe auch Abschnitt \ref{IML-Teilgraphen aus Selektion ableiten}.
+  (siehe auch Abschnitt \ref{IML-Teilgraphen aus Selektion ableiten}).
 
   \begin{precond}
      \cond 
@@ -240,9 +240,9 @@ davon unberührt.
     gelöscht (siehe \ref{GUI Subgraph List}).
     
     \cond
-    War der gelöschte IML-Teilgraph hervorgehoben, so wurde die
+    War der gelöschte IML-Teilgraph hervorgehoben, so ist die
     Hervorhebung der zugehörigen Fenster-Knoten und Fenster-Kanten
-    aufgehoben.
+    in allen Anzeigefenstern aufgehoben.
 
   \end{postsuccess}
   
