@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.ads,v $, $Revision: 1.8 $
---  $Author: keulsn $
---  $Date: 2003/06/09 15:26:23 $
+--  $RCSfile: giant-evolutions.ads,v $, $Revision: 1.9 $
+--  $Author: squig $
+--  $Date: 2003/07/11 12:58:49 $
 --
 ------------------------------------------------------------------------------
 --
@@ -461,6 +461,10 @@ package Giant.Evolutions is
      (Master          : access Iterative_Evolution'Class;
       Sub_Calculation : access Evolution'Class);
 
+   ---------------------------------------------------------------------------
+   --  Can be used to test evolutions without tasking.
+   procedure Start_Calculation_Blocked
+     (Individual : access Evolution'Class);
 
                               ------------------
 private                       -- Private Part --

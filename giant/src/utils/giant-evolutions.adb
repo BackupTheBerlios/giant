@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.16 $
---  $Author: keulsn $
---  $Date: 2003/07/10 23:36:39 $
+--  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.17 $
+--  $Author: squig $
+--  $Date: 2003/07/11 12:58:49 $
 --
 ------------------------------------------------------------------------------
 
@@ -1051,5 +1051,29 @@ package body Giant.Evolutions is
       Gtk.Main.Idle_Remove (Driver_State.Idle_Handler);
       Driver_State := No_Iterative_Driver_State;
    end Stop_Iterative_Driver;
+
+   procedure Start_Calculation_Blocked
+     (Individual : access Evolution'Class)
+   is
+      Next_Action : Evolution_Action := Run;
+   begin
+      loop
+         case Next_Action is
+           when Run =>
+              Next_Action := Cancel;
+              Step (Individual, Next_Action);
+           when Synchronize =>
+              Next_Action := Cancel;
+              Synchronized_Step (Individual, Next_Action);
+           when Finish =>
+              Finish (Individual, False);
+              return;
+           when Cancel =>
+              Finish (Individual, True);
+              return;
+         end case;
+      end loop;
+   end Start_Calculation_Blocked;
+
 
 end Giant.Evolutions;

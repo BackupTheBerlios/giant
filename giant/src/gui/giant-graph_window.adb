@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.33 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.34 $
 --  $Author: squig $
---  $Date: 2003/07/10 21:01:40 $
+--  $Date: 2003/07/11 12:58:49 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -706,7 +706,8 @@ package body Giant.Graph_Window is
          (On_Action_Mode_Button_Pressed'Access), Window);
       Widget_Callback.Object_Connect
         (Window.Graph, "background_popup_event",
-         On_Background_Popup'Access, Window);
+         Action_Mode_Marshallers.To_Marshaller
+         (On_Background_Popup'Access), Window);
       Widget_Callback.Object_Connect
         (Window.Graph, "edge_popup_event",
          Edge_Popup_Marshallers.To_Marshaller
