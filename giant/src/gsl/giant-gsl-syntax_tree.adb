@@ -20,9 +20,9 @@
 --
 -- First Author: Gerrit Schulz
 --
--- $RCSfile: giant-gsl-syntax_tree.adb,v $, $Revision: 1.4 $
+-- $RCSfile: giant-gsl-syntax_tree.adb,v $, $Revision: 1.5 $
 -- $Author: schulzgt $
--- $Date: 2003/08/03 12:32:10 $
+-- $Date: 2003/08/14 14:36:20 $
 --
 with Unchecked_Deallocation;
 with Giant.Gsl.Types;
@@ -70,7 +70,9 @@ package body Giant.Gsl.Syntax_Tree is
          Syntax_Node);
 
    begin
-      Free (Node);
+      if Node /= Null_Node then
+         Free (Node);
+      end if;
    end Destroy_Node;
 
    ---------------------------------------------------------------------------
@@ -83,14 +85,16 @@ package body Giant.Gsl.Syntax_Tree is
          Syntax_Node);
 
    begin
-      if Node.Child1 /= Null_Node then
-         Destroy_Syntax_Tree (Node.Child1);
+      if Node /= Null_Node then
+         if Node.Child1 /= Null_Node then
+            Destroy_Syntax_Tree (Node.Child1);
+         end if;
+         if Node.Child2 /= Null_Node then
+            Destroy_Syntax_Tree (Node.Child2);
+         end if;
+         Gsl.Types.Destroy_Gsl_Type (Node.Literal);
+         Free (Node);
       end if;
-      if Node.Child2 /= Null_Node then
-         Destroy_Syntax_Tree (Node.Child2);
-      end if;
-      Gsl.Types.Destroy_Gsl_Type (Node.Literal);
-      Free (Node);
    end Destroy_Syntax_Tree;
 
    ---------------------------------------------------------------------------
