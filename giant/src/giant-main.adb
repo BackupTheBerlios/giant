@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.44 $
---  $Author: keulsn $
---  $Date: 2003/09/12 20:30:11 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.45 $
+--  $Author: koppor $
+--  $Date: 2003/09/20 12:49:58 $
 --
 --
 ------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ is
    is
    begin
       Ada.Text_IO.Put_Line
-        ("usage: giant project-file [-g graph-file] [-e script-file] [-c config-file] | -h | -v");
+        ("usage: giant [project-file] [-g graph-file] [-e script-file] [-c config-file] | -h | -v");
    end;
 
    procedure Evaluate_Arguments
