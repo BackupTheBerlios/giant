@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.12 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.13 $
 --  $Author: koppor $
---  $Date: 2003/06/13 15:32:54 $
+--  $Date: 2003/06/13 17:35:44 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -148,6 +148,7 @@ package body Giant.Graph_Lib is
    begin
       --  < cannot be used, since that would case an infinite recursion
       --  therefore, we have to trick a bit :)
+      --  TBD: compare pointers
       return Storables.Less (Left.Iml_Node, Right.Iml_Node);
    end "<";
 
@@ -159,6 +160,7 @@ package body Giant.Graph_Lib is
       return Boolean
    is
    begin
+      --  TBD: compare pointers
       return (Left.Name < Right.Name);
    end "<";
 
@@ -173,6 +175,7 @@ package body Giant.Graph_Lib is
       return Boolean
    is
    begin
+      --  TBD: compare pointers
       return
         (Left.Source_Node    < Right.Source_Node) or
         (Left.Target_Node    < Right.Target_Node) or
@@ -190,6 +193,7 @@ package body Giant.Graph_Lib is
       return Boolean
    is
    begin
+      --  TBD: compare pointers
       return
         (Left.Source_Node_Class     < Right.Source_Node_Class) or
         (Left.Source_Node_Attribute < Right.Source_Node_Attribute);
@@ -202,6 +206,7 @@ package body Giant.Graph_Lib is
       return Boolean
    is
    begin
+      --  TBD: compare pointers
       return (Left.Name < Right.Name);
    end "<";
 
@@ -212,6 +217,7 @@ package body Giant.Graph_Lib is
       return Boolean
    is
    begin
+      --  TBD: compare pointers
       return (Left.Name = Right.Name);
    end "=";
 
@@ -328,10 +334,51 @@ package body Giant.Graph_Lib is
    procedure Create (Path_To_IML_File : in String) is
 
       procedure Initialize_Node_Class_Id_Mapping is
+         All_Classes : IML_Reflection.Classes;
+         Cur_Class   : Node_Class_Id;
+         Hash_Data   : Node_Class_Id_Hash_Data_Access;
       begin
-         null;
+         Node_Class_Id_Mapping := Node_Class_Id_Hashed_Mappings.Create;
 
-         -- TBD!!
+         All_Classes := IML_Classes.Get_All_Classes;
+
+         for I in All_Classes'Range loop
+            Cur_Class := All_Classes (I);
+
+            Hash_Data := new Node_Class_Id_Hash_Data;
+            Hash_Data.Node_Attribute_Id_Mapping :=
+              Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.Create;
+
+            Node_Class_Id_Hashed_Mappings.Bind
+              (Node_Class_Id_Mapping,
+               Cur_Class,
+               Hash_Data);
+
+            for J in Cur_Class.Fields'Range loop
+               declare
+                  Cur_Field : IML_Reflection.Field_Id := Cur_Class.Fields (J);
+               begin
+                  if (Cur_Field.all in IML_Reflection.Edge_Field) or
+                    (Cur_Field.all in IML_Reflection.List_Field) or
+                    (Cur_Field.all in IML_Reflection.Set_Field) then
+                     declare
+                        New_Edge_Class : Edge_Class_Id;
+                     begin
+                        New_Edge_Class := new Edge_Class;
+                        New_Edge_Class.Source_Node_Class := Cur_Class;
+                        New_Edge_Class.Source_Node_Attribute := Cur_Field;
+
+                        Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.Bind
+                          (Hash_Data.Node_Attribute_Id_Mapping,
+                           Cur_Field,
+                           New_Edge_Class);
+                     end;
+                  end if;
+               end;
+            end loop;
+
+         end loop;
+
       end Initialize_Node_Class_Id_Mapping;
 
       -----------------------------------------------------------
@@ -821,8 +868,8 @@ package body Giant.Graph_Lib is
 
       procedure Destroy_Node_Class_Id_Mapping is
       begin
+         --  TBD: deep-destroy!
          null;
-         --  TBD
       end Destroy_Node_Class_Id_Mapping;
 
    begin
@@ -841,28 +888,20 @@ package body Giant.Graph_Lib is
       Node_Attribute : in Node_Attribute_Id)
       return Boolean
    is
-      I : Integer;
+      Hash_Data : Node_Class_Id_Hash_Data_Access;
    begin
-      I := Node_Class.Fields'First;
-      while
-        (I <= Node_Class.Fields'Last) and then
-        (IML_Reflection."/=" (Node_Attribute, Node_Class.Fields (I))) loop
-         I := I+1;
-      end loop;
-
-      if I <= Node_Class.Fields'Last then
-         declare
-            Field : IML_Reflection.Field_Id := Node_Class.Fields (I);
-         begin
-            --  same fields like in ConvertIMLGraphToTempStructure.
-            --    ProcessQueue.Process_Attribute
-            return
-              (Field.all in IML_Reflection.Edge_Field) or
-              (Field.all in IML_Reflection.List_Field) or
-              (Field.all in IML_Reflection.Set_Field);
-         end;
+      if not Node_Class_Id_Hashed_Mappings.Is_Bound
+        (Node_Class_Id_Mapping,
+         Node_Class) then
+         return False;
       else
-         return false;
+         Hash_Data := Node_Class_Id_Hashed_Mappings.Fetch
+           (Node_Class_Id_Mapping,
+            Node_Class);
+
+         return Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.Is_Bound
+           (Hash_Data.Node_Attribute_Id_Mapping,
+            Node_Attribute);
       end if;
    end Does_Edge_Class_Exist;
 
