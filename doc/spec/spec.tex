@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: spec.tex,v $, $Revision: 1.38 $
-%  $Date: 2003/04/06 17:40:34 $
+%  $RCSfile: spec.tex,v $, $Revision: 1.39 $
+%  $Date: 2003/04/06 17:54:15 $
 %  $Author: koppor $
 %
 %  Description: Master Datei der Spezifikation
@@ -10,15 +10,22 @@
 % ==============================================================================
 
 \documentclass[a4paper,titlepage,11pt,german,twoside]{scrbook}
-%
+
+
+\makeatletter
+
 %koma uses \chapter*, but we want to use \chapter
 %  changed srcbook.cls-commands
-\makeatletter
 \renewcommand\idx@heading{%
   \twocolumn
   \chapter{\indexname}\@mkboth{\indexname}{\indexname}
 }
+
+%Nummerierung soll net so eng aneinanderhaengen
+\renewcommand*\l@section{\@dottedtocline{1}{1.5em}{3em}}
+
 \makeatother
+
 
 \usepackage{../styles/common}
 
