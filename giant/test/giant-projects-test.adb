@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-projects-test.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-projects-test.adb,v $, $Revision: 1.7 $
 --  $Author: schwiemn $
---  $Date: 2003/06/26 15:06:07 $
+--  $Date: 2003/06/26 15:23:35 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -86,7 +86,8 @@ package body Giant.Projects.Test is
       -- remove all files in the project directory
       Kill_Files_In_Dir ("resources/test_project_directory/");
    
-   
+      -- in the target dir for Save As
+      Kill_Files_In_Dir ("resources/test_project_copy_dir");
       
       New_Project := Giant.Projects.Create_Empty_Project 
         ("My_Test_Project",
@@ -98,16 +99,16 @@ package body Giant.Projects.Test is
         ("resources/test_project_directory/My_Test_Project.xml"),
          "Does_Project_Exist");
                           
-      Subgraph_Donald := Giant.Graph_Lib.Subgraphs.Create ("Donald");
-      Subgraph_Daisy  := Giant.Graph_Lib.Subgraphs.Create ("Daisy");
+--      Subgraph_Donald := Giant.Graph_Lib.Subgraphs.Create ("Donald");
+--      Subgraph_Daisy  := Giant.Graph_Lib.Subgraphs.Create ("Daisy");
          
-      Vis_Window_Durchsicht := Giant.Vis_Windows.Create_New ("Durchsicht");
+--      Vis_Window_Durchsicht := Giant.Vis_Windows.Create_New ("Durchsicht");
          
-      Giant.Projects.Add_Subgraph (New_Project, Subgraph_Donald);
-      Giant.Projects.Add_Subgraph (New_Project, Subgraph_Daisy);
+--      Giant.Projects.Add_Subgraph (New_Project, Subgraph_Donald);
+--      Giant.Projects.Add_Subgraph (New_Project, Subgraph_Daisy);
       
-      Giant.Projects.Add_Visualisation_Window 
-        (New_Project, Vis_Window_Durchsicht);
+--      Giant.Projects.Add_Visualisation_Window 
+--        (New_Project, Vis_Window_Durchsicht);
       
       Projects.Store_Whole_Project_As
          (New_Project,
@@ -137,11 +138,11 @@ package body Giant.Projects.Test is
       Giant.Graph_Lib.Load      
         ("resources/rfg_examp.iml");
         
-      Giant.Config.Vis_Styles.Initialize_Config_Vis_Styles
-        ("resources/vis_styles/resources_dir",
-         "",
-         "", 
-         "resources/vis_styles/only_defaults_giant_vis_style.xml");                                          
+ --     Giant.Config.Vis_Styles.Initialize_Config_Vis_Styles
+ --       ("resources/vis_styles/resources_dir",
+ --        "",
+ --        "", 
+ --        "resources/vis_styles/only_defaults_giant_vis_style.xml");                                          
    end Set_Up;
 
    procedure Tear_Down (T : in out Test_Case) is
