@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.6 $
 --  $Author: koppor $
---  $Date: 2003/06/25 16:39:46 $
+--  $Date: 2003/06/27 16:50:52 $
 --
 
 with Ada.Text_IO;
@@ -134,13 +134,58 @@ package body Giant.Graph_Lib.Test is
       null;
    end Edge_Set_Test;
 
+   ---------------------------------------------------------------------------
+   --  Could be implemented more efficient
+   --    a) traverse All_Nodes "by hand"
+   --         don't use function Get_All_Nodes, but travel thourgh the hashmap
+   --         directly
+   procedure All_Edges_Test (R : in out AUnit.Test_Cases.Test_Case'Class)
+   is
+
+      function Get_All_Edges_Indirectly return Edge_Id_Set
+      is
+         All_Nodes : Node_Id_Sets.Set;
+         Iter      : Node_Id_Sets.Iterator;
+         Cur_Node  : Node_Id;
+         Result    : Edge_Id_Sets.Set;
+      begin
+         Result := Edge_Id_Sets.Empty_Set;
+
+         All_Nodes := Get_All_Nodes;
+
+         Iter := Node_Id_Sets.Make_Iterator (All_Nodes);
+
+         while Node_Id_Sets.More (Iter) loop
+            Node_Id_Sets.Next (Iter, Cur_Node);
+
+            Edge_Id_Sets.Union (Result, Get_Outgoing_Edges (Cur_Node));
+         end loop;
+
+         Node_Id_Sets.Destroy (All_Nodes);
+
+         return Result;
+      end Get_All_Edges_Indirectly;
+
+
+      All_Edges_Indirectly : Edge_Id_Sets.Set;
+      All_Edges_Directly : Edge_Id_Sets.Set;
+
+   begin
+      All_Edges_Indirectly := Get_All_Edges_Indirectly;
+      All_Edges_Directly   := Get_All_Edges;
+
+      -- FIXME: Assert ( "=", 1, 2);
+
+      Edge_Id_Sets.Destroy (All_Edges_Directly);
+      Edge_Id_Sets.Destroy (All_Edges_Indirectly);
+   end All_Edges_Test;
+
    procedure Done (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
    begin
       Giant.Graph_Lib.Unload;
       Giant.Graph_Lib.Destroy;
    end Done;
-
 
    --------------------------------
    --  Routines from AUnit-Test  --
@@ -157,6 +202,7 @@ package body Giant.Graph_Lib.Test is
       Register_Routine (T, Output_RootNode'Access, "Output_RootNode");
       Register_Routine (T, Check_Counts'Access, "Check_Counts");
       Register_Routine (T, Edge_Set_Test'Access, "Edge_Set_Test");
+      Register_Routine (T, All_Edges_Test'Access, "All Edges Test");
       Register_Routine (T, Done'Access, "Done");
    end Register_Tests;
 
