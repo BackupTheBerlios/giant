@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.16 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.17 $
 --  $Author: koppor $
---  $Date: 2003/06/24 19:24:46 $
+--  $Date: 2003/06/25 11:38:05 $
 --
 
 --  Bauhaus / IML
@@ -342,6 +342,18 @@ package Giant.Graph_Lib is
    --    Node_Attribute_Does_Not_Exist if given Node_Attribute does not exist
    function Convert_Node_Attribute_Name_To_Id
      (Node_Class_Name     : in String;
+      Node_Attribute_Name : in String)
+     return Node_Attribute_Id;
+
+   ---------------------------------------------------------------------------
+   --  Returns:
+   --    The id belonging to given Node_Attribute
+   --    Invalid_Attribute_Id if given Node_Class does not exist
+   --
+   --  Raises:
+   --    Node_Attribute_Does_Not_Exist if given Node_Attribute does not exist
+   function Convert_Node_Attribute_Name_To_Id
+     (Node_Class          : in Node_Class_Id;
       Node_Attribute_Name : in String)
      return Node_Attribute_Id;
 
