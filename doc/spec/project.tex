@@ -1,17 +1,71 @@
 % ==============================================================================
-%  $RCSfile: project.tex,v $, $Revision: 1.4 $
-%  $Date: 2003/02/13 11:05:22 $
-%  $Author: schulzgt $
+%  $RCSfile: project.tex,v $, $Revision: 1.5 $
+%  $Date: 2003/02/13 12:02:52 $
+%  $Author: schwiemn $
 %
 %  Description:
 %
 % ==============================================================================
 
-\section {Das Projekt}
-GIANT speichert persistente Informationen in sogenannten Projekten. Der Benutzer kann beliebig viele 
-Projekte erzeugen. Während der Arbeit mit GIANT kann ein einzelnes Projekt.
-(vorausgesetzt die Reflektion zum IML-Graphen emöglicht es IML-Graphen während des laufenden Betriebs
-aus dem Speicher zu entfernen).
+
+\section {Persistenz über Projekte}
+
+GIANT speichert persistente Informationen in sogenannten Projekten.
+Ein Projekt besteht aus einem Verweis auf eine IML-Graph-Datei, auf die sich
+die gespeicherten Informationen beziehen, sowie aus gespeicherten Informationen für
+IML-Teilgraphen und Anzeigefenstern.\\
+Jedes Projekt hat einen vom Benutzer definierbaren Namen, dieser Name entspricht dem Namen der 
+Projektdatei und wird innerhalb des IML-Browsers angezeigt.
+Der Name eines bereits angelegten Projektes kann nicht geändert werden (außer dadurch, dass
+man dass Projekt neu speichert und das alte löscht). 
+Der Benutzer kann beliebig viele Projekte erzeugen.\\
+Während der Arbeit mit GIANT kann jederzeit ein Projekt geladen werden, wobei immer nur ein
+Projekt gleichzeitig geöffnet sein darf.Vorraussetzung hierfür ist alledings, dass dies 
+von Reflektion zum IML-Graphen unterstützt wird.
+
+  \subsection {Das Projektverzeichnis}
+  In dem Projektverzeichnis liegt die Projektdatei, der Name des Projektverzeichnisses ist beliebig.
+  Im Projektverzeichnis befindet sich acuh Dateien für jedes gespeicherte Anzeigefenster und jeden 
+  gespeicherten IML-Teilgraphen.
+  In jedem Projektverzeichnis darf nur ein Projekt gespeichert werden.
+
+
+  \subsection {Die Projektdatei}
+  Die Projektdatei befindet sich im Projektverzeichnis und enthält Informationen, 
+  die zur Identifikation des zu einem Projekt gehörenden IML-Graphen nötig sind. 
+  Der Name der Projektdatei entspricht dem Namen des Projektes.
+
+  \subsection {Der zugehörige IML-Graph}
+  Der absolute oder realtive Pfad zu der Datei, die den IML-Graphen enthält, ist in der
+  Projektdatei gespeichert. Alternativ dazu kann der Benutzer den Pfad zur IML-Graph Datei auch
+  eingeben.
+ 
+  \subsection {Die Identifikation der IML-Graph Datei}
+  Die Reflektion muss für jede IML-Graph Datei eine möglichst eindeutige Prüfsumme berechnen können.
+  Bei Laden eines Projektes wird überprüft ob die in der Projektdatei gespeicherte Prüfsumme
+  der der zu ladenen IML-Graph Datei entspricht. 
+  Das Verhalten von GIANT für den Fall, dass eine IML-Graph Datei geladen wird, 
+  die zwar die passende Prüfsumme hat, aber nicht den IML-Graphen enthält, 
+  der dem Projekt zu Grunde liegt, ist undefiniert.
+
+  \subsection {Verwaltungsdateien für Anzeigefenster}
+  Für jedes gespeicherte Anzeigefenster gibt es eine Verwaltungsdatei. 
+  Diese Verwaltungsdatei enthält alle Informationen zur kompletten Rekonstruktion 
+  eines Anzeigefensters. Gespeichert werden:
+
+  \begin {itemize}
+
+    \item Der komplette Anzeigeinahlt (alle visualisierten Knoten und Kanten mit Position).
+    \item Alle Pins (gespeicherte sichtbare Anzeigeinhalte).
+    \item Alle dem Anzeigefenster bekannten Selektion.
+
+  \end {itemize}
+
+  Die VISUALISIERUNGSSTIELE (für jedes Anzeigefenster kann ein VISUALISIERUNGSSTIEL ausgewählt werden)
+  werden aber nicht gespeichert, da sie von der Konfiguartionsdatei vorgegeben werden.
+
+
+ 
 
 
 \subsection {Name des Projekts}
@@ -22,13 +76,30 @@ der Projektes selbst entspricht.
 Keine der weiter unten beschriebenen Dateien ist zwischen Projekten austauschbar, darf also nicht in
 ein anderes Projektverzeichnis kopiert werden.
 
-\subsection{Die Projektdatei}
-Die Projektdatei enthält Informationen, die zur Identifikation der zu einem Projekt gehörende.
 
-\subsection{Die Identifikation der IML-Graph Datei}
 
-\subsection {Die Projektdatei}
-Die Projektdatei enthält Informationen, die zur Identifikation der zu einem Projekt gehörenden.
+   \subsection {Die Projektdatei}
+   Die Projektdatei 
+   
+   Die Projektdatei enthält Informationen, die zur Identifikation der zu einem 
+   Projekt gehörenden 
+  
+
+    
+
+
+  \subsection {Verwaltungsdateien für IML-Teilgraphen}
+  Sämtliche IML-Teilgraphen 
+
+  \subsection{Verwaltungsdatei für Anfragen}
+  KANN er auch SELBER mittels Paste und Copy im Emacs machen.
+
+
+
+
+
+\section {Verhalten von GIANT beim Speichern} 
+
 
 \subsection{Verwaltungsdateien für Anzeigefenster}
 In einem Unterverzeichnis des Projektverzeichnisses werden jeweils in einzelnen Dateien.
@@ -36,6 +107,7 @@ In einem Unterverzeichnis des Projektverzeichnisses werden jeweils in einzelnen 
 \subsection{Verwaltungsdateien für IML-Teilgraphen}
 Sämtliche IML-Teilgraphen
 
-\section {Verhalten}
+subsection{Speichern von IML-Teilgraphen}
+
 
 \subsection{Grundlegendes Verhalten beim Speichern}
