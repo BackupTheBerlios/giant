@@ -1,121 +1,95 @@
 % ==============================================================================
-%  $RCSfile: nomenclature.tex,v $, $Revision: 1.11 $
-%  $Date: 2003/02/18 15:21:04 $
-%  $Author: schwiemn $
+%  $RCSfile: nomenclature.tex,v $, $Revision: 1.12 $
+%  $Date: 2003/02/23 18:20:09 $
+%  $Author: squig $
 %
-%  Description:
+%  Description: Begriffslexikon
 %
 % ==============================================================================
 
 \begin{nomenclature}
-
-\term{Anzeigefenster}{Visualisation Window}{
-Ein Fenster in dem ein Teilgraph des IML-Graphen nach bestimmten Kriterien 
-visualisiert ist. Jedem Anzeigefenster ist ein Anzeigeinhalt zugeordnet.
-}
-
-\term{Anzeigeinhalt}{Window Content}{
-Eine \gq{virtuelle} Oberfläche auf der die Objekte des visualisierten Teilgraphen
-(also Fenster-Knoten und Fenster-Kanten) angeordnet sind, 
-d.h. räumliche Layoutinformation zu allen Objekten des 
-entsprechenden Anzeigefensters. Abhängig von der Zoomstufe ist jeweils nur ein 
-bestimmter Teil des Anzeigeinhaltes sichtbar - der sichtbare Anzeigeinhalt. 
-Die Größe des Anzeigeinhaltes ist theoretisch unbegrenzt. 
-}
-
-\term{Sichtbarer Anzeigeinhalt}{Visible Window Content}{
-Der Bereich des Anzeigeinhaltes eines Anzeigefensters, der zur Zeit sichtbar 
-dargestellt wird.
-}
-
-\term{Zoomstufe}{Zoom Level}{
-Dieser Faktor beschreibt die Größe des sichtbaren Anzeigeinhaltes.
-Bei einer sehr niedrigen Zoomstufe (auch: weit weg gezoomt) ist ein größerer 
-Teil des im Anzeigefenster visualisierten IML-Graphen sichtbar als bei einer
-hohen Zoomstufe (auch: sehr nach heran gezoomt).
-}
-
-\term{IML-Graph}{IML Graph}{
-Der IML-Graph, wie er von der Bauhaus Reengineering GmbH gestetellt wird.
-Auf diesen Graphen wird über das sogenannte Reflection Model zugegriffen.
-}
-
-\term{Reflektion}{Reflection Model}{
-Die Schnittstelle zum Zugriff auf den IML-Graphen.
-}
-
-\term{IML-Teilgraph}{IML Subgraph}{
-Eine Menge über Knoten und Kanten des IML-Graphen, die so gestaltet ist,
-dass sie einen Teilgraphen des IML-Graphen darstellt.
-}
-
-\term{Anfrage}{Query}{
-Eine Anfrage beschreibt einen Vorgang, bei dem über geeignete Kriterien
-Konten und Kanten aus dem IML-Graphen oder aus IML-Teilgraphen ausgewählt
-werden.
-}
-
-\term{Selektion}{Selection}{
-Eine Auswahl von Knoten und Kanten eines visualisierten Teilgraphen des 
-IML-Graphen innerhalb eines Anzeigefensters.
-}
-
-\term{IML-Knoten}{IML Node}{
-Ein Knoten des IML-Graphen.
-}
-
-\term{IML-Kante}{IML Edge}{
-Eine Kante des IML-Graphen.
-}
-
-\term{Graph-Knoten}{Graph Node}{
-Ein Knoten des IML-Graphen welcher Bestandteil eines IML-Teilgraphen ist.
-}
-
-\term{Graph-Kante}{Graph Edge}{
-Eine Kante des IML-Graphen welche Bestandteil eines IML-Teilgraphen ist.
-}
-
-\term{Fenster-Knoten}{Window Node}{
-Die grafische Repräsentation eines IML-Knoten innerhalb eines Anzeigefensters.
-}
-
-\term{Fenster-Kante}{Window Edge}{
-Die grafische Repräsentation einer IML-Kante innerhalb eines Anzeigefensters.
-}
-
-\term{Knoten-Annotationen}{Node Annotation}{
-Eine textuelle Beschreibung zu einem bestimmten Knoten des IML-Graphen.
-}
-
-
-\term{Knotenklasse}{Node Class}{
-Die Einteilung der Knoten des IML-Graphen in verschiedene Klassen, 
-wie sie sich aus der IML-Graph-Bibliothek von Bauhaus ergibt.
-}
-
-\term{Kantenklasse}{Edge Class}{
-Die Einteilung der Kanten des IML-Graphen in verschiedene Klassen, 
-wie sie sich aus der IML-Graph-Bibliothek von Bauhaus ergibt.
-}
-
-\term{Layout}{Layout}{
-Die zweidimensionale räumliche Anordnung von Fenster-Knoten und Fenster-Kanten innerhalb
-eines Anzeigefensters auf dem sogenannten Anzeigeinhalt.
-}
-
-
-\term{selektieren}{to select}{
-Selektieren beschreibt einen Vorgang über den der Benutzer, z.B.\ durch Anklicken 
-von Fenster-Knoten oder Fenster-Kanten mit der Maus, eine Selektion aufbaut.
-}
-
-
-\term{hervorheben}{to highlight}{
-Hervorheben bedeutet, dass in einem Anzeigefenster visualisierte Fenster-Knoten oder Fenster-Kanten 
-z.B.\ durch  eine farbige Umrahmung von anderen Fenster-Knoten oder Fenster-Kanten unterscheidbar
-gemacht werden
-}
+  
+  \term{Anfrage}{Query}{Eine Anfrage beschreibt einen Vorgang, bei dem
+    über geeignete Kriterien Konten und Kanten aus dem IML-Graphen
+    oder aus IML-Teilgraphen ausgewählt werden.}
+  
+  \term{Anzeigefenster}{Visualisation Window}{Ein Fenster in dem ein
+    Teilgraph des IML-Graphen nach bestimmten Kriterien visualisiert
+    ist. Jedem Anzeigefenster ist ein Anzeigeinhalt zugeordnet.}
+  
+  \term{Anzeigeinhalt}{Window Content}{ Eine \gq{virtuelle} Oberfläche
+    auf der die Objekte des visualisierten Teilgraphen (also
+    Fenster-Knoten und Fenster-Kanten) angeordnet sind, d.h. räumliche
+    Layoutinformation zu allen Objekten des entsprechenden
+    Anzeigefensters. Abhängig von der Zoomstufe ist jeweils nur ein
+    bestimmter Teil des Anzeigeinhaltes sichtbar - der sichtbare
+    Anzeigeinhalt.  Die Größe des Anzeigeinhaltes ist theoretisch
+    unbegrenzt.}
+  
+  \term{Fenster-Kante}{Window Edge}{Die grafische Repräsentation einer
+    IML-Kante innerhalb eines Anzeigefensters.}
+  
+  \term{Fenster-Knoten}{Window Node}{Die grafische Repräsentation
+    eines IML-Knoten innerhalb eines Anzeigefensters.}
+  
+  \term{Graph-Kante}{Graph Edge}{Eine Kante des IML-Graphen welche
+    Bestandteil eines IML-Teilgraphen ist.}
+  
+  \term{Graph-Knoten}{Graph Node}{Ein Knoten des IML-Graphen welcher
+    Bestandteil eines IML-Teilgraphen ist.}
+  
+  \term{IML-Graph}{IML Graph}{Der IML-Graph, wie er von der Bauhaus
+    Reengineering GmbH gestetellt wird.  Auf diesen Graphen wird über
+    das sogenannte Reflection Model zugegriffen.}
+  
+  \term{IML-Kante}{IML Edge}{Eine Kante des IML-Graphen.}
+  
+  \term{IML-Knoten}{IML Node}{Ein Knoten des IML-Graphen.}
+  
+  \term{IML-Teilgraph}{IML Subgraph}{Eine Menge über Knoten und Kanten
+    des IML-Graphen, die so gestaltet ist, dass sie einen Teilgraphen
+    des IML-Graphen darstellt.}
+  
+  \term{Kantenklasse}{Edge Class}{Die Einteilung der Kanten des
+    IML-Graphen in verschiedene Klassen, wie sie sich aus der
+    IML-Graph-Bibliothek von Bauhaus ergibt.}
+  
+  \term{Knoten-Annotationen}{Node Annotation}{Eine textuelle
+    Beschreibung zu einem bestimmten Knoten des IML-Graphen.}
+  
+  \term{Knotenklasse}{Node Class}{Die Einteilung der Knoten des
+    IML-Graphen in verschiedene Klassen, wie sie sich aus der
+    IML-Graph-Bibliothek von Bauhaus ergibt.}
+  
+  \term{Layout}{Layout}{Die zweidimensionale räumliche Anordnung von
+    Fenster-Knoten und Fenster-Kanten innerhalb eines Anzeigefensters
+    auf dem sogenannten Anzeigeinhalt.}
+  
+  \term{Reflektion}{Reflection Model}{Die Schnittstelle zum Zugriff
+    auf den IML-Graphen.}
+  
+  \term{Selektion}{Selection}{Eine Auswahl von Knoten und Kanten eines
+    visualisierten Teilgraphen des IML-Graphen innerhalb eines
+    Anzeigefensters.}
+  
+  \term{Sichtbarer Anzeigeinhalt}{Visible Window Content}{ Der Bereich
+    des Anzeigeinhaltes eines Anzeigefensters, der zur Zeit sichtbar
+    dargestellt wird.}
+  
+  \term{Zoomstufe}{Zoom Level}{ Dieser Faktor beschreibt die Größe des
+    sichtbaren Anzeigeinhaltes.  Bei einer sehr niedrigen Zoomstufe
+    (auch: weit weg gezoomt) ist ein größerer Teil des im
+    Anzeigefenster visualisierten IML-Graphen sichtbar als bei einer
+    hohen Zoomstufe (auch: sehr nach heran gezoomt).}
+  
+  \term{hervorheben}{to highlight}{Hervorheben bedeutet, dass in einem
+    Anzeigefenster visualisierte Fenster-Knoten oder Fenster-Kanten
+    z.B.\ durch eine farbige Umrahmung von anderen Fenster-Knoten oder
+    Fenster-Kanten unterscheidbar gemacht werden.}
+  
+  \term{selektieren}{to select}{Selektieren beschreibt einen Vorgang
+    über den der Benutzer, z.B.\ durch Anklicken von Fenster-Knoten
+    oder Fenster-Kanten mit der Maus, eine Selektion aufbaut.}
 
 \end{nomenclature}
 
