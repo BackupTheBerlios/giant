@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.17 $
+--  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.18 $
 --  $Author: koppor $
---  $Date: 2003/09/02 13:36:08 $
+--  $Date: 2003/09/02 13:37:40 $
 --
 
 with Ada.Exceptions;
@@ -159,10 +159,10 @@ package body Giant.Layout_Factory is
             Config.Class_Sets.Class_Sets_Lists.Destroy (Class_Sets_List);
             String_Lists.Destroy (Class_Sets_String_List);
 
-            Logger.Debug ("After building, " &
-                          "<TBD> " &
-                          "Class Sets are remaining");
-            Logger.Debug ("They could not be converted from string to ID");
+            --  Logger.Debug ("After building, " &
+            --                "<TBD> " &
+            --                "Class Sets are remaining");
+            --  Logger.Debug ("They could not be converted from string to ID");
 
             return Res;
          end Convert_String_To_Meta_Class_Set;
