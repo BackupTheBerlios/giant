@@ -20,13 +20,14 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.16 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.17 $
 --  $Author: squig $
---  $Date: 2003/06/27 14:34:55 $
+--  $Date: 2003/06/29 11:51:56 $
 --
 
 with Ada.Unchecked_Deallocation;
 
+with Gdk.Color;
 with Glib;
 with Gtk.Box;
 with Gtk.Button;
@@ -36,6 +37,7 @@ with Gtk.Menu_Item;
 with Gtk.Widget;
 
 with Giant.Clists;
+with Giant.Config.Global_Data;
 with Giant.Controller;
 with Giant.Default_Dialog;
 with Giant.Dialogs;
@@ -46,10 +48,6 @@ with Giant.Input_Dialog;
 with Giant.Main_Window;
 
 package body Giant.Graph_Window is
-
-   package Graph_Window_Menu_Item_Callback is
-    new Gtk.Handlers.User_Callback (Gtk.Menu_Item.Gtk_Menu_Item_Record,
-                                    Graph_Window_Access);
 
    package Graph_Window_Input_Dialog is
      new Input_Dialog (Graph_Window_Access);
@@ -239,6 +237,41 @@ package body Giant.Graph_Window is
                                  Get_Selected_Selection (Window));
    end On_Selection_List_Hide;
 
+   generic
+      Highlight_Status : Vis_Windows.Selection_Highlight_Status;
+   package Highlight_Menu_Callback is
+
+        procedure On_Highlight
+          (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
+
+   end Highlight_Menu_Callback;
+
+   package body Highlight_Menu_Callback is
+
+        procedure On_Highlight
+          (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+        is
+           Window : Graph_Window_Access := Graph_Window_Access (Source);
+        begin
+           Controller.Highlight_Selection
+             (Get_Window_Name (Window), Get_Selected_Selection (Window),
+              Highlight_Status);
+        end On_Highlight;
+
+   end Highlight_Menu_Callback;
+
+   package Highlight_Status_None is
+     new Highlight_Menu_Callback (Vis_Windows.None);
+
+   package Highlight_Status_Color_1 is
+     new Highlight_Menu_Callback (Vis_Windows.Color_1);
+
+   package Highlight_Status_Color_2 is
+     new Highlight_Menu_Callback (Vis_Windows.Color_2);
+
+   package Highlight_Status_Color_3 is
+     new Highlight_Menu_Callback (Vis_Windows.Color_3);
+
    procedure On_Selection_List_Rename
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
@@ -269,6 +302,16 @@ package body Giant.Graph_Window is
         (Get_Window_Name (Source),
          Get_Selected_Selection (Window));
    end On_Selection_List_Delete;
+
+   procedure On_Selection_List_Set_Active
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+      Window : constant Graph_Window_Access := Graph_Window_Access (Source);
+   begin
+      Controller.Set_Current_Selection
+        (Get_Window_Name (Source),
+         Get_Selected_Selection (Window));
+   end On_Selection_List_Set_Active;
 
    procedure On_Selection_List_Show
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
@@ -321,6 +364,39 @@ package body Giant.Graph_Window is
       Initialize (Window);
    end Create;
 
+   procedure Initialize_Styles
+     (Window : access Graph_Window_Record'Class)
+   is
+
+      function Initialize_Style
+        (Config_Id : in Config.Global_Data.Selection_High_Light_ID)
+         return Gtk.Style.Gtk_Style
+      is
+         Style : Gtk.Style.Gtk_Style;
+         Color_Access : Config.Color_Access;
+         Color : Gdk.Color.Gdk_Color;
+      begin
+         Color_Access
+           := Config.Global_Data.Get_Selection_Highlight_Color (Config_Id);
+         Color := Gdk.Color.Parse (Config.Get_Color_Value (Color_Access));
+
+         Style := Gtk.Style.Copy
+           (Gui_Utils.String_Clists.Get_Style (Window.Selection_List));
+         Gtk.Style.Set_Foreground (Style, Gtk.Enums.State_Normal, Color);
+         Gtk.Style.Set_Foreground (Style, Gtk.Enums.State_Selected, Color);
+         return Style;
+      end;
+
+   begin
+      Window.Styles (Vis_Windows.None) := null;
+      Window.Styles (Vis_Windows.Color_1)
+        := Initialize_Style (Config.Global_Data.Color_1);
+      Window.Styles (Vis_Windows.Color_2)
+        := Initialize_Style (Config.Global_Data.Color_2);
+      Window.Styles (Vis_Windows.Color_3)
+        := Initialize_Style (Config.Global_Data.Color_3);
+   end Initialize_Styles;
+
    procedure Initialize
      (Window : access Graph_Window_Record'Class)
    is
@@ -328,6 +404,7 @@ package body Giant.Graph_Window is
 
       Menu : Gtk.Menu.Gtk_Menu;
       Menu_Item : Gtk.Menu_Item.Gtk_Menu_Item;
+      Submenu : Gtk.Menu.Gtk_Menu;
       Left_Box : Gtk.Box.Gtk_Vbox;
       Left_Paned : Gtk.Paned.Gtk_Paned;
       Vbox : Gtk.Box.Gtk_Vbox;
@@ -381,6 +458,29 @@ package body Giant.Graph_Window is
       --  selections list menu
       Gtk.Menu.Gtk_New (Window.Selection_List_Menu);
       Gtk.Menu.Append (Window.Selection_List_Menu,
+                       New_Menu_Item (-"Set Active",
+                                      On_Selection_List_Set_Active'Access,
+                                      Window));
+      Gtk.Menu.Append (Window.Selection_List_Menu, New_Menu_Separator);
+      Submenu := New_Sub_Menu (Window.Selection_List_Menu, -"Highlight");
+      Gtk.Menu.Append (Submenu, New_Menu_Item
+                       (-"Color 1",
+                        Highlight_Status_Color_1.On_Highlight'Access,
+                        Window));
+      Gtk.Menu.Append (Submenu, New_Menu_Item
+                       (-"Color 2",
+                        Highlight_Status_Color_2.On_Highlight'Access,
+                        Window));
+      Gtk.Menu.Append (Submenu, New_Menu_Item
+                       (-"Color 3",
+                        Highlight_Status_Color_3.On_Highlight'Access,
+                        Window));
+      Gtk.Menu.Append (Window.Selection_List_Menu, New_Menu_Item
+                       (-"Unhighlight",
+                        Highlight_Status_None.On_Highlight'Access,
+                        Window));
+      Gtk.Menu.Append (Window.Selection_List_Menu, New_Menu_Separator);
+      Gtk.Menu.Append (Window.Selection_List_Menu,
                        New_Menu_Item (-"Show", On_Selection_List_Show'Access,
                                       Window));
       Gtk.Menu.Append (Window.Selection_List_Menu,
@@ -406,7 +506,7 @@ package body Giant.Graph_Window is
                                       Window));
 
       --  selections
-      Gui_Utils.String_Clists.Create (Window.Selection_List, 2,
+      Gui_Utils.String_Clists.Create (Window.Selection_List, 3,
                                       Update_Selection'Access);
       Gui_Utils.String_Clists.Set_Show_Titles (Window.Selection_List, True);
       Gui_Utils.String_Clists.Connect_Popup_Menu
@@ -415,7 +515,9 @@ package body Giant.Graph_Window is
       Gui_Utils.String_Clists.Set_Column_Title
         (Window.Selection_List, 0, -"Selection");
       Gui_Utils.String_Clists.Set_Column_Title
-        (Window.Selection_List, 1, -"Color");
+        (Window.Selection_List, 1, -"Active");
+      Gui_Utils.String_Clists.Set_Column_Title
+        (Window.Selection_List, 2, -"Color");
 
       Gtk.Paned.Add2 (Left_Paned,
                       Add_Scrollbars (Window.Selection_List));
@@ -586,8 +688,34 @@ package body Giant.Graph_Window is
       Row  : in     Glib.Gint;
       Name : in     String)
    is
+      use type Gtk.Style.Gtk_Style;
+      use type Vis_Windows.Selection_Highlight_Status;
+
+      Window : Graph_Window_Access
+        := Graph_Window_Access (Gui_Utils.String_Clists.Get_Toplevel (List));
+      Highlighted : Vis_Windows.Selection_Highlight_Status
+        := Vis_Windows.Get_Highlight_Status (Window.Visual_Window, Name);
+      Is_Active : Boolean
+        := (Vis_Windows.Get_Current_Selection (Window.Visual_Window) = Name);
    begin
+      if (Window.Styles (Vis_Windows.Color_1) = null) then
+         Initialize_Styles (Window);
+      end if;
+
       Gui_Utils.String_Clists.Set_Text (List, Row, 0, Name);
+      if (Is_Active) then
+         Gui_Utils.String_Clists.Set_Text (List, Row, 1, -"Yes");
+      else
+         Gui_Utils.String_Clists.Set_Text (List, Row, 1, "");
+      end if;
+
+      Gui_Utils.String_Clists.Set_Cell_Style
+        (List, Row, 2, Window.Styles (Highlighted));
+      if (Highlighted /= Vis_Windows.None or else Is_Active) then
+         Gui_Utils.String_Clists.Set_Text (List, Row, 2, -"#####");
+      else
+         Gui_Utils.String_Clists.Set_Text (List, Row, 2, -"");
+      end if;
    end Update_Selection;
 
    procedure Add_Selection

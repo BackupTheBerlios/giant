@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.21 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.22 $
 --  $Author: squig $
---  $Date: 2003/06/25 18:59:59 $
+--  $Date: 2003/06/29 11:51:56 $
 --
 ------------------------------------------------------------------------------
 --
@@ -51,6 +51,7 @@
 with Giant.Graph_Lib;
 with Giant.Projects;
 with Giant.Valid_Names;
+with Giant.Vis_Windows;
 
 package Giant.Controller is
 
@@ -206,6 +207,11 @@ package Giant.Controller is
      (Window_Name    : in String;
       Selection_Name : in String);
 
+   procedure Highlight_Selection
+     (Window_Name      : in String;
+      Selection_Name   : in String;
+      Highlight_Status : in Vis_Windows.Selection_Highlight_Status);
+
    function Remove_Selection
      (Window_Name          : in String;
       Name                 : in String;
@@ -217,12 +223,20 @@ package Giant.Controller is
       Old_Name    : in String;
       New_Name    : in String);
 
+   procedure Set_Current_Selection
+     (Window_Name : in String;
+      Name        : in String);
+
    procedure Show_All_Selections
      (Window_Name    : in String);
 
    procedure Show_Selection
      (Window_Name    : in String;
       Selection_Name : in String);
+
+   procedure Unhighlight_Selection
+     (Window_Name : in String;
+      Name        : in String);
 
    ---------------------------------------------------------------------------
    --  Subgraphs

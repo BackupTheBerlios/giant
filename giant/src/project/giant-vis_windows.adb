@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.19 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.20 $
 --  $Author: squig $
---  $Date: 2003/06/22 23:03:19 $
+--  $Date: 2003/06/29 11:51:56 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -39,7 +39,7 @@ package body Giant.Vis_Windows is
    --  Name should correspond to Giant.Valid_Names.Standard_Name
    --  (only if used in GIANT). If you use this package separately
    --  you do not need a name that corresponds to Standard_Name.
-   Standard_Selection_Name : constant String := "Standard_Selection";
+   Standard_Selection_Name : constant String := "Default";
 
 
    ---------------------------------------------------------------------------
@@ -700,7 +700,9 @@ package body Giant.Vis_Windows is
    function May_Highlight_Status_Be_Changed
      (Vis_Window     : in Visual_Window_Access;
       Selection_Name : in String)
-     return Boolean is
+     return Boolean
+   is
+      use type Ada.Strings.Unbounded.Unbounded_String;
    begin
 
       if Vis_Window = null then
@@ -711,14 +713,7 @@ package body Giant.Vis_Windows is
          raise Selection_With_Passed_Name_Not_Found_Exception;
       end if;
 
-      -- check
-      if Ada.Strings.Unbounded."="
-        (Vis_Window.Current_Selection, Selection_Name) then
-
-         return False;
-      end if;
-
-      return True;
+      return (Vis_Window.Current_Selection /= Selection_Name);
    end May_Highlight_Status_Be_Changed;
 
    ---------------------------------------------------------------------------
@@ -740,7 +735,7 @@ package body Giant.Vis_Windows is
          raise Selection_With_Passed_Name_Not_Found_Exception;
       end if;
 
-      if May_Highlight_Status_Be_Changed (Vis_Window, Selection_Name) then
+      if not May_Highlight_Status_Be_Changed (Vis_Window, Selection_Name) then
          raise Highlight_Status_Of_Selection_May_Not_Be_Changed_Exception;
       end if;
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.37 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.38 $
 --  $Author: squig $
---  $Date: 2003/06/27 14:34:55 $
+--  $Date: 2003/06/29 11:51:56 $
 --
 
 with Ada.Exceptions;
@@ -120,7 +120,8 @@ package body Giant.Main_Window is
 
    Status_Bar : Gtk.Status_Bar.Gtk_Status_Bar;
 
-   Styles : array (Projects.Subgraph_Highlight_Status) of Gtk.Style.Gtk_Style;
+   Styles : array (Projects.Subgraph_Highlight_Status) of Gtk.Style.Gtk_Style
+ := (others => null);
 
    --  ugly workaround, see Close_Project
    Can_Close_Project : Boolean;
@@ -555,33 +556,36 @@ package body Giant.Main_Window is
    --  Initializers
    ---------------------------------------------------------------------------
 
-   function Initialize_Style
-     (Config_Id : in Config.Global_Data.Subgraph_High_Light_ID)
-     return Gtk.Style.Gtk_Style
-   is
-      Style : Gtk.Style.Gtk_Style;
-      Color_Access : Config.Color_Access;
-      Color : Gdk.Color.Gdk_Color;
-   begin
-      Color_Access
-        := Config.Global_Data.Get_Subgraph_Highlight_Color (Config_Id);
-      Color := Gdk.Color.Parse (Config.Get_Color_Value (Color_Access));
-
-      Style := Gtk.Style.Copy
-        (Gui_Utils.String_Clists.Get_Style (Subgraph_List));
-      Gtk.Style.Set_Base (Style, State_Normal, Color);
-      Gtk.Style.Set_Background (Style, State_Selected, Color);
-      return Style;
-   end;
-
    procedure Initialize_Styles
    is
+
+      function Initialize_Style
+        (Config_Id : in Config.Global_Data.Subgraph_High_Light_ID)
+         return Gtk.Style.Gtk_Style
+      is
+         Style : Gtk.Style.Gtk_Style;
+         Color_Access : Config.Color_Access;
+         Color : Gdk.Color.Gdk_Color;
+      begin
+         Color_Access
+           := Config.Global_Data.Get_Subgraph_Highlight_Color (Config_Id);
+         Color := Gdk.Color.Parse (Config.Get_Color_Value (Color_Access));
+
+         Style := Gtk.Style.Copy
+           (Gui_Utils.String_Clists.Get_Style (Subgraph_List));
+         Gtk.Style.Set_Foreground (Style, State_Normal, Color);
+         Gtk.Style.Set_Foreground (Style, State_Selected, Color);
+         return Style;
+      end;
+
    begin
-      Styles (Projects.None)
-        := Gui_Utils.String_Clists.Get_Style (Subgraph_List);
-      Styles (Projects.Color_1) := Initialize_Style (Config.Global_Data.Color_1);
-      Styles (Projects.Color_2) := Initialize_Style (Config.Global_Data.Color_2);
-      Styles (Projects.Color_3) := Initialize_Style (Config.Global_Data.Color_3);
+      Styles (Projects.None) := null;
+      Styles (Projects.Color_1)
+        := Initialize_Style (Config.Global_Data.Color_1);
+      Styles (Projects.Color_2)
+        := Initialize_Style (Config.Global_Data.Color_2);
+      Styles (Projects.Color_3)
+        := Initialize_Style (Config.Global_Data.Color_3);
    end Initialize_Styles;
 
    function Initialize_Menu
@@ -765,8 +769,6 @@ package body Giant.Main_Window is
       Widget_Boolean_Callback.Connect
         (Window, "delete_event",
          Widget_Boolean_Callback.To_Marshaller (On_Delete'Access));
-
-      Initialize_Styles;
    end Initialize;
 
    ---------------------------------------------------------------------------
@@ -820,9 +822,16 @@ package body Giant.Main_Window is
       Row  : in     Glib.Gint;
       Name : in     String)
    is
+      use type Gtk.Style.Gtk_Style;
+      use type Projects.Subgraph_Highlight_Status;
+
       Subgraph : Graph_Lib.Subgraphs.Subgraph
         := Projects.Get_Subgraph (Controller.Get_Project, Name);
    begin
+      if (Styles (Projects.Color_1) = null) then
+         Initialize_Styles;
+      end if;
+
       Gui_Utils.String_Clists.Set_Text (List, Row, 0, Name);
       Gui_Utils.String_Clists.Set_Text (List, Row, 1,
                               Natural'Image (Graph_Lib.Subgraphs.Get_Node_Count (Subgraph)));
@@ -833,6 +842,12 @@ package body Giant.Main_Window is
       Gui_Utils.String_Clists.Set_Cell_Style (List, Row, 3,
                                     Styles (Projects.Get_Highlight_Status
                                             (Controller.Get_Project, Name)));
+      if (Projects.Get_Highlight_Status
+          (Controller.Get_Project, Name) = Projects.None) then
+         Gui_Utils.String_Clists.Set_Text (List, Row, 3, "");
+      else
+         Gui_Utils.String_Clists.Set_Text (List, Row, 3, "#####");
+      end if;
    end Update_Subgraph;
 
    procedure Add_Subgraph

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.28 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.29 $
 --  $Author: squig $
---  $Date: 2003/06/27 14:34:55 $
+--  $Date: 2003/06/29 11:51:56 $
 --
 
 with Ada.Strings.Unbounded;
@@ -325,6 +325,19 @@ package body Giant.Controller is
       Vis_Windows.Fade_Out_Selection (Window, Selection_Name);
    end;
 
+   procedure Highlight_Selection
+     (Window_Name      : in String;
+      Selection_Name   : in String;
+      Highlight_Status : in Vis_Windows.Selection_Highlight_Status)
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+   begin
+      Vis_Windows.Set_Highlight_Status
+        (Window, Selection_Name, Highlight_Status);
+      Gui_Manager.Update_Selection (Window_Name, Selection_Name);
+   end;
+
    function Remove_Selection
      (Window_Name          : in String;
       Name                 : in String;
@@ -355,6 +368,22 @@ package body Giant.Controller is
       Gui_Manager.Rename_Selection (Window_Name, Old_Name, New_Name);
    end Rename_Selection;
 
+   procedure Set_Current_Selection
+     (Window_Name : in String;
+      Name        : in String)
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+      Previous_Selection_Name : String
+        := Vis_Windows.Get_Current_Selection (Window);
+   begin
+      Unhighlight_Selection (Window_Name, Name);
+
+      Vis_Windows.Set_Current_Selection (Window, Name);
+      Gui_Manager.Update_Selection (Window_Name, Previous_Selection_Name);
+      Gui_Manager.Update_Selection (Window_Name, Name);
+   end Set_Current_Selection;
+
    procedure Show_All_Selections
      (Window_Name    : in String)
    is
@@ -369,6 +398,14 @@ package body Giant.Controller is
    begin
       null;
    end;
+
+   procedure Unhighlight_Selection
+     (Window_Name : in String;
+      Name        : in String)
+   is
+   begin
+      Highlight_Selection (Window_Name, Name, Vis_Windows.None);
+   end Unhighlight_Selection;
 
    ---------------------------------------------------------------------------
    --  Subgraphs

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.21 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.22 $
 --  $Author: squig $
---  $Date: 2003/06/27 16:58:06 $
+--  $Date: 2003/06/29 11:51:56 $
 --
 
 with Ada.Strings.Unbounded;
@@ -100,6 +100,14 @@ package body Giant.Gui_Manager is
       String_Lists.Destroy (List);
 
       --  add selections
+      List := Vis_Windows.Get_All_Selections (Vis_Window);
+      Iterator := String_Lists.MakeListIter (List);
+      while String_Lists.More (Iterator) loop
+         String_Lists.Next (Iterator, Name);
+         Graph_Window.Add_Selection
+           (Window, Ada.Strings.Unbounded.To_String (Name));
+      end loop;
+      String_Lists.Destroy (List);
    end;
 
    ---------------------------------------------------------------------------
@@ -237,6 +245,21 @@ package body Giant.Gui_Manager is
       Graph_Window.Remove_Selection (Window, Old_Name);
       Graph_Window.Add_Selection (Window, New_Name);
    end Rename_Selection;
+
+   procedure Update_Selection
+     (Window_Name : in String;
+      Name        : in String)
+   is
+      Window : Graph_Window.Graph_Window_Access
+        := Get_Open_Window (Window_Name);
+   begin
+      if (Window = null) then
+         --  window is not shown
+         return;
+      end if;
+
+      Graph_Window.Update_Selection (Window, Name);
+   end Update_Selection;
 
    ---------------------------------------------------------------------------
    --  Subgraphs

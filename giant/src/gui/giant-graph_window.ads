@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.14 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.15 $
 --  $Author: squig $
---  $Date: 2003/06/27 16:58:06 $
+--  $Date: 2003/06/29 11:51:56 $
 --
 ------------------------------------------------------------------------------
 --
@@ -37,6 +37,7 @@ with Gtk.Label;
 with Gtk.Menu;
 with Gtk.Option_Menu;
 with Gtk.Paned;
+with Gtk.Style;
 with Gtk.Window;
 
 with Giant.Gui_Utils;
@@ -138,6 +139,9 @@ package Giant.Graph_Window is
       Name   : in     String);
 
 private
+   type Style_Array_Type is array (Vis_Windows.Selection_Highlight_Status)
+     of Gtk.Style.Gtk_Style;
+
    type Graph_Window_Record is
      new Gtk.Window.Gtk_Window_Record with record
         Split_Pane : Gtk.Paned.Gtk_Hpaned;
@@ -157,6 +161,9 @@ private
 
         --  the data record from projects
         Visual_Window : Vis_Windows.Visual_Window_Access;
+
+        --  the selection highlight color cell styles
+        Styles : Style_Array_Type := (others => null);
      end record;
 
 end Giant.Graph_Window;
