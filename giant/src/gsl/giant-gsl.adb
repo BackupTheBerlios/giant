@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/19 15:09:36 $
+-- $Date: 2003/07/24 14:27:39 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -135,24 +135,46 @@ package body Giant.Gsl is
    function Log_Gsl_Type
      (Var : Gsl_Type) 
       return String is
+
+      use Giant.Graph_Lib.Node_Id_Sets;
+      use Giant.Graph_Lib.Edge_Id_Sets;
    begin
       if Var = Gsl_Null then
          return "Gsl_Null";
+
       elsif Var'Tag = Gsl_Node_Id_Record'Tag then
          return "Gsl_Node_Id - " &
                 Graph_Lib.Node_Id_Image (Get_Value (Gsl_Node_Id (Var)));
+
+      elsif Var'Tag = Gsl_Node_Id_Record'Tag then
+         return "Gsl_Edge_Id";
+
+      elsif Var'Tag = Gsl_Node_Set_Record'Tag then
+         return "Gsl_Node_Set - Size: " &
+                Size (Get_Value (Gsl_Node_Set (Var)))'Img;
+
+      elsif Var'Tag = Gsl_Node_Set_Record'Tag then
+         return "Gsl_Edge_Set - Size: " &
+                Size (Get_Value (Gsl_Edge_Set (Var)))'Img;
+
       elsif Var'Tag = Gsl_String_Record'Tag then
          return "Gsl_String - " & Get_Value (Gsl_String (Var));
+
       elsif Var'Tag = Gsl_Boolean_Record'Tag then
          return "Gsl_Boolean - " & Get_Value (Gsl_Boolean (Var))'Img;
+
       elsif Var'Tag = Gsl_Natural_Record'Tag then
          return "Gsl_Natural - " & Get_Value (Gsl_Natural (Var))'Img;
+
       elsif Var'Tag = Gsl_List_Record'Tag then
          return "Gsl_List";
+
       elsif Var'Tag = Gsl_Var_Reference_Record'Tag then
          return "Gsl_Var_Reference";
+
       elsif Var'Tag = Gsl_Script_Reference_Record'Tag then
          return "Gsl_Script_Reference";
+
       else
          return "Unknown Type";
       end if;
