@@ -5,3 +5,6 @@
 *.log
 *.ps
 *.toc
+*.dvi
+*.out
+*.pdf
