@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.32 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.33 $
 --  $Author: schwiemn $
---  $Date: 2003/06/25 16:53:18 $
+--  $Date: 2003/06/25 16:54:31 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -869,7 +869,9 @@ package body Giant.Projects is
         Integer'Value (
                        (DOM.Core.Elements.Get_Attribute
                         (Data_XML_Node, "iml_graph_checksum")));
-
+      
+      ------------------------------------------------------------------------
+      -- initialize hash maps
       New_Project_Access.All_Subgraphs := Subgraph_Data_Hashs.Create;
       All_Vis_Windows.All_Subgraphs := Known_Vis_Windows_Hashs.Create;     
       

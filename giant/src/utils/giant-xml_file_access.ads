@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-xml_file_access.ads,v $, $Revision: 1.2 $
+-- $RCSfile: giant-xml_file_access.ads,v $, $Revision: 1.3 $
 -- $Author: schwiemn $
--- $Date: 2003/06/20 13:45:48 $
+-- $Date: 2003/06/25 16:53:18 $
 -- --------
 -- 
 -- This package offers basic functionality needed to handle xml files
@@ -50,7 +50,7 @@
 --
 with Input_Sources.File; -- from xmlada
 with Tree_Readers;       -- from xmlada
-with Sax.Readers;        -- from xmlada
+ with Sax.Readers;        -- from xmlada
 
 with DOM.Core.Nodes;     -- from xmlada
 with DOM.Core.Documents; -- from xmlada
