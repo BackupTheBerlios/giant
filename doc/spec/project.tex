@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: project.tex,v $, $Revision: 1.7 $
-%  $Date: 2003/02/13 12:18:58 $
+%  $RCSfile: project.tex,v $, $Revision: 1.8 $
+%  $Date: 2003/02/13 13:14:31 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -8,6 +8,7 @@
 % ==============================================================================
 
 
+%===================
 \section {Persistenz über Projekte}
 
 GIANT speichert persistente Informationen in sogenannten Projekten.
@@ -72,24 +73,50 @@ von Reflektion zum IML-Graphen unterstützt wird.
   KANN er auch SELBER mittels Paste und Copy im Emacs machen.
   SOLLTEN WIR NICHT UNBEDINGT IN DER SPEZ ZUSAGEN.
 
-\section {Greundlegendes Verhalten von GIANT beim Speichern von Projekten} 
+%===================
+\section {Grundlegendes Verhalten von GIANT beim Speichern von Projekten} 
+  
 
-Beim Beenden von GIANT werden automatisch alle zum Speichern markierten Anzeigefenster
-und alle IML-Teilgraphen in die entsprechenden Verwaltungsdateien geschrieben. Nicht
-zum Speichern markierte Anzeigefenster gehen verloren.\\
-Dieses Speichern kann der Benutzer auch explizit während des Betriebs von GIANT 
+  \subsection{Funktion \gq{Alles Speichern}} 
+  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>EVENTUELL USE CASE Alles Speichern
+  Beim Beenden von GIANT wird gefragt, ob alles gespeichert werden soll oder nicht.
+  Falls, ja werden alle Anzeigefenster und IML-Teilgraphen in die Verwaltungsdateien
+  geschrieben, falls nein bleibt der Zustand beim letzten Speichern erhalten.
+  Dieses Speichern kann auch während dem Betrieb durch den Benutzer veranlasst werden.
 
+  %===
+  \subsection {Persistenz von Anzeigefenstern}
+  Hinsichtlich der Persitenz von Anzeigenfenstern sind folgende Fälle zu unterscheiden:
 
+    \subsubsection {Persistente Anzeigefenster}
+    Alle im Projekt bereits vorhandenen Anzeigefenster (alle Anzeigefenster zu denen es eine entsprechende
+    Verwaltungsdatei gibt) werden auf der GUI in der Liste über die Anzeigefenster angezeigt, 
+    egal ob sie geöffnet oder nicht. Sie können aus dann dieser Liste ausgewählt und geöffnet werden.\\
+    Wird ein solches Anzeigefenster geschlossen, so fragt GIANT nach, ob er eventuelle Änderungen speichern soll
+    oder nicht. Falls ja, werden eventuelle Änderungen in die für das Anzeigefenster bereits 
+    vorhandene Verwaltungsdatei geschrieben, Falls nein, bleibt der Zustand des Anzeigefensters nach der letzten
+    Speicherung vorhanden (die zugehörige Verwaltungsdatei wird nicht verändert).
 
-  Im HAUPTMENÜ sind alle für das Projekt definierten Anzeigefenster
+    Ein persistentes Anzeigefenster kann gelöscht werden, hierbei werden alle Information über das Anzeigefenster einschließlich
+    der Verwaltungsdatei vernichtet
+    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>EVENTUELL USE CASE - Löschen persistenter Anzeigefenster
 
-\subsection{Verwaltungsdateien für Anzeigefenster}
-In einem Unterverzeichnis des Projektverzeichnisses werden jeweils in einzelnen Dateien.
+    \subsubsection{Nicht persistente Anzeigefenster}
+    Nicht persistente Anzeigefenster (typischerweise sind das vom Benutzer neu erzeugte Anzeigefenster) werden in der
+    entsprechenden Liste nur solange sie geöffnet sind auch angezeigt. Beim Schließen eines solchen Anzeigefensters fragt
+    GIANT nach, ob er das Anzeigefenster speichern soll oder nicht. Durch das Speichern wird dieses Fenster dann
+    zu einem persistenten Anzeigefenster und erhält eine eigene Verwaltungsdatei. Wird nicht gespeichert, so gehen
+    alle zugehörigen Informationen verloren.
 
-\subsection{Verwaltungsdateien für IML-Teilgraphen}
-Sämtliche IML-Teilgraphen
+  %===
+  \subsection {Persistenz von IML-Teilgraphen}
+  Alle in einem Projekt bereits vorhandenen IML-Teilgraphen werden auf der GUI angezeigt (in einer entsprechenden Liste).
+  IML-Teilgraphen können nicht einzeln gespeichert oder geladen werden, sondern nur über die Funktion 
+  \gq{Alles Speichern} (siehe oben).
+  Wird das Programm beendet ohne das zuvor die Funktion \gq{Alles Speichern} ausgeführt wird, so gehen 
+  alle nicht gespeicherten Informationen zu den IML-Teilgraphen verloren. Der Zustand des Projektes 
+  nach dem letzten Speichern bleibt dann erhalten.
 
-subsection{Speichern von IML-Teilgraphen}
-
-
-\subsection{Grundlegendes Verhalten beim Speichern}
+  Beim Ausführen der Funktion \qd{Alles SPeichern} werden sämtliche Änderungen für die IML-Teilgraphen 
+  in die Verwaltungsdateien geschrieben. Verwaltungsdateien für IML-Teilgraphen die zwischendurch gelöscht
+  wurden, werden ebenfalls gelöscht. Für neu angelegte IML-Teilgraphen werden dann Verwaltungsdateien erzeugt.
