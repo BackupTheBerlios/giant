@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-projects-test.adb,v $, $Revision: 1.10 $
---  $Author: squig $
---  $Date: 2003/07/14 14:13:53 $
+--  $RCSfile: giant-projects-test.adb,v $, $Revision: 1.11 $
+--  $Author: schwiemn $
+--  $Date: 2003/07/15 21:08:03 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -97,17 +97,12 @@ package body Giant.Projects.Test is
 
    begin
 
-      -- remove all files in the project directory
-      Kill_Files_In_Dir ("resources/test_project_directory/");
+      Kill_Files_In_Dir ("resources/test_project_directory/dir_1");
 
-      -- in the target dir for Save As
-      Kill_Files_In_Dir ("resources/test_project_copy_dir");
-
-      Kill_Files_In_Dir ("resources/test_project_copy_dir_2");
 
       Test_Project_1 := Giant.Projects.Create_Empty_Project
         ("My_Test_Project",
-         "resources/test_project_directory/",
+         "resources/test_project_directory/dir_1",
          "resources/rfg_examp.iml",
          Giant.Graph_Lib.Get_Graph_Hash);
 
@@ -123,20 +118,14 @@ package body Giant.Projects.Test is
 
 
       Test_Project_1 := Projects.Load_Project_File
-        ("resources/test_project_directory/My_Test_Project.xml");
+        ("resources/test_project_directory/dir_1/My_Test_Project.xml");
       ---------
-
-
 
 
       Subgraph_Donald := Giant.Graph_Lib.Subgraphs.Create ("Donald");
       Subgraph_Daisy  := Giant.Graph_Lib.Subgraphs.Create ("Daisy");
 
       Vis_Window_Durchsicht := Giant.Vis_Windows.Create_New ("Durchsicht");
-
-
-
-
 
 
 
@@ -263,6 +252,15 @@ package body Giant.Projects.Test is
          "",
          "",
          "resources/vis_styles/only_defaults_giant_vis_style.xml");
+         
+      -- create directories necessary for test (if they do not already exist)
+      File_Management.Create_Dir_Path 
+        ("resources/test_project_directory/dir_1");
+      File_Management.Create_Dir_Path 
+        ("resources/test_project_directory/dir_2");                 
+      File_Management.Create_Dir_Path 
+        ("resources/test_project_directory/dir_3"); 
+        
    end Set_Up;
 
    procedure Tear_Down (T : in out Test_Case) is
