@@ -20,10 +20,12 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.18 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.19 $
 --  $Author: koppor $
---  $Date: 2003/06/25 16:40:40 $
+--  $Date: 2003/06/25 18:52:21 $
 --
+
+with Giant.Constant_Ptr_Hashs;
 
 --  Bauhaus / IML
 with IML_Reflection;
@@ -41,6 +43,7 @@ with IML_Node_IDs;
 pragma Elaborate_All (Lists);
 pragma Elaborate_All (Hashed_Mappings);
 pragma Elaborate_All (Ordered_Sets);
+pragma Elaborate_All (Giant.Constant_Ptr_Hashs);
 
 package Giant.Graph_Lib is
 
@@ -712,6 +715,19 @@ package Giant.Graph_Lib is
    -------------
    -- Hashing --
    -------------
+
+   ---------------------------------------------------------------------------
+   --  Will become the maximum size of the hashtable
+   Node_Attribute_Id_Hash_Range_Size : constant := 29;
+
+   ---------------------------------------------------------------------------
+   --  used more than once, therefore it is included here
+   package Node_Attribute_Id_Hash_Functions is
+      new Constant_Ptr_Hashs
+     (T          => IML_Reflection.Field'Class,
+      T_Ptr      => Node_Attribute_Id,
+      Range_Size => Node_Attribute_Id_Hash_Range_Size);
+
 
    ---------------------------------------------------------------------------
    --  Returns:
