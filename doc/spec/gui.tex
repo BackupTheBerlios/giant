@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.30 $
-%  $Date: 2003/02/25 14:33:49 $
-%  $Author: squig $
+%  $RCSfile: gui.tex,v $, $Revision: 1.31 $
+%  $Date: 2003/02/25 17:26:08 $
+%  $Author: schwiemn $
 %
 %  Description: Bis zu Revision 1.6 sind UseCase-artige Beschreibungen enthalten,
 %  die für UseCases nützlich sein könnten. 
@@ -191,13 +191,16 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     
     
     Wenn auf einem Knoten die rechte Maustaste geklickt wird, öffnet sich
-    folgendes Kontextmenü:
+    folgendes Popup Menü:
     
     >>>>>>>> hier fehlen noch Punkte
+    
+    \subsubsection{Node-Popup-Menü} \label{Node-Popup-Menü}
     \begin{enumerate}
       \item Show Node Info Window
 
       \item Annotate Node \label{Annotate Node}
+      \item Change Node Annotation \label{Change Node Annotation}
       \item Delete Node Annotation \label{Delete Node Annotation}
     \end{enumerate}
     Wenn in der VIS\_PANE, nicht auf einer Kante oder einem Knoten, die rechte
@@ -402,6 +405,12 @@ Beschreibung von verschiedenen Textfeldtypen etc. zur Eingabe von Daten.
 
 \subsection{Platz Schaffen-Dialog}
 \label{Platz Schaffen-Dialog}
+
+
+
+  \subsection{Knoten Annotations-Dialog}
+  \label{Knoten Annotations-Dialog}
+
 
 Im Dialogfenster MAKE\_ROOM wird in einem Textfeld als Zahl angegeben, um wieviel
 Pixel die Knoten an der vorher markierten Stelle auseinandergeschoben werden sollen.

@@ -1,6 +1,6 @@
 % ==============================================================================
 %  $RCSfile: node_annotations.tex,v $
-%  $Date: 2003/02/25 16:11:30 $
+%  $Date: 2003/02/25 17:26:08 $
 %  $Author: schwiemn $
 %
 %  Description: Use-Cases zum Annotieren von Knoten
@@ -19,7 +19,7 @@
     \cond Die neue Annotation ist noch nicht
           in der Verwaltungsdatei für Knoten-Annotationen eingetragen.
     \cond Der annotierte Knoten wird in allen Anzeigefenstern als annotiert
-          hervorgehoben (hat nun das entsprechende Icon).
+          gekennzeichnet.
           
   \end{postsuccess}
 
@@ -29,10 +29,14 @@
   
   \begin{proc}
     \step[1] 
-    Der Benutzer wählt den Fenster-Knoten aus, der annotiert werden soll und
-    öffnet das entsprechende POPUPMENÜ -> VERWEIS ZU GUI.
+    Der Benutzer führt einen Rechtsklick auf den 
+    Knoten, der annotiert werden soll,
+    durch und wählt im Popup Menü für Knoten den Eintrag
+    \gq {Annotate Node} aus (siehe \ref{Node-Popup-Menü}).
+   
     \step[2]
-    GIANT zeigt nun den EINGABEDIALOG FÜR ANNOTATIONEN.
+    GIANT zeigt nun den Knoten Annotations-Dialog 
+    (siehe \ref{Knoten Annotations-Dialog}).
     
     \step[3]
     Der Benutzer gibt dort den entsprechenden Text für die Knoten-Annotation 
@@ -81,12 +85,15 @@
   
   \begin{proc}
     \step[1] 
-    Der Benutzer wählt den Fenster-Knoten aus, dessen Annotation geändert
-    werden soll und öffnet durch Rechtsklick das entsprechende
-    Popupmenu \ref{Annotate Node}.
+    Der Benutzer führt einen Rechtsklick auf den 
+    Knoten, dessen Annotation geändert werden soll,
+    durch und wählt im Popup Menü für Knoten den Eintrag
+    \gq {Change Node Annotation} aus (siehe \ref{Node-Popup-Menü}).
+ 
     
     \step[2]
-    GIANT zeigt nun den EINGABEDIALOG FÜR ANNOTATIONEN. Hier wird der Text
+    GIANT zeigt nun den Knoten Annotations-Dialog 
+    (siehe \ref{Knoten Annotations-Dialog}). Hier wird der Text
     für die bisherige Annotation dargestellt.
     
     \step[3]
@@ -134,11 +141,11 @@
   \end{postfail}
   
   \begin{proc}
+  
     \step[1] 
-    Der Benutzer wählt den Fenster-Knoten aus, dessen Annotation gelöscht 
-    werden soll durch Rechtsklick auf den Knoten und Auswahl von Delete Node
-    Annotation im Popupmenü.
-    \ref{Delete Node Annotation}
+    Der Benutzer führt einen Rechtsklick auf den zu löschenden 
+    Knoten durch und wählt im Popup Menü für Knoten den Eintrag
+    \gq {Delete Node Annotation} aus (siehe \ref{Node-Popup-Menü}).
           
     \step[2] 
     GIANT löscht die entsprechende Annotation.
