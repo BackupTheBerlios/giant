@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis.ads,v $, $Revision: 1.10 $
+--  $RCSfile: giant-vis.ads,v $, $Revision: 1.11 $
 --  $Author: keulsn $
---  $Date: 2003/07/12 16:19:27 $
+--  $Date: 2003/07/13 19:58:09 $
 --
 ------------------------------------------------------------------------------
 
@@ -63,7 +63,7 @@ package Giant.Vis is
       Coordinate_Type   => Logic_Float,
       Coordinate_Zero   => 0.0,
       Point_Size        => 0.0,
-      Image             => Logic_Float_Image,
+      Image             => Logic_Float'Image,
       Value             => Logic_Float'Value,
       Coord_Less_Equal  => "<=",
       Coord_Negate      => "-",

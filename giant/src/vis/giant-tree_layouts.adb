@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.13 $
---  $Author: koppor $
---  $Date: 2003/07/11 01:47:01 $
+--  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.14 $
+--  $Author: keulsn $
+--  $Date: 2003/07/13 19:58:09 $
 --
 ------------------------------------------------------------------------------
 --  Variables are named according to the paper
@@ -198,6 +198,8 @@ package body Giant.Tree_Layouts is
          The_Matrix_Layout := Matrix_Layouts.Initialize
            (Layout.Widget,
             Layout.Widget_Lock,
+            --  FIX: inserted False 13/07/2003 sk
+            False,
             The_Selection,
             Matrix_Target_Position);
 
