@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.ads,v $, $Revision: 1.5 $
+--  $RCSfile: giant-evolutions.ads,v $, $Revision: 1.6 $
 --  $Author: keulsn $
---  $Date: 2003/06/04 10:25:48 $
+--  $Date: 2003/06/04 13:25:38 $
 --
 ------------------------------------------------------------------------------
 --
@@ -268,7 +268,8 @@ package Giant.Evolutions is
    --  complexity of 'Individual' is known. Should be overwritten by
    --  descendants to show a more meaningful text.
    --
-   --  MUST be able to be reentrant from different tasks.
+   --  MUST be able to be reentrant from different tasks. Usually should
+   --  return a constant String
    --
    --  The following Texts can be replaced inside the String:
    --    %v - Natural'Image (Get_Progress_Count (Individual))
@@ -278,7 +279,7 @@ package Giant.Evolutions is
    --  Precondition
    --    Get_Complexity (Individual) > 0
    --  Returns:
-   --    -"Items processed:%v of%u"
+   --    "%v " & (-"of") & " %u"
    function Get_Progress_Text_Showing_Complexity
      (Individual : access Evolution)
      return String;
@@ -288,7 +289,8 @@ package Giant.Evolutions is
    --  complexity of 'Individual' is unknown. Should be overwritten by
    --  descendants to show a more meaningful text.
    --
-   --  MUST be able to be reentrant from different tasks.
+   --  MUST be able to be reentrant from different tasks. Usually should
+   --  return a constant String.
    --
    --  The following Texts can be replaced inside the String:
    --    %v - Natural'Image (Get_Progress_Count (Individual))
@@ -296,7 +298,7 @@ package Giant.Evolutions is
    --  Precondition
    --    Get_Complexity (Individual) = 0
    --  Returns:
-   --    -"Items processed:%v"
+   --    "%v"
    function Get_Progress_Text_Unknown_Complexity
      (Individual : access Evolution)
      return String;
@@ -637,14 +639,6 @@ private                       -- Private Part --
       Cancel_Handler  => 0);
 
 
-   ------------------
-   -- Visual Modes --
-   ------------------
-
-   type Visual_Mode_Type is
-     (Uninitialized, Showing_Counter, Showing_Percentage);
-
-
    ----------------------------------
    -- Type declaration completions --
    ----------------------------------
@@ -665,8 +659,6 @@ private                       -- Private Part --
          Parent           : Evolution_Class_Access            := null;
          --  Child evolution to be evolved before this can continue or null
          Child            : Evolution_Class_Access            := null;
-         --  Stores in which mode the progress is visualized
-         Visual_Mode      : Visual_Mode_Type                  := Uninitialized;
       end record;
 
    type Concurrent_Evolution is abstract new Evolution with null record;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant_test-concurrent_calculations.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant_test-concurrent_calculations.adb,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/06/02 00:09:07 $
+--  $Date: 2003/06/04 13:25:38 $
 --
 ------------------------------------------------------------------------------
 
@@ -42,7 +42,7 @@ package body Giant_Test.Concurrent_Calculations is
       Pointer := new Counter;
       Giant.Evolutions.Initialize
         (Giant.Evolutions.Evolution_Class_Access (Pointer),
-         Number_Of_Steps);
+         0); --  Number_Of_Steps);
       Pointer.Number := Calculation_Number;
       return Pointer;
    end Create;
@@ -63,12 +63,12 @@ package body Giant_Test.Concurrent_Calculations is
       end if;
       Giant.Evolutions.Advance_Progress (Individual, 1);
       if Giant.Evolutions.Get_Progress_Count (Individual) >=
-        Giant.Evolutions.Get_Complexity (Individual) then
+        100 then --Giant.Evolutions.Get_Complexity (Individual) then
 
          Next_Action := Giant.Evolutions.Finish;
       else
          if Giant.Evolutions.Get_Progress_Count (Individual)
-           mod (Giant.Evolutions.Get_Complexity (Individual) / 2 + 10) = 0 then
+           mod (100 / 2 + 10) = 0 then
 
             Next_Action := Giant.Evolutions.Synchronize;
          else

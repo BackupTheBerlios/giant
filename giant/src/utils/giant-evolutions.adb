@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.7 $
 --  $Author: keulsn $
---  $Date: 2003/06/04 10:25:48 $
+--  $Date: 2003/06/04 13:25:38 $
 --
 ------------------------------------------------------------------------------
 
@@ -157,7 +157,6 @@ package body Giant.Evolutions is
       Individual.Child_Progress := 0;
       Individual.Next_Action := Run;
       Individual.Parent := null;
-      Individual.Visual_Mode := Uninitialized;
    end Initialize;
 
    procedure Synchronized_Step
@@ -213,7 +212,7 @@ package body Giant.Evolutions is
      return Boolean is
    begin
       if Get_Next_Action (Individual) = Cancel then
-         Evolution_Logger.Debug
+         Evolution_Logger.Error
            ("Validation failed (because Next_Action set to Cancel) for "
             & Logging_Name (Individual)
             & ". Possibly Initialize was not called.");
@@ -221,6 +220,20 @@ package body Giant.Evolutions is
       end if;
       return True;
    end Validate;
+
+   procedure Init_Visuals
+     (Individual : access Evolution'Class;
+      Dialog     : in     Progress_Dialog.Progress_Dialog_Access := null) is
+   begin
+      if Progress_Dialog."/=" (Dialog, null) then
+         Progress_Dialog.Set_Lower (Dialog, 0.0);
+         Progress_Dialog.Set_Upper (Dialog, 0.0);
+         Progress_Dialog.Set_Activity_Mode (Dialog, True);
+         Progress_Dialog.Set_Progress_Text
+           (Dialog, Get_Progress_Text_Unknown_Complexity (Individual));
+         Progress_Dialog.Show_All (Dialog);
+      end if;
+   end Init_Visuals;
 
    procedure Update_Visuals
      (Individual : access Evolution'Class;
@@ -231,7 +244,6 @@ package body Giant.Evolutions is
       Complexity_Known : Boolean := True;
       Complexity       : Natural := 0;
       Step_Count       : Natural := 0;
-      --  Progress         : Float;
    begin
       if Progress_Dialog."/=" (Dialog, null) then
          loop
@@ -247,19 +259,18 @@ package body Giant.Evolutions is
          end loop;
 
          if Complexity_Known then
-            --  Progress := Float (Step_Count) / Float (Complexity));
-            if Individual.Visual_Mode /= Showing_Percentage then
+            if Progress_Dialog.Get_Activity_Mode (Dialog) then
+               Progress_Dialog.Set_Activity_Mode (Dialog, False);
                Progress_Dialog.Set_Progress_Text
                  (Dialog, Get_Progress_Text_Showing_Complexity (Individual));
-               Individual.Visual_Mode := Showing_Percentage;
             end if;
             Progress_Dialog.Set_Upper (Dialog, Float (Complexity));
             Progress_Dialog.Set_Value (Dialog, Float (Step_Count));
          else
-            if Individual.Visual_Mode /= Showing_Counter then
+            if not Progress_Dialog.Get_Activity_Mode (Dialog) then
+               Progress_Dialog.Set_Activity_Mode (Dialog, True);
                Progress_Dialog.Set_Progress_Text
                  (Dialog, Get_Progress_Text_Unknown_Complexity (Individual));
-               Individual.Visual_Mode := Showing_Counter;
             end if;
             Progress_Dialog.Set_Value (Dialog, Float (Step_Count));
          end if;
@@ -277,14 +288,14 @@ package body Giant.Evolutions is
      (Individual : access Evolution)
      return String is
    begin
-      return -"Items processed:%p of%c";
+      return "%v " & (-"of") & " %u";
    end Get_Progress_Text_Showing_Complexity;
 
    function Get_Progress_Text_Unknown_Complexity
      (Individual : access Evolution)
      return String is
    begin
-      return "Items processed:%p";
+      return "%v";
    end Get_Progress_Text_Unknown_Complexity;
 
 
@@ -546,6 +557,7 @@ package body Giant.Evolutions is
                   Perform_Action := Cancel;
                end if;
 
+               pragma Assert (Perform_Action in Evolution_Action);
                case Perform_Action is
                   when Synchronize =>
                      Next_Action := Cancel;
@@ -684,12 +696,11 @@ package body Giant.Evolutions is
             Drivers (Driver_Id).Cancel_Handler :=
               Driver_Dialog_Cb.Connect
               (Widget    => Dialog,
-               Name      => "canceled",
+               Name      => "cancelled",
                Marsh     => Driver_Dialog_Cb.To_Marshaller
                               (Cancel_Callback'Access),
                User_Data => Driver_Id);
-            Progress_Dialog.Set_Lower (Dialog, 0.0);
-            Progress_Dialog.Show_All (Dialog);
+            Init_Visuals (Drivers (Driver_Id).Individual, Dialog);
          end if;
       end Initialize_Driver;
 
@@ -995,15 +1006,13 @@ package body Giant.Evolutions is
 
          if Progress_Dialog."/=" (Driver_State.Dialog, null) then
             Progress_Dialog.Ref (Driver_State.Dialog);
-            Dialog_Cb.Connect
+            Driver_State.Cancel_Handler := Dialog_Cb.Connect
               (Widget    => Driver_State.Dialog,
-               Name      => "canceled",
+               Name      => "cancelled",
                Marsh     => Dialog_Cb.To_Marshaller
-                              (Iterative_Cancel_Callback'Access));
-
+                             (Iterative_Cancel_Callback'Access));
             Progress_Dialog.Set_Modal (Driver_State.Dialog);
-            Progress_Dialog.Set_Lower (Driver_State.Dialog, 0.0);
-            Progress_Dialog.Show_All (Driver_State.Dialog);
+            Init_Visuals (Driver_State.Individual, Driver_State.Dialog);
          end if;
          Idle_Handler := Gtk.Main.Idle_Add
            (Iterative_Driver_Callback'Access);
@@ -1014,7 +1023,8 @@ package body Giant.Evolutions is
    begin
       if Progress_Dialog."/=" (Driver_State.Dialog, null) then
          Gtk.Handlers.Disconnect
-           (Driver_State.Dialog, Driver_State.Cancel_Handler);
+           (Driver_State.Dialog,
+            Driver_State.Cancel_Handler);
          Progress_Dialog.Destroy (Driver_State.Dialog);
          Progress_Dialog.Unref (Driver_State.Dialog);
       end if;
