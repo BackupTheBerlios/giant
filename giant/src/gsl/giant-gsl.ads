@@ -22,25 +22,32 @@
 --
 -- $RCSfile: giant-gsl.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/29 14:27:10 $
+-- $Date: 2003/09/02 09:22:46 $
 --
--- This package implements the datatypes used in GSL.
+------------------------------------------------------------------------------
+-- This package includes some global parts of the GSL implementation
+-- provided by GIANT.
+--
+-- There are three parts:
+--   - exceptions
+--   - two datastructures (Gsl_Type and Syntax_Node)
+--   - instantiations of some packages for Bauhaus.Reuse
 --
 
+-- from Ada
 with Ada.Strings.Unbounded;
 use  Ada.Strings.Unbounded;
 
--- from Bauhaus Reuse
+-- from Bauhaus.Reuse
 with Stacks_Unbounded;
 pragma Elaborate_All (Stacks_Unbounded);
-
 with Hashed_Mappings;
 pragma Elaborate_All (Hashed_Mappings);
 
+-- from Giant
 with Giant.Default_Logger;
 
 package Giant.Gsl is
-
 
    ---------------------------------------------------------------
    -- Gsl exceptions, should be catched in the gsl interpreter) --
@@ -135,29 +142,28 @@ package Giant.Gsl is
    -------------------------------------------------
 
    ---------------------------------------------------------------------------
-   --
+   -- instantiation of different stack types (Stacks_Unbounded)
    package Execution_Stacks is new Stacks_Unbounded
      (Elem_Type => Syntax_Node);
 
-   ---------------------------------------------------------------------------
-   --
    package Result_Stacks is new Stacks_Unbounded
      (Elem_Type => Gsl_Type);
 
-   ---------------------------------------------------------------------------
-   --
    package Activation_Record_Stacks is new Stacks_Unbounded
      (Elem_Type => Activation_Record);
 
    ---------------------------------------------------------------------------
-   -- instantiation of Hashed_Mappings for GSL variables
-   -- the hash function Script_Hash uses String_Hash
+   -- instantiation of Hashed_Mappings for gsl variables
+   -- the hash function Gsl_Var_Hash uses String_Hash
+   --
+   -- Parameters:
+   --   K - key
+   -- Returns:
+   --   the hash value of K
    function Gsl_Var_Hash
      (K : Unbounded_String)
       return Integer;
 
-   ---------------------------------------------------------------------------
-   --
    package Gsl_Var_Hashed_Mappings is new Hashed_Mappings
      (Key_Type => Unbounded_String,
       Value_Type => Gsl_Type,
@@ -176,7 +182,7 @@ private
    Gsl_Null : constant Gsl_Type := null;
 
    ---------------------------------------------------------------------------
-   -- Syntax_Node is the type used in the Syntax Tree and the Execution Stack
+   -- Syntax_Node is the type used in Gsl.Syntax_Tree and Gsl.Execution_Stacks
    type Syntax_Node_Record is
       record
          N_Type  : Node_Type;
@@ -189,7 +195,7 @@ private
    Null_Node : constant Syntax_Node := null;
 
    ---------------------------------------------------------------------------
-   -- Activation Record used in the Gsl Interpreter
+   -- Activation_Record is used in Gsl.Interpreters
    type Activation_Record_Record is
       record
          Parent : Activation_Record;

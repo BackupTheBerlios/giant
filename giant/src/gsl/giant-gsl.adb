@@ -22,18 +22,20 @@
 --
 -- $RCSfile: giant-gsl.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/29 14:27:10 $
---
--- This package implements the datatypes used in GSL.
+-- $Date: 2003/09/02 09:22:46 $
 --
 
+-- from Ada
 with Ada.Tags;
 use  Ada.Tags;
 
+-- from Bauhaus.Reuse
 with String_Hash;
 
+-- from Giant
 with Giant.Graph_Lib;
 
+-- from Giant.Gsl
 with Giant.Gsl.Types;
 use  Giant.Gsl.Types;
 with Giant.Gsl.Syntax_Tree;
@@ -42,16 +44,7 @@ use  Giant.Gsl.Syntax_Tree;
 package body Giant.Gsl is
 
    ---------------------------------------------------------------------------
-   --
-   function Gsl_Var_Hash
-     (K : Unbounded_String)
-      return Integer is
-   begin
-      return String_Hash (To_String (K));
-   end Gsl_Var_Hash;
-
-   ---------------------------------------------------------------------------
-   --
+   -- creates a String-representation for a Gsl_Type
    function Gsl_Type_Image
      (Object : Gsl_Type)
       return String is
@@ -101,7 +94,7 @@ package body Giant.Gsl is
    end Gsl_Type_Image;
 
    ---------------------------------------------------------------------------
-   --
+   -- creates a String-representation for a Syntax_Node
    function Syntax_Node_Image
      (Node : Syntax_Node)
       return String is
@@ -128,5 +121,14 @@ package body Giant.Gsl is
       end if;
       return "Null_Node";
    end Syntax_Node_Image;
+
+   ---------------------------------------------------------------------------
+   -- hash function for Gsl_Var_Hashed_Mappings
+   function Gsl_Var_Hash
+     (K : Unbounded_String)
+      return Integer is
+   begin
+      return String_Hash (To_String (K));
+   end Gsl_Var_Hash;
 
 end Giant.Gsl;
