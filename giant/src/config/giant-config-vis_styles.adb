@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.20 $
+-- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.21 $
 -- $Author: schwiemn $
--- $Date: 2003/07/11 17:18:21 $
+-- $Date: 2003/07/14 19:15:00 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -741,7 +741,7 @@ package body Giant.Config.Vis_Styles is
          -- create the filter for each node class and insert the setting
 
          -- 2.1 Get all node classes the actual setting should be used for
-         ------------------------------------------ ----------------------    
+         -----------------------------------------------------------------    
          Node_Class_Names_List :=
            Get_All_Node_Class_Names (XML_Node_Top_Level);
 
@@ -1251,9 +1251,8 @@ package body Giant.Config.Vis_Styles is
              (Default_Vis_Style_File),
             Global_Default_Vis_Style_Name);
 
-      exception 
+      exception   
          when others =>
-
             raise Illegal_Default_Vis_Style_Exception;
       end;
 

@@ -20,13 +20,17 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-iml_class_inheritance_proc.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-iml_class_inheritance_proc.adb,v $, $Revision: 1.2 $
 --  $Author: schwiemn $
---  $Date: 2003/07/11 13:56:49 $
+--  $Date: 2003/07/14 19:15:00 $
 --
 with DOM.Core.Elements;  -- from xmlada
 
-package body Giant.IML_Class_Inheritance_Proc is
+with GIANT.Logger;  -- from GIANT
+
+   package body Giant.IML_Class_Inheritance_Proc is
+
+   package Logger is new Giant.Logger("Giant.IML_Class_Inheritance_Proc");
 
    ---------------------------------------------------------------------------
    --  <!ATTLIST super_node_class
@@ -74,7 +78,7 @@ package body Giant.IML_Class_Inheritance_Proc is
       A_Node_Class_ID := Graph_Lib.Convert_Node_Class_Name_To_Id
         (DOM.Core.Elements.Get_Attribute
           (XML_Node, "super_start_node_class"));  
-      
+            
       Node_Class_Set := Graph_Lib.Get_Inherited_Classes
         (Node_Class     => A_Node_Class_ID,
          Include_Parent => True);     

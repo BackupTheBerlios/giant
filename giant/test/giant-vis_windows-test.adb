@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-vis_windows-test.adb,v $, $Revision: 1.8 $
---  $Author: squig $
---  $Date: 2003/07/14 14:13:53 $
+--  $RCSfile: giant-vis_windows-test.adb,v $, $Revision: 1.9 $
+--  $Author: schwiemn $
+--  $Date: 2003/07/14 19:15:00 $
 --
 with Ada.Streams.Stream_IO;
 
@@ -258,7 +258,7 @@ package body Giant.Vis_Windows.Test is
       Test_Window : Vis_Windows.Visual_Window_Access;
    begin
 
-      for i in 1 .. 500_000_000 loop
+      for i in 1 .. 1 loop
          Test_Window := Set_Up_Vis_Window ("Test_Window_X");
          Vis_Windows.Deallocate_Vis_Window_Deep (Test_Window);
       end loop;
@@ -269,7 +269,6 @@ package body Giant.Vis_Windows.Test is
 
       Test_Window : Vis_Windows.Visual_Window_Access;
    begin
-      Logger.Warn ("=== Running Vis Windows ===");
 
       Test_Window := Set_Up_Vis_Window ("Test_Window_X");
       Check_Default_Win_Status (Test_Window);
@@ -303,13 +302,86 @@ package body Giant.Vis_Windows.Test is
 
 
    ---------------------------------------------------------------------------
-   procedure Test_Changing_Names
+   procedure Test_Changing_Status_And_Content
       (R : in out AUnit.Test_Cases.Test_Case'Class) is
 
+      Test_Window : Vis_Windows.Visual_Window_Access;
    begin
+   
+      Test_Window := Set_Up_Vis_Window ("Test_Window_X");
+      Check_Default_Win_Status (Test_Window);
+      
+      -- do some changes
+      ------------------
+      Vis_Windows.Change_Name (Test_Window, "Test_Window_X-New_Name");
+      
+      Vis_Windows.Change_Selection_Name 
+        (Test_Window,
+         "Selection_1",
+         "Selection_1-New_Name");   
+               
+      Vis_Windows.Change_Selection_Name 
+        (Test_Window,
+         "Selection_2",
+         "Selection_2-New_Name");  
+                 
+      Vis_Windows.Set_Current_Selection (Test_Window, "Selection_3");
+                 
+      -- should also reset current selection to default           
+      Vis_Windows.Remove_Selection (Test_Window, "Selection_3");
+                                   
 
-      null;
-   end  Test_Changing_Names;
+   
+                             
+                                    
+      -- check important exceptions
+      -----------------------------
+      
+      -- Standard_Selection_Name_May_Not_Be_Changed_Exception
+      begin
+         Vis_Windows.Change_Selection_Name 
+           (Test_Window,
+            "Default",
+            "Default-New_Name");         
+         Assert 
+           (False, 
+            "Check Change_Selection_Name " 
+            & "- ""Standard_Selection_Name_May_Not_Be_Changed_Exception"" "
+            & "not rised correctly.");
+      exception
+         when Standard_Selection_Name_May_Not_Be_Changed_Exception =>
+            Assert 
+              (False, 
+               "Check Change_Selection_Name " 
+               & "- ""Standard_Selection_Name_May_Not_Be_Changed_Exception"" "
+               & "not rised correctly.");    
+      end;
+      
+      -- Standard_Selection_May_Not_Be_Removed_Exception
+      begin
+         Vis_Windows.Remove_Selection (Test_Window, "Default");       
+         Assert 
+           (False, 
+            "Check Remove_Selection " 
+            & "- ""Standard_Selection_May_Not_Be_Removed_Exception"" "
+            & "not rised correctly.");
+      exception
+         when Standard_Selection_May_Not_Be_Removed_Exception =>
+            Assert 
+              (False, 
+               "Check Remove_Selection " 
+               & "- ""Standard_Selection_May_Not_Be_Removed_Exception"" "
+               & "not rised correctly.");    
+      end;
+      
+
+      Vis_Windows.Deallocate_Vis_Window_Deep (Test_Window);
+      
+      
+      
+      
+      -- Reload
+   end  Test_Changing_Status_And_Content;
 
    ---------------------------------------------------------------------------
    function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is
@@ -321,7 +393,7 @@ package body Giant.Vis_Windows.Test is
    procedure Register_Tests (T : in out Test_Case) is
    begin
 
-      --Register_Routine (T, Leack_Test'Access, "Leack_Test");
+      Register_Routine (T, Leack_Test'Access, "Leack_Test");
       Register_Routine (T, Test_Init'Access, "Test_Init");
       Register_Routine (T, Test_Streaming'Access, "Test_Streaming");
 
