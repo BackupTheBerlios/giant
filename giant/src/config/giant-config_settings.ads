@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.8 $
--- $Author: schwiemn $
--- $Date: 2003/06/23 17:17:45 $
+-- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.9 $
+-- $Author: squig $
+-- $Date: 2003/06/25 18:59:59 $
 --
 -- -----
 -- This package holds the functionality needed to access and handle
@@ -35,7 +35,11 @@
 --
 with Ada.Strings.Unbounded;
 
+with Giant.Config_Settings_Validators;
+
 package Giant.Config_Settings is
+
+   package Boolean_Settings is new Config_Settings_Validators (Boolean);
 
    ---------------------------------------------------------------------------
    -- Used to identify a config file by the top level node (document node)
@@ -130,7 +134,11 @@ package Giant.Config_Settings is
 
        (To_UStr ("Main_Window.Separator"),
         To_UStr ("230"),
-        Validate_Integer'Access)
+        Validate_Integer'Access),
+
+      (To_UStr ("Confirm.Delete"),
+       To_UStr ("True"),
+        Boolean_Settings.Validate'Access)
       );
 
    ---------------------------------------------------------------------------
@@ -221,6 +229,11 @@ package Giant.Config_Settings is
    -- Raised if a setting demanded as an integer value could not be converted
    -- into an integer value.
    Config_Setting_Is_Not_An_Integer_Value : exception;
+
+   ---------------------------------------------------------------------------
+   -- Raised if a setting demanded as an integer value could not be converted
+   -- into an integer value.
+   Invalid_Type_Exception : exception;
 
    ---------------------------------------------------------------------------
    -- This function is used to determine whether a config setting

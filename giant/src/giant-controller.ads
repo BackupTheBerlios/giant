@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.20 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.21 $
 --  $Author: squig $
---  $Date: 2003/06/25 17:47:57 $
+--  $Date: 2003/06/25 18:59:59 $
 --
 ------------------------------------------------------------------------------
 --
@@ -88,19 +88,25 @@ package Giant.Controller is
    ---------------------------------------------------------------------------
 
    ---------------------------------------------------------------------------
-   --  Closes the currently open project.
+   --  Returns the annotation for Node.
    function Get_Node_Annotation
      (Node : in Graph_Lib.Node_Id)
      return String;
 
+   ---------------------------------------------------------------------------
+   --  Returns True, if Node is annotated.
    function Is_Node_Annotated
      (Node : in Graph_Lib.Node_Id)
      return Boolean;
 
+   ---------------------------------------------------------------------------
+   --  Sets the annotation for Node to Text.
    procedure Set_Node_Annotation
      (Node : in Graph_Lib.Node_Id;
       Text : in String);
 
+   ---------------------------------------------------------------------------
+   --  Removes the annotation for Node.
    procedure Remove_Node_Annotation
      (Node : in Graph_Lib.Node_Id);
 
@@ -267,10 +273,11 @@ package Giant.Controller is
      return Boolean;
 
    ---------------------------------------------------------------------------
-   --  Creates a new named Name window. The window is opened if the
+   --  Creates a window with a unique name. The window is opened if the
    --  gui is shown.
    --
    --  See:
+   --    Get_Unique_Name
    --    Giant.Vis_Windows.Create_New
    --    Giant.Projects.Add_Visualisation_Window
    --    Open_Window
@@ -301,9 +308,29 @@ package Giant.Controller is
       Ask_For_Confirmation : in Boolean := True)
      return Boolean;
 
+   ---------------------------------------------------------------------------
+   --  Renames a window.
+   --
+   --  Parameters:
+   --    Old_Name - The name of the window
+   --    New_Name - The new name of the window
+   --  See:
+   --    Giant.Projects.Get_Visualisation_Window
+   --    Giant.Projects.Change_Vis_Window_Name
    procedure Rename_Window
      (Old_Name : in String;
       New_Name : in String);
+
+   ---------------------------------------------------------------------------
+   --  Save a window.
+   --
+   --  Parameters:
+   --    Name - The name of the window
+   --  See:
+   --    Giant.Projects.Get_Visualisation_Window
+   --    Giant.Gui_Manager.Open
+   procedure Save_Window
+     (Name : in String);
 
 private
 

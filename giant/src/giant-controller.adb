@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.23 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.24 $
 --  $Author: squig $
---  $Date: 2003/06/25 17:28:05 $
+--  $Date: 2003/06/25 18:59:59 $
 --
 
 with Ada.Strings.Unbounded;
@@ -553,16 +553,26 @@ package body Giant.Controller is
      (Old_Name : in String;
       New_Name : in String)
    is
-      Window : Vis_Windows.Visual_Window_Access;
-   begin
       --  make sure the window is loaded
-      Window := Projects.Get_Visualisation_Window (Current_Project, Old_Name);
-
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Old_Name);
+   begin
       Projects.Change_Vis_Window_Name
         (Current_Project, Old_Name, New_Name);
 
       Gui_Manager.Rename_Window (Old_Name, New_Name);
    end Rename_Window;
+
+   procedure Save_Window
+     (Name : in String)
+   is
+      --  make sure the window is loaded
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Name);
+   begin
+      Projects.Store_Single_Visualisation_Window (Current_Project, Name);
+      Logger.Info ("Saved window " & Name);
+   end Save_Window;
 
 end Giant.Controller;
 

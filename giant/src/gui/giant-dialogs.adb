@@ -20,15 +20,47 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-dialogs.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-dialogs.adb,v $, $Revision: 1.5 $
 --  $Author: squig $
---  $Date: 2003/06/24 10:50:12 $
+--  $Date: 2003/06/25 18:59:59 $
 --
 
 with Gtk.Box;
+with Gtk.Check_Button;
 with Gtkada.Pixmaps;
 
 package body Giant.Dialogs is
+
+   function Show_Delete_Confirmation_Dialog
+     (Message : in String := -"Do you really want to delete?")
+     return Boolean
+   is
+      use type Default_Dialog.Response_Type;
+
+      Dialog : Default_Dialog.Default_Dialog_Access;
+      Box : Gtk.Box.Gtk_Hbox;
+      Check : Gtk.Check_Button.Gtk_Check_Button;
+      Response : Default_Dialog.Response_Type;
+   begin
+      if (False) then
+         return True;
+      end if;
+
+      Default_Dialog.Create (Dialog, -"Giant Delete Confirmation",
+                             Default_Dialog.Button_Yes_No);
+      Box := Default_Dialog.Add_Icon_Box
+        (Dialog, Gtkada.Pixmaps.Confirmation_Xpm, Message);
+
+      Gtk.Check_Button.Gtk_New (Check, -"Do not show delete Confirmations again");
+      Gtk.Box.Add (Default_Dialog.Get_Center_Box (Dialog), Check);
+
+      Default_Dialog.Show_Modal (Dialog);
+
+      Response := Default_Dialog.Get_Response (Dialog);
+      Default_Dialog.Destroy (Dialog);
+
+      return (Response = Default_Dialog.Response_Yes);
+   end Show_Delete_Confirmation_Dialog;
 
    function Show_Confirmation_Dialog
      (Message : in String;

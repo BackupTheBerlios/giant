@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.9 $
--- $Author: schwiemn $
--- $Date: 2003/06/23 17:29:53 $
+-- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.10 $
+-- $Author: squig $
+-- $Date: 2003/06/25 18:59:59 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Text_IO;
@@ -278,7 +278,7 @@ package body Giant.Config_Settings is
 
       -- top level node (document node)
       The_XML_Document : Dom.Core.Document;
-      
+
       Process_File : Boolean := True;
    begin
 
@@ -301,7 +301,7 @@ package body Giant.Config_Settings is
             raise Config_File_Not_Correct_Exception;
       end;
 
-      if Process_File then 
+      if Process_File then
          -- check for correct type
          if (XML_File_Access.Does_XML_Document_Belong_To_Type
              (Config_File_Identifier, The_XML_Document) = False) then
@@ -325,7 +325,7 @@ package body Giant.Config_Settings is
             Tree_Readers.Free(The_Tree_Reader);
          exception
             when others =>
-               Logger.Fatal 
+               Logger.Fatal
                  ("Procedure: Access_Config_File - XML Error while "
                   & "reading entries of parsed xml file: "
                   & Config_File);
@@ -342,7 +342,7 @@ package body Giant.Config_Settings is
       User_Config_File  : in String) is
 
    begin
-   
+
       ADO_Initialized := True;
 
       -- Basic Initialisation
@@ -657,46 +657,46 @@ package body Giant.Config_Settings is
    end Get_User_Config_File;
 
    ---------------------------------------------------------------------------
-   procedure Write_DTD_File (File_Name : in String) is 
-   
+   procedure Write_DTD_File (File_Name : in String) is
+
       DTD_File : Ada.Text_IO.File_Type;
    begin
-   
+
       --  create the file
       -------------------
       Ada.Text_IO.Create
         (DTD_File,
          Ada.Text_IO.Out_File,
          File_Name);
-         
+
       Ada.Text_IO.Set_Output (DTD_File);
-         
+
       Ada.Text_IO.Put_Line
         ("<!ELEMENT giant_config_file (absolute_path_root?, (setting)*)>");
 
       Ada.Text_IO.Put_Line
         ("  <!ELEMENT absolute_path_root EMPTY>");
-        
-      Ada.Text_IO.Put_Line 
+
+      Ada.Text_IO.Put_Line
         ("  <!ATTLIST absolute_path_root");
       Ada.Text_IO.Put_Line
-        ("    root_directory  CDATA  #REQUIRED");        
+        ("    root_directory  CDATA  #REQUIRED");
       Ada.Text_IO.Put_Line
         ("  >");
-      Ada.Text_IO.Put_Line 
+      Ada.Text_IO.Put_Line
         ("  <!ELEMENT setting EMPTY>");
-      Ada.Text_IO.Put_Line 
+      Ada.Text_IO.Put_Line
         ("  <!ATTLIST setting");
-      Ada.Text_IO.Put_Line 
+      Ada.Text_IO.Put_Line
         ("    name   CDATA  #REQUIRED");
-      Ada.Text_IO.Put_Line 
+      Ada.Text_IO.Put_Line
         ("    value  CDATA  #REQUIRED");
-      Ada.Text_IO.Put_Line 
+      Ada.Text_IO.Put_Line
         ("  >");
-                
+
       --  close down resources
       Ada.Text_IO.Set_Output (Ada.Text_IO.Standard_Output);
-      Ada.Text_IO.Close (DTD_File);      
+      Ada.Text_IO.Close (DTD_File);
    end Write_DTD_File;
 
    ---------------------------------------------------------------------------
@@ -711,7 +711,7 @@ package body Giant.Config_Settings is
 
       if not ADO_Initialized then
          raise Config_Settings_ADO_Not_Initialized_Exception;
-      end if;      
+      end if;
 
       --  create the file
       -------------------
@@ -770,12 +770,12 @@ package body Giant.Config_Settings is
       --  close down resources
       Ada.Text_IO.Set_Output (Ada.Text_IO.Standard_Output);
       Ada.Text_IO.Close (Config_File);
-            
+
       -- write DTD File into the same directory
-      Write_DTD_File 
+      Write_DTD_File
         (File_Management.Return_Dir_Path_For_File_Path (File_Name)
          & "giant_config_file.dtd");
-                          
+
    end Store_User_Config_File;
 
 end Giant.Config_Settings;

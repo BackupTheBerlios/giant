@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-dialogs.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-dialogs.ads,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/06/23 21:57:04 $
+--  $Date: 2003/06/25 18:59:59 $
 --
 ------------------------------------------------------------------------------
 --
@@ -43,6 +43,10 @@ package Giant.Dialogs is
      (Message : in String;
       Buttons : in Default_Dialog.Button_Type := Default_Dialog.Button_Yes_No)
       return Default_Dialog.Response_Type;
+
+   function Show_Delete_Confirmation_Dialog
+     (Message : in String := -"Do you really want to delete?")
+     return Boolean;
 
    procedure Show_Error_Dialog
      (Message : in String;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.33 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.34 $
 --  $Author: squig $
---  $Date: 2003/06/25 17:28:05 $
+--  $Date: 2003/06/25 18:59:59 $
 --
 
 with Ada.Exceptions;
@@ -357,6 +357,20 @@ package body Giant.Main_Window is
    ---------------------------------------------------------------------------
    --  Window Context Menu Callbacks
    ---------------------------------------------------------------------------
+   function Validate_Window_Name
+     (Name   : in String;
+      Widget : in Gtk.Object.Gtk_Object)
+      return Boolean
+   is
+   begin
+      if (Projects.Does_Vis_Window_Exist (Controller.Get_Project, Name)) then
+         Dialogs.Show_Error_Dialog
+           (-"A window with this name already exists.");
+         return False;
+      end if;
+      return True;
+   end Validate_Window_Name;
+
 
    procedure On_Window_List_Open
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
@@ -373,19 +387,12 @@ package body Giant.Main_Window is
       Closed := Controller.Close_Window (Get_Selected_Window);
    end On_Window_List_Close;
 
-   function Validate_Window_Name
-     (Name   : in String;
-      Widget : in Gtk.Object.Gtk_Object)
-      return Boolean
+   procedure On_Window_List_Save
+     (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
    begin
-      if (Projects.Does_Vis_Window_Exist (Controller.Get_Project, Name)) then
-         Dialogs.Show_Error_Dialog
-           (-"A window with this name already exists.");
-         return False;
-      end if;
-      return True;
-   end Validate_Window_Name;
+      Controller.Save_Window (Get_Selected_Window);
+   end On_Window_List_Save;
 
    procedure On_Window_List_Rename
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
@@ -668,6 +675,8 @@ package body Giant.Main_Window is
       Gtk.Menu.Append (Window_List_Menu,
                        New_Menu_Item (-"Close", On_Window_List_Close'Access));
       Gtk.Menu.Append (Window_List_Menu, New_Menu_Separator);
+      Gtk.Menu.Append (Window_List_Menu,
+                       New_Menu_Item (-"Save", On_Window_List_Save'Access));
       Gtk.Menu.Append (Window_List_Menu,
                        New_Menu_Item (-"Rename...",
                                       On_Window_List_Rename'Access));
