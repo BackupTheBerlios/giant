@@ -18,12 +18,14 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.73 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.74 $
 --  $Author: koppor $
---  $Date: 2003/09/18 17:38:24 $
+--  $Date: 2003/09/18 18:14:59 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
+with Ada.Strings;
+with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded;
 with Ada.Tags;
 
@@ -1665,7 +1667,7 @@ package body Giant.Graph_Lib is
         Node_Attribute.all in Literal_Types.Real_Literal_Field then
          --  literals are completly handled as strings, because
          --  GSL can't handle Integers and Reals
-         return Class_Invalid; -- FIXME! Convert to string
+         return Class_String;
 
          --  Edges to other nodes
       elsif Node_Attribute.all in IML_Reflection.Edge_Field'Class then
@@ -1866,7 +1868,9 @@ package body Giant.Graph_Lib is
             Value : Literal_Types.Char_Literal_Type :=
               Char.Get_Value (Node.IML_Node);
          begin
-            return  Literal_Types.Char_Literal_Type'Image (Value);
+            return Ada.Strings.Fixed.Trim
+              (Literal_Types.Char_Literal_Type'Image (Value),
+               Ada.Strings.Both);
          end;
       elsif Attribute.all in Literal_Types.Int_Literal_Field then
          declare
@@ -1875,7 +1879,9 @@ package body Giant.Graph_Lib is
             Value : Literal_Types.Int_Literal_Type :=
               Int.Get_Value (Node.IML_Node);
          begin
-            return Literal_Types.Int_Literal_Type'Image (Value);
+            return Ada.Strings.Fixed.Trim
+              (Literal_Types.Int_Literal_Type'Image (Value),
+               Ada.Strings.Both);
          end;
       elsif Attribute.all in Literal_Types.Real_Literal_Field then
          declare
@@ -1884,7 +1890,9 @@ package body Giant.Graph_Lib is
             Value : Literal_Types.Real_Literal_Type :=
               Real.Get_Value (Node.IML_Node);
          begin
-            return Literal_Types.Real_Literal_Type'Image (Value);
+            return Ada.Strings.Fixed.Trim
+              (Literal_Types.Real_Literal_Type'Image (Value),
+               Ada.Strings.Both);
          end;
       else
          --  handling for enumerators
