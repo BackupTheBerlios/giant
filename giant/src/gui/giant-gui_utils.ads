@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.11 $
+--  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.12 $
 --  $Author: squig $
---  $Date: 2003/06/23 17:33:34 $
+--  $Date: 2003/06/23 21:57:04 $
 --
 ------------------------------------------------------------------------------
 --
@@ -89,8 +89,7 @@ package Giant.Gui_Utils is
    --  Generic Packages
    ---------------------------------------------------------------------------
 
-   package String_Clists is new
-     Giant.Data_Clists (String);
+   package String_Clists is new Giant.Data_Clists (String);
 
    ---------------
    --  Methods  --

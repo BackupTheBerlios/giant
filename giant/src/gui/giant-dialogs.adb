@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-dialogs.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-dialogs.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/22 21:54:21 $
+--  $Date: 2003/06/23 21:57:04 $
 --
 
 with Gtk.Box;
@@ -36,15 +36,15 @@ package body Giant.Dialogs is
    is
       Dialog : Default_Dialog.Default_Dialog_Access;
       Box : Gtk.Box.Gtk_Hbox;
-	  Response : Default_Dialog.Response_Type;
+      Response : Default_Dialog.Response_Type;
    begin
       Default_Dialog.Create (Dialog, -"Giant Question", Buttons);
       Box := Default_Dialog.Add_Icon_Box
-		(Dialog, "gnome-question.xpm", Message);
+        (Dialog, "gnome-question.xpm", Message);
 
       Default_Dialog.Show_Modal (Dialog);
 
-	  Response := Default_Dialog.Get_Response (Dialog);
+      Response := Default_Dialog.Get_Response (Dialog);
       Default_Dialog.Destroy (Dialog);
 
       return Response;
@@ -65,35 +65,16 @@ package body Giant.Dialogs is
       Default_Dialog.Destroy (Dialog);
    end Show_Error_Dialog;
 
-
    function Show_Input_Dialog
-     (Message		  : in String;
-	  Title			  : in String							 := -"Giant Input";
-	  Default_Input	  : in String							 := "";
-	  Input_Validator : in Input_Dialog.Input_Validator_Type := null)
+     (Message         : in String;
+      Title           : in String                                   := -"Giant Input";
+      Default_Input   : in String                                   := "";
+      Input_Validator : in Gtk_Object_Input_Dialog.Input_Validator_Type := null)
       return String
    is
-	  use type Default_Dialog.Response_Type;
-
-      Dialog : Input_Dialog.Input_Dialog_Access;
    begin
-      Input_Dialog.Create (Dialog, Title, Message, Input_Validator);
-      Input_Dialog.Set_Text (Dialog, Default_Input);
-
-      Input_Dialog.Show_Modal (Dialog);
-
-      if (Input_Dialog.Get_Response (Dialog) 
-		  = Default_Dialog.Response_Okay) then
-         declare
-            S : constant String := Input_Dialog.Get_Text (Dialog);
-         begin
-            Input_Dialog.Destroy (Dialog);
-            return S;
-         end;
-      else
-         Input_Dialog.Destroy (Dialog);
-         return "";
-      end if;
+      return Gtk_Object_Input_Dialog.Show (Message, Title, Default_Input,
+                                           Input_Validator, null);
    end Show_Input_Dialog;
 
 end Giant.Dialogs;

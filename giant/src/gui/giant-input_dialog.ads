@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-input_dialog.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-input_dialog.ads,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/22 21:54:21 $
+--  $Date: 2003/06/23 21:57:04 $
 --
 ------------------------------------------------------------------------------
 --
@@ -33,12 +33,20 @@ with Gtk.Gentry;
 
 with Giant.Default_Dialog;
 
+generic
+
+   type Data_Type is private;
+
 package Giant.Input_Dialog is
+
+   pragma Elaborate_Body;
 
    type Input_Dialog_Record is
      new Default_Dialog.Default_Dialog_Record with private;
 
    type Input_Dialog_Access is access all Input_Dialog_Record'Class;
+
+   type Data_Type_Access is access Data_Type;
 
    ----------------------------------------------------------------------------
    --  Invoked when the user presses Okay.
@@ -46,20 +54,23 @@ package Giant.Input_Dialog is
    --  Returns:
    --    True, if the value is valid and the dialog can be closed
    type Input_Validator_Type is access function
-	 (Text : in String) 
-	 return Boolean;
+     (Text : in String;
+      Data : in Data_Type)
+     return Boolean;
 
    procedure Create
-     (Dialog		  :    out Input_Dialog_Access;
-	  Title			  : in     String;
-	  Message		  : in     String;
-	  Input_Validator : in     Input_Validator_Type);
+     (Dialog          :    out Input_Dialog_Access;
+      Title           : in     String;
+      Message         : in     String;
+      Input_Validator : in     Input_Validator_Type;
+      Custom_Data     : in     Data_Type);
 
    procedure Initialize
-     (Dialog		  : access Input_Dialog_Record'Class;
-	  Title			  : in     String;
-	  Message		  : in     String;
-	  Input_Validator : in     Input_Validator_Type);
+     (Dialog          : access Input_Dialog_Record'Class;
+      Title           : in     String;
+      Message         : in     String;
+      Input_Validator : in     Input_Validator_Type;
+      Custom_Data     : in     Data_Type);
 
    function Can_Hide
      (Dialog : access Input_Dialog_Record)
@@ -71,13 +82,22 @@ package Giant.Input_Dialog is
 
    procedure Set_Text
      (Dialog : access Input_Dialog_Record;
-	  Text	 : in     String);
+      Text   : in     String);
+
+   function Show
+     (Message         : in String;
+      Title           : in String               := -"Giant Input";
+      Default_Input   : in String               := "";
+      Input_Validator : in Input_Validator_Type := null;
+      Custom_Data     : in Data_Type)
+      return String;
 
 private
    type Input_Dialog_Record is
      new Default_Dialog.Default_Dialog_Record with record
-		Input : Gtk.Gentry.Gtk_Entry;
-		Input_Validator : Input_Validator_Type;
+        Input : Gtk.Gentry.Gtk_Entry;
+        Input_Validator : Input_Validator_Type;
+        Custom_Data : Data_Type;
      end record;
 
 end Giant.Input_Dialog;

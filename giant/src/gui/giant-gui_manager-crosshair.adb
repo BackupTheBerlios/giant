@@ -20,35 +20,56 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager-crosshair.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-gui_manager-crosshair.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/23 19:19:34 $
+--  $Date: 2003/06/23 21:57:04 $
+
+with Ada.Unchecked_Deallocation;
+
+with Giant.Logger;
 
 package body Giant.Gui_Manager.Crosshair is
-   
+
+   package Logger is new Giant.Logger("giant.main");
+
    procedure Enqueue
      (Action : access Crosshair_Action_Type'Class)
    is
    begin
-	  Set_Crosshair_Mode (True);
+      Gui_Manager.Set_Status (-"Please select the target window");
+      Pending_Action := Crosshair_Action_Access (Action);
+      Set_Crosshair_Mode (True);
    end Enqueue;
-   
+
    function Is_Action_Enqueued
-	 return Boolean
+     return Boolean
    is
    begin
-	  return (Pending_Action /= null);
+      return (Pending_Action /= null);
    end Is_Action_Enqueued;
 
    procedure Trigger
-	 (Window : access Graph_Window.Graph_Window_Record'Class)
+     (Window : access Graph_Window.Graph_Window_Record'Class)
    is
    begin
-	  if (Pending_Action /= null) then
-		 Execute (Pending_Action, Window);
-	  end if;
-	  Set_Crosshair_Mode (False);
+      if (Pending_Action /= null) then
+         Gui_Manager.Set_Status ("");
+         Execute (Pending_Action, Window);
+         Pending_Action := null;
+      end if;
+      Set_Crosshair_Mode (False);
    end Trigger;
-   
+
+   procedure Free is new Ada.Unchecked_Deallocation
+     (Crosshair_Action_Type'Class, Crosshair_Action_Access);
+
+   procedure Destroy
+     (Action : access Crosshair_Action_Type)
+   is
+      P : Crosshair_Action_Access := Crosshair_Action_Access (Action);
+   begin
+      Free (P);
+   end Destroy;
+
 end Giant.Gui_Manager.Crosshair;
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.12 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.13 $
 --  $Author: squig $
---  $Date: 2003/06/23 19:19:34 $
+--  $Date: 2003/06/23 21:57:04 $
 --
 
 with Glib;
@@ -37,14 +37,18 @@ with Giant.Clists;
 with Giant.Controller;
 with Giant.Default_Dialog;
 with Giant.Dialogs;
+with Giant.Gui_Manager.Crosshair;
 with Giant.Gui_Utils;
+with Giant.Input_Dialog;
 
 package body Giant.Graph_Window is
 
-   package Graph_Window_Menu_Item_Callback is new
-     Gtk.Handlers.User_Callback (Gtk.Menu_Item.Gtk_Menu_Item_Record,
-                                 Graph_Window_Access);
+   package Graph_Window_Menu_Item_Callback is
+    new Gtk.Handlers.User_Callback (Gtk.Menu_Item.Gtk_Menu_Item_Record,
+                                    Graph_Window_Access);
 
+   package Graph_Window_Input_Dialog is
+     new Input_Dialog (Graph_Window_Access);
 
    procedure Update_Pin
      (List : access Gui_Utils.String_Clists.Giant_Data_Clist_Record;
@@ -76,6 +80,15 @@ package body Giant.Graph_Window is
       return Gui_Utils.String_Clists.Get_Selected_Item (Window.Pin_List);
    end Get_Selected_Pin;
 
+   function Get_Window_Name
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+     return String
+   is
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
+   begin
+      return Vis_Windows.Get_Name (Window.Visual_Window);
+   end Get_Window_Name;
+
    ---------------------------------------------------------------------------
    --  Callbacks
    ---------------------------------------------------------------------------
@@ -84,19 +97,19 @@ package body Giant.Graph_Window is
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
       return Boolean
    is
-      Window : Graph_Window_Access
-        := Graph_Window_Access (Gtk.Widget.Get_Toplevel (Source));
       Closed : Boolean;
    begin
       Closed := Controller.Close_Window
-        (Vis_Windows.Get_Name (Window.Visual_Window));
+        (Get_Window_Name (Gtk.Widget.Get_Toplevel (Source)));
       return True;
    end On_Close;
 
    procedure On_Pick_Edge_Clicked
-     (Source : access Gtk.Button.Gtk_Button_Record'Class)
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
    begin
+      -- FIX: remove this:
+      Gui_Manager.Crosshair.Trigger (Graph_Window_Access (Source));
       null;
    end On_Pick_Edge_Clicked;
 
@@ -115,58 +128,77 @@ package body Giant.Graph_Window is
    --  Selection Menu Callbacks
    ---------------------------------------------------------------------------
 
---     package body Validators is
+   function Validate_Selection_Name
+     (Name   : in String;
+      Window : in Graph_Window_Access)
+      return Boolean
+   is
+   begin
+      if (Vis_Windows.Does_Selection_Exist
+          (Window.Visual_Window, Name)) then
+         Dialogs.Show_Error_Dialog
+           (-"A selection with this name already exists.");
+         return False;
+      end if;
+      return True;
+   end Validate_Selection_Name;
 
---        function Validate_Selection_Name
---          (Name : in String)
---           return Boolean
---        is
---        begin
---           if (Vis_Windows.Does_Selection_Exist (Window.Vis_Windows, Name)) then
---              Dialogs.Show_Error_Dialog
---                (-"A selection with this name already exists.");
---              return False;
---           end if;
---           return True;
---        end Validate_Selection_Name;
-
---     end
+   procedure On_Selection_List_Duplicate
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
+      Source_Name : String := Get_Selected_Selection (Window);
+   begin
+      declare
+         Target_Name : constant String
+           := Graph_Window_Input_Dialog.Show
+           (-"Target name", -"Duplicate Selection",
+            Source_Name, Validate_Selection_Name'Access, Window);
+      begin
+         if (Target_Name /= "" and then Target_Name /= Source_Name) then
+            Controller.Duplicate_Selection
+              (Get_Window_Name (Source), Source_Name, Target_Name);
+         end if;
+      end;
+   end On_Selection_List_Duplicate;
 
    procedure On_Selection_List_Hide
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
       Window : Graph_Window_Access := Graph_Window_Access (Source);
    begin
-      Controller.Hide_Selection (Vis_Windows.Get_Name (Window.Visual_Window),
+      Controller.Hide_Selection (Get_Window_Name (Source),
                                  Get_Selected_Selection (Window));
    end On_Selection_List_Hide;
 
    procedure On_Selection_List_Rename
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
+      Window : constant Graph_Window_Access := Graph_Window_Access (Source);
    begin
---        declare
---           New_Name : constant String
---             := Dialogs.Show_Input_Dialog
---             (-"New name", -"Rename Selection",
---              Old_Name, Validate_Subgraph_Name'Access);
---        begin
+      declare
+         Old_Name : constant String := Get_Selected_Selection (Window);
+         New_Name : constant String
+           := Graph_Window_Input_Dialog.Show
+           (-"New name", -"Rename Selection",
+            Old_Name, Validate_Selection_Name'Access, Window);
+      begin
 
---           if (New_Name /= "" and then New_Name /= Old_Name) then
---              Controller.Rename_Subgraph (Old_Name, New_Name);
---           end if;
---        end;
-      null;
+         if (New_Name /= "" and then New_Name /= Old_Name) then
+            Controller.Rename_Selection (Get_Window_Name (Source),
+                                         Old_Name, New_Name);
+         end if;
+      end;
    end On_Selection_List_Rename;
 
    procedure On_Selection_List_Delete
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
-      Window : Graph_Window_Access := Graph_Window_Access (Source);
+      Window : constant Graph_Window_Access := Graph_Window_Access (Source);
       Removed : Boolean;
    begin
       Removed := Controller.Remove_Selection
-        (Vis_Windows.Get_Name (Window.Visual_Window),
+        (Get_Window_Name (Source),
          Get_Selected_Selection (Window));
    end On_Selection_List_Delete;
 
@@ -175,7 +207,7 @@ package body Giant.Graph_Window is
    is
       Window : Graph_Window_Access := Graph_Window_Access (Source);
    begin
-      Controller.Show_Selection (Vis_Windows.Get_Name (Window.Visual_Window),
+      Controller.Show_Selection (Get_Window_Name (Source),
                                  Get_Selected_Selection (Window));
    end On_Selection_List_Show;
 
@@ -283,13 +315,26 @@ package body Giant.Graph_Window is
       Gtk.Menu.Append (Window.Selection_List_Menu,
                        New_Menu_Item (-"Show", On_Selection_List_Show'Access,
                                       Window));
-      Gtk.Menu.Gtk_New (Window.Selection_List_Menu);
       Gtk.Menu.Append (Window.Selection_List_Menu,
-                       New_Menu_Item (-"Rename", On_Selection_List_Rename'Access,
+                       New_Menu_Item (-"Hide", On_Selection_List_Hide'Access,
                                       Window));
-      Gtk.Menu.Gtk_New (Window.Selection_List_Menu);
       Gtk.Menu.Append (Window.Selection_List_Menu,
-                       New_Menu_Item (-"Delete", On_Selection_List_Delete'Access,
+                       New_Menu_Item (-"Show All",
+                                      On_Selection_List_Show_All'Access,
+                                      Window));
+      Gtk.Menu.Append (Window.Selection_List_Menu, New_Menu_Separator);
+      Gtk.Menu.Append (Window.Selection_List_Menu,
+                       New_Menu_Item (-"Rename...",
+                                      On_Selection_List_Rename'Access,
+                                      Window));
+      Gtk.Menu.Append (Window.Selection_List_Menu,
+                       New_Menu_Item (-"Dupliate...",
+                                      On_Selection_List_Duplicate'Access,
+                                      Window));
+      Gtk.Menu.Append (Window.Selection_List_Menu, New_Menu_Separator);
+      Gtk.Menu.Append (Window.Selection_List_Menu,
+                       New_Menu_Item (-"Delete",
+                                      On_Selection_List_Delete'Access,
                                       Window));
 
       --  selections
@@ -363,8 +408,9 @@ package body Giant.Graph_Window is
       Gtk.Box.Pack_Start (Vbox, Hbox,
                           Expand => False, Fill => False, Padding => 0);
 
-      Gtk.Box.Pack_Start (Hbox, New_Button (-"Pick Edge",
-                                            On_Pick_Edge_Clicked'Access),
+      Gtk.Box.Pack_Start (Hbox,
+                          New_Button (-"Pick Edge",
+                                      On_Pick_Edge_Clicked'Access, Window),
                           Expand => False, Fill => False, Padding => 0);
 
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-input_dialog.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-input_dialog.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/06/23 12:40:58 $
+--  $Date: 2003/06/23 21:57:04 $
 --
 
 with Gtk.Button;
@@ -35,18 +35,20 @@ package body Giant.Input_Dialog is
      (Dialog          :    out Input_Dialog_Access;
       Title           : in     String;
       Message         : in     String;
-      Input_Validator : in     Input_Validator_Type)
+      Input_Validator : in     Input_Validator_Type;
+      Custom_Data     : in     Data_Type)
    is
    begin
       Dialog := new Input_Dialog_Record;
-      Initialize (Dialog, Title, Message, Input_Validator);
+      Initialize (Dialog, Title, Message, Input_Validator, Custom_Data);
    end Create;
 
    procedure Initialize
      (Dialog          : access Input_Dialog_Record'class;
       Title           : in     String;
       Message         : in     String;
-      Input_Validator : in     Input_Validator_Type)
+      Input_Validator : in     Input_Validator_Type;
+      Custom_Data     : in     Data_Type)
    is
       Box : Gtk.Box.Gtk_Hbox;
    begin
@@ -54,6 +56,7 @@ package body Giant.Input_Dialog is
                                  Default_Dialog.Button_Okay_Cancel);
 
       Dialog.Input_Validator := Input_Validator;
+      Dialog.Custom_Data := Custom_Data;
 
       Box := Add_Icon_Box (Dialog, "gnome-question.xpm", Message);
 
@@ -73,7 +76,8 @@ package body Giant.Input_Dialog is
       if (Get_Response (Dialog)
           = Default_Dialog.Response_Okay) then
          if (Dialog.Input_Validator /= null) then
-            return Dialog.Input_Validator (Get_Text (Dialog));
+            return Dialog.Input_Validator (Get_Text (Dialog),
+                                           Dialog.Custom_Data);
          end if;
       end if;
 
@@ -96,5 +100,37 @@ package body Giant.Input_Dialog is
    begin
       Gtk.Gentry.Set_Text (Dialog.Input, Text);
    end Set_Text;
+
+   function Show
+     (Message         : in String;
+      Title           : in String               := -"Giant Input";
+      Default_Input   : in String               := "";
+      Input_Validator : in Input_Validator_Type := null;
+      Custom_Data     : in Data_Type)
+      return String
+   is
+      use type Default_Dialog.Response_Type;
+
+      Dialog : Input_Dialog_Access;
+   begin
+      Input_Dialog.Create (Dialog, Title, Message, Input_Validator,
+                           Custom_Data);
+      Input_Dialog.Set_Text (Dialog, Default_Input);
+
+      Input_Dialog.Show_Modal (Dialog);
+
+      if (Input_Dialog.Get_Response (Dialog)
+          = Default_Dialog.Response_Okay) then
+         declare
+            S : constant String := Input_Dialog.Get_Text (Dialog);
+         begin
+            Input_Dialog.Destroy (Dialog);
+            return S;
+         end;
+      else
+         Input_Dialog.Destroy (Dialog);
+         return "";
+      end if;
+   end Show;
 
 end Giant.Input_Dialog;

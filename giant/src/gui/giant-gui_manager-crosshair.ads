@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager-crosshair.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-gui_manager-crosshair.ads,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/23 19:19:34 $
+--  $Date: 2003/06/23 21:57:04 $
 --
 --  Provides the cross window actions.
 --
@@ -45,6 +45,9 @@ package Giant.Gui_Manager.Crosshair is
    procedure Cancel
      (Action : access Crosshair_Action_Type)
       is abstract;
+
+   procedure Destroy
+     (Action : access Crosshair_Action_Type);
 
    procedure Execute
      (Action : access Crosshair_Action_Type;

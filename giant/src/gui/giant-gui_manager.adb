@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.12 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.13 $
 --  $Author: squig $
---  $Date: 2003/06/23 19:19:34 $
+--  $Date: 2003/06/23 21:57:04 $
 --
 
 with Ada.Strings.Unbounded;
@@ -153,6 +153,17 @@ package body Giant.Gui_Manager is
          Initialize_Project;
       end if;
    end Set_Project_Loaded;
+
+   procedure Set_Status
+     (Text : in String)
+   is
+   begin
+      if (not Gui_Initialized) then
+         return;
+      end if;
+
+      Main_Window.Set_Status (Text);
+   end Set_Status;
 
    ---------------------------------------------------------------------------
    --  Selections

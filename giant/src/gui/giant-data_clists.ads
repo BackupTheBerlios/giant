@@ -20,11 +20,11 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-data_clists.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-data_clists.ads,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/20 18:03:14 $
+--  $Date: 2003/06/23 21:57:04 $
 --
---  Provides an convenince Gtk.Clist that has a single row data type 
+--  Provides an convenince Gtk.Clist that has a single row data type
 --  associated.
 --
 --  Pattern:
@@ -49,47 +49,47 @@ package Giant.Data_Clists is
    type Giant_Data_Clist is access all Giant_Data_Clist_Record'Class;
 
    type Update_Procedure_Type is access procedure
-	 (List : access Giant_Data_Clist_Record;
-	  Row  : in     Glib.Gint;
-	  Item : in     Data_Type);
+     (List : access Giant_Data_Clist_Record;
+      Row  : in     Glib.Gint;
+      Item : in     Data_Type);
 
    procedure Create
-	 (List			   :    out Giant_Data_Clist;
-	  Columns		   : in     Glib.Gint;
-	  Update_Procedure : in     Update_Procedure_Type);
+     (List             :    out Giant_Data_Clist;
+      Columns          : in     Glib.Gint;
+      Update_Procedure : in     Update_Procedure_Type);
 
    procedure Initialize
-	 (List			   : access Giant_Data_Clist_Record'Class;
-	  Columns		   : in     Glib.Gint;
-	  Update_Procedure : in     Update_Procedure_Type);
+     (List             : access Giant_Data_Clist_Record'Class;
+      Columns          : in     Glib.Gint;
+      Update_Procedure : in     Update_Procedure_Type);
 
-   procedure Add 
-	 (List : access Giant_Data_Clist_Record;
-	  Item : in     Data_Type);
+   procedure Add
+     (List : access Giant_Data_Clist_Record;
+      Item : in     Data_Type);
 
    function Get_Row
-	 (List : access Giant_Data_Clist_Record;
-	  Item : in Data_Type)
-	  return Glib.Gint;
+     (List : access Giant_Data_Clist_Record;
+      Item : in Data_Type)
+      return Glib.Gint;
 
    function Get_Selected_Item
-	 (List : access Giant_Data_Clist_Record)
-	  return Data_Type;
+     (List : access Giant_Data_Clist_Record)
+      return Data_Type;
 
    procedure Update
-	 (List : access Giant_Data_Clist_Record;
-	  Item : in Data_Type);
+     (List : access Giant_Data_Clist_Record;
+      Item : in Data_Type);
 
    procedure Remove
-	 (List : access Giant_Data_Clist_Record;
-	  Item : in Data_Type);
+     (List : access Giant_Data_Clist_Record;
+      Item : in Data_Type);
 
 private
 
    package Data is new Gtk.Clist.Row_Data (Data_Type);
 
    type Giant_Data_Clist_Record is new Clists.Giant_Clist_Record with record
-	  Update_Procedure : Update_Procedure_Type;
+      Update_Procedure : Update_Procedure_Type;
    end record;
 
 end Giant.Data_Clists;

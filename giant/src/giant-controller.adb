@@ -21,9 +21,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.18 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.19 $
 --  $Author: squig $
---  $Date: 2003/06/23 19:19:34 $
+--  $Date: 2003/06/23 21:57:04 $
 --
 
 with Ada.Strings.Unbounded;
@@ -288,10 +288,8 @@ package body Giant.Controller is
       Source : Graph_Lib.Selections.Selection
         := Vis_Windows.Get_Selection (Window, Source_Name);
       Target : Graph_Lib.Selections.Selection
-        := Vis_Windows.Get_Selection (Window, Target_Name);
+        := Graph_Lib.Selections.Clone (Source, Target_Name);
    begin
-      Graph_Lib.Selections.Rename (Target, Target_Name);
-
       Vis_Windows.Add_Selection (Window, Target);
       Gui_Manager.Add_Selection (Window_Name, Target_Name);
    end Duplicate_Selection;

@@ -20,13 +20,12 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.26 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.27 $
 --  $Author: squig $
---  $Date: 2003/06/23 19:19:34 $
+--  $Date: 2003/06/23 21:57:04 $
 --
 
 with Ada.Strings.Unbounded;
-with Ada.Unchecked_Deallocation;
 with Interfaces.C.Strings;
 
 with Gdk.Event;
@@ -41,6 +40,7 @@ with Gtk.Main;
 with Gtk.Menu;
 with Gtk.Menu_Bar;
 with Gtk.Menu_Item;
+with Gtk.Object;
 with Gtk.Paned;
 with Gtk.Status_Bar;
 with Gtk.Widget;
@@ -53,8 +53,9 @@ with Giant.About_Dialog;
 with Giant.Clists;
 with Giant.Config_Settings;
 with Giant.Controller;
-with Giant.Dialogs;
+with Giant.Default_Dialog;
 with Giant.Default_Logger;
+with Giant.Dialogs;
 with Giant.Graph_Lib;
 with Giant.Graph_Lib.Subgraphs;
 with Giant.Gsl_Dialog;
@@ -280,7 +281,8 @@ package body Giant.Main_Window is
    end On_Window_List_Close;
 
    function Validate_Window_Name
-     (Name : in String)
+     (Name   : in String;
+      Widget : in Gtk.Object.Gtk_Object)
       return Boolean
    is
    begin
@@ -344,7 +346,8 @@ package body Giant.Main_Window is
    ---------------------------------------------------------------------------
 
    function Validate_Subgraph_Name
-     (Name : in String)
+     (Name   : in String;
+      Widget : in Gtk.Object.Gtk_Object)
       return Boolean
    is
    begin
@@ -381,7 +384,7 @@ package body Giant.Main_Window is
       Action := new
         Create_Selection_Action_Type(Subgraph_Name'Length);
       Action.Subgraph_Name := Subgraph_Name;
-      Gui_Manager.Crosshair.Enqueue(Action);
+      Gui_Manager.Crosshair.Enqueue (Action);
    end On_Subgraph_List_Create_Selection;
 
    procedure On_Subgraph_List_Duplicate
@@ -437,10 +440,9 @@ package body Giant.Main_Window is
       Message : in String)
    is
       use type Default_Logger.Level_Type;
-      Id : Gtk.Status_Bar.Message_Id;
    begin
       if (Level = Default_Logger.Level_Info) then
-         Id := Gtk.Status_Bar.Push (Status_Bar, 1, Message);
+         Set_Status (Message);
       end if;
    end;
 
@@ -558,15 +560,15 @@ package body Giant.Main_Window is
                                       On_Subgraph_List_Unhightlight'Access));
       Gtk.Menu.Append (Subgraph_List_Menu, New_Menu_Separator);
       Gtk.Menu.Append (Subgraph_List_Menu,
-                       New_Menu_Item (-"Duplicate...",
-                                      On_Subgraph_List_Duplicate'Access));
-      Gtk.Menu.Append (Subgraph_List_Menu,
                        New_Menu_Item (-"Insert As Selection...",
                                       On_Subgraph_List_Create_Selection'Access));
       Gtk.Menu.Append (Subgraph_List_Menu, New_Menu_Separator);
       Gtk.Menu.Append (Subgraph_List_Menu,
                        New_Menu_Item (-"Rename...",
                                       On_Subgraph_List_Rename'Access));
+      Gtk.Menu.Append (Subgraph_List_Menu,
+                       New_Menu_Item (-"Duplicate...",
+                                      On_Subgraph_List_Duplicate'Access));
       Gtk.Menu.Append (Subgraph_List_Menu, New_Menu_Separator);
       Gtk.Menu.Append (Subgraph_List_Menu,
                        New_Menu_Item (-"Delete",
@@ -687,8 +689,21 @@ package body Giant.Main_Window is
      (Ask_For_Confirmation: Boolean)
      return Boolean
    is
+      use type Default_Dialog.Response_Type;
+
+      Response : Default_Dialog.Response_Type;
    begin
-      --  save size
+      Response := Dialogs.Show_Confirmation_Dialog
+        (-"The project has changed. Save changes?",
+         Default_Dialog.Button_Yes_No_Cancel);
+      if (Response = Default_Dialog.Response_Yes) then
+         -- FIX: save changes
+         Controller.Save_Project;
+      elsif (Response = Default_Dialog.Response_Cancel) then
+         return False;
+      end if;
+
+      --  save settings
       Config_Settings.Set_Setting
         ("Main_Window.Width",
          Integer (Gtk.Window.Get_Allocation_Width (Window)));
@@ -698,9 +713,7 @@ package body Giant.Main_Window is
       Config_Settings.Set_Setting
         ("Main_Window.Separator",
          Integer (String_Clists.Get_Allocation_Height (Window_List)));
-      -- Gtk.Paned.Get_Position (Pane)
 
-      -- FIX: ask user to save project
       return True;
    end Hide;
 
@@ -762,20 +775,23 @@ package body Giant.Main_Window is
       end if;
    end Set_Project_Loaded;
 
+   procedure Set_Status
+     (Text : in String)
+   is
+      Id : Gtk.Status_Bar.Message_Id;
+   begin
+      Id := Gtk.Status_Bar.Push (Status_Bar, 1, Text);
+   end Set_Status;
+
    ---------------------------------------------------------------------------
    --  Subgraph Crosshair
    ---------------------------------------------------------------------------
 
-   procedure Destroy is new Ada.Unchecked_Deallocation
-     (Create_Selection_Action_Type'Class, Create_Selection_Action_Access);
-
    procedure Cancel
      (Action : access Create_Selection_Action_Type)
    is
-      P : Create_Selection_Action_Access
-        := Create_Selection_Action_Access (Action);
    begin
-      Destroy (P);
+      Destroy (Action);
    end;
 
    procedure Execute
@@ -784,10 +800,9 @@ package body Giant.Main_Window is
    is
    begin
       Controller.Create_Selection_From_Subgraph
-        (Vis_Windows.Get_Name
-         (Graph_Window.Get_Vis_Window (Window)),
-          Action.Subgraph_Name,
-          Action.Subgraph_Name);
+        (Action.Subgraph_Name,
+         Vis_Windows.Get_Name (Graph_Window.Get_Vis_Window (Window)),
+         Action.Subgraph_Name);
    end;
 
 end Giant.Main_Window;

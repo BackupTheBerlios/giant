@@ -20,19 +20,24 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-dialogs.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-dialogs.ads,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/22 21:54:21 $
+--  $Date: 2003/06/23 21:57:04 $
 --
 ------------------------------------------------------------------------------
 --
 -- Provides common dialogs.
 --
 
+with Gtk.Object;
+
 with Giant.Default_Dialog;
 with Giant.Input_Dialog;
 
 package Giant.Dialogs is
+
+   package Gtk_Object_Input_Dialog is new Giant.Input_Dialog
+     (Gtk.Object.Gtk_Object);
 
    function Show_Confirmation_Dialog
      (Message : in String;
@@ -44,10 +49,10 @@ package Giant.Dialogs is
       Title   : in String := -"Giant Error");
 
    function Show_Input_Dialog
-     (Message		  : in String;
-	  Title			  : in String							 := -"Giant Input";
-	  Default_Input	  : in String							 := "";
-	  Input_Validator : in Input_Dialog.Input_Validator_Type := null)
+     (Message         : in String;
+      Title           : in String                                   := -"Giant Input";
+      Default_Input   : in String                                   := "";
+      Input_Validator : in Gtk_Object_Input_Dialog.Input_Validator_Type := null)
 
      return String;
 
