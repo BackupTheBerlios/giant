@@ -2,14 +2,17 @@
 # GIANT Makefile
 #
 
-# gnatmake is called from this directory
-# therefore all pathes need to be relative to this directory
+# gnatmake is called from this directory therefore all pathes need to
+# be relative to this directory or absolute
 OUT_PATH        = obj-$(shell uname -s)/
 
 AUNIT_PATH      = ../aunit-1.01
 GIANT_PATH      = ../giant
 IMLLIB_PATH     = ../iml_browser_030825
 XMLADA_PATH     = ../xmlada-0.7.1
+
+CFLAGS          = -g -O2 -finline-functions
+GNAT_FLAGS      = -j2 -gnatX -gnatn
 
 AUNIT_INCLUDES  = -I$(AUNIT_PATH)/aunit/framework -I$(AUNIT_PATH)/aunit/text_reporter
 IMLLIB_INCLUDES = -I$(IMLLIB_PATH)/IML.generated -I$(IMLLIB_PATH)/IML.src -I$(IMLLIB_PATH)/Reuse.src -I$(IMLLIB_PATH)/usr.local.reuse
@@ -20,11 +23,6 @@ INCLUDES        = $(GIANT_INCLUDES) $(IMLLIB_INCLUDES) $(AUNIT_INCLUDES) $(XMLAD
 
 LIBS            = -largs $(IMLLIB_LIBS) $(shell gtkada-config --libs) 
 
-CFLAGS          = -g 
-#-O2 -funroll-loops
-GNAT_FLAGS      = -j2 -gnatX -gnata -gnatf -gnatwl -gnato -fstack-check
-#-fprofile-arcs -ftest-coverage
-#-gnaty3abcefhiklmprt #-gnatys 
 ALL_CFLAGS      = $(CFLAGS) $(TARGET_CFLAGS) $(GNAT_FLAGS) $(INCLUDES) $(CUSTOM_CFLAGS)
 ALL_LFLAGS      = $(LFLAGS) $(TARGET_LFLAGS) $(LIBS)
 

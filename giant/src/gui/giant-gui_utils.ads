@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.18 $
+--  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.19 $
 --  $Author: squig $
---  $Date: 2003/09/09 15:31:24 $
+--  $Date: 2003/09/11 18:44:24 $
 --
 ------------------------------------------------------------------------------
 --
@@ -42,6 +42,7 @@ with Gtk.Menu_Bar;
 with Gtk.Menu_Item;
 with Gtk.Misc;
 with Gtk.Paned;
+with Gtk.Pixmap;
 with Gtk.Scrolled_Window;
 with Gtk.Separator;
 with Gtk.Table;
@@ -154,7 +155,6 @@ package Giant.Gui_Utils is
 
    ---------------------------------------------------------------------------
    --  Returns an absolute path to the passed icon.
-   --
    function Get_Icon
      (Filename : in String)
      return String;

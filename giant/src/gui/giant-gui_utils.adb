@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.23 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.24 $
 -- $Author: squig $
--- $Date: 2003/09/09 15:31:24 $
+-- $Date: 2003/09/11 18:44:24 $
 --
 
 with Glib;
@@ -124,7 +124,7 @@ package body Giant.Gui_Utils is
                     & GNAT.OS_Lib.Directory_Separator & Filename);
       return Config.Global_Data.Get_Resources_Directory & "icons"
         & GNAT.OS_Lib.Directory_Separator & Filename;
-   end;
+   end Get_Icon;
 
    function Get_Selected_Row
      (List : access Gtk.Clist.Gtk_Clist_Record'Class)

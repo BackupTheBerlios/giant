@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-progress_dialog.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-progress_dialog.adb,v $, $Revision: 1.11 $
 --  $Author: squig $
---  $Date: 2003/09/09 15:31:24 $
+--  $Date: 2003/09/11 18:44:24 $
 --
 
 with Interfaces.C.Strings;
@@ -70,6 +70,7 @@ package body Giant.Progress_Dialog is
       Box : Gtk.Box.Gtk_Vbox;
    begin
       Default_Dialog.Initialize (Dialog, Title, Default_Dialog.Button_Cancel);
+      Set_Modal (Dialog, True);
 
       --  provide signals
       Glib.Object.Initialize_Class_Record
@@ -93,7 +94,7 @@ package body Giant.Progress_Dialog is
       Gtk.Progress_Bar.Set_Adjustment
         (Dialog.Progress_Bar,
          Dialog.Progress_Bar_Adjustment);
-      Gtk.Progress_Bar.Set_Pulse_Step (Dialog.Progress_Bar, Glib.Gdouble (1));
+      Gtk.Progress_Bar.Set_Pulse_Step (Dialog.Progress_Bar, Glib.Gdouble (0.01));
       Gtk.Box.Pack_Start (Box, Dialog.Progress_Bar, Expand => False,
                           Fill => False, Padding => DEFAULT_SPACING);
    end;
@@ -156,8 +157,9 @@ package body Giant.Progress_Dialog is
       Text   : in     String)
    is
    begin
-      Gtk.Progress_Bar.Set_Show_Text (Dialog.Progress_Bar, True);
-      Gtk.Progress_Bar.Set_Format_String (Dialog.Progress_Bar, Text);
+      --Gtk.Progress_Bar.Set_Show_Text (Dialog.Progress_Bar, True);
+      --Gtk.Progress_Bar.Set_Format_String (Dialog.Progress_Bar, Text);
+      Gtk.Progress_Bar.Set_Text (Dialog.Progress_Bar, Text);
    end Set_Progress_Text;
 
    procedure Set_Upper (Dialog : access Progress_Dialog_Record;

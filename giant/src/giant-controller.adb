@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.91 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.92 $
 --  $Author: squig $
---  $Date: 2003/09/09 21:32:03 $
+--  $Date: 2003/09/11 18:44:23 $
 --
 
 with Ada.Strings.Unbounded;
@@ -30,6 +30,7 @@ with Ada.Text_IO;
 
 with String_Lists;
 
+with Giant.Basic_Evolutions;
 with Giant.Config;
 with Giant.Config_Settings;
 with Giant.Config.Global_Data;
@@ -436,6 +437,7 @@ package body Giant.Controller is
    is
       Checksum : Integer;
       Closed : Boolean;
+      Individual : Basic_Evolutions.Basic_Evolution_Access;
    begin
       --  check this now to avoid loading the graph
       if (Projects.Is_Already_A_Project_File_In_Directory
@@ -451,8 +453,13 @@ package body Giant.Controller is
       --  should not fail
       Closed := Close_Project;
 
+      --  progress dialog
+      Individual := Basic_Evolutions.Create
+        (Gui_Manager.Create_Progress_Dialog
+         (-"Creating Project", "Loading Graph"));
+
       --  create graph
-      Graph_Lib.Load (Graph_Filename);
+      Graph_Lib.Load (Graph_Filename, Individual);
       Checksum := Graph_Lib.Get_Graph_Hash;
 
       Logger.Info (-"Creating project " & Project_Filename);
@@ -521,6 +528,7 @@ package body Giant.Controller is
       Graph_Filename : String
         := Projects.Get_Bauhaus_IML_Graph_File (Filename);
       Closed : Boolean;
+      Individual : Basic_Evolutions.Basic_Evolution_Access;
    begin
       --  check this now to avoid loading the graph
       if (not Projects.Does_Project_Exist_File (Filename)) then
@@ -530,15 +538,23 @@ package body Giant.Controller is
       --  should not fail
       Closed := Close_Project;
 
-      --  create graph
+      --  progress dialog
+      Individual := Basic_Evolutions.Create
+        (Gui_Manager.Create_Progress_Dialog
+         (-"Loading Project", "Loading Graph"));
+
+      --  load graph
       Logger.Info (-"Loading graph " & Graph_Filename);
-      Giant.Graph_Lib.Load (Graph_Filename);
+      Giant.Graph_Lib.Load (Graph_Filename, Individual);
 
       Logger.Info (-"Opening project " & Filename);
       Current_Project := Projects.Load_Project_File (Filename);
 
       --  update application
       Initialize_Project;
+
+      --  close progress dialog
+      Basic_Evolutions.Destroy (Individual);
    end;
 
    procedure Save_Project

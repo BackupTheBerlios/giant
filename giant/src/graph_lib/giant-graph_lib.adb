@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.65 $
---  $Author: koppor $
---  $Date: 2003/09/02 08:54:48 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.66 $
+--  $Author: squig $
+--  $Date: 2003/09/11 18:44:23 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -361,7 +361,14 @@ package body Giant.Graph_Lib is
    -----------------------------------------------------------
    --  Create the internal representation of the IML-Graph  --
    -----------------------------------------------------------
-   procedure Load (Path_To_IML_File : in String) is
+   procedure Load
+     (Path_To_IML_File : in String;
+      Individual       : in Basic_Evolutions.Basic_Evolution_Access := null)
+     is
+
+      -- FIX
+      Node_Count : Integer := 10000;
+      Cancel : Boolean := False;
 
       -----------------------------------------------------------
       --  Data-Structore for temporary graph used for loading  --
@@ -686,6 +693,9 @@ package body Giant.Graph_Lib is
 
             Queue_Tail := Queue;
 
+            Basic_Evolutions.Set_Total_Complexity
+              (Individual,
+               Node_Count);
             while Load_Nodes.Node_Queues.More (Iter) loop
                Node := Load_Nodes.Node_Queues.CellValue (Iter);
 
@@ -707,6 +717,7 @@ package body Giant.Graph_Lib is
 
                end if;
                Load_Nodes.Node_Queues.Forward (Iter);
+               Cancel := Basic_Evolutions.Step (Individual);
             end loop;
          end Process_Queue;
 
@@ -717,14 +728,20 @@ package body Giant.Graph_Lib is
       begin
          Logger.Debug ("Begin: Convert_IML_Graph_To_Temp_Structure");
 
+         Basic_Evolutions.Set_Text (Individual, -"Loading IML file");
+         Cancel := Basic_Evolutions.Step (Individual);
          Queue := Load_Nodes.Node_Queues.Create;
 
          Root_Node := IML_Graphs.Get_Raw_Graph (IML_Graph);
 
+         Basic_Evolutions.Set_Text (Individual, -"Creating Node Mapper");
+         Cancel := Basic_Evolutions.Step (Individual, 50);
          IML_Node_Mapper.Get (Root_Node, Node, Created);
 
          Load_Nodes.Node_Queues.Attach (Queue, Node);
 
+         Basic_Evolutions.Set_Text (Individual, -"Processing Node %v of %u");
+         Cancel := Basic_Evolutions.Step (Individual, 10);
          Process_Queue;
       end Convert_IML_Graph_To_Temp_Structure;
 

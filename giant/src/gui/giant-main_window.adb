@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.62 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.63 $
 --  $Author: squig $
---  $Date: 2003/09/09 15:31:24 $
+--  $Date: 2003/09/11 18:44:24 $
 --
 
 with Ada.Exceptions;
@@ -30,9 +30,12 @@ with Ada.Strings.Unbounded;
 with Interfaces.C.Strings;
 with System;
 
+with Gdk.Bitmap;
 with Gdk.Color;
 with Gdk.Event;
+with Gdk.Pixmap;
 with Gdk.Types;
+with Gdk.Window;
 with Glib; use type Glib.Gint;
 with Glib.Object;
 with Gtk.Box;
@@ -1071,6 +1074,8 @@ package body Giant.Main_Window is
 
    procedure Show
    is
+      Icon : Gdk.Pixmap.Gdk_Pixmap;
+      Mask : Gdk.Bitmap.Gdk_Bitmap := Gdk.Bitmap.Null_Bitmap;
    begin
       Window := new Main_Window_Record;
       Initialize;
@@ -1091,6 +1096,23 @@ package body Giant.Main_Window is
       Set_Project_Loaded (False);
 
       Show_All (Window);
+
+      --  set window icon
+      Gdk.Pixmap.Create_From_Xpm
+        (Pixmap      => Icon,
+         Window      => Get_Window (Window),
+         Mask        => Mask,
+         Transparent => Gdk.Color.Null_Color,
+         Filename    => Gui_Utils.Get_Icon ("giant.xpm"));
+      if Gdk."/=" (Icon, Gdk.Pixmap.Null_Pixmap) then
+         Gdk.Window.Set_Icon
+           (Window      => Get_Window (Window),
+            Icon_Window => Get_Window (Window),
+            Pixmap      => Icon,
+            Mask        => Mask);
+      else
+         Logger.Warn ("Failed to load giant.xpm.");
+      end if;
    end Show;
 
    procedure Set_Status

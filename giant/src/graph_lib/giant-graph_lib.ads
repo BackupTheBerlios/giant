@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.41 $
---  $Author: koppor $
---  $Date: 2003/08/26 13:46:17 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.42 $
+--  $Author: squig $
+--  $Date: 2003/09/11 18:44:23 $
 --
 --  TBD:
 --    * Write into comment, when the routine may be used
@@ -31,6 +31,7 @@
 --        edge and node-attributes
 --    * Check, why there are no inspectors for Edge_Class_Ids
 
+with Giant.Basic_Evolutions;
 with Giant.Constant_Ptr_Hashs;
 
 --  Bauhaus / IML
@@ -310,7 +311,9 @@ package Giant.Graph_Lib is
    --
    --  Raises:
    --    Load_Error if something has gone wrong
-   procedure Load (Path_To_IML_File : in String);
+   procedure Load
+     (Path_To_IML_File : in String;
+      Individual       : in Basic_Evolutions.Basic_Evolution_Access := null);
 
    ---------------------------------------------------------------------------
    --  Unloads the graph from the memory
