@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.44 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.45 $
 --  $Author: koppor $
---  $Date: 2003/07/06 01:57:08 $
+--  $Date: 2003/07/06 03:16:03 $
 
 --  TBD:
 --    s/Program_Error/somethingofmyown
@@ -1361,7 +1361,7 @@ package body Giant.Graph_Lib is
    end Get_All_Node_Class_Ids;
 
    ----------------------------------------------------------------------------
-   --  Analogue to DestroyAllNodes
+   --  Analogue to Destroy_All_Nodes
    function Get_All_Nodes
       return Node_Id_Set
    is
@@ -1467,7 +1467,7 @@ package body Giant.Graph_Lib is
    end Get_Outgoing_Edges;
 
    ----------------------------------------------------------------------------
-   function Get_Node_Attribute_Attribute_Node_Id_List_Value
+   function Get_Node_Attribute_Node_Id_List_Value
      (Node      : in     Node_Id;
       Attribute : in     Node_Attribute_Id)
       return Node_Id_List
@@ -1507,7 +1507,7 @@ package body Giant.Graph_Lib is
       end;
 
       return List;
-   end Get_Node_Attribute_Attribute_Node_Id_List_Value;
+   end Get_Node_Attribute_Node_Id_List_Value;
 
    ----------------------------------------------------------------------------
    function Get_Node_Attribute_Boolean_Value
@@ -1546,7 +1546,7 @@ package body Giant.Graph_Lib is
       elsif Node_Attribute.all in IML_Reflection.Natural_Field'Class then
          return Class_Natural;
       elsif Node_Attribute.all in IML_Reflection.Enumerator_Field'Class then
-         return Class_String_List;
+         return Class_String;
       else
          My_Logger.Error (Node_Attribute.Name);
          My_Logger.Error ("Class for Node_Attribute could not be found");
@@ -1669,6 +1669,10 @@ package body Giant.Graph_Lib is
       return Natural
    is
    begin
+      if Get_Node_Attribute_Class_Id (Attribute) /= Class_SLoc then
+         raise Wrong_Attribute_Type;
+      end if;
+
       return SLocs.Get_Column
         (Get_Node_Attribute_SLoc_Value (Node, Attribute));
    end Get_Node_Attribute_SLoc_Column_Value;
@@ -1680,6 +1684,10 @@ package body Giant.Graph_Lib is
       return String
    is
    begin
+      if Get_Node_Attribute_Class_Id (Attribute) /= Class_SLoc then
+         raise Wrong_Attribute_Type;
+      end if;
+
       return SLocs.Get_Filename
         (Get_Node_Attribute_SLoc_Value (Node, Attribute));
    end Get_Node_Attribute_SLoc_Filename_Value;
@@ -1691,6 +1699,10 @@ package body Giant.Graph_Lib is
       return Natural
    is
    begin
+      if Get_Node_Attribute_Class_Id (Attribute) /= Class_SLoc then
+         raise Wrong_Attribute_Type;
+      end if;
+
       return SLocs.Get_Line
         (Get_Node_Attribute_SLoc_Value (Node, Attribute));
    end Get_Node_Attribute_SLoc_Line_Value;
@@ -1702,18 +1714,34 @@ package body Giant.Graph_Lib is
       return String
    is
    begin
+      if Get_Node_Attribute_Class_Id (Attribute) /= Class_SLoc then
+         raise Wrong_Attribute_Type;
+      end if;
+
       return SLocs.Get_Path
         (Get_Node_Attribute_SLoc_Value (Node, Attribute));
    end Get_Node_Attribute_SLoc_Path_Value;
 
-   --  function Get_Node_Attribute_String_Value
-   --    (Node      : in     Node_Id;
-   --     Attribute : in     Node_Attribute_Id)
-   --     return String
-   --  is
-   --  begin
-   --     return Get_Node_Attribute_String_Value (Node, Attribute);
-   --  end Get_Node_Attribute_String_Value;
+   ----------------------------------------------------------------------------
+   function Get_Node_Attribute_String_Value
+      (Node      : in     Node_Id;
+       Attribute : in     Node_Attribute_Id)
+      return String
+   is
+   begin
+      if Get_Node_Attribute_Class_Id (Attribute) /= Class_String then
+         raise Wrong_Attribute_Type;
+      end if;
+
+      declare
+         Enum       : IML_Reflection.Enumerator_Field :=
+           IML_Reflection.Enumerator_Field (Attribute.all);
+         Enum_Value : Natural;
+      begin
+         Enum_Value := Enum.Get_Value (Node.IML_Node);
+         return Enum.Type_Id.Enumerators (Enum_Value).all;
+      end;
+   end Get_Node_Attribute_String_Value;
 
    ----------------------------------------------------------------------------
    function Get_Node_Attribute_Value_As_String
@@ -1721,15 +1749,44 @@ package body Giant.Graph_Lib is
       Attribute : in     Node_Attribute_Id)
       return String
    is
+
+      ------------------------------------------------------------------------
+      --  List is destroyed at the end of the function
+      function Convert_Node_Id_List_To_String
+        (The_List : in Node_Id_List)
+        return String
+      is
+         List : Node_Id_List := The_List;
+      begin
+         --  TBD
+
+         Node_Id_Lists.Destroy (List);
+         return "(""not"", ""yet"", implemented"")";
+      end Convert_Node_Id_List_To_String;
+
+      ------------------------------------------------------------------------
+      --  Set is destroyed at the end of the function
+      function Convert_Node_Id_Set_To_String
+        (The_Set : in Node_Id_Set)
+        return String
+      is
+         Set : Node_Id_Set := The_Set;
+      begin
+         --  TBD
+
+         Node_Id_Sets.Destroy (Set);
+         return "{""not"", ""yet"", implemented""}";
+      end Convert_Node_Id_Set_To_String;
+
    begin
       case Get_Node_Attribute_Class_Id (Attribute) is
          when Class_SLoc =>
             declare
-               SLoc_StoredInIML : IML_Reflection.SLoc_Field
-                 := IML_Reflection.SLoc_Field (Attribute.all);
-               SLoc             : SLocs.SLoc;
+               SLoc_Stored_In_IML : IML_Reflection.SLoc_Field :=
+                 IML_Reflection.SLoc_Field (Attribute.all);
+               SLoc               : SLocs.SLoc;
             begin
-               SLoc := SLoc_StoredInIML.Get_Value (Node.IML_Node);
+               SLoc := SLoc_Stored_In_IML.Get_Value (Node.IML_Node);
                return SLocs.Plain_Image (SLoc);
             end;
 
@@ -1743,20 +1800,26 @@ package body Giant.Graph_Lib is
          when Class_Natural =>
             return Natural'Image (Get_Node_Attribute_Natural_Value
                                   (Node, Attribute));
+
          when Class_Node_Id =>
             return Node_Id_Image (Get_Node_Attribute_Node_Id_Value
                                   (Node, Attribute));
 
          when Class_Node_Id_List =>
-            return "";
+            return Convert_Node_Id_List_To_String
+              (Get_Node_Attribute_Node_Id_List_Value (Node, Attribute));
 
          when Class_Node_Id_Set =>
-            return "";
+            return Convert_Node_Id_Set_To_String
+              (Get_Node_Attribute_Node_Id_Set_Value (Node, Attribute));
+
+         when Class_String =>
+            return Get_Node_Attribute_String_Value (Node, Attribute);
 
          when others =>
             My_Logger.Fatal ("Unknown Attribute-Class in " &
                              "Get_Node_Attribute_Value_As_String");
-            return "";
+            return "* unkown *";
       end case;
    end Get_Node_Attribute_Value_As_String;
 
