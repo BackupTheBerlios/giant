@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.19 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.20 $
 --  $Author: schwiemn $
---  $Date: 2003/06/18 16:31:07 $
+--  $Date: 2003/06/18 16:49:10 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -948,7 +948,10 @@ package body Giant.Projects is
       
       -- Load node annotations
       ------------------------
--- TODO
+      New_Project_Access.The_Node_Annotations := 
+        Node_Annotations.Load_From_File 
+          (Ada.Strings.Unbounded.To_String 
+            (New_Project_Access.Node_Annotations_File));
 
 
       --  deallocate storrage
@@ -958,13 +961,14 @@ package body Giant.Projects is
       
       --  check whether correct iml graph is loaded
       ---------------------------------------------
-      
-      --  deallocate whole project if check failes.
-      
-      
-      
-      
-      
+      if not Is_Correct_IML_Graph_Loaded 
+        (New_Project_Access.Bauhaus_IML_Graph_File_Checksum ) then
+        
+         --  deallocate whole project if check failes
+         Deallocate_Project_Deep (New_Project_Access);
+         raise Wrong_IML_Graph_Loaded_Exception;         
+      end if;
+                        
       return New_Project_Access;
    end Load_Project;
 
