@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: martin_test.adb,v $, $Revision: 1.19 $
+--  $RCSfile: martin_test.adb,v $, $Revision: 1.20 $
 --  $Author: schwiemn $
---  $Date: 2003/07/21 18:40:06 $
+--  $Date: 2003/08/08 14:42:26 $
 --  
 with AUnit.Test_Suites; use AUnit.Test_Suites;
 with AUnit.Test_Runner;
@@ -46,24 +46,24 @@ procedure Martin_Test is
    begin
    
    
- --    Add_Test (Result, new Giant.Vis_Windows.Test.Test_Case); 
+   -- Add_Test (Result, new Giant.Vis_Windows.Test.Test_Case); 
       
       
- --    Add_Test (Result, new Giant.Projects.Test.Test_Case);
+   --    Add_Test (Result, new Giant.Projects.Test.Test_Case);
       
-      Add_Test (Result, new Hashed_Mappings_Lazy_Init_Test.Test_Case);       
+   --    Add_Test (Result, new Hashed_Mappings_Lazy_Init_Test.Test_Case);       
   
-  --  Add_Test (Result, new Giant.Config.Vis_Styles.Test.Test_Case);
+   --  Add_Test (Result, new Giant.Config.Vis_Styles.Test.Test_Case);
  
-  --  Add_Test (Result, new Giant.Config.Class_Sets.Test.Test_Case);
-         
-    --   Add_Test (Result, new Giant.XML_File_Access.Test.Test_Case);
+   --  Add_Test (Result, new Giant.Config.Class_Sets.Test.Test_Case);
+        
+   --   Add_Test (Result, new Giant.XML_File_Access.Test.Test_Case);
   
-    -- Add_Test (Result, new Giant.File_Management.Test.Test_Case);  
+   -- Add_Test (Result, new Giant.File_Management.Test.Test_Case);  
      
     --   Add_Test (Result, new Giant.Node_Annotations.Test.Test_Case);
 
--- Add_Test (Result, new Giant.GSL_Support.Test.Test_Case);
+ Add_Test (Result, new Giant.GSL_Support.Test.Test_Case);
              
       return Result;
    end Suite;

@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-gsl_support-test.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-gsl_support-test.adb,v $, $Revision: 1.3 $
 --  $Author: schwiemn $
---  $Date: 2003/07/03 13:15:39 $
+--  $Date: 2003/08/08 14:42:26 $
 --
 with AUnit.Assertions; use AUnit.Assertions;
 with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
@@ -150,11 +150,15 @@ package body Giant.GSL_Support.Test is
 
    end Test_Locate_GSL_File;
 
-   function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is
+   ---------------------------------------------------------------------------
+   function Name (T : Test_Case) 
+     return Ada.Strings.Unbounded.String_Access is
+     
    begin
       return new String'("GSL_Support");
    end Name;
 
+   ---------------------------------------------------------------------------
    procedure Register_Tests (T : in out Test_Case) is
    begin
    
