@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-xml_file_access.adb,v $, $Revision: 1.2 $
--- $Author: schwiemn $
--- $Date: 2003/06/20 13:45:48 $
+-- $RCSfile: giant-xml_file_access.adb,v $, $Revision: 1.3 $
+-- $Author: koppor $
+-- $Date: 2003/10/01 23:00:35 $
 --
 with GNAT.Directory_Operations; -- from GNAT
 
@@ -32,7 +32,7 @@ package body Giant.XML_File_Access is
 
    ---------------------------------------------------------------------------
    -- Note:
-   --  xmlada resolves relative paths towards the working directory of the 
+   --  xmlada resolves relative paths towards the working directory of the
    --  current execution environment. By changing this directory we enforce
    --  an interpretation relative to the position of the xml file.
    procedure Load_XML_File_Validated
@@ -42,25 +42,25 @@ package body Giant.XML_File_Access is
 
       -- The input file
       Input_File   : Input_Sources.File.File_Input;
-      
+
       -- store "working directory for the execution environment"
       Old_Exec_Dir : String := GNAT.Directory_Operations.Get_Current_Dir;
 
    begin
 
-      begin 
+      begin
         -- open input file
         Input_Sources.File.Open (File, Input_File);
-		
+
       exception
-	     when others =>
-		    raise  XML_File_Access_Error_Exception;
-	  end;
+         when others =>
+            raise  XML_File_Access_Error_Exception;
+      end;
 
       -- activate "validation feature"
       Tree_Readers.Set_Feature
         (Tree_Reader, Sax.Readers.Validation_Feature, True);
-		
+
       Tree_Readers.Set_Feature
         (Tree_Reader, Sax.Readers.Namespace_Feature, True);
       Tree_Readers.Set_Feature
@@ -74,13 +74,13 @@ package body Giant.XML_File_Access is
 
       -- change working directory to the dirctory where the xml file is
       -- located
-      GNAT.Directory_Operations.Change_Dir 
+      GNAT.Directory_Operations.Change_Dir
         (File_Management.Return_Dir_Path_For_File_Path (File));
-       
+
       -- read tree from file completely into main memory
       -- this may cause exceptions
       Tree_Readers.Parse (Tree_Reader, Input_File);
-      
+
       -- restore old position of working directory
       GNAT.Directory_Operations.Change_Dir (Old_Exec_Dir);
 
@@ -88,18 +88,18 @@ package body Giant.XML_File_Access is
       Input_Sources.File.Close (Input_File);
 
       -- The first element of the document the "Document-Element" or
-	  -- "top level node" as it is also called.
+          -- "top level node" as it is also called.
       XML_Document := Tree_Readers.Get_Tree (Tree_Reader);
-	  
-   exception 
-   	
-	 -- deallocate storrage and close file
+
+   exception
+
+         -- deallocate storrage and close file
      when E : Sax.Readers.XML_Fatal_Error =>
           Input_Sources.File.Close (Input_File);
           Tree_Readers.Free (Tree_Reader);
-          GNAT.Directory_Operations.Change_Dir (Old_Exec_Dir);          
-		  
-		  raise XML_File_Parse_Fatal_Error_Exception;
+          GNAT.Directory_Operations.Change_Dir (Old_Exec_Dir);
+
+                  raise XML_File_Parse_Fatal_Error_Exception;
    end Load_XML_File_Validated;
 
    ---------------------------------------------------------------------------
