@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.21 $
+--  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.22 $
 --  $Author: squig $
---  $Date: 2003/09/20 20:27:36 $
+--  $Date: 2003/09/20 21:16:39 $
 --
 
 with Ada.Exceptions;
@@ -137,8 +137,8 @@ package body Giant.Gsl_Dialog is
    ---------------------------------------------------------------------------
 
    procedure Show_Open_Dialog
-     (Dialog : access Gsl_Dialog_Record'Class;
-      Delete : Boolean)
+     (Dialog            : access Gsl_Dialog_Record'Class;
+      Delete            : in     Boolean)
    is
    begin
       declare
@@ -148,13 +148,16 @@ package body Giant.Gsl_Dialog is
          Success : Boolean;
       begin
          if (Filename /= "") then
-            if (Save_Changes (Dialog)) then
-               Set_Filename (Dialog, Filename);
-               if (Delete) then
-                  Gtk.Text.Delete_Text (Dialog.Text_Area);
+            if (Delete) then
+               --  ask user what to do if text area was modified
+               if (not Save_Changes (Dialog)) then
+                  return;
                end if;
-               Success := Read (Dialog, Filename);
+               Set_Filename (Dialog, Filename);
+               Gtk.Text.Delete_Text (Dialog.Text_Area);
             end if;
+
+            Success := Read (Dialog, Filename);
          end if;
       end;
    end Show_Open_Dialog;
@@ -189,7 +192,7 @@ package body Giant.Gsl_Dialog is
    begin
       if (Dialog.Text_Has_Changed) then
          Response := Dialogs.Show_Confirmation_Dialog
-           (-"The script has changed. Save changes?",
+           (-"The text was modified. Save changes?",
             Default_Dialog.Button_Yes_No_Cancel);
          if (Response = Default_Dialog.Response_Yes) then
             if (Get_Filename (Dialog) = "") then
@@ -283,14 +286,6 @@ package body Giant.Gsl_Dialog is
       Gtk.Menu.Add
         (Menu, New_Stock_Menu_Item (Gtk.Stock.Stock_Open,
                                     On_File_Open'Access, Dialog));
-      Gtk.Menu.Add
-        (Menu, New_Menu_Item (-"Open In External Editor",
-                              On_File_Open_External'Access, Dialog));
-      Gtk.Menu.Add (Menu, New_Menu_Separator);
-      Gtk.Menu.Add
-        (Menu, New_Menu_Item (-"Insert", On_File_Insert'Access, Dialog));
-      Gtk.Menu.Add
-        (Menu, New_Menu_Item (-"Revert", On_File_Revert'Access, Dialog));
       Gtk.Menu.Add (Menu, New_Menu_Separator);
       Gtk.Menu.Add
         (Menu, New_Stock_Menu_Item (Gtk.Stock.Stock_Save,
@@ -298,6 +293,13 @@ package body Giant.Gsl_Dialog is
       Gtk.Menu.Add
         (Menu, New_Stock_Menu_Item (Gtk.Stock.Stock_Save_As,
                                     On_File_Save_As'Access, Dialog));
+      Gtk.Menu.Add (Menu, New_Menu_Separator);
+      Gtk.Menu.Add
+        (Menu, New_Menu_Item (-"Open In External Editor",
+                              On_File_Open_External'Access, Dialog));
+      Gtk.Menu.Add (Menu, New_Menu_Separator);
+      Gtk.Menu.Add
+        (Menu, New_Menu_Item (-"Revert", On_File_Revert'Access, Dialog));
 
       --  edit menu
       Menu := New_Sub_Menu (Menu_Bar, -"Edit");
@@ -311,6 +313,10 @@ package body Giant.Gsl_Dialog is
       Gtk.Menu.Add (Menu, New_Menu_Separator);
       Gtk.Menu.Add (Menu, New_Stock_Menu_Item (Gtk.Stock.Stock_Clear,
                                                On_Edit_Clear'Access, Dialog));
+      Gtk.Menu.Add (Menu, New_Menu_Separator);
+      Gtk.Menu.Add
+        (Menu, New_Menu_Item (-"Insert File...", On_File_Insert'Access, Dialog));
+
    end;
 
    procedure Initialize
@@ -325,7 +331,7 @@ package body Giant.Gsl_Dialog is
       Scrolled_Window : Gtk.Scrolled_Window.Gtk_Scrolled_Window;
    begin
       Default_Dialog.Initialize (Dialog,
-                                 -"Execute GSL Script",
+                                 -"GSL Editor",
                                  Default_Dialog.Button_Close);
 
       --  vertical center box

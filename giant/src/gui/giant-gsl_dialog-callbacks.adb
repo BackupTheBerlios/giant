@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gsl_dialog-callbacks.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-gsl_dialog-callbacks.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/09/20 20:27:36 $
+--  $Date: 2003/09/20 21:16:39 $
 --
 
 with Ada.Exceptions;
@@ -44,63 +44,65 @@ package body Giant.Gsl_Dialog.Callbacks is
    procedure On_File_Insert
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
-	  Dialog : constant Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
+      Dialog : constant Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
    begin
-	  Show_Open_Dialog (Dialog, Delete => False);
+      Show_Open_Dialog (Dialog, Delete => False);
    end;
 
    procedure On_File_New
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
-	  Dialog : constant Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
+      Dialog : constant Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
    begin
-	  if (Save_Changes (Dialog)) then
-		 Gtk.Text.Delete_Text (Dialog.Text_Area);
-	  end if;
+      if (Save_Changes (Dialog)) then
+         Set_Filename (Dialog, "");
+         Gtk.Text.Delete_Text (Dialog.Text_Area);
+         Dialog.Text_Has_Changed := False;
+      end if;
    end;
 
    procedure On_File_Open
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
-	  Dialog : constant Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
+      Dialog : constant Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
    begin
-	  Show_Open_Dialog (Dialog, Delete => True);
+      Show_Open_Dialog (Dialog, Delete => True);
    end;
 
    procedure On_File_Open_External
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
-	  Dialog : constant Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
+      Dialog : constant Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
    begin
-	  File_Management.Execute_External_Editor
-		(Command  => Config_Settings.Get_Setting_As_String ("Editor.Source"),
-		 Filename => Get_Filename (Dialog),
-		 Line     => 0,
-		 Column   => 0);
+      File_Management.Execute_External_Editor
+        (Command  => Config_Settings.Get_Setting_As_String ("Editor.Source"),
+         Filename => Get_Filename (Dialog),
+         Line     => 0,
+         Column   => 0);
    end;
 
    procedure On_File_Revert
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
       use type Default_Dialog.Response_Type;
-	  Dialog : constant Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
-	  Response : Default_Dialog.Response_Type;
-	  Success : Boolean;
+      Dialog : constant Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
+      Response : Default_Dialog.Response_Type;
+      Success : Boolean;
    begin
-	  if (Get_Filename (Dialog) /= "") then
-		 if (Dialog.Text_Has_Changed) then
-			Response := Dialogs.Show_Confirmation_Dialog
-			  (-"The script has changed. Really revert?",
-			   Default_Dialog.Button_Yes_No);
-			if (Response = Default_Dialog.Response_No) then
-			   --  do not revert
-			   return;
-			end if;
-		 end if;
+      if (Get_Filename (Dialog) /= "") then
+         if (Dialog.Text_Has_Changed) then
+            Response := Dialogs.Show_Confirmation_Dialog
+              (-"The text was modified. Really revert?",
+               Default_Dialog.Button_Yes_No);
+            if (Response = Default_Dialog.Response_No) then
+               --  do not revert
+               return;
+            end if;
+         end if;
 
-		 Gtk.Text.Delete_Text (Dialog.Text_Area);
-		 Success := Read (Dialog, Get_Filename (Dialog));
-	  end if;
+         Gtk.Text.Delete_Text (Dialog.Text_Area);
+         Success := Read (Dialog, Get_Filename (Dialog));
+      end if;
    end;
 
    procedure On_File_Save
@@ -109,11 +111,11 @@ package body Giant.Gsl_Dialog.Callbacks is
       Dialog : constant Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
       Success : Boolean;
    begin
-	  if (Get_Filename (Dialog) = "") then
-		 On_File_Save_As (Source);
-	  else
-		 Success := Write (Dialog, Get_Filename (Dialog));
-	  end if;
+      if (Get_Filename (Dialog) = "") then
+         On_File_Save_As (Source);
+      else
+         Success := Write (Dialog, Get_Filename (Dialog));
+      end if;
    end;
 
    procedure On_File_Save_As
@@ -132,33 +134,33 @@ package body Giant.Gsl_Dialog.Callbacks is
    procedure On_Edit_Clear
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
-	  Dialog : constant Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
+      Dialog : constant Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
    begin
-	  Gtk.Text.Delete_Text (Dialog.Text_Area);
+      Gtk.Text.Delete_Text (Dialog.Text_Area);
    end;
 
    procedure On_Edit_Copy
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
-	  Dialog : constant Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
+      Dialog : constant Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
    begin
-	  Gtk.Text.Copy_Clipboard (Dialog.Text_Area, 0);
+      Gtk.Text.Copy_Clipboard (Dialog.Text_Area, 0);
    end;
 
    procedure On_Edit_Cut
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
-	  Dialog : constant Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
+      Dialog : constant Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
    begin
-	  Gtk.Text.Cut_Clipboard (Dialog.Text_Area, 0);
+      Gtk.Text.Cut_Clipboard (Dialog.Text_Area, 0);
    end;
 
    procedure On_Edit_Paste
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
-	  Dialog : constant Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
+      Dialog : constant Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
    begin
-	  Gtk.Text.Paste_Clipboard (Dialog.Text_Area, 0);
+      Gtk.Text.Paste_Clipboard (Dialog.Text_Area, 0);
    end;
 
    ---------------------------------------------------------------------------
@@ -206,33 +208,33 @@ package body Giant.Gsl_Dialog.Callbacks is
    ---------------------------------------------------------------------------
 
    function On_Focus
-	 (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
-	  Event	 : in     Gdk.Event.Gdk_Event)
-	 return Boolean
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event)
+     return Boolean
    is
       use type Default_Dialog.Response_Type;
-	  use type File_Management.OS_Time;
+      use type File_Management.OS_Time;
       Dialog : constant Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
-	  Filename : constant String := Get_Filename (Dialog);
-	  Response : Default_Dialog.Response_Type;
-	  Success : Boolean;
+      Filename : constant String := Get_Filename (Dialog);
+      Response : Default_Dialog.Response_Type;
+      Success : Boolean;
    begin
-	  if (Filename /= "" and then
-		  Dialog.Last_Save_Date 
-		  /= File_Management.File_Time_Stamp (Filename)) then
+      if (Filename /= "" and then
+          Dialog.Last_Save_Date
+          /= File_Management.File_Time_Stamp (Filename)) then
 
-		 Response := Dialogs.Show_Confirmation_Dialog
-		   (-"The file has changed on disk. Revert?",
-			Default_Dialog.Button_Yes_No);
-		 if (Response = Default_Dialog.Response_Yes) then
-			Gtk.Text.Delete_Text (Dialog.Text_Area);
-			Success := Read (Dialog, Get_Filename (Dialog));
-		 else
-			--  do not bother user again
-			Dialog.Last_Save_Date := File_Management.File_Time_Stamp (Filename);
-		 end if;
-	  end if;
-	  return False;
+         Response := Dialogs.Show_Confirmation_Dialog
+           (-"The file has changed on disk. Revert?",
+            Default_Dialog.Button_Yes_No);
+         if (Response = Default_Dialog.Response_Yes) then
+            Gtk.Text.Delete_Text (Dialog.Text_Area);
+            Success := Read (Dialog, Get_Filename (Dialog));
+         else
+            --  do not bother user again
+            Dialog.Last_Save_Date := File_Management.File_Time_Stamp (Filename);
+         end if;
+      end if;
+      return False;
    end On_Focus;
-   
+
 end Giant.Gsl_Dialog.Callbacks;
