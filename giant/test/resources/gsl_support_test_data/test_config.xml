@@ -32,7 +32,7 @@
   <setting name="IML_Subgraph_Highlight_Color_2" value="RGB:FF/00/FF" />
   <setting name="IML_Subgraph_Highlight_Color_3" value="RGB:FF/FF/00" />  
   
-  <setting name="GSL.Include_Paths" 
+  <setting name="GSL.Include_Path" 
            value="./gsl_include_dir_1:./gsl_include_dir_2" />    
 </giant_config_file>
 

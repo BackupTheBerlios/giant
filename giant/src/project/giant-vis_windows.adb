@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.34 $
---  $Author: keulsn $
---  $Date: 2003/08/12 14:30:31 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.35 $
+--  $Author: schwiemn $
+--  $Date: 2003/08/19 13:33:33 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -360,8 +360,8 @@ package body Giant.Vis_Windows is
       --  The Graph widget will be deallocated automatically
       --  (only if there are no other references that have
       --  increased the Reference Counter).
-  --    Graph_Widgets.Unref (Vis_Window.The_Graph_Widget);
---      Graph_Widgets.Destroy (Vis_Window.The_Graph_Widget);
+      --  Graph_Widgets.Unref (Vis_Window.The_Graph_Widget);
+      Graph_Widgets.Destroy (Vis_Window.The_Graph_Widget);
 
       Pin_Sets.Destroy (Vis_Window.Set_Of_All_Pins);
 

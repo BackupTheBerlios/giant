@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-gsl_support-test.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-gsl_support-test.adb,v $, $Revision: 1.4 $
 --  $Author: schwiemn $
---  $Date: 2003/08/08 14:42:26 $
+--  $Date: 2003/08/19 13:33:33 $
 --
 with AUnit.Assertions; use AUnit.Assertions;
 with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
@@ -151,6 +151,31 @@ package body Giant.GSL_Support.Test is
    end Test_Locate_GSL_File;
 
    ---------------------------------------------------------------------------
+   procedure Test_Fault_Tolerance 
+     (R : in out AUnit.Test_Cases.Test_Case'Class) is
+     
+     Dummy_String : String (1..1);
+   begin
+                                       
+      -- test fault tolerance for not existing gsl scripts
+      begin   
+   
+         Dummy_String := 
+           GSL_Support.Get_GSL_Include ("not_existing_script");
+ 
+         Assert (False, 
+            "Test Locate_GSL_Include_File"
+            & "GSL_Skript_File_Does_Not_Exist_Exception");
+      exception
+         when GSL_Support.GSL_Script_Not_Found_Exception =>
+          
+         Assert (True, 
+            "Test Locate_GSL_Include_File"
+            & "GSL_Skript_File_Does_Not_Exist_Exception");  
+      end;
+   end Test_Fault_Tolerance;
+
+   ---------------------------------------------------------------------------
    function Name (T : Test_Case) 
      return Ada.Strings.Unbounded.String_Access is
      
@@ -165,6 +190,8 @@ package body Giant.GSL_Support.Test is
       Register_Routine (T, Test_String_Split'Access, "Test_String_Split");          
       Register_Routine 
         (T, Test_Locate_GSL_File'Access, "Test_Locate_GSL_File");
+      Register_Routine 
+        (T, Test_Fault_Tolerance'Access, "Test_Fault_Tolerance");
         
    end Register_Tests;
 
