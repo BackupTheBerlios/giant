@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.31 $
---  $Author: koppor $
---  $Date: 2003/07/15 10:12:52 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.32 $
+--  $Author: keulsn $
+--  $Date: 2003/07/15 11:57:31 $
 --
 ------------------------------------------------------------------------------
 
@@ -157,14 +157,13 @@ package body Giant.Graph_Widgets is
       Annotations : in     Node_Annotations.Node_Annotation_Access) is
    begin
       Create (Widget, Style, Annotations);
-      raise Unimplemented;
    end Read_Graph_Widget;
 
    procedure Write_Graph_Widget
      (Stream : in     Bauhaus_IO.Out_Stream_Type;
       Widget : access Graph_Widget_Record) is
    begin
-      raise Unimplemented;
+      null;
    end Write_Graph_Widget;
 
 
@@ -378,13 +377,15 @@ package body Giant.Graph_Widgets is
      (Widget    : access Graph_Widget_Record'Class;
       Selection : in     Graph_Lib.Selections.Selection) is
    begin
-      raise Unimplemented;
+      --------------------------------raise Unimplemented;
+      null;
    end Remove_Selection;
 
    procedure Clear
      (Widget : access Graph_Widget_Record'Class) is
    begin
-      raise Unimplemented;
+      --------------------------------raise Unimplemented;
+      null;
    end Clear;
 
 
@@ -629,7 +630,7 @@ package body Giant.Graph_Widgets is
       Width     : in     Vis.Logic_Float;
       Height    : in     Vis.Logic_Float) is
    begin
-      raise Unimplemented;
+      null;  ---------------------------  raise Unimplemented;
    end Make_Room;
 
    procedure Move_Selection
@@ -637,7 +638,7 @@ package body Giant.Graph_Widgets is
       Selection : access Graph_Lib.Selections.Selection;
       Move      : in     Vis.Logic.Vector_2d) is
    begin
-      raise Unimplemented;
+      null;  ----------------------------  raise Unimplemented;
    end Move_Selection;
 
 
@@ -775,13 +776,13 @@ package body Giant.Graph_Widgets is
       Selection  : access Graph_Lib.Selections.Selection;
       Hidden     : in     Boolean) is
    begin
-      raise Unimplemented;
+      null;  -----------------------  raise Unimplemented;
    end Set_Hidden;
 
    procedure Unhide_All
      (Widget     : access Graph_Widget_Record'Class) is
    begin
-      raise Unimplemented;
+      null;  -------------------------  raise Unimplemented;
    end Unhide_All;
 
    procedure Change_Annotation_State
@@ -813,8 +814,7 @@ package body Giant.Graph_Widgets is
      (Widget     : access Graph_Widget_Record'Class)
      return Vis.Zoom_Level is
    begin
-      raise Unimplemented;
-      return 0.0;
+      return Vis.Logic_Float'Safe_Last;
    end Get_Maximum_Zoom_Level;
 
    function Get_Zoom_Level
@@ -842,20 +842,20 @@ package body Giant.Graph_Widgets is
      (Widget     : access Graph_Widget_Record'Class;
       Edge       : in     Graph_Lib.Edge_Id) is
    begin
-      raise Unimplemented;
+      null;  ------------------------  raise Unimplemented;
    end Zoom_To_Edge;
 
    procedure Zoom_To_Selection
      (Widget     : access Graph_Widget_Record'Class;
       Selection  : access Graph_Lib.Selections.Selection) is
    begin
-      raise Unimplemented;
+      null;  --------------------------  raise Unimplemented;
    end Zoom_To_Selection;
 
    procedure Zoom_To_All
      (Widget     : access Graph_Widget_Record'Class) is
    begin
-      raise Unimplemented;
+      null;  ----------------------------  raise Unimplemented;
    end Zoom_To_All;
 
    function Get_Logical_Area
