@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.14 $
+-- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.15 $
 -- $Author: koppor $
--- $Date: 2003/10/01 23:13:24 $
+-- $Date: 2003/10/06 17:44:30 $
 --
 
 --  from GIANT
@@ -174,7 +174,7 @@ package body Giant.Config.Class_Sets is
       A_Node_Class_ID     : Graph_Lib.Node_Class_Id;
       A_Node_Class_ID_Set : Graph_Lib.Node_Class_Id_Set;
 
-      A_Edge_Class_ID_Set : Graph_Lib.Edge_Class_Id_Set;
+      An_Edge_Class_ID_Set : Graph_Lib.Edge_Class_Id_Set;
 
       File_List : String_Lists.List;
       File_List_Iter : String_Lists.ListIter;
@@ -330,7 +330,7 @@ package body Giant.Config.Class_Sets is
                     (A_Node_Class_ID_Set) then
 
                      Graph_Lib.Edge_Class_Id_Sets.Destroy
-                       (A_Edge_Class_ID_Set);
+                       (An_Edge_Class_ID_Set);
 
                   else
                      -- insert all node class id's from the calculated set
@@ -361,26 +361,26 @@ package body Giant.Config.Class_Sets is
                XML_Node := DOM.Core.Nodes.Item (XML_Nodes_List, I);
 
                -- calculate set of edge classes specified by this node
-               A_Edge_Class_ID_Set :=
+               An_Edge_Class_ID_Set :=
                  Edge_Class_Proc.Process_Edge_Class_Entry (XML_Node);
 
                -- check whether returned set is empty
                if Graph_Lib.Edge_Class_Id_Sets.Is_Empty
-                 (A_Edge_Class_ID_Set) then
+                 (An_Edge_Class_ID_Set) then
 
                   Graph_Lib.Edge_Class_Id_Sets.Destroy
-                    (A_Edge_Class_ID_Set);
+                    (An_Edge_Class_ID_Set);
 
                else
 
                   -- insert all edge class id's from the calculated set into
                   -- the class set
                   Insert_Edge_Class_Id_Set_Into_Class_Set
-                    (New_Class_Set_Access, A_Edge_Class_ID_Set);
+                    (New_Class_Set_Access, An_Edge_Class_ID_Set);
 
                   -- deallocate returned edge class id set
                   Graph_Lib.Edge_Class_Id_Sets.Destroy
-                    (A_Edge_Class_ID_Set);
+                    (An_Edge_Class_ID_Set);
 
                end if;
 
@@ -398,25 +398,25 @@ package body Giant.Config.Class_Sets is
                XML_Node := DOM.Core.Nodes.Item (XML_Nodes_List, I);
 
                -- calculate set of edge classes specified by this node
-               A_Edge_Class_ID_Set :=
+               An_Edge_Class_ID_Set :=
                  IML_Class_Inheritance_Proc.
                    Get_All_Sub_Edge_Classes (XML_Node);
 
                -- check whether returned set is empty
                if Graph_Lib.Edge_Class_Id_Sets.Is_Empty
-                 (A_Edge_Class_ID_Set) then
+                 (An_Edge_Class_ID_Set) then
 
                   Graph_Lib.Edge_Class_Id_Sets.Destroy
-                    (A_Edge_Class_ID_Set);
+                    (An_Edge_Class_ID_Set);
                else
                   -- insert all edge class id's from the calculated set into
                   -- the class set
                   Insert_Edge_Class_Id_Set_Into_Class_Set
-                    (New_Class_Set_Access, A_Edge_Class_ID_Set);
+                    (New_Class_Set_Access, An_Edge_Class_ID_Set);
 
                   -- deallocate returned edge class id set
                   Graph_Lib.Edge_Class_Id_Sets.Destroy
-                    (A_Edge_Class_ID_Set);
+                    (An_Edge_Class_ID_Set);
                end if;
 
             end loop;
@@ -644,7 +644,7 @@ package body Giant.Config.Class_Sets is
       Node_Class_Iter : Node_Class_Look_Up_Hashed_Mappings.Values_Iter;
       A_Node_Class    : Graph_Lib.Node_Class_Id;
       Edge_Class_Iter : Edge_Class_Look_Up_Hashed_Mappings.Values_Iter;
-      A_Edge_Class    : Graph_Lib.Edge_Class_Id;
+      An_Edge_Class    : Graph_Lib.Edge_Class_Id;
    begin
 
       New_Meta := new Class_Set_Data;
@@ -687,15 +687,15 @@ package body Giant.Config.Class_Sets is
               (Edge_Class_Iter) loop
 
                Edge_Class_Look_Up_Hashed_Mappings.Next
-                 (Edge_Class_Iter, A_Edge_Class);
+                 (Edge_Class_Iter, An_Edge_Class);
 
                if not Edge_Class_Look_Up_Hashed_Mappings.Is_Bound
-                 (New_Meta.Edge_Classes, A_Edge_Class) then
+                 (New_Meta.Edge_Classes, An_Edge_Class) then
 
                   Edge_Class_Look_Up_Hashed_Mappings.Bind
                     (New_Meta.Edge_Classes,
-                     A_Edge_Class,
-                     A_Edge_Class);
+                     An_Edge_Class,
+                     An_Edge_Class);
                end if;
             end loop;
 
