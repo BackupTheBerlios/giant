@@ -11,12 +11,28 @@
    <!-- ................................................................. -->
 
    <default_node_setting
-      icon         = "test_node_icon_red_1.xpm"
-      text_color   = "yellow"
-      border_color = "red"
-      fill_color   = "black"> 
+     icon         = "test_node_icon_default_1.xpm"
+     text_color   = "black"
+     border_color = "black"
+     fill_color   = "white"> 
+      
+     <node_attribute attribute_name = "SLoc"/>      
    </default_node_setting>
-
+   
+   
+  <node_class_specific_setting 
+    icon         = "test_node_icon_blue_1.xpm"
+    text_color   = "blue"
+    border_color = "black"
+    fill_color   = "white"> 
+    
+    <node_attribute attribute_name  = "SLoc"/>    
+     
+    <node_class     node_class_name = "IML_Root"/>
+    <node_class     node_class_name = "HPGNode"/>
+    <node_class     node_class_name = "OC_Parameter"/>        
+  </node_class_specific_setting>
+      
 
    <!-- ................................................................. -->
    <default_edge_setting
