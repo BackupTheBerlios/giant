@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory-test.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-layout_factory-test.adb,v $, $Revision: 1.3 $
 --  $Author: koppor $
---  $Date: 2003/07/07 11:21:38 $
+--  $Date: 2003/07/13 00:00:18 $
 --
 
 with Ada.Text_IO;
@@ -61,7 +61,7 @@ package body Giant.Layout_Factory.Test is
 
    function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is
    begin
-      return new String'("Layouts-Matrix_Layouts");
+      return new String'("Layout-Factory");
    end Name;
 
    procedure Register_Tests (T : in out Test_Case) is
