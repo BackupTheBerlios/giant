@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.10 $
-%  $Date: 2003/02/24 10:35:57 $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.11 $
+%  $Date: 2003/02/24 11:01:00 $
 %  $Author: birdy $
 %
 %  Description: Use-Cases für die Fensterfunktionalität der GUI
@@ -33,11 +33,11 @@ Projektes anlegen.
   
   \begin{proc}    
     \step[1]
-    Der Benutzer startet den UseCase über das PopUp Menü \ref{WINDOW\_LIST_POPUP}
+    Der Benutzer startet den UseCase über das PopUp Menü \ref{WINDOW-LIST-POPUP}
     durch Auswahl von \gq{New Window}
     
     \step[2] 
-    GIANT öffnet den allgemeinen Texteingabedialog. \ref{DIALOG\_WINDOW}.
+    GIANT öffnet den allgemeinen Texteingabedialog. \ref{DIALOG-WINDOW}.
       
     \step[3] 
     Der Benutzer gibt dort einen zulässigen Namen für das neue Anzeigefenster
@@ -84,7 +84,7 @@ gehen hierbei unwiederbringlich verloren.
   
   \begin{proc}    
     \step[1]
-    Der Benutzer startet den UseCase über das PopUp Menü \ref{WINDOW\_LIST_POPUP}
+    Der Benutzer startet den UseCase über das PopUp Menü \ref{WINDOW-LIST-POPUP}
     
     \step[2] 
     Giant zeigt die allgemeine Sicherheitsabfrage und fragt nach, ob das
@@ -127,8 +127,8 @@ Dient zum Öffnen eines Anzeigefensters des Projektes.
 
     \step[1]
     Der Benutzer führt einen Rechtsklick auf ein nicht geöffnetes
-    Anzeigefenster in der \ref{WINDOW\_LIST} durch und wählt im
-    PopUp Menü \ref{WINDOW\_LIST\_POPUP}  den entsprechenden Eintag aus.
+    Anzeigefenster in der \ref{WINDOW-LIST} durch und wählt im
+    PopUp Menü \ref{WINDOW-LIST-POPUP}  den entsprechenden Eintag aus.
    
     \step[2]
     GIANT öffnet das entsprechende Anzeigefenster.
@@ -163,7 +163,7 @@ Mit diesem UseCase wird ein geöffnetes Anzeigefenster geschlossen.
     Der Benutzer schließt das Anzeigefenster (durch klicken auf das ''X''
     Symbol rechts oben in der Titelleiste des Anzeigefensters).\\
     Alternativ kann er das Anzeigefenster über das entsprechende PopUp
-    Menü \ref{WINDOW\_LIST\_POPUP} in der Liste \ref{WINDOW\_LIST} schließen.
+    Menü \ref{WINDOW-LIST-POPUP} in der Liste \ref{WINDOW-LIST} schließen.
          
     \step[2]
     GIANT zeigt die allgemeine Sicherheitsabfrage 
@@ -225,15 +225,14 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
   
   \begin{proc}    
     \step[1]
-    Der Benutzer startet den UseCase über das PopUp Menü \ref{SUBGRAPH\_LIST\_POPUP}.
+    Der Benutzer startet den UseCase über das PopUp Menü \ref{SUBGRAPH-LIST-POPUP}.
     Hierdurch wird der einzufügende IML-Teilgraph bestimmt (immer
     der IML-Teilgraph), auf dem der Rechtsklick ausgeführt wurde.
     
     \step[2] 
     Der Benutzer wählt das entsprechende Anzeigefenster aus und
-    gibt über das Fadenkreuz die Position vor, an der die neuen
+    gibt über das Fadenkreuz \ref{Fadenkreuzcursor} die Position vor, an der die neuen
     Fenster-Knoten und Fenster-Kanten eingefügt werden sollen.
-    >>>>>>>>>>>>>>>>> VERWEIS AUF BESCHREIBUNG des FADENKREUZES in GUI
     
     \step[3]
     GIANT zeigt den Dialog zur Auswahl des entsprechenden Layoutalgorithmus.

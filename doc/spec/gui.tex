@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.23 $
-%  $Date: 2003/02/24 10:36:10 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.24 $
+%  $Date: 2003/02/24 11:00:46 $
 %  $Author: birdy $
 %
 %  Description: Bis zu Revision 1.6 sind UseCase-artige Beschreibungen enthalten,
@@ -51,7 +51,8 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     Im Untermenü Datei des Hauptfensters befinden sich folgende Einträge.  
 
       \begin{enumerate}
-         \item Load Project
+         \item Load Project\\
+	  blah
          \item Save Project
          \item New Project
          \item Quit
@@ -87,7 +88,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
   Im Fenster befindet sich zuoberst eine Liste WINDOW\_LIST.
    
     \subsubsection {Inhalt Window List}
-    \label{WINDOW\_LIST}
+    \label{WINDOW-LIST}
    
       WINDOW\_LIST hat die Spalten WINDOW\_NAME und WINDOW\_OPEN. In WINDOW\_NAME
       wird der Name der Anzeigefenster dargestellt, in WINDOW\_OPEN befindet
@@ -98,7 +99,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     
     
         Beim Rechtsklick auf WINDOW\_LIST öffnet sich ein Popup-Menü mit folgenden Menüpunkten:
-	\label{WINDOW\_LIST\_POPUP}
+	\label{WINDOW-LIST-POPUP}
 
         \begin{enumerate}
           \item Open Window
@@ -133,7 +134,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     \subsubsection {PopUp Menü Subgraph List}
         
       Beim Rechtsklick auf SUBGRAPH\_LIST öffnet sich ein Popup-Menü mit folgenden Menüpunkten:
-	\label{SUBGRAPH\_LIST\_POPUP}
+	\label{SUBGRAPH-LIST-POPUP}
         \begin{enumerate}
           \item highlight (zum Hervorheben eines Teilgraphen in allen Fenstern mit Farbe SUBGRAPH\_COL)
           \item Change highlighting color
@@ -150,7 +151,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
   \subsection {Zugehörige Dialoge}
   
   	\begin{enumerate}
-		\label SUBGRAPH\_LIST/NEW\_WINDOW
+		\label{SUBGRAPH-LIST-NEW-WINDOW}
 		\item SUBGRAPH\_LIST/NEW\_WINDOW
 			Dieser Dialog ermöglicht, ein neues Fenster anzulegen
 			
@@ -335,7 +336,7 @@ Darunter befinden sich zwei Buttons: Anfrage verwerfen und Anfrage
 übernehmen als IML-Teilgraph. 
 
 \section{Allgemeiner Texteingabedialog}
-\label{DIALOG\_WINDOW}
+\label{DIALOG-WINDOW}
 
 Ein allgemeiner Texteingabedialog ist ein Fenster DIALOG\_WINDOW mit dem
 Titel \gq{GIANT Dialog}. Im Fenster ist ein einzeiliges Textfeld TEXT\_FIELD
@@ -386,11 +387,8 @@ Der Dialog Layoutalgorithmen bietet folgende Möglichkeiten:
 
 
 \item Auswahl des Layoutalgorithmus\\
-	Hiermit kann der Layoutalgorithmus ausgewählt werden.
 
 \item Eingabe der zu berücksichtigenden Kanten bei semantischen Layouts\\
-
-
 
 \item OK Button\\
 \item Cancel Button\\
@@ -435,7 +433,12 @@ mit \gq{No}.
 \section{Fadenkreuzcursor}
 \label{Fadenkreuzcursor}
 	Der Cursor verwandelt sich nach Auswahl bestimmter
-	Funktionen in ein Fadenkreuz. Durch Rechtsklick auf einen
-	Knoten/eine Kante in einem Fenster wird dieser Knoten/diese
-	Kante für die jeweilige Funktion ausgewählt. Der Cursor verwandelt
+	Funktionen in ein Fadenkreuz, rechts unten im Fadenkreuz ist
+	entweder NODE, EDGE oder POS zu sehen, um zu zeigen, daß entweder ein
+	Knoten, eine Kante oder eine Position im Fenster auszuwählen ist.
+	Falls beides möglich ist, erscheint dieser Text nicht. Durch Rechtsklick
+	auf einen
+	Knoten/eine Kante/leere Position in einem Fenster wird dieser Knoten/diese
+	Kante/Position für die jeweilige Funktion ausgewählt. Der Cursor verwandelt
 	sich dann wieder in den Normalcursor.
+
