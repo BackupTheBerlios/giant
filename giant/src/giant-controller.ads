@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.35 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.36 $
 --  $Author: squig $
---  $Date: 2003/07/14 22:28:11 $
+--  $Date: 2003/07/15 11:50:26 $
 --
 ------------------------------------------------------------------------------
 --
@@ -85,8 +85,9 @@ package Giant.Controller is
    --  GUI
    ---------------------------------------------------------------------------
 
-   ---------------------------------------------------------------------------
-   --  Shows an error dialog or error message, if gui is not initialized.
+   -------------------------------------------------------------------------
+   --  Shows an error dialog.Shows error message on console, if gui is
+   --  not initialized.
    procedure Show_Error
      (Message : in String);
 
@@ -482,8 +483,8 @@ package Giant.Controller is
    ---------------------------------------------------------------------------
 
    procedure Set_Zoom_Level
-     (Window_Name : in String;
-      Zoom_Level  : in Vis.Zoom_Level);
+     (Window_Name : in     String;
+      Zoom_Level  : in out Vis.Zoom_Level);
 
 private
 

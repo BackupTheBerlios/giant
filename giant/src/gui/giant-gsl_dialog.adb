@@ -20,11 +20,12 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.12 $
+--  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.13 $
 --  $Author: squig $
---  $Date: 2003/07/03 18:42:21 $
+--  $Date: 2003/07/15 11:50:26 $
 --
 
+with Ada.Exceptions;
 with Ada.IO_Exceptions;
 with Ada.Text_Io; use Ada.Text_Io;
 
@@ -270,7 +271,10 @@ package body Giant.Gsl_Dialog is
               Logger.Warn ("error executing gsl script: " & Filename);
               Logger.Error (E);
 
-              Dialogs.Show_Error_Dialog ("Error while executing the script.");
+              Dialogs.Show_Error_Dialog
+                (-"Error during execution"
+                 & " (" & Ada.Exceptions.Exception_Message (E)
+                 & ").");
          end;
 
          --  the script failed

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.33 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.34 $
 --  $Author: squig $
---  $Date: 2003/07/10 21:24:48 $
+--  $Date: 2003/07/15 11:50:26 $
 --
 --
 ------------------------------------------------------------------------------
@@ -197,7 +197,7 @@ begin
       Default_Vis_Style_File => "dist/vis_styles_set_1/Default.xml");
 
    Logger.Debug ("intializing class sets");
-   Config.Class_Sets.Initialize_Class_Sets (".");
+   Config.Class_Sets.Initialize_Class_Sets ("dist/class_sets_set_1");
 
    Logger.Debug ("parsing command line arguments");
    Parse_Arguments;

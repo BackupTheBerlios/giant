@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.ads,v $, $Revision: 1.7 $
---  $Author: koppor $
---  $Date: 2003/07/07 08:28:54 $
+--  $RCSfile: giant-layout_factory.ads,v $, $Revision: 1.8 $
+--  $Author: squig $
+--  $Date: 2003/07/15 11:50:26 $
 --
 ------------------------------------------------------------------------------
 --
@@ -39,9 +39,7 @@ with Giant.Vis;
 
 package Giant.Layout_Factory is
 
-   Additonal_Parameters_Error : exception;
    Invalid_Format             : exception;
-   Other_Error                : exception;
    Unknown_Algorithm          : exception;
 
    ----------------------------------------------------------------------------

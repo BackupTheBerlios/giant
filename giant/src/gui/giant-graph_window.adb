@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.34 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.35 $
 --  $Author: squig $
---  $Date: 2003/07/11 12:58:49 $
+--  $Date: 2003/07/15 11:50:26 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -453,9 +453,9 @@ package body Giant.Graph_Window is
    is
       Window : Graph_Window_Access := Graph_Window_Access (Source);
       Zoom_Level : Vis.Zoom_Level
-        := 1.0; --FIX:Graph_Widgets.Get_Zoom_Level (Window.Graph);
+        := Graph_Widgets.Get_Zoom_Level (Window.Graph) + DEFAULT_ZOOM_STEP;
    begin
-      Controller.Set_Zoom_Level (Get_Window_Name (Window), Zoom_Level + 0.2);
+      Controller.Set_Zoom_Level (Get_Window_Name (Window), Zoom_Level);
    end On_Zoom_In_Clicked;
 
    procedure On_Zoom_Level_Selected
@@ -478,8 +478,8 @@ package body Giant.Graph_Window is
          else
             Zoom_Level := Vis.Zoom_Level'Value (Zoom_String);
          end if;
-         Controller.Set_Zoom_Level (Get_Window_Name (Window),
-                                    Zoom_Level / 100.0);
+         Zoom_Level := Zoom_Level / 100.0;
+         Controller.Set_Zoom_Level (Get_Window_Name (Window), Zoom_Level);
       end if;
    exception
       when Constraint_Error =>
@@ -490,8 +490,11 @@ package body Giant.Graph_Window is
    procedure On_Zoom_Out_Clicked
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
+      Zoom_Level : Vis.Zoom_Level
+        := Graph_Widgets.Get_Zoom_Level (Window.Graph) - DEFAULT_ZOOM_STEP;
    begin
-      null;
+      Controller.Set_Zoom_Level (Get_Window_Name (Window), Zoom_Level);
    end On_Zoom_Out_Clicked;
 
    ---------------------------------------------------------------------------
@@ -1062,10 +1065,10 @@ package body Giant.Graph_Window is
    ---------------------------------------------------------------------------
 
    procedure Update_Zoom_Level
-     (Window     : access Graph_Window_Record)
+     (Window : access Graph_Window_Record)
    is
       Zoom_Level : Vis.Zoom_Level
-        := 1.0; -- FIX:Graph_Widgets.Get_Zoom_Level (Window.Graph);
+        := Graph_Widgets.Get_Zoom_Level (Window.Graph);
    begin
       Gtk.Gentry.Set_Text (Gtk.Combo.Get_Entry (Window.Zoom_Combo),
                            Integer'Image

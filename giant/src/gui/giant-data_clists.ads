@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-data_clists.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-data_clists.ads,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/06/23 21:57:04 $
+--  $Date: 2003/07/15 11:50:26 $
 --
 --  Provides an convenince Gtk.Clist that has a single row data type
 --  associated.
@@ -52,6 +52,8 @@ package Giant.Data_Clists is
      (List : access Giant_Data_Clist_Record;
       Row  : in     Glib.Gint;
       Item : in     Data_Type);
+
+   package Data is new Gtk.Clist.Row_Data (Data_Type);
 
    procedure Create
      (List             :    out Giant_Data_Clist;
@@ -85,8 +87,6 @@ package Giant.Data_Clists is
       Item : in Data_Type);
 
 private
-
-   package Data is new Gtk.Clist.Row_Data (Data_Type);
 
    type Giant_Data_Clist_Record is new Clists.Giant_Clist_Record with record
       Update_Procedure : Update_Procedure_Type;

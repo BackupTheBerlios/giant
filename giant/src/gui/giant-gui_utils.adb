@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.19 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.20 $
 -- $Author: squig $
--- $Date: 2003/07/10 21:54:53 $
+-- $Date: 2003/07/15 11:50:26 $
 --
 
 with Glib;
@@ -131,6 +131,8 @@ package body Giant.Gui_Utils is
         Dialogs.Show_Error_Dialog(-"File not found: " & Filename);
      when Ada.IO_Exceptions.Status_Error =>
         Dialogs.Show_Error_Dialog (-"File already open: " & Filename);
+     when Ada.IO_Exceptions.Use_Error =>
+        Dialogs.Show_Error_Dialog (-"Could not open file: " & Filename);
    end Handle_IO_Exception;
 
    function New_Button

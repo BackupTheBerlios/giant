@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.53 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.54 $
 --  $Author: squig $
---  $Date: 2003/07/14 22:28:11 $
+--  $Date: 2003/07/15 11:50:26 $
 --
 
 with Ada.Strings.Unbounded;
@@ -173,6 +173,8 @@ package body Giant.Controller is
       Evolution : Evolutions.Evolution_Class_Access;
       Started : Boolean;
    begin
+      Logger.Debug ("Applying layout: " & Layout_Name & "["
+                    & Additional_Parameters & "]");
       Layout_Factory.Create (Algorithm => Layout_Name,
                              Selection_To_Layout => Selection,
                              Widget => Vis_Windows.Get_Graph_Widget (Window),
@@ -1028,15 +1030,25 @@ package body Giant.Controller is
    ---------------------------------------------------------------------------
 
    procedure Set_Zoom_Level
-     (Window_Name : in String;
-      Zoom_Level  : in Vis.Zoom_Level)
+     (Window_Name : in     String;
+      Zoom_Level  : in out Vis.Zoom_Level)
    is
+      use type Vis.Zoom_Level;
+
       Window : Vis_Windows.Visual_Window_Access
-        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+        := Projects.Get_Visualisation_Window (Current_Project,
+                                              Window_Name);
+      Widget : Graph_Widgets.Graph_Widget
+        := Vis_Windows.Get_Graph_Widget (Window);
    begin
       Logger.Debug ("setting zoom level for " & Window_Name & ": "
                     & Vis.Zoom_Level'Image (Zoom_Level));
-      --Graph_Widgets.Set_Zoom_Level ();
+      if (Zoom_Level > Graph_Widgets.Get_Maximum_Zoom_Level (Widget)) then
+         Zoom_Level := Graph_Widgets.Get_Maximum_Zoom_Level (Widget);
+      elsif (Zoom_Level < 0.0) then
+         Zoom_Level := 0.0;
+      end if;
+      Graph_Widgets.Set_Zoom_Level (Widget, Zoom_Level);
       Gui_Manager.Update_Zoom_Level (Window_Name);
    end Set_Zoom_Level;
 

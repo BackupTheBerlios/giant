@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.20 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.21 $
 --  $Author: squig $
---  $Date: 2003/07/10 20:17:45 $
+--  $Date: 2003/07/15 11:50:26 $
 --
 ------------------------------------------------------------------------------
 --
@@ -53,6 +53,8 @@ package Giant.Graph_Window is
      new Gtk.Window.Gtk_Window_Record with private;
 
    type Graph_Window_Access is access all Graph_Window_Record'Class;
+
+   DEFAULT_ZOOM_STEP : constant Vis.Zoom_Level := 0.2;
 
    ---------------------------------------------------------------------------
    --  Package: Actions

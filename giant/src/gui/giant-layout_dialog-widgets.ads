@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-layout_dialog-widgets.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-layout_dialog-widgets.ads,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/07/08 16:07:32 $
+--  $Date: 2003/07/15 11:50:26 $
 --
 ------------------------------------------------------------------------------
 --
@@ -135,6 +135,7 @@ private
      new Layout_Container_Record with
       record
          Widget : Gtk.Box.Gtk_Vbox;
+         Root_Node : Gtk.Gentry.Gtk_Entry;
          Class_Set_List : Gui_Utils.String_Clists.Giant_Data_Clist;
       end record;
 

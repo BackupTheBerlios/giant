@@ -20,11 +20,12 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-layout_dialog.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-layout_dialog.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/07/08 16:07:32 $
+--  $Date: 2003/07/15 11:50:26 $
 --
 
+with Ada.Exceptions;
 with Ada.Strings.Unbounded;
 
 with Glib;
@@ -34,6 +35,7 @@ with Gtk.Table;
 with Giant.Controller;
 with Giant.Gui_Utils;
 with Giant.Layout_Dialog.Widgets;
+with Giant.Layout_Factory;
 
 package body Giant.Layout_Dialog is
 
@@ -147,10 +149,17 @@ package body Giant.Layout_Dialog is
                                   Selection_Name,
                                   Dialog.Position,
                                   Get_Layout_Parameters (Container));
-         return True;
       end if;
-
       return True;
+   exception
+     when E: Layout_Factory.Invalid_Format =>
+        Controller.Show_Error (-"Invalid layout parameter"
+                               & " (" & Ada.Exceptions.Exception_Message (E)
+                               & ").");
+        return False;
+     when Layout_Factory.Unknown_Algorithm =>
+        Controller.Show_Error (-"Unknown layout algorithm.");
+        return False;
    end Can_Hide;
 
    procedure Show

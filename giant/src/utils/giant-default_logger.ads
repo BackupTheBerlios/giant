@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger.ads,v $, $Revision: 1.9 $
+--  $RCSfile: giant-default_logger.ads,v $, $Revision: 1.10 $
 --  $Author: squig $
---  $Date: 2003/07/10 16:26:35 $
+--  $Date: 2003/07/15 11:50:26 $
 --
 ------------------------------------------------------------------------------
 --
@@ -115,8 +115,7 @@ package Giant.Default_Logger is
    procedure Info
      (Message : in String;
       Name    : in String := DEFAULT_NAME);
-
-   ---------------------------------------------------------------------------
+---------------------------------------------------------------------------
    --  Prints a message with WARN priority to the log file.
    --
    --  Parameters:

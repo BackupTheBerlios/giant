@@ -20,11 +20,12 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-layout_dialog-widgets.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-layout_dialog-widgets.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/07/10 16:26:35 $
+--  $Date: 2003/07/15 11:50:26 $
 
 with Glib;
+with Gtk.Enums;
 with Gtk.Table;
 
 with Lists;
@@ -114,6 +115,15 @@ package body Giant.Layout_Dialog.Widgets is
 
       Gtk.Box.Gtk_New_Vbox (Container.Widget);
       Gtk.Box.Pack_Start (Container.Widget,
+                          Gui_Utils.New_Label (-"Root Node ID:"),
+                          Expand => False, Fill => True,
+                          Padding => Gui_Utils.DEFAULT_SPACING);
+      Gtk.Gentry.Gtk_New (Container.Root_Node);
+      Gtk.Box.Pack_Start (Container.Widget, Container.Root_Node,
+                          Expand => False, Fill => True,
+                          Padding => Gui_Utils.DEFAULT_SPACING);
+
+      Gtk.Box.Pack_Start (Container.Widget,
                           Gui_Utils.New_Label
                           (-"Please select the class sets."),
                           Expand => False, Fill => True,
@@ -121,6 +131,8 @@ package body Giant.Layout_Dialog.Widgets is
 
       String_Clists.Create (Container.Class_Set_List, 1, Update_Class'Access);
       String_Clists.Set_Column_Title (Container.Class_Set_List, 0, -"Class");
+      String_Clists.Set_Selection_Mode (Container.Class_Set_List,
+                                        Gtk.Enums.Selection_Multiple);
 
       List := Config.Class_Sets.Get_All_Existing_Class_Sets;
       Iterator := String_Lists.MakeListIter (List);
@@ -165,9 +177,23 @@ package body Giant.Layout_Dialog.Widgets is
      (Container : access Tree_Layout_Container_Record)
      return String
    is
+      use type Gtk.Enums.Gint_List.Glist;
+      Classes : Ada.Strings.Unbounded.Unbounded_String
+        := Ada.Strings.Unbounded.To_Unbounded_String ("");
+      Selection : Gtk.Enums.Gint_List.Glist
+        := Gui_Utils.String_Clists.Get_Selection (Container.Class_Set_List);
+      Row : Glib.Gint;
    begin
-      return Graph_Lib.Node_Id_Image (Graph_Lib.Get_Root_Node)
-        & ";";
+      while (Selection /= Gtk.Enums.Gint_List.Null_List) loop
+         Row := Gtk.Enums.Gint_List.Get_Data (Selection);
+         Ada.Strings.Unbounded.Append
+           (Classes, Gui_Utils.String_Clists.Data.Get
+            (Container.Class_Set_List, Row)
+            & ",");
+         Selection := Gtk.Enums.Gint_List.Next (Selection);
+      end loop;
+      return Gtk.Gentry.Get_Chars (Container.Root_Node)
+        & ";" & Ada.Strings.Unbounded.To_String (Classes);
    end Get_Layout_Parameters;
 
    ---------------------------------------------------------------------------
