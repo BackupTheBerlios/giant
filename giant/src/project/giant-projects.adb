@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.12 $
---  $Author: squig $
---  $Date: 2003/06/17 16:08:41 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.13 $
+--  $Author: schwiemn $
+--  $Date: 2003/06/17 16:29:30 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -893,7 +893,8 @@ package body Giant.Projects is
 
       use Ada.Strings.Unbounded;
 
-      Known_Vis_Iter            : Known_Vis_Windows_Hashs.Values_Iter;
+      Known_Vis_Iter            : Known_Vis_Windows_Hashs.Bindings_Iter;
+      A_Vis_Window_Key          : Ada.Strings.Unbounded.Unbounded_String;
       A_Vis_Window_Data_Element : Vis_Window_Data_Element;
 
       Subgraphs_Iter : Subgraph_Data_Hashs.Values_Iter;
@@ -913,14 +914,52 @@ package body Giant.Projects is
       -- files. All memory loaded vis windows will become "file linked".
       -----------------------------------------------------------------
       Known_Vis_Iter :=
-        Known_Vis_Windows_Hashs.Make_Values_Iter
+        Known_Vis_Windows_Hashs.Make_Bindings_Iter
           (Project.All_Project_Vis_Windows);
 
       while Known_Vis_Windows_Hashs.More (Known_Vis_Iter) loop
-
+      
          Known_Vis_Windows_Hashs.Next
-           (Known_Vis_Iter, A_Vis_Window_Data_Element);
+           (Known_Vis_Iter, A_Vis_Window_Key, A_Vis_Window_Data_Element);
+           
+         A_Vis_Window_Data_Element.Is_File_Linked := True;
+           
+         Known_Vis_Windows_Hashs.Update_Value
+            (Project.All_Project_Vis_Windows,
+             A_Vis_Window_Key,
+             A_Vis_Window_Data_Element);
 
+         if A_Vis_Window_Data_Element.Is_File_Linked then
+
+           -- if window if already file linked write to existing file
+           Write_Vis_Window_To_File
+             (Ada.Strings.Unbounded.To_String 
+               (A_Vis_Window_Data_Element.Existing_Vis_Window_File),
+              Memory_Loaded_Vis_Window_Hashs.Fetch 
+                (Project.All_Memory_Loaded_Vis_Windows,
+                 A_Vis_Window_Data_Element.Existing_Vis_Window_File));
+         else
+         
+            -- calculate new file name if window if not file linked
+            Write_Vis_Window_To_File
+              (Ada.Strings.Unbounded.To_String
+                (Create_Name_For_File
+                  (Ada.Strings.Unbounded.To_String 
+                    (Project.Abs_Project_Dirctory),
+                   Ada.Strings.Unbounded.To_String
+                    (A_Vis_Window_Data_Element.Vis_Window_Name),
+                   Const_Vis_Window_File_Ending)),
+               Memory_Loaded_Vis_Window_Hashs.Fetch 
+                (Project.All_Memory_Loaded_Vis_Windows,
+                 A_Vis_Window_Data_Element.Existing_Vis_Window_File));      
+         end if;
+
+         -- change vis window status
+         A_Vis_Window_Data_Element.Is_File_Linked := True;          
+         Known_Vis_Windows_Hashs.Update_Value
+            (Project.All_Project_Vis_Windows,
+             A_Vis_Window_Key,
+             A_Vis_Window_Data_Element);
       end loop;
 
       -- Write all iml_subgraphs into the management files and adjust
