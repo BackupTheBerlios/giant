@@ -1,6 +1,8 @@
 default: view
 
 include ../Makefile.incl
+
+$(shell ./create_MakefilePics.sh)
 include Makefile.pics
 
 ifeq ($(shell test -r ../Makefile.local && echo "true"),true)
