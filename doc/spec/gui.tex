@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.28 $
-%  $Date: 2003/02/24 20:55:38 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.29 $
+%  $Date: 2003/02/25 13:27:41 $
 %  $Author: birdy $
 %
 %  Description: Bis zu Revision 1.6 sind UseCase-artige Beschreibungen enthalten,
@@ -47,9 +47,8 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
   \subsection {Menüleiste (Main Window)}
   In der Menüleiste befinden sich folgende Einträge:
 
-    \subsubsection {Untermenü Datei (Main Window)} \label{Main Window}
-    Im Untermenü Datei des Hauptfensters befinden sich folgende Einträge.  
-
+    \subsubsection {Untermenü File (Main Window)} \label{Main-Window-File}
+    Im Untermenü File des Hauptfensters befinden sich folgende Einträge.  
       \begin{enumerate}
          \item {Load Project}
          \item {Save Project}
@@ -57,18 +56,13 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
          \item{ Quit}
       \end{enumerate}    
       
-     %Eingefügt von Martin Schwienbacher für Use Cases zur Annotation von 
-     %Knoten
-     \subsubsection {Untermenü  (Tools)}      
+     \subsubsection {Untermenü  (Tools)}  \label{Main-Window-Tools    
        \begin{enumerate}
-          %Dient zum Filtern von Annotationen deren Knoten nicht mehr
-	  %visualisiert sind.
-	  % -- Wird nicht beim Löschen eines Knotens auch dessen Annotation gelöscht? Philipp
           \item {Delete annotations having no visible Node}
         \end{enumerate}
 	
 
-    \subsubsection {Untermenü Info (Main Window)}      
+    \subsubsection {Untermenü Info (Main Window)}  \label{Main-Window-Info}     
        \begin{enumerate}
           \item {About GIANT}
         \end{enumerate}
@@ -201,10 +195,8 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     
     >>>>>>>> hier fehlen noch Punkte
     \begin{enumerate}
-      \item Show Node Info Window ???
-      \item Hide Node ????
-      \item Show Parent ????
-      \item Show Children ????
+      \item Show Node Info Window
+
       \item Annotate Node \label{Annotate Node}
       \item Delete Node Annotation \label{Delete Node Annotation}
     \end{enumerate}
