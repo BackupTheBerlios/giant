@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.1 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.2 $
 -- $Author: squig $
--- $Date: 2003/05/23 16:32:56 $
+-- $Date: 2003/05/23 19:03:25 $
 --
 
 with Gtk.Enums; use Gtk.Enums;
@@ -35,9 +35,22 @@ with Gtk.Widget;
 
 package body Giant.Gui_Utils is
 
+   function New_Button
+     (Label    : in String;
+      Callback : in Button_Callback.Marshallers.Void_Marshaller.handler)
+     return Gtk.Button.Gtk_Button
+   is
+     Button : Gtk.Button.Gtk_Button;
+   begin
+      Gtk.Button.Gtk_New (button, Label);
+      Button_Callback.Connect
+        (Button, "clicked", Button_Callback.To_Marshaller (Callback));
+      return Button;
+   end New_Button;
+
    function New_Sub_Menu
-     (Menu_Bar : Gtk.Menu_Bar.Gtk_Menu_Bar;
-      Label : String)
+     (Menu_Bar : in Gtk.Menu_Bar.Gtk_Menu_Bar;
+      Label    : in String)
      return Gtk.Menu.Gtk_Menu
    is
       Item : Gtk.Menu_Item.Gtk_Menu_Item;
@@ -53,16 +66,15 @@ package body Giant.Gui_Utils is
    end;
 
    function New_Menu_Item
-     (Label : String;
-      Callback : Menu_Item_Callback.Marshallers.Void_Marshaller.Handler)
+     (Label    : in String;
+      Callback : in Menu_Item_Callback.Marshallers.Void_Marshaller.Handler)
       return Gtk.Menu_Item.Gtk_Menu_Item
    is
       Item : Gtk.Menu_Item.Gtk_Menu_Item;
    begin
       Gtk.Menu_Item.Gtk_New (Item, Label);
       Menu_Item_Callback.Connect
-        (Item, "activate",
-         Menu_Item_Callback.To_Marshaller (Callback));
+        (Item, "activate", Menu_Item_Callback.To_Marshaller (Callback));
       return Item;
    end New_Menu_Item;
 
@@ -88,8 +100,8 @@ package body Giant.Gui_Utils is
    end New_Vpaned;
 
    function Add_Scrollbar_And_Frame
-     (Widget : Gtk.Widget.Gtk_Widget;
-      Title : String)
+     (Widget : in Gtk.Widget.Gtk_Widget;
+      Title  : in String)
      return Gtk.Frame.Gtk_Frame
    is
      Frame : Gtk.Frame.Gtk_Frame;
@@ -110,7 +122,7 @@ package body Giant.Gui_Utils is
    end Add_Scrollbar_And_Frame;
 
    function New_Column_Label
-     (Title : String)
+     (Title : in String)
      return Gtk.Label.Gtk_Label
    is
       Label: Gtk.Label.Gtk_Label;

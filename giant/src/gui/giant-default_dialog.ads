@@ -20,19 +20,47 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-default_dialog.ads,v $, $Revision: 1.1 $
 --  $Author: squig $
 --  $Date: 2003/05/23 19:03:24 $
 --
 ------------------------------------------------------------------------------
 --
---  Contains the empty root package.
---
---  Do not add any code.
+-- Provides a default dialog with a content area and a button panel.
 --
 
-package Giant is
+with Gtk.Box;
+with Gtk.Hbutton_Box;
+with Gtk.Window;
 
-   function "-" (S : String) return String;
+package Giant.Default_Dialog is
+   
+   type Response_Type is
+	 (Response_Okay, Response_Cancel, Response_Yes, Response_No);
+	 
+   type Button_Type is
+	 (Button_None, Button_Close, Button_Okay_Cancel, Button_Yes_No);
+   
+   type Default_Dialog_Record is new Gtk.Window.Gtk_Window_Record with record
+      Center_Box : Gtk.Box.Gtk_Vbox;
+	  Button_Box : Gtk.Hbutton_Box.Gtk_Hbutton_Box;
+	  Response : Response_Type;
+   end record;
+   
+   type Default_Dialog is
+	 access all Default_Dialog_Record'Class;
+   
+   procedure Create 
+	 (Dialog  :    out Default_Dialog;
+	  Title	  : in     String;
+	  Buttons : in     Button_Type);
+	 
+   function Add_Icon_Box 
+	 (Dialog		: in Default_Dialog;
+	  Icon_Filename	: in String;
+	  Message		: in String			:= "")
+	 return Gtk.Box.Gtk_Hbox;
+   
+   procedure Show_Error (Message : in String);
 
-end Giant;
+end Giant.Default_Dialog;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-default_logger.ads,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/05/23 15:31:19 $
+--  $Date: 2003/05/23 19:03:25 $
 --
 ------------------------------------------------------------------------------
 --
@@ -58,8 +58,9 @@ package Giant.Default_Logger is
    --  Parameters:
    --    Message - The message
    --    Name - The name of the logger
-   procedure Debug (Message : String;
-                    Name : String := DEFAULT_NAME);
+   procedure Debug
+     (Message : in String;
+      Name    : in String := DEFAULT_NAME);
 
    ---------------------------------------------------------------------------
    --  Prints a message with ERROR priority to the log file.
@@ -67,8 +68,9 @@ package Giant.Default_Logger is
    --  Parameters:
    --    Message - The message
    --    Name - The name of the logger
-   procedure Error (Message : String;
-                    Name : String := DEFAULT_NAME);
+   procedure Error
+     (Message : in String;
+      Name    : in String := DEFAULT_NAME);
 
    ---------------------------------------------------------------------------
    --  Prints a message with FATAL priority to the log file.
@@ -76,8 +78,9 @@ package Giant.Default_Logger is
    --  Parameters:
    --    Message - The message
    --    Name - The name of the logger
-   procedure Fatal (Message : String;
-                    Name : String := DEFAULT_NAME);
+   procedure Fatal
+     (Message : in String;
+      Name    : in String := DEFAULT_NAME);
 
    ---------------------------------------------------------------------------
    --  Prints a message with INFO priority to the log file.
@@ -85,8 +88,9 @@ package Giant.Default_Logger is
    --  Parameters:
    --    Message - The message
    --    Name - The name of the logger
-   procedure Info (Message : String;
-                   Name : String := DEFAULT_NAME);
+   procedure Info
+     (Message : in String;
+      Name    : in String := DEFAULT_NAME);
 
    ---------------------------------------------------------------------------
    --  Prints a message with WARN priority to the log file.
@@ -94,13 +98,15 @@ package Giant.Default_Logger is
    --  Parameters:
    --    Message - The message
    --    Name - The name of the logger
-   procedure Warn (Message : String;
-                   Name : String := DEFAULT_NAME);
+   procedure Warn
+     (Message : in String;
+      Name    : in String := DEFAULT_NAME);
 
    ---------------------------------------------------------------------------
    --  Prints Message to stderr.
    --
-   procedure Err_Put_Line (Message : String);
+   procedure Err_Put_Line
+     (Message : in String);
 
 end Giant.Default_Logger;
 

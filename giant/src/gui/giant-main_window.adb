@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/05/23 16:51:45 $
+--  $Date: 2003/05/23 19:03:25 $
 --
 
 with Gdk.Event;
@@ -42,7 +42,6 @@ with Gtk.Paned;
 with Gtkada.Types;
 with Interfaces.C.Strings;
 
-with Giant.Utils; use Giant.Utils;
 with Giant.Gui_Utils; use Giant.Gui_Utils;
 --  with Vis_Window_Management;
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-logger.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-logger.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/05/23 16:32:56 $
+--  $Date: 2003/05/23 19:03:25 $
 --
 
 with Ada.IO_Exceptions;
@@ -33,31 +33,31 @@ with Giant.Default_Logger;
 
 package body Giant.Logger is
 
-   procedure Debug (Message : String)
+   procedure Debug (Message : in String)
    is
    begin
       Default_Logger.Debug (Message, Name);
    end Debug;
 
-   procedure Error (Message : String)
+   procedure Error (Message : in String)
    is
    begin
       Default_Logger.Error (Message, Name);
    end Error;
 
-   procedure Fatal (Message : String)
+   procedure Fatal (Message : in String)
    is
    begin
       Default_Logger.fatal (Message, Name);
    end Fatal;
 
-   procedure Info (Message : String)
+   procedure Info (Message : in String)
    is
    begin
       Default_Logger.Info (Message, Name);
    end Info;
 
-   procedure Warn (Message : String)
+   procedure Warn (Message : in String)
    is
    begin
       Default_Logger.Warn (Message, Name);

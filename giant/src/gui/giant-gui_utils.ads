@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/05/23 16:32:56 $
+--  $Date: 2003/05/23 19:03:25 $
 --
 ------------------------------------------------------------------------------
 --
@@ -44,11 +44,17 @@ with Gtk.Widget;
 
 package Giant.Gui_Utils is
 
-   DEFAULT_SPACING : constant Glib.Gint := 5;
+   -----------------
+   --  Constants  --
+   -----------------
 
-   package Menu_Item_Callback is new
-     Gtk.Handlers.Callback (Gtk.Menu_Item.Gtk_Menu_Item_Record);
-     
+   DEFAULT_SPACING : constant Glib.Gint := 5;
+   BUTTON_SPACING : constant Glib.Gint := 10;
+
+   -----------------
+   --  Callbacks  --
+   -----------------
+
    package Button_Callback is new
      Gtk.Handlers.Callback (Gtk.Button.Gtk_Button_Record);
 
@@ -58,26 +64,38 @@ package Giant.Gui_Utils is
    package Clist_Return_Callback is new
      Gtk.Handlers.Return_Callback (Gtk.Clist.Gtk_Clist_Record, Boolean);
 
+   package Menu_Item_Callback is new
+     Gtk.Handlers.Callback (Gtk.Menu_Item.Gtk_Menu_Item_Record);
+
    function Add_Scrollbar_And_Frame
-     (Widget : Gtk.Widget.Gtk_Widget;
-      Title : String)
+     (Widget : in Gtk.Widget.Gtk_Widget;
+      Title  : in String)
      return Gtk.Frame.Gtk_Frame;
 
+   ---------------
+   --  Methods  --
+   ---------------
+
+   function New_Button
+     (label    : in String;
+      Callback : in Button_Callback.Marshallers.Void_Marshaller.handler)
+     return Gtk.Button.Gtk_Button;
+
    function New_Column_Label
-     (Title : String)
+     (Title : in String)
      return Gtk.Label.Gtk_Label;
 
    function New_Menu_Item
-     (Label : String;
-      Callback : Menu_Item_Callback.Marshallers.Void_Marshaller.Handler)
+     (Label    : in String;
+      Callback : in Menu_Item_Callback.Marshallers.Void_Marshaller.Handler)
      return Gtk.Menu_Item.Gtk_Menu_Item;
 
    function New_Menu_Separator
       return Gtk.Menu_Item.Gtk_Menu_Item;
 
    function New_Sub_Menu
-     (Menu_Bar : Gtk.Menu_Bar.Gtk_Menu_Bar;
-      Label : String)
+     (Menu_Bar : in Gtk.Menu_Bar.Gtk_Menu_Bar;
+      Label    : in String)
      return Gtk.Menu.Gtk_Menu;
 
    function New_Vpaned

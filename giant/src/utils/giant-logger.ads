@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-logger.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-logger.ads,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/05/23 17:13:22 $
+--  $Date: 2003/05/23 19:03:25 $
 --
 ------------------------------------------------------------------------------
 --
@@ -51,27 +51,27 @@ package Giant.Logger is
    ---------------------------------------------------------------------------
    --  See:
    --    Default_Logger.Debug
-   procedure Debug (Message : String);
+   procedure Debug (Message : in String);
 
    ---------------------------------------------------------------------------
    --  See:
    --    Default_Logger.Error
-   procedure Error (Message : String);
+   procedure Error (Message : in String);
 
    ---------------------------------------------------------------------------
    --  See:
    --    Default_Logger.Fatal
-   procedure Fatal (Message : String);
+   procedure Fatal (Message : in String);
 
    ---------------------------------------------------------------------------
    --  See:
    --    Default_Logger.Info
-   procedure Info (Message : String);
+   procedure Info (Message : in String);
 
    ---------------------------------------------------------------------------
    --  See:
    --    Default_Logger.Warn
-   procedure Warn (Message : String);
+   procedure Warn (Message : in String);
 
 end Giant.Logger;
 

@@ -20,15 +20,17 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-utils.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant.adb,v $, $Revision: 1.1 $
 --  $Author: squig $
---  $Date: 2003/05/23 16:32:56 $
+--  $Date: 2003/05/23 19:03:24 $
 --
---  Provides common utility methods.
---
+with Gtkada.Intl;
 
-package Giant.Utils is
+package body Giant is
 
-   function "-" (S : String) return String;
+   function "-" (S : String) return String is
+   begin
+      return Gtkada.Intl.Dgettext ("GIANT", S);
+   end;
 
-end Giant.Utils;
+end Giant;

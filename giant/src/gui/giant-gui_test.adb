@@ -18,12 +18,13 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_test.adb,v $, $Revision: 1.2 $
+-- $RCSfile: giant-gui_test.adb,v $, $Revision: 1.3 $
 -- $Author: squig $
--- $Date: 2003/05/23 17:13:21 $
+-- $Date: 2003/05/23 19:03:24 $
 --
 with Gtk.Main;
 
+with Giant.Default_Dialog;
 with Giant.Main_Window;
 with Giant.Default_Logger;
 with Giant.Logger;
@@ -35,12 +36,11 @@ begin
    Default_Logger.Init;
    --Config.Initialize_Config_Data ("/etc/giant/giantrc", ".giantrc");
 
-   Gui_Logger.Debug ("foo");
-
    Gtk.Main.Set_Locale;
    Gtk.Main.Init;
 
-   Main_Window.Show;
+   --Main_Window.Show;
+   Default_Dialog.Show_Error ("An Error has occured!");
 
    Gtk.Main.Main;
 
