@@ -1,0 +1,42 @@
+\documentclass[a4paper,titlepage,11pt,german,twoside]{scrbook}
+               
+\usepackage{../styles/common}
+\usepackage{spec}
+
+\makeindex
+
+\begin{document}
+
+\sf
+
+% title page
+\thispagestyle{empty}
+\hfill
+\parbox{5cm}{Universität Stuttgart \\
+  Studienprojekt A IML Browser}
+
+\vspace{5cm}
+
+\begin{center}
+  \Huge
+  \textsf{Spezifikation}
+
+  \vspace{1cm}\Large\today
+\end{center}
+\newpage
+
+% toc
+\setcounter{tocdepth}{1}
+\tableofcontents
+
+% content
+\chapter{Einleitung}
+\section{Abschnitt}
+
+Hier ist der Text.
+
+% appendix
+\appendix
+\include{nomenclature}
+
+\end{document}

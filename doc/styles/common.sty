@@ -2,96 +2,45 @@
 %% sollte in allen Dokumenten included werden
 %%
 
-%% Absaetze ohne Einzuege, dafuer mit spacing 
-\RequirePackage{parskip}
-
-%% deutsche TeX-Begriffe, Trennregeln, etc.
+% packages
+\RequirePackage{parskip}                % Absaetze: ohne Einzuege, mit spacing 
 \RequirePackage[german]{babel} 
-%% New German "Rechtschreibung" doesn't work on gspcs
-%\RequirePackage[ngerman]{babel} 
-
-%% ASCII-8bit als Eingabe ermoeglichen
-%% nur aus kompatibilitaetsgruenden aufgefuehrt, da nur ASCII-7bit 
-%% erlaubt sind.
 \RequirePackage[latin1]{inputenc}
-
-%Postscript T1 coding for textsymbols
 \RequirePackage[T1]{fontenc}
 \RequirePackage{textcomp}   
-
-%% graphikeinbettung
 \RequirePackage{graphicx}
-
-%% eepic-Graphiken aktivieren
 \RequirePackage{eepic}
-
-%% landscape und rotate
-%\RequirePackage{lscape}
-%\RequirePackage{rotating}
-
-%% \url{} aktivieren
-\RequirePackage{url}
-
-%% Header vorbereiten: Koma-Header
-%\RequirePackage{scrpage2}
-
-%% Header Packtet: Fancy-Header
+\RequirePackage{url}                    % \url{} aktivieren
 \RequirePackage{fancyhdr}
-
-%% fancychap fuer die schoenen Ueberschriften
-%\RequirePackage[Lenny]{fncychap}
-%\RequirePackage[Rejne]{fncychap}
-
-%% fuer Symbole
-%\RequirePackage{latexsym}
-
-%% mal ne andere Schrift, die einem auch den pdf-Export erleichtert!
-%\RequirePackage{palatino}
-
-%% indexerstellung aktivieren
-%\RequirePackage{makeidx}
-
-% neue Tabelle, die laenger ist :-) 
-\RequirePackage{longtable}
-
-% fuer xspace
+\RequirePackage{longtable}              % neue Tabelle, die laenger ist
 \RequirePackage{xspace}
-
-% fuer Letzte Seite
 \RequirePackage{lastpage}
-
-% fuer Fuﬂnoten
 \RequirePackage{footnote}
-
-% fuer a4Wide - Textlayout
 \RequirePackage{a4wide}
+\RequirePackage{times}                  % font
 
-\def\company{Foobaz}
+% Euro symbol
+\newcommand\euro{{\sffamily C%
+  \makebox[0pt][l]{\kern-.70em\mbox{--}}%
+  \makebox[0pt][l]{\kern-.68em\raisebox{.25ex}{--}}}}
 
-%%%% 
-%% FancyHeader 
-%% redefine header and footer
-%%%%
-%\pagestyle{scrheadings}                  
+% common commands
+\newcommand\company{CodeFactory }
+\newcommand\product{GIANT }
+
+% makro for german quotation marks
+\newcommand{\gq}[1]{\glqq{}#1\grqq{}}
+
 \pagestyle{fancy}
 
-%\automark[section]{chapter}
-
-%Header
-\lhead{\firm}
+% header
+\lhead{\company}
 \chead{}
 \rhead{\today}
 
-%Footer
+% footer
 \lfoot{}
 \cfoot{}
 \rfoot{\thepage{} / \pageref{LastPage}}
 
-% global commands
-
-%makro 4 german quotation marks
-\newcommand{\gq}[1]{\glqq{}#1\grqq{}}
-
-%productname
-\newcommand{\product}{\textsc{Foobar}\xspace}
 

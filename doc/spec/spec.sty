@@ -1,0 +1,85 @@
+% TODO:
+%   Bei leeren Vorbedinungen keine TeX-Fehlermeldung
+%   Also dass
+%     \begin{precond}
+%     \end{precond}
+%   ohne was dazwischen funktioniert.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Begriffslexikon                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newenvironment{nomenclature}
+{\begin{itemize}}
+{\end{itemize}}
+
+%
+% Parameter
+%
+%   1 Name
+%   2 Erklaerung
+%   3 Synonyme, die in der Spezifikation nicht verwendet werden sollen.
+%     Diese werden durch ein (noch zu schreibendes) Skript
+%     in saemtlichen Texfiles gesucht und angemeckert.
+\newcommand{\term}[3]{\item \textbf{#1}\\ #2}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Use-Cases                                                                   %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% neuer UseCase
+% bsp: \uc{usecasename}
+\newenvironment{uc}[2][]
+{\clearpage\section{#2}\ifx#1\undefined\else\label{#1}\fi}
+{}
+
+% Aktoren
+\newenvironment{actors}
+{\subsection{Aktor(en)}\begin{itemize}}
+{\end{itemize}}
+
+\newcommand{\actor}{\item }
+
+% Einstiegspunkte als enumeration
+\newenvironment{entries}
+{\subsection{Einstiegspunkte}\begin{enumerate}}
+{\end{enumerate}}
+
+% Ablauf
+\newenvironment{proc}
+{\subsection{Ablauf}\begin{enumerate}}
+{\end{enumerate}}
+
+% Unterpunkte fuer Ablauf
+\newenvironment{subprocedure}
+{\begin{enumerate}
+    \setlength{\itemsep}{0ex plus 0.2ex}     
+    \renewcommand{\labelenumii}{\arabic{enumi}.\alph{enumii}}}
+{\end{enumerate}}
+
+\newcommand{\step}[1][]{\item \ifx#1\undefined\else\label{#1}\fi}
+
+% Alternativer Ablauf
+\newenvironment{aproc}
+{\subsection{Alternative Abl\"aufe}\begin{itemize}}
+{\end{itemize}}
+
+\newcommand{\astep}[1]{\item Bei Punkt \ref{#1}:\\}
+
+% Vor- und Nachbedingungen als enumeration
+\newenvironment{precond}
+{\subsection{Vorbedingungen}\begin{enumerate}}
+{\end{enumerate}}
+
+\newenvironment{postcond}
+{\subsection{Nachbedingungen}\begin{enumerate}}
+{\end{enumerate}}
+
+% Bedingung
+\newcommand{\cond}{\item }
+
+%%% Local Variables: 
+%%% mode: plain-tex
+%%% TeX-master: "spec"
+%%% End: 
