@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.9 $
---  $Author: schwiemn $
---  $Date: 2003/06/30 18:10:46 $
+--  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.10 $
+--  $Author: squig $
+--  $Date: 2003/07/08 16:07:32 $
 --
 
 with Ada.IO_Exceptions;
@@ -43,12 +43,19 @@ package body Giant.Default_Logger is
    end Close;
 
    procedure Init
+     (Filename : in String)
    is
    begin
-      Ada.Text_IO.Create (Out_File, Ada.Text_IO.Out_File, "debug.log");
+      Ada.Text_IO.Create (Out_File, Ada.Text_IO.Out_File, Filename);
    exception
       when others =>
          Err_Put_Line ("Could not open log file.");
+   end Init;
+
+   procedure Init
+   is
+   begin
+      null;
    end Init;
 
    ---------------------------------------------------------------------------
@@ -65,16 +72,22 @@ package body Giant.Default_Logger is
          Listener (Level, Name, Message);
       end if;
 
-      if (Ada.Text_IO.Is_Open (Out_File)) then
+      declare
          -- cut off Level_ and pad to 5 letters
-         Ada.Text_IO.Put (Out_File, Get_Level_String (Level));
-         Ada.Text_IO.Put (Out_File, " [");
-         Ada.Text_IO.Put (Out_File, Head (Name, 30));
-         Ada.Text_IO.Put (Out_File, "] ");
-         Ada.Text_IO.Put (Out_File, Message);
-         Ada.Text_IO.New_Line (Out_File);
-         Ada.Text_IO.Flush (Out_File);
-      end if;
+         Composed_Message : constant String
+           := Get_Level_String (Level) & " [" & Head (Name, 30) & "] "
+           & Message;
+      begin
+         if (Ada.Text_IO.Is_Open (Out_File)) then
+            Ada.Text_IO.Put (Out_File, Composed_Message);
+            Ada.Text_IO.New_Line (Out_File);
+            Ada.Text_IO.Flush (Out_File);
+         else
+            Ada.Text_IO.Put (Ada.Text_Io.Standard_Error, Composed_Message);
+            Ada.Text_IO.New_Line (Ada.Text_Io.Standard_Error);
+            Ada.Text_IO.Flush (Ada.Text_Io.Standard_Error);
+         end if;
+      end;
 --     exception
 --       when others =>
 --          null; -- just ignore it to not clutter stderr

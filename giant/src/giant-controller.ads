@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.30 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.31 $
 --  $Author: squig $
---  $Date: 2003/07/07 14:04:47 $
+--  $Date: 2003/07/08 16:07:31 $
 --
 ------------------------------------------------------------------------------
 --
@@ -181,8 +181,8 @@ package Giant.Controller is
    --    Giant.Graph_Lib.Load
    --    Giant.Projects.Create_Empty_Project_For_File
    procedure Create_Project
-     (Filename       : in String;
-      Graph_Filename : in String);
+     (Project_Filename : in String;
+      Graph_Filename   : in String);
 
    ---------------------------------------------------------------------------
    --  Returns the currently open project.

@@ -20,13 +20,15 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger.ads,v $, $Revision: 1.6 $
+--  $RCSfile: giant-default_logger.ads,v $, $Revision: 1.7 $
 --  $Author: squig $
---  $Date: 2003/06/18 18:40:37 $
+--  $Date: 2003/07/08 16:07:32 $
 --
 ------------------------------------------------------------------------------
 --
 --  Contains the logging package.
+--
+--  Call any of the Init methods first.
 --
 
 with Ada.Exceptions;
@@ -47,16 +49,18 @@ package Giant.Default_Logger is
                 Name    : in String;
                 Message : in String);
 
+   -------------------------------------------------------------------------
+   --  Creates a log file named Filename. Prints a message to stderr
+   --  if open fails.
+   procedure Init
+     (Filename : in String);
+
    ---------------------------------------------------------------------------
-   --  Opens the log file. Prints a message to stderr if open fails.
-   --
-   --  Call this method first.
-   --
+   --  Sets the output to stderr.
    procedure Init;
 
    ---------------------------------------------------------------------------
    --  Closes the log file. Prints a message to stderr if close fails.
-   --
    procedure Close;
 
    ---------------------------------------------------------------------------

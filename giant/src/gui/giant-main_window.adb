@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.45 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.46 $
 --  $Author: squig $
---  $Date: 2003/07/04 22:45:46 $
+--  $Date: 2003/07/08 16:07:32 $
 --
 
 with Ada.Exceptions;
@@ -160,6 +160,8 @@ package body Giant.Main_Window is
         Dialogs.Show_Error_Dialog (-"The selected directory is invalid.");
      when Projects.Wrong_IML_Graph_Loaded_Exception =>
         Dialogs.Show_Error_Dialog (-"The IML graph is invalid.");
+     when Projects.Project_Does_Not_Exist_Exception =>
+        Dialogs.Show_Error_Dialog (-"The project file is invalid.");
      when Projects.Directory_Holds_Already_A_Project_File_Exception =>
         Dialogs.Show_Error_Dialog (-"The project could not be created. The directory already contains a project.");
      when E : others =>

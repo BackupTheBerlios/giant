@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.43 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.44 $
 --  $Author: squig $
---  $Date: 2003/07/07 14:10:22 $
+--  $Date: 2003/07/08 16:07:31 $
 --
 
 with Ada.Strings.Unbounded;
@@ -30,6 +30,7 @@ with Ada.Strings.Unbounded;
 with String_Lists;
 
 with Giant.Evolutions;
+with Giant.File_Management;
 with Giant.Graph_Lib;
 with Giant.Graph_Lib.Selections;
 with Giant.Graph_Lib.Subgraphs;
@@ -227,20 +228,27 @@ package body Giant.Controller is
    end;
 
    procedure Create_Project
-     (Filename             : in String;
-      Graph_Filename       : in String)
+     (Project_Filename : in String;
+      Graph_Filename   : in String)
    is
       Checksum : Integer;
    begin
+      --  check this now to avoid loading the graph
+      if (Projects.Is_Already_A_Project_File_In_Directory
+          (File_Management.Return_Dir_Path_For_File_Path (Project_Filename)))
+          then
+         raise Projects.Directory_Holds_Already_A_Project_File_Exception;
+      end if;
+
       --  create graph
       Graph_Lib.Load (Graph_Filename);
       Checksum := Graph_Lib.Get_Graph_Hash;
 
-      Logger.Info (-"Creating project " & Filename);
+      Logger.Info (-"Creating project " & Project_Filename);
 
       --  create project
       Current_Project := Projects.Create_Empty_Project_For_File
-        (Filename, Graph_Filename, Checksum);
+        (Project_Filename, Graph_Filename, Checksum);
 
       --  update application
       Initialize_Project;
@@ -302,6 +310,10 @@ package body Giant.Controller is
       Graph_Filename : String
         := Projects.Get_Bauhaus_IML_Graph_File (Filename);
    begin
+      --  check this now to avoid loading the graph
+      if (not Projects.Does_Project_Exist_File (Filename)) then
+         raise Projects.Project_Does_Not_Exist_Exception;
+      end if;
 
       --  create graph
       Logger.Info (-"Loading graph " & Graph_Filename);
@@ -576,7 +588,6 @@ package body Giant.Controller is
          end if;
       end loop;
       String_Lists.Destroy (List);
-      null;
    end;
 
    procedure Show_Selection

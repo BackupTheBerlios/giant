@@ -20,13 +20,13 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.17 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.18 $
 --  $Author: squig $
---  $Date: 2003/06/30 10:44:53 $
+--  $Date: 2003/07/08 16:07:32 $
 --
 ------------------------------------------------------------------------------
 --
--- Provides the graph window.
+--  Provides the graph window.
 --
 
 with Gdk.Event;
@@ -37,6 +37,7 @@ with Gtk.Label;
 with Gtk.Menu;
 with Gtk.Paned;
 with Gtk.Style;
+with Gtk.Widget;
 with Gtk.Window;
 
 with Giant.Graph_Widgets;
@@ -134,6 +135,10 @@ package Giant.Graph_Window is
      (Window : access Graph_Window_Record;
       Name   : in     String);
 
+   function Get_Selected_Selection
+     (Window : access Graph_Window_Record)
+     return String;
+
    procedure Update_Selection
      (Window : access Graph_Window_Record;
       Name   : in     String);
@@ -161,6 +166,11 @@ package Giant.Graph_Window is
      (Window     : access Graph_Window_Record);
 
 private
+
+   function Get_Window_Name
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+     return String;
+
    type Style_Array_Type is array (Vis_Windows.Selection_Highlight_Status)
      of Gtk.Style.Gtk_Style;
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.27 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.28 $
 --  $Author: squig $
---  $Date: 2003/07/07 14:04:47 $
+--  $Date: 2003/07/08 16:07:32 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -51,6 +51,8 @@ with Giant.Gui_Utils;
 with Giant.Input_Dialog;
 with Giant.Logger;
 with Giant.Main_Window;
+
+with Giant.Graph_Window.Callbacks; use Giant.Graph_Window.Callbacks;
 
 package body Giant.Graph_Window is
 
@@ -93,7 +95,7 @@ package body Giant.Graph_Window is
    ---------------------------------------------------------------------------
 
    function Get_Selected_Selection
-     (Window : access Graph_Window_Record'Class)
+     (Window : access Graph_Window_Record)
      return String
    is
    begin
@@ -573,7 +575,7 @@ package body Giant.Graph_Window is
         (Window.Graph, "action_mode_button_press_event",
          On_Graph_Action_Mode_Button_Pressed'Access, Window);
 
-      Gtk.Paned.Pack2 (Window.Split_Pane, Window.Graph,
+      Gtk.Paned.Pack2 (Window.Split_Pane, Add_Scrollbars (Window.Graph),
                        Resize => True, Shrink => False);
 
       --  left box
@@ -584,7 +586,6 @@ package body Giant.Graph_Window is
                        Resize => False, Shrink => False);
 
       --  minimap
-      -- FIX: use Window.Graph instead of fake graph
       Mini_Maps.Create (Window.Mini_Map, Window.Graph);
       Gtk.Box.Pack_Start (Left_Box, Add_Frame (Window.Mini_Map, -"MiniMap"),
                           Expand => False, Fill => True, Padding => 0);
@@ -659,6 +660,10 @@ package body Giant.Graph_Window is
                                       Window));
       Gtk.Menu.Append (Window.Selection_List_Menu, New_Menu_Separator);
       Gtk.Menu.Append (Window.Selection_List_Menu,
+                       New_Menu_Item (-"Apply Layout",
+                                      On_Apply_Layout'Access, Window));
+      Gtk.Menu.Append (Window.Selection_List_Menu, New_Menu_Separator);
+      Gtk.Menu.Append (Window.Selection_List_Menu,
                        New_Menu_Item (-"Rename...",
                                       On_Selection_List_Rename'Access,
                                       Window));
@@ -690,11 +695,10 @@ package body Giant.Graph_Window is
       Gui_Utils.String_Clists.Set_Column_Title
         (Window.Selection_List, 2, -"Color");
 
-      Gtk.Paned.Add2 (Left_Paned,
-                      Add_Scrollbars (Window.Selection_List));
+      Gtk.Paned.Add2 (Left_Paned, Add_Scrollbars (Window.Selection_List));
 
       --  visualization style
-
+      --  Causes: Gtk-WARNING **: gtk_scrolled_window_add(): cannot add non scrollable widget use gtk_scrolled_window_add_with_viewport() instead
       Gtk.Combo.Gtk_New (Window.Vis_Style_Combo);
       Gtk.Box.Pack_Start (Left_Box,
                           Add_Frame (Window.Vis_Style_Combo, -"Style"),
@@ -725,11 +729,13 @@ package body Giant.Graph_Window is
       Gtk.Enums.String_List.Append (Zoom_Levels, -"50%");
       Gtk.Enums.String_List.Append (Zoom_Levels, -"Whole Graph");
 
+      --  causes: Gtk-WARNING **: gtk_scrolled_window_add(): cannot add non scrollable widget use gtk_scrolled_window_add_with_viewport() instead
       Gtk.Combo.Gtk_New (Window.Zoom_Combo);
       Gtk.Combo.Disable_Activate (Window.Zoom_Combo);
-      Gtk.Combo.Set_Popdown_Strings (Window.Zoom_Combo, Zoom_Levels);
+      Gtk.Combo.Set_Popdown_Strings (Window.Zoom_Combo,
+                                     Zoom_Levels);
       Gtk.Box.Pack_Start (Hbox, Window.Zoom_Combo,
-                          Expand => False, Fill => False, Padding => 0);
+                          Expand => True, Fill => True, Padding => 0);
       Gtk.Combo.Set_Usize (Window.Zoom_Combo, 100, Glib.Gint (-1));
 
       --  connect zoom callbacks
@@ -931,8 +937,6 @@ package body Giant.Graph_Window is
      (Window     : access Graph_Window_Record)
    is
    begin
-      --Gtk.Combo.Set_Value_In_List (Dialog.Operation, 0, Ok_If_Empty
-      --=> False);
       Gtk.Gentry.Set_Text (Gtk.Combo.Get_Entry (Window.Vis_Style_Combo),
                            Vis_Windows.Get_Vis_Style (Window.Visual_Window));
    end Update_Vis_Style;

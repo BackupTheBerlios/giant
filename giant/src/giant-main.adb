@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.29 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.30 $
 --  $Author: squig $
---  $Date: 2003/07/07 14:10:22 $
+--  $Date: 2003/07/08 16:07:32 $
 --
 --
 ------------------------------------------------------------------------------
@@ -38,6 +38,7 @@ with GNAT.OS_Lib;
 
 with Giant.Config;
 with Giant.Config_Settings;
+with Giant.Config.Class_Sets;
 with Giant.Config.Global_Data;
 with Giant.Config.Vis_Styles;
 with Giant.Controller;
@@ -160,7 +161,7 @@ is
    end Open_Test_Project;
 
 begin
-   Default_Logger.Init;
+   Default_Logger.Init ("debug.log");
 
    --  load config settings
    Config_Settings.Initialize_Config_Settings
@@ -170,6 +171,7 @@ begin
 
    Giant.Graph_Lib.Initialize;
 
+   Logger.Debug ("reading configuration");
    Config.Vis_Styles.Initialize_Config_Vis_Styles
      (Resources_Root_Dir     =>
         Config.Global_Data.Get_Resources_Directory,
@@ -177,6 +179,9 @@ begin
       User_Vis_Directory     => "",
       Default_Vis_Style_File =>
         "test/resources/vis_styles/only_defaults_giant_vis_style.xml");
+
+   Logger.Debug ("intializing class sets");
+   Config.Class_Sets.Initialize_Class_Sets (".");
 
    Logger.Debug ("parsing command line arguments");
    Parse_Arguments;

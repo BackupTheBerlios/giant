@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-layout_dialog.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-layout_dialog.ads,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/07/05 20:13:42 $
+--  $Date: 2003/07/08 16:07:32 $
 --
 ------------------------------------------------------------------------------
 --
@@ -34,40 +34,79 @@ with Ada.Strings.Unbounded;
 with Giant.Default_Dialog;
 with Giant.Vis;
 
+with Gtk.Notebook;
+with Gtk.Widget;
+
 package Giant.Layout_Dialog is
 
-   type Layout_Dialog_Record is
+   ---------------------------------------------------------------------------
+   --  Layout Container
+   ---------------------------------------------------------------------------
+
+   type Layout_Container_Record is abstract tagged private;
+
+   type Layout_Container is access all Layout_Container_Record'Class;
+
+   function Get_Widget
+     (Container : access Layout_Container_Record)
+     return Gtk.Widget.Gtk_Widget is abstract;
+
+   function Get_Display_Name
+     (Container : access Layout_Container_Record)
+     return String is abstract;
+
+   function Get_Layout_Name
+     (Container : access Layout_Container_Record)
+     return String is abstract;
+
+   function Get_Layout_Parameters
+     (Container : access Layout_Container_Record)
+      return String is abstract;
+
+   ---------------------------------------------------------------------------
+   --  Layout Dialog
+   ---------------------------------------------------------------------------
+
+   type Layout_Dialog_Record (Container_Count : Integer) is
      new Default_Dialog.Default_Dialog_Record with private;
 
    type Layout_Dialog_Access is
       access all Layout_Dialog_Record'Class;
 
+   procedure Create
+     (Dialog         :    out Layout_Dialog_Access;
+      Window_Name    : in     String;
+      Selection_Name : in     String);
+
+   procedure Initialize
+     (Dialog         : access Layout_Dialog_Record'Class;
+      Window_Name    : in     String;
+      Selection_Name : in     String);
+
    function Can_Hide
      (Dialog : access Layout_Dialog_Record)
      return Boolean;
 
-   procedure Create
-     (Dialog		 :    out Layout_Dialog_Access;
-	  Window_Name	 : in     String;
-	  Selection_Name : in     String);
-
-   procedure Initialize
-     (Dialog		 : access Layout_Dialog_Record'Class;
-	  Window_Name	 : in     String;
-	  Selection_Name : in     String);
-
    procedure Show
-	 (Window_Name	 : in String;
-	  Selection_Name : in String;
-	  Position		 : in Vis.Logic.Vector_2d := Vis.Logic.Zero_2d);
+     (Window_Name    : in String;
+      Selection_Name : in String;
+      Position       : in Vis.Logic.Vector_2d := Vis.Logic.Zero_2d);
 
 private
-   type Layout_Dialog_Record is
-     new Default_Dialog.Default_Dialog_Record with record
-		Layouts_Notebook : Gtk.Notebook;
-		Position : Vis.Logic.Vector_2d := Vis.Logic.Zero_2d;
-		Selection_Name : Ada.Strings.Unbounded.Unbounded_String;
-		Window_Name : Ada.Strings.Unbounded.Unbounded_String;
+   type Layout_Container_Record is abstract tagged null record;
+
+   type Layout_Container_Array is array (Integer range <>)
+     of Layout_Container;
+
+   type Layout_Dialog_Record (Container_Count : Integer) is
+     new Default_Dialog.Default_Dialog_Record
+     with record
+        Layouts_Notebook : Gtk.Notebook.Gtk_Notebook;
+        Position : Vis.Logic.Vector_2d := Vis.Logic.Zero_2d;
+        Selection_Name : Ada.Strings.Unbounded.Unbounded_String;
+        Window_Name : Ada.Strings.Unbounded.Unbounded_String;
+        Layouts : Layout_Container_Array (0 .. Container_Count);
+        Layouts_Count : Natural := 0;
      end record;
 
 end Giant.Layout_Dialog;
