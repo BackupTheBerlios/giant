@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/12 09:33:56 $
+-- $Date: 2003/08/12 10:03:20 $
 --
 -- This package implements the Gsl interpreter.
 --
@@ -46,6 +46,8 @@ package Giant.Gsl.Interpreters is
 
    type Interpreter is access all Interpreter_Record'Class;
    type Interpreter_Access is access all Interpreter_Record;
+
+   type Gsl_Params is new Gsl.Types.Gsl_List;
 
    --------------------------------------------------------------------------
    --
@@ -111,7 +113,7 @@ package Giant.Gsl.Interpreters is
      (Individual : Interpreter;
       Name       : String;
       Context    : String;
-      Param      : Gsl_Type);
+      Param      : Gsl_Params);
 
    ---------------------------------------------------------------------------
    --

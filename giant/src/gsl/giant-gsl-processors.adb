@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-processors.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/12 09:33:56 $
+-- $Date: 2003/08/12 10:03:20 $
 --
 
 with Ada.Exceptions;
@@ -158,8 +158,12 @@ package body Giant.Gsl.Processors is
          -- script_activation ::= expression list
          when Script_Activation => Script_Activation_Cmd;
 
+         ---------------------------------------------------------------------
+         --
          when Script_Exec => Script_Exec_Cmd;
 
+         ---------------------------------------------------------------------
+         --
          when Script_Finish =>
             Gsl.Interpreters.Restore_Activation_Record;
 
@@ -192,6 +196,11 @@ package body Giant.Gsl.Processors is
          when Result_Pop =>
             Result_Stacks.Pop (Result_Stack, Res1);
             Destroy_Gsl_Type (Res1);
+
+         ---------------------------------------------------------------------
+         --
+         when Param_Fetch =>
+            null;
 
       end case;
    end Execute;

@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/19 15:09:36 $
+-- $Date: 2003/08/12 10:03:20 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -65,7 +65,7 @@ package Giant.Gsl is
    type Node_Type is (Literal, Visible_Var, Global_Var, Visible_Ref,
                       Var_Creation, Global_Ref, Script_Decl, List, Sequence,
                       Script_Activation, Script_Exec, Script_Finish,
-                      Script_Loop, Result_Pop);
+                      Script_Loop, Result_Pop, Param_Fetch);
 
    ---------------------------------------------------------------------------
    -- Syntax_Node is the type used in the Syntax Tree and the Execution Stack

@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/12 09:33:56 $
+-- $Date: 2003/08/12 10:03:20 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -252,7 +252,7 @@ package body Giant.Gsl.Interpreters is
      (Individual : Interpreter;
       Name       : String;
       Context    : String;
-      Param      : Gsl_Type) is
+      Param      : Gsl_Params) is
 
       use Gsl.Compilers;
       use Gsl.Syntax_Tree;
@@ -268,9 +268,9 @@ package body Giant.Gsl.Interpreters is
       -- |                                                       |
       -- | Script_Activation   ->   Gsl_List (Name)              |
       -- |                          Gsl_Script_Reference ("run") |
-      -- |                                                       |
-      -- | Script_Activation   ->   Gsl_List (Param)             |
-      -- |                          Gsl_Script_Reference (Name)  |
+      -- | Param_Fetch         ->   Gsl_List (Param)             |
+      -- | Script_Activation   ->   Gsl_Script_Reference (Name)  |
+      -- | Sequence                                              |
       -- |                                                       |
       --
       -- execution stack
@@ -280,11 +280,14 @@ package body Giant.Gsl.Interpreters is
           (Script_Activation, Null_Node, Null_Node)));
       Execution_Stacks.Push (Individual.Execution_Stack, Get_Execution_Stack
         (Individual.Gsl_Compiler, Create_Node
+          (Param_Fetch, Null_Node, Null_Node)));
+      Execution_Stacks.Push (Individual.Execution_Stack, Get_Execution_Stack
+        (Individual.Gsl_Compiler, Create_Node
           (Script_Activation, Null_Node, Null_Node)));
 
       -- result stack
-      Result_Stacks.Push (Script);
-      Result_Stacks.Push (Gsl_Type (Params));
+      -- Result_Stacks.Push (Script);
+      -- Result_Stacks.Push (Gsl_Type (Params));
 
       -- set gsl time (used for performance measurement)
       Individual.Gsl_Time := Ada.Real_Time.Clock;
