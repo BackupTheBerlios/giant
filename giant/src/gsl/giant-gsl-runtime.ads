@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/25 16:09:27 $
+-- $Date: 2003/06/29 18:15:28 $
 --
 -- This package implements the Gsl Runtime Library 
 --
@@ -31,6 +31,31 @@ with Giant.Gsl.Types;
 use  Giant.Gsl.Types;
 
 package Giant.Gsl.Runtime is
+
+
+   ---------------------------------------------------------------------------
+   --
+   function Runtime_Set
+     (Parameter : Gsl_List)
+      return Gsl_Type;
+
+   ---------------------------------------------------------------------------
+   --
+   function Runtime_If
+     (Parameter : Gsl_List)
+      return Gsl_Type;
+
+   ---------------------------------------------------------------------------
+   --
+   function Runtime_Loop
+     (Parameter : Gsl_List)
+      return Gsl_Type;
+
+   ---------------------------------------------------------------------------
+   --
+   function Runtime_Error
+     (Parameter : Gsl_List)
+      return Gsl_Type;
 
 ------------------------------------------------------------------------------
 -- arithmetic (ref. GIANT Scripting Language Specification 1.5.1.3)
@@ -179,6 +204,19 @@ package Giant.Gsl.Runtime is
    ---------------------------------------------------------------------------
    --
    function Runtime_Is_Null
+     (Parameter : Gsl_List)
+      return Gsl_Type;
+
+------------------------------------------------------------------------------
+-- IML graph (ref. GIANT Scripting Language Specification 1.5.1.7)
+
+   ---------------------------------------------------------------------------
+   --
+   function Runtime_Root_Node
+     (Parameter : Gsl_List)
+      return Gsl_Type;
+
+   function Runtime_All_Nodes
      (Parameter : Gsl_List)
       return Gsl_Type;
 
