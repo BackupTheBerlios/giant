@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-progress_dialog.adb,v $, $Revision: 1.6 $
---  $Author: squig $
---  $Date: 2003/06/16 15:27:58 $
+--  $RCSfile: giant-progress_dialog.adb,v $, $Revision: 1.7 $
+--  $Author: schulzgt $
+--  $Date: 2003/06/20 15:05:52 $
 --
 
 with Glib;
@@ -172,7 +172,7 @@ package body Giant.Progress_Dialog is
       --  adjust value
       Upper_Bound := abs Float (Gtk.Adjustment.Get_Upper
                                 (Dialog.Progress_Bar_Adjustment));
-      if (Upper_Bound = 0) then
+      if (Upper_Bound = Float(0)) then
          Gtk.Adjustment.Set_Value (Dialog.Progress_Bar_Adjustment,
                                    Glib.Gfloat (0));
       else
