@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/04 10:58:49 $
+-- $Date: 2003/08/04 15:19:04 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -1346,6 +1346,28 @@ package body Giant.Gsl.Runtime is
 
 ------------------------------------------------------------------------------
 -- GUI (ref. GIANT Scripting Language Specification 1.5.2.3 and 1.5.2.4)
+
+   ---------------------------------------------------------------------------
+   --
+   function Runtime_Input
+   (Parameter : Gsl_List)
+      return Gsl_Type is
+
+      Input_Name : Gsl_Type;
+   begin
+      if Get_List_Size (Parameter) /= 1 then
+        Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'input': Expecting 1 parameter.");
+      end if;
+      Input_Name := Get_Value_At (Parameter, 1);
+      if Is_Gsl_String (Input_Name) then
+         return Gsl_Type (Create_Gsl_String (Controller.Gsl_Input
+           (Get_Value (Gsl_String (Input_Name)))));
+      else
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'input': Gsl_String expected.");
+      end if;
+   end Runtime_Input;
 
    ---------------------------------------------------------------------------
    --

@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/04 10:58:49 $
+-- $Date: 2003/08/04 15:19:04 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -208,6 +208,7 @@ package body Giant.Gsl.Interpreters is
       Register_Runtime (Runtime_Get_Source'Access,    "get_source");
       Register_Runtime (Runtime_Get_Target'Access,    "get_target");
       -- gui (ref. GIANT Scripting Language Specification 1.5.2.3, 1.5.2.4)
+      Register_Runtime (Runtime_Input'Access,         "input");
       Register_Runtime (Runtime_Exists_Window'Access, "exists_window");
       Register_Runtime (Runtime_Get_Window_Content'Access,
                         "get_window_content");
