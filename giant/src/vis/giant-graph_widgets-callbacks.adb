@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.8 $
 --  $Author: squig $
---  $Date: 2003/07/10 20:17:45 $
+--  $Date: 2003/07/10 20:23:55 $
 --
 ------------------------------------------------------------------------------
 
@@ -341,6 +341,10 @@ package body Giant.Graph_Widgets.Callbacks is
       if (Gdk.Event.Get_Button (Event) = 1) then
          Notifications.Action_Mode_Button_Press_Event
            (Widget, Event, Vis.Logic.Zero_2d);
+         return True;
+      elsif (Gdk.Event.Get_Button (Event) = 2) then
+         Notifications.Node_Popup
+           (Widget, Event, Look_Up(Widget, Graph_Lib.Get_Root_Node));
          return True;
       elsif (Gdk.Event.Get_Button (Event) = 3) then
          Notifications.Background_Popup (Widget, Event, Vis.Logic.Zero_2d);
