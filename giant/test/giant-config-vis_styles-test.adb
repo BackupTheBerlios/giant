@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-config-vis_styles-test.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-config-vis_styles-test.adb,v $, $Revision: 1.10 $
 --  $Author: schwiemn $
---  $Date: 2003/07/10 15:03:47 $
+--  $Date: 2003/07/10 18:33:15 $
 --
 with Ada.Strings.Unbounded;
 
@@ -40,6 +40,151 @@ with Giant.Logger;
 package body Giant.Config.Vis_Styles.Test is
 
    package Logger is new Giant.Logger("giant.config.vis_styles.test");
+   
+   ---------------------------------------------------------------------------
+   -- Utilities
+   ---------------------------------------------------------------------------
+   
+   ---------------------------------------------------------------------------
+   -- Retruns True if all settings do match
+   function Check_Edge_Class_Config_Status
+     (Vis_Style      : in Config.Vis_Styles.Visualisation_Style_Access;
+      Node_Class     : in String; 
+      Attribute      : in String;
+      Req_Line_Color : in String;
+      Req_Text_Color : in String;
+      Req_Line_Style : in Config.Vis_Styles.Edge_Line_Style;
+      Show_Label     : in Boolean)                
+   return Boolean is
+   
+      Passed       : Boolean := True;     
+      All_Colors   : Giant.Config.Vis_Styles.Color_Access_Array_Access;
+      Color_Id     : Positive;     
+      A_Edge_Class : Giant.Graph_Lib.Edge_Class_Id;      
+   begin
+   
+      All_Colors := Giant.Config.Vis_Styles.Get_All_Colors;       
+   
+      A_Edge_Class := 
+        GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+          (Graph_Lib.Convert_Node_Class_Name_To_Id (Node_Class),
+           Graph_Lib.Convert_Node_Attribute_Name_To_Id              
+            (Node_Class, Attribute));
+                
+      Color_Id := Config.Vis_Styles.Get_Line_Color 
+        (Vis_Style, A_Edge_Class);
+        
+      if not (Giant.Config.Get_Color_Value (All_Colors.all (Color_Id)) = 
+        Req_Line_Color) then
+  
+         Passed := False;
+      end if;
+           
+      Color_Id := Config.Vis_Styles.Get_Text_Color 
+        (Vis_Style, A_Edge_Class);
+        
+      if not (Giant.Config.Get_Color_Value (All_Colors.all (Color_Id)) = 
+         Req_Text_Color) then
+         
+          Passed := False;         
+      end if;
+          
+      if not (Giant.Config.Vis_Styles.Get_Line_Style 
+        (Vis_Style, A_Edge_Class) = Req_Line_Style) then
+        
+         Passed := False;  
+      end if;
+                      
+      if not (Giant.Config.Vis_Styles.Show_Label_For_Edge_Class_Name 
+        (Vis_Style, A_Edge_Class) = Show_Label) then
+        
+         Passed := False;  
+      end if;
+         
+      return Passed;
+   end Check_Edge_Class_Config_Status;
+            
+   ---------------------------------------------------------------------------
+   -- Retruns True if all settings do match
+   function Check_Node_Class_Config_Status
+     (Vis_Style          : in Config.Vis_Styles.Visualisation_Style_Access;
+      Node_Class         : in String; 
+      Req_Icon_File_Path : in String;      
+      Req_Text_Color     : in String;
+      Req_Border_Color   : in String;
+      Req_Fill_Color     : in String;      
+      Attr_in_Filter     : in Natural)                
+   return Boolean is
+   
+      Passed       : Boolean := True;     
+      All_Icons : Giant.Config.Vis_Styles.Node_Icons_Array_Access;  
+      All_Colors : Giant.Config.Vis_Styles.Color_Access_Array_Access;
+      Node_Icon_Id : Positive;                                         
+      Color_Id : Positive;
+      Attr_Filter : Giant.Graph_Lib.Node_Attribute_Filters.Filter;
+   begin
+   
+      All_Icons  := Giant.Config.Vis_Styles.Get_All_Node_Icons;
+      All_Colors := Giant.Config.Vis_Styles.Get_All_Colors;       
+   
+      Node_Icon_Id := Giant.Config.Vis_Styles.Get_Node_Icon_Encoding
+        (Vis_Style, 
+         Graph_Lib.Convert_Node_Class_Name_To_Id (Node_Class));              
+     
+      if not (Ada.Strings.Unbounded.To_String 
+        (All_Icons.all (Node_Icon_Id)) = Req_Icon_File_Path) then
+         
+         Passed := False;
+      end if;
+      
+      Color_Id := Config.Vis_Styles.Get_Border_Color 
+        (Vis_Style, 
+         Graph_Lib.Convert_Node_Class_Name_To_Id (Node_Class));
+        
+      if not (Giant.Config.Get_Color_Value (All_Colors.all (Color_Id)) = 
+        Req_Border_Color) then
+
+         Passed := False;
+      end if;
+
+                       
+      Color_Id := Config.Vis_Styles.Get_Fill_Color 
+        (Vis_Style, 
+         Graph_Lib.Convert_Node_Class_Name_To_Id (Node_Class));
+            
+      if not (Giant.Config.Get_Color_Value (All_Colors.all (Color_Id)) = 
+        Req_Fill_Color) then
+
+         Passed := False;
+      end if;
+         
+      Color_Id := Config.Vis_Styles.Get_Text_Color 
+        (Vis_Style, 
+         Graph_Lib.Convert_Node_Class_Name_To_Id (Node_Class));
+                  
+      if not (Giant.Config.Get_Color_Value (All_Colors.all (Color_Id)) = 
+        Req_Text_Color) then
+
+         Passed := False;
+      end if;    
+      
+      
+      Attr_Filter := Giant.Config.Vis_Styles.Get_Attribute_Filter 
+        (Vis_Style, 
+         Graph_Lib.Convert_Node_Class_Name_To_Id (Node_Class));
+                   
+      if not (Graph_Lib.Node_Attribute_Filters.Size (Attr_Filter) = 
+        Attr_in_Filter) then
+
+         Passed := False;
+      end if;       
+            
+      return Passed;
+   end Check_Node_Class_Config_Status;
+      
+   ---------------------------------------------------------------------------
+   -- Test
+   --------------------------------------------------------------------------- 
    
    ---------------------------------------------------------------------------
    procedure Test_Leacks
@@ -66,19 +211,16 @@ package body Giant.Config.Vis_Styles.Test is
 
       end loop;
    end Test_Leacks;
-   
+      
    ---------------------------------------------------------------------------
    -- Only tests dafault vis style
    procedure Test_Init_Test_Set_Default_1
      (R : in out AUnit.Test_Cases.Test_Case'Class) is
      
      Test_Vis_Style : Giant.Config.Vis_Styles.Visualisation_Style_Access;
-     All_Icons : Giant.Config.Vis_Styles.Node_Icons_Array_Access;
-     All_Colors : Giant.Config.Vis_Styles.Color_Access_Array_Access;
-     Node_Icon_Id : Positive;
-     Color_Id : Positive;
      
-     Attr_Filter : Giant.Graph_Lib.Node_Attribute_Filters.Filter;
+     All_Colors : Giant.Config.Vis_Styles.Color_Access_Array_Access;                                   
+     Color_Id : Positive;     
    begin
 
       for i in 1 .. 1 loop
@@ -96,143 +238,85 @@ package body Giant.Config.Vis_Styles.Test is
          Test_Vis_Style := 
            Giant.Config.Vis_Styles.Initialize_Vis_Style_By_Name
              ("test_vis_style_1_default");
-         
+                      
          Assert (Config.Vis_Styles.Get_Default_Vis_Style = Test_Vis_Style,
            "Check whether Default Vis Style Loaded");
-             
-         All_Icons  := Giant.Config.Vis_Styles.Get_All_Node_Icons;
-         All_Colors := Giant.Config.Vis_Styles.Get_All_Colors;
+
          
          -- Check "test_vis_style_1_default"
          -----------------------------------
          
          -- check global data 
          --------------------
+         All_Colors := Giant.Config.Vis_Styles.Get_All_Colors; 
+         
          Color_Id := 
            Config.Vis_Styles.Get_Vis_Window_Background_Color (Test_Vis_Style);
          
          Assert 
            (Giant.Config.Get_Color_Value (All_Colors.all (Color_Id)) = 
             "RGB:20/20/20", "Test Correct Vis_Window_Background_Color");
-                           
+            
          -- Check Node Class Data
          ------------------------   
-                
-         -- icon test
-         Node_Icon_Id := Giant.Config.Vis_Styles.Get_Node_Icon_Encoding
-             (Test_Vis_Style, 
-              Graph_Lib.Convert_Node_Class_Name_To_Id ("TC_Floating_Point"));              
+                  
+         -- check "TC_Floating_Point"
          Assert 
-           (Ada.Strings.Unbounded.To_String 
-             (All_Icons.all (Node_Icon_Id)) 
-            = File_Management.Get_Absolute_Path_To_File_From_Relative
-               ("./", 
-                "resources/vis_styles/vis_styles_test_set_default_1/"
-                & "test_node_icon_default_1.xpm"), 
-                "Teste_Icon ""TC_Floating_Point""" );
-                
-         -- icon test
-         Node_Icon_Id := Giant.Config.Vis_Styles.Get_Node_Icon_Encoding
-             (Test_Vis_Style, 
-              Graph_Lib.Convert_Node_Class_Name_To_Id ("HPGNode"));              
+           (Check_Node_Class_Config_Status
+             (Vis_Style          => Test_Vis_Style,
+              Node_Class         => "TC_Floating_Point", 
+              Req_Icon_File_Path => 
+                File_Management.Get_Absolute_Path_To_File_From_Relative
+                 ("./", 
+                  "resources/vis_styles/vis_styles_test_set_default_1/"
+                  & "test_node_icon_default_1.xpm"),      
+              Req_Text_Color     => "RGB:AA/AA/A1",
+              Req_Border_Color   => "RGB:AA/AA/A2",
+              Req_Fill_Color     => "RGB:AA/AA/A3",      
+              Attr_in_Filter     => 1),
+            "Test config data for node class ""TC_Floating_Point""");               
+
+         -- check "HPGNode"
          Assert 
-           (Ada.Strings.Unbounded.To_String 
-             (All_Icons.all (Node_Icon_Id)) 
-            = File_Management.Get_Absolute_Path_To_File_From_Relative
-               ("./", 
-                "resources/vis_styles/vis_styles_test_set_default_1/"
-                & "test_node_icon_blue_1.xpm"), 
-                "Teste_Icon ""HPGNode""" );     
-                
-         -- icon test
-         Node_Icon_Id := Giant.Config.Vis_Styles.Get_Node_Icon_Encoding
-             (Test_Vis_Style, 
-              Graph_Lib.Convert_Node_Class_Name_To_Id ("TC_Boolean"));              
+           (Check_Node_Class_Config_Status
+             (Vis_Style          => Test_Vis_Style,
+              Node_Class         => "HPGNode", 
+              Req_Icon_File_Path => 
+                File_Management.Get_Absolute_Path_To_File_From_Relative
+                  ("./", 
+                   "resources/vis_styles/vis_styles_test_set_default_1/"
+                   & "test_node_icon_blue_1.xpm"), 
+              Req_Text_Color     => "blue",
+              Req_Border_Color   => "blue",
+              Req_Fill_Color     => "white",      
+              Attr_in_Filter     => 1),
+            "Test config data for node class ""HPGNode""");        
+
+         -- check "TC_Boolean"
          Assert 
-           (Ada.Strings.Unbounded.To_String 
-             (All_Icons.all (Node_Icon_Id)) 
-            = File_Management.Get_Absolute_Path_To_File_From_Relative
-               ("./", 
-                "resources/vis_styles/vis_styles_test_set_default_1/"
-                & "test_node_icon_red_1.xpm"), 
-                "Teste_Icon ""TC_Boolean""" );   
-                
-         -- Node Colors
-         --------------------
-         
-         -- TC_Floating_Point
-         Color_Id := Config.Vis_Styles.Get_Border_Color 
-           (Test_Vis_Style, 
-            Graph_Lib.Convert_Node_Class_Name_To_Id ("TC_Floating_Point"));
-         Assert 
-           (Giant.Config.Get_Color_Value (All_Colors.all (Color_Id)) = 
-            "RGB:AA/AA/A2", 
-            "Test Correct Get_Border_Color ""TC_Floating_Point""");
-                       
-         Color_Id := Config.Vis_Styles.Get_Fill_Color 
-           (Test_Vis_Style, 
-            Graph_Lib.Convert_Node_Class_Name_To_Id ("TC_Floating_Point"));
-         Assert 
-           (Giant.Config.Get_Color_Value (All_Colors.all (Color_Id)) = 
-            "RGB:AA/AA/A3", 
-            "Test Correct Get_Fill_Color ""TC_Floating_Point""");            
-            
-         Color_Id := Config.Vis_Styles.Get_Text_Color 
-           (Test_Vis_Style, 
-            Graph_Lib.Convert_Node_Class_Name_To_Id ("TC_Floating_Point"));
-         Assert 
-           (Giant.Config.Get_Color_Value (All_Colors.all (Color_Id)) = 
-            "RGB:AA/AA/A1", 
-            "Test Correct Get_Text_Color ""TC_Floating_Point""");             
-            
-          
-         -- TC_Boolean
-         Color_Id := Config.Vis_Styles.Get_Border_Color 
-           (Test_Vis_Style, 
-            Graph_Lib.Convert_Node_Class_Name_To_Id ("TC_Boolean"));
-         Assert 
-           (Giant.Config.Get_Color_Value (All_Colors.all (Color_Id)) = 
-            "red", 
-            "Test Correct Get_Border_Color ""TC_Boolean""");
-                       
-         Color_Id := Config.Vis_Styles.Get_Fill_Color 
-           (Test_Vis_Style, 
-            Graph_Lib.Convert_Node_Class_Name_To_Id ("TC_Boolean"));
-         Assert 
-           (Giant.Config.Get_Color_Value (All_Colors.all (Color_Id)) = 
-            "white", 
-            "Test Correct Get_Fill_Color ""TC_Boolean""");            
-            
-         Color_Id := Config.Vis_Styles.Get_Text_Color 
-           (Test_Vis_Style, 
-            Graph_Lib.Convert_Node_Class_Name_To_Id ("TC_Boolean"));
-         Assert 
-           (Giant.Config.Get_Color_Value (All_Colors.all (Color_Id)) = 
-            "red", 
-            "Test Correct Get_Text_Color ""TC_Boolean"""); 
-            
-         -- Test Attribute_Filter
-         ------------------------      
-         
-         -- TC_Boolean         
-         Attr_Filter := Giant.Config.Vis_Styles.Get_Attribute_Filter 
-           (Test_Vis_Style, 
-            Graph_Lib.Convert_Node_Class_Name_To_Id ("TC_Boolean"));
-                   
-         Assert (Graph_Lib.Node_Attribute_Filters.Size (Attr_Filter) = 2,
-                 "Teste Correct Size of Attr_Filter for ""TC_Boolean""");
-                                   
-         Giant.Config.Vis_Styles.Clear_Config_Vis_Styles;
+           (Check_Node_Class_Config_Status
+             (Vis_Style          => Test_Vis_Style,
+              Node_Class         => "TC_Boolean", 
+              Req_Icon_File_Path => 
+                File_Management.Get_Absolute_Path_To_File_From_Relative
+                  ("./", 
+                   "resources/vis_styles/vis_styles_test_set_default_1/"
+                   & "test_node_icon_red_1.xpm"), 
+              Req_Text_Color     => "red",
+              Req_Border_Color   => "red",
+              Req_Fill_Color     => "white",      
+              Attr_in_Filter     => 2),
+            "Test config data for node class ""TC_Boolean""");             
+           
       end loop;
    end Test_Init_Test_Set_Default_1;
-   
-   
+     
    ---------------------------------------------------------------------------
    -- Test Edge Data
    procedure Test_Init_Edge_Class_Vis_Data
      (R : in out AUnit.Test_Cases.Test_Case'Class) is
      
-     Test_Vis_Style : Giant.Config.Vis_Styles.Visualisation_Style_Access;
+     Test_Vis_Style : Giant.Config.Vis_Styles.Visualisation_Style_Access;         
 
    begin
 
@@ -244,7 +328,77 @@ package body Giant.Config.Vis_Styles.Test is
             "resources/vis_styles/vis_styles_test_set_2/",
             "resources/vis_styles/vis_styles_test_set_default_1/"
             & "test_vis_style_1_default.xml");
-      
+            
+         Test_Vis_Style := 
+           Giant.Config.Vis_Styles.Initialize_Vis_Style_By_Name
+             ("test_vis_style_4_edges");                           
+          
+         -- test color for edge classes defined by default
+         ---------------------------------------------------------------
+    
+         -- edge class "IML_Root.Parent"                      
+         Assert 
+           (Check_Edge_Class_Config_Status
+             (Vis_Style      => Test_Vis_Style,
+              Node_Class     => "IML_Root", 
+              Attribute      => "Parent",
+              Req_Line_Color => "RGB:AA/AA/A1",
+              Req_Text_Color => "RGB:AA/AA/A2",
+              Req_Line_Style => Giant.Config.Vis_Styles.Continuous_Line,
+              Show_Label     => FALSE),
+            "Test status of config data for edge class ""IML_Root.Parent""");
+
+                        
+         -- test color for edge classes defined by (start_node_class, *)
+         ---------------------------------------------------------------------
+         
+         -- edge class "Routine_Call.EType"
+         Assert 
+           (Check_Edge_Class_Config_Status
+             (Vis_Style      => Test_Vis_Style,
+              Node_Class     => "Routine_Call", 
+              Attribute      => "EType",
+              Req_Line_Color => "blue",
+              Req_Text_Color => "blue",
+              Req_Line_Style => Giant.Config.Vis_Styles.Dotted_Line,
+              Show_Label     => TRUE),
+            "Test status of config data for edge class "
+            & """Routine_Call.EType""");
+
+         -- test color for edge classes defined by (*, attribute_name)
+         ---------------------------------------------------------------------
+         
+         -- edge class "LR_Conversion.CF_Next"
+         Assert 
+           (Check_Edge_Class_Config_Status
+             (Vis_Style      => Test_Vis_Style,
+              Node_Class     => "LR_Conversion", 
+              Attribute      => "CF_Next",
+              Req_Line_Color => "blue",
+              Req_Text_Color => "blue",
+              Req_Line_Style => Giant.Config.Vis_Styles.Dotted_Line,
+              Show_Label     => TRUE),
+            "Test status of config data for edge class "
+            & """LR_Conversion.CF_Next""");
+            
+         -- test color for edge classes defined by 
+         -- (start_node_class, attribute_name)
+         --------------------------------------------------------------------- 
+         
+         -- edge class Array_LR_Conversion.CF_Next           
+         Assert 
+           (Check_Edge_Class_Config_Status
+             (Vis_Style      => Test_Vis_Style,
+              Node_Class     => "Array_LR_Conversion", 
+              Attribute      => "CF_Next",
+              Req_Line_Color => "green",
+              Req_Text_Color => "green",
+              Req_Line_Style => Giant.Config.Vis_Styles.Dashed_Line,
+              Show_Label     => FALSE),
+            "Test status of config data for edge class "
+            & """Array_LR_Conversion.CF_Next""");   
+            
+
       end loop;
    end Test_Init_Edge_Class_Vis_Data;
 
