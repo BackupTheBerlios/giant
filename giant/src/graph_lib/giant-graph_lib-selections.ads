@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.18 $
+--  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.19 $
 --  $Author: koppor $
---  $Date: 2003/07/07 13:15:46 $
+--  $Date: 2003/07/14 19:24:20 $
 --
 ------------------------------------------------------------------------------
 --
@@ -266,7 +266,7 @@ package Giant.Graph_Lib.Selections is
 
 private
 
-   type Selection_Record (Name_Length : Positive) is record
+   type Selection_Record (Name_Length : Natural) is record
       Name  : String (1..Name_Length);
       Nodes : Node_Id_Set;
       Edges : Edge_Id_Set;
