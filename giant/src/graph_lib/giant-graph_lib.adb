@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.46 $
---  $Author: schwiemn $
---  $Date: 2003/07/07 06:21:55 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.47 $
+--  $Author: koppor $
+--  $Date: 2003/07/07 11:28:31 $
 
 --  TBD:
 --    s/Program_Error/somethingofmyown
@@ -1464,6 +1464,15 @@ package body Giant.Graph_Lib is
    is
    begin
       return Edge_Id_Array_Routines.To_Set (Node.Outgoing_Edges);
+   end Get_Outgoing_Edges;
+
+   ----------------------------------------------------------------------------
+   function Get_Outgoing_Edges
+      (Node : in Node_Id)
+      return Edge_Id_Array
+   is
+   begin
+      return Node.Outgoing_Edges;
    end Get_Outgoing_Edges;
 
    ----------------------------------------------------------------------------
