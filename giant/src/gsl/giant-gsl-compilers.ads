@@ -22,13 +22,15 @@
 --
 -- $RCSfile: giant-gsl-compilers.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/09 14:14:22 $
+-- $Date: 2003/07/02 16:26:53 $
 --
 -- This package implements the datatypes used in GSL.
 --
 
 with Ada.Strings.Unbounded;
 use  Ada.Strings.Unbounded;
+
+with GNAT.OS_Lib;
 
 with Hashed_Mappings;
 pragma Elaborate (Hashed_Mappings);
@@ -66,6 +68,13 @@ package Giant.Gsl.Compilers is
 
    ---------------------------------------------------------------------------
    --
+   function Is_Equal
+     (T1 : GNAT.OS_Lib.OS_Time;
+      T2 : GNAT.OS_Lib.OS_Time)
+      return Boolean;
+
+   ---------------------------------------------------------------------------
+   --
    function Get_Execution_Stack
      (Comp : Compiler;
       Name : String)
@@ -91,7 +100,8 @@ private
    --
    type Gsl_Script_Record (Name_Length : Natural) is
       record
-         Name : String (1 .. Name_Length);
+         Name        : String (1 .. Name_Length);
+         Time_Stamp  : GNAT.OS_Lib.OS_Time;
          Syntax_Tree : Syntax_Node;
       end record;
 
