@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-clists.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-clists.adb,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/06/23 11:30:45 $
+--  $Date: 2003/07/10 13:13:21 $
 --
 
 with Ada.Strings.Unbounded;
@@ -34,6 +34,8 @@ with Gdk.Types;
 with Gtk.Arguments;
 with Gtk.Enums;
 with Gtk.Handlers;
+with Gtk.Menu;
+with Gtk.Menu_Item;
 with Gtk.TearOff_Menu_Item;
 with Gtk.Widget;
 with Gtkada.Types;
@@ -90,11 +92,13 @@ package body Giant.Clists is
       if Gdk.Event.Get_Button (Event) = 3
         and then Gdk.Event.Get_Event_Type (Event) = Gdk.Types.Button_Press
       then
+         --  select clicked row
          Gtk.Clist.Get_Selection_Info (Source,
                                        Gint (Gdk.Event.Get_X (Event)),
                                        Gint (Gdk.Event.Get_Y (Event)),
                                        Row, Column, Is_Valid);
          if (Is_Valid) then
+            --  show popup menu
             Gtk.Clist.Select_Row (Source, Row, Column);
             Gtk.Menu.Show_All (Menu);
             Gtk.Menu.Popup (Menu,
@@ -102,7 +106,33 @@ package body Giant.Clists is
                             Activate_Time => Gdk.Event.Get_Time (Event));
             return True;
          end if;
+      elsif Gdk.Event.Get_Button (Event) = 1
+        and then Gdk.Event.Get_Event_Type (Event) = Gdk.Types.Gdk_2Button_Press
+      then
+         --  select clicked row
+         Gtk.Clist.Get_Selection_Info (Source,
+                                       Gint (Gdk.Event.Get_X (Event)),
+                                       Gint (Gdk.Event.Get_Y (Event)),
+                                       Row, Column, Is_Valid);
+        if (Is_Valid) then
+           declare
+              Children : Gtk.Widget.Widget_List.Glist;
+              Menu_Item : Gtk.Menu_Item.Gtk_Menu_Item;
+           begin
+              --  activate first popup menu item
+              Children := Gtk.Menu.Children (Menu);
+              if (Gtk.Widget.Widget_List.Length (Children) > 0
+                  and then (Gtk.Widget.Widget_List.Get_Data (Children).all
+                            in Gtk.Menu_Item.Gtk_Menu_Item_Record)) then
+                 Gtk.Menu_Item.Activate
+                   (Gtk.Menu_Item.Gtk_Menu_Item
+                    (Gtk.Widget.Widget_List.Get_Data (Children)));
+              end if;
+              Gtk.Widget.Widget_List.Free (Children);
+           end;
+        end if;
       end if;
+
       return False;
    end On_Clist_Button_Press;
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/07/08 21:54:51 $
+--  $Date: 2003/07/10 13:13:21 $
 --
 
 with Giant.Layout_Dialog;
@@ -64,23 +64,9 @@ package body Giant.Graph_Window.Callbacks is
    --  Graph Widget Callbacks
    ---------------------------------------------------------------------------
 
-   procedure On_Action_Mode_Button_Press_Event
-     (Source   : access Gtk.Widget.Gtk_Widget_Record'Class;
-      Event    : in     Gdk.Event.Gdk_Event_Button;
-      Location : in     Vis.Logic.Vector_2d)
-   is
-      Window : Graph_Window_Access := Graph_Window_Access (Source);
-   begin
-      if (Gui_Manager.Actions.Is_Action_Pending) then
-         Gui_Manager.Actions.Trigger (Window, Event, Location);
-      elsif (Is_Local_Action_Pending (Window)) then
-         Trigger_Local_Action (Window, Event, Location);
-      end if;
-   end On_Action_Mode_Button_Press_Event;
-
-   procedure On_Graph_Action_Mode_Button_Pressed
+   procedure On_Action_Mode_Button_Pressed
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
-      Args   : in     Gtk.Arguments.Gtk_Args)
+      Event  : in     Graph_Widgets.Handlers.Button_Press_Action)
    is
       use type Actions.Graph_Window_Action_Access;
 
@@ -92,15 +78,19 @@ package body Giant.Graph_Window.Callbacks is
          Actions.Execute
            (Window.Local_Action, Window, null, Vis.Logic.Zero_2d);
       end if;
-   end On_Graph_Action_Mode_Button_Pressed;
+   end On_Action_Mode_Button_Pressed;
 
 --     procedure Edge_Popup
 --       (Widget : access Graph_Widget_Record'Class;
 --        Edge   : in     Vis_Data.Vis_Edge_Id);
 
---     procedure Node_Popup
---       (Widget : access Graph_Widget_Record'Class;
---        Node   : in     Vis_Data.Vis_Node_Id);
+   procedure On_Node_Popup
+     (Widget : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event  : in     Graph_Widgets.Handlers.Node_Popup_Action)
+   is
+   begin
+      null;
+   end On_Node_Popup;
 
    procedure On_Selection_Changed
      (Widget     : access Gtk.Widget.Gtk_Widget_Record'Class;

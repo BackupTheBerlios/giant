@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.29 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.30 $
 --  $Author: squig $
---  $Date: 2003/07/08 21:54:51 $
+--  $Date: 2003/07/10 13:13:21 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -45,6 +45,7 @@ with Giant.Config.Global_Data;
 with Giant.Controller;
 with Giant.Default_Dialog;
 with Giant.Dialogs;
+with Giant.Graph_Widgets.Handlers;
 with Giant.Gui_Manager;
 with Giant.Gui_Manager.Actions;
 with Giant.Gui_Utils;
@@ -70,6 +71,25 @@ package body Giant.Graph_Window is
      (List : access Gui_Utils.String_Clists.Giant_Data_Clist_Record;
       Row  : in     Glib.Gint;
       Name : in     String);
+
+   ---------------------------------------------------------------------------
+   --  Marshaller Packages
+   ---------------------------------------------------------------------------
+
+   package Action_Mode_Marshallers is new
+     Gui_Utils.Widget_Callback.Marshallers.Generic_Marshaller
+     (Base_Type   => Graph_Widgets.Handlers.Button_Press_Action,
+      Conversion  => Graph_Widgets.Handlers.To_Button_Press_Action);
+
+   package Edge_Popup_Marshallers is new
+     Gui_Utils.Widget_Callback.Marshallers.Generic_Marshaller
+     (Base_Type   => Graph_Widgets.Handlers.Edge_Popup_Action,
+      Conversion  => Graph_Widgets.Handlers.To_Edge_Popup_Action);
+
+   package Node_Popup_Marshallers is new
+     Gui_Utils.Widget_Callback.Marshallers.Generic_Marshaller
+     (Base_Type   => Graph_Widgets.Handlers.Node_Popup_Action,
+      Conversion  => Graph_Widgets.Handlers.To_Node_Popup_Action);
 
    ---------------------------------------------------------------------------
    --  Package: Actions
@@ -682,7 +702,8 @@ package body Giant.Graph_Window is
       Window.Graph := Vis_Windows.Get_Graph_Widget (Window.Visual_Window);
       Widget_Callback.Object_Connect
         (Window.Graph, "action_mode_button_press_event",
-         On_Graph_Action_Mode_Button_Pressed'Access, Window);
+         Action_Mode_Marshallers.To_Marshaller
+         (On_Action_Mode_Button_Pressed'Access), Window);
 
       Gtk.Paned.Pack2 (Window.Split_Pane, Add_Scrollbars (Window.Graph),
                        Resize => True, Shrink => False);

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-graph_window-callbacks.ads,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/07/08 21:54:51 $
+--  $Date: 2003/07/10 13:13:21 $
 --
 ------------------------------------------------------------------------------
 --
@@ -35,6 +35,7 @@ with Gtk.Widget;
 with Giant.Graph_Lib;
 with Giant.Graph_Lib.Selections;
 with Giant.Graph_Widgets;
+with Giant.Graph_Widgets.Handlers;
 with Giant.Graph_Widgets.Notifications;
 
 package Giant.Graph_Window.Callbacks is
@@ -59,15 +60,13 @@ package Giant.Graph_Window.Callbacks is
    --  Graph Widget Callbacks
    ---------------------------------------------------------------------------
 
-   procedure On_Action_Mode_Button_Press_Event
-     (Source   : access Gtk.Widget.Gtk_Widget_Record'Class;
-      Event    : in     Gdk.Event.Gdk_Event_Button;
-      Location : in     Vis.Logic.Vector_2d);
-
-   -- FIX: deprecated, use above
-   procedure On_Graph_Action_Mode_Button_Pressed
+   procedure On_Action_Mode_Button_Pressed
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
-      Args   : in     Gtk.Arguments.Gtk_Args);
+      Event  : in     Graph_Widgets.Handlers.Button_Press_Action);
+
+   procedure On_Node_Popup
+     (Widget : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event  : in     Graph_Widgets.Handlers.Node_Popup_Action);
 
    procedure On_Selection_Changed
      (Widget     : access Gtk.Widget.Gtk_Widget_Record'Class;
