@@ -1,3 +1,18 @@
+2003-10-02  Oliver Kopp  <koppor@studi.informatik.uni-stuttgart.de>
+
+        * test/*: compile-fix (Elaborate_All (Giant.Logger))
+	
+	* test/framework_test.adb: added missing tests
+
+	* test/giant-config-class_sets-test.adb: Added "All_Nodes"
+
+	* shared/class_sets/all_nodes.xml: added to support tree-layout
+
+	* Makefile: ported gcov to schmidt
+
+	* src/graph_lib/giant-graph_lib.adb: Changed initial size of
+	hashmaps to fit new interface of hashed_mappings
+
 2003-09-24  Steffen Pingel  <squig@users.sourceforge.net>
 
 	* src/utils/giant-file_management.adb: Fixed exception when
