@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.33 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.34 $
 --  $Author: schwiemn $
---  $Date: 2003/06/25 16:54:31 $
+--  $Date: 2003/06/25 16:56:44 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -873,7 +873,7 @@ package body Giant.Projects is
       ------------------------------------------------------------------------
       -- initialize hash maps
       New_Project_Access.All_Subgraphs := Subgraph_Data_Hashs.Create;
-      All_Vis_Windows.All_Subgraphs := Known_Vis_Windows_Hashs.Create;     
+      New_Project_Access.All_Vis_Windows := Known_Vis_Windows_Hashs.Create;     
       
 
       --  check whether correct iml graph is loaded

@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.9 $
+-- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.10 $
 -- $Author: schwiemn $
--- $Date: 2003/06/24 20:21:05 $
+-- $Date: 2003/06/25 16:53:18 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -111,7 +111,7 @@ package body Giant.Config.Vis_Styles is
 
    ---------------------------------------------------------------------------
    -- 0.3
-   -- Internal subprograms
+   -- Internal subDoes_Vis_Style_Existprograms
    ---------------------------------------------------------------------------
 
    ---------------------------------------------------------------------------
