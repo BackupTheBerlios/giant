@@ -20,11 +20,21 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-node_annotations.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-node_annotations.adb,v $, $Revision: 1.6 $
 --  $Author: schwiemn $
---  $Date: 2003/06/02 13:56:35 $
+--  $Date: 2003/06/02 17:00:52 $
 --
-with Giant.File_Management;
+with Ada.Text_IO;
+with Ada.Unchecked_Deallocation;
+
+with GIANT.File_Management; --  from GIANT
+with GIANT.XML_File_Access; --  from GIANT
+
+with Tree_Readers;       --  from xmlada
+with DOM.Core;           --  from xmlada
+with DOM.Core.Documents; --  from xmlada
+with DOM.Core.Nodes;     --  from xmlada
+with DOM.Core.Elements;  --  from xmlada
 
 package body Giant.Node_Annotations is
 
@@ -42,17 +52,20 @@ package body Giant.Node_Annotations is
                
       DTD_File_Name : Ada.Strings.Unbounded.Unbounded_String;
       DTD_File : Ada.Text_IO.File_Type;
+      
    begin
    
       -- Determine name and path for the DTD
-      DTD_File_Name := Ada.Strings.Unbounded.To_Unbounded_String
-        (File_Management.Return_Dir_Path_For_File_Path (Node_Annotations_File)
-        & "giant_node_annotations_file.dtd";
+      DTD_File_Name := Ada.Strings.Unbounded."&"
+        (Ada.Strings.Unbounded.To_Unbounded_String
+          (File_Management.Return_Dir_Path_For_File_Path 
+            (Node_Annotations_File)),
+         "giant_node_annotations_file.dtd");
              
       Ada.Text_IO.Create 
         (DTD_File, 
          Ada.Text_IO.Out_File, 
-         Ada.Strings.Unbounded_String.To_String (DTD_File_Name));                
+         Ada.Strings.Unbounded.To_String (DTD_File_Name));                
 
       Ada.Text_IO.Set_Output(DTD_File);
       
@@ -71,7 +84,7 @@ package body Giant.Node_Annotations is
       Ada.Text_IO.Set_Output (Ada.Text_IO.Standard_Output);
       Ada.Text_IO.Close (DTD_File);
    
-   end Copy_DTD_To_Directory;
+   end Write_DTD_To_Directory;
 
 
    ---------------------------------------------------------------------------
@@ -86,7 +99,7 @@ package body Giant.Node_Annotations is
 
       New_Node_Annotation_Access : Node_Annotation_Access := null;
 
-      Annotation_Tree_Reader : ree_Readers.Tree_Reader;
+      Annotation_Tree_Reader : Tree_Readers.Tree_Reader;
       Annotation_XML_Document : Dom.Core.Document;
 
       XML_Annotation_Nodes_List : DOM.Core.Node_List;
@@ -102,7 +115,7 @@ package body Giant.Node_Annotations is
       begin
 
          XML_File_Access.Load_XML_File_Validated
-           (Ada.Strings.Unbounded.To_String (A_File_Name),
+           (Node_Annotations_File,
             Annotation_Tree_Reader,
             Annotation_XML_Document);
 
@@ -114,8 +127,10 @@ package body Giant.Node_Annotations is
             raise Node_Annotations_File_Not_Correct_Exception;
       end;
 
-      if ( XML_File_Access.Does_XML_Document_Belong_To_Type
-           ("giant_node_annotations_file", The_XML_Document) = False) ) then
+      if (XML_File_Access.Does_XML_Document_Belong_To_Type
+           ("giant_node_annotations_file", 
+            Annotation_XML_Document) = False) then
+            
          Tree_Readers.Free (Annotation_Tree_Reader);
          raise Node_Annotations_File_Not_Correct_Exception;
       end if;
@@ -160,7 +175,7 @@ package body Giant.Node_Annotations is
       end loop;
 
       -- deallocate resources
-      DOM.Core.Free (XML_Nodes_List);
+      DOM.Core.Free (XML_Annotation_Nodes_List);
       Tree_Readers.Free (Annotation_Tree_Reader);
 
       return New_Node_Annotation_Access;
@@ -186,10 +201,10 @@ package body Giant.Node_Annotations is
      (Node_Annotations          : in Node_Annotation_Access;
       Node_Annotations_File     : in String) is
 
-      The_File : Ada_Text_IO.File_Type;
+      The_File : Ada.Text_IO.File_Type;
       
       Annotations_Iter  : Node_Annotation_Hashed_Mappings.Bindings_Iter;
-      Annotation_Text   : Ada.Strings.Unbounded_String;
+      Annotation_Text   : Ada.Strings.Unbounded.Unbounded_String;
       Annotated_Node_ID : Graph_Lib.Node_Id;
 
    begin
@@ -218,7 +233,7 @@ package body Giant.Node_Annotations is
       Ada.Text_IO.Put_Line 
         ("<!DOCTYPE giant_node_annotations_file");
       Ada.Text_IO.Put_Line 
-        ("  SYSTEM ""giant_node_annotations_file.dtd""">
+        ("  SYSTEM ""giant_node_annotations_file.dtd"">");
       Ada.Text_IO.New_Line;
       
       Ada.Text_IO.Put_Line 
@@ -276,7 +291,7 @@ package body Giant.Node_Annotations is
       
       --  Free pointer
       Free_Node_Annotation_Access (Node_Annotations);   
-   end Deallocate_Node_Annotation_Access;
+   end Deallocate;
 
 
    ---------------------------------------------------------------------------
@@ -392,5 +407,66 @@ package body Giant.Node_Annotations is
         (Node_Annotations.Annotations, Node);       
    end Remove_Node_Annotation;
    
+   
+   ---------------------------------------------------------------------------
+   --  D 
+   --  Iterators
+   ---------------------------------------------------------------------------
+   
+   ---------------------------------------------------------------------------
+   function Make_Node_ID_Iter
+     (Node_Annotations : in Node_Annotation_Access)
+     return Node_ID_Iter is
+     
+   begin
+      
+      if Node_Annotations = null then
+         raise Node_Annotation_Access_Not_Initialized_Exception;
+      end if; 
+         
+      return Node_ID_Iter 
+        (Node_Annotation_Hashed_Mappings.Make_Keys_Iter
+          (Node_Annotations.Annotations));
+   end Make_Node_ID_Iter;
+   
+   --------------------------------------------------------------------------- 
+   function More (Iter : in Node_ID_Iter) return Boolean is
+   
+   begin
+   
+      return Node_Annotation_Hashed_Mappings.More
+        (Node_Annotation_Hashed_Mappings.Keys_Iter (Iter));
+   end More;
+   
+   ---------------------------------------------------------------------------
+   procedure Next
+     (Iter : in out Node_ID_Iter;
+      Node :    out Graph_Lib.Node_Id) is
+   begin
+         
+       Node_Annotation_Hashed_Mappings.Next
+         (Node_Annotation_Hashed_Mappings.Keys_Iter (Iter),
+          Node);       
+   end next;
+   
 end Giant.Node_Annotations;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

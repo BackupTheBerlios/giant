@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.1 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.2 $
 -- $Author: schwiemn $
--- $Date: 2003/05/27 08:56:23 $
+-- $Date: 2003/06/02 17:00:52 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -850,7 +850,7 @@ private
 
     -- Only Visualisation Windows that a loaded into the main
     -- memory - Heap is allocated for an Instance of
-    -- Vis_Window_Management.Visual_Window_Access
+    -- Vis_Window_Management. Visual_Window_Access
     -- A Management File in the project dirctory may exist or not
     Memory_Loaded_Vis_Windows : Memory_Loaded_Vis_Window_Sets.Set;
 

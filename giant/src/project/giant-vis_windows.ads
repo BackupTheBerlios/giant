@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.1 $
+-- $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.2 $
 -- $Author: schwiemn $
--- $Date: 2003/05/27 08:56:23 $
+-- $Date: 2003/06/02 17:00:52 $
 --
 -- ----------------
 -- This package realizes a container that administrates the components
@@ -784,15 +784,16 @@ private
    type Visual_Window_Accsess is access Visual_Window_Element;
 
    type Visual_Window_Element is record
+   
+      
+      Vis_Window_Name        : Valid_Names.Standard_Name;
 
-      Vis_Window_Name       : Valid_Names.Standard_Name;
+      The_Graph_Widget       : Graph_Widget;
 
-      The_Graph_Widget      : Graph_Widget;
-
-      Set_Of_All_Pins       : Pin_Sets.Set;
+      Set_Of_All_Pins        : Pin_Sets.Set;
 
       -- Aliases - also in the set All_Managed_Selections
-      Standard_Selection    : Selection_Data_Elemet;
+      Standard_Selection     : Selection_Data_Elemet;
 
       -- Aliases - also in the set All_Managed_Selections
       Current_Selection      : Selection_Data_Elemet;
