@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.52 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.53 $
 --  $Author: koppor $
---  $Date: 2003/07/11 10:50:20 $
+--  $Date: 2003/07/14 17:51:47 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -59,55 +59,6 @@ package body Giant.Graph_Lib is
 
    package Edge_Id_Array_Routines is new Edge_Id_Sets.Arrays
      (Item_Array => Edge_Id_Array);
-
-   --------------------------------------
-   --  Hashing for Node_Attribute_Ids  --
-   --------------------------------------
-
-   ---------------------------------------------------------------------------
-   package Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings is
-      new Hashed_Mappings
-     (Key_Type   => Node_Attribute_Id,
-      Value_Type => Edge_Class_Id,
-      Hash       => Node_Attribute_Id_Hash_Functions.Integer_Hash);
-
-   ----------------------------------
-   --  Hashing for Node_Class_Ids  --
-   ----------------------------------
-
-   ---------------------------------------------------------------------------
-   --  Hashtable-size
-   --    Default of ptr_hashs: 17
-   Node_Class_Id_Hash_Range_Size : constant := 29;
-
-   ---------------------------------------------------------------------------
-   package Node_Class_Id_Hash_Functions is
-      new Constant_Ptr_Hashs
-     (T          => IML_Reflection.Abstract_Class'Class,
-      T_Ptr      => Node_Class_Id,
-      Range_Size => Node_Class_Id_Hash_Range_Size);
-
-   ---------------------------------------------------------------------------
-   type Node_Class_Id_Hash_Data is record
-      --  Hashtable hasing Node_Attribute_Ids to Edge_Class_Ids
-      Node_Attribute_Id_Mapping :
-        Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.Mapping;
-
-      --  further contents will surely come
-   end record;
-
-   ---------------------------------------------------------------------------
-   type Node_Class_Id_Hash_Data_Access is access Node_Class_Id_Hash_Data;
-
-   ---------------------------------------------------------------------------
-   package Node_Class_Id_Hashed_Mappings is
-      new Hashed_Mappings
-     (Key_Type   => Node_Class_Id,
-      Value_Type => Node_Class_Id_Hash_Data_Access,
-      Hash       => Node_Class_Id_Hash_Functions.Integer_Hash);
-
-   ---------------------------------------------------------------------------
-   Node_Class_Id_Mapping : Node_Class_Id_Hashed_Mappings.Mapping;
 
    ---------------------
    --  Miscellaneous  --
@@ -256,23 +207,20 @@ package body Giant.Graph_Lib is
      (Node_Class_Name : in String)
       return Node_Class_Id
    is
-      All_Classes : IML_Reflection.Classes;
       I           : Integer;
    begin
       --  straightforward-implementation, since this function is only
       --  needed during the initialization
 
-      All_Classes := IML_Classes.Get_All_Classes;
-
-      I := All_Classes'First;
+      I := All_Node_Classes'First;
       while
-        (I <= All_Classes'Last) and then
-        (All_Classes (I).Name /= Node_Class_Name) loop
+        (I <= All_Node_Classes'Last) and then
+        (All_Node_Classes (I).Name /= Node_Class_Name) loop
          I := I+1;
       end loop;
 
-      if I <= All_Classes'Last then
-         return All_Classes (I);
+      if I <= All_Node_Classes'Last then
+         return All_Node_Classes (I);
       else
          raise Node_Class_Does_Not_Exist;
       end if;
@@ -321,16 +269,15 @@ package body Giant.Graph_Lib is
    ---------------------------------------------------------------------------
    procedure Initialize
    is
-      All_Classes : IML_Reflection.Classes;
       Cur_Class   : Node_Class_Id;
       Hash_Data   : Node_Class_Id_Hash_Data_Access;
    begin
       Node_Class_Id_Mapping := Node_Class_Id_Hashed_Mappings.Create;
 
-      All_Classes := IML_Classes.Get_All_Classes;
+      Initialize_All_Node_Classes;
 
-      for I in All_Classes'Range loop
-         Cur_Class := All_Classes (I);
+      for I in All_Node_Classes'Range loop
+         Cur_Class := All_Node_Classes (I);
 
          Hash_Data := new Node_Class_Id_Hash_Data;
          Hash_Data.Node_Attribute_Id_Mapping :=
@@ -366,6 +313,12 @@ package body Giant.Graph_Lib is
 
       end loop;
    end Initialize;
+
+   ---------------------------------------------------------------------------
+   procedure Initialize_All_Node_Classes is
+   begin
+      All_Node_Classes := IML_Classes.Get_All_Classes;
+   end Initialize_All_Node_Classes;
 
    ---------------------------------------------------------------------------
    procedure Destroy
@@ -1143,18 +1096,34 @@ package body Giant.Graph_Lib is
    ---------------------------------------------------------------------------
    function Get_Inherited_Classes
      (Node_Class     : in Node_Class_Id;
-      Include_Parent : in Boolean := True)
+      Include_Parent : in Boolean)
      return Node_Class_Id_Set
    is
+
+      ------------------------------------------------------------------------
+      --  Recursivly implemented, since it doesn't need to be fast.
+      procedure Get_Inherited_Classes
+        (Node_Class : in     Node_Class_Id;
+         Res        : in out Node_Class_Id_Set)
+      is
+      begin
+         for I in All_Node_Classes'Range loop
+            if All_Node_Classes (I) = Node_Class.Super then
+               Node_Class_Id_Sets.Insert (Res, All_Node_Classes (I));
+               Get_Inherited_Classes (All_Node_Classes (I), Res);
+            end if;
+         end loop;
+      end Get_Inherited_Classes;
+
       Res : Node_Class_Id_Set;
    begin
       Res := Node_Class_Id_Sets.Empty_Set;
 
-      --  TBD: get children
-
       if Include_Parent then
          Node_Class_Id_Sets.Insert (Res, Node_Class);
       end if;
+
+      Get_Inherited_Classes (Node_Class, Res);
 
       return Res;
    end Get_Inherited_Classes;
@@ -1363,18 +1332,11 @@ package body Giant.Graph_Lib is
    ---------------------------------------------------------------------------
    function Get_All_Node_Class_Ids return Node_Class_Id_Set is
       Set      : Node_Class_Id_Set;
-
-      Iter     : Node_Class_Id_Hashed_Mappings.Keys_Iter;
-      CurClass : Node_Class_Id;
-
    begin
       Set  := Node_Class_Id_Sets.Empty_Set;
-      Iter := Node_Class_Id_Hashed_Mappings.Make_Keys_Iter
-        (Node_Class_Id_Mapping);
 
-      while Node_Class_Id_Hashed_Mappings.More (Iter) loop
-         Node_Class_Id_Hashed_Mappings.Next (Iter, CurClass);
-         Node_Class_Id_Sets.Insert (Set, CurClass);
+      for I in All_Node_Classes'Range loop
+         Node_Class_Id_Sets.Insert (Set, All_Node_Classes (I));
       end loop;
 
       return Set;
