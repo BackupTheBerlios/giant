@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.26 $
---  $Author: koppor $
---  $Date: 2003/06/30 18:35:58 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.27 $
+--  $Author: squig $
+--  $Date: 2003/06/30 18:54:09 $
 --
 --
 ------------------------------------------------------------------------------
@@ -74,16 +74,12 @@ is
 
       loop
          case GNAT.Command_Line.Getopt
-           ("-newproject: -graph: -loadproject: -execute: -version -help")
+           ("-graph: -execute: -version -help")
          is
            --  long option names
            when '-' =>
               case GNAT.Command_Line.Full_Switch
                 (GNAT.Command_Line.Full_Switch'First + 1) is
-                when 'n' =>
-                   --  "newproject"
-                   Free (Project_Filename);
-                   Project_Filename := new String'(GNAT.Command_Line.Parameter);
                 when 'e' =>
                    --  "execute"
                    Free (Script_Filename);
@@ -109,6 +105,29 @@ is
               null;
          end case;
       end loop;
+
+      --  non-switch argument
+      Project_Filename := new String' (GNAT.Command_Line.Get_Argument);
+
+      if (Project_Filename.all /= "") then
+         begin
+            Controller.Open_Project (Project_Filename.all);
+         exception
+           when others =>
+              if (Graph_Filename.all /= "") then
+                 Controller.Create_Project (Project_Filename.all,
+                                            Graph_Filename.all);
+                 Free (Project_Filename);
+              end if;
+         end;
+
+         Free (Project_Filename);
+
+         if (Script_Filename.all /= "") then
+            Controller.Execute_GSL (Script_Filename.all);
+            Free (Script_Filename);
+         end if;
+      end if;
    end Parse_Arguments;
 
    procedure New_Test_Project

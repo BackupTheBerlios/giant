@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.25 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.26 $
 --  $Author: squig $
---  $Date: 2003/06/30 15:46:28 $
+--  $Date: 2003/06/30 18:54:09 $
 --
 ------------------------------------------------------------------------------
 --
@@ -85,7 +85,7 @@ package Giant.Controller is
    ---------------------------------------------------------------------------
 
    procedure Execute_GSL
-     (Script : in String);
+     (Filename : in String);
 
    ---------------------------------------------------------------------------
    --  Node Annotations
