@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-vectors.ads,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/06/07 12:47:19 $
+--  $Date: 2003/06/09 01:13:39 $
 --
 ------------------------------------------------------------------------------
 
@@ -55,6 +55,11 @@ generic
    --  Width and Height of a point (should be 0.0 or 1) affects width and
    --  height of rectangles
    Point_Size : Coordinate_Type;
+
+   --  Text version of Coordinate_Type
+   with function Image
+     (A : in Coordinate_Type)
+     return String;
 
    --  <= on Coordinate_Type
    with function Coord_Less_Equal
@@ -158,6 +163,9 @@ package Giant.Vectors is
      (Vector : in out Vector_2d;
       Y      : in     Coordinate_Type);
 
+   function Image
+     (Vector : in     Vector_2d)
+     return String;
 
    ------------------
    -- Rectangle_2d --
@@ -220,6 +228,50 @@ package Giant.Vectors is
    function Get_Height
      (Rectangle : in     Rectangle_2d)
      return Coordinate_Type;
+
+   procedure Set_Top
+     (Rectangle : in out Rectangle_2d;
+      Top       : in     Coordinate_Type);
+
+   procedure Set_Bottom
+     (Rectangle : in out Rectangle_2d;
+      Bottom    : in     Coordinate_Type);
+
+   procedure Set_Left
+     (Rectangle : in out Rectangle_2d;
+      Left      : in     Coordinate_Type);
+
+   procedure Set_Right
+     (Rectangle : in out Rectangle_2d;
+      Right     : in     Coordinate_Type);
+
+   procedure Set_Top_Left
+     (Rectangle : in out Rectangle_2d;
+      Top_Left  : in     Vector_2d);
+
+   procedure Set_Top_Right
+     (Rectangle : in out Rectangle_2d;
+      Top_Right : in     Vector_2d);
+
+   procedure Set_Bottom_Left
+     (Rectangle   : in out Rectangle_2d;
+      Bottom_Left : in     Vector_2d);
+
+   procedure Set_Bottom_Right
+     (Rectangle    : in out Rectangle_2d;
+      Bottom_Right : in     Vector_2d);
+
+   procedure Set_Center
+     (Rectangle : in out Rectangle_2d;
+      Center    : in     Vector_2d);
+
+   procedure Move
+     (Rectangle : in out Rectangle_2d;
+      Offset    : in     Vector_2d);
+
+   function Image
+     (Rectangle : in     Rectangle_2d)
+     return String;
 
 private
 

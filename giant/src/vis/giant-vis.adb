@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-vis.adb,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/06/07 12:48:04 $
+--  $Date: 2003/06/09 01:13:39 $
 --
 ------------------------------------------------------------------------------
 
@@ -38,6 +38,43 @@ package body Giant.Vis is
    begin
       return Logic_Float (A);
    end To_Logic_Float;
+
+   function Logic_Float_Image
+     (A : in Logic_Float)
+     return String is
+
+      Print_Minus    : Boolean     := A < 0.0;
+      Positive_Value : Logic_Float := abs A;
+      Trunc          : Logic_Float := Logic_Float'Truncation (Positive_Value);
+      More           : Logic_Float := Logic_Float'Truncation
+                                        ((Positive_Value - Trunc) * 1_000.0);
+      Fore_Int       : Integer;
+      Aft_Int        : Integer;
+   begin
+      if Logic_Float (Integer'Last) < Trunc then
+         if Print_Minus then
+            return "-???";
+         else
+            return "+???";
+         end if;
+      else
+         Fore_Int := Integer (Trunc);
+         Aft_Int  := Integer (More);
+         declare
+            Fore      : String          := Integer'Image (Fore_Int);
+            Aft_Image : String          := Integer'Image (Aft_Int);
+            Aft       : String (1 .. 3) := (others => '0');
+         begin
+            Aft (Aft'Last - Aft_Image'Length + 2 .. Aft'Last) :=
+              Aft_Image (Aft_Image'First + 1 .. Aft_Image'Last);
+            if Print_Minus then
+               return "-" & Fore (Fore'First + 1 .. Fore'Last) & "." & Aft;
+            else
+               return Fore (Fore'First + 1 .. Fore'Last) & "." & Aft;
+            end if;
+         end;
+      end if;
+   end Logic_Float_Image;
 
    function To_Absolute_Int
      (A : in Natural)
@@ -73,6 +110,19 @@ package body Giant.Vis is
       return To_Absolute (Zoom * (Point + Origin));
    end Transform;
 
+   function Transform_Backward
+     (Point          : in     Absolute.Vector_2d;
+      Origin         : in     Logic.Vector_2d;
+      Zoom           : in     Zoom_Level)
+     return Logic.Vector_2d is
+   begin
+      if Zoom > 0.0 then
+         return To_Logic (Point) / Zoom - Origin;
+      else
+         return Logic.Zero_2d;
+      end if;
+   end Transform_Backward;
+
    function Transform
      (Transformation : in     Transformation_Type;
       Point          : in     Logic.Vector_2d)
@@ -80,6 +130,15 @@ package body Giant.Vis is
    begin
       return Transform (Point, Transformation.Origin, Transformation.Zoom);
    end Transform;
+
+   function Transform_Backward
+     (Transformation : in     Transformation_Type;
+      Point          : in     Absolute.Vector_2d)
+     return Logic.Vector_2d is
+   begin
+      return Transform_Backward
+        (Point, Transformation.Origin, Transformation.Zoom);
+   end Transform_Backward;
 
    function Transform
      (Transformation : in     Transformation_Type;
@@ -123,11 +182,11 @@ package body Giant.Vis is
       Y_Zoom        : Zoom_Level;
       Zoom          : Zoom_Level;
    begin
-      if Target_Width <= 0.0 or Target_Height <= 0.0 then
-         return (Origin => Logic.Combine_Vector (0.0, 0.0), Zoom => 0.0);
+      if Source_Width <= 0.0 or Source_Height <= 0.0 then
+         return (Origin => Logic.Zero_2d, Zoom => 0.0);
       else
-         X_Zoom := Zoom_Level (Source_Width / Target_Width);
-         Y_Zoom := Zoom_Level (Source_Height / Target_Height);
+         X_Zoom := Zoom_Level (Target_Width / Source_Width);
+         Y_Zoom := Zoom_Level (Target_Height / Source_Height);
          if X_Zoom <= 0.0 then
             Zoom := Y_Zoom;
          elsif Y_Zoom <= 0.0 then
@@ -136,7 +195,7 @@ package body Giant.Vis is
             Zoom := Zoom_Level'Min (X_Zoom, Y_Zoom);
          end if;
          if Zoom <= 0.0 then
-            return (Origin => Logic.Combine_Vector (0.0, 0.0), Zoom => 0.0);
+            return (Origin => Logic.Zero_2d, Zoom => 0.0);
          else
             Origin := To_Logic (Absolute.Get_Center (Target)) / Zoom
               - Logic.Get_Center (Source);

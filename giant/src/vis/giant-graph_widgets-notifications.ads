@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-notifications.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-graph_widgets-notifications.ads,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/05/23 16:39:04 $
+--  $Date: 2003/06/09 01:13:39 $
 --
 ------------------------------------------------------------------------------
 --
@@ -129,6 +129,18 @@ package Giant.Graph_Widgets.Notifications is
    --------------------------
    -- Visible Area Changes --
    --------------------------
+
+   ----------------------------------------------------------------------------
+   --  Emits the Graph_Widgets.Handlers.Logical_Area_Changed_Signal
+   --  to inform any listener thant the total logical area occupied by
+   --  the graph has changed.
+   --
+   --  Parameters:
+   --    Widget - The graph widget
+   --    Area   - The logical area occupied by the graph in 'Widget'
+   procedure Logical_Area_Changed
+     (Widget : access Graph_Widget_Record'Class;
+      Area   : in     Vis.Logic.Rectangle_2d);
 
    ----------------------------------------------------------------------------
    --  Emits the Graph_Widgets.Handlers.Visible_Area_Changed_Signal

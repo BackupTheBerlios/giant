@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-vectors.adb,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/06/07 12:47:19 $
+--  $Date: 2003/06/09 01:13:39 $
 --
 ------------------------------------------------------------------------------
 
@@ -117,6 +117,14 @@ package body Giant.Vectors is
    begin
       Vector.Y := Y;
    end Set_Y;
+
+   function Image
+     (Vector : in     Vector_2d)
+     return String is
+   begin
+      return "(" & Image (Get_X (Vector)) & ", "
+        & Image (Get_Y (Vector)) & ")";
+   end Image;
 
 
    ----------------
@@ -224,8 +232,11 @@ package body Giant.Vectors is
      (Rectangle : in     Rectangle_2d)
      return Vector_2d is
    begin
-      return (Get_Top_Left (Rectangle) + Get_Bottom_Right (Rectangle))
-        / To_Field_Type (2);
+      return Get_Top_Left (Rectangle) + Combine_Vector
+        (Scalar_Div_Coord (Coord_Sub (Get_Width (Rectangle), Point_Size),
+                           To_Field_Type (2)),
+         Scalar_Div_Coord (Coord_Sub (Get_Height (Rectangle), Point_Size),
+                           To_Field_Type (2)));
    end Get_Center;
 
    function Get_Width
@@ -245,5 +256,111 @@ package body Giant.Vectors is
                                    Get_Top (Rectangle)),
                         Point_Size);
    end Get_Height;
+
+   procedure Set_Top
+     (Rectangle : in out Rectangle_2d;
+      Top       : in     Coordinate_Type) is
+   begin
+      if Coord_Less_Equal (Top, Get_Bottom (Rectangle)) then
+         Rectangle.Top := Top;
+      else
+         pragma Assert (False);
+         null;
+      end if;
+   end Set_Top;
+
+   procedure Set_Bottom
+     (Rectangle : in out Rectangle_2d;
+      Bottom    : in     Coordinate_Type) is
+   begin
+      if Coord_Less_Equal (Get_Top (Rectangle), Bottom) then
+         Rectangle.Bottom := Bottom;
+      else
+         pragma Assert (False);
+         null;
+      end if;
+   end Set_Bottom;
+
+   procedure Set_Left
+     (Rectangle : in out Rectangle_2d;
+      Left      : in     Coordinate_Type) is
+   begin
+      if Coord_Less_Equal (Left, Get_Right (Rectangle)) then
+         Rectangle.Left := Left;
+      else
+         pragma Assert (False);
+         null;
+      end if;
+   end Set_Left;
+
+   procedure Set_Right
+     (Rectangle : in out Rectangle_2d;
+      Right     : in     Coordinate_Type) is
+   begin
+      if Coord_Less_Equal (Get_Left (Rectangle), Right) then
+         Rectangle.Right := Right;
+      else
+         pragma Assert (False);
+         null;
+      end if;
+   end Set_Right;
+
+   procedure Set_Top_Left
+     (Rectangle : in out Rectangle_2d;
+      Top_Left  : in     Vector_2d) is
+   begin
+      Set_Left (Rectangle, Get_X (Top_Left));
+      Set_Top (Rectangle, Get_Y (Top_Left));
+   end Set_Top_Left;
+
+   procedure Set_Top_Right
+     (Rectangle : in out Rectangle_2d;
+      Top_Right : in     Vector_2d) is
+   begin
+      Set_Right (Rectangle, Get_X (Top_Right));
+      Set_Top (Rectangle, Get_Y (Top_Right));
+   end Set_Top_Right;
+
+   procedure Set_Bottom_Left
+     (Rectangle   : in out Rectangle_2d;
+      Bottom_Left : in     Vector_2d) is
+   begin
+      Set_Left (Rectangle, Get_X (Bottom_Left));
+      Set_Bottom (Rectangle, Get_Y (Bottom_Left));
+   end Set_Bottom_Left;
+
+   procedure Set_Bottom_Right
+     (Rectangle    : in out Rectangle_2d;
+      Bottom_Right : in     Vector_2d) is
+   begin
+      Set_Right (Rectangle, Get_X (Bottom_Right));
+      Set_Bottom (Rectangle, Get_Y (Bottom_Right));
+   end Set_Bottom_Right;
+
+   procedure Set_Center
+     (Rectangle : in out Rectangle_2d;
+      Center    : in     Vector_2d) is
+   begin
+      Move (Rectangle, Center - Get_Center (Rectangle));
+   end Set_Center;
+
+   procedure Move
+     (Rectangle : in out Rectangle_2d;
+      Offset    : in     Vector_2d) is
+
+      Top_Left     : Vector_2d := Get_Top_Left (Rectangle);
+      Bottom_Right : Vector_2d := Get_Bottom_Right (Rectangle);
+   begin
+      Rectangle := Combine_Rectangle
+        (Top_Left + Offset, Bottom_Right + Offset);
+   end Move;
+
+   function Image
+     (Rectangle : in     Rectangle_2d)
+     return String is
+   begin
+      return "(" & Image (Get_Top_Left (Rectangle)) & " - "
+        & Image (Get_Bottom_Right (Rectangle)) & ")";
+   end Image;
 
 end Giant.Vectors;

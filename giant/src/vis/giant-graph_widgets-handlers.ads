@@ -20,20 +20,18 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-handlers.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-graph_widgets-handlers.ads,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/05/23 16:39:04 $
+--  $Date: 2003/06/09 01:13:39 $
 --
 ------------------------------------------------------------------------------
 --
---  This Package provides the 'To_Marshaller' functions necessary to connect
---  to the signals emitted by 'Graph_Widgets.Graph_Widget'.
---  It also provides instances of the generic package
---  Gtk.Handlers.<Callback_type>. Use the 'Connect' subprograms provided in
---  these packages.
+--  This Package provides Callback and Marshaller instances necessary to
+--  connect handlers to the signals emitted by 'Graph_Widgets.Graph_Widget'.
 --
 
 
+with Gtk.Arguments;
 with Gtk.Handlers;
 
 package Giant.Graph_Widgets.Handlers is
@@ -42,8 +40,55 @@ package Giant.Graph_Widgets.Handlers is
    -- Signals without return value --
    ----------------------------------
 
-   package No_Return is new Gtk.Handlers.Callback
+   package Graph_Widget_Callbacks is new Gtk.Handlers.Callback
      (Widget_Type => Graph_Widget_Record);
+
+
+   -----------------
+   -- Conversions --
+   -----------------
+
+   ----------------------------------------------------------------------------
+   --  Conversion function for Marshallers
+   --
+   --  Parameters:
+   --    Args - The GtkAda argument array
+   --    Num  - The Index of an argument in 'Args'
+   --  Returns:
+   --    The Area at index 'Num' in 'Args'
+   function To_Rectangle_2d
+     (Args : in Gtk.Arguments.Gtk_Args;
+      Num  : in Natural)
+     return Vis.Logic.Rectangle_2d;
+
+
+   ----------------------------
+   -- "logical_area_changed" --
+   ----------------------------
+
+   ----------------------------------------------------------------------------
+   --  Emitted whenever the logical area containing the complete graph
+   --  changes. This change can be due to inserting, removing of nodes
+   --  or to moving nodes inside the Graph_Widget.
+   Logical_Area_Changed_Signal : constant String := "logical_area_changed";
+
+   ----------------------------------------------------------------------------
+   --  Type of handlers for signal Visible_Area_Changed_Signal
+   --  Parameters:
+   --    Widget - The graph widget
+   --    Area   - The visible area inside 'Widget'
+   type Logical_Area_Changed_Signal_Cb is access procedure
+     (Widget : access Graph_Widget_Record'Class;
+      Area   : in     Vis.Logic.Rectangle_2d);
+
+   ----------------------------------------------------------------------------
+   --  Package providing the 'Connect' subprograms
+   package Logical_Area_Cbs renames Graph_Widget_Callbacks;
+
+
+   ----------------------------
+   -- "visible_area_changed" --
+   ----------------------------
 
    ----------------------------------------------------------------------------
    --  Emitted whenever the visible logical area changes. This change can
@@ -52,7 +97,7 @@ package Giant.Graph_Widgets.Handlers is
    Visible_Area_Changed_Signal : constant String := "visible_area_changed";
 
    ----------------------------------------------------------------------------
-   --  Handler for signal Visible_Area_Changed_Signal
+   --  Type of handlers for signal Visible_Area_Changed_Signal
    --  Parameters:
    --    Widget - The graph widget
    --    Area   - The visible area inside 'Widget'
@@ -61,9 +106,7 @@ package Giant.Graph_Widgets.Handlers is
       Area   : in     Vis.Logic.Rectangle_2d);
 
    ----------------------------------------------------------------------------
-   --  Visible_Area_Changed
-   function To_Marshaller
-     (Cb : in Visible_Area_Changed_Signal_Cb)
-     return No_Return.Marshallers.Marshaller;
+   --  Package providing the 'Connect' subprograms
+   package Visible_Area_Cbs renames Graph_Widget_Callbacks;
 
 end Giant.Graph_Widgets.Handlers;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-vis.ads,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/06/07 12:47:19 $
+--  $Date: 2003/06/09 01:13:39 $
 --
 ------------------------------------------------------------------------------
 
@@ -39,6 +39,10 @@ package Giant.Vis is
      (A : in Natural)
      return Logic_Float;
 
+   function Logic_Float_Image
+     (A : in Logic_Float)
+     return String;
+
    package Logic is new Vectors
      (Field_Type        => Logic_Float,
       To_Field_Type     => To_Logic_Float,
@@ -47,6 +51,7 @@ package Giant.Vis is
       Coordinate_Type   => Logic_Float,
       Coordinate_Zero   => 0.0,
       Point_Size        => 0.0,
+      Image             => Logic_Float_Image,
       Coord_Less_Equal  => "<=",
       Coord_Negate      => "-",
       Coord_Add         => "+",
@@ -74,6 +79,7 @@ package Giant.Vis is
       Coordinate_Type   => Absolute_Int,
       Coordinate_Zero   => 0,
       Point_Size        => 1,
+      Image             => Absolute_Int'Image,
       Coord_Less_Equal  => "<=",
       Coord_Negate      => "-",
       Coord_Add         => "+",
@@ -99,10 +105,21 @@ package Giant.Vis is
       Zoom           : in     Zoom_Level)
      return Absolute.Vector_2d;
 
+   function Transform_Backward
+     (Point          : in     Absolute.Vector_2d;
+      Origin         : in     Logic.Vector_2d;
+      Zoom           : in     Zoom_Level)
+     return Logic.Vector_2d;
+
    function Transform
      (Transformation : in     Transformation_Type;
       Point          : in     Logic.Vector_2d)
      return Absolute.Vector_2d;
+
+   function Transform_Backward
+     (Transformation : in     Transformation_Type;
+      Point          : in     Absolute.Vector_2d)
+     return Logic.Vector_2d;
 
    function Transform
      (Transformation : in     Transformation_Type;
