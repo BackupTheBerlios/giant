@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis.ads,v $, $Revision: 1.11 $
+--  $RCSfile: giant-vis.ads,v $, $Revision: 1.12 $
 --  $Author: keulsn $
---  $Date: 2003/07/13 19:58:09 $
+--  $Date: 2003/07/14 12:43:59 $
 --
 ------------------------------------------------------------------------------
 
@@ -214,6 +214,10 @@ package Giant.Vis is
      (Source         : in     Logic.Rectangle_2d;
       Target         : in     Absolute.Rectangle_2d)
      return Transformation_Type;
+
+   function Get_Zoom_Level
+     (Transformation : in     Transformation_Type)
+     return Zoom_Level;
 
 private
 

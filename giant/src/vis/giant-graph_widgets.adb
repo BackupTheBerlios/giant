@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.25 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.26 $
 --  $Author: keulsn $
---  $Date: 2003/07/12 16:19:27 $
+--  $Date: 2003/07/14 12:43:59 $
 --
 ------------------------------------------------------------------------------
 
@@ -642,11 +642,15 @@ package body Giant.Graph_Widgets is
    procedure Set_Vis_Style
      (Widget     : access Graph_Widget_Record'Class;
       Style      : in     Config.Vis_Styles.Visualisation_Style_Access) is
+
+      Lock : Lock_Type;
    begin
+      Lock_All_Content (Widget, Lock);
+      ------------------------------------------------------- something missing
+      --  Shift everything to Unsized_Nodes
+      --  Shift everything to Unsized_Edges
       --  Settings.Set_Style (Widget, Style);
-      --  Drawing.Pollute_Everything (Widget);
-      --  not sufficient, size may change!
-      Redraw (Widget);
+      Release_Lock (Widget, Lock);
    end Set_Vis_Style;
 
 
@@ -774,15 +778,21 @@ package body Giant.Graph_Widgets is
      (Widget     : access Graph_Widget_Record'Class)
      return Vis.Zoom_Level is
    begin
-      -- FIX: raise Unimplemented;
-      return 1.0;
+      return Positioning.Get_Zoom (Widget);
    end Get_Zoom_Level;
 
    procedure Set_Zoom_Level
      (Widget     : access Graph_Widget_Record'Class;
       Zoom       : in     Vis.Zoom_Level) is
+
+      Lock : Lock_Type;
    begin
-      raise Unimplemented;
+      Lock_All_Content (Widget, Lock);
+      ------------------------------------------------------ something missing
+      --  Shift everything to Unsized_Nodes
+      --  Shift everything to Unsited_Edges
+      Positioning.Set_Zoom (Widget, Zoom);
+      Release_Lock (Widget, Lock);
    end Set_Zoom_Level;
 
    procedure Zoom_To_Edge

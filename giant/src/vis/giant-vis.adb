@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis.adb,v $, $Revision: 1.11 $
+--  $RCSfile: giant-vis.adb,v $, $Revision: 1.12 $
 --  $Author: keulsn $
---  $Date: 2003/07/12 16:19:27 $
+--  $Date: 2003/07/14 12:43:59 $
 --
 ------------------------------------------------------------------------------
 
@@ -329,5 +329,12 @@ package body Giant.Vis is
          end if;
       end if;
    end Get_Transformation_Rect_Into_Rect_Centered;
+
+   function Get_Zoom_Level
+     (Transformation : in     Transformation_Type)
+     return Zoom_Level is
+   begin
+      return Transformation.Zoom;
+   end Get_Zoom_Level;
 
 end Giant.Vis;

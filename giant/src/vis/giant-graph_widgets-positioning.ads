@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-positioning.ads,v $, $Revision: 1.4 $
+--  $RCSfile: giant-graph_widgets-positioning.ads,v $, $Revision: 1.5 $
 --  $Author: keulsn $
---  $Date: 2003/07/12 16:19:27 $
+--  $Date: 2003/07/14 12:43:59 $
 --
 ------------------------------------------------------------------------------
 --
@@ -79,6 +79,10 @@ package Giant.Graph_Widgets.Positioning is
    procedure Set_Zoom
      (Widget : access Graph_Widget_Record'Class;
       Zoom   : in     Vis.Zoom_Level);
+
+   function Get_Zoom
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis.Zoom_Level;
 
 
    ---------------------

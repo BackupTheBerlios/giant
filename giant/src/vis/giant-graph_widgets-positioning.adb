@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-positioning.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-graph_widgets-positioning.adb,v $, $Revision: 1.7 $
 --  $Author: keulsn $
---  $Date: 2003/07/12 16:19:27 $
+--  $Date: 2003/07/14 12:43:59 $
 --
 ------------------------------------------------------------------------------
 
@@ -190,6 +190,13 @@ package body Giant.Graph_Widgets.Positioning is
         (Origin => Vis.Logic.Zero_2d,
          Zoom   => Zoom);
    end Set_Zoom;
+
+   function Get_Zoom
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis.Zoom_Level is
+   begin
+      return Vis.Get_Zoom_Level (Widget.Positioning.Transformation);
+   end Get_Zoom;
 
 
    ---------------------
