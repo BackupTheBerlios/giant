@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: graphlib_test.adb,v $, $Revision: 1.4 $
+--  $RCSfile: graphlib_test.adb,v $, $Revision: 1.5 $
 --  $Author: koppor $
---  $Date: 2003/06/25 17:42:38 $
+--  $Date: 2003/06/27 16:51:08 $
 --
 
 with AUnit.Test_Suites; use AUnit.Test_Suites;
@@ -45,7 +45,6 @@ procedure Graphlib_Test is
    procedure Run is new AUnit.Test_Runner (Suite);
 
    ---------------------------------------------------------------------------
-
    function Node_Attribute_Filters_Suite return Access_Test_Suite is
       Result : Access_Test_Suite := new Test_Suite;
    begin
