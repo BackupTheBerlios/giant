@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.ads,v $, $Revision: 1.1 $
+-- $RCSfile: giant-config-vis_styles.ads,v $, $Revision: 1.2 $
 -- $Author: schwiemn $
--- $Date: 2003/05/27 07:50:13 $
+-- $Date: 2003/06/06 17:29:27 $
 --
 -- ----------------
 -- This package provides the functionality needed to manage
@@ -99,8 +99,9 @@
 --
 with Ada.Strings.Unbounded;
 
-with String_Lists;                     -- from Bauhaus IML "Reuse.src"
-with Hashed_Mappings;
+with String_Lists;    -- from Bauhaus IML "Reuse.src"
+with Hashed_Mappings; -- from Bauhaus IML "Reuse.src"
+pragma Elaborate_All (Hashed_Mappings);
 
 with Giant.Graph_Lib.Node_Attribute_Filters; -- from GIANT
 

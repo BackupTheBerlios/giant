@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-valid_names.ads,v $, $Revision: 1.1 $
+-- $RCSfile: giant-valid_names.ads,v $, $Revision: 1.2 $
 -- $Author: schwiemn $
--- $Date: 2003/05/27 09:14:55 $
+-- $Date: 2003/06/06 17:29:27 $
 --
 -- -----------------------
 -- This package provides the functionality needed
@@ -32,6 +32,7 @@
 with Ada.Strings.Unbounded;
 
 package Giant.Valid_Names is
+pragma Elaborate_Body;
 
    ---------------------------------------------------------------------------
    -- The minimum length (characters) of a "Standard Name"

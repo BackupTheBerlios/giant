@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.1 $
---  $Author: koppor $
---  $Date: 2003/05/28 12:17:02 $
+--  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.2 $
+--  $Author: schwiemn $
+--  $Date: 2003/06/06 17:29:27 $
 --
 ------------------------------------------------------------------------------
 --
@@ -40,8 +40,8 @@ with Ada.Streams;
 with Lists;
 
 --  from GIANT
-with Valid_Names;
-with Graph_Lib.Selections;
+with Giant.Valid_Names;
+with Giant.Graph_Lib.Selections;
 
 package Giant.Graph_Lib.Subgraphs is
 

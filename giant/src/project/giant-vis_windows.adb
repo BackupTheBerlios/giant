@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.6 $
 --  $Author: schwiemn $
---  $Date: 2003/06/06 16:17:53 $
+--  $Date: 2003/06/06 17:29:27 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -30,7 +30,7 @@ with Gtk.Object; -- from gtakada
 
 with Unbounded_String_Hash; -- from Bauhaus IML "Reuse.src"
 
-package body Giant.Vis_Window_Management is
+package body Giant.Vis_Windows is
 
    ---------------------------------------------------------------------------
    --  The default name used for standard selections
@@ -38,7 +38,7 @@ package body Giant.Vis_Window_Management is
    --  This constant is used to determine the name for a new standard 
    --  selection that has to be created during the execution of 
    --  "function Create_New ...".
-   constant Standard_Selection_Name is Valid_Names.Standard_Name :=
+   Standard_Selection_Name : constant Valid_Names.Standard_Name :=
      Valid_Names.To_Standard_Name ("Standard_Selection");
 
 
@@ -50,19 +50,26 @@ package body Giant.Vis_Window_Management is
    ---------------------------------------------------------------------------
    function Create_New
      (Vis_Window_Name : in Valid_Names.Standard_Name)
-     return Vis_Window_Data_Access is
+     return Visual_Window_Access is
      
-      New_Window_Ac     : Vis_Window_Data_Access;      
+      New_Window_Ac     : Visual_Window_Access;      
       New_Standard_Sel  : Graph_Lib.Selections.Selection;
       New_Graph_Widget  : Graph_Widgets.Graph_Widget;      
       Standard_Sel_Data : Selection_Data_Elemet;
    begin
    
-      New_Window_Ac := new Visual_Window_Element;      
+      New_Window_Ac := new Visual_Window_Element; 
+      -- set name     
       New_Window_Ac.Vis_Window_Name := 
         Ada.Strings.Unbounded.To_Unbounded_String
           (Valid_Names.To_String (Vis_Window_Name));
+          
+      -- set default visualisation style
+      New_Window_Ac.The_Visualisation_Style :=       
+        Config.Vis_Styles.Get_Name_Of_Vis_Style
+          (Config.Vis_Styles.Get_Default_Vis_Style);
    
+      -- create empty pin set
       New_Window_Ac.Set_Of_All_Pins := Pin_Sets.Empty_Set;      
       New_Window_Ac.All_Managed_Selections := Selection_Data_Sets.Empty_Set;
       
@@ -89,34 +96,43 @@ package body Giant.Vis_Window_Management is
         Ada.Strings.Unbounded.To_Unbounded_String
           (Graph_Lib.Selections.Get_Name (New_Standard_Sel));      
       
-      --  Build management data for selection
+      --  Build management data for standard selection
       Standard_Sel_Data.The_Selection := New_Standard_Sel;    
       Standard_Sel_Data.Selection_Highlight_Status := None;
       Standard_Sel_Data.Is_Faded_Out := False;
 
-      -- Insert selection
+      -- Insert standard selection
       Selection_Data_Sets.Insert
         (New_Window_Ac.All_Managed_Selections, Standard_Sel_Data);  
 
       return New_Window_Ac;
-   end Create_New_Empty_Vis_Window;
+   end Create_New;
 
    ---------------------------------------------------------------------------
-   procedure Vis_Window_Data_Access_Read
+   procedure Visual_Window_Access_Read
      (Stream : in  Bauhaus_IO.In_Stream_Type;
-      Item   : out Vis_Window_Data_Access) is
+      Item   : out Visual_Window_Access) is
    begin
    
       
     --  GRAPH_LIB; TODO
     --  !!!!!!!!!!
+    
+
+-- ONLY IF STORED STYLE NOT FOUND
+--          -- set default visualisation style
+--      New_Window_Ac.The_Visualisation_Style :=       
+--        Config.Vis_Styles.Get_Name_Of_Vis_Style
+--          (Config.Vis_Styles.Get_Default_Vis_Style);
+    
+    
       
     null;  
       
-   end Vis_Window_Data_Access_Read;
+   end Visual_Window_Access_Read;
        
    ---------------------------------------------------------------------------
-   procedure Vis_Window_Data_Access_Write
+   procedure Visual_Window_Access_Write
      (Stream : in Bauhaus_IO.In_Stream_Type;
       Item   : in Vis_Window_Data_Access) is   
    begin
@@ -125,7 +141,7 @@ package body Giant.Vis_Window_Management is
     --  !!!!!!!!!!
    
     null;
-   end Vis_Window_Data_Access_Write;
+   end Visual_Window_Access_Write;
 
    ---------------------------------------------------------------------------
    procedure Deallocate_Vis_Window_Deep
@@ -148,7 +164,7 @@ package body Giant.Vis_Window_Management is
       begin
     
          Deallocate_All_Selections (The_Set);
-      end Insert_Edge_Class_Id_Set_Into_Class_Set;
+      end Deallocate_All_Selections_Part_Of_Elements_In_Set;
    
       ---------------------------------------------
       procedure Free_Visual_Window_Access is new Ada.Unchecked_Deallocation
@@ -157,7 +173,7 @@ package body Giant.Vis_Window_Management is
    begin
    
       if Vis_Window = null then      
-         raise Vis_Window_Data_Access_Not_Initialized;
+         raise Visual_Window_Access_Not_Initialized;
       end if;
        
       --  Decreases the GTK Reference Counter.
@@ -191,7 +207,7 @@ package body Giant.Vis_Window_Management is
    begin
    
       if Vis_Window = null then      
-         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+         raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
       
       return Ada.Strings.Unbounded.Unbounded_String 
@@ -200,14 +216,14 @@ package body Giant.Vis_Window_Management is
   
    ---------------------------------------------------------------------------
    function Is_Equal
-     (Left  : in Visual_Window_Data_Access;
-      Right : in Visual_Window_Data_Access)
+     (Left  : in Visual_Window_Access;
+      Right : in Visual_Window_Access)
      return Boolean is
           
    begin
    
       if (Left = null) or (Right = null) then      
-         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+         raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
       
       return Ada.Strings.Unbounded."=" 
@@ -216,16 +232,16 @@ package body Giant.Vis_Window_Management is
    
    ---------------------------------------------------------------------------
    function Get_Hash_Value
-     (Vis_Window  : in Visual_Window_Data_Access;
+     (Vis_Window  : in Visual_Window_Access)
      return Integer is
      
    begin
      
       if Vis_Window = null then      
-          raise Vis_Window_Data_Access_Not_Initialized_Exception;
+          raise Visual_Window_Access_Not_Initialized_Exception;
        end if;
      
-      return function Unbounded_String_Hash (Vis_Window.Vis_Window_Name);         
+      return Unbounded_String_Hash (Vis_Window.Vis_Window_Name);         
    end Get_Hash_Value;
 
 
@@ -236,7 +252,7 @@ package body Giant.Vis_Window_Management is
 
    ---------------------------------------------------------------------------
    function Does_Selection_Exist
-     (Vis_Window     : in Visual_Window_Data_Access;
+     (Vis_Window     : in Visual_Window_Access;
       Selection_Name : in Valid_Names.Standard_Name)
      return Boolean is
      
@@ -247,7 +263,7 @@ package body Giant.Vis_Window_Management is
    begin
 
        if Vis_Window = null then      
-          raise Vis_Window_Data_Access_Not_Initialized_Exception;
+          raise Visual_Window_Access_Not_Initialized_Exception;
        end if;
        
        Dummy_Selection := Graph_Lib.Selections.Create (Selection_Name);
@@ -267,7 +283,7 @@ package body Giant.Vis_Window_Management is
    function Get_Selection
      (Vis_Window     : in Visual_Window_Access;
       Selection_Name : in Valid_Names.Standard_Name) 
-      return Graph_Lib.Selections.Selection_Access is
+      return Graph_Lib.Selections.Selection is
       
       Dummy_Selection     : Graph_Lib.Selections.Selection;
       Dummy_Data_Element  : Selection_Data_Elemet;
@@ -276,7 +292,7 @@ package body Giant.Vis_Window_Management is
    begin
 
        if Vis_Window = null then      
-          raise Vis_Window_Data_Access_Not_Initialized_Exception;
+          raise Visual_Window_Access_Not_Initialized_Exception;
        end if;
        
        if (Does_Selection_Exist (Vis_Window, Selection_Name) = False) then
@@ -295,7 +311,7 @@ package body Giant.Vis_Window_Management is
 
    ---------------------------------------------------------------------------
    function Get_All_Selections
-     (Vis_Window : in Visual_Window_Data_Access)      
+     (Vis_Window : in Visual_Window_Access)      
      return String_Lists.List is 
           
       The_List                 : String_Lists.List;      
@@ -305,7 +321,7 @@ package body Giant.Vis_Window_Management is
    begin
     
        if Vis_Window = null then      
-          raise Vis_Window_Data_Access_Not_Initialized_Exception;
+          raise Visual_Window_Access_Not_Initialized_Exception;
        end if; 
        
        The_List := String_Lists.Create;       
@@ -338,7 +354,7 @@ package body Giant.Vis_Window_Management is
      
    ---------------------------------------------------------------------------
    procedure Add_Selection
-     (Vis_Window : in Visual_Window_Data_Access;
+     (Vis_Window : in Visual_Window_Access;
       Selection  : in Graph_Lib.Selections.Selection) is
       
       New_Sel_Data_Element : Selection_Data_Elemet;
@@ -346,7 +362,7 @@ package body Giant.Vis_Window_Management is
    begin
     
       if Vis_Window = null then      
-         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+         raise Visual_Window_Access_Not_Initialized_Exception;
       end if; 
        
       if (Does_Selection_Exist 
@@ -362,11 +378,11 @@ package body Giant.Vis_Window_Management is
 
       Selection_Data_Sets.Insert
         (Vis_Window.All_Managed_Selections, New_Sel_Data_Element);      
-   end if;
+   end Add_Selection;
 
    ---------------------------------------------------------------------------
    procedure Remove_Selection_From_Vis_Window
-     (Vis_Window     : in Visual_Window_Data_Access;
+     (Vis_Window     : in Visual_Window_Access;
       Selection_Name : in Valid_Names.Standard_Name) is
        
      Dummy_Selection    : Graph_Lib.Selections.Selection;
@@ -375,7 +391,7 @@ package body Giant.Vis_Window_Management is
    begin
    
       if Vis_Window = null then      
-         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+         raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
        
       if (Does_Selection_Exist (Vis_Window, Selection_Name) = False) then
@@ -409,7 +425,7 @@ package body Giant.Vis_Window_Management is
    begin
      
       if Vis_Window = null then      
-         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+         raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
           
       return Ada.Strings.Unbounded.To_String (Vis_Window.Current_Selection);
@@ -422,7 +438,7 @@ package body Giant.Vis_Window_Management is
    begin
    
       if Vis_Window = null then      
-         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+         raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
        
       if (Does_Selection_Exist (Vis_Window, Selection_Name) = False) then
@@ -443,7 +459,7 @@ package body Giant.Vis_Window_Management is
    begin  
                   
       if Vis_Window = null then      
-         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+         raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
      
       return Ada.Strings.Unbounded.To_String (Vis_Window.Standard_Selection);          
@@ -452,7 +468,7 @@ package body Giant.Vis_Window_Management is
    ---------------------------------------------------------------------------
    function Get_Highlight_Status
      (Vis_Window     : in Visual_Window_Access;
-      Selection_Name : in Valid_Names.Standard_Name);
+      Selection_Name : in Valid_Names.Standard_Name)
      return Highlight_Status is
          
       Dummy_Selection     : Graph_Lib.Selections.Selection;
@@ -462,7 +478,7 @@ package body Giant.Vis_Window_Management is
    begin
 
        if Vis_Window = null then      
-          raise Vis_Window_Data_Access_Not_Initialized_Exception;
+          raise Visual_Window_Access_Not_Initialized_Exception;
        end if;
        
        if (Does_Selection_Exist (Vis_Window, Selection_Name) = False) then
@@ -483,12 +499,12 @@ package body Giant.Vis_Window_Management is
    ---------------------------------------------------------------------------
    function May_Highlight_Status_Be_Changed
      (Vis_Window     : in Visual_Window_Access;
-      Selection_Name : in Valid_Names.Standard_Name); 
+      Selection_Name : in Valid_Names.Standard_Name) 
      return Boolean is      
    begin
    
       if Vis_Window = null then      
-         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+         raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
        
       if (Does_Selection_Exist (Vis_Window, Selection_Name) = False) then
@@ -516,7 +532,7 @@ package body Giant.Vis_Window_Management is
    begin
   
       if Vis_Window = null then      
-         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+         raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
        
       if (Does_Selection_Exist (Vis_Window, Selection_Name) = False) then
@@ -551,7 +567,7 @@ package body Giant.Vis_Window_Management is
    begin
    
       if Vis_Window = null then      
-         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+         raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
        
       if (Does_Selection_Exist (Vis_Window, Selection_Name) = False) then
@@ -585,7 +601,7 @@ package body Giant.Vis_Window_Management is
    begin
 
       if Vis_Window = null then      
-         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+         raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
           
       if (Does_Selection_Exist (Vis_Window, Selection_Name) = False) then
@@ -615,7 +631,7 @@ package body Giant.Vis_Window_Management is
    begin
    
       if Vis_Window = null then      
-         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+         raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
           
       if (Does_Selection_Exist (Vis_Window, Selection_Name) = False) then
@@ -646,7 +662,7 @@ package body Giant.Vis_Window_Management is
    begin
    
       if Vis_Window = null then      
-         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+         raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
           
       if (Does_Selection_Exist (Vis_Window, Selection_Name) = False) then
@@ -681,7 +697,7 @@ package body Giant.Vis_Window_Management is
    begin
    
       if Vis_Window = null then      
-         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+         raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
    
       Dummy_Pin.Pin_Name := Pin_Name;                         
@@ -691,7 +707,7 @@ package body Giant.Vis_Window_Management is
       end if;
 
       return False;   
-   end Does_Pin_Exist;
+   end Does_Exist;
 
    --------------------------------------------------------------------------
    function Get_Position
@@ -704,7 +720,7 @@ package body Giant.Vis_Window_Management is
    begin
    
       if Vis_Window = null then      
-         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+         raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
    
       if (Does_Exist (Vis_Window, Pin_Name) = False) then
@@ -730,7 +746,7 @@ package body Giant.Vis_Window_Management is
    begin
    
       if Vis_Window = null then      
-         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+         raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
    
       if (Does_Exist (Vis_Window, Pin_Name) = False) then
@@ -757,7 +773,7 @@ package body Giant.Vis_Window_Management is
    begin
      
       if Vis_Window = null then      
-         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+         raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
   
       The_List := String_Lists.Create;       
@@ -777,51 +793,132 @@ package body Giant.Vis_Window_Management is
    procedure Add_Pin
      (Vis_Window : in Visual_Window_Data_Access;
       Name       : in Valid_Names.Standard_Name;
-      Position   : in Vis.Logic.Vector_2d
+      Position   : in Vis.Logic.Vector_2d;
       Zoom_Level : in Vis.Zoom_Level) is
       
       New_Pin : Pin;
    begin
    
       if Vis_Window = null then      
-         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+         raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
       
       if (Does_Exist (Vis_Window, Pin_Name) = True) then
          raise Pin_Does_Already_Exist_Exception;
       end if;
       
-      New_Pin.Pin_Name : Name;
-      New_Pin.Pin_Pos  : Position;
-      New_Pin.Pin_Zoom : Zoom_Level;
+      New_Pin.Pin_Name := Name;
+      New_Pin.Pin_Pos  := Position;
+      New_Pin.Pin_Zoom := Zoom_Level;
       
       Pin_Sets.Insert
         (Vis_Window.Set_Of_All_Pins, New_Pin);              
    end Add_Pin;
       
    ---------------------------------------------------------------------------
-   function Remove_Pin_From_Vis_Window
-      (Vis_Window : in Visual_Window_Data_Access;
-       Pin_Name   : in Valid_Names.Standard_Name) is
+   procedure Remove_Pin
+     (Vis_Window : in Visual_Window_Data_Access;
+      Pin_Name   : in Valid_Names.Standard_Name) is
        
+      Dummy_Pin  : Pin;
    begin
    
+      if Vis_Window = null then      
+         raise Visual_Window_Access_Not_Initialized_Exception;
+      end if;
+      
+      if (Does_Exist (Vis_Window, Pin_Name) = False) then
+         raise Pin_With_Passed_Name_Not_Found_Exception;
+      end if;
    
-   end Remove_Pin_From_Vis_Window;
+      Dummy_Pin.Pin_Name := Pin_Name;                             
+      Pin_Sets.Remove (Vis_Window.Set_Of_All_Pins, Dummy_Pin);   
+   end Remove_Pin;
 
 
    ---------------------------------------------------------------------------
-   function Get_Vis_Window_Vis_Style
+   -- F
+   -- Visualisation Styles
+   ---------------------------------------------------------------------------
+   
+   ---------------------------------------------------------------------------
+   function Get_Vis_Style
      (Vis_Window : in Visual_Window_Data_Access)
-     return String;
+     return String is
+     
+   begin
+   
+      if Vis_Window = null then      
+         raise Visual_Window_Access_Not_Initialized_Exception;
+      end if;
+      
+      return Ada.Strings.Unbound.To_String 
+        (Vis_Window.The_Visualisation_Style);
+   end Get_Vis_Style;
 
    ---------------------------------------------------------------------------
-   procedure Set_Vis_Window_Vis_Style
-     (Vis_Window : in Visual_Window_Data_Access;
-      Vis_Style  : in String);
-
-
-end Giant.Vis_Window_Management;
+   procedure Set_Vis_Style
+     (Vis_Window     : in Visual_Window_Access;
+      Vis_Style_Name : in String) is
+      
+   begin
+   
+      if Vis_Window = null then      
+         raise Vis_Window_Access_Not_Initialized_Exception;
+      end if;
+   
+      if (Config.Vis_Styles.Does_Vis_Style_Exist (Vis_Style_Name) = False) 
+        then        
+         raise Vis_Style_Does_Not_Exist_Exception;
+      end if;
+     
+      Vis_Window.The_Visualisation_Style := 
+        Ada.Strings.Unbounded.To_Unbounded_String (Vis_Style_Name);
+   end Set_Vis_Style;
+   
+     
+   ---------------------------------------------------------------------------
+   --  Implementation of subprograms from the private part of the
+   --  specification (*.ads file) of this package.
+   ---------------------------------------------------------------------------
+   
+   ---------------------------------------------------------------------------
+   function Pin_Equal (Left : in Pin; Right : in Pin) return Boolean is
+   begin
+   
+     return Ada.Strings.Unbounded."=" (Left.Pin_Name, Right.Pin_Name);
+   end Pin_Equal;
+     
+   ---------------------------------------------------------------------------
+   function Pin_Less_Than (Left : in Pin; Right : in Pin) return Boolean is
+   begin
+   
+     return Ada.Strings.Unbounded."<" (Left.Pin_Name, Right.Pin_Name);
+   end Pin_Less_Than;
+   
+   ---------------------------------------------------------------------------
+   function Selection_Data_Equal
+     (Left  : in Selection_Data_Elemet;
+      Right : in Selection_Data_Elemet)
+     return Boolean is
+   begin
+      
+      return (Graph_Lib.Selections.Get_Name (Left.The_Selection) =
+        Graph_Lib.Selections.Get_Name (Right.The_Selection));
+   end Selection_Data_Equal;
+  
+   ---------------------------------------------------------------------------
+   function Selection_Data_Less_Than 
+     (Left  : in Selection_Data_Elemet;
+      Right : in Selection_Data_Elemet)
+     return Boolean is
+   begin
+     
+     return (Graph_Lib.Selections.Get_Name (Left.The_Selection) <
+        Graph_Lib.Selections.Get_Name (Right.The_Selection));   
+   end Selection_Data_Less_Than;
+   
+end Giant.Vis_Windows;
 
 
 
