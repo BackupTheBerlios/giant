@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.54 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.55 $
 --  $Author: koppor $
---  $Date: 2003/07/14 18:45:53 $
+--  $Date: 2003/07/17 16:14:32 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -48,7 +48,7 @@ pragma Elaborate_All (Tagged_Ptr_Hash);
 
 package body Giant.Graph_Lib is
 
-   package My_Logger is new Logger("giant.graph_lib");
+   package Logger is new Giant.Logger("giant.graph_lib");
 
    Invalid_Node_Attribute_Id : constant Node_Attribute_Id := null;
 
@@ -542,14 +542,14 @@ package body Giant.Graph_Lib is
                New_Queue_Tail : Load_Nodes.Node_Queues.List;
 
             begin
-               --  My_Logger.Debug ("Begin: Process_Edge");
+               --  Logger.Debug ("Begin: Process_Edge");
 
                if (Storables."/=" (Target, null)) and then
                  (Is_IML_Root (Target)) then
                   IML_Node_Mapper.Get
                     (IML_Roots.IML_Root (Target), Target_Node, Created);
 
-                  --  My_Logger.Debug ("Fetched Target_Node");
+                  --  Logger.Debug ("Fetched Target_Node");
 
                   if Created then
                      New_Queue_Tail := Load_Nodes.Node_Queues.MakeList
@@ -557,7 +557,7 @@ package body Giant.Graph_Lib is
                      Load_Nodes.Node_Queues.Attach
                        (Queue_Tail, New_Queue_Tail);
                      Queue_Tail := New_Queue_Tail;
-                     --  My_Logger.Debug ("Attached Target_Node");
+                     --  Logger.Debug ("Attached Target_Node");
                   end if;
 
                   Load_Nodes.Create_Edge
@@ -566,10 +566,10 @@ package body Giant.Graph_Lib is
                      Attribute,
                      Attribute_Element_Number);
 
-                  --  My_Logger.Debug ("Edge created");
+                  --  Logger.Debug ("Edge created");
                end if;
 
-               --  My_Logger.Debug ("End: Process_Edge");
+               --  Logger.Debug ("End: Process_Edge");
             end Process_Edge;
 
             Node  : Load_Nodes.Node_Access;
@@ -579,7 +579,7 @@ package body Giant.Graph_Lib is
               (IML_Node  : in IML_Roots.IML_Root;
                Attribute : in IML_Reflection.Field_ID) is
             begin
-               --  My_Logger.Debug ("Begin: Process_Attribute");
+               --  Logger.Debug ("Begin: Process_Attribute");
 
                if Attribute.all in IML_Reflection.Edge_Field'Class then
                   declare
@@ -591,7 +591,7 @@ package body Giant.Graph_Lib is
                      if Storables."/=" (Target, null) then
                         Process_Edge (Node, Target, Attribute, 0);
                         --  else
-                        --    My_Logger.Info
+                        --    Logger.Info
                         --      ("Edge_Field with null target ignored");
                      end if;
                   end;
@@ -640,11 +640,11 @@ package body Giant.Graph_Lib is
                   IML_Reflection.Builtin_Field'Class) then
                   null;
                else
-                  My_Logger.Error (Attribute.Name);
-                  My_Logger.Error ("Unknown IML_Reflection.Field");
+                  Logger.Error (Attribute.Name);
+                  Logger.Error ("Unknown IML_Reflection.Field");
                end if;
 
-               --  My_Logger.Debug ("End: Process_Attribute");
+               --  Logger.Debug ("End: Process_Attribute");
             end Process_Attribute;
 
             Iter      : Load_Nodes.Node_Queues.ListIter;
@@ -660,7 +660,7 @@ package body Giant.Graph_Lib is
             while Load_Nodes.Node_Queues.More (Iter) loop
                Node := Load_Nodes.Node_Queues.CellValue (Iter);
 
-               --  My_Logger.Debug ("Processing: " &
+               --  Logger.Debug ("Processing: " &
                --                     IML_Node_Ids.Image
                --        (Storables.Get_Node_Id (Node.IML_Node)));
 
@@ -686,7 +686,7 @@ package body Giant.Graph_Lib is
          Node      : Load_Nodes.Node_Access;
 
       begin
-         My_Logger.Debug ("Begin: Convert_IML_Graph_To_Temp_Structure");
+         Logger.Debug ("Begin: Convert_IML_Graph_To_Temp_Structure");
 
          Queue := Load_Nodes.Node_Queues.Create;
 
@@ -918,7 +918,7 @@ package body Giant.Graph_Lib is
           end Convert_Edge_Set_To_Edge_Array;
 
       begin
-         My_Logger.Debug ("Begin: Convert_Temp_Structure_To_Used_Structure");
+         Logger.Debug ("Begin: Convert_Temp_Structure_To_Used_Structure");
 
          Convert_Nodes (IML_Node_ID_Mapping);
 
@@ -956,7 +956,7 @@ package body Giant.Graph_Lib is
            Load_Nodes.Node_Queues.DestroyDeep (Dispose => Dispose);
 
       begin
-         My_Logger.Debug ("Begin: Destroy_Temp_Structure");
+         Logger.Debug ("Begin: Destroy_Temp_Structure");
          DestroyDeep_Nodes (Queue);
       end Destroy_Temp_Structure;
 
@@ -1203,9 +1203,12 @@ package body Giant.Graph_Lib is
    is
       IML_Node_Id : IML_Node_IDs.Node_Id;
    begin
-      IML_Node_Id := Storables.Get_Node_Id (Node.IML_Node);
-
-      return IML_Node_IDs.Image (IML_Node_Id);
+      if Node = Invalid_Node_Id then
+         return "n/a";
+      else
+         IML_Node_Id := Storables.Get_Node_Id (Node.IML_Node);
+         return IML_Node_IDs.Image (IML_Node_Id);
+      end if;
    end Node_Id_Image;
 
    ---------------------------------------------------------------------------
@@ -1511,7 +1514,7 @@ package body Giant.Graph_Lib is
 
                Node_Id_Lists.Attach (List, Res_Node);
             else
-               My_Logger.Debug ("No IML_Root @ List_Value");
+               Logger.Debug ("No IML_Root @ List_Value");
             end if;
 
          end loop;
@@ -1559,8 +1562,8 @@ package body Giant.Graph_Lib is
       elsif Node_Attribute.all in IML_Reflection.Enumerator_Field'Class then
          return Class_String;
       else
-         My_Logger.Error (Node_Attribute.Name);
-         My_Logger.Error ("Class for Node_Attribute could not be found");
+         Logger.Error (Node_Attribute.Name);
+         Logger.Error ("Class for Node_Attribute could not be found");
          return Class_Natural;
       end if;
    end Get_Node_Attribute_Class_Id;
@@ -1614,7 +1617,7 @@ package body Giant.Graph_Lib is
 
                Node_Id_Sets.Insert (Set, Res_Node);
             else
-               My_Logger.Debug ("No IML_Root @ Set_Value");
+               Logger.Debug ("No IML_Root @ Set_Value");
             end if;
          end loop;
       end;
@@ -1646,12 +1649,14 @@ package body Giant.Graph_Lib is
                   (IML_Node_ID_Mapping,
                    Storables.Get_Node_Id (Target) );
              else
-                My_Logger.Fatal ("Edge_Field with non-IML_Root-target");
-                raise Node_Does_Not_Exist;
+                Logger.Debug ("Edge_Field with non-IML_Root-target");
+                return Invalid_Node_Id;
              end if;
           else
-             My_Logger.Fatal ("Edge_Field with null target");
-             raise Node_Does_Not_Exist;
+             --  TBD: why is this reached only at a certain visstyle?
+             --  see Martins Mail of 20030717
+             Logger.Debug ("Edge_Field with null target");
+             return Invalid_Node_Id;
           end if;
       end;
 
@@ -1876,8 +1881,8 @@ package body Giant.Graph_Lib is
             return Get_Node_Attribute_String_Value (Node, Attribute);
 
          when others =>
-            My_Logger.Fatal ("Unknown Attribute-Class in " &
-                             "Get_Node_Attribute_Value_As_String");
+            Logger.Fatal ("Unknown Attribute-Class in " &
+                          "Get_Node_Attribute_Value_As_String");
             return "* unkown *";
       end case;
    end Get_Node_Attribute_Value_As_String;
