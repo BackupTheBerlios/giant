@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/18 12:02:20 $
+-- $Date: 2003/08/26 14:02:46 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -90,16 +90,19 @@ package body Giant.Gsl.Runtime is
          end if;
 
       elsif Get_Ref_Type (Gsl_Var_Reference (Var)) = Gsl.Types.Selection then
-         if Get_Current_Context = "" then
-            Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
-              "Runtime error: No context set.");
-         elsif Is_Gsl_Object_Set (Value) then
+         --if Get_Current_Context = "" then
+         --   Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+         --     "Runtime error: No context set.");
+         --elsif Is_Gsl_Object_Set (Value) then
+         if Is_Gsl_Object_Set (Value) then
             Sel := Create (Get_Ref_Name (Gsl_Var_Reference (Var)));
             Add_Node_Set (Sel, Get_Value (Gsl_Node_Set
               (Get_Value_At (Gsl_List (Value), 1))));
             Add_Edge_Set (Sel, Get_Value (Gsl_Edge_Set
               (Get_Value_At (Gsl_List (Value), 2))));
-            Controller.Add_Selection (Get_Current_Context, Sel, true);
+            --Controller.Add_Selection (Get_Current_Context, Sel, true);
+            Controller.Add_Selection
+              (Get_Ref_Context (Gsl_Var_Reference (Var)), Sel, false);
          else
            Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
              "Script 'set': Gsl_Object_Set expected.");
@@ -107,6 +110,15 @@ package body Giant.Gsl.Runtime is
       end if;
       return Gsl_Null;
    end Runtime_Set;
+
+   --------------------------------------------------------------------------
+   --
+   function Runtime_Deref
+     (Parameter : Gsl_List)
+      return Gsl_Type is
+   begin
+      return Gsl_Null; 
+   end Runtime_Deref;
 
    ---------------------------------------------------------------------------
    --
@@ -288,8 +300,8 @@ package body Giant.Gsl.Runtime is
       A        : Gsl_Type;
       B        : Gsl_Type;
       Var      : Gsl_Type;
-      Node_Set : Graph_Lib.Node_Id_Sets.Set;
-      Edge_Set : Graph_Lib.Edge_Id_Sets.Set;
+      Node_Set : Graph_Lib.Node_Id_Set;
+      Edge_Set : Graph_Lib.Edge_Id_Set;
    begin
       if Get_List_Size (Parameter) /= 2 then
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
@@ -355,8 +367,8 @@ package body Giant.Gsl.Runtime is
       A        : Gsl_Type;
       B        : Gsl_Type;
       Var      : Gsl_Type;
-      Node_Set : Graph_Lib.Node_Id_Sets.Set;
-      Edge_Set : Graph_Lib.Edge_Id_Sets.Set;
+      Node_Set : Graph_Lib.Node_Id_Set;
+      Edge_Set : Graph_Lib.Edge_Id_Set;
    begin
       if Get_List_Size (Parameter) /= 2 then
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
@@ -1425,7 +1437,40 @@ package body Giant.Gsl.Runtime is
    function Runtime_Get_Window_Content
       (Parameter : Gsl_List)
       return Gsl_Type is
+
+      Subgraph    : Graph_Lib.Subgraphs.Subgraph;
+      Window_Name : Gsl_Type;
+      Object_Set  : Gsl_List;
    begin
+      if Get_List_Size (Parameter) /= 1 then
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'get_window_content': Expecting 1 parameter.");
+      end if;
+      Window_Name := Get_Value_At (Parameter, 1);
+      if Is_Gsl_String (Window_Name) then
+         -- check if window exist
+         if not Controller.Exists_Window (Get_Value (Gsl_String (Window_Name)))
+         then
+            Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+              "Script 'insert_into_window': Window " &
+              Get_Value (Gsl_String (Window_Name)) &  "does not exist.");
+         end if;
+
+         Subgraph := Controller.Gsl_Get_Window_Content
+           (Get_Value (Gsl_String (Window_Name)));
+
+         Object_Set := Create_Gsl_List (2);
+         Set_Value_At (Object_Set, 1, Gsl_Type
+           (Create_Gsl_Node_Set (Graph_Lib.Node_Id_Sets.Copy
+             (Graph_Lib.Subgraphs.Get_All_Nodes (Subgraph)))));
+         Set_Value_At (Object_Set, 2, Gsl_Type
+           (Create_Gsl_Edge_Set (Graph_Lib.Edge_Id_Sets.Copy
+             (Graph_Lib.Subgraphs.Get_All_Edges (Subgraph)))));
+         return Gsl_Type (Object_Set);
+      else
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'get_window_content': Gsl_String expected.");
+      end if;
       return Gsl_Null;
    end Runtime_Get_Window_Content;
 
@@ -1521,13 +1566,37 @@ package body Giant.Gsl.Runtime is
    function Runtime_Remove_From_Window
       (Parameter : Gsl_List)
       return Gsl_Type is
+
+      Window_Name    : Gsl_Type;
+      Remove_Content : Gsl_Type;
    begin
-      --function Remove_Selection
-      --  (Window_Name          : in String;
-      --   Name                 : in String;
-      --   Remove_Content       : in Boolean;
-      --   Ask_For_Confirmation : in Boolean := True)
-      --   return Boolean;
+      if Get_List_Size (Parameter) /= 2 then
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'remove_from_window': Expecting 2 parameters.");
+      end if;
+      Window_Name    := Get_Value_At (Parameter, 1);
+      Remove_Content := Get_Value_At (Parameter, 2);
+      if Is_Gsl_String (Window_Name) and Is_Gsl_Object_Set (Remove_Content)
+      then
+         -- check if window exist
+         if not Controller.Exists_Window (Get_Value (Gsl_String (Window_Name)))
+         then
+            Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+              "Script 'remove_from_window': Window " &
+              Get_Value (Gsl_String (Window_Name)) &  "does not exist.");
+         end if;
+
+         -- remove the selection using the giant.controller
+         -- procedure Remove_Selection
+         --   (Window_Name : in String;
+         --    Nodes       : in Graph_Lib.Node_Id_Set;
+         --    Edges       : in Graph_Lib.Edge_Id_Set;
+         --    Ask_For_Confirmation : in Boolean := True);
+      else
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'remove_from_window': Gsl_String and " & 
+           "Gsl_Object_Set expected.");
+      end if;
       return Gsl_Null;
    end Runtime_Remove_From_Window;
 
