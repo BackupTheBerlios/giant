@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: afa.tex,v $, $Revision: 1.21 $
-%  $Date: 2003/04/20 15:46:12 $
+%  $RCSfile: afa.tex,v $, $Revision: 1.22 $
+%  $Date: 2003/04/20 18:39:35 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung allgemeiner funktionaler Anforderungen - UseCase
@@ -270,23 +270,26 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
                
   \begin{enumerate}
   
-  \item Es gibt zu jedem Anzeigefenster beliebig viele Selektionen,
-    davon ist immer eine die aktuelle Selektion (siehe
-    \ref{Selektieren von Fenster-Knoten und Fenster-Kanten in
-      Anzeigefenstern}).
+  \item Es gibt zu jedem Anzeigefenster beliebig viele Selektionen
+    (mindestens aber eine -- die Standard-Selektion),
+    davon ist immer eine die aktuelle Selektion.
     
     \item 
-    Das oben beschriebene Selektieren mittels linker Maustaste etc. betrifft
-    immer nur die aktuelle Selektion. \\
+    Das oben beschriebene Selektieren mittels der linken Maustaste 
+    und weiterer Funktionstasten (siehe 
+    \ref{Selektieren von Fenster-Knoten und Fenster-Kanten in Anzeigefenstern}) 
+    betrifft immer nur die aktuelle Selektion. \\
     Alle anderen Selektionen können zwar hervorgehoben werden, aber nicht 
     durch das Selektieren mittels linker Maustaste etc. geändert werden.
       
     \item
-    Der Benutzer kann jederzeit bestimmen, welche der Selektionen die
-    aktuelle Selektion ist.
+    Der Benutzer kann jederzeit bestimmen, welche der Selektionen eines
+    Anzeigefensters die aktuelle Selektion ist (siehe UseCase 
+    \ref {Selektion zur aktuellen Selektion machen}).
     
     \item 
-    Die aktuelle Selektion wird immer hervorgehoben. 
+    Die aktuelle Selektion wird immer hervorgehoben (siehe hierzu auch   
+    \ref{Hervorheben von Selektionen und der aktuelle Selektion}). 
   
   \end {enumerate}
   
@@ -300,17 +303,16 @@ in Anzeigefenster}
   \index{IML-Teilgraphen!Einfügen in Anzeigefenster}
   \index{Selektionen!Einfügen in Anzeigefenster}
   
-  In diesem Abschnitt wir das Einfügen von IML-Teilgraphen und
+  In diesem Abschnitt wir der Einfügevorgang von IML-Teilgraphen und
   Selektionen in Anzeigefenster spezifiziert.
 
    \subsection {Vorgabe der Zielposition} \index{Zielposition}
      \label{Vorgabe der Zielposition}
-   Für bestimmte UseCases (siehe z.B.\ 
+   Für bestimmte UseCases (siehe z.B.\ UseCase 
    \ref{IML-Teilgraph in Anzeigefenster einfügen})
    muss der Benutzer manuell Zielpositionen innerhalb eines 
    zu bestimmenden Anzeigefensters auswählen. An dieser
-   Zielposition werden dann z.B. neue Fenster-Knoten eingefügt.\\
-   Ablauf:
+   Zielposition werden dann z.B. neue Fenster-Knoten eingefügt. Ablauf:
    
    \begin {enumerate}
    
@@ -323,7 +325,7 @@ in Anzeigefenster}
      \item
      Befindet sich die Maus über dem Bereich des Anzeigefensters, wo
      der IML-Graph visualisiert wird, so wird anstatt des
-     Mauszeigers ein Fadenkreuz angezeigt.
+     Mauszeigers ein Fadenkreuz (siehe auch \ref{Fadenkreuzcursor}) angezeigt.
      
      \item
      Durch Klicken mit der linken Maustaste wird dann über das Fadenkreuz die
@@ -444,7 +446,7 @@ in Anzeigefenster}
     Es wird ein neuer IML-Teilgraph erzeugt. Dieser umfasst alle Graph-Knoten 
     und Graph-Kanten der Selektion, welche einen gültigen Teilgraphen bilden.
     Kanten der Selektion, deren Start- und Zielknoten nicht ebenfalls
-    Bestandteil der Selektion sind, werden also ignoriert.
+    Bestandteil der Selektion sind, werden ignoriert.
  
   \end {enumerate}
   

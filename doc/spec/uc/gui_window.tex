@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.44 $
-%  $Date: 2003/04/19 19:45:43 $
-%  $Author: birdy $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.45 $
+%  $Date: 2003/04/20 18:39:35 $
+%  $Author: schwiemn $
 %
 %  Description: UseCases für die Fensterfunktionalität der GUI
 %
@@ -225,7 +225,7 @@ unwiederbringlich verloren.
 
     \cond
     Falls das Anzeigefenster vor dem Löschen geöffnet war, so
-    ist das Anzeigefenster jetzt natürlich auch geschlossen.
+    ist das Anzeigefenster jetzt geschlossen.
     
     \cond
     Die Verwaltungsdatei für das Anzeigefenster (siehe   
@@ -309,7 +309,7 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
     \step[1]
     Der Benutzer startet den UseCase über das Popup-Menü 
     (siehe \ref{SUBGRAPH-LIST-POPUP})
-    im Hauptfenster \gq{Insert IML Subgraph}.
+    im Hauptfenster durch Auswahl des Eintrags \gq{Insert IML Subgraph}.
     Hierdurch wird der einzufügende IML-Teilgraph bestimmt (immer
     der IML-Teilgraph, auf dem der Rechtsklick ausgeführt wurde).
     
@@ -338,20 +338,25 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
     \step[5]
     Der Benutzer bestätigt mit OK.
     
-    \step[6]
-    GIANT fordert den Anwender über die Statuszeile auf, die Zielposition
-    des Layouts anzugeben (\gq{Please click on desired target position for
-    Layout in Window}). Der Nutzer klickt mit der linken Maustaste auf
-    das Zielgebiet im Fenster.
+   % Eingefügt von Philipp 
+   % Entfernt von Martin, da dies bereits mit Punkt 2
+   % abgedeckt ist. Zudem waren die Alternativen nicht mehr
+   % konsistent.
+
+   % \step[6]
+   % GIANT fordert den Anwender über die Statuszeile auf, die Zielposition
+   % des Layouts anzugeben (\gq{Please click on desired target position for
+   % Layout in Window}). Der Nutzer klickt mit der linken Maustaste auf
+   % das Zielgebiet im Fenster.
           
-    \step[7] GIANT berechnet das entsprechende Layout und zeigt einen
+    \step[6] GIANT berechnet das entsprechende Layout und zeigt einen
     Dialog an, der den Benutzer über den Fortschritt der Berechnung
     informiert (siehe \ref{Progressbar-Modale}).\\
     Während der Berechnung des Layouts kann das System GIANT nicht
     bedient werden. Zugänglich ist nur der Button zum Abbruch der
     Berechnung (siehe \ref{Progressbar-Modale-Cancel}).
     
-    \step[8]
+    \step[7]
     Nach Abschluss der Berechnung fügt GIANT die Fenster-Knoten und 
     Fenster-Kanten in das entsprechende Anzeigefenster ein.
    
@@ -421,15 +426,16 @@ Ziel-Anzeigefenster unter Beibehaltung des Layouts kopiert werden
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase über das Popup-Menü
-    (siehe \ref{Selektionsauswahlliste}) in der Selektionsauswahlliste.
-    Durch Auswahl eines der beiden Menüeinträge 
+    der Selektionsauswahlliste (siehe \ref{Selektionsauswahlliste}), 
+    indem er dort den Menüeintrag
     \gq{Copy Selection Keeping Existing Layout} oder 
-    \gq{Copy Selection Changing Existing Layout}.
-    Hierdurch wird automatisch die Selektion bestimmt (immer
+    den Menüeintrag
+    \gq{Copy Selection Changing Existing Layout} auswählt.
+    Hierdurch wird automatisch die Quell-Selektion bestimmt (immer
     die Selektion, auf der der Rechtsklick ausgeführt wurde).
     
     \step[2] 
-    Der Benutzer wählt das entsprechende Ziel-Anzeigefenster aus.
+    Der Benutzer wählt das gewünschte Ziel-Anzeigefenster aus.
     Das Ziel-Anzeigefenster kann nicht das Quell-Anzeigefenster sein.
     GIANT zeigt in der Statuszeile im Hauptfenster den Text
     \gq{Select Position in Display Window
@@ -444,10 +450,11 @@ Ziel-Anzeigefenster unter Beibehaltung des Layouts kopiert werden
     
     \step[3]
     GIANT kopiert die Fenster-Knoten und Fenster-Kanten der 
-    Selektion in das Ziel-Anzeigefenster. Bei neu eingefügten 
+    Quell-Selektion in das Ziel-Anzeigefenster. Bei neu eingefügten 
     Fenster-Knoten bleibt das Layout, welches diese in der
     Quell-Selektion relativ zueinander haben, erhalten.\\
-    Je nachdem, welchen Eintrag der Benutzer im Popup-Menü ausgewählt hat,
+    Je nachdem, welchen Eintrag der Benutzer unter Schritt 1
+    im Popup-Menü ausgewählt hat,
     geschieht mit den bereits im Ziel-Anzeigefenster vorhandenen 
     Fenster-Knoten der Selektion folgendes:
     \begin {enumerate}
@@ -477,10 +484,10 @@ Ziel-Anzeigefenster unter Beibehaltung des Layouts kopiert werden
 \end{uc}
 
 % ==============================================================================
-\begin{uc}[Fenster-Knoten und Fenster-Kanten einer Selektion aus 
-           Anzeigefenster löschen]
-      {UC: Fenster-Knoten und Fenster-Kanten einer Selektion aus 
-           Anzeigefenster löschen}
+\begin{uc}[Alle Fenster-Knoten und Fenster-Kanten einer Selektion aus 
+           einem Anzeigefenster löschen]
+      {UC: Alle Fenster-Knoten und Fenster-Kanten einer Selektion aus 
+           einem Anzeigefenster löschen}
 \index{Fenster-Knoten!löschen}
 \index{Fenster-Kanten!löschen}
                   
@@ -538,15 +545,15 @@ Fenster-Kanten}).
     \step[1]
     Der Benutzer führt einen Rechtsklick auf die entsprechende Selektion in der
     Selektionsauswahlliste durch (siehe \ref{Selektionsauswahlliste})
-    und wählt im Popup-Menü \gq{Delete Nodes and Edges
+    und wählt im Popup-Menü den Eintrag \gq{Delete Nodes and Edges
     of Selection} aus.
       
     
     \step[2]
     GIANT zeigt die Sicherheitsabfrage (siehe \ref{Sicherheitsabfrage}) 
-    und fragt nach, ob es die Selektion samt ihrer Knoten und Kanten
-    wirklich löschen soll (\gq{Really delete Selection from its window 
-    including Nodes and Edges?}).
+    und fragt nach, ob es die Selektion samt ihrer Fenster-Knoten und 
+    Fenster-Kanten wirklich löschen soll (\gq{Really delete Selection 
+    from its window including Nodes and Edges?}).
     
     \step[3]
     Der Benutzer bestätigt mit Yes.
@@ -576,7 +583,7 @@ Fenster-Kanten}).
 
 Mittels dieses UseCase kann der Benutzer die Visualisierung
 von Fenster-Knoten und Fenster-Kanten innerhalb eines Anzeigefensters
-dynamisch durch Auswahl verschiedener frei definierbarer
+zur Laufzeit von GIANT durch Auswahl verschiedener frei definierbarer
 Visualisierungsstile ändern (siehe auch \ref{Config Visualisierungsstile}).
 
   \begin{precond}
@@ -585,7 +592,7 @@ Visualisierungsstile ändern (siehe auch \ref{Config Visualisierungsstile}).
     Es gibt ein geöffnetes Anzeigefenster.    
    
     \cond
-    Es gibt mindestens einen definierten Visualisierungsstil.
+    Es gibt mindestens einen benutzerdefinierten Visualisierungsstil.
        
   \end{precond}
 
@@ -657,9 +664,9 @@ Verändert die Position des sichtbaren Anzeigeinhaltes.
       Anzeigeinhalt des aktiven Anzeigefensters nach links verschoben wird;
       dadurch werden dann die Fenster-Knoten und Fenster-Kanten sichtbar, die
       sich links vom aktuell sichtbaren Anzeigeinhalt befinden.\\
-      Mittels der Cursortasten werden also die Scrollleisten simuliert.
+      Mittels der Cursortasten werden also die Bildlaufleisten simuliert.
       Das Drücken der linken Cursortaste entspricht z.B.\ dann einem Klick
-      auf den linken Pfeil der horizontalen Scrollleiste.
+      auf den linken Pfeil der horizontalen Bildlaufleiste.
       
     \end {enumerate}
         
@@ -672,6 +679,7 @@ Verändert die Position des sichtbaren Anzeigeinhaltes.
 \begin{uc}[Anzeigefenster zoomen]{UC: Anzeigefenster zoomen}
 \index{Anzeigefenster!zoomen}
 \index{zoomen}
+\index{Zoomstufe}
 Verändert den Maßstab der Darstellung von Fenster-Knoten und Fenster-Kanten.
 
   \begin{precond}
@@ -693,10 +701,10 @@ Verändert den Maßstab der Darstellung von Fenster-Knoten und Fenster-Kanten.
   \begin{proc}    
   
     \step[1]
-      Der Benutzer gibt in der Zoom-Kontrolle-Combobox 
+      Der Benutzer gibt in der Combobox zur Zoom-Kontrolle
       (siehe \ref{GUI Zoom-Kontrolle})
-      des Anzeigefensters einen
-      neuen Zoomwert ein, wählt darin einen der vordefinierten Werte aus oder 
+      des Anzeigefensters einen Wert für die
+      neue Zoomstufe ein, wählt einen der vordefinierten Werte aus oder 
       ändert den Zoomwert in festgelegten Schritten mit den \gq{+} oder 
       \gq{-} Buttons. 
       
@@ -773,8 +781,8 @@ dargestellt wird.
   \begin{proc}    
   
     \step[1]
-    Der Benutzer klickt auf \gq{Fit in window} in der Zoomkontrolle des
-    Fensters (siehe \ref{GUI Zoom-Kontrolle}).
+    Der Benutzer wählt den Eintrag \gq{Fit in window} in der Combobox 
+    Zoom-Kontrolle aus (siehe \ref{GUI Zoom-Kontrolle}).
       
     \step[2]
     GIANT berechnet die neue Zoomstufe für das Anzeigefenster.

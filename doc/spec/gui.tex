@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.92 $
-%  $Date: 2003/04/20 15:46:12 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.93 $
+%  $Date: 2003/04/20 18:39:35 $
 %  $Author: schwiemn $
 %
 %  Description: 
@@ -10,6 +10,7 @@
 % ==============================================================================
 
 \section{Über die Benutzeroberfläche}
+\index{Benutzeroberfläche} 
 
 \begin{enumerate}
   \item {GIANT besitzt eine graphische Benutzeroberfläche, die per Maus zu
@@ -37,9 +38,13 @@ vermerkt.
    \label{Main-Window-Pic}
 \end{figure}
 
-Jede Instanz von GIANT hat genau ein Hauptfenster.
-Im Hauptfenster (Main Window, \ref{Main-Window-Pic}) werden vorhandene Anzeigefenster und
-IML-Teilgraphen angezeigt. Über Popup-Menüs können IML-Teilgraphen
+%Ergänzungen by Martin
+Jede Instanz von GIANT hat genau ein Hauptfenster. \index{Hauptfenster}
+Im Hauptfenster (Main Window, \ref{Main-Window-Pic}) werden die
+Anzeigefenster und
+IML-Teilgraphen des aktuell geöffneten Projektes (siehe  
+\ref{Project Persistenz der Projekte}) in Listen angezeigt. 
+Über Popup-Menüs können IML-Teilgraphen
 und Anzeigefenster manipuliert werden.
 
 Im Fenster befinden sich zwei Listen, Window List (2 Spalten), und
@@ -76,14 +81,15 @@ Subgraph List (4 Spalten).
 
   \subsection {Statuszeile}
   \label{Statuszeile}
-  Die Statuszeile befindet sich ganz unten im Fenster. In der
+  \index{Statuszeile}
+  Die Statuszeile befindet sich ganz unten im Hauptfenster. In der
   Statuszeile werden Informationen zum aktuellen Zustand von GIANT
   dargestellt.
 
    \subsection {Window List}
   
-   Im Fenster befindet sich zuoberst eine Liste Window List, welche
-   alle Fenster des Projektes (offen und geschlossen anzeigt).
+   Im Fenster befindet sich zuoberst eine Liste \gq{Window List}, welche
+   alle Anzeigefenster des Projektes (offen und geschlossen anzeigt).
    
    \subsubsection {Inhalt Window List}
    \label{WINDOW-LIST}
@@ -112,11 +118,12 @@ Subgraph List (4 Spalten).
   \subsection {Subgraph List}
   \label{GUI Subgraph List}
     
-    Unter der Window List befindet sich eine Liste Subgraph List.
+    Unter der Window List befindet sich eine Liste \gq{Subgraph List} über
+    alle IML-Teilgraphen des Projektes.
    
     \subsubsection {Inhalt Subgraph List} 
     
-      Subgraph List hat die Spalten 
+      Subgraph List hat die folgenden Spalten:
       \begin{enumerate}
         \item Name
         \item Nodes
@@ -124,15 +131,19 @@ Subgraph List (4 Spalten).
         \item Highlighted
       \end{enumerate}
     
-      In Subgraph Name stehen die Namen der existierenden Subgraphen,
-      in Nodes die Anzahl der Knoten des Subgraphen, in Edges die
-      Anzahl der Kanten und in Highlighted ein Kästchen mit der
-      Farbe, die verwendet wird, wenn dieser Subgraph markiert wird.
+      In der Spalte Name stehen die Namen der existierenden Subgraphen,
+      in Nodes die Anzahl der Graph-Knoten des Subgraphen, in Edges die
+      Anzahl der Graph-Kanten und in Highlighted befindet sich
+      ein Kästchen in der
+      Farbe, die für die Hervorhebung des IML-Teilgraphen verwendet wird
+      (siehe hierzu auch \ref{hervorheben von Knoten und Kanten}).
+      Bei nicht hervorgehobenen IML-Teilgraphen wird dieses Kästchen
+      nicht angezeigt.
 
     
     \subsubsection {Popup-Menü Subgraph List}
     \label {Popup-Menü Subgraph List}
-      Beim Rechtsklick auf Subgraph öffnet 
+      Bei einem Rechtsklick auf Subgraph List öffnet 
       sich ein Popup-Menü mit folgenden Menüpunkten:
         \label{SUBGRAPH-LIST-POPUP}
         \begin{enumerate}
@@ -162,19 +173,23 @@ Subgraph List (4 Spalten).
      \label{Graph-Window-Pic}
   \end{figure}
 
-  Im Programm kann es mehrere Anzeigefenster geben. Ein Anzeigefenster (\ref{Graph-Window-Pic}) besteht
+  Im Programm kann es mehrere Anzeigefenster geben. 
+  Ein Anzeigefenster (\ref{Graph-Window-Pic}) besteht
   aus folgenden Elementen:
   
   \label{GUI Stilauswahl-Combobox} 
-  In Anzeigefenstern (Visualization Windows) werden Graphen
+  In Anzeigefenstern (Visualization Windows) werden Teile des IML-Graphen
   visualisiert.  Sie erscheinen im großen quadratischen rechten Teil
   (\gq{Vis Pane}) des Fensters. Die Vis Pane enthält den Anzeigeinhalt
   des Fensters.  Im linken Viertel des Fensters, der Toolbar
   (\gq{Vis Toolbar}) befinden sich untereinander die
   MiniMap, Pinliste, Selektionsliste, die Stilauswahl-Combobox und die
-  Zoom-Kontrolle.
+  Zoom-Kontrolle. 
+  \index{Zoom-Kontrolle}
+  \index{Visualisierungsstile!Stilauswahl-Combobox}
 
  \subsection {MiniMap} \label{GUI Minimap}
+ \index{Minimap} 
  
  In der MiniMap wird der Anzeigeinhalt verkleinert dargestellt,
  der Graph wird jedoch nur durch einen grauen Kasten repräsentiert,
@@ -182,15 +197,16 @@ Subgraph List (4 Spalten).
  umschlossen. Der sichtbare Anzeigeinhalt wird durch einen kleineren
  Rahmen repräsentiert, der innerhalb der MiniMap durch Mausklicks
  versetzt werden kann. Je nach Zoomstufe ist dieser Rahmen größer
- oder kleiner. Wird der Rahmen versetzt, der sichtbare Anzeigeinhalt
- in der Vis Pane entsprechend angepasst.
+ oder kleiner. Wird der Rahmen versetzt, wird der sichtbare Anzeigeinhalt
+ in der Vis Pane entsprechend angepasst (siehe auch UseCase 
+ \ref{Verschieben des sichtbaren Anzeigeinhaltes über die Minimap}).
 
   \subsection{Visualisierung der Knoten}
 
     In der Vis Pane werden die Fenster-Knoten und Fenster-Kanten angezeigt.
     
-    Wenn auf einem Knoten die rechte Maustaste geklickt wird, öffnet sich
-    folgendes Popup-Menü:
+    Wenn auf einem Fenster-Knoten mit der rechten Maustaste geklickt wird, 
+    öffnet sich folgendes Popup-Menü:
  
     \subsubsection{Node-Popup-Menü}\label{Node-Popup-Menü}
     \begin{enumerate}
@@ -208,7 +224,7 @@ Subgraph List (4 Spalten).
     \end{enumerate}
     
     Wenn in der Vis Pane mit der rechten Maustaste auf eine Stelle
-    geklickt wird an der kein Knoten liegt, öffnet sich das folgende
+    geklickt wird, an der kein Fenster-Knoten liegt, öffnet sich das folgende
     Popup-Menü. Die Einträge dieses Menüs sind auch im Node-Popup-Menü
     (siehe \ref{Node-Popup-Menü}) sichtbar.
 
@@ -220,6 +236,7 @@ Subgraph List (4 Spalten).
     
 
   \subsection{Pins} \label{VIS-PANE-Pins}
+  \index{Pins}
 
     In der Pinliste (\gq{Pin List}) können Pins festgelegt werden.
 
@@ -293,7 +310,8 @@ Subgraph List (4 Spalten).
       \item Button \gq{Pick Edge} % OK
   \end{enumerate}    
 
-  In der ComboBox ist neben den vorgegebenen Zoom Stufen noch der
+  In der ComboBox zur Zoom-Kontrolle befindet sich
+  neben den vorgegebenen Zoomstufen \index{Zoomstufe} noch der
   Eintrag \gq{Fit in Window}.
 
     \subsection{Scrollbars}
@@ -532,6 +550,7 @@ Beschriftung \gq{Yes}, sowie ein Button mit der standardmäßigen Beschriftung
 die Information, die der  Benutzer zur Beantwortung der Sicherheitsabfrage
 benötigt.
 
+\clearpage
 
 \section{Auswahl von Dateien}
 
@@ -569,7 +588,7 @@ des Standard-Filechooser-Dialogs.
 \label{Progressbar}
 Es gibt in GIANT zwei Möglichkeiten zur Fortschrittsanzeige während
 laufender Berechnungen.  Jede Progressbar ist mit \gq{The system is
-  busy. Please be patient.} beschriftet.
+busy. Please be patient.} beschriftet.
 
 %\clearpage
 \subsection{Progressbar-Runs}
