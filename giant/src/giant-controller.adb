@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.44 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.45 $
 --  $Author: squig $
---  $Date: 2003/07/08 16:07:31 $
+--  $Date: 2003/07/10 14:04:50 $
 --
 
 with Ada.Strings.Unbounded;
@@ -789,6 +789,12 @@ package body Giant.Controller is
    is
       Removed : Boolean;
    begin
+      if (not Projects.Is_Vis_Window_Memory_Loaded
+          (Current_Project, Name)) then
+         --  the window is not even loaded
+         return True;
+      end if;
+
       if (Gui_Manager.Close (Name, Ask_For_Confirmation)) then
          Projects.Free_Memory_For_Vis_Window (Current_Project, Name);
 

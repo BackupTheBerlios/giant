@@ -20,11 +20,11 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-clists.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-clists.adb,v $, $Revision: 1.5 $
 --  $Author: squig $
---  $Date: 2003/07/10 13:13:21 $
+--  $Date: 2003/07/10 14:04:50 $
 --
-
+with Text_Io;
 with Ada.Strings.Unbounded;
 with Interfaces.C.Strings;
 
@@ -76,30 +76,42 @@ package body Giant.Clists is
    --  Callbacks
    ---------------------------------------------------------------------------
 
+   function Select_Clicked_Row
+     (Source : access Gtk.Clist.Gtk_Clist_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event)
+     return Boolean
+   is
+      Row : Glib.Gint;
+      Column : Glib.Gint;
+      Is_Valid : Boolean;
+   begin
+      Gtk.Clist.Get_Selection_Info (Source,
+                                    Glib.Gint (Gdk.Event.Get_X (Event)),
+                                    Glib.Gint (Gdk.Event.Get_Y (Event)),
+                                    Row, Column, Is_Valid);
+      if (Is_Valid) then
+         --  select clicked row
+         Gtk.Clist.Select_Row (Source, Row, Column);
+         return True;
+      end if;
+      return False;
+   end Select_Clicked_Row;
+
    function On_Clist_Button_Press
      (Source : access Gtk.Clist.Gtk_Clist_Record'Class;
       Event  : in     Gdk.Event.Gdk_Event;
       Menu   : in     Gtk.Menu.Gtk_Menu)
      return Boolean
    is
-      use Glib;
-      use Gdk.Types;
-
-      Row : Gint;
-      Column : Gint;
-      Is_Valid : Boolean;
+      use type Glib.Guint;
+      use type Gdk.Types.Gdk_Event_Type;
    begin
       if Gdk.Event.Get_Button (Event) = 3
         and then Gdk.Event.Get_Event_Type (Event) = Gdk.Types.Button_Press
       then
-         --  select clicked row
-         Gtk.Clist.Get_Selection_Info (Source,
-                                       Gint (Gdk.Event.Get_X (Event)),
-                                       Gint (Gdk.Event.Get_Y (Event)),
-                                       Row, Column, Is_Valid);
-         if (Is_Valid) then
+         --  right single click
+         if (Select_Clicked_Row (Source, Event)) then
             --  show popup menu
-            Gtk.Clist.Select_Row (Source, Row, Column);
             Gtk.Menu.Show_All (Menu);
             Gtk.Menu.Popup (Menu,
                             Button => Gdk.Event.Get_Button (Event),
@@ -109,26 +121,24 @@ package body Giant.Clists is
       elsif Gdk.Event.Get_Button (Event) = 1
         and then Gdk.Event.Get_Event_Type (Event) = Gdk.Types.Gdk_2Button_Press
       then
-         --  select clicked row
-         Gtk.Clist.Get_Selection_Info (Source,
-                                       Gint (Gdk.Event.Get_X (Event)),
-                                       Gint (Gdk.Event.Get_Y (Event)),
-                                       Row, Column, Is_Valid);
-        if (Is_Valid) then
-           declare
+         --  left double click
+         if (Select_Clicked_Row (Source, Event)) then
+            declare
               Children : Gtk.Widget.Widget_List.Glist;
-              Menu_Item : Gtk.Menu_Item.Gtk_Menu_Item;
+              Widget : Gtk.Widget.Gtk_Widget;
            begin
-              --  activate first popup menu item
+              --  activate second popup menu item (first is tear off)
               Children := Gtk.Menu.Children (Menu);
-              if (Gtk.Widget.Widget_List.Length (Children) > 0
-                  and then (Gtk.Widget.Widget_List.Get_Data (Children).all
-                            in Gtk.Menu_Item.Gtk_Menu_Item_Record)) then
-                 Gtk.Menu_Item.Activate
-                   (Gtk.Menu_Item.Gtk_Menu_Item
-                    (Gtk.Widget.Widget_List.Get_Data (Children)));
+              if (Gtk.Widget.Widget_List.Length (Children) > 1) then
+                 Widget := Gtk.Widget.Widget_List.Nth_Data (Children, 1);
+                 if (Widget.all in Gtk.Menu_Item.Gtk_Menu_Item_Record) then
+                    Text_Io.Put_Line ("!3");
+                    Gtk.Menu_Item.Activate
+                      (Gtk.Menu_Item.Gtk_Menu_Item (Widget));
+                 end if;
               end if;
               Gtk.Widget.Widget_List.Free (Children);
+              return True;
            end;
         end if;
       end if;
