@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.8 $
 --  $Author: koppor $
---  $Date: 2003/06/23 18:07:26 $
+--  $Date: 2003/06/24 18:52:31 $
 
 package body Giant.Graph_Lib.Selections is
 
@@ -51,8 +51,17 @@ package body Giant.Graph_Lib.Selections is
      (Selection_To_Modify : in out Selection;
       Edge_Set            : in     Edge_Id_Set)
    is
+
+      procedure Execute (Edge : in Edge_Id) is
+      begin
+         Add_Edge (Selection_To_Modify,
+                   Edge);
+      end Execute;
+
+      procedure Apply is new Edge_Id_Sets.Apply (Execute => Execute);
+
    begin
-      null;
+      Apply (Edge_Set);
    end Add_Edge_Set;
 
    ---------------------------------------------------------------------------
@@ -81,7 +90,7 @@ package body Giant.Graph_Lib.Selections is
       procedure Apply is new Node_Id_Sets.Apply (Execute => Execute);
 
    begin
-      Apply (Selection_To_Modify.Nodes);
+      Apply (Node_Set);
    end Add_Node_Set;
 
    ---------------------------------------------------------------------------
