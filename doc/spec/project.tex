@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: project.tex,v $, $Revision: 1.22 $
-%  $Date: 2003/03/28 01:31:37 $
+%  $RCSfile: project.tex,v $, $Revision: 1.23 $
+%  $Date: 2003/03/28 16:09:17 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -10,8 +10,13 @@
 
 %===================
 \section {Persistenz der Projekte}\index{Persistenz} \index {Projekte}
+\label{Project Persistenz der Projekte}
 
 GIANT speichert persistente Informationen in sogenannten Projekten.
+Ein Projekt fasst alle Arbeitsergebnisse, die der Benutzer mittels
+GIANT für einen IML-Graphen erzeugen kann, wie z.B. Anzeigefenster und
+IML-Teilgraphen, logisch zusammen.
+\\Hierbei sind die anschließend beschriebenen Konventionen zu beachten:
 \begin {enumerate}
 
   \item
@@ -52,16 +57,46 @@ GIANT speichert persistente Informationen in sogenannten Projekten.
   Während der Arbeit mit GIANT kann jederzeit ein vorhandenes Projekt 
   geladen oder ein neues Projekt angelegt werden. 
 
+  \item
+  Ein nicht gerade in GIANT geöffnetes Projekt kann vom Benutzer 
+  beliebig modifiziert werden.
+  GIANT unterstützt dies durch den Einsatz von XML. Insbesondere
+  kann der Benutzer die Projektdatei (siehe \ref{Project Die Projektdatei})
+  modifizieren und so dem Projekt z.B. neue Verwaltungsdateien 
+  (siehe \ref {Project Verwaltungsdatei für Knoten-Annotationen},
+         \ref {Project Verwaltungsdateien für Anzeigefenster} und
+         \ref {Project Verwaltungsdateien für IML-Teilgraphen}) hinzufügen
+  oder die zugehörige IML-Graph Datei ändern.\\
+  Das Fehrhalten von GIANT gegenüber Fehlern aufgrund manueller Änderungen
+  des Benutzers an einem Projekt (Editieren der Projektdatei und
+  Ändern der Verwaltungsdateien) ist undefiniert.
+
+  \item
+  Um Inkonsistenzen und Konflikte zu vermeiden sollten alle Dateien, die
+  zu einem Projekt gehören, im Projektverzeichnis liegen (GIANT
+  macht dies automatisch immer so). Man sollte
+  in die Projektdatei also manuell keine Referenzen auf Verwaltungsdateien
+  ausserhalb der Projektverzeichnisses eintragen; verboten ist dies
+  alledings nicht. Das Verhalten von GIANT im Fehlerfall bleibt aber 
+  diesbezüglich undefiniert.
+
+
 \end {enumerate}
 
 
   \subsection {Das Projektverzeichnis} \index{Projekte!Projektverzeichnis}
+  \label{Project Das Projektverzeichnis} 
   \begin {enumerate}
 
     \item  
     Sämtliche Dateien, die die Informationen für ein Projekt enthalten,
-    befinden sich in diesem Verzeichnis. 
-
+    befinden sich in diesem Verzeichnis. GIANT speichert alle
+    Verwaltungsdateien (siehe 
+    \ref {Project Verwaltungsdatei für Knoten-Annotationen},
+    \ref {Project Verwaltungsdateien für Anzeigefenster} und
+    \ref {Project Verwaltungsdateien für IML-Teilgraphen}) automatisch
+    im Projektverzeichnis.
+ 
     \item
     In einem Projektverzeichnis darf nur ein Projekt abgelegt werden.
     
@@ -69,6 +104,7 @@ GIANT speichert persistente Informationen in sogenannten Projekten.
 
 
   \subsection {Die Projektdatei} \index{Projekte!Projektdatei}
+  \label{Project Die Projektdatei} 
   \begin {enumerate}
 
     \item
@@ -85,11 +121,14 @@ GIANT speichert persistente Informationen in sogenannten Projekten.
     \item
     Die Projektdatei enthält Referenzen zu allen Dateien, die Bestandteil
     des Projektes sind (Verwaltungsdateien für IML-Teilgraphen und
-    Anzeigefenster und die Verwaltungsdatei für Knoten-Annotationen).
+    Anzeigefenster, sowie die Verwaltungsdatei für Knoten-Annotationen).
+    Verwaltungsdateien, die zwar im Projektverzeichnis liegen, zu
+    denen aber keine Referenz in der Projekdatei existiert, gehören
+    nicht zum Projekt.
 
     \item
-    Der Pfad zu der Datei, die den IML-Graphen enthält, ist in der Projektdatei 
-    gespeichert. 
+    Der Pfad zu der Datei, die den IML-Graphen enthält, ist in der 
+    Projektdatei gespeichert. 
   \end {enumerate}
   
  
@@ -104,6 +143,8 @@ GIANT speichert persistente Informationen in sogenannten Projekten.
 
 
   \subsection {Verwaltungsdateien für Anzeigefenster}
+  \label {Project Verwaltungsdateien für Anzeigefenster}
+
   \index{Projekte!Verwaltungsdateien für Anzeigefenster}
   \index{Verwaltungsdateien für Anzeigefenster}
 
@@ -141,6 +182,7 @@ GIANT speichert persistente Informationen in sogenannten Projekten.
 
 
   \subsection {Verwaltungsdateien für IML-Teilgraphen}  
+  \label {Project Verwaltungsdateien für IML-Teilgraphen}
 
   \index{Projekte!Verwaltungsdateien für IML-Teilgraphen}
   \index{Verwaltungsdateien für IML-Teilgraphen}
@@ -160,7 +202,9 @@ GIANT speichert persistente Informationen in sogenannten Projekten.
   \end{enumerate}
   
   
-  \subsection {Die Verwaltungsdatei für Knoten-Annotationen}  
+  \subsection {Die Verwaltungsdatei für Knoten-Annotationen}
+  \label {Project Verwaltungsdatei für Knoten-Annotationen}
+
   \index{Projekte!Verwaltungsdateien für Knoten-Annotationen}
   \index{Verwaltungsdateien für Knoten-Annotationen}
   \index{Knoten-Annotationen}
@@ -171,7 +215,8 @@ GIANT speichert persistente Informationen in sogenannten Projekten.
    Diese Datei liegt als XML Datei vor.
 
    \item
-   Alle Knoten-Annotationen werden in einer Verwaltungsdatei gespeichert.
+   Alle Knoten-Annotationen werden in einer Verwaltungsdatei gespeichert (von
+   dieser Datei darf es immer nur eine im Projekt geben).
   
   \end{enumerate}
   
@@ -220,7 +265,7 @@ GIANT speichert persistente Informationen in sogenannten Projekten.
       Die Position der Fenster-Knoten und Fenster-Kanten des 
       Anzeigefensters.
 
-    \item  \index{Persistenz!Visualosoerungsstile}
+    \item  \index{Persistenz!Visualisierungsstile}
     Für den gewählten Visualisierungsstil des Anzeigefensters wird
     nur der Name gespeichert, da die Visualisierungstile über
     die Konfigurationsdateien beliebig editiert
@@ -294,7 +339,11 @@ GIANT speichert persistente Informationen in sogenannten Projekten.
   
   
 \subsection {Persistenz von Knoten-Annotationen}  
+\label{Project Persistenz von Knoten-Annotationen} 
 \index{Persistenz!Knoten-Annotationen}
+
+Hier wird beschrieben, wie Knoten-Annotationen von GIANT persistent
+verwaltet werden.
 
   \begin {enumerate}
   

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: load_store.tex,v $, $Revision: 1.8 $
-%  $Date: 2003/03/28 01:31:37 $
+%  $RCSfile: load_store.tex,v $, $Revision: 1.9 $
+%  $Date: 2003/03/28 16:09:17 $
 %  $Author: schwiemn $
 %
 %  Description: Use-Cases für Lade- und Speicherfunktionalität
@@ -9,8 +9,12 @@
 
 \begin{uc}[Neues Projekt]{UC: Neues Projekt}
   Erstellt ein neues GIANT Projekt. Ein eventuell bereits geöffnetes
-  Projekt wird dabei geschlossen, wobei Änderungen wobei auf Nachfrage 
+  Projekt wird dabei geschlossen, wobei Änderungen auf Nachfrage 
   vorher gespeichert werden.
+  Weitere wichtige Informationen, die in engem Zusammenhang mit 
+  diesem UseCase stehen, sind unter dem Abschnitt 
+  \ref{Project Persistenz der Projekte} zu finden.
+  
   
   \begin{precond}
     \cond Das Programm ist gestartet.
@@ -21,9 +25,14 @@
           ist erstellt und geladen.   
     \cond Eine IML-Datei ist geladen.
     \cond Das angegebene Projektverzeichnis ist gegebenenfalls erstellt 
-          worden.
-    \cond Die Projektdatei liegt im Projektverzeichnis.
-    \cond Änderungen an einem bisherigen Projekt sind gespeichert
+          worden (siehe hierzu auch \ref {Project Das Projektverzeichnis}).
+
+    \cond Die Projektdatei (siehe \ref{Project Die Projektdatei})
+          liegt im Projektverzeichnis.
+ 
+    \cond Das zuvor geöffnete Projekt ist geschlossen.
+    
+    \cond Änderungen an dem zuvor geöffneten Projekt sind gespeichert
           oder verworfen.
   \end{postsuccess}
 
@@ -38,30 +47,36 @@
   
     \step[2] Der Benutzer wählt im Standard-Filechooser-Dialog
     (\gq{Please Select IML File}) eine IML-Datei aus und
-    bestätigt seine Eingabe mit OK.
+    bestätigt seine Eingabe mit OK (siehe auch \ref 
+    {Standard-Filechooser-Dialog}).
     
     \step[3] Der Benutzer gibt im Standard-Filechooser-Dialog
     den Pfad und Namen der Projektdatei (\gq{Please select Project
-    Path and Project File Name}). Der Name der Projektdatei ist
-    automatisch auch der Name für das Projekt.\\
+    Path and Project File Name}) ein. Der Name der Projektdatei ist
+    automatisch auch der Name für das Projekt.
+
+    \step[4]
     Dann bestätigt er seine Eingabe mit OK.\\
-    Existiert die eingegbene Datei schon, erscheint eine Fehlermeldung.\\
+    Existiert die eingegbene Projektdatei bereits, 
+    erscheint eine Fehlermeldung gemäß den unter Abschnitt 
+    \ref{afa Fehlerverhalten} beschriebenen Konventionen.\\
     Existiert in dem Projektverzeichnis bereits eine andere Projektdatei, so 
-    erscheint eine entsprechende Fehlermeldung.\\
+    erscheint ebenfalls eine Fehlermeldung.\\
     Das Verzeichnis in dem die Projektdatei liegt, wird automatisch zum 
     Projektverzeichnis (dort landen auch alle Verwaltungsdateien für das 
     Projekt).
     
-    \step[4] Falls bereits ein Projekt geöffnet ist, erscheint eine Abfrage
+    \step[5] Falls bereits ein Projekt geöffnet ist, erscheint eine 
+    Sicherheitsabfrage (siehe \ref{Sicherheitsabfrage}
     ob dieses gespeichert werden soll. Lehnt der Benutzer dies ab, gehen
     alle nicht gespeicherten Informationen verloren.\\
     Entscheidet der Benutzer sich für Speichern, so wird
     die unter \ref{Alles Speichern} beschriebene Funktionalität 
     ausgeführt.
     
-    \step[5]
-    GIANT schließt das aktuell geöffnete Projekt und erstellt 
-    ein neues Projekt.
+    \step[6]
+    GIANT schließt das aktuell geöffnete Projekt, erstellt 
+    ein neues Projekt und öffnet dieses.
        
   \end{proc}
 
@@ -75,8 +90,15 @@
 
 \begin{uc}[Projekt öffnen]{UC: Projekt öffnen}
   Öffnet ein GIANT Projekt. Ein eventuell bereits vorhandenes 
-  Projekt wird dabei geschlossen, wobei Änderungen wobei auf Nachfrage 
-  vorher gespeichert werden.
+  Projekt wird dabei geschlossen, wobei Änderungen auf Nachfrage 
+  vorher gespeichert werden. \\ 
+  Sollte der Benutzer die XML-Dateien 
+  innerhalb des Projektverzeichnisses (siehe 
+  \ref{Project Das Projektverzeichnis}) manuell modifziert haben, so
+  dass diese von den durch GIANT automatisch erstellten Dateien
+  abweichen, so wird keinerlei Garantie für das korrekte Öffnen
+  des Projektes übernommen. Des weiteren bleibt das Verhalten
+  bezüglich eventuell auftretender Fehler unspezifiziert.
 
   \begin{precond}
     \cond Das Programm ist gestartet.
@@ -96,13 +118,16 @@
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase über das Hauptmenü.
-    !!!!!ENTSPRECHENDEN MENÜEINTAG NENNEN.
+    !!!!!ENTSPRECHENDEN MENÜEINTAG NENNEN GUI BESCHREIBUNG!!!!!!!!!!!!!!.
     
     \step[2] 
-    Der Benutzer wählt aus dem Standard-Filechooser-Dialog 
-    eine vorhandene GIANT Projektdatei aus und bestätigt mit OK.
+    Der Benutzer wählt aus dem Standard-Filechooser-Dialog (siehe 
+    \ref {Standard-Filechooser-Dialog})
+    eine vorhandene GIANT Projektdatei (siehe \ref{Project Die Projektdatei}) 
+    aus und bestätigt mit OK.
     
-    \step[3] Falls bereits ein Projekt geöffnet ist, erscheint eine Abfrage
+    \step[3] Falls bereits ein Projekt geöffnet ist, erscheint eine 
+    Sicherheitsabfrage (siehe \ref{Sicherheitsabfrage})
     ob dieses gespeichert werden soll. Lehnt der Benutzer dies ab, gehen
     alle nicht gespeicherten Informationen verloren.\\
     Entscheidet der Benutzer sich für Speichern, so wird
@@ -122,7 +147,12 @@
 
 \begin{uc}[Projekt speichern]{UC: Projekt speichern}  
 
-  Speichert alle Änderungen an einem Projekt.
+  Speichert alle Änderungen an einem Projekt. Der Zustand der
+  entsprechenden Verwaltungsdateien im Projektverzeichnis entspricht
+  nach erfolgreicher Ausführung dieses UseCases exakt dem aktuellen
+  Zusatand des geöffneten Projektes. Alle Konventionen zur
+  Persistenz von Projekten sind im Abschnitt 
+  \ref{Project Persistenz der Projekte} exakt spezifiziert.
 
   \begin{precond}
     \cond Das Programm ist gestartet.

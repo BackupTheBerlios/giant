@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.44 $
-%  $Date: 2003/03/28 13:21:47 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.45 $
+%  $Date: 2003/03/28 16:09:17 $
 %  $Author: schwiemn $
 %
 %  Description: Bis zu Revision 1.6 sind UseCase-artige Beschreibungen enthalten,
@@ -157,19 +157,23 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
                 \item SUBGRAPH\_LIST/        
         \end{enumerate}
 
-\section {Anzeigefenster}
+\section {Anzeigefenster} \label{GUI Anzeigefenster}
+\index{Anzeigefenster}
 
   Im Programm kann es kein, eines oder mehrere Anzeigefenster geben.
   
   Ein Anzeigefenster besteht aus folgenden Elementen:
 
   In Anzeigefenstern (DISPLAY\_WINDOW) werden Graphen visualisiert,
-  sie erscheinen im grossen quadratischen rechten Teil (VIS\_PANE) des Fensters.
+  sie erscheinen im grossen quadratischen rechten Teil (VIS\_PANE) 
+  des Fensters.
   Im linken Viertel des Fensters, der Toolbar (DISPLAY\_WINDOW\_TOOLBAR)
   befinden sich untereinander die MiniMap (MINIMAP), Pinliste (PIN\_LIST)
   mit darunterliegenden Buttons, und Selektionsliste (SELECTION\_LIST),
-  die Zoom-Kontrolle, die Stilauswahl-Combobox (STYLE\_COMBO) und
-  ein Button zum Ausblenden der Toolbar (TOOLBAR\_HIDE).
+  die Zoom-Kontrolle, 
+  die Stilauswahl-Combobox (STYLE\_COMBO)
+  \label{GUI Stilauswahl-Combobox} 
+  und  ein Button zum Ausblenden der Toolbar (TOOLBAR\_HIDE).
 
  \subsection {Minimap} \label{GUI Minimap}
 
@@ -422,12 +426,15 @@ Beschriftung OK\_LABEL.
 Defaultmäßig ist der Button mit \gq{OK} beschriftet.
 
 \section{Sicherheitsabfrage}\label{Sicherheitsabfrage}
+\index{Sicherheitsabfrage}
 
 Eine allgemeine Sicherheitsabfrage ist ein Fenster CONFIRMATION\_WINDOW mit dem
 Titel \gq{GIANT Confirmation Prompt}. Im Fenster ist
 ein Fragetext Text CONFIRMATION\_LABEL und ein Button YES\_BUTTON mit der
 Beschriftung YES\_LABEL, sowie ein NO\_BUTTON mit der Beschriftung
-NO\_LABEL.
+NO\_LABEL. In dem Fragetext steht jeweils kontextabhängig 
+die Information, die der 
+Benutzer zur Beantwortung der Sicherheitsabfrage benötigt.
 Defaultmäßig ist der YES\_BUTTON mit \gq{Yes} beschriftet, NO\_BUTTON
 mit \gq{No}.
 

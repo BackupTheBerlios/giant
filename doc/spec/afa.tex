@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: afa.tex,v $, $Revision: 1.6 $
-%  $Date: 2003/03/28 13:21:47 $
+%  $RCSfile: afa.tex,v $, $Revision: 1.7 $
+%  $Date: 2003/03/28 16:09:17 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung allgemeiner funktionaler Anforderungen - UseCase
@@ -10,7 +10,10 @@
 
 
 \section{Fehlerverhalten} \index{Fehlerverhalten}
-\label {afa Fehlerverhalten}
+\label{afa Fehlerverhalten}
+
+Beim Auftreten von Fehlern während des Betriebs von GIANT werden
+wann immer möglich die folgenden Konventionen eingehalten.
 
 \begin {enumerate}
   \item
@@ -103,6 +106,8 @@
 
 \section {Grundlegendes Feedbackverhalten} \index{Feedbackverhalten}
 
+Hier wird beschrieben, wie GIANT dem Benutzer über  
+den aktuellen Systemzustand informiert.
 
    \subsection{\gq{I am busy Feedback}}
    Während der der Berechnung durch Layoutalgorithmen und Anfragen 
@@ -129,26 +134,35 @@ Hier wird beschrieben, welche Eingaben für Namen etc. innerhalb
 von GIANT (z.B. bei den entsprechenden Texteingabedialogen) zulässig sind.
 Unzulässige Namen werden generell abgelehnt und führen zu einer Fehlermeldung.
 
-  \subsection {STANDARD NAME}
-  Ein String, der nur die im Folgenden beschriebenen Zeichen enthalten darf.\\
-  Zulässige Zeichen sind:
-  \begin {enumerate}
+
+ \subsection{Bezeichnertypen} \label{afa Bezeichnertypen}
+ Hier werden Bezeichnertypen, also vom GIANT als zulässig akzeptierte
+ Folgen von Ziffern, Buchstaben und Sonderzeichen definiert.
+
+
+    \subsubsection {Der String \gq{STANDARD NAME}}
+    Ein String, der nur die im Folgenden beschriebenen Zeichen enthalten darf.\\
+    Zulässige Zeichen sind:
+    \begin {enumerate}
   
-    \item
-    Groß- und Kleibuchstaben des deutschen Alphabetes. Nicht zulässig sind
-    Umlaute und das Zeichen ''"s''.
+      \item
+      Groß- und Kleibuchstaben des deutschen Alphabetes. Nicht zulässig sind
+      Umlaute und das Zeichen ''"s''.
     
-    \item
-    Die Ziffern ''0'' bis ''9''.
+      \item
+      Die Ziffern ''0'' bis ''9''.
     
-    \item
-    Das Zeichen ''\_''. 
-  
-   
-  \end {enumerate}
+      \item
+      Das Zeichen ''\_''. 
+     
+    \end {enumerate}
 
 
   \subsection {Zulässige Namen}
+  Für  Namen, die der Benutzer z.B. für Projekte vergeben darf, 
+  wird hier der jeweils zulässige Bezeichnertyp
+  (siehe \ref{afa Bezeichnertypen}) spezifiziert.
+
   \begin {enumerate}
   
     \item Name eines Projektes: STANDARD NAME
@@ -176,12 +190,15 @@ Unzulässige Namen werden generell abgelehnt und führen zu einer Fehlermeldung.
 Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
 
   \subsection {Selektieren von Fenster-Knoten und Fenster-Kanten in 
-               Anzeigefenstern}
+               Anzeigefenstern} \index{selektieren}
   \label {Selektieren von Fenster-Knoten und Fenster-Kanten in 
                Anzeigefenstern} 
-  \index {selektieren}
 
-
+  Hier werden die Konventionen und die nötigen Bedienhandlungen
+  zur Selektion und Deselektion einzelner
+  Fenster-Knoten und Fenster-Kanten, sowie zur Bildung von 
+  Selektionsmengen über Fenster-Knoten und Fenster-Kanten spezifiziert.
+    
   \begin{enumerate}
   
    \item Selektieren durch Anklicken mit linker Maustaste.\\
@@ -196,7 +213,7 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
    Falls bereits selektiert wird der Fenster-Knoten oder die Fenster-Kante 
    aus der aktuellen Selektion entfernt.
    
-   \index {Rahmen}
+   \index{Rahmen}
    \item Selektieren durch Aufziehen eines Rahmens mittes gedrückter 
    linker Maustaste.\\
    Alle Fenster-Knoten und Fenster-Kanten innerhalb des Rahmens werden 
@@ -226,7 +243,7 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
   spezifiziert, ist insbesondere jeder UseCase für Selektionen auch auf die 
   aktuelle Selektion anwendbar.
 	       
-  \begin {enumerate}
+  \begin{enumerate}
   
     \item
     Neben den vom Benutzer erzeugten Selektionen
@@ -260,6 +277,9 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
 in Anzeigefenster}
   \label{Verhalten beim Einfügen von IML-Teilgraphen und Selektionen
          in Anzeigefenster}
+
+   Dieser Abschnitt spezifiziert die Konventionen für
+   das Einfügen von IML-Teilgraphen und Selektionen in Anzeigefenster.
 
    \subsection {Vorgabe der Zielposition} \index{Zielposition}
      \label{Vorgabe der Zielposition}
@@ -333,7 +353,8 @@ in Anzeigefenster}
      \label{Einfügen von IML-Teilgraphen in Anzeigefenster}
    \index{IML-Teilgraphen!Einfügen in Anzeigefenster}
 
-   Hier wird das grundlegende Verhalten beim Einfügen von IML-Teilgraphen
+   Hier wird das grundlegende Verhalten des Systems 
+   beim Einfügen von IML-Teilgraphen
    in Anzeigefenster (Kopieren einer Selektion aus einem Anzeigefenster
    in ein anderes) beschrieben.
    
@@ -385,8 +406,7 @@ in Anzeigefenster}
  
   \end {enumerate}
   
-  
-  
+    
   \subsection {IML-Teilgraph aus Selektion ableiten}
     \label{IML-Teilgraphen aus Selektion ableiten}
 
@@ -409,19 +429,19 @@ in Anzeigefenster}
 \section {Verhalten beim Entfernen von Fenster-Knoten und Fenster-Kanten}
   \label{Verhalten beim Entfernen von Fenster-Knoten und Fenster-Kanten}
 
-  \index {Fenster-Knoten!entfernen}
-  \index {Fenster-Kanten!entfernen}
+  \index{Fenster-Knoten!entfernen}
+  \index{Fenster-Kanten!entfernen}
 
   
   Beim \gq{Entfernen} von Fenster-Knoten und Fenster-Kanten aus einem
-  Anzeigefenster werden nur die Grafischen repäsentationen der Knoten und
-  Kanten des Bauhaus-IML-Graphen in dem betroffenen ANzeigefenster gelöscht.
+  Anzeigefenster werden nur die grafischen Repäsentationen der Knoten und
+  Kanten des Bauhaus-IML-Graphen in dem betroffenen Anzeigefenster gelöscht.
   Die IML-Knoten und IML-Kanten des IML-Graphen bleiben davon unberührt.
   Grundsätzlich gelten beim \gq{Entfernen} die im Folgenden beschriebenen
   Konventionen.
  
  
-  \subsection {Entfernen aller Knoten und Kanten einer Selektionen}
+  \subsection {Entfernen aller Knoten und Kanten einer Selektion}
     \label {Entfernen aller Knoten und Kanten einer Selektionen}
 
     \index{Selektionen!Entfernen von Knoten und Kanten}
@@ -442,7 +462,6 @@ in Anzeigefenster}
     die betroffenen Fenster-Knoten und Fenster-Kanten werden also auch aus 
     diesen Selektionen entfernt.
 
-      
   \end{enumerate}
 
 
@@ -450,11 +469,11 @@ in Anzeigefenster}
 \section {Auseinanderschieben von Fenster-Knoten}
   \label {Auseinanderschieben von Fenster-Knoten}
 
-  \index {Fenster-Knoten!auseinanderschieben}
-  \index {auseinanderschieben}
+  \index{Fenster-Knoten!auseinanderschieben}
+  \index{auseinanderschieben}
   
 Sollen Fenster-Knoten auf dem Anzeigeinhalt automatisch
-auseinandergeschoben werden, so geschieht dies nach dem folgenden
+auseinandergeschoben werden, so geschieht dies nach dem hier beschriebenen
 Modus (keine zentrische Streckung).
 GIANT stellt diese Funktionalität dem Benutzer über einen
 UseCase zur manuellen Ausführung zur Verfügung. Ein automatisches 

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.20 $
-%  $Date: 2003/03/28 01:31:37 $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.21 $
+%  $Date: 2003/03/28 16:09:17 $
 %  $Author: schwiemn $
 %
 %  Description: Use-Cases für die Fensterfunktionalität der GUI
@@ -466,6 +466,55 @@ Siehe auch
 \end{uc}
 
 % ==============================================================================
+\begin{uc}[Den Visualisierungsstil eines Anzeigefensters ändern]
+{UC: Den Visualisierungsstil eines Anzeigefensters ändern}
+
+Mittels dieses UseCase kann der Benutzer die Visualisierung
+von Fenster-Knoten und Fenster-Kanten innerhalb eines Anzeigefensters
+dynamisch durch Auswahl verschiedener frei definierbarer
+Visualisierungsstile (siehe auch \ref{Config Visualisierungsstile}) ändern.
+
+  \begin{precond}
+
+    \cond 
+    Es gibt ein geöffnetes Anzeigefenster.    
+   
+    \cond
+    Es gibt mindestents einem vom Benutzer definierten Visualisierungsstil
+    (siehe \ref{Config Visualisierungsstile}). 
+       
+  \end{precond}
+
+  \begin{postsuccess}
+    
+    \cond
+    Die Darstellung der Fenster-Knoten und Fenster-Kanten in dem
+    Anzeigefenster entspricht den Vorgaben des gewählten 
+    Visualisierungsstils.
+
+    \cond
+    Alle anderen Zustände und Eigenschaften des Anzeigefensters, wie
+    z.B. die hervorgehobenen Selektionen, bleiben unverändert.
+    
+  \end{postsuccess}
+
+  \begin{proc}    
+  
+    \step[1]
+    Der Benutzer ändert den Visualisierungsstiel eines Anzeigefensters
+    dadurch, dass er in der Stilauswahl-Combobox 
+    des Anzeigefensters (siehe \ref{GUI Stilauswahl-Combobox}) einen 
+    anderen Visualisierungsstil einstellt.
+      
+    \step[2]
+    GIANT ändert die Dartellung von Fenster-Knoten und Fenster-Kanten
+    entsprechend ab.
+              
+  \end{proc}
+
+\end{uc}
+
+% ==============================================================================
 \begin{uc}[Anzeigefenster scrollen]{UC: Anzeigefenster scrollen}
 Verändert die Position des sichtbaren Anzeigeinhaltes.
 
@@ -531,7 +580,8 @@ Verändert den Maßstab der Darstellung von Knoten und Kanten (relativ)
     \begin {enumerate}
       \item
       Der Benutzer gibt in der Zoomkontroll-Combobox des Anzeigefensters einen
-      neuen Zoomwert ein, wählt darin einen der vorgefertigten Werte aus oder ändert
+      neuen Zoomwert ein, wählt darin einen der vorgefertigten Werte aus oder 
+      ändert
       den Zoomwert in festgelegten Schritten mit den Zoom+ oder Zoom- Buttons.
       
       \item
@@ -544,7 +594,8 @@ Verändert den Maßstab der Darstellung von Knoten und Kanten (relativ)
 
 % ==============================================================================
 \begin{uc}[Label]{UC: Zoomen auf eine gesamte Selektion}
-Wählt die Zoomstufe und Scrollt so, daß eine gesamte Selektion im Fenster sichtbar ist
+Wählt die Zoomstufe und Scrollt so, daß eine gesamte Selektion im Fenster 
+sichtbar ist
 
   \begin{precond}
     \cond 
@@ -567,9 +618,10 @@ Wählt die Zoomstufe und Scrollt so, daß eine gesamte Selektion im Fenster sichtb
     \step[1]
     \begin {enumerate}
       \item
-      Der Benutzer klickt auf \gq{Zoom to make selection fill window} im Popup-Menü
-      der Selektionsauswahlliste \ref{Selektionsauswahlliste} auf der Selektion,
-      welche er sichtbar machen will.
+      Der Benutzer klickt auf \gq{Zoom to make selection fill window} 
+      im Popup-Menü
+      der Selektionsauswahlliste \ref{Selektionsauswahlliste} auf der 
+      Selektion, welche er sichtbar machen will.
       
     \end {enumerate}
         
@@ -579,7 +631,8 @@ Wählt die Zoomstufe und Scrollt so, daß eine gesamte Selektion im Fenster sichtb
 % ==============================================================================
 \begin{uc}[Label]{UC: Zoomen auf gesamten Inhalt eines Anzeigefensters}
 
-Wählt die Zoomstufe und Scrollt so, daß der gesamte Fensterinhalt im Fenster sichtbar ist
+Wählt die Zoomstufe und Scrollt so, daß der gesamte Fensterinhalt im Fenster 
+sichtbar ist
 
   \begin{precond}
     \cond 
@@ -615,12 +668,13 @@ Wählt die Zoomstufe und Scrollt so, daß der gesamte Fensterinhalt im Fenster sic
 \begin{uc}[Zoomen auf eine Kante]{UC: Zoomen auf eine Kante}
 
 
-Wählt die Zoomstufe und Scrollt so, daß eine bestimmte Kante komplett im Fenster sichtbar ist
+Wählt die Zoomstufe und Scrollt so, daß eine bestimmte Kante komplett im 
+Fenster sichtbar ist
 
   \begin{precond}
     \cond 
-    Ein Projekt mit mindestens einem geöffneten Anzeigefenster mit mindestens einer Kante
-    ist geladen.
+    Ein Projekt mit mindestens einem geöffneten Anzeigefenster mit mindestens 
+    einer Kante ist geladen.
        
   \end{precond}
 
@@ -664,8 +718,8 @@ Drag and Drop, Cut and Paste
 
   \begin{precond}
     \cond 
-    Ein Projekt mit mindestens einem geöffneten Anzeigefenster mit mindestens einer Kante
-    ist geladen.
+    Ein Projekt mit mindestens einem geöffneten Anzeigefenster mit mindestens 
+    einer Kante ist geladen.
        
   \end{precond}
 

@@ -1,6 +1,6 @@
 % =============================================================================
-%  $RCSfile: fa.tex,v $, $Revision: 1.16 $
-%  $Date: 2003/03/28 13:21:47 $
+%  $RCSfile: fa.tex,v $, $Revision: 1.17 $
+%  $Date: 2003/03/28 16:09:17 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -34,15 +34,17 @@ vorgesehen.\\
 
 Der Benutzer startet das Programm GIANT durch Ausführen der entsprechenden
 Programmdatei. Hierbei hat er bezüglich eventueller Kommandozeilenparameter
-die folgenden Optionen. 
++die folgenden Optionen. 
 
   \subsection {Mögliche Parameter} \index{Kommandozeilenparameter}
   \begin {enumerate}
     
-    \item <-loadiml=''Pfad''>; als Kurzversion auch <-li=''Pfad'>'\
+    \item
+    \verb+-loadiml=''Pfad''+; Abkürzung: \verb+-li=''Pfad''+ \\
     Angabe des Pfades zu einer existierenden IML-Graph Datei.
     
-    \item <-newprojectfile=''Pfad''>; als Kurzversion auch <-np''Pfad''>\\
+    \item 
+    \verb+-newprojectfile=''Pfad''+; Abkürzung: \verb+-np''Pfad''+\\
     Angabe des Pfades für die neu zu erstellenden Projektdatei 
     (die Datei darf nicht bereits vorhanden sein, sonst Fehlermeldung).\\
     Das Verzeichnis der Projektdatei ist automatisch Projektverzeichnis,
@@ -50,13 +52,16 @@ die folgenden Optionen.
     weitere Projektdatei liegen.
     Existiert das Projektverzeichnis noch nicht, so wird es neu angelegt.
     
-    \item -loadproject=''Pfad''; als Kurzversion auch <-lp=''Pfad''> \\
+    \item 
+    \verb+-loadproject=''Pfad''+; Abkürzung: \verb+-lp=''Pfad''+ \\
     Angabe des Pfades zu einer existierenden Projektdatei.
           
-    \item -loadquery=''Pfad''; als Kurzversion auch <-lq=''Pfad''> \\
+    \item
+    \verb+-loadquery=''Pfad''+; Abkürzung \verb+-lq=''Pfad''+\\
     Pfad zu einer Datei in der ein GQSL Skript gespeichert ist.
   
-    \item -help\\
+    \item 
+    \verb+-help+\\
     Zeigt Hilfe zu den möglichen Kommandozeilenparametern an.
         
       
@@ -69,24 +74,23 @@ die folgenden Optionen.
 
   \begin {enumerate}
   
-    \item Eingabe von: <giant>\\
+    \item Eingabe von: \verb+giant+\\
     GIANT startet und ziegt das Main Window an. 
     Es ist noch kein Projekt geladen.
     
-    \item Eingabe von: \\
-    <giant -loadiml=''my\_iml\_file''\\
-    -newprojectfile=''/home/projektverzeichnis/projektdatei''>\\
+    \item Eingabe von: \verb+giant -loadiml=''my\_iml\_file''+\\
+    \verb+-newprojectfile=''/home/projektverzeichnis/projektdatei''+\\
     Ein neues Projekt wird geöffnet und erhält den Namen der Projektdatei.
     \label{Kommandozeile_neus}
 
-    \item Eingabe von: <giant -loadproject=''my\_project\_file''>\\
+    \item Eingabe von: \verb+giant -loadproject=''my\_project\_file''+\\
     Das angegebene Projekt wird geöffnet.
     \label{Kommandozeile_altes}
     
     \item
     Bei \ref{Kommandozeile_neus} und \ref{Kommandozeile_altes}
     kann zusätzlich entweder der Parameter\\
-    <... -loadquery''my\_query\_file''> eingegeben werden.\\
+    \verb+... -loadquery''my\_query\_file''+ eingegeben werden+\\
     In diesem Falle wird dann die übergebene Anfrage ausgeführt.
     Die Ergebnisse werden dem neuen oder dem bestehenden Projekt 
     hinzugefügt, sind aber noch nicht persistent gespeichert.

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: product.tex,v $, $Revision: 1.29 $
-%  $Date: 2003/03/28 01:31:37 $
+%  $RCSfile: product.tex,v $, $Revision: 1.30 $
+%  $Date: 2003/03/28 16:09:17 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung des Produktes. Übersicht über die Funktionen
@@ -13,12 +13,13 @@
 \section{GIANT Projekte} \index{Projekte}
 
 Innerhalb eines Projektes fasst GIANT Informationen, 
-wie erzeugte Anzeigefenster (mit Selektionen etc.) und
-erzeugte IML-Teilgraphen für einen vorgegebenen IML-Graphen zusammen
-und speichert diese persistent. \\
-Die Zusammenfassung zu Projekten soll der 
-Übersicht dienen und den Austausch von Teilergebnissen 
-(wie z.B. einzelner Anzeigefenster) erleichtern.
+wie erzeugte Anzeigefenster und
+erzeugte IML-Teilgraphen für einen vorgegebenen IML-Graphen, zusammen
+und speichert diese persistent. Die Zusammenfassung zu Projekten soll der 
+Übersicht dienen und den Austausch von Teilergebnissen, 
+wie z.B. einzelner Anzeigefenster, erleichtern.\\
+Für weitere Informationen zu Projekten siehe 
+Kapitel \ref{GIANT Projektverwaltung}.
 
 
 % ==============================================================================
@@ -66,12 +67,16 @@ haben.
   werden sollen) auch während der Laufzeit von GIANT beeinflussen.
   Da über entsprechende XML-Dateien verschiedene 
   Visualisierungsstile definiert werden können, kann GIANT so
-  an spezifische Problemstellungen angepasst werden.
+  an spezifische Problemstellungen angepasst werden.\\
+  Weitere Informationen hierzu sind unter \ref{Config Visualisierungsstile}
+  verfügbar.
 
 \section{Knoten-Annotationen} \index{Knoten-Annotationen}
 Jeder Knoten kann mit einer textuellen Annotation versehen werden. Diese
 Annotation kann in einem Fenster außerhalb des Anzeigefensters
-zur Anzeige gebracht und bearbeitet werden.
+zur Anzeige gebracht und bearbeitet werden.\\
+Für weitere Informationen hierzu siehe
+\ref{Project Persistenz von Knoten-Annotationen}.
 
 
 % ==============================================================================
@@ -81,7 +86,9 @@ stellt nahezu die gesamte Funktionalität von GIANT zur Verfügung und kann
 insbesondere auch zum Aufruf via Kommandozeile
 genutzt werden. Die drei Schritte des anschließend beschriebenen 
 \gq{Drei-Stufen-Konzeptes} können über diese Anfragesprache auch \gq{auf 
-einen Schlag} erledigt werden. 
+einen Schlag} erledigt werden.\\
+Die GQSL ist unter Kapitel \ref {GIANT Query Skripting Language} im
+Detail spezifiziert.
 
 
 % ==============================================================================

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.15 $
-%  $Date: 2003/03/28 13:21:47 $
+%  $RCSfile: config.tex,v $, $Revision: 1.16 $
+%  $Date: 2003/03/28 16:09:17 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -69,9 +69,17 @@ Einstellungen vorgenommen werden.
 
 
 
-\section {Visualisierungsstile} 
+\section {Visualisierungsstile} \label{Config Visualisierungsstile}
 \index{Visulisierungsstile!Konfiguration}
 \index{Konfiguration!Visulisierungsstile}
+
+Der Benutzer kann beliebig viele Visualisierungsstile definieren.
+Mittels dieser Visualisierungsstile kann die Darstellung von
+Fenster-Knoten und Fenster-Kanten dynamisch zur Laufzeit geändert werden
+(siehe hierzu auch 
+\ref{Den Visualisierungsstil eines Anzeigefensters ändern}).\\
+Für Visualisierungsstile gelten die folgenden Konventionen:
+
 
 \begin {enumerate}
 
@@ -93,13 +101,21 @@ Einstellungen vorgenommen werden.
 
   \item
   Wird eine Kanten- oder eine Knotenklasse innerhalb eines
-  Visualisierungsstieles mehreren klassenspezifischen Einstellungen zugeordnet, 
-  führt dies zu keinem Fehler, es bleibt aber unspezifiziert, 
+  Visualisierungsstieles mehreren klassenspezifischen Einstellungen zugeordnet,   führt dies zu keinem Fehler, es bleibt aber unspezifiziert, 
   welche Einstellung tatsächlich genommen wird.
 
+  \item
+  Es gibt jeweils eine Standard-Einstellung, die für alle
+  Knoten- und Kantenklassen genommen wird, für die keine
+  extra klassenspezifischen Einstellungen vorgenommen wurden.
+
   \item \index{Visulisierungsstile!Standard-Visualisierungsstil}
-  Es gibt immer einen Standard-Visualisierungsstil (von GIANT fest
-  vorgegeben).
+  Es gibt immer einen von GIANT fest
+  vorgegeben Standard-Visualisierungsstil. Dieser Visualisierungsstiel
+  wird für neu erzeugte Anzeigefenster genommen. 
+  Kann GIANT den einem Anzeigefenster zugewiesenen Visualisierungsstil
+  nicht finden (falls die zugehörige XML-Datei fehlt) wird ebenfalls
+  der Standard-Visualisierungsstil genommen. 
 
 \end {enumerate}
 
