@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.5 $
+-- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.6 $
 -- $Author: schwiemn $
--- $Date: 2003/06/22 21:21:09 $
+-- $Date: 2003/06/23 15:24:18 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Text_IO;
@@ -337,6 +337,8 @@ package body Giant.Config_Settings is
       User_Config_File  : in String) is
 
    begin
+   
+      ADO_Initialized := True;
 
       -- Basic Initialisation
       -- must happen at this point
@@ -372,8 +374,6 @@ package body Giant.Config_Settings is
       -------------------------------------------------------------------
       Add_Default_Values_If_Necessary;
 
-      -- Finshed
-      ADO_Initialized := True;
    end Initialize_Config_Settings;
 
    ---------------------------------------------------------------------------
