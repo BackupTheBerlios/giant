@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.8 $
 --  $Author: keulsn $
---  $Date: 2003/07/12 03:33:56 $
+--  $Date: 2003/07/14 23:12:18 $
 --
 ------------------------------------------------------------------------------
 
@@ -311,7 +311,7 @@ package body Giant.Graph_Widgets.States is
       if Gdk.Cursor."=" (Default_Waiting_Cursor, Gdk.Cursor.Null_Cursor) then
          Gdk.Cursor.Gdk_New
            (Widget      => Default_Waiting_Cursor,
-            Cursor_Type => Gdk.Types.Pirate);
+            Cursor_Type => Gdk.Types.Left_Ptr);
       end if;
       return Default_Waiting_Cursor;
    end Get_Default_Default_Cursor;
@@ -322,7 +322,7 @@ package body Giant.Graph_Widgets.States is
       if Gdk.Cursor."=" (Default_Action_Cursor, Gdk.Cursor.Null_Cursor) then
          Gdk.Cursor.Gdk_New
            (Widget      => Default_Action_Cursor,
-            Cursor_Type => Gdk.Types.Coffee_Mug);
+            Cursor_Type => Gdk.Types.Watch);
       end if;
       return Default_Waiting_Cursor;
    end Get_Default_Waiting_Cursor;

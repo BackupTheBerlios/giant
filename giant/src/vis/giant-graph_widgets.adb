@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.27 $
---  $Author: squig $
---  $Date: 2003/07/14 22:28:11 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.28 $
+--  $Author: keulsn $
+--  $Date: 2003/07/14 23:12:18 $
 --
 ------------------------------------------------------------------------------
 
@@ -180,7 +180,9 @@ package body Giant.Graph_Widgets is
       Old_State : Boolean;
       New_State : Boolean;
       Iterator  : Node_Id_Mappings.Values_Iter;
+      Lock      : Lock_Type;
    begin
+      Lock_All_Content (Widget, Lock);
       Settings.Set_Annotation_Pool (Widget, Pool);
       --  Update on all nodes
       Iterator := Node_Id_Mappings.Make_Values_Iter (Widget.Node_Map);
@@ -194,22 +196,35 @@ package body Giant.Graph_Widgets is
             States.Changed_Visual (Widget);
          end if;
       end loop;
-      Redraw (Widget);
+      Release_Lock (Widget, Lock);
    end Set_Node_Annotations;
 
    procedure Set_Default_Cursor
      (Widget : access Graph_Widget_Record'Class;
       Cursor : in     Gdk.Cursor.Gdk_Cursor) is
    begin
-      States.Set_Default_Cursor (Widget, Cursor);
+      if Gdk.Cursor."/=" (Cursor, Gdk.Cursor.Null_Cursor) then
+         States.Set_Default_Cursor (Widget, Cursor);
+      end if;
    end Set_Default_Cursor;
 
    procedure Set_Waiting_Cursor
      (Widget : access Graph_Widget_Record'Class;
       Cursor : in     Gdk.Cursor.Gdk_Cursor) is
    begin
-      States.Set_Waiting_Cursor (Widget, Cursor);
+      if Gdk.Cursor."/=" (Cursor, Gdk.Cursor.Null_Cursor) then
+         States.Set_Waiting_Cursor (Widget, Cursor);
+      end if;
    end Set_Waiting_Cursor;
+
+   procedure Set_Action_Mode_Cursor
+     (Widget : access Graph_Widget_Record'Class;
+      Cursor : in     Gdk.Cursor.Gdk_Cursor) is
+   begin
+      if Gdk.Cursor."/=" (Cursor, Gdk.Cursor.Null_Cursor) then
+         States.Set_Action_Cursor (Widget, Cursor);
+      end if;
+   end Set_Action_Mode_Cursor;
 
 
    --------------------------------------------
@@ -378,12 +393,8 @@ package body Giant.Graph_Widgets is
    -----------------
 
    procedure Start_Action_Mode
-     (Widget : access Graph_Widget_Record'Class;
-      Cursor : in     Gdk.Cursor.Gdk_Cursor     := Gdk.Cursor.Null_Cursor) is
+     (Widget : access Graph_Widget_Record'Class) is
    begin
-      if Gdk.Cursor."/=" (Cursor, Gdk.Cursor.Null_Cursor) then
-         States.Set_Action_Cursor (Widget, Cursor);
-      end if;
       States.Enable_Action_Mode (Widget);
    end Start_Action_Mode;
 
@@ -657,6 +668,36 @@ package body Giant.Graph_Widgets is
    ------------------
    -- Highlighting --
    ------------------
+
+   function To_Local_Highlight_Type
+     (Color      : in     Config.Global_Data.Selection_High_Light_ID)
+     return Vis_Data.Local_Highlight_Type is
+   begin
+      case Color is
+         when Config.Global_Data.Current_Selection =>
+            return Vis_Data.Current_Local;
+         when Config.Global_Data.Color_1 =>
+            return Vis_Data.First_Local;
+         when Config.Global_Data.Color_2 =>
+            return Vis_Data.Second_Local;
+         when Config.Global_Data.Color_3 =>
+            return Vis_Data.Third_Local;
+      end case;
+   end To_Local_Highlight_Type;
+
+   function To_Global_Highlight_Type
+     (Color      : in     Config.Global_Data.Subgraph_High_Light_ID)
+     return Vis_Data.Global_Highlight_Type is
+   begin
+      case Color is
+         when Config.Global_Data.Color_1 =>
+            return Vis_Data.First_Global;
+         when Config.Global_Data.Color_2 =>
+            return Vis_Data.Second_Global;
+         when Config.Global_Data.Color_3 =>
+            return Vis_Data.Third_Global;
+      end case;
+   end To_Global_Highlight_Type;
 
    procedure Add_Local_Highlighting
      (Widget     : access Graph_Widget_Record'Class;

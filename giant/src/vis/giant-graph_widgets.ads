@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.30 $
---  $Author: squig $
---  $Date: 2003/07/14 22:28:11 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.31 $
+--  $Author: keulsn $
+--  $Date: 2003/07/14 23:12:18 $
 --
 ------------------------------------------------------------------------------
 --
@@ -192,11 +192,17 @@ package Giant.Graph_Widgets is
    --  to be released.
    --
    --  If this subprogram is never called, then the cursor for
-   --  'Gdk.Types.Arrow' will be used.
+   --  'Gdk.Types.Left_Ptr' will be used.
    --
+   --  Note:
+   --    The cursor is never destroyed. It is the user's responsibility to
+   --    do so, after either a different cursor has been set in the graph
+   --    widget, or the graph widget is destroyed.
    --  Parameters:
    --    Widget - The graph widget
    --    Cursor - The cursor
+   --  Precondition:
+   --    Cursor /= Null_Cursor, else nothing will be done.
    procedure Set_Default_Cursor
      (Widget : access Graph_Widget_Record'Class;
       Cursor : in     Gdk.Cursor.Gdk_Cursor);
@@ -207,12 +213,38 @@ package Giant.Graph_Widgets is
    --  the graph widget is performing heavy calculations.
    --
    --  If this subprogram is never called, then the cursor for
-   --  'Gdk.Types.Clock' will be used.
+   --  'Gdk.Types.Watch' will be used.
    --
+   --  Note:
+   --    The cursor is never destroyed. It is the user's responsibility to
+   --    do so, after either a different cursor has been set in the graph
+   --    widget, or the graph widget is destroyed.
    --  Parameters:
    --    Widget - The graph widget
    --    Cursor - The cursor
+   --  Precondition:
+   --    Cursor /= Null_Cursor, else nothing will be done.
    procedure Set_Waiting_Cursor
+     (Widget : access Graph_Widget_Record'Class;
+      Cursor : in     Gdk.Cursor.Gdk_Cursor);
+
+   ----------------------------------------------------------------------------
+   --  Sets the cursor used inside the graph widget during the time when
+   --  the graph widget is in action mode.
+   --
+   --  If this subprogram is never called, then the cursor for
+   --  'Gdk.Types.Crosshair' will be used.
+   --
+   --  Note:
+   --    The cursor is never destroyed. It is the user's responsibility to
+   --    do so, after either a different cursor has been set in the graph
+   --    widget, or the graph widget is destroyed.
+   --  Parameters:
+   --    Widget - The graph widget
+   --    Cursor - The cursor
+   --  Precondition:
+   --    Cursor /= Null_Cursor, else nothing will be done.
+   procedure Set_Action_Mode_Cursor
      (Widget : access Graph_Widget_Record'Class;
       Cursor : in     Gdk.Cursor.Gdk_Cursor);
 
@@ -343,20 +375,15 @@ package Giant.Graph_Widgets is
    -----------------
 
    ----------------------------------------------------------------------------
-   --  Enables action mode and sets cursor. During action mode the user can
+   --  Enables action mode. During action mode the user can
    --  only move the visual area inside the graph widget and click onto the
    --  graph widget. After each such click the graph widget emits a signal.
    --  See Giant.Graph_Widgets.Handlers for details.
    --
-   --  If 'Cursor' = 'Null_Cursor' then a default cursor is used.
-   --
    --  Parameters:
    --    Widget - The graph widget
-   --    Cursor - The cursor to be displayed during action mode
-   --             or 'Null_Cursor'.
    procedure Start_Action_Mode
-     (Widget : access Graph_Widget_Record'Class;
-      Cursor : in     Gdk.Cursor.Gdk_Cursor     := Gdk.Cursor.Null_Cursor);
+     (Widget : access Graph_Widget_Record'Class);
 
    ----------------------------------------------------------------------------
    --  If the graph widget is in action mode, then cancels action mode and
