@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.31 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.32 $
 --  $Author: squig $
---  $Date: 2003/06/30 10:44:52 $
+--  $Date: 2003/06/30 12:28:00 $
 --
 
 with Ada.Strings.Unbounded;
@@ -233,16 +233,12 @@ package body Giant.Controller is
    procedure Open_Project
      (Filename : in String)
    is
-      Graph_Filename : Ada.Strings.Unbounded.Unbounded_String;
-      Checksum : Integer;
+      Graph_Filename : String
+        := Projects.Get_Bauhaus_IML_Graph_File (Filename);
    begin
-      Projects.Get_Bauhaus_IML_Graph_Data_File
-        (Filename, Graph_Filename, Checksum);
-
       --  create graph
-      Logger.Info (-"Loading graph "
-                   & Ada.Strings.Unbounded.To_String (Graph_Filename));
-      Giant.Graph_Lib.Load (Ada.Strings.Unbounded.To_String (Graph_Filename));
+      Logger.Info (-"Loading graph " & Graph_Filename);
+      Giant.Graph_Lib.Load (Graph_Filename);
 
       Logger.Info (-"Opening project " & Filename);
       Current_Project := Projects.Load_Project_File (Filename);
@@ -309,9 +305,7 @@ package body Giant.Controller is
         := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
    begin
       if (New_Name /= Old_Name) then
-         -- FIX: the following method is missing in Vis_Windows
---           Vis_Windows.Change_Pin_Name
---             (Window, Old_Name, New_Name);
+         Vis_Windows.Change_Pin_Name (Window, Old_Name, New_Name);
          Gui_Manager.Rename_Pin (Window_Name, Old_Name, New_Name);
       end if;
    end Rename_Pin;

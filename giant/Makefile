@@ -31,7 +31,8 @@ INCLUDES        = $(GIANT_INCLUDES) $(IMLLIB_INCLUDES) $(AUNIT_INCLUDES) $(XMLAD
 
 LIBS            = $(shell gtkada-config)
 
-CFLAGS          = -g -O2 -funroll-loops
+CFLAGS          = -g 
+#-O2 -funroll-loops
 GNAT_FLAGS      = -j2 -gnatX -gnata -gnatf -gnatwl -gnato 
                   #-gnaty3abcefhiklmprt #-gnatys 
 ALL_CFLAGS      = $(CFLAGS) $(TARGET_CFLAGS) $(GNAT_FLAGS) $(INCLUDES) $(CUSTOM_CFLAGS)
