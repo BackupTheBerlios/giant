@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/27 16:38:30 $
+-- $Date: 2003/09/02 10:21:34 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -1605,8 +1605,10 @@ package body Giant.Gsl.Runtime is
       (Parameter : Gsl_List)
       return Gsl_Type is
 
+      use Graph_Lib.Selections;
       Window_Name    : Gsl_Type;
       Remove_Content : Gsl_Type;
+      Selection      : Graph_Lib.Selections.Selection;
    begin
       if Get_List_Size (Parameter) /= 2 then
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
@@ -1624,12 +1626,18 @@ package body Giant.Gsl.Runtime is
               Get_Value (Gsl_String (Window_Name)) &  "does not exist.");
          end if;
 
+         Selection := Create ("REMOVE_SELECTION_CONTENT");
+         Add_Node_Set (Selection, Get_Value (Gsl_Node_Set
+           (Get_Value_At (Gsl_List (Remove_Content), 1))));
+         Add_Edge_Set (Selection, Get_Value (Gsl_Edge_Set
+           (Get_Value_At (Gsl_List (Remove_Content), 2))));
+
          -- remove the selection using the giant.controller
-         -- procedure Remove_Selection
-         --   (Window_Name : in String;
-         --    Nodes       : in Graph_Lib.Node_Id_Set;
-         --    Edges       : in Graph_Lib.Edge_Id_Set;
-         --    Ask_For_Confirmation : in Boolean := True);
+         Controller.Remove_Selection_Content
+           (Get_Value (Gsl_String (Window_Name)), Selection);
+
+         -- destroy the selection and free the memory
+         Destroy (Selection);
       else
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
            "Script 'remove_from_window': Gsl_String and " & 
