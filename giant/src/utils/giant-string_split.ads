@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-string_split.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-string_split.ads,v $, $Revision: 1.2 $
 --  $Author: koppor $
---  $Date: 2003/07/01 21:10:17 $
+--  $Date: 2003/07/07 09:52:21 $
 --
 ------------------------------------------------------------------------------
 --
@@ -44,12 +44,15 @@ package Giant.String_Split is
    --  Parameters:
    --    Source:  String to split
    --    Pattern: Separation character
+   --    Trim:    If blanks should be trimmed at both sides
    --
    --  Returns:
-   --    List of substrings
+   --    * List of substrings
+   --    * Empty list, if source is empty
    function Split_String
      (Source  : in String;
-      Pattern : in String)
+      Pattern : in String;
+      Trim    : in Boolean := false)
      return String_Lists.List;
 
 end Giant.String_Split;
