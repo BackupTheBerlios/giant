@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.3 $
-%  $Date: 2003/02/16 19:18:33 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.4 $
+%  $Date: 2003/02/16 19:25:07 $
 %  $Author: birdy $
 %
 %  Description:
@@ -78,9 +78,9 @@ Buttons Erstellen (NEW\_WINDOW\_CREATE) und Abbruch
 werden kann.
 Bei leerem, schon vorhandenem oder ungültigem Fensternamen 
 werden entsprechend drei verschiedene Fehlermeldungen Fenstername
-leer bzw. vorhanden bzw. ungültig ausgegeben, NEW_WINDOW_NAME
+leer bzw. vorhanden bzw. ungültig ausgegeben, NEW\_WINDOW\_NAME
 bleibt offen.
-Beim Klicken auf Abbruch wird NEW_WINDOW_NAME geschlossen.
+Beim Klicken auf Abbruch wird NEW\_WINDOW\_NAME geschlossen.
 
 \subsubsection{IML-Teilgraph einfügen}
 
@@ -170,11 +170,11 @@ hinzu, bildet also die Vereinigungsmenge beider
 Graphen.
 
 Bei Klick auf den Button Teilgraphen vereinigen erscheint ein
-Fenster SUBGRAPH_UNION_WINDOW , in dem sich der Text
+Fenster SUBGRAPH\_UNION\_WINDOW , in dem sich der Text
 Teilgraph <Teilgraph> vereinigen mit und eine Combobox
 mit allen Subgraphen in SUBGRAPH\_LIST ohne den Subgraphen,
 der bei Auslösung des Buttons selektiert war, befindet.
-In ein Feld Name des neuen Teilgraphen (SUBGRAPH_UNION_NAME)
+In ein Feld Name des neuen Teilgraphen (SUBGRAPH\_UNION\_NAME)
 kann der Name des neuen Teilgraphen eingetragen werden.
 Über zwei Buttons OK und Cancel kann die Funktion
 ausgelöst oder abgebrochen werden.
@@ -182,7 +182,7 @@ Beim Klick auf OK wird der in der Combobox ausgewählte Teilgraph
 mit dem Teilgraphen in der Liste vereinigt und ein neuer
 Teilgraph, der die Vereinigung der beiden Teilgraphen ist,
 erstellt und der Liste SUBGRAPH\_LIST hinzugefügt.
-Falls SUBGRAPH_UNION_NAME leer ist oder einen schon vorhandenen
+Falls SUBGRAPH\_UNION\_NAME leer ist oder einen schon vorhandenen
 oder ungültigen Namen enthält, wird eine entsprechende
 Fehlermeldung ausgegeben.
 
@@ -193,18 +193,18 @@ selektierten Teilgraphen mit einem weiteren der Teilgraphen
 in SUBGRAPH\_LIST.
 
 Bei Klick auf den Button Teilgraphen Differenz erscheint ein
-Fenster SUBGRAPH_DIFF_WINDOW , in dem sich der Text
+Fenster SUBGRAPH\_DIFF\_WINDOW , in dem sich der Text
 Teilgraph Differenz <Teilgraph> und: und eine Combobox
 mit allen Subgraphen in SUBGRAPH\_LIST ohne den Subgraphen,
 der bei Auslösung des Buttons selektiert war, befindet.
-In ein Feld Name des neuen Teilgraphen (SUBGRAPH_DIFF_NAME)
+In ein Feld Name des neuen Teilgraphen (SUBGRAPH\_DIFF\_NAME)
 kann der Name des neuen Teilgraphen eingetragen werden.
 Über zwei Buttons OK und Cancel kann die Funktion
 ausgelöst oder abgebrochen werden.
 Beim Klick auf OK wird die Differenzmenge beider Teilgraphen
-gebildet, ein neuer Teilgraph mit Namen SUBGRAPH_DIFF_NAME
+gebildet, ein neuer Teilgraph mit Namen SUBGRAPH\_DIFF\_NAME
 erstellt und der Liste hinzugefügt.
-Falls SUBGRAPH_DIFF_NAME leer ist oder einen schon vorhandenen
+Falls SUBGRAPH\_DIFF\_NAME leer ist oder einen schon vorhandenen
 oder ungültigen Namen enthält, wird eine entsprechende
 Fehlermeldung ausgegeben.
 
@@ -216,18 +216,18 @@ selektierten Teilgraphen mit einem weiteren der Teilgraphen
 in SUBGRAPH\_LIST.
 
 Bei Klick auf den Button Teilgraphen Differenz erscheint ein
-Fenster SUBGRAPH_INTERSECTION_WINDOW , in dem sich der Text
+Fenster SUBGRAPH\_INTERSECTION\_WINDOW , in dem sich der Text
 Teilgraph Schnittmenge <Teilgraph> und: und eine Combobox
 mit allen Subgraphen in SUBGRAPH\_LIST ohne den Subgraphen,
 der bei Auslösung des Buttons selektiert war, befindet.
-In ein Feld Name des neuen Teilgraphen (SUBGRAPH_INTERSECTION_NAME)
+In ein Feld Name des neuen Teilgraphen (SUBGRAPH\_INTERSECTION\_NAME)
 kann der Name des neuen Teilgraphen eingetragen werden.
 Über zwei Buttons OK und Cancel kann die Funktion
 ausgelöst oder abgebrochen werden.
 Beim Klick auf OK wird die Schnittmenge beider Teilgraphen
-gebildet, ein neuer Teilgraph mit Namen SUBGRAPH_INTERSECTION_NAME
+gebildet, ein neuer Teilgraph mit Namen SUBGRAPH\_INTERSECTION\_NAME
 erstellt und der Liste hinzugefügt.
-Falls SUBGRAPH_INTERSECTION_NAME leer ist oder einen schon vorhandenen
+Falls SUBGRAPH\_INTERSECTION\_NAME leer ist oder einen schon vorhandenen
 oder ungültigen Namen enthält, wird eine entsprechende
 Fehlermeldung ausgegeben.
 
@@ -251,14 +251,14 @@ Bei Klick auf den Button Teilgraphen importieren wird ein Dateifenster
 geöffnet, in dem ein Dateiname mit Pfad festgelegt werden kann, unter
 dem der Teilgraph gespeichert wird.
 Falls der Name des Teilgraphen schon in der Liste existiert, erscheint
-ein Fenster SUBGRAPH_IMPORT_DUPNAME Name des Teilgraphen <Name>
+ein Fenster SUBGRAPH\_IMPORT\_DUPNAME Name des Teilgraphen <Name>
 Existiert schon, bitte Ersatznamen angeben und OK klicken, oder Abbruch
 klicken, um nicht zu laden.
-Im Fenster SUBGRAPH_IMPORT_DUPNAME ist ein Textfeld SUBGRAPH_IMPORT_NEWNAME,
+Im Fenster SUBGRAPH\_IMPORT\_DUPNAME ist ein Textfeld SUBGRAPH\_IMPORT\_NEWNAME,
 in dem ein Ersatzname angegeben werden kann. Bei Klick auf OK
-wird der Teilgraph unter dem Namen SUBGRAPH_IMPORT_NEWNAME importiert,
+wird der Teilgraph unter dem Namen SUBGRAPH\_IMPORT\_NEWNAME importiert,
 bei Abbruch passiert nichts und das Fenster wird geschlossen.
-Sollte auch SUBGRAPH_IMPORT_NEWNAME schon existieren, so wird
+Sollte auch SUBGRAPH\_IMPORT\_NEWNAME schon existieren, so wird
 ein zusätzliches fehlerfenster Fenster Dieser Name existiert schon angezeigt.
 
 \subsection{Knoten-Informationsfenster}
@@ -409,9 +409,9 @@ Die Progressbar zeigt den ungefähren Verlauf der Berechnung an,
 mit QUERY\_CANCEL kann die Berechnung abgebrochen werden.
 
 Nach Beendigung der Berechnung erscheint ein Fenster QUERY\_RESULT,
-in dem Anfrage beendet. Gefundene Knoten: QUERY\_FOUND_\NODES ,
+in dem Anfrage beendet. Gefundene Knoten: QUERY\_FOUND\_NODES ,
 Gefundene Kanten: QUERY\_FOUND\_EDGES steht. Darunter befindet sich
-der Text übernehmen als IML-Teilgraph und eine Combo-Box IML_SUBGRAPHS,
+der Text übernehmen als IML-Teilgraph und eine Combo-Box IML\_SUBGRAPHS,
 in der die bisher geladenen IML-Teilgraphen und eine Eingabemöglichkeit
 für einen neuen Namen sind.
 Darunter befinden sich zwei Buttons: Anfrage verwerfen und Anfrage
