@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.39 $
-%  $Date: 2003/04/17 00:29:17 $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.40 $
+%  $Date: 2003/04/17 22:44:59 $
 %  $Author: schwiemn $
 %
 %  Description: UseCases für die Fensterfunktionalität der GUI
@@ -73,7 +73,7 @@ Dient zum Öffnen eines Anzeigefensters des Projektes.
 \begin{uc}[Anzeigefenster umbenennen]{UC: Anzeigefenster umbenennen}
 \index{Anzeigefenster!umbenennen}
 
-Dient zum Umbenennen eines Anzeigefensters des Projektes.
+Dient dem Umbenennen eines Anzeigefensters des Projektes.
 
   \begin{precond}
     \cond Ein Projekt mit mindestens einem Anzeigefenster ist geladen.
@@ -119,8 +119,10 @@ Näheres zur Persistenz von Anzeigefenstern ist unter Abschnitt
 
   \begin{postsuccess}  
     \cond Nach dem letzten Speichern am Anzeigefenster vorgenommene
-    Änderungen sind jetzt in der Verwaltungsdatei des Anzeigefensters
+    Änderungen sind jetzt auch in der Verwaltungsdatei des Anzeigefensters
     (siehe \ref {Project Verwaltungsdateien für Anzeigefenster}) gespeichert.
+    Die in der Verwaltungsdatei gespeicherten Informationen
+    beschreiben jetzt den aktuellen Zustand des Anzeigefensters.
 
     \cond Wurde das Anzeigefenster zum ersten mal gespeichert, so existiert
     jetzt eine Verwaltungsdatei für das Anzeigefenster im Projektverzeichnis.
@@ -282,13 +284,14 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
   \begin{postsuccess}
     
     \cond 
-    Alle Knoten und Kanten des IML-Teilgraphen sind in das Anzeigefenster
+    Alle Graph-Knoten und Graph-Kanten des IML-Teilgraphen sind 
+    in das Anzeigefenster
     entsprechend dem gewählten Layout an der vorgegebenen Position
     eingefügt.
     
     \cond
     In dem Anzeigefenster gibt es eine neue aktuelle Selektion, 
-    die die neu eingefügten Knoten und Kanten umfasst.
+    die die neu eingefügten Fenster-Knoten und Fenster-Kanten umfasst.
    
   \end{postsuccess}
 
@@ -334,8 +337,8 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
     Dialog an, der den Benutzer über den Fortschritt der Berechnung
     informiert (siehe \ref{Progressbar-Modale}).\\
     Während der Berechnung des Layouts kann das System GIANT nicht
-    bedient werden. Zugänglich ist nur der Button zum Abbruch des
-    Algorithmus (siehe \ref{Progressbar-Modale-Cancel}).
+    bedient werden. Zugänglich ist nur der Button zum Abbruch der
+    Berechnung (siehe \ref{Progressbar-Modale-Cancel}).
     
     \step[7]
     Nach Abschluss der Berechnung fügt GIANT die Fenster-Knoten und 
@@ -392,7 +395,7 @@ Ziel-Anzeigefenster unter Beibehaltung des Layouts kopiert werden
     der Standard-Selektion wird überschrieben.
 
     \cond
-    Im Ziel-Anzeigefenster gibt es keine Knoten mit der selben ID
+    Im Ziel-Anzeigefenster gibt es keine Fenster-Knoten mit der selben ID
     mehrfach. 
 
   \end{postsuccess}
@@ -429,7 +432,7 @@ Ziel-Anzeigefenster unter Beibehaltung des Layouts kopiert werden
 
     
     \step[3]
-    GIANT kopiert die Knoten und Kanten der 
+    GIANT kopiert die Fenster-Knoten und Fenster-Kanten der 
     Selektion in das Ziel-Anzeigefenster. 
     Je nachdem, welchen Eintrag der Benutzer im Popup-Menü ausgewählt hat,
     geschieht mit den bereits im Ziel-Anzeigefenster vorhandenen 
@@ -441,7 +444,7 @@ Ziel-Anzeigefenster unter Beibehaltung des Layouts kopiert werden
       verändert.
        
      \item Falls \gq{Copy Selection Changing Existing Layout} gewählt
-       wurde, wird ihre Position im Zielanzeigefenster gemäß dem
+       wurde, wird ihre Position im Ziel-Anzeigefenster gemäß dem
        Layout der eingefügten Selektion verändert.
         
     \end {enumerate}
@@ -487,8 +490,18 @@ Fenster-Kanten}).
   \begin{postsuccess}
     
     \cond
-    Die Selektion ist aus dem Anzeigefenster gelöscht.
-    
+    Falls die gewählte Selektion nicht die Standard-Selektion war,
+    ist die Selektion jetzt aus dem Anzeigefenster gelöscht und taucht nicht
+    mehr in der Liste über die Selektionen auf.
+
+    \cond Wurde die Standard-Selektion (siehe \ref{Standard-Selektion}) 
+    gewählt, so wird diese nicht aus dem Anzeigefenster gelöscht, sondern
+    ist jetzt halt leer.
+
+    \cond
+    Die Standard-Selektion ist jetzt die aktuelle Selektion 
+    (siehe \ref{Aktuelle Selektion vs Selektionen}).
+        
     \cond 
     Alle betroffenen Fenster-Knoten und Fenster-Kanten sind gemäß
     der unter 
@@ -512,7 +525,7 @@ Fenster-Kanten}).
     \step[1]
     Der Benutzer führt einen Rechtsklick auf die entsprechende Selektion in der
     Selektionsauswahlliste durch (siehe \ref{Selektionsauswahlliste})
-    und wählt im entsprechenden Popup-Menü \gq{Delete Nodes and Edges
+    und wählt im Popup-Menü \gq{Delete Nodes and Edges
     of Selection} aus.
       
     
@@ -619,7 +632,8 @@ Verändert die Position des sichtbaren Anzeigeinhaltes.
     \step[1]
     \begin {enumerate}
       \item
-      Der Benutzer scrollt den sichtbaren Anzeigefokus mittels der horizontalen
+      Der Benutzer scrollt den sichtbaren Anzeigeinhalt mittels der 
+      horizontalen
       oder vertikalen Bildlaufleisten des Anzeigefensters (siehe    
       \ref{Scrolleisten}). Dies geschieht mittels
       der Maus gemäß der Konventionen von GTK/Ada für Bildlaufleisten.
@@ -645,7 +659,7 @@ Verändert die Position des sichtbaren Anzeigeinhaltes.
 \begin{uc}[Anzeigefenster zoomen]{UC: Anzeigefenster zoomen}
 \index{Anzeigefenster!zoomen}
 \index{zoomen}
-Verändert den Maßstab der Darstellung von Knoten und Kanten.
+Verändert den Maßstab der Darstellung von Fenster-Knoten und Fenster-Kanten.
 
   \begin{precond}
     \cond 
@@ -760,13 +774,13 @@ dargestellt wird.
 \index{zoomen auf eine Kante}
 
 Wählt die passende Zoomstufe und scrollt den sichtbaren Anzeigeinhalt
-so, dass eine Kante mit ihren Start-- und Ziel-Fenster-Knoten komplett
+so, dass eine Fenster-Kante mit ihren Start-- und Ziel-Fenster-Knoten komplett
 im sichtbaren Anzeigeinhalt liegt.
 
   \begin{precond}
     \cond 
     Ein Projekt mit mindestens einem geöffneten Anzeigefenster mit mindestens 
-    einer Kante ist geladen.
+    einer Fenster-Kante ist geladen.
        
   \end{precond}
 
@@ -774,8 +788,8 @@ im sichtbaren Anzeigeinhalt liegt.
   \begin{postsuccess}
     
     \cond Der sichtbare Anzeigeinhalts wurde mittels Zoomen und
-    Scrollen so verändert, dass die ausgewählte Kante und ihre Start-
-    und Ziel-Fenster-Knoten vollständig sichtbar ist. Die Detailstufe
+    Scrollen so verändert, dass die ausgewählte Fenster-Kante und ihre Start-
+    und Ziel-Fenster-Knoten vollständig sichtbar sind. Die Detailstufe
     (siehe \ref{Visualization Detailstufen}) wurde ggf. automatisch
     angepasst.
     
@@ -818,7 +832,7 @@ im sichtbaren Anzeigeinhalt liegt.
   \begin{aproc}
 
     \astep{3} Der Benutzer kann den UseCase abbrechen, indem er
-    einen Rechtsklick mit der Maus (dem Fadenkreuzcursor) auf eine
+    mit der Maus (dem Fadenkreuzcursor) einen Rechtsklick auf eine
     beliebige Stelle ausführt.
   
   \end{aproc}
@@ -849,8 +863,17 @@ Anzeigeinhalt verschoben werden. Dieses Verschieben geschieht mittels
     
     \cond
     Der einzelne Fenster-Knoten oder alle Fenster-Knoten der Selektion
-    wurden im Anzeigeinhalt verschoben. Das Layout der Fensterknoten
-    bleibt hierbei unverändert.
+    wurden im Anzeigeinhalt verschoben. Bei den nicht ausgeblendeten
+    Fenster-Knoten einer verschobenen Selektion bleibt das
+    Layout dieser Fenster-Knoten relativ zueinander unverändert.
+
+    \cond
+    Ausgeblendete Fenster-Knoten, die zu einer verschobenen Selektion
+    gehören, bleiben ausgeblendet.
+
+    \cond
+    Ausgeblendete Fenster-Knoten bleiben an ihrer alten Position,
+    auch wenn eine Selektion, zu der sie gehören, verschoben wurde.
 
   \end{postsuccess}
 
@@ -932,7 +955,7 @@ Drop auf dem sichtbaren Anzeigeinhalt verschoben werden.
   \begin{postsuccess}
     
     \cond
-    Der einzelne Fensterknoten wurde auf dem Anzeigeinhalt entsprechend 
+    Der einzelne Fenster-Knoten wurde auf dem Anzeigeinhalt entsprechend 
     verschoben.  
 
   \end{postsuccess}
@@ -1046,7 +1069,7 @@ Mit diesem UseCase kann ein neuer Pin erzeugt werden (siehe auch
 
   \begin{postsuccess}
     \cond 
-    In der Liste über die Pins des Anzeigefensters
+    In der Pinliste des Anzeigefensters
     (siehe \ref{VIS-PANE-Pins}) befindet sich ein neuer Pin mit 
     dem vom Benutzer definierten Namen.
 
@@ -1063,7 +1086,7 @@ Mit diesem UseCase kann ein neuer Pin erzeugt werden (siehe auch
     Anzeigefensters durch und wählt aus dem Popup-Menü 
     (siehe \ref{Empty Vis Pane Right click}) \gq{New Pin} aus.
     Der später erstellte Pin verweist dann auf die Stelle im Anzeigeinhalt,
-    auf die der Rechtklick durchgeführt wurde.
+    auf die der Rechtsklick durchgeführt wurde.
  
 
     \step[2] 
@@ -1103,7 +1126,7 @@ wieder her (siehe auch \ref{Pins}).
 
   \begin{postsuccess}
     \cond 
-    Der sichtbare Anzeigefokus des Anzeigefensters ist auf die entsprechenden
+    Der sichtbare Anzeigeinhalt des Anzeigefensters ist auf die entsprechenden
     Koordinaten und die entsprechende Zoomstufe, wie sie im ausgewählten
     Pin hinterlegt waren, gesetzt.
     

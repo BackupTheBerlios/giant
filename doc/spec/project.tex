@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: project.tex,v $, $Revision: 1.31 $
-%  $Date: 2003/04/17 17:48:19 $
+%  $RCSfile: project.tex,v $, $Revision: 1.32 $
+%  $Date: 2003/04/17 22:44:58 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -15,7 +15,7 @@
 \index{Persistenz} \index{Projekte}
 \label{Project Persistenz der Projekte}
 
-GIANT speichert persistente Informationen in sogenannten Projekten.
+GIANT verwaltet persistente Informationen in sogenannten Projekten.
 Ein Projekt fasst alle Arbeitsergebnisse, die der Benutzer mittels
 GIANT für einen IML-Graphen erzeugen kann, wie z.B. Anzeigefenster und
 IML-Teilgraphen, logisch zusammen.
@@ -24,7 +24,7 @@ IML-Teilgraphen, logisch zusammen.
 
   \item
   Die gesamte in dieser Spezifikation beschriebene Funktionalität, die
-  sich auf das Laden bestehender und das Öffnen neuer Projekte während
+  sich auf das Öffnen bestehender und das Erstellen neuer Projekte während
   der Laufzeit von GIANT bezieht, kann nur implementiert werden, 
   falls die Reflektion zur Bauhaus IML-Graph Bibliothek dies unterstützt.
   Der Kunde muss hierzu in der Reflektion die Möglichkeit vorsehen, 
@@ -60,10 +60,10 @@ Konventionen der Projektverwaltung:
   Der Benutzer kann beliebig viele Projekte anlegen.
   
   \item
-  In GIANT darf immer nur ein Projekt gleichzeitig geöffnet sein. 
+  In GIANT kann immer nur ein Projekt gleichzeitig geöffnet sein. 
   
   \item
-  Während der Arbeit mit GIANT kann jederzeit ein vorhandenes Projekt 
+  Während der Arbeit mit GIANT kann ein vorhandenes Projekt 
   geladen oder ein neues Projekt angelegt werden. 
 
   \item \index{Projekte!manuelle Modifikation}
@@ -205,10 +205,10 @@ Konventionen der Projektverwaltung:
  
   \end {enumerate}
  
-  Der für das Anzeigefenster gewählte Visualisierungsstil wird zwar mit 
-  gespeichert, da die Visualisierungsstile völlig unabhängig von den 
+  Der Name des für das Anzeigefenster gewählten Visualisierungsstils wird zwar 
+  mit gespeichert, da die Visualisierungsstile völlig unabhängig von den 
   Projekten über Konfigurationsdateien realisiert werden, 
-  kann nicht garantiert werden, dass der gewünschte Stiel beim Laden 
+  kann nicht garantiert werden, dass der gewünschte Stil beim Laden 
   des Projektes auch wieder gefunden wird,
   in diesem Fall wird dann ein \gq{Standard-Stil} verwendet.
 
@@ -263,8 +263,8 @@ Konventionen der Projektverwaltung:
   Diese Funktionalität wird von entsprechenden UseCases genutzt. 
   Hierbei werden alle Anzeigefenster, IML-Teilgraphen 
   und Knoten-Annotationen in die Verwaltungsdateien geschrieben, 
-  wobei auch alle Änderungen an noch offenen Anzeigefenstern berücksichtigt 
-  werden; d.h. der aktuelle Zustand (z.B. die Position der IML-Knoten)
+  wobei auch alle Änderungen an noch geöffneten Anzeigefenstern berücksichtigt 
+  werden; d.h. der aktuelle Zustand (z.B. die Position der Fenster-Knoten)
   der offenen Anzeigefenster wird ohne explizite Rückfrage beim Benutzer
   in die Verwaltungsdateien geschrieben.
   Der Zustand der persistenten Informationen in den Verwaltungsdateien
@@ -291,7 +291,8 @@ Konventionen der Projektverwaltung:
 
       \subitem
       Der exakte Zustand jeder Selektion; d.h. ob und wie die
-      Selektion hervorgehoben ist.
+      Selektion hervorgehoben ist, ob sie gefiltert ist und ob
+      sie den Status der aktuellen Selektion hat.
 
       \subitem
       Die Position der Fenster-Knoten und Fenster-Kanten des 
@@ -328,7 +329,7 @@ Konventionen der Projektverwaltung:
     verändert).
 
     \item
-    Modifikationen (z.B. das Verschieben von Knoten) 
+    Modifikationen (z.B. das Verschieben von Fenster-Knoten) 
     auf einem Anzeigefenster werden nicht automatisch
     nach deren Durchführung gespeichert (so kann notfalls ein
     Rückgängig durchgeführt werden).

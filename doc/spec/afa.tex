@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: afa.tex,v $, $Revision: 1.17 $
-%  $Date: 2003/04/16 17:45:38 $
+%  $RCSfile: afa.tex,v $, $Revision: 1.18 $
+%  $Date: 2003/04/17 22:44:58 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung allgemeiner funktionaler Anforderungen - UseCase
@@ -135,11 +135,12 @@ Unzulässige Namen werden generell abgelehnt und führen zu einer Fehlermeldung.
 
 
  \subsection{Bezeichnertypen} \label{afa Bezeichnertypen}
- Hier werden Bezeichnertypen, also vom GIANT als zulässig akzeptierte
+ Hier werden Bezeichnertypen, also von GIANT als zulässig akzeptierte
  Folgen von Ziffern, Buchstaben und Sonderzeichen definiert.
 
 
     \subsubsection {Der String \gq{STANDARD NAME}}
+    \label{afa Standard Name} 
     Hier wird ein String spezifiziert, der nur die im Folgenden 
     beschriebenen Zeichen enthalten darf.\\
     Zulässige Zeichen sind:
@@ -280,7 +281,7 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
     durch das Selektieren mittels linker Maustaste etc. geändert werden.
       
     \item
-    Der Benutzer kann jederzeit bestimmen, welche der Selektion die
+    Der Benutzer kann jederzeit bestimmen, welche der Selektionen die
     aktuelle Selektion ist.
     
     \item 
@@ -307,7 +308,7 @@ in Anzeigefenster}
    \ref{IML-Teilgraph in Anzeigefenster einfügen})
    muss der Benutzer manuell Zielpositionen innerhalb eines 
    zu bestimmenden Anzeigefensters auswählen. An dieser
-   Zielposition werden dann z.B. neue Fenster-Knoten etc. eingefügt.\\
+   Zielposition werden dann z.B. neue Fenster-Knoten eingefügt.\\
    Ablauf:
    
    \begin {enumerate}
@@ -333,8 +334,9 @@ in Anzeigefenster}
    \subsection {Automatisches Erzeugen neuer Selektionen im Zielfenster}
    Sämtliche Fenster-Knoten und Fenster-Kanten, die in einem Schritt in
    ein Anzeigefenster eingefügt werden, werden dort automatisch
-   zur Standard-Selektion, der alte Inhalt der Standard-Selektion geht dabei verloren
-   und die Standard-Selektion bekommt den Status der aktuellen Selektion.
+   zur Standard-Selektion, der alte Inhalt der Standard-Selektion geht 
+   dabei verloren und die Standard-Selektion bekommt den Status der 
+   aktuellen Selektion.
     
    \subsection{Einfügen von Selektionen in Anzeigefenster}
       \label{Einfügen von Selektionen in Anzeigefenster}
@@ -352,13 +354,14 @@ in Anzeigefenster}
      übernommen.
      
      \item
-     Die Position von Knoten der einzufügenden Selektion, 
+     Die Position von Fenster-Knoten der einzufügenden Selektion, 
      die bereits in dem Anzeigefenster visualisiert sind,
      bleibt falls nicht an entsprechender Stelle anders
      spezifiziert unverändert.
      
      \item
-     Kanten der Selektion werden nur eingefügt, falls ihr Start- und Zielknoten
+     Fenster-Kanten der Selektion werden nur eingefügt, 
+     falls ihr Start- und Zielknoten
      ebenfalls Bestandteil der Selektion ist oder bereits im Anzeigefenster
      visualisiert ist. 
      
@@ -385,9 +388,8 @@ in Anzeigefenster}
      
      \item
      Die Graph-Knoten und Graph-Kanten des IML-Teilgraphen werden dann
-     genau wie eine Selektion in das Anzeigefenster eingefügt, dies geschieht
-     dann zu den gleichen Bedingungen, wie unter 
-     \ref{Einfügen von Selektionen in Anzeigefenster} beschrieben.
+     analog zu  \ref{Einfügen von Selektionen in Anzeigefenster} 
+     als Fenster-Knoten und Fenster-Kanten in das Anzeigefenster eingefügt
        
    \end{enumerate} 
   
@@ -415,7 +417,8 @@ in Anzeigefenster}
   
     \item
     Im zu bestimmenden Anzeigefenster wird eine neue Selektion erzeugt,
-    die alle Knoten und Kanten des IML-Teilgraphen umfasst, welche bereits
+    die alle Graph-Knoten und Graph-Kanten des IML-Teilgraphen umfasst, 
+    welche bereits
     als Fenster-Knoten und Fenster-Kanten im Anzeigefenster vorhanden sind.
     
     \item
@@ -437,8 +440,8 @@ in Anzeigefenster}
     Die Selektion bleibt unverändert.
     
     \item
-    Es wird ein neuer IML-Teilgraph erzeugt. Dieser umfasst alle Knoten und
-    Kanten der Selektion, welche einen gültigen Teilgraphen bilden.
+    Es wird ein neuer IML-Teilgraph erzeugt. Dieser umfasst alle Graph-Knoten 
+    und Graph-Kanten der Selektion, welche einen gültigen Teilgraphen bilden.
     Kanten der Selektion, deren Start- und Zielknoten nicht ebenfalls
     Bestandteil der Selektion sind, werden also ignoriert.
  
@@ -452,7 +455,7 @@ in Anzeigefenster}
   \index{Fenster-Kanten!entfernen}
 
   
-  Beim \gq{Entfernen} von Fenster-Knoten und Fenster-Kanten aus einem
+  Beim Entfernen von Fenster-Knoten und Fenster-Kanten aus einem
   Anzeigefenster werden nur die graphischen Repräsentationen der IML-Knoten und
   IML-Kanten des Bauhaus-IML-Graphen in dem betroffenen Anzeigefenster 
   gelöscht.
@@ -509,7 +512,7 @@ von GIANT diesbezüglich unterstützen.
   
   \item 
   Die Fenster-Knoten werden immer entlang einer Strecke von diesem
-  Punkt durch den jeweiligen Fensterknoten verschoben.
+  Punkt durch den jeweiligen Fenster-Knoten verschoben.
   
   \item
   Jeder Fenster-Knoten wird um einen konstanten Betrag (kann vom Benutzer 

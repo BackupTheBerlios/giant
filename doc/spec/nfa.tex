@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: nfa.tex,v $, $Revision: 1.10 $
-%  $Date: 2003/04/08 13:28:24 $
-%  $Author: squig $ 
+%  $RCSfile: nfa.tex,v $, $Revision: 1.11 $
+%  $Date: 2003/04/17 22:44:58 $
+%  $Author: schwiemn $ 
 %
 %  Description: Nichtfunktionale Anforderungen
 %
@@ -64,11 +64,11 @@ auszeichnen. Erreicht werden soll dies durch die folgenden Grundsätze.
 
   \item
   Ein explizites Mengengerüst, z.B. hinsichtlich der minimalen und 
-  maximalen Anzahl von darstellbaren Knoten, gibt es nicht. 
+  maximalen Anzahl von darstellbaren Fenster-Knoten, gibt es nicht. 
 
   \item
-  Größenbeschränkungen (z.B. Größe der zu ladenden IML-Graph-Datei, 
-  Anzahl Knoten in einem Anzeigefenster ...) sollen sich alleine aus dem 
+  Größenbeschränkungen (Größe der zu ladenden IML-Graph-Datei, 
+  Anzahl Fenster-Knoten in einem Anzeigefenster ...) sollen sich alleine aus dem 
   verfügbaren Arbeitsspeicher ergeben. 
    
   \item
@@ -122,11 +122,7 @@ angezeigt werden können.
 
   \item
   Bei GIANT handelt es sich um ein striktes Einbenutzersystem.
-  
-  \item
-  Die selbe Installation von GIANT darf nicht gleichzeitig mehrfach
-  gestartet werden.
-   
+    
   \item
   Das Systemverhalten für den Fall, dass zwei Benutzer mittels verschiedener
   laufender Instanzen von GIANT (als Prozess im Betriebssystem) 

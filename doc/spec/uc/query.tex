@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: query.tex,v $, $Revision: 1.15 $
-%  $Date: 2003/04/17 15:37:43 $
+%  $RCSfile: query.tex,v $, $Revision: 1.16 $
+%  $Date: 2003/04/17 22:44:59 $
 %  $Author: schwiemn $
 %
 %  Description: UseCases für die Anfragen
@@ -31,7 +31,7 @@ Die Möglichkeiten der GQSL sind im Detail in Kapitel
     \cond Wurde der UseCase vor Beginn der Berechnung des Skriptes
           abgebrochen, bleibt das System im bisherigen Zustand.
 
-    \cond Wurde der UseCase während der Berechnung des Skriptes 
+    \cond Wurde der UseCase während der Ausführung des Skriptes 
           abgebrochen, so werden bereits ausgeführte Aktionen
           (wie z.B. das Einfügen neuer Fenster-Knoten in Anzeigefenster)
           nicht wieder rückgängig gemacht.
@@ -100,7 +100,7 @@ einer Datei (siehe \ref {Config Anfrage-Dateien}) laden.
      \cond Wurde der UseCase vor Beginn der Berechnung des Skriptes
           abgebrochen, bleibt das System im bisherigen Zustand.
 
-    \cond Wurde der UseCase während der Berechnung des Skriptes 
+    \cond Wurde der UseCase während der Ausführung des Skriptes 
           abgebrochen, so werden bereits ausgeführte Aktionen
           (wie z.B. das Einfügen neuer Fenster-Knoten in Anzeigefenster)
           nicht wieder rückgängig gemacht.
@@ -162,7 +162,7 @@ einer Datei (siehe \ref {Config Anfrage-Dateien}) laden.
               Abarbeitung des UseCase zurück.
     \astep{6} Der Benutzer bricht den UseCase mit Cancel ab.
 
-    \astep{10} Die laufende Berechnung des Skripts kann vom Benutzer
+    \astep{10} Die laufende Ausführung des Skripts kann vom Benutzer
     mit Cancel abgebrochen werden.
   \end{aproc}
 

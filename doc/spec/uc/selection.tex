@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: selection.tex,v $, $Revision: 1.18 $
-%  $Date: 2003/04/17 15:02:54 $
+%  $RCSfile: selection.tex,v $, $Revision: 1.19 $
+%  $Date: 2003/04/17 22:44:59 $
 %  $Author: schwiemn $
 %
 %  Description: UseCases für die Selektionen
@@ -174,7 +174,7 @@ Mit diesem UseCase können neue, leere Selektionen angelegt werden.
   \end{precond}
 
   \begin{postsuccess}
-    \cond Eine neue Selektion mit entsprechendem Namen
+    \cond Eine neue Selektion mit dem vorgegebenen Namen
          ist angelegt und erscheint in der Liste der Selektionen 
          (siehe \ref{Selektionsauswahlliste}).
     \cond Diese neue Selektion hat keinen Inhalt (selektierte Knoten und
@@ -231,8 +231,8 @@ Anzeigefensters.
     und erscheint in der Liste der Selektionen
     (siehe \ref{Selektionsauswahlliste}).
     \cond
-    Die neue Selektion umfasst die gleichen Knoten und Kanten wie die
-    Selektion, von der kopiert wurde.
+    Die neue Selektion umfasst die selben Fenster-Knoten und Fenster-Kanten 
+    wie die Selektion, von der kopiert wurde.
 
   \end{postsuccess}
 
@@ -296,7 +296,7 @@ nicht gelöscht werden.
     Die Fenster-Knoten und Fenster-Kanten, 
     die zur gelöschten Selektion gehören, werden nicht gelöscht.
           
-    \cond War die Selektion hervorgehoben, so wird die entsprechende
+    \cond War die Selektion hervorgehoben, so wird die
     Hervorhebung der Fenster-Knoten und Fenster-Kanten aufgehoben.
 
     \cond
@@ -474,18 +474,17 @@ Das Vorgehen ist analog zu dem UseCase
        
     \cond
     Im Falle einer Mengenvereinigung umfasst, die neue Selektion TARGET alle
-    Knoten und Kanten aus der LEFT\_SOURCE Selektion und der 
+    Fenster-Knoten und Fenster-Kanten aus der LEFT\_SOURCE Selektion und der 
     RIGHT\_SOURCE Selektion.
     
     \cond
     Im Falle einer Mengendifferenz umfasst, die neue Selektion TARGET alle
-    Knoten und Kanten aus der LEFT\_SOURCE Selektion, die nicht 
-    Bestandteil der 
-    RIGHT\_SOURCE Selektion sind.
+    Fenster-Knoten und Fenster-Kanten aus der LEFT\_SOURCE Selektion, 
+    die nicht Bestandteil der  RIGHT\_SOURCE Selektion sind.
 
     \cond
     Im Falle eines Mengenschnitts umfasst, die neue Selektion TARGET alle
-    Knoten und Kanten, die der LEFT\_SOURCE Selektion und der 
+    Fenster-Knoten und Fenster-Kanten, die der LEFT\_SOURCE Selektion und der 
     RIGHT\_SOURCE Selektion gemeinsam angehören.
 
   \end{postsuccess}
@@ -509,7 +508,7 @@ Das Vorgehen ist analog zu dem UseCase
     Der Benutzer wählt dort die beiden Quell-Selektionen (LEFT\_SOURCE und 
     RIGHT\_SOURCE)
     aus, bestimmt die durchzuführende Mengenoperation und gibt unter 
-    TARGET den Namen der neue zu erzeugenden Selektion 
+    TARGET den Namen der neu zu erzeugenden Selektion 
     ein (gültige Namen siehe \ref{afa Zulaessige Namen}). \\
     Dann bestätigt er die Eingabe mit OK.
        

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: nomenclature.tex,v $, $Revision: 1.18 $
-%  $Date: 2003/04/17 17:53:57 $
+%  $RCSfile: nomenclature.tex,v $, $Revision: 1.19 $
+%  $Date: 2003/04/17 22:44:58 $
 %  $Author: schwiemn $
 %
 %  Description: Begriffslexikon
@@ -12,7 +12,7 @@
 \begin{nomenclature}
   
   \term{Anfrage}{Query}{Eine Anfrage beschreibt einen Vorgang, bei dem
-    über geeignete Kriterien Konten und Kanten aus dem IML-Graphen
+    über geeignete Kriterien IML-Konten und IML-Kanten aus dem IML-Graphen
     oder aus IML-Teilgraphen ausgewählt werden.}
   
   \term{Anzeigefenster}{Visualization Window}{Ein Fenster in dem ein
@@ -52,15 +52,15 @@
     des IML-Graphen, die so gestaltet ist, dass sie einen Teilgraphen
     des IML-Graphen darstellt.}
   
-  \term{Kantenklasse}{Edge Class}{Die Einteilung der Kanten des
+  \term{Kantenklasse}{Edge Class}{Die Einteilung der IML-Kanten des
     IML-Graphen in verschiedene Klassen, wie sie sich aus der
     IML-Graph-Bibliothek von Bauhaus ergibt.
     Innerhalb dieser Spezifikation ist der Begriff Kantenklasse so
-    zu verstehen, dass jede Kante eindeutig zu genau einer Kantenklasse
+    zu verstehen, dass jede IML-Kante eindeutig zu genau einer Kantenklasse
     gehört, eine Vererbungshierarchie existiert nicht. Die Zuordnung
-    einer Kante zu einer Kantenklasse wird durch die Knotenklasse
+    einer IML-Kante zu einer Kantenklasse wird durch die Knotenklasse
     des Start-Knotens und den Namen des Attributes
-    (aus dem Bauhaus-IML-Graphen), welches die Kante
+    (aus dem Bauhaus-IML-Graphen), welches die IML-Kante
     beschreibt, festgelegt. Jede vorkommende Kombination aus der
     Knoten-Klasse eines Start-Knotens und dem Namen eines Attributes,
     welches eine Kante beschreibt, ist somit eine eigene Kantenklasse}
@@ -73,12 +73,12 @@
   \term{Knoten-Annotationen}{Node Annotation}{Eine textuelle
     Beschreibung zu einem bestimmten Knoten des IML-Graphen.}
   
-  \term{Knotenklasse}{Node Class}{Die Einteilung der Knoten des
+  \term{Knotenklasse}{Node Class}{Die Einteilung der IML-Knoten des
     IML-Graphen in verschiedene Klassen, wie sie sich aus der
     IML-Graph-Bibliothek von Bauhaus ergibt.
     Im Sinne der Verwendung dieses Begriffes innerhalb der Spezifikation
     liegt den Knotenklassen keine Vererbungshierarchie zu Grunde, jeder
-    Knoten gehört also eindeutig zu genau einer Knotenklasse}
+    IML-Knoten gehört also eindeutig zu genau einer Knotenklasse}
   
   \term{Layout}{Layout}{Die zweidimensionale räumliche Anordnung von
     Fenster-Knoten und Fenster-Kanten innerhalb eines Anzeigefensters
@@ -90,8 +90,8 @@
   \term{Schleife}{Loop}{Eine Kante mit identischem Start- und Zielknoten.
     Wird oft auch als Selbstkante bezeichnet.}
   
-  \term{Selektion}{Selection}{Eine Auswahl von Knoten und Kanten eines
-    visualisierten Teilgraphen des IML-Graphen innerhalb eines
+  \term{Selektion}{Selection}{Eine Auswahl von Fenster-Knoten und Fenster-Kanten 
+    eines visualisierten Teilgraphen des IML-Graphen innerhalb eines
     Anzeigefensters.}
   
   \term{Sichtbarer Anzeigeinhalt}{Visible Window Content}{ Der Bereich

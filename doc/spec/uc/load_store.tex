@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: load_store.tex,v $, $Revision: 1.20 $
-%  $Date: 2003/04/17 00:29:18 $
+%  $RCSfile: load_store.tex,v $, $Revision: 1.21 $
+%  $Date: 2003/04/17 22:44:59 $
 %  $Author: schwiemn $
 %
 %  Description: UseCases für Lade- und Speicherfunktionalität
@@ -82,23 +82,21 @@
     Projektdatei wird automatisch zum Projektverzeichnis.
 
     \step[6]
-    Dann bestätigt er seine Eingabe mit OK.\\
+    Der Benutzer bestätigt er seine Eingabe mit OK.\\
     Existiert die eingegebene Projektdatei bereits, 
     erscheint eine Fehlermeldung gemäß den unter Abschnitt 
     \ref{afa Fehlerverhalten} beschriebenen Konventionen.\\
     Existiert in dem Projektverzeichnis bereits eine andere Projektdatei, so 
     erscheint ebenfalls eine Fehlermeldung.\\
-    Das Verzeichnis in dem die Projektdatei liegt, wird automatisch zum 
-    Projektverzeichnis.
     
     \step[7] Falls noch ein Projekt geöffnet ist, erscheint eine 
     Sicherheitsabfrage (siehe \ref{Sicherheitsabfrage})
-    ob dieses gespeichert werden soll. Lehnt der Benutzer dies ab, gehen
-    alle nicht gespeicherten Informationen verloren.\\
+    ob dieses gespeichert werden soll.    
     Entscheidet der Benutzer sich für Speichern, so wird
     die unter \ref{Alles Speichern} beschriebene Funktionalität 
-    ausgeführt.
-    
+    ausgeführt. Lehnt der Benutzer dies ab, gehen
+    alle nicht gespeicherten Informationen verloren.\\
+     
     \step[8]
     GIANT schließt das aktuell geöffnete Projekt (falls eines geöffnet war), 
     legt, falls noch nicht vorhanden, ein neues Projektverzeichnis an,
@@ -168,11 +166,12 @@
     
     \step[3] Falls bereits ein Projekt geöffnet ist, erscheint eine 
     Sicherheitsabfrage (siehe \ref{Sicherheitsabfrage})
-    ob dieses gespeichert werden soll. Lehnt der Benutzer dies ab, gehen
-    alle nicht gespeicherten Informationen verloren.\\
+    ob dieses gespeichert werden soll.     
     Entscheidet der Benutzer sich für Speichern, so wird
     die unter \ref{Alles Speichern} beschriebene Funktionalität 
-    ausgeführt.
+    ausgeführt. Lehnt der Benutzer dies ab, gehen
+    alle nicht gespeicherten Informationen verloren.\\
+
     
     \step[4]
     GIANT schließt das alte Projekt (falls eines geöffnet war)
@@ -279,11 +278,11 @@ Speichert alle Informationen zu einem Projekt in eine neue Projektdatei
 
      
     \step[2] Der Benutzer gibt im Standard-Filechooser-Dialog 
-             (siehe \ref {Standard-Filechooser-Dialog}) den Pfad, 
+             (siehe \ref {Standard-Filechooser-Dialog}) 
              das neue Projektverzeichnis 
              (siehe \ref{Project Das Projektverzeichnis})
              und den Namen für die neue Projektdatei
-             (siehe \ref{Project Die Projektdatei}) vor, die Dateiendung 
+             (siehe \ref{Project Die Projektdatei}) ein, die Dateiendung 
              wird später von GIANT automatisch gesetzt. \\
     Der Name der Projektdatei ist automatisch auch der Name für das Projekt.
     Zulässige Namen sind unter Abschnitt \ref{afa Zulaessige Namen}

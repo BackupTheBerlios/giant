@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: subgraph.tex,v $, $Revision: 1.16 $
-%  $Date: 2003/04/17 15:37:43 $
+%  $RCSfile: subgraph.tex,v $, $Revision: 1.17 $
+%  $Date: 2003/04/17 22:44:59 $
 %  $Author: schwiemn $
 %
 %  Description: UseCases für IML-Teilgraphen
@@ -106,10 +106,8 @@ aufgehoben werden.
 
   \begin{precond}
      \cond 
-     Es gibt mindestens ein geöffnetes Anzeigefenster.
-     
-     \cond
-     Es gibt mindestens eine Selektion.
+     Es gibt mindestens ein geöffnetes Anzeigefenster mit 
+     mindestens einer Selektion.
      
    \end{precond}
 
@@ -296,21 +294,23 @@ analog zu dem UseCase \ref{Mengenoperationen auf 2 Selektionen}.
     \cond
     Im Falle einer Mengenvereinigung umfasst
     der neue IML-Teilgraph TARGET alle
-    Knoten und Kanten aus dem LEFT\_SOURCE IML-Teilgraphen und dem 
+    Graph-Knoten und Garph-Kanten aus dem LEFT\_SOURCE IML-Teilgraphen und dem 
     RIGHT\_SOURCE IML-Teilgraphen.
     
     \cond
     Im Falle einer Mengendifferenz umfasst der neue IML-Teilgraph TARGET alle
-    Knoten und Kanten aus dem LEFT\_SOURCE IML-Teilgraphen, die nicht 
+    Graph-Knoten und Graph-Kanten aus dem LEFT\_SOURCE IML-Teilgraphen, 
+    die nicht 
     Bestandteil des RIGHT\_SOURCE IML-Teilgraphen sind.\\
 
     \cond
     Im Falle eines Mengenschnitts umfasst der neue IML-Teilgraph TARGET alle
-    Knoten und Kanten, die sowohl dem LEFT\_SOURCE IML-Teilgraphen als auch 
+    Graph-Knoten und Graph-Kanten, 
+    die sowohl dem LEFT\_SOURCE IML-Teilgraphen als auch 
     dem RIGHT\_SOURCE IML-Teilgraphen angehören.
 
     \cond
-    Hätte der IML-Teilgraph Target nach der Mengenoperation Graph-Kanten 
+    Hätte der IML-Teilgraph TARGET nach der Mengenoperation Graph-Kanten 
     ohne zugehörigen Start- und Zielknoten, so
     sind diese Graph-Kanten aus dem IML-Teilgraphen TARGET entfernt worden
     (dieser Fall kann bei Mengenschnitt und Mengendifferenz eintreten).

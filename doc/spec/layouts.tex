@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: layouts.tex,v $, $Revision: 1.8 $
-%  $Date: 2003/04/17 17:48:19 $
+%  $RCSfile: layouts.tex,v $, $Revision: 1.9 $
+%  $Date: 2003/04/17 22:44:58 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung der Layouts
@@ -48,42 +48,49 @@ Die Position, an die der Mittelpunkt des Wurzelknotens des Baums positioniert we
 \subsection{Beschreibung}
 Das Treelayout basiert auf Walkers Algorithmus. Dabei werden folgende Eigenschaften erreicht:
 \begin{enumerate}
-   \item Alle Kinder eines Knotens sind auf der gleichen Ebene
-   \item Alle Kinder eines Knotens haben den gleichen horizontalen Abstand zueinander
+   \item Alle Kinder eines Fenster-Knotens sind auf der gleichen Ebene
+   \item Alle Kinder eines Fenster-Knotens haben den gleichen 
+         horizontalen Abstand zueinander
 \end{enumerate}
 
 Die Reihenfolge der Kinder von der \texttt{IML\_Reflection}\xspace\"ubernommen. 
-In der Grundfunktionalit\"at werden alle Kanten betrachtet.
+In der Grundfunktionalit\"at werden alle Fenster-Kanten betrachtet.
 
-Der vertikale Abstand von Ebene zu Ebene richtet sich nach der H\"ohe des h\"ochsten Knotens (siehe \ref{Visualization-Knoten-Rechteck}).
+Der vertikale Abstand von Ebene zu Ebene richtet sich nach der H\"ohe des h\"ochsten Fenster-Knotens 
+(siehe \ref{Visualization-Knoten-Rechteck}).
 
-Falls der \"ubergebene IML-Teilgraph keinen Baum darstellt, werden die Knoten in die Ebene 
+Falls der \"ubergebene IML-Teilgraph keinen Baum darstellt, werden die Fenster-Knoten in die Ebene 
 eingegliedert, die bei einer Tiefensuche als erstes erreicht wird.
 
-Zerf\"allt der IML-Teilgraph in nicht-zusammenh\"angede Komponenten, so wird das Layout f\"ur jede dieser Komponente durchgef\"uhrt.
-Die disjkunkten Bäume werden dann horizontal nebeneinander angeordnet.
+Zerf\"allt der IML-Teilgraph in nicht-zusammenh\"angende Komponenten, so wird das 
+Layout f\"ur jede dieser Komponente durchgef\"uhrt.
+Die disjunkten Bäume werden dann horizontal nebeneinander angeordnet.
 
-Als Erweiterung kann der Algorithmus nur bestimmte Kanten betrachten. Dabei werden im ersten Lauf nur die Knoten betrachtet, die durch die gegebenen Kanten erreicht werden k\"onnen.
-Im zweiten Lauf werden Knoten, die durch die gegebenen Kanten nicht erreicht werden konnten, im Matrixlayout (siehe \ref{Matrixlayout}) rechts von dem letzten Baum angeordnet.
+Als Erweiterung kann der Algorithmus nur bestimmte Fenster-Kanten betrachten. 
+Dabei werden im ersten Lauf nur die Fenster-Knoten betrachtet, die durch die gegebenen 
+Fenster-Kanten erreicht werden k\"onnen.
+Im zweiten Lauf werden Fenster-Knoten, die durch die gegebenen Fenster-Kanten nicht erreicht 
+werden konnten, 
+im Matrixlayout (siehe \ref{Matrixlayout}) rechts von dem letzten Baum angeordnet.
 
 \section{Matrixlayout}
 \label{Matrixlayout}
 \subsection{Parameter}
 \begin{enumerate}
-  \item \textbf{IML-Teilgraph}\\
-Der IML-Teilgraph, der layoutet werden soll
+  \item \textbf{Selektion}\\
+Die Selektion, die layoutet werden soll
   \item \textbf{Zielposition}\\
 Die Position, an der die linke obere Ecke des Quadrats liegen soll.
 \end{enumerate}
 
 \subsection{Beschreibung}
-Im Matrixlayout werden die Knoten in einem Rechteck ausgerichtet.
-Dabei ist die Zahl der Knoten pro Zeile und Spalte gleich.  Die Breite
+Im Matrixlayout werden die Fenster-Knoten in einem Rechteck ausgerichtet.
+Dabei ist die Zahl der Fenster-Knoten pro Zeile und Spalte gleich.  Die Breite
 des Rechtecks wird mittels der abgerundeten Wurzel der Anzahl der zu
-layouteten Knoten bestimmt; die H\"ohe ergibt sich automatisch.  Die
-Knoten werden mittels einer Breitensuche besucht und in dieser
+layoutenden Knoten bestimmt; die H\"ohe ergibt sich automatisch.  Die
+Fenster-Knoten werden mittels einer Breitensuche besucht und in dieser
 Besuchsreihenfolge in das Rechteck zeilenweise eingef\"ugt. Dabei hat
-die obere Begrenzung jedes Knotens einer Zeile die selbe Y-Koordinate.
+die obere Begrenzung jedes Fenster-Knotens einer Zeile die selbe Y-Koordinate.
 Der vertikale Abstand von Zeile zu Zeile richtet sich nach der H\"ohe
-des h\"ochsten Knotens (siehe \ref{Visualization-Knoten-Rechteck}).
+des h\"ochsten Fenster-Knotens (siehe \ref{Visualization-Knoten-Rechteck}).
 
