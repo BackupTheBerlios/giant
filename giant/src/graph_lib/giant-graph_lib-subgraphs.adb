@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.12 $
+--  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.13 $
 --  $Author: koppor $
---  $Date: 2003/07/15 15:44:53 $
+--  $Date: 2003/07/22 08:59:41 $
 
 with Giant.Logger;
 
@@ -41,18 +41,37 @@ package body Giant.Graph_Lib.Subgraphs is
    end "<";
 
    ---------------------------------------------------------------------------
+   function Is_Member
+     (The_Subgraph  : in Subgraph;
+      Edge          : in Edge_Id)
+     return Boolean
+   is
+   begin
+      return Selections.Is_Member
+        (Selections.Selection (The_Subgraph), Edge);
+   end Is_Member;
+
+   ---------------------------------------------------------------------------
+   function Is_Member
+     (The_Subgraph  : in Subgraph;
+      Node          : in Node_Id)
+     return Boolean
+   is
+   begin
+      return Selections.Is_Member
+        (Selections.Selection (The_Subgraph), Node);
+   end Is_Member;
+
+   ---------------------------------------------------------------------------
    procedure Add_Edge
      (The_Subgraph : in Subgraph;
       Edge         : in Edge_Id)
    is
    begin
-      if Selections.Is_Member (Selections.Selection (The_Subgraph),
-                               Edge.Source_Node)
-        and Selections.Is_Member (Selections.Selection (The_Subgraph),
-                                  Edge.Target_Node)
+      if Is_Member (The_Subgraph, Edge.Source_Node)
+        and Is_Member (The_Subgraph, Edge.Target_Node)
       then
-         Selections.Add_Edge
-           (Selections.Selection (The_Subgraph), Edge);
+         Selections.Add_Edge (Selections.Selection (The_Subgraph), Edge);
       end if;
    end Add_Edge;
 
@@ -64,8 +83,7 @@ package body Giant.Graph_Lib.Subgraphs is
 
       procedure Execute (Edge : in Edge_Id) is
       begin
-         Add_Edge (The_Subgraph,
-                   Edge);
+         Add_Edge (The_Subgraph, Edge);
       end Execute;
 
       procedure Apply is new Edge_Id_Sets.Apply (Execute => Execute);
@@ -80,9 +98,7 @@ package body Giant.Graph_Lib.Subgraphs is
       Node         : in Node_Id)
    is
    begin
-      Selections.Add_Node
-        (Selections.Selection (The_Subgraph),
-         Node);
+      Selections.Add_Node (Selections.Selection (The_Subgraph), Node);
    end Add_Node;
 
    ---------------------------------------------------------------------------
@@ -413,18 +429,9 @@ package body Giant.Graph_Lib.Subgraphs is
 
       procedure Execute (Edge : in Edge_Id)
       is
-         Source_And_Target_In_Subgraph : Boolean;
       begin
-         Source_And_Target_In_Subgraph :=
-           Selections.Is_Member (Selections.Selection (The_Subgraph),
-                                 Edge.Source_Node)
-           and Selections.Is_Member (Selections.Selection (The_Subgraph),
-                                     Edge.Target_Node);
-
-         if not Source_And_Target_In_Subgraph then
-            --  "Edge_Does_Not_Exist" could be risen here.
-            --     It is not catched nor converted, since the preconditions
-            --     assures, that this cannot happen
+         if Is_Member (The_Subgraph, Edge.Source_Node)
+           and Is_Member (The_Subgraph, Edge.Target_Node) then
             Edge_Id_Sets.Insert (Edges_To_Remove, Edge);
          end if;
       end Execute;
@@ -441,7 +448,7 @@ package body Giant.Graph_Lib.Subgraphs is
       Edges : Edge_Id_Set := Get_All_Edges (The_Subgraph);
 
    begin
-      Apply (Get_All_Edges (The_Subgraph));
+      Apply (Edges);
       Edge_Id_Sets.Diff (Edges, Edges_To_Remove);
    end Ensure_Graph_Edge_Properties;
 
