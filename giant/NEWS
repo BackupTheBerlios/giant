@@ -6,7 +6,8 @@ in the source directory for details.
 
 Version 1.1.1 (2003-09-)
 
- * standard.gsl fixed
+ * Adjust node size when zooming (Bug #880)
+ * Fixed standard.gsl 
  * Fixed activation record of loop body (Bug #924)
  * Fixed get_first call (Bug #925)
  * Decreased intensity of gsl logging (Bug #926) 
