@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.13 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.14 $
 --  $Author: keulsn $
---  $Date: 2003/06/30 02:55:18 $
+--  $Date: 2003/06/30 14:37:49 $
 --
 ------------------------------------------------------------------------------
 --
@@ -826,7 +826,7 @@ package Giant.Graph_Widgets is
 
    ----------------------------------------------------------------------------
    --  Style for drawing of edges
-   --  can be 'Continouus_Line', 'Dashed_Line', 'Dotted_Line'
+   --  can be 'Continuous_Line', 'Dashed_Line', 'Dotted_Line'
    type Edge_Style_Type is new Config.Vis_Styles.Edge_Line_Style;
 
                            ------------------

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.11 $
 --  $Author: keulsn $
---  $Date: 2003/06/24 21:17:42 $
+--  $Date: 2003/06/30 14:37:49 $
 --
 ------------------------------------------------------------------------------
 
@@ -198,6 +198,20 @@ package body Giant.Vis_Data is
    begin
       return Edge.Points (Num);
    end Get_Point;
+
+   function Get_Left_Arrow_Point
+     (Edge : in     Vis_Edge_Id)
+     return Vis.Absolute.Vector_2d is
+   begin
+      return Edge.Left_Arrow_Point;
+   end Get_Left_Arrow_Point;
+
+   function Get_Right_Arrow_Point
+     (Edge : in     Vis_Edge_Id)
+     return Vis.Absolute.Vector_2d is
+   begin
+      return Edge.Right_Arrow_Point;
+   end Get_Right_Arrow_Point;
 
    function Has_Text_Area
      (Edge : in     Vis_Edge_Id)

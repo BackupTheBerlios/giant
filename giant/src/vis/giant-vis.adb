@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-vis.adb,v $, $Revision: 1.7 $
 --  $Author: keulsn $
---  $Date: 2003/06/24 10:55:04 $
+--  $Date: 2003/06/30 14:37:49 $
 --
 ------------------------------------------------------------------------------
 
@@ -130,6 +130,15 @@ package body Giant.Vis is
         (Logic_Float (Absolute.Get_X (Vector)),
          Logic_Float (Absolute.Get_Y (Vector)));
    end To_Logic;
+
+   procedure To_Gdk
+     (Vector : in     Absolute.Vector_2d;
+      X      :    out Glib.Gint;
+      Y      :    out Glib.Gint) is
+   begin
+      X := Glib.Gint (Absolute.Get_X (Vector));
+      Y := Glib.Gint (Absolute.Get_Y (Vector));
+   end To_Gdk;
 
    function Intersects_Line_Horizontal_Line_X
      (Origin         : in     Logic.Vector_2d;

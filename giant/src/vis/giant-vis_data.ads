@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.13 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.14 $
 --  $Author: keulsn $
---  $Date: 2003/06/24 21:17:42 $
+--  $Date: 2003/06/30 14:37:49 $
 --
 ------------------------------------------------------------------------------
 --
@@ -242,13 +242,30 @@ package Giant.Vis_Data is
      (Edge : in     Vis_Edge_Id)
      return Vis.Absolute_Natural;
 
+   ----------------------------------------------------------------------------
+   --  Number of Points for the main line of edge (excluding the arrow)
    function Get_Number_Of_Points
      (Edge : in     Vis_Edge_Id)
      return Edge_Point_Number;
 
+   ----------------------------------------------------------------------------
+   --  Get a point of the main line (excluding the arrow). The main line
+   --  is drawn along the points returned by this function in ascending
+   --  order of 'Num'.
+   --
+   --  Precondition:
+   --    1 <= Num <= Get_Number_Of_Points
    function Get_Point
      (Edge : in     Vis_Edge_Id;
       Num  : in     Positive)
+     return Vis.Absolute.Vector_2d;
+
+   function Get_Left_Arrow_Point
+     (Edge : in     Vis_Edge_Id)
+     return Vis.Absolute.Vector_2d;
+
+   function Get_Right_Arrow_Point
+     (Edge : in     Vis_Edge_Id)
      return Vis.Absolute.Vector_2d;
 
    function Has_Text_Area

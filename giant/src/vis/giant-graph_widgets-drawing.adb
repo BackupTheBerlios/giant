@@ -20,13 +20,14 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/06/30 02:55:17 $
+--  $Date: 2003/06/30 14:37:49 $
 --
 ------------------------------------------------------------------------------
 
 
+with Gdk.Types;
 with Gdk.Drawable;
 with Gdk.Window;
 with Glib;
@@ -46,7 +47,10 @@ package body Giant.Graph_Widgets.Drawing is
    Default_Dot_Length           : constant := 2;
    Default_Dot_Separation       : constant := 2;
 
+   Default_Edge_Line_Thickness  : constant := 0;
+
    Default_Node_Light_Thickness : constant := 6;
+
    Default_Text_Spacing         : constant := 3;
    Default_Text_Abbreviation    : constant String := "...";
 
@@ -265,15 +269,139 @@ package body Giant.Graph_Widgets.Drawing is
    end Revert_Clipping;
    pragma Inline (Revert_Clipping);
 
+
+   ----------------------------------------------------------------------------
+   --  Draws a node onto 'Buffer'
    procedure Draw_Edge
      (Widget : access Graph_Widget_Record'Class;
       Buffer : in     Gdk.Pixmap.Gdk_Pixmap;
       Edge   : in     Vis_Data.Vis_Edge_Id;
       Origin : in     Vis.Absolute.Vector_2d) is
+
+      procedure Draw_Edge_Line
+        (Gc     : in     Gdk.GC.Gdk_GC;
+         From   : in     Vis.Absolute.Vector_2d;
+         To     : in     Vis.Absolute.Vector_2d) is
+
+         From_X : Glib.Gint;
+         From_Y : Glib.Gint;
+         To_X   : Glib.Gint;
+         To_Y   : Glib.Gint;
+      begin
+         Vis.To_Gdk (From, From_X, From_Y);
+         Vis.To_Gdk (To, To_X, To_Y);
+         Gdk.Drawable.Draw_Line
+           (Drawable   => Buffer,
+            Gc         => Gc,
+            X1         => From_X,
+            Y1         => From_Y,
+            X2         => To_X,
+            Y2         => To_Y);
+      end Draw_Edge_Line;
+
+      procedure Draw_All_Edge_Lines
+        (Gc     : in     Gdk.GC.Gdk_GC;
+         Style  : in     Edge_Style_Type;
+         Width  : in     Vis.Absolute_Natural) is
+
+         Source     : Vis.Absolute.Vector_2d;
+         Target     : Vis.Absolute.Vector_2d;
+         Line_Style : Gdk.Types.Gdk_Line_Style;
+      begin
+         case Style is
+            when Continuous_Line =>
+               Line_Style := Gdk.Types.Line_Solid;
+            when Dashed_Line =>
+               Line_Style := Gdk.Types.Line_On_Off_Dash;
+            when Dotted_Line =>
+               Line_Style := Gdk.Types.Line_On_Off_Dash;
+         end case;
+         --  set line width
+         Gdk.GC.Set_Line_Attributes
+           (GC         => Gc,
+            Line_Width => Glib.Gint (Width),
+            Line_Style => Line_Style,
+            Cap_Style  => Gdk.Types.Cap_Round,
+            Join_Style => Gdk.Types.Join_Round);
+         --  Cannot use 'Gdk.Drawable.Draw_Lines' because
+         --  'Gdk.Types.Gdk_Points_Array' uses Glib.Gint16 as component type
+         --  wich is too small.
+         Target := Vis_Data.Get_Point (Edge, 1) - Origin;
+         for I in 2 .. Vis_Data.Get_Number_Of_Points (Edge) loop
+            Source := Target;
+            Target := Vis_Data.Get_Point (Edge, I) - Origin;
+            Draw_Edge_Line
+              (Gc     => Gc,
+               From   => Source,
+               To     => Target);
+         end loop;
+         --  Target contains end point
+         Draw_Edge_Line
+           (Gc     => Gc,
+            From   => Vis_Data.Get_Left_Arrow_Point (Edge) - Origin,
+            To     => Target);
+         Draw_Edge_Line
+           (Gc     => Gc,
+            From   => Vis_Data.Get_Right_Arrow_Point (Edge) - Origin,
+            To     => Target);
+      end Draw_All_Edge_Lines;
+
+      type Light_Array is array
+        (1 .. Vis_Data.Highlight_Type'Pos (Vis_Data.Highlight_Type'Last) -
+              Vis_Data.Highlight_Type'Pos (Vis_Data.Highlight_Type'First) + 1)
+        of Vis_Data.Local_Highlight_Type;
+      Lights                : Light_Array;
+      Light_Count           : Integer;
+      Current_Thickness     : Vis.Absolute_Natural;
+      Light_Extra_Thickness : Vis.Absolute_Natural;
+      Style                 : Edge_Style_Type :=
+        Settings.Get_Edge_Style (Widget, Edge);
+      Highlighting          : Vis_Data.Flags_Type :=
+        Vis_Data.Get_Highlighting (Edge);
    begin
-      null;
+      if Vis_Data.Is_Hidden (Edge) then
+         return;
+      end if;
+
+      Light_Count := Lights'First - 1;
+      for Light in Vis_Data.Highlight_Type loop
+         if Highlighting (Light) then
+            Light_Count := Light_Count + 1;
+            Lights (Light_Count) := Light;
+         end if;
+      end loop;
+      if Light_Count >= Lights'First then
+         Current_Thickness := Vis_Data.Get_Thickness (Edge);
+         Light_Extra_Thickness :=
+           (Current_Thickness - Default_Edge_Line_Thickness) /
+           (Light_Count - Lights'First + 1);
+         loop
+            Draw_All_Edge_Lines
+              (Gc    => Widget.Drawing.Edge_Light (Lights (Light_Count)),
+               Style => Continuous_Line,
+               Width => Current_Thickness);
+
+            Light_Count := Light_Count - 1;
+            exit when Light_Count < Lights'First;
+            Current_Thickness := Current_Thickness - Light_Extra_Thickness;
+         end loop;
+      end if;
+
+      Draw_All_Edge_Lines
+        (Gc    => Widget.Drawing.Edge_Line (Style),
+         Style => Style,
+         Width => Default_Edge_Line_Thickness);
+
+      if Vis_Data.Has_Text_Area (Edge) then
+         Draw_Text
+           (Buffer => Buffer,
+            Font   => Settings.Get_Edge_Font (Widget),
+            Gc     => Widget.Drawing.Edge_Label,
+            Area   => Vis_Data.Get_Text_Area (Edge),
+            Text   => Graph_Lib.Get_Edge_Tag (Vis_Data.Get_Graph_Edge (Edge)));
+      end if;
    end Draw_Edge;
-   pragma Inline (Draw_Edge);
+
 
    ----------------------------------------------------------------------------
    --  Draws a node onto 'Buffer'
@@ -602,7 +730,6 @@ package body Giant.Graph_Widgets.Drawing is
       Draw_Node_Rectangle (Inner_Rect);
       Draw_Node_Content (Inner_Rect);
    end Draw_Node;
-   pragma Inline (Draw_Node);
 
    procedure Update_Buffer_Edges
      (Widget : access Graph_Widget_Record'Class) is
