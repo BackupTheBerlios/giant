@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: selection.tex,v $, $Revision: 1.9 $
-%  $Date: 2003/03/28 01:31:37 $
+%  $RCSfile: selection.tex,v $, $Revision: 1.10 $
+%  $Date: 2003/03/29 01:52:04 $
 %  $Author: schwiemn $
 %
 %  Description: Use-Cases für die Selektionen
@@ -15,7 +15,7 @@
 Dieser UseCase dient dazu, eine Selektion zur aktuellen Selektion zu machen.
 Dies ist nötig, da nur die aktuelle Selektion mittels der Maus
 modifiziert werden kann. 
-Siehe auch \ref{Aktuelle Selektion vs Selektionen}. 
+Siehe hierzu auch Abschnitt \ref{Aktuelle Selektion vs Selektionen}. 
 	  
 	 
   \begin{precond}
@@ -33,7 +33,8 @@ Siehe auch \ref{Aktuelle Selektion vs Selektionen}.
   \begin{proc}    
     \step[1]
     Der Benutzer führt mit der linken Maustaste einen Doppelklick 
-    auf eine nicht aktuelle Selektion durch.
+    auf eine nicht aktuelle Selektion in der Selektionsauswahlliste
+    (siehe \ref{Selektionsauswahlliste}) durch.
 
     \step[2]
     GIANT macht die entsprechende Selektion zur aktuellen Selektion.  
@@ -46,7 +47,8 @@ Siehe auch \ref{Aktuelle Selektion vs Selektionen}.
 \begin{uc}[Aktuelle Selektion zurück stufen]
           {UC: Aktuelle Selektion zurück stufen}
 	  
-Siehe auch \ref{Aktuelle Selektion vs Selektionen}. Mit diesem UseCase kann
+Siehe hierzu auch Abschnitt \ref{Aktuelle Selektion vs Selektionen}. 
+Mit diesem UseCase kann
 eine aktuelle Selektion auf den Status einer \gq{normalen} Selektion
 zurückgestuft werden.
 	  
@@ -63,7 +65,8 @@ zurückgestuft werden.
   \begin{proc}    
     \step[1]
     Der Benutzer führt mit der linken Maustaste einen Doppelklick 
-    auf die aktuelle Selektion aus.
+    auf die aktuelle Selektion in der Selektionsauswahlliste
+    (siehe \ref{Selektionsauswahlliste}) durch..
 
     \step[2]
     GIANT stuft die aktuelle Selektion auf den Status einer \gq{normalen}
@@ -78,7 +81,7 @@ zurückgestuft werden.
           {UC: Selektion graphisch hervorheben}
 	  
 Dieser UseCase dient zum Hervorheben von Selektionen innerhalb eines
-Anzeigefensters.
+Anzeigefensters (siehe auch \ref {hervorheben von Knoten und Kanten}).
 
   \begin{precond}
     \cond Es gibt ein Anzeigefenster mit mindestens einer Selektion.
@@ -98,12 +101,12 @@ Anzeigefensters.
  
   \begin{proc}    
     \step[1]
-    Der Benutzer startet den UseCase mit Rechtsklick in
-    die Selektionsauswahlliste \ref{Selektionsauswahlliste}
-    auf die entsprechende Selektion über das PopUp Menü
-    \gq{Highlight Selection Color1 (2,3)}.
-        
-      
+    Der Benutzer startet den UseCase mit einem Rechtsklick 
+    auf die gewünschte Selektion in der
+    Selektionsauswahlliste \ref{Selektionsauswahlliste}
+    und wählt im zugehörigen PopUp Menü den Eintrag
+    \gq{Highlight Selection  Color1} aus.
+  
     \step[2]
     GIANT hebt die Selektion mit der entsprechenden Farbe hervor.
     
@@ -137,12 +140,13 @@ Anzeigefensters aufzuheben.
 
   
   \begin{proc}    
-    \step[1]
-    Der Benutzer startet den UseCase mit Rechtsklick in
-    die Selektionsauswahlliste \ref{Selektionsauswahlliste}
-    auf die entsprechende Selektion über den PopUp-Menüpunkt
-    \gq{Unhighlight Selection}.
-
+    \step[1]    
+    Der Benutzer startet den UseCase mit einem Rechtsklick 
+    auf die gewünschte Selektion in der
+    Selektionsauswahlliste (siehe \ref{Selektionsauswahlliste})
+    und wählt im zugehörigen PopUp Menü den Eintrag
+    \gq{Unhighlight Selection} aus.
+  
     \step[2]
     GIANT setzt die Hervorhebung der Selektion zurück.
     
@@ -163,7 +167,7 @@ Mit diesem UseCase können neue, leere Selektionen angelegt werden.
   \begin{postsuccess}
     \cond Eine neue Selektion mit entsprechendem Namen
          ist angelegt und erscheint in der Liste der Selektionen 
-	 (SELECTION\_LIST).
+	 (siehe \ref{Selektionsauswahlliste}).
     \cond Diese neue Selektion hat keinen Inhalt (selektierte Knoten und
           Kanten).
 
@@ -175,18 +179,18 @@ Mit diesem UseCase können neue, leere Selektionen angelegt werden.
   
   \begin{proc}    
     \step[1]
-    Der Benutzer startet den UseCase mit Rechtsklick in
-    die Selektionsauswahlliste \ref{Selektionsauswahlliste}
-    auf die entsprechende Selektion über den PopUp-Menüpunkt
-    \gq{New Selection}.
+    Der Benutzer startet den UseCase mit Rechtsklick auf die
+    die Selektionsauswahlliste (siehe \ref{Selektionsauswahlliste}
+    und wählt im Popup-Menü den Eintrag
+    \gq{New Selection} aus.
     
     \step[2] 
-    GIANT öffnet den allgemeinen Texteingabedialog \ref{DIALOG-WINDOW},
-    \gq{Enter Name for new Selection}.
+    GIANT öffnet den allgemeinen Texteingabedialog 
+    (siehe\ref{DIALOG-WINDOW}).
       
     \step[3] 
     Der Benutzer gibt dort einen zulässigen Namen für die neue Selektion 
-    ein und bestätigt mit OK.\\
+    ein und bestätigt mit OK (siehe \ref{afa Zulaessige Namen}). \\
     Hat bereits eine andere Selektion innerhalb des Anzeigefensters den selben
     Namen erscheint eine Fehlermeldung.
     
@@ -214,7 +218,8 @@ Anzeigefensters (nicht zum Kopieren in ein anderes Anzeigefenster).
   \begin{postsuccess}
     \cond 
     Eine neue Selektion mit entsprechendem Namen ist angelegt 
-    und erscheint in der Liste der Selektionen (SELECTION\_LIST).
+    und erscheint in der Liste der Selektionen
+    (siehe \ref{Selektionsauswahlliste}.
     \cond
     Die neue Selektion umfasst die gleichen Knoten und Kanten wie die
     Selektion, von der kopiert wurde.
@@ -228,17 +233,16 @@ Anzeigefensters (nicht zum Kopieren in ein anderes Anzeigefenster).
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase durch Rechtsklick auf die zu kopierende
-    Selektion in der Selektionsauswahlliste \ref{Selektionsauswahlliste}
-    (\gq{Quellselektion}) und wählt aus dem PopUp Menü:
-    Copy Selection.
+    Selektion in der Selektionsauswahlliste (\ref{Selektionsauswahlliste})
+    und wählt aus dem PopUp Menü den Eintrag \gq{Copy Selection}.
     
     \step[2] 
-    GIANT öffnet den allgemeinen Texteingabedialog \ref{DIALOG-WINDOW},
-    \gq{Please enter name for copy of Selection X} .
+    GIANT öffnet den allgemeinen Texteingabedialog 
+    (siehe \ref{DIALOG-WINDOW}).
       
     \step[3] 
     Der Benutzer gibt dort einen zulässigen Namen für die neue Selektion 
-    ein und bestätigt mit OK.\\
+    ein und bestätigt mit OK (siehe \ref{afa Zulaessige Namen}).\\
     Hat bereits eine andere Selektion innerhalb des Anzeigefensters den selben
     Namen erscheint eine Fehlermeldung.
     
@@ -288,10 +292,9 @@ unverändert.
     \step[1]
     Der Benutzer startet den UseCase durch Rechtsklick auf die zu löschende
     Selektion in der Selektionsauswahlliste \ref{Selektionsauswahlliste}
-    (\gq{Quellselektion}) und wählt aus dem PopUp Menü:
-    Delete Selection.
-  
-    
+    und wählt aus dem PopUp Menü den Eintrag \gq{Delete Selection} aus.
+
+      
     \step[2]
     GIANT löscht die entsprechende Selektion.
   
@@ -304,7 +307,7 @@ unverändert.
          {UC: Selektionen manuell modifizieren}
 	 
 Jeweils die aktuelle Selektion kann mittels der Maus modifiziert 
-werden. 
+werden (siehe auch  \ref{Aktuelle Selektion vs Selektionen}).  
 
 
   \begin{precond}
@@ -344,8 +347,8 @@ werden.
 \begin{uc}[Selektion aus IML-Teilgraph erzeugen]
          {UC: Selektion aus IML-Teilgraph erzeugen}
 	 
-Leitet eine Selektion aus einem IML-Teilgraphen ab.
-Siehe hierzu \ref{Selektion aus IML-Teilgraphen ableiten}.
+Leitet eine Selektion aus einem IML-Teilgraphen ab
+(siehe hierzu \ref{Selektion aus IML-Teilgraphen ableiten}).
 
 
   \begin{precond}
@@ -373,17 +376,18 @@ Siehe hierzu \ref{Selektion aus IML-Teilgraphen ableiten}.
      
     \step[1]
     Der Benutzer führt einen Rechtsklick auf den Quell-IML-Teilgraphen 
-    in der Subgraph List im Hauptfenster aus
-    und wählt im dazugehörigen PopUp Menü \ref{PopUp Menü Subgraph List}
-    den Eintrag \gq{Create Window Selection from IML Subgraph}.
+    in der entsprechenden Liste im Hauptfenster 
+    (siehe \ref{GUI Subgraph List}) aus
+    und wählt im dazugehörigen PopUp Menü 
+    (siehe \ref{PopUp Menü Subgraph List})
+    den Eintrag \gq{Create Window Selection from IML Subgraph} aus.
      
     \step[2]
-    GIANT zeigt den allgemeinen Texteingabediolog \ref{DIALOG-WINDOW},
-    \gq{Enter name for new selection}
+    GIANT zeigt den allgemeinen Texteingabediolog \ref{DIALOG-WINDOW}.
       	    
     \step[3]
     Der Benutzer gibt einen Namen für die neu zu erstellende Selektion ein
-    und bestätigt mit OK.\\
+    und bestätigt mit OK (gültige Namen siehe \ref{afa Zulaessige Namen}).
     Gibt der Benutzer hier keinen Namen ein, so vergibt GIANT automatisch 
     einen Namen.
     
@@ -393,12 +397,14 @@ Siehe hierzu \ref{Selektion aus IML-Teilgraphen ableiten}.
     ein Fadenkreuz.
     
     \step[5]
-    Der Nutzer klickt auf die VIS\_PANE des Windows, in dem er die neue
+    Der Nutzer klickt auf den sichtbaren Anzeigeinhalt des
+    Anzeigefensters, in dem er die neue
     Selektion erstellen will (Ziel-Anzeigefenster).
        
     \step[6]
     Die Statuszeile im Hauptfenster wechselt wieder zur normalen Anzeige.
-    GIANT erzeugt gemäß der unter \ref{Selektion aus IML-Teilgraphen ableiten}
+    GIANT erzeugt gemäß der unter Abschnitt 
+    \ref{Selektion aus IML-Teilgraphen ableiten}
     beschriebenen Konvention im Ziel-Anzeigefenster eine neue Selektion als 
     Ableitung aus dem Quell-IML-Teilgraphen.
 
@@ -406,6 +412,7 @@ Siehe hierzu \ref{Selektion aus IML-Teilgraphen ableiten}.
   
   \begin{aproc}
     \astep{3} Der Benutzer bricht den UseCase mit Cancel ab.
+    \astep{4} Der Benutzer bricht den UseCase durch einen Rechtsklick ab.
   \end{aproc}
 
 
@@ -416,11 +423,13 @@ Siehe hierzu \ref{Selektion aus IML-Teilgraphen ableiten}.
 %===============================================================================
 \begin{uc}[Mengenoperationen auf 2 Selektionen]
 {UC: Mengenoperationen auf 2 Selektionen}
-Zusätzlich zu den Möglichkeiten der Anfragesprache kann der Benutzer
+Zusätzlich zu den Möglichkeiten der Anfragsprache GQSL (siehe
+\ref {GIANT Query Skripting Language}) kann der Benutzer
 die gängigen Mengenoperationen, wie Mengenvereinigung, Schnitt und Differenz,
-auch direkt über einen entsprechenden Dialog ausführen.
-Beschreibung des Dialoges siehe \ref{Common-Set-Operation-Dialog}.
-Vorgehen analog zu \ref{Mengenoperationen auf 2 IML-Teilgraphen}.
+auch direkt über einen entsprechenden Dialog 
+(siehe \ref{Common-Set-Operation-Dialog})  ausführen.
+Das Vorgehen ist analog zu dem UseCase
+\ref{Mengenoperationen auf 2 IML-Teilgraphen}.
 
 
 
@@ -433,7 +442,8 @@ Vorgehen analog zu \ref{Mengenoperationen auf 2 IML-Teilgraphen}.
     \cond 
     Eine neue Selektion mit entsprechendem Namen (eingegeben unter TARGET) 
     ist angelegt 
-    und erscheint in der Liste der Selektionen (SELECTION\_LIST).
+    und erscheint in der Liste der Selektionen 
+    (siehe \ref{Selektionsauswahlliste}).
        
     \cond
     Im Falle einer Mengenvereinigung umfasst, die neue Selektion TARGET alle
@@ -461,8 +471,8 @@ Vorgehen analog zu \ref{Mengenoperationen auf 2 IML-Teilgraphen}.
     \step[1]
     Der Benutzer startet den UseCase über durch Auswahl des
     Menüpunktes Selection Set Operation (Union/Difference/Intersection) 
-    aus dem PopUp Menü in der Selektionsauswahlliste SELECTION\_LIST
-    \label{Selektionsauswahlliste}.
+    aus dem PopUp Menü in der Selektionsauswahlliste (siehe
+    \label{Selektionsauswahlliste}).
     
     \step[2] 
     GIANT öffnet den Common\_Set\_Operation\_Dialog 
@@ -474,7 +484,7 @@ Vorgehen analog zu \ref{Mengenoperationen auf 2 IML-Teilgraphen}.
     RIGHT\_SOURCE)
     aus, bestimmt die durchzuführende Mengenoperation und gibt unter 
     TARGET den Namen der neue zu erzeugenden Selektion 
-    ein.\\
+    ein (gültige Namen siehe \ref{afa Zulaessige Namen}). \\
     Dann bestätigt er die Eingabe mit OK.
        
     \step[4]
@@ -483,7 +493,8 @@ Vorgehen analog zu \ref{Mengenoperationen auf 2 IML-Teilgraphen}.
   \end{proc}
 
   \begin{aproc}
-    \ageneral Der Benutzer bricht die Eingabe der Daten mit Cancel ab.
+    \ageneral 
+    Der Benutzer bricht die Eingabe der Daten mit Cancel ab.
   \end{aproc}
 
 

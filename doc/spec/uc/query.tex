@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: query.tex,v $, $Revision: 1.4 $
-%  $Date: 2003/03/28 13:21:47 $
+%  $RCSfile: query.tex,v $, $Revision: 1.5 $
+%  $Date: 2003/03/29 01:52:04 $
 %  $Author: schwiemn $
 %
 %  Description: Use-Cases für die Anfragen
@@ -9,6 +9,7 @@
 
 % ==============================================================================
 \begin{uc}[Anfrage ausführen]{UC: Neue Anfrage ausführen}
+\index{Anfragen!ausführen}
 Mit diesem UseCase kann eine Anfrage über den Anfragedialog
 (siehe \ref{GUI Anfragedialog}) eingegeben werden.
 Die Möglichkeiten der GQSL sind im Detail unter Kapitel
@@ -58,6 +59,8 @@ Die Möglichkeiten der GQSL sind im Detail unter Kapitel
     GIANT berechnet die Anfrage und teilt dem Benutzer
     den Fortschritt mittels eines Progressbars mit.
     !!!!!!!!!!!VERWEIS GUI!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     Während der Abarbeitung der Anfrage ist das System nicht bedienbar.\\
     
   
@@ -69,7 +72,9 @@ Die Möglichkeiten der GQSL sind im Detail unter Kapitel
     \astep{5} Die laufende Berechnung des Anfrageergebnisses 
     kann vom Benutzer jeder Zeit durch Betätigen des
     Buttons \gq{Stop Calculation} abgebrochen werden.
-     !!!!!!!!!!!!VERWEIS GUI!!!!!!!!!!!!!!!!!!!!!!!.
+     !!!!!!!!!!!!VERWEIS GUI!!!!!!!!!!!!!!!!!!!!!!!
+     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   \end{aproc}
 
@@ -78,6 +83,7 @@ Die Möglichkeiten der GQSL sind im Detail unter Kapitel
 
 % ==============================================================================
 \begin{uc}[Label]{UC: Anfrage laden}
+\index{Anfragen!aus Datei laden}
 Der Benutzer kann zusätzlich zur manuellen Eingabe von GQSL Anfragen
 (siehe \ref{Anfrage ausführen}) auch gespeicherte Anfragen aus 
 einer Anfragedatei (siehe \ref {Config Anfrage-Dateien}) laden.
@@ -143,7 +149,9 @@ einer Anfragedatei (siehe \ref {Config Anfrage-Dateien}) laden.
     \step[10]
     GIANT berechnet die Anfrage und teilt dem Benutzer
     den Fortschritt mittels eines Progressbars mit.
-    !!!!!!!!!!!VERWEIS GUI!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !!!!!!!!!!!VERWEIS GUI!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     Während der Abarbeitung der Anfrage ist das System nicht bedienbar.\\
 
   \end{proc}
@@ -158,7 +166,9 @@ einer Anfragedatei (siehe \ref {Config Anfrage-Dateien}) laden.
     \astep{10} Die laufende Berechnung des Anfrageergebnisses 
     kann vom Benutzer jeder Zeit durch Betätigen des
     Buttons \gq{Stop Calculation} abgebrochen werden.
-     !!!!!!!!!!!!VERWEIS GUI!!!!!!!!!!!!!!!!!!!!!!!.
+     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     !!!!!!!!!!!!VERWEIS GUI!!!!!!!!!!!!!!!!!!!!!!!
+     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   \end{aproc}
 
@@ -166,6 +176,7 @@ einer Anfragedatei (siehe \ref {Config Anfrage-Dateien}) laden.
 
 % ==============================================================================
 \begin{uc}[Label]{UC: Anfrage speichern}
+\index{Anfragen!in eine Datei speichern}
 Mit diesem UseCase kann der Benutzer GQSL Skripte aus dem 
 Anfragedialog (siehe \ref{GUI Anfragedialog}) in Anfragedateien 
 (siehe \ref {Config Anfrage-Dateien}) speichern.
@@ -203,7 +214,7 @@ Anfragedialog (siehe \ref{GUI Anfragedialog}) in Anfragedateien
     den Button \gq{Save Query}.
     
     \step[2]
-    GIANT prüft das GQSL Skript im Textfeld des Anfragedialoges den
+    GIANT prüft ob das GQSL Skript im Textfeld des Anfragedialoges den
     Vorgaben der Grammatik (siehe \ref {GIANT Query Skripting Language} 
     entspricht. Falls nein erscheint eine Fehlermeldung 
     (siehe \ref {afa Fehlerverhalten})
@@ -216,7 +227,6 @@ Anfragedialog (siehe \ref{GUI Anfragedialog}) in Anfragedateien
     \step[4]
     Der Benutzer gibt den Pfad und die Datei, in der das GQSL Skript
     gespeichert werden soll, vor und bestätigt mit OK.
-
 
     \step[5]
     GIANT speichert das GQSL Skript in der vorgegebenen Anfragedatei.

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.47 $
-%  $Date: 2003/03/28 21:57:12 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.48 $
+%  $Date: 2003/03/29 01:52:04 $
 %  $Author: schwiemn $
 %
 %  Description: Bis zu Revision 1.6 sind UseCase-artige Beschreibungen enthalten,
@@ -59,7 +59,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
       
      \subsubsection {Untermenü  Tools}  \label{Main-Window-Tools}
        \begin{enumerate}
-          \item {Delete annotations having no visible Node}
+          \item {Delete Annotations having no visible Node}
 	  \item {Select Layout algorithm}
           \item {Execute GQSL Query}
         \end{enumerate}
@@ -108,6 +108,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
         \end{enumerate}
     
   \subsection {Subgraph List}
+  \label{GUI Subgraph List}
     
     Unter der WINDOW\_LIST im Fenster befindet sich eine Liste SUBGRAPH\_LIST.
    
@@ -134,15 +135,15 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
       sich ein Popup-Menü mit folgenden Menüpunkten:
         \label{SUBGRAPH-LIST-POPUP}
         \begin{enumerate}
-          \item highlight in all windows (zum Hervorheben eines 
-                Teilgraphen in allen Fenstern mit Farbe SUBGRAPH\_COL)
-          \item unhighlight in all windows
-	  \item Change highlighting color
+          \item Highlight with Color 1
+          \item Highlight with Color 2
+          \item Highlight with Color 3
+          \item Unhighlight in all windows
           \item Copy IML Subgraph
 	  \item Create Window Selection from IML Subgraph % OK
           \item Rename IML Subgraph
           \item Delete IML Subgraph
-          \item IML Subgraph Set Operation (Union/Difference/Intersection)
+          \item IML Subgraph Set Operation 
         \end{enumerate}   
         
     
@@ -238,7 +239,6 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     eines Popup-Menüs aktivierbar:
     \begin{enumerate}
       \item New Selection
-      \item Add Nodes to this Selection
 
       \item Move Selection
      
@@ -247,13 +247,15 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
 
       \item Layout Selection
 
-      \item Create New IML Subgraph from this Selection % ?
+      \item Create New IML Subgraph from this Selection % 
       
       \item Highlight Selection  Color1 [gemäß Einstellung in Config Datei] % OK
       \item Highlight Selection  Color2 [gemäß Einstellung in Config Datei] % OK
       \item Highlight Selection  Color3 [gemäß Einstellung in Config Datei] % OK
       
       \item Zoom to make selection fill window % OK
+     
+      \item Copy Selection
       
       \item Unhighlight Selection % OK
       \item Copy Selection keep existing layout % OK
@@ -362,7 +364,8 @@ Defaultmäßig sind die Buttons mit \gq{OK} und \gq{Cancel} beschriftet.
 
 
 
-\section{Common\_Set\_Operation\_Dialog}\label{Common-Set-Operation-Dialog}
+\section{Common\_Set\_Operation\_Dialog}
+\label{Common-Set-Operation-Dialog}
 
 Dieser Dialog dient dazu, Mengenoperationen über Selektionen und
 IML-Teilgraphen durchzuführen.\\
