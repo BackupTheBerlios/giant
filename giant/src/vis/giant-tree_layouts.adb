@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.6 $
---  $Author: squig $
---  $Date: 2003/07/07 12:10:32 $
+--  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.7 $
+--  $Author: koppor $
+--  $Date: 2003/07/07 19:56:05 $
 --
 ------------------------------------------------------------------------------
 --  Variables are named according to the paper
@@ -81,7 +81,7 @@ package body Giant.Tree_Layouts is
       -----------------------------------------------------------------------
       procedure Remove_Node_Layout_Data is
       begin
-         --  TBD: recusively process Layout_Tree_Root and remove content
+         --  TBD: recusively process Tree_Root and remove content
          --  out of the memory
          null;
       end Remove_Node_Layout_Data;
@@ -106,6 +106,7 @@ package body Giant.Tree_Layouts is
       Next_Action :    out Evolutions.Evolution_Action)
    is
 
+      ------------------------------------------------------------------------
       procedure Start_Matrix_Layout
       is
          The_Matrix_Layout : Matrix_Layouts.Matrix_Layout;
@@ -133,6 +134,154 @@ package body Giant.Tree_Layouts is
          Evolutions.Start_Sub_Calculation (Layout, The_Matrix_Layout);
          Next_Action := Evolutions.Finish;
       end Start_Matrix_Layout;
+
+      ------------------------------------------------------------------------
+      procedure FirstWalk_Part_One is
+         Nodes_Processed : Natural := 0;
+         V               : Node_Layout_Data;
+         W               : Node_Layout_Data;
+
+         Part_Two_Data   : FirstWalk_Part_Two_Data_Record;
+
+      begin
+         while (Nodes_Processed <= Max_Nodes_In_One_Run) and
+           not FirstWalk_Part_One_Stacks.Is_Empty
+           (Layout.FirstWalk_Part_One_Stack) loop
+            FirstWalk_Part_One_Stacks.Pop
+              (Layout.FirstWalk_Part_One_Stack, V);
+            if V.Leftmost_Child = null then
+               --  V is a leaf
+
+               W := V.Left_Silbling;
+               if W /= null then
+                  --  V has a left silbling W
+                  V.Prelim := W.Prelim + Layout.Distance;
+               else
+                  V.Prelim := 0.0;
+               end if;
+            else
+               --  Reverse processing gives a correct stack-ordering
+               W := V.Rightmost_Child;
+               while W /= null loop
+                  FirstWalk_Part_One_Stacks.Push
+                    (Layout.FirstWalk_Part_One_Stack, W);
+
+                  Part_Two_Data.V := V;
+                  Part_Two_Data.W := W;
+                  if W = V.Rightmost_Child then
+                     Part_Two_Data.DefaultAncestor := V.Leftmost_Child;
+                  else
+                     --  null indicates, that the defaultancestor of
+                     --    the last call to Apportion has to be taken
+                     Part_Two_Data.DefaultAncestor := null;
+                  end if;
+
+                  W := W.Left_Silbling;
+               end loop;
+            end if;
+
+            Nodes_Processed := Nodes_Processed + 1;
+         end loop;
+
+         Evolutions.Advance_Progress (Layout, Nodes_Processed);
+
+         if FirstWalk_Part_One_Stacks.Is_Empty
+           (Layout.FirstWalk_Part_One_Stack) then
+            Layout.State := FirstWalk_Run_Part_Two;
+            Next_Action  := Evolutions.Run;
+         else
+            Next_Action  := Evolutions.Run;
+         end if;
+      end FirstWalk_Part_One;
+
+      ------------------------------------------------------------------------
+      procedure FirstWalk_Part_Two
+      is
+         Nodes_Processed    : Natural := 0;
+         Part_Two_Data      : FirstWalk_Part_Two_Data_Record;
+
+         ---------------------------------------------------------------------
+         --  Adjust DefaultAncestor of next item of the stack
+         procedure Adjust_DefaultAncestor is
+            Part_Two_Next_Data : FirstWalk_Part_Two_Data_Record;
+         begin
+            FirstWalk_Part_Two_Stacks.Pop
+              (Layout.FirstWalk_Part_Two_Stack, Part_Two_Next_Data);
+
+            if Part_Two_Next_Data.DefaultAncestor = null then
+               Part_Two_Next_Data.DefaultAncestor :=
+                 Part_Two_Data.DefaultAncestor;
+            end if;
+
+            FirstWalk_Part_Two_Stacks.Push
+              (Layout.FirstWalk_Part_Two_Stack, Part_Two_Next_Data);
+         end Adjust_DefaultAncestor;
+
+         ---------------------------------------------------------------------
+         procedure Apportion
+           (V               : in Node_Layout_Data;
+            DefaultAncestor : in out Node_Layout_Data)
+         is
+         begin
+            --  TBD
+            null;
+         end Apportion;
+
+      begin
+
+         while (Nodes_Processed <= Max_Nodes_In_One_Run) and
+           not FirstWalk_Part_Two_Stacks.Is_Empty
+           (Layout.FirstWalk_Part_Two_Stack) loop
+            FirstWalk_Part_Two_Stacks.Pop
+              (Layout.FirstWalk_Part_Two_Stack, Part_Two_Data);
+
+            Apportion (Part_Two_Data.W,
+                       Part_Two_Data.DefaultAncestor);
+
+            Adjust_DefaultAncestor;
+            --  Adjust DefaultAncestor of next node if necessary
+
+            Nodes_Processed := Nodes_Processed + 1;
+         end loop;
+
+         Evolutions.Advance_Progress (Layout, Nodes_Processed);
+
+         if FirstWalk_Part_Two_Stacks.Is_Empty
+           (Layout.FirstWalk_Part_Two_Stack) then
+            Layout.State := FirstWalk_Run_Part_Three;
+            Next_Action  := Evolutions.Run;
+         else
+            Next_Action  := Evolutions.Run;
+         end if;
+      end FirstWalk_Part_Two;
+
+      -----------------------------------------------------------------------
+      procedure FirstWalk_Part_Three
+      is
+
+         Nodes_Processed : Natural := 0;
+         V               : Node_Layout_Data;
+
+      begin
+         while (Nodes_Processed <= Max_Nodes_In_One_Run) and
+           not FirstWalk_Part_Three_Stacks.Is_Empty
+           (Layout.FirstWalk_Part_Three_Stack) loop
+            FirstWalk_Part_Three_Stacks.Pop
+              (Layout.FirstWalk_Part_Three_Stack, V);
+
+            Nodes_Processed := Nodes_Processed + 1;
+         end loop;
+
+         Evolutions.Advance_Progress (Layout, Nodes_Processed);
+
+         if FirstWalk_Part_Three_Stacks.Is_Empty
+           (Layout.FirstWalk_Part_Three_Stack) then
+            Layout.State := SecondWalk_Start;
+            Next_Action  := Evolutions.Run;
+         else
+            Next_Action  := Evolutions.Run;
+         end if;
+      end FirstWalk_Part_Three;
 
    begin
       case Layout.State is
@@ -162,15 +311,46 @@ package body Giant.Tree_Layouts is
                   --    jumped to there
                   Next_Action  := Evolutions.Synchronize;
             end case;
+
          when Init_Run =>
-            Layout.State := FirstWalk;
+            Layout.State := FirstWalk_Start;
             Next_Action  := Evolutions.Run;
-         when FirstWalk =>
-            Layout.State := SecondWalk;
+
+         when FirstWalk_Start =>
+            FirstWalk_Part_One_Stacks.Push
+              (Layout.FirstWalk_Part_One_Stack, Layout.Tree_Root);
+
+            Layout.State := FirstWalk_Run_Part_One;
             Next_Action  := Evolutions.Run;
-         when SecondWalk =>
+
+         when FirstWalk_Run_Part_One =>
+            FirstWalk_Part_One;
+
+         when FirstWalk_Run_Part_Two =>
+            FirstWalk_Part_Two;
+
+         when FirstWalk_Run_Part_Three =>
+            FirstWalk_Part_Three;
+
+         when SecondWalk_Start =>
+            declare
+               SecondWalk_Data : SecondWalk_Data_Record;
+            begin
+               SecondWalk_Data.V := Layout.Tree_Root;
+               SecondWalk_Data.M := - Layout.Tree_Root.Prelim;
+
+               SecondWalk_Stacks.Push
+                 (Layout.SecondWalk_Stack,
+                  SecondWalk_Data);
+            end;
+
+            Layout.State := SecondWalk_Run;
+            Next_Action  := Evolutions.Run;
+
+         when SecondWalk_Run =>
             Layout.State := Matrix;
             Next_Action  := Evolutions.Run;
+
          when Matrix =>
             Start_Matrix_Layout;
       end case;
@@ -200,7 +380,7 @@ package body Giant.Tree_Layouts is
       begin
          Data := new Node_Layout_Data_Record;
          --  from the paper
-         Data.Modf     := 0;
+         Data.Modf     := 0.0;
          Data.Thread   := null;
          Data.Ancestor := Data;
 
@@ -234,14 +414,25 @@ package body Giant.Tree_Layouts is
            (Layout.Nodes_To_Layout, Layout.Root_Node);
 
          --  Generate layout-data for root node
-         Layout.Layout_Tree_Root := Generate_Node_Layout_Data
+         Layout.Tree_Root := Generate_Node_Layout_Data
            (Node  => Layout.Root_Node,
             Level => 1);
 
          --  Generate queue having root as first and only element
-         Layout.Layout_Queue :=
-           Node_Layout_Data_Lists.MakeList (Layout.Layout_Tree_Root);
-         Layout.Layout_Queue_Last := Layout.Layout_Queue;
+         Layout.Queue :=
+           Node_Layout_Data_Lists.MakeList (Layout.Tree_Root);
+         Layout.Queue_Last := Layout.Queue;
+
+         --  FirstWalk-Stacks
+         Layout.FirstWalk_Part_One_Stack   := FirstWalk_Part_One_Stacks.Create;
+         Layout.FirstWalk_Part_Two_Stack   := FirstWalk_Part_Two_Stacks.Create;
+         Layout.FirstWalk_Part_Three_Stack :=
+           FirstWalk_Part_Three_Stacks.Create;
+
+         Layout.SecondWalk_Stack := SecondWalk_Stacks.Create;
+
+         Layout.Distance :=
+           Graph_Widgets.Get_Current_Maximum_Node_Width (Layout.Widget) * 1.1;
 
          --  next step is the "normal" initialize of the treelayout
          Layout.State := Init_Run;
@@ -265,20 +456,20 @@ package body Giant.Tree_Layouts is
          is
 
             ------------------------------------------------------------------
-            --  Appends given element to Layout.Layout_Queue in O(1)
+            --  Appends given element to Layout.Queue in O(1)
             --
             --  a simple "Append" of Node_Layout_Data_Lists can't be used,
             --    since it needs O(n)
-            procedure Append_To_Layout_Queue
+            procedure Append_To_Queue
               (Data : in Node_Layout_Data)
             is
                Last_Element : Node_Layout_Data_Lists.List;
             begin
                Last_Element := Node_Layout_Data_Lists.MakeList (Data);
                Node_Layout_Data_Lists.Attach
-                 (Layout.Layout_Queue_Last, Last_Element);
-               Layout.Layout_Queue_Last := Last_Element;
-            end Append_To_Layout_Queue;
+                 (Layout.Queue_Last, Last_Element);
+               Layout.Queue_Last := Last_Element;
+            end Append_To_Queue;
 
             --  Stores the current amount of Silblings
             Silbling_Count     : Natural;
@@ -343,7 +534,7 @@ package body Giant.Tree_Layouts is
 
                         --  the children of Data have to be created, too
                         --  --> append Data to queue
-                        Append_To_Layout_Queue (Data);
+                        Append_To_Queue (Data);
 
                      end if;
                   end if;
@@ -382,25 +573,25 @@ package body Giant.Tree_Layouts is
 
       begin
          Number_Nodes_To_Process := Min
-           (Node_Layout_Data_Lists.Length (Layout.Layout_Queue),
+           (Node_Layout_Data_Lists.Length (Layout.Queue),
             Max_Nodes_In_One_Run);
 
          for I in 1..Number_Nodes_To_Process loop
             Current_Data := Node_Layout_Data_Lists.FirstValue
-              (Layout.Layout_Queue);
+              (Layout.Queue);
             Create_Children (Current_Data);
-            Node_Layout_Data_Lists.DeleteHead (Layout.Layout_Queue);
+            Node_Layout_Data_Lists.DeleteHead (Layout.Queue);
          end loop;
 
          Evolutions.Advance_Progress (Layout, Number_Nodes_To_Process);
 
          if Graph_Lib.Node_Id_Sets.Is_Empty (Layout.Nodes_To_Layout) or
-           Node_Layout_Data_Lists.IsEmpty (Layout.Layout_Queue) then
+           Node_Layout_Data_Lists.IsEmpty (Layout.Queue) then
             --  there are no more nodes to convert to Node_Layout_Data
-            --    (i.e. in Layout.Layout_Queue are only leaves)
+            --    (i.e. in Layout.Queue are only leaves)
             --  or there are no more Node_Layout_Datas to process
             --  --> proceed to next step
-            Layout.State := FirstWalk;
+            Layout.State := FirstWalk_Start;
             Next_Action  := Evolutions.Run;
          else
             Next_Action := Evolutions.Synchronize;
