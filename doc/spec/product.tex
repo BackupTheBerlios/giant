@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: product.tex,v $, $Revision: 1.15 $
-%  $Date: 2003/02/19 18:02:50 $
+%  $RCSfile: product.tex,v $, $Revision: 1.16 $
+%  $Date: 2003/02/20 11:51:53 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung des Produktes. Übersicht über die Funktionen
@@ -257,10 +257,20 @@ Unzulässige Namen werden generell abgelehnt und führen zu einer Fehlermeldung.
   \begin {enumerate}
   
     \item Name eines Projektes: STANDARD FILENAME
-    \item Name eines IML-Teilgraphen: STANDARD FILENAME
-    \item Name eines Anzeigefensters: STANDARD FILENAME
+    \item Name eines IML-Teilgraphen: STANDARD FILENAME\\
+          Dieser Name muss für jeden IML-Teilgraphen innerhalb eines
+	  Projektes eindeutig sein.
+    
+    \item Name eines Anzeigefensters: STANDARD FILENAME\\
+          Dieser Name muss für jedes Anzeigefenster innerhalb des Projektes
+	  eindeutig sein.
+    
     \item Name einer Selektion: STANDARD FILENAME
+          Dieser Name muss für jede Selektion innerhalb eines Anzeigefensters
+	  eindeutig sein.
+    
     \item Name eines Pins: STANDARD FILENAME
+          Dieser Name muss innerhalb eines Anzeigefensters eindeutig sein.
  
   \end {enumerate}
  

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: selection.tex,v $, $Revision: 1.2 $
-%  $Date: 2003/02/19 18:02:50 $
+%  $RCSfile: selection.tex,v $, $Revision: 1.3 $
+%  $Date: 2003/02/20 11:51:53 $
 %  $Author: schwiemn $
 %
 %  Description: Use-Cases für die Selektionen
@@ -329,11 +329,77 @@ werden.
 
 \end{uc}
 %===============================================================================
-\begin{uc}[Label]{UC: Mengenvereinigung von 2 Selektionen}
+\begin{uc}[Label]{UC: Mengenoperationen auf 2 Selektionen}
+Zusätzlich zu den Möglichkeiten der Anfragesprache kann der Benutzer
+die gängigen Mengen Operationen, wie Mengenvereinigung, Schnitt und Differenz,
+auch direkt über einen entsprechenden Dialog ausführen.
+Beschreibung des Dialoges siehe \ref{Common-Set-Operation-Dialog}.
+
+
+  \begin{precond}
+    \cond Es gibt ein geöffnetes Anzeigefenster mit mindestens zwei Selektionen.
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond 
+    Eine neue Selektion mit entsprechendem Namen (eingegeben unter TARGET) ist angelegt 
+    und erscheint in der Liste der Selektionen (SELECTION\_LIST).
+       
+    \cond
+    Im Falle einer Mengenvereinigung umfasst, die neue Selektion TARGET alle
+    Knoten und Kanten aus der LEFT\_SOURCE Selektion und der RIGHT\_SOURCE Selektion.
+    
+    \cond
+    Im Falle einer Mengendifferenz umfasst, die neue Selektion TARGET alle
+    Knoten und Kanten aus der LEFT\_SOURCE Selektion, die nicht Bestandteil der 
+    RIGHT\_SOURCE Selektion sind.
+
+    \cond
+    Im Falle eines Mengenschnitts umfasst, die neue Selektion TARGET alle
+    Knoten und Kanten, die sowohl der LEFT\_SOURCE Selektion und der RIGHT\_SOURCE Selektion.
+
+  \end{postsuccess}
+
+  \begin{postfail}
+    \cond Das System bleibt im bisherigen Zustand.
+  \end{postfail}
+  
+  \begin{proc}    
+    \step[1]
+    Der Benutzer startet den UseCase über durch Auswahl aus dem PopUp Menü 
+    !!!!!ENTSPRECHENDEN MENÜEINTAG NENNEN.
+    
+    \step[2] 
+    GIANT öffnet den Common\_Set\_Operation\_Dialog 
+    (siehe \ref{Common-Set-Operation-Dialog}).
+    
+    
+    \step[3] 
+    Der Benutzer wählt dort die beiden Quellselektionen (LEFT\_SOURCE und RIGHT\_SOURCE)
+    aus und gibt unter TARGET den Namen der neue zu erzeugenden Selektion ein.\\
+       
+    \step[4]
+    GIANT führt die Mengenoperation aus.
+  
+  \end{proc}
+
+  \begin{aproc}
+    \ageneral Der Benutzer bricht die Eingabe der Daten mit Cancel ab.
+  \end{aproc}
+
+
+
+
+
 \end{uc}
 %===============================================================================
 \begin{uc}[Label]{UC: Mengendifferenz von 2 Selektionen}
+>>> Ist mit dem oberen UseCase abgedeckt
+>>> KANN gestrichen werden
+
 \end{uc}
 %===============================================================================
 \begin{uc}[Label]{UC: Mengenschnitt von 2 Selektionen}
+>>> Ist mit dem oberen UseCase abgedeckt
+>>> KANN gestrichen werden
 \end{uc}

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.18 $
-%  $Date: 2003/02/19 18:02:50 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.19 $
+%  $Date: 2003/02/20 11:51:53 $
 %  $Author: schwiemn $
 %
 %  Description: Bis zu Revision 1.6 sind UseCase-artige Beschreibungen enthalten,
@@ -333,6 +333,52 @@ mit einem Prompt-Text TEXT\_LABEL davor, zwei Buttons OK\_BUTTON und CANCEL\_BUT
 mit den Beschriftungen OK\_LABEL und CANCEL\_LABEL.
 Defaultmäßig sind die Buttons mit \gq{OK} und \gq{Cancel} beschriftet.
 
+
+
+\section{Common\_Set\_Operation\_Dialog}\label{Common-Set-Operation-Dialog}
+
+Dieser Dialog dient dazu, Mengenoperationen über Selektionen und
+IML-Teilgraphen durchzuführen.\\
+Die Mengenoperation lässt sich dann wie folgt beschreiben:
+TARGET := LEFT\_SOURCE <op> RIGHT\_SOURCE.\\ \\
+
+
+Bestandteile des Dialoges sind:
+\begin {enumerate}
+
+ \item LEFT\_SOURCE Combobox\\
+ Soll eine Mengenoperation für Selektionen ausgeführt werden, so werden hier
+ alle Selektionen des entsprechenden Anzeigefensters angezeigt.\\
+ Bei einer Mengenoperation über IML-Teilgraphen, werden alle IML-Teilgraphen
+ des Projektes angezeigt.
+   
+ \item LEFT\_SOURCE Combobox\\
+ Soll eine Mengenoperation für Selektionen ausgeführt werden, so werden hier
+ alle Selektionen des entsprechenden Anzeigefensters angezeigt.\\
+ Bei einer Mengenoperation über IML-Teilgraphen, werden alle IML-Teilgraphen
+ des Projektes angezeigt.
+
+ \item TARGET Textfield\\
+ Name der neuen Selektion oder des neuen IML-Teilgraphen als Ergebnis
+ der Mengenoperation.
+  
+ \item Ein OK Button\\
+ Entsprechende Mengenoperation wird ausgeführt.
+ 
+ \item Ein Cancel Button\\
+ Bricht die Eingabe ab.
+ 
+ 
+
+\end {enumerate}
+
+
+
+
+
+
+
+
 \section{Dateneingabe}
 Beschreibung von verschiedenen Textfeldtypen etc. zur Eingabe von Daten.
 
@@ -359,4 +405,27 @@ mit \gq{No}.
   \subsection {Der \gq{Standard-Filechooser-Dialog}}
   Die Auswahl von Dateien (Laden/Speichern) passiert bei GIANT mittels
   des von GTK/ADA bereit gestellten Filechooser-Dialogs.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
