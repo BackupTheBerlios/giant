@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.8 $
 --  $Author: koppor $
---  $Date: 2003/06/10 07:34:20 $
+--  $Date: 2003/06/10 10:38:32 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -36,20 +36,17 @@ with IML.IO;
 with IML_Node_IDs;
 with IML_Reflection;
 with IML_Roots;
+with Lists;
 
 --  from Giant
 with Giant.Constant_Ptr_Hashs;
 with Giant.Ptr_Normal_Hashs;
-with Giant.Lists;
-
 with Giant.Logger;
-
 
 pragma Elaborate_All (Giant.Constant_Ptr_Hashs);
 pragma Elaborate_All (Giant.Ptr_Normal_Hashs);
 pragma Elaborate_All (Hashed_Mappings);
 pragma Elaborate_All (Ptr_Hashs);
-
 
 package body Giant.Graph_Lib is
 
@@ -357,7 +354,7 @@ package body Giant.Graph_Lib is
 
          type Edge_Access is access Edge_Record;
 
-         package Edge_Lists is new Giant.Lists
+         package Edge_Lists is new Lists
            (ItemType => Edge_Access);
 
          type Node_Record is record
@@ -388,7 +385,7 @@ package body Giant.Graph_Lib is
          --  ! The edges pointing to this node are /not/ destroyed
          procedure Destroy_Node (NodeToDestroy : in out Node_Access);
 
-         package Node_Queues is new Giant.Lists (ItemType => Node_Access);
+         package Node_Queues is new Lists (ItemType => Node_Access);
          subtype Node_Queue is Node_Queues.List;
 
       end Load_Nodes;
@@ -613,7 +610,7 @@ package body Giant.Graph_Lib is
             Iter := Load_Nodes.Node_Queues.MakeListIter (Queue);
 
             while Load_Nodes.Node_Queues.More (Iter) loop
-               Node := Load_Nodes.Node_Queues.CurrentElement (Iter);
+               Node := Load_Nodes.Node_Queues.CellValue (Iter);
 
                if Node.IML_Node.all in IML_Roots.IML_Root_Class'Class then
                   --  we process only nodes below IML_Root and no other
@@ -628,7 +625,7 @@ package body Giant.Graph_Lib is
                   end loop;
 
                end if;
-               Load_Nodes.Node_Queues.MoveNext (Iter);
+               Load_Nodes.Node_Queues.Forward (Iter);
             end loop;
          end ProcessQueue;
 
@@ -1547,4 +1544,3 @@ package body Giant.Graph_Lib is
    end Make_Attribute_Iterator;
 
 end Giant.Graph_Lib;
-
