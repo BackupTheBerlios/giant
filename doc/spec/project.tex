@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: project.tex,v $, $Revision: 1.19 $
-%  $Date: 2003/02/25 16:11:30 $
+%  $RCSfile: project.tex,v $, $Revision: 1.20 $
+%  $Date: 2003/02/26 07:50:27 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -13,6 +13,20 @@
 
 GIANT speichert persistente Informationen in so genannten Projekten.
 \begin {enumerate}
+
+  \item
+  Die gesamte in dieser Spezifikation beschriebene Funktionalität, die
+  sich auf das Laden bestehender und das öffnen neuer Projekte während
+  der Laufzeit von GIANT bezieht, kann nur implementiert werden, 
+  falls die Reflektion zur Bauhaus IML-Graph Bibliothek dies unterstützt.
+  Der Kunde muss hierzu in der Reflektion die Möglichkeit vorsehen, 
+  IML-Graphen zur Laufzeit laden und bereits geladene IML-Graphen zur
+  Laufzeit aus dem Speicher entfernen zu können.
+    
+  \item
+  Zur sicheren Identifikation der IML-Graph Datei, 
+  die zu einem Projekt gehört, muss über die Reflektion eine eindeutige
+  Prüfsumme für jeden IML-Graphen berechnet werden können.
 
   \item 
   Wird während des Betriebs von GIANT ein neues Projekt angelegt, so erhält 
@@ -35,11 +49,9 @@ GIANT speichert persistente Informationen in so genannten Projekten.
   In GIANT darf immer nur ein Projekt gleichzeitig geöffnet sein. 
   
   \item
-  Während der Arbeit mit GIANT kann jederzeit ein Projekt geladen oder ein
-  neues Projekt angelegt werden. 
-  Voraussetzung hierfür ist allerdings, dass dies 
-  in der Reflektion zum IML-Graphen unterstützt wird.
-  
+  Während der Arbeit mit GIANT kann jederzeit ein vorhandenes Projekt 
+  geladen oder ein neues Projekt angelegt werden. 
+
 \end {enumerate}
 
 
@@ -82,8 +94,7 @@ GIANT speichert persistente Informationen in so genannten Projekten.
   
  
   \subsection {Prüfung der IML-Graph Datei}
-  Die Reflektion muss für jede IML-Graph Datei eine möglichst eindeutige 
-  Prüfsumme berechnen können. Beim Laden eines Projektes wird überprüft, 
+  Beim Laden eines Projektes wird überprüft, 
   ob die in der Projektdatei gespeicherte Prüfsumme
   der Prüfsumme der zu ladenden IML-Graph Datei entspricht. 
   Das Verhalten von GIANT für den Fall, dass eine IML-Graph Datei geladen wird, 
@@ -237,7 +248,7 @@ GIANT speichert persistente Informationen in so genannten Projekten.
   
    \item
    Änderungen bestehender oder neu erzeugte Knoten-Annotationen werden nur
-   über die Funktionaliät unter \gq{alles Speichern} in die 
+   über die Funktionaliät unter \gq{Alles Speichern} in die 
    Verwaltungsdatei geschrieben.
    
    \item
