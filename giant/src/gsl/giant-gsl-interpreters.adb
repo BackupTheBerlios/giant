@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/29 18:14:45 $
+-- $Date: 2003/06/30 16:03:29 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -94,23 +94,24 @@ package body Giant.Gsl.Interpreters is
    -- initilizes the Gsl Interpreter for Evolution.
    procedure Execute_Script
      (Individual : Interpreter;
-      Name       : String) is
+      Name       : String;
+      Context    : String) is
    begin
+      -- set the current interpreter and initilize context and script
       Current_Interpreter := Individual;
-      Default_Logger.Debug
-        ("Interpreter: Call compiler.", "Giant.Gsl");
-      Individual.Execution_Stack :=
-        Giant.Gsl.Compilers.Get_Execution_Stack
-          (Individual.Gsl_Compiler, Name);
-      Default_Logger.Debug
-        ("Interpreter: Initilize result stack.", "Giant.Gsl");
+      Individual.Script := To_Unbounded_String (Name);
+      Individual.Context := To_Unbounded_String (Context);
+      -- initialize the execution stack with the 
+      Individual.Execution_Stack := Giant.Gsl.Compilers.Get_Execution_Stack
+        (Individual.Gsl_Compiler, Name);
+      -- initialize the result stack
       Individual.Result_Stack := Result_Stacks.Create;
-      Default_Logger.Debug
-        ("Interpreter: Initilize activation records.", "Giant.Gsl");
+      -- create the main activation record and set it acitve
       Individual.Main_Activation_Record := Create_Activation_Record (null);
       Individual.Current_Activation_Record := 
         Individual.Main_Activation_Record;
-      
+     
+      -- register runtime functions
       Default_Logger.Debug
         ("Interpreter: Register runtime functions.", "Giant.Gsl");
       Register_Runtime (Giant.Gsl.Runtime.Runtime_Set'Access, "set");
@@ -135,9 +136,7 @@ package body Giant.Gsl.Interpreters is
       Register_Runtime (Giant.Gsl.Runtime.Runtime_Is_Edgeid'Access, 
                         "is_edgeid");
 
-
-      Default_Logger.Debug
-        ("Interpreter: Initilize Evolution.", "Giant.Gsl");
+      -- initilze the evolution object, comlexity is 0
       Initialize (Individual, 0);
    end Execute_Script;
 
@@ -197,9 +196,6 @@ package body Giant.Gsl.Interpreters is
             when Script_Decl =>
                Lit := Giant.Gsl.Syntax_Tree.Get_Literal (Cmd);
                Lit := Copy (Lit);
-               -- Set_Activation_Record (Gsl_Script_Reference (Lit),
-               --  Create_Activation_Record
-               --    (Current_Interpreter.Current_Activation_Record));
                Set_Activation_Record (Gsl_Script_Reference (Lit),
                  Current_Interpreter.Current_Activation_Record);
                Result_Stacks.Push (Current_Interpreter.Result_Stack, Lit);
@@ -222,6 +218,8 @@ package body Giant.Gsl.Interpreters is
                   Result_Stacks.Pop (Individual.Result_Stack, Res1);
                   for i in 1 .. Giant.Gsl.Syntax_Tree.Get_Size (Cmd)-1 loop
                      Result_Stacks.Pop (Individual.Result_Stack, Res2);
+                     -- free the memory
+                     Destroy_Gsl_Type (Res2);
                   end loop;
                   Result_Stacks.Push
                     (Individual.Result_Stack, Res1);
@@ -242,7 +240,9 @@ package body Giant.Gsl.Interpreters is
                null;
 
          end case;
-         
+
+         -- destroy the command, free memory
+         Giant.Gsl.Syntax_Tree.Destroy_Node (Cmd);
          Next_Action := Giant.Evolutions.Run;
          Log_Result_Stack;
       end if;

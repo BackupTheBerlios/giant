@@ -22,10 +22,14 @@
 --
 -- $RCSfile: giant-gsl-interpreters.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/29 18:14:45 $
+-- $Date: 2003/06/30 16:03:29 $
 --
--- This package implements the datatypes used in GSL.
+-- This package implements the Gsl interpreter.
 --
+
+with Ada.Strings.Unbounded;
+use  Ada.Strings.Unbounded;
+
 with Giant.Evolutions;
 with Giant.Gsl.Compilers;
 with Giant.Gsl.Types;
@@ -64,7 +68,8 @@ package Giant.Gsl.Interpreters is
    --
    procedure Execute_Script
      (Individual : Interpreter;
-      Name       : String);
+      Name       : String;
+      Context    : String);
 
    ---------------------------------------------------------------------------
    --
@@ -103,17 +108,28 @@ package Giant.Gsl.Interpreters is
      (Name            : String;
       Value           : Gsl_Type);
 
-private 
+private
 
+   ---------------------------------------------------------------------------
+   --
    Current_Interpreter : Interpreter;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Script_Activation_Cmd;
+   
+   ---------------------------------------------------------------------------
+   --
    procedure Script_Exec_Cmd;
 
+   ---------------------------------------------------------------------------
+   --
    function Create_Activation_Record
      (Parent : Activation_Record)
       return Activation_Record;
    
+   ---------------------------------------------------------------------------
+   --
    procedure Destroy_Activation_Record
      (AR : Activation_Record);
 
@@ -121,6 +137,8 @@ private
    -- the GSL interpreter, inherits Iterative_Evolution 
    type Interpreter_Record is new Giant.Evolutions.Iterative_Evolution with
       record
+         Context                   : Unbounded_String;
+         Script                    : Unbounded_String;
          Execution_Stack           : Execution_Stacks.Stack;
          Result_Stack              : Result_Stacks.Stack;
          Main_Activation_Record    : Activation_Record;
