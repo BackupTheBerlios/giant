@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: project.tex,v $, $Revision: 1.32 $
-%  $Date: 2003/04/17 22:44:58 $
+%  $RCSfile: project.tex,v $, $Revision: 1.33 $
+%  $Date: 2003/04/18 23:28:09 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -284,26 +284,24 @@ Konventionen der Projektverwaltung:
     sind um den Zustand des Anzeigefensters zu rekonstruieren, der
     möglichst exakt dem Zustand bei der Speicherung des Anzeigefensters
     entspricht. Insbesondere werden hierbei die folgenden Bestandteile
-    des Anzeigefensters gespeichert:
+    des Anzeigefensters gespeichert:\\\\
 
-      \subitem
-      Alle Selektionen und Pins des Anzeigefensters.
+      Alle Selektionen und Pins des Anzeigefensters.\\\\
 
-      \subitem
       Der exakte Zustand jeder Selektion; d.h. ob und wie die
       Selektion hervorgehoben ist, ob sie gefiltert ist und ob
-      sie den Status der aktuellen Selektion hat.
+      sie den Status der aktuellen Selektion hat. \\\\
 
-      \subitem
       Die Position der Fenster-Knoten und Fenster-Kanten des 
-      Anzeigefensters.
+      Anzeigefensters.\\\\
+
 
     \item  \index{Persistenz!Visualisierungsstile}
     Für den gewählten Visualisierungsstil des Anzeigefensters wird
     nur der Name gespeichert, da die Visualisierungsstile über
     die Konfigurationsdateien beliebig editiert
     und auch gelöscht werden können. Wird beim Laden eines
-    Anzeigefensters aus der Verwaltungsdatei kein Visualisierungstil
+    Anzeigefensters aus der Verwaltungsdatei kein Visualisierungsstil
     gefunden, dessen Name dem gespeicherten entspricht, so
     wird für das Anzeigefenster statt dessen ein 
     Standard-Visualisierungsstil verwendet.
@@ -390,7 +388,7 @@ verwaltet werden.
  \item Einmal erzeugte Knoten-Annotationen werden jedem IML-Knoten mit
    der entsprechenden ID zugeordnet, unabhängig davon in welchem
    Anzeigefenster diese visualisiert sind. Ein Knoten kann auch
-   annotiert sein, wenn er in keinem Anzeigefenster visualisiert ist.
+   annotiert sein, wenn er in keinem Anzeigefenster visualisiert ist. 
    Wird ein annotierter Knoten gelöscht (aus einem Anzeigefenster
    entfernt), so wird der dazu vorhandene Eintrag für die Annotation
    in der Verwaltungsdatei nicht automatisch mit gelöscht.

@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.80 $
-%  $Date: 2003/04/18 16:36:51 $
-%  $Author: birdy $
+%  $RCSfile: gui.tex,v $, $Revision: 1.81 $
+%  $Date: 2003/04/18 23:28:09 $
+%  $Author: schwiemn $
 %
 %  Description: 
 %
@@ -76,7 +76,7 @@ Subgraph List (4 Spalten).
   \subsection {Statuszeile}
   \label{Statuszeile}
   Die Statuszeile befindet sich ganz unten im Fenster. In der
-  Statustzeile Informationen zum aktuellen Zustand von GIANT
+  Statuszeile werden Informationen zum aktuellen Zustand von GIANT
   dargestellt.
 
    \subsection {Window List}
@@ -231,7 +231,7 @@ Subgraph List (4 Spalten).
     Selektion, \gq{Color} mit der Farbe der Selektion und \gq{State}
     mit dem Status der Selektion (eingeblendet oder ausgeblendet).
 
-    Im Popup-Menü der Selektionsauswahlliste (\gq{Selection List} befinden
+    Im Popup-Menü der Selektionsauswahlliste (\gq{Selection List}) befinden
     sich folgende Einträge:
 
     \begin{enumerate}
@@ -265,7 +265,7 @@ Subgraph List (4 Spalten).
       \item Copy Selection Changing Existing Layout % OK
       \item Delete Selection % OK
       \item Delete Nodes and Edges of Selection
-      \item Selection Set Operation (Union/Difference/Intersection) % OK
+      \item Selection Set Operation % Changed by Martin
       
       \item Set Layout Algorithm For Selection
       
@@ -309,7 +309,7 @@ Subgraph List (4 Spalten).
     zu Knoten angezeigt werden.
     
     Im Fenster wird die ID und der Typ des Knotens dargestellt,
-    darunter befinden sich unteinander drei getrennt
+    darunter befinden sich untereinander drei getrennt
     scrollbare Listen, Attributes, Successor Nodes und
     Predecessor Nodes.
     
@@ -422,7 +422,7 @@ Bestandteile des Dialoges sind:
  der Mengenoperation.
  
  \item Buttons OK und Cancel\\
- Mit den beiden Buttons OK und Cancel läßt sich die Operation starten bzw.
+ Mit den beiden Buttons OK und Cancel lässt sich die Operation starten bzw.
  der Dialog ohne Ausführen der Operation verlassen.
  
 \end {enumerate}
@@ -442,10 +442,12 @@ Der Dialog Layoutalgorithmen (\ref{Layout-Algorithm-Dialog-Pic}) bietet folgende
 \begin {enumerate}
  \item Auswahl des Layoutalgorithmuses
  \item {Eingabe der zu berücksichtigenden Kanten bei semantischen Layouts
- 	Hierbei können mittels der Buttons >> und << die verfügbaren
+ 	Hierbei können mittels der Buttons \gq{>>} und \gq{<<} die 
+        verfügbaren
 	definierten Listen von Knoten- und Kantentypen zwischen den beiden
-	Listen Available und Use For Layout hin und her geschoben werden.
-	Nur Kantenlisten, die sich in der Use For Layout Spalte befinden,
+	Spalten \gq{Available} und \gq{Use For Layout} 
+        hin und her geschoben werden.
+	Nur Kantenlisten, die sich in der \gq{Use For Layout} Spalte befinden,
 	werden berücksichtigt.
         }
  \item OK Button
@@ -480,7 +482,7 @@ Textfeld übernommen oder verworfen werden.
        \label{Make-Room-Dialog-Pic}
     \end{figure}
 
-Im Dialogfenster Make Room (\ref{Make-Room-Dialog-Pic}) wird in einem Textfeld als Zahl angegeben, um wieviel
+Im Dialogfenster Make Room (\ref{Make-Room-Dialog-Pic}) wird in einem Textfeld als Zahl angegeben, um wie viel
 Pixel die Knoten an der vorher markierten Stelle auseinandergeschoben werden sollen.
 Mit dem Button OK kann bestätigt werden, mit Button Cancel abgebrochen werden.
 
@@ -508,7 +510,7 @@ mit der standardmäßigen Beschriftung \gq{OK}.
        \label{Confirmation-Window-Pic}
     \end{figure}
     
-Eine allgemeine Sicherheitsabfrage (\ref{Confirmation-Window-Pic}) ist ein Fenster Confirmation Window mit dem
+Eine allgemeine Sicherheitsabfrage (\ref{Confirmation-Window-Pic}) ist ein Fenster (\gq{Confirmation Window}) mit dem
 Titel \gq{Confirmation}. Im Fenster ist
 ein Fragetext und ein Button mit der standardmäßigen Beschriftung
 Beschriftung \gq{Yes}, sowie ein Button mit der standardmäßigen Beschriftung
@@ -535,11 +537,16 @@ benötigt.
 \section{Fadenkreuz-Cursor}
 \label{Fadenkreuzcursor}
         Der Cursor verwandelt sich nach Auswahl bestimmter
-        Funktionen in ein Fadenkreuz.
-        Durch Linksklick auf einen Knoten, eine Kante oder leere Position in einem
-    Fenster wird diese(r) für die jeweilige Funktion ausgewählt. Der Cursor verwandelt
-        sich dann wieder in den Standard-Cursor.
-    Durch Rechtsklick läßt sich die ausgewählte Funktion abbrechen.
+        Funktionen (siehe Beschreibung der UseCases) in ein Fadenkreuz.
+        Durch Linksklick auf einen Fenster-Knoten oder eine 
+        Fenster-Kante in einem Anzeigefenster  
+        wird diese(r) für die jeweilige Funktion ausgewählt. 
+        Der Fadenkreuz-Cursor wird auch zur Vorgabe von Positionen
+        verwendet.
+        Nach dem Linksklick  verwandelt
+        sich der Fadenkreuz-Cursor wieder in den Standard-Cursor.
+        Durch einen Rechtsklick bei aktivem Fadenkreuz-Cursor lässt sich 
+        die aktuelle Funktion abbrechen.
 
 
 \section{Fortschrittsanzeige}
