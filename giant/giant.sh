@@ -3,9 +3,9 @@
 cd `dirname $0`
 system=`uname -s`
 if [ "$system" = "Linux" ]; then
-	./giant-Linux
+	./giant-Linux $*
 elif [ "$system" = "SunOS" ]; then
-	./giant-SunOS
+	./giant-SunOS $*
 else
 	echo "$system is unsupported."
 	exit 1
