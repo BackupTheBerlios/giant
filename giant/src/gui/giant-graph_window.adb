@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.24 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.25 $
 --  $Author: squig $
---  $Date: 2003/07/02 19:03:42 $
+--  $Date: 2003/07/03 13:23:19 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -304,7 +304,7 @@ package body Giant.Graph_Window is
    end On_Selection_List_Hide;
 
    generic
-      Highlight_Status : Vis_Windows.Selection_Highlight_Status;
+      Highlight_Status : Vis_Windows.Changable_Highlight_Status;
    package Highlight_Menu_Callback is
 
         procedure On_Highlight
@@ -526,6 +526,8 @@ package body Giant.Graph_Window is
         := Initialize_Style (Config.Global_Data.Color_2);
       Window.Styles (Vis_Windows.Color_3)
         := Initialize_Style (Config.Global_Data.Color_3);
+      Window.Styles (Vis_Windows.Current_Selection)
+        := Initialize_Style (Config.Global_Data.Current_Selection);
    end Initialize_Styles;
 
    procedure Initialize
@@ -860,7 +862,7 @@ package body Giant.Graph_Window is
 
       Gui_Utils.String_Clists.Set_Cell_Style
         (List, Row, 2, Window.Styles (Highlighted));
-      if (Highlighted /= Vis_Windows.None or else Is_Active) then
+      if (Highlighted /= Vis_Windows.None) then
          Gui_Utils.String_Clists.Set_Text (List, Row, 2, -"#####");
       else
          Gui_Utils.String_Clists.Set_Text (List, Row, 2, -"");
