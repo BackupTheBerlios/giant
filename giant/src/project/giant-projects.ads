@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.4 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.5 $
 -- $Author: schwiemn $
--- $Date: 2003/06/05 17:15:59 $
+-- $Date: 2003/06/11 16:06:55 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -39,16 +39,17 @@
 -- regarding the node_annotations has been put into the package
 -- "Node_Annotation_Management".
 --
-with Ada.Text_IO;
-with Ada.Strings.Unbounded;
+--with Ada.Text_IO;
+--with Ada.Strings.Unbounded;
 
-with Giant.Graph_Lib;                  -- from GIANT
-with Giant.Valid_Names;                -- from GIANT
-with Giant.Vis_Window_Sets;            -- from GIANT
-with Giant.Vis_Window_Management;      -- from GIANT
-with Giant.Node_Annotation_Management; -- from GIANT
+--with Giant.Graph_Lib;                  -- from GIANT
+--with Giant.Graph_Lib.Subgraphs;        -- from GIANT
+--with Giant.Valid_Names;                -- from GIANT
+--with Giant.Vis_Window_Sets;            -- from GIANT
+--with Giant.Vis_Window_Management;      -- from GIANT
+--with Giant.Node_Annotation_Management; -- from GIANT
 
-with String_Lists; -- from Bauhaus IML "Reuse.src"
+--with String_Lists; -- from Bauhaus IML "Reuse.src"
 
 package Giant.Projects is
 
@@ -60,8 +61,8 @@ package Giant.Projects is
    type Project_Access is private;
 
    ---------------------------------------------------------------------------
-   -- Describes the highlight status of an iml subgraph
-   type IML_Subgraph_Highlight_Status : exception;
+   -- Describes the highlight status of an subgraph
+   type Subgraph_Highlight_Status : exception;
 
    ---------------------------------------------------------------------------
    -- Raised if a passed parameter of type Project_Access is not
@@ -87,6 +88,11 @@ package Giant.Projects is
    ---------------------------------------------------------------------------
    -- Raised if a project with the passed name does not exist.
    Project_Does_Not_Exist_Exception : exception;
+   
+   ---------------------------------------------------------------------------
+   -- Raised on attempt to load a project while the "giant.graph_lib" holds 
+   -- an iml graph that has a different check sum. 
+   Wrong_IML_Graph_Loaded_Exception : exception;
 
 
    ---------------------------------------------------------------------------
@@ -123,10 +129,48 @@ package Giant.Projects is
       Project_Directory : in String)
       return boolean;
 
+   --------------------------------------------------------------------------
+   -- Returns the data necessary to identify the Bauhaus IML Graph underlying
+   -- this project.
+   --
+   --  Note
+   --   The out Parameters are not checked in any way.
+   --
+   -- Parameters:
+   --   Project_Name - The name of a project.
+   --   Project_Directory - The directory where the project is located
+   --     (project directory).
+   --   Bauhaus_IML_Graph_File - The file of the Bauhaus IML-Graph
+   --   Bauhaus_IML_Graph_File_Checksum - A checksum that may be used
+   --     to check whether "Bauhaus_IML_Graph_File" holds the
+   --     correct IML Graph.
+   -- Raises:
+   --   Project_Does_Not_Exist_Exception - Raised if the project
+   --     "Project_Name" is not found in the given directory.
+   --   Invalid_Project_Directory_Excpetion - Raised if the passed directory
+   --     "Project_Directory" is not found.
+   Get_Bauhaus_IML_Graph_Data
+     (Project_Name           : in     Valid_Names.Standard_Name;
+      Project_Directory      : in     String
+      Bauhaus_IML_Graph_File :    out Ada.Strings.Unbounded.Unbounded_String;
+      Bauhaus_IML_Graph_File_Checksum : out Integer)
+
    ---------------------------------------------------------------------------
+   -- Before executing this subprgram
+   -- an iml graph must have been loaded by Giant.Graph_lib.
+   --
+   -- Protocoll:
+   --   1. Determine the IML Graph for the project
+   --      => "Giant.Projects.Get_Bauhaus_IML_Graph_Data"
+   --   2. Load this iml graph into memory via "Giant.Graph_Lib"
+   --   3. Load the Project => "Giant.Projects.Load_Project"
+   --
    -- Initializes a project by reading all the data describing a project
    -- from the project file and from the management files of the
-   -- projects components .
+   -- projects components.
+   --
+   -- All relativ paths inside an xml file describing a project are 
+   -- regarded as absolute paths towards "Project_Directory".
    --
    -- Parameters:
    --   Project_Name - The name of a project.
@@ -139,7 +183,10 @@ package Giant.Projects is
    --     "Project_Name" is not found in the given directory.
    --   Invalid_Project_Directory_Excpetion - Raised if the passed directory
    --     "Project_Directory" is not found.
-   function Load_Project_From_Project_File
+   --   Wrong_IML_Graph_Loaded_Exception - Raised if the iml graph loaded
+   --     by giant.graph_lib has a checksum that differs to the checksum
+   --     stored in the project.
+   function Load_Project
      (Project_Name : in Valid_Names.Standard_Name;
       Project_Directory : in String)
      return Project_Access;
@@ -163,7 +210,7 @@ package Giant.Projects is
    --     "Project_Directory" is not found.
    --   Directory_Holds_Already_A_Project_File_Exception - Raised if
    --     "Project_Directory" already holds a project file.
-   function Create_New_Empty_Project
+   function Create_Empty_Project
      (Project_Name                    : in Valid_Names.Standard_Name;
       Project_Directory               : in String;
       Bauhaus_IML_Graph_File          : in String;
@@ -177,8 +224,8 @@ package Giant.Projects is
    --   This procedure performs a DEEP DEALLOCATION
    --   all visualisation windows (including their Selections), the
    --   node annotations
-   --   and all IML_Subgraphs of the project are deallocated too.
-   --   As IML_Subraphs, Node Annotations and Visualisation_Windows
+   --   and all Subgraphs of the project are deallocated too.
+   --   As Subraphs, Node Annotations and Visualisation_Windows
    --   and Selections are pointers you should beware of dangling pointers.
    --
    --   The Project file and all managements files are not affected
@@ -195,7 +242,7 @@ package Giant.Projects is
    ----------------------------------------------------------------------------
    -- Writes all data describing a project into its project file and
    -- the according management files for visualisations windows,
-   -- iml-subgraphs and node-annotations.
+   -- all subgraphs and node-annotations.
    --
    -- After the execution of this method the state of the project (loaded
    -- into the main memory) exactly corresponds to the state of
@@ -213,7 +260,7 @@ package Giant.Projects is
    ----------------------------------------------------------------------------
    -- Writes all data describing a project into a new project file (incl.
    -- the according management files for visualisations windows,
-   -- iml-subgraphs and node-annotations).
+   -- subgraphs and node-annotations).
    --
    -- After the execution of this method the state of the project (loaded
    -- into the main memory) exactly corresponds to the state of
@@ -282,29 +329,7 @@ package Giant.Projects is
    -- The Bauhaus IML Graph
    ---------------------------------------------------------------------------
 
-   --------------------------------------------------------------------------
-   -- Returns the data necessary to identify the IML_Subgraph underlying
-   -- this project.
-   --
-   --  Note
-   --   The out Parameters are not checked in any way.
-   --   The "consumer" has to check whether is data is correct.
-   --
-   -- Parameters:
-   --   Project - A instance of the ADT that describes a project.
-   --   Bauhaus_IML_Graph_File - The file of the Bauhaus IML-Graph
-   --   Bauhaus_IML_Graph_File_Checksum - A checksum that may be used
-   --     to check whether "Bauhaus_IML_Graph_File" holds the
-   --     correct IML Graph.
-   -- Raises
-   --   Project_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Project_Access" is passed as
-   --     parameter.
-   Get_Bauhaus_IML_Graph_File_Data
-     (Project                         : in Project_Access
-      Bauhaus_IML_Graph_File          :
-        out Ada.Strings.Unbounded.Unbounded_String;
-      Bauhaus_IML_Graph_File_Checksum :    out Integer)
+
 
 
    ---------------------------------------------------------------------------
@@ -590,46 +615,49 @@ package Giant.Projects is
 
 
    ---------------------------------------------------------------------------
-   -- C IML_Subgraphs
+   -- C Subgraphs
    --
-   -- All functionality necessarry to administrate IML-Subgraphs
+   -- All functionality necessarry to administrate Subgraphs
    -- inside a project is specified here.
+   -- Needed to handle the IML-Subgraphs 
+   --
+   -- -> see GIANT Spec. "12.2.3. Persistenz von IML-Teilgraphen"
    ---------------------------------------------------------------------------
 
    ---------------------------------------------------------------------------
-   -- This Exception is raised if a demanded IML-Subgraph does not
+   -- This Exception is raised if a demanded Subgraph does not
    -- exist in the project
-   IML_Subgraph_Is_Not_Part_Of_Project_Exception     : Exception
+   Subgraph_Is_Not_Part_Of_Project_Exception     : Exception
 
    ---------------------------------------------------------------------------
-   -- Raised if an IML-Subgraph that should be added to the
+   -- Raised if an Subgraph that should be added to the
    -- project already exists.
-   IML_Subgraph_Is_Already_Part_Of_Project_Exception : Exception;
+   Subgraph_Is_Already_Part_Of_Project_Exception : Exception;
 
    ---------------------------------------------------------------------------
-   -- Determines whether a iml sungraph with the given name exists.
+   -- Determines whether a subgraph with the given name exists.
    --
    -- Parameters:
    --   Project - The instance of the ADT holding a project.
-   --   IML_Subgraph_Name - The name of an iml subgraph.
+   --   Subgraph_Name - The name of a subgraph.
    -- Returns:
-   --   True, if the iml subgraph exists; False, otherwise.
+   --   True, if the subgraph exists; False, otherwise.
    -- Raises:
    --  Project_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Project_Access" is passed as
    --     parameter.
-   function Does_IML_Subgraph_Exist
+   function Does_Subgraph_Exist
      (Project           : in Project_Access;
-      IML_Subgraph_Name : in Valid_Names.Standard_Name)
+      Subgraph_Name : in Valid_Names.Standard_Name)
      return Boolean;
 
    ---------------------------------------------------------------------------
-   -- Returns an iml subgraph from the project.
+   -- Returns a subgraph from the project.
    --
    -- Note !!!
    --   The returned ATD is a pointer into the internal data structure
    --   of "Project".
-   --   You man NOT DEALLOCATE the returned iml subgraph
+   --   You man NOT DEALLOCATE the returned subgraph
    --   before it is removed from the Project.
    --
    --   Several calls of this function with the same parameters will
@@ -637,93 +665,93 @@ package Giant.Projects is
    --
    -- Parameters:
    --   Project - The instance of the ADT holding a project.
-   --   IML_Subgraph_Name - The name of an iml subgraph.
+   --   Subgraph_Name - The name of a subgraph.
    -- Returns:
-   --    The ADT describing an iml subgraph.
+   --    The ADT describing a subgraph.
    -- Raises:
    --   Project_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Project_Access" is passed as
    --     parameter.
-   --   IML_Subgraph_Is_Not_Part_Of_Project_Exception - Raised if
-   --   "Project" has no iml subgraph with the name "IML_Subgraph_Name".
-   function Get_IML_Subgraph
+   --   Subgraph_Is_Not_Part_Of_Project_Exception - Raised if
+   --   "Project" has no subgraph with the name "Subgraph_Name".
+   function Get_Subgraph
      (Project           : in Project_Access;
-      IML_Subgraph_Name : in Valid_Names.Standard_Name)
+      Subgraph_Name : in Valid_Names.Standard_Name)
      return Graph_Lib.IML_Subgraphs.IML_Subgraph_Access;
 
    ---------------------------------------------------------------------------
-   -- Returns the names of all iml subgraphs of the project
-   -- If there are no IML_Subgraphs part of the project than
+   -- Returns the names of all subgraphs of the project (not sorted by 
+   -- any order).
+   -- If there are no subgraphs part of the project than
    -- an empty list will be returned.
-   -- The List is sorted in ascending alphabetical order.
    --
    -- Parameters:
    --   Project - The instance of the ADT holding a project.
    -- Returns
-   --   A list containing the names of all iml subgraphs of this project.
+   --   A list containing the names of all subgraphs of this project.
    -- Raises:
    --   Project_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Project_Access" is passed as
    --     parameter.
-   function Get_All_IML_Sungraphs_Sorted
+   function Get_All_Sungraphs
      (Project : in Project_Access)
      return String_Lists.List;
 
    ---------------------------------------------------------------------------
-   -- Adds an iml subgraph to a project.
+   -- Adds a subgraph to a project.
    --
-   -- Note !!!
+   -- Note
    --   The instance of the ADT "Graph_Lib.IML_Subgraphs.IML_Subgraph_Access"
    --   becomes part of the internal data structure of "Project".
-   --   You are NOT ALLOWED to change the name of the iml subgraph
-   --   or to DEALLOCATE it as long as it si part of the project
-   --   (before doing so you have to remove the iml subgraph from the
+   --   You are NOT ALLOWED to change the name of the subgraph
+   --   or to DEALLOCATE it as long as it is part of the project
+   --   (before doing so you have to remove the subgraph from the
    --    project).
    --
-   -- Each iml subgraph in the project must have an unique name.
+   --   Each subgraph in the project must have an unique name.
    --
    -- Parameters:
    --   Project - The instance of the ADT holding a project.
-   --   IML_Subgraph - The new iml subgraph.
+   --   Subgraph - The new subgraph.
    -- Raises:
    --   Project_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Project_Access" is passed as
    --     parameter.
-   --   IML_Subgraph_Is_Already_Part_Of_Project_Exception - Raised if
-   --     the project already has an iml subgraph with the same name
-   --     as "IML_Subgraph".
-   procedure Add_IML_Subgraph
+   --   Subgraph_Is_Already_Part_Of_Project_Exception - Raised if
+   --     the project already has a subgraph with the same name
+   --     as "Subgraph".
+   procedure Add_Subgraph
      (Project      : in Project_Access;
-      IML_Subgraph : in Graph_Lib.IML_Subgraphs.IML_Subgraph_Access);
+      Subgraph : in Graph_Lib.IML_Subgraphs.IML_Subgraph_Access);
 
    ---------------------------------------------------------------------------
-   -- Removes an iml subgraph from the project.
+   -- Removes a subgraph from the project.
    --
    -- Note!
-   --   The IML_Subgraph is only removed from the project
+   --   The subgraph is only removed from the project
    --   no deep deallocation is done (the corresponding instance
    --   of Graph_Lib.IML_Subgraphs.IML_Subgraph_Access is not
    --   deallocated).
    --   Beware of memory leacks!
    --
    --   After the call of that subprogram you may do what ever you want
-   --   with the removed iml subgraph without affecting the internal
+   --   with the removed subgraph without affecting the internal
    --   datastructure of "Project".
    --
    -- Parameters:
    --   Project - The instance of the ADT holding a project.
-   --   IML_Subgraph_Name - The name of the iml subgraph that should be
+   --   Subgraph_Name - The name of the subgraph that should be
    --     removed from the "Project".
    -- Raises:
    --   Project_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Project_Access" is passed as
    --     parameter.
-   --   IML_Subgraph_Is_Not_Part_Of_Project_Exception - Raised if the
-   --     project "Project" does not hold a iml subgraph with the name
+   --   Subgraph_Is_Not_Part_Of_Project_Exception - Raised if the
+   --     project "Project" does not hold a subgraph with the name
    --     "IML_Subgraph_Name".
-   procedure Remove_IML_Subgraph_From_Project
+   procedure Remove_Subgraph
       (Project           : in Project_Access;
-       IML_Subgraph_Name : in Valid_Names.Standard_Name);
+       Subgraph_Name : in Valid_Names.Standard_Name);
 
    ---------------------------------------------------------------------------
    -- D Node Annotations
@@ -770,54 +798,35 @@ package Giant.Projects is
 private
 
    ---------------------------------------------------------------------------
-   -- Management of visualisation window models
+   -- Management of visualisation window data models
    ---------------------------------------------------------------------------
 
-   -- not Used for persistence
-   package Memory_Loaded_Vis_Window_Sets is new Ordered_Sets
-     (Item_Type => Vis_Window_Management.Visual_Window_Data_Access,
-      "="       => Vis_Window_Management.Equal
-      "<"       => Vis_Window_Management.Less_Than);
+   package Known_Vis_Windows_Hashs is new Hashed_Mappings
+     (Key_Type   => Ada.Strings.Unbounded.Unbounded_String,
+      Equal      => Ada.Strings.Unbounded."=",
+      Hash       => Unbounded_String_Hash,
+      Value_Type => Ada.Strings.Unbounded.Unbounded_String); 
 
-
+   package Memory_Loaded_Vis_Window_Hash is new Hashed_Mappings
+     (Key_Type   => Ada.Strings.Unbounded.Unbounded_String,
+      Equal      => Ada.Strings.Unbounded."=",
+      Hash       => Unbounded_String_Hash,
+      Value_Type => Vis_Windows.Visual_Window_Access);
+      
    ---------------------------------------------------------------------------
-   -- Management of IML_Subgraphs
+   -- Management of Subgraphs
    ---------------------------------------------------------------------------
 
-   type IML_Subgraph_Data_Elemet is record
-     IML_Subgraph : Graph_Lib.IML_Subgraphs.IML_Subgraph_Access;
-     Selection_Highlight_Status : IML_Subgraph_Highlight_Status;
+   type Subgraph_Data_Elemet is record
+     Subgraph         : Graph_Lib.Subgraphs.Subgraph;
+     Highlight_Status : Subgraph_Highlight_Status;
    end record;
 
-   function IML_Subgraph_Data_Elemet_Equal
-     (Left  : in IML_Subgraph_Data_Elemet;
-      Right : in IML_Subgraph_Data_Elemet)
-     return Boolean;
-
-   function IML_Subgraph_Data_Elemet_Less_Than
-     (Left  : in IML_Subgraph_Data_Elemet;
-      Right : in IML_Subgraph_Data_Elemet)
-     return Boolean;
-
-   procedure IML_Subgraph_Data_Elemet'Write
-     (Stream       : access Root_Stream_Type'Class;
-      IML_Subgraph : in IML_Subgraph_Data_Elemet);
-
-   procedure IML_Subgraph_Data_Elemet'Read
-     (Stream       : access Root_Stream_Type'Class;
-      IML_Subgraph : out IML_Subgraph_Data_Elemet);
-
-   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   Use Hash_Map !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! instead of set
-
-   package IML_Subgraph_Data_Sets is new Ordered_Sets
-     (Item_Type => IML_Subgraph_Data_Elemet,
-      "="       => IML_Subgraph_Data_Elemet_Equal,
-      "<"       => IML_Subgraph_Data_Elemet_Less_Than,
-      Write     => IML_Subgraph_Data_Elemet'Write,
-      Read      => IML_Subgraph_Data_Elemet'Read);
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+   package Subgraph_Data_Hashs is new Hashed_Mappings
+     (Key_Type   => Ada.Strings.Unbounded.Unbounded_String,
+      Equal      => Ada.Strings.Unbounded."=",
+      Hash       => Unbounded_String_Hash,
+      Value_Type => Subgraph_Data_Elemet);
 
   ----------------------------------------------------------------------------
   -- Project Data object
@@ -829,40 +838,36 @@ private
   -- The Pointer to that dataobject
   type Project_Access is access Project_Element;
 
-  -- Used to administrate the names of all visualisation windows
-  -- that are part of the project
-  package Unbounded_String_Ordered_Sets is new Ordered_Sets
-    (Item_Type => Ada.Strings.Unbounded.Unbounded_String);
-
   type Project_Element is record
 
     -- The name of the project
-    Project_Name     : Valid_Names.Standard_Name;
+    Project_Name     : Ada.Strings.Unbounded.Unbounded_String;
+    
     -- The directory there all data (including management files
-    -- for visualisation windows, IML_Subgraphs and the
+    -- for visualisation windows, Subgraphs and the
     -- management file for node annatations) describing the
     -- whole project has to be located.
     Project_Dirctory : Ada.Strings.Unbounded.Unbounded_String;
 
     -- The file holding the Bauhaus IML-Graph
-    Bauhaus_IML_Graph_File : String;
+    Bauhaus_IML_Graph_File : Ada.Strings.Unbounded.Unbounded_String;
 
-    -- Checksum of the IML_Subgraph
+    -- Checksum of the Bauhaus IML Graph
     Bauhaus_IML_Graph_File_Checksum : Integer;
 
-    -- All Vis Windows are located in the project directory.
-    All_Project_Vis_Windows : Unbounded_String_Ordered_Sets.Set;
+    -- All Vis Windows that are part of the project.
+    All_Project_Vis_Windows : Known_Vis_Windows_Hashs.Mapping;
 
     -- Only Visualisation Windows that a loaded into the main
-    -- memory - Heap is allocated for an Instance of
-    -- Vis_Window_Management. Visual_Window_Access
+    -- memory -> Heap is allocated for an Instance of
+    -- Visual_Window_Access.
     -- A Management File in the project dirctory may exist or not
-    Memory_Loaded_Vis_Windows : Memory_Loaded_Vis_Window_Sets.Set;
+    All_Memory_Loaded_Vis_Windows : Memory_Loaded_Vis_Window_Hash.Mapping;
 
-    IML_Subgraphs_Management : IML_Subgraph_Data_Sets.Set;
+    All_Subgraphs : Subgraph_Data_Hashs.Mapping;
 
-    -- The annotations
-    Node_Annotations : Node_Annotation_Management.Node_Annotation_Access;
+    -- The node annotations
+    Node_Annotations : Node_Annotations.Node_Annotation_Access;
 
   end record;
 
