@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.11 $
 --  $Author: koppor $
---  $Date: 2003/07/13 00:39:07 $
+--  $Date: 2003/07/19 17:11:38 $
 --
 
 with Ada.Exceptions;
@@ -42,7 +42,7 @@ with String_Lists;
 package body Giant.Layout_Factory is
 
    ---------------------------------------------------------------------------
-   package My_Logger is new Logger ("Layout_Factory");
+   package Logger is new Giant.Logger ("Layout_Factory");
 
    ---------------------------------------------------------------------------
    procedure Create
@@ -110,12 +110,19 @@ package body Giant.Layout_Factory is
             Res                    : Config.Class_Sets.Meta_Class_Set_Access;
 
          begin
+            Logger.Debug ("Got class-sets (String) " & Data);
+
             Class_Sets_String_List := String_Split.Split_String
               (Source  => Data,
                Pattern => ",",
                Trim    => true);
 
             --  convert String_List into a list of Class_Set_Accesses
+
+            Logger.Debug ("These are " &
+                          Integer'Image (String_Lists.Length
+                                         (Class_Sets_String_List)) & " " &
+                          "strings containing a class set");
 
             Class_Sets_List := Config.Class_Sets.Class_Sets_Lists.Create;
 
@@ -128,18 +135,33 @@ package body Giant.Layout_Factory is
                begin
                   Cur_Class_Set := Config.Class_Sets.Get_Class_Set_Access
                     (Cur_Class_Set_Name);
+                  --  exception risen here, if Class_Set could not be found
+
+                  --  If no exception was risen, add converted class_set
+                  Config.Class_Sets.Class_Sets_Lists.Attach
+                    (Class_Sets_List, Cur_Class_Set);
                exception
                   when Config.Class_Sets.Class_Set_Does_Not_Exist_Exception =>
-                     My_Logger.Error ("Class_Set " & Cur_Class_Set_Name &
-                                      " not found");
+                     Logger.Error ("Class_Set " & Cur_Class_Set_Name &
+                                   " not found");
                end;
             end loop;
+
+            Logger.Debug ("From that list, " &
+                          Integer'Image
+                          (Config.Class_Sets.Class_Sets_Lists.Length
+                           (Class_Sets_List)) & " " &
+                          "sets could be converted to IDs");
 
             --  Build returns an empty class-set, if given list is empty
             Res := Config.Class_Sets.Build (Class_Sets_List);
 
             Config.Class_Sets.Class_Sets_Lists.Destroy (Class_Sets_List);
             String_Lists.Destroy (Class_Sets_String_List);
+
+            Logger.Debug ("After building, " &
+                          "<TBD> " &
+                          "Class Sets are remaining");
 
             return Res;
          end Convert_String_To_Meta_Class_Set;
