@@ -4,6 +4,9 @@ mini_map :
 evolution :
 	make -C ../ MAIN=test/giant_test-evolution EXEC=test/evolution all
 
+graph_lib :
+	make -C ../ MAIN=test/giant_test-graph_lib EXEC=test/graph_lib all
+
 all:
 	make -C ../ all
 
