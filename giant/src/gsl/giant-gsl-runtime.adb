@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
 -- $Author: koppor $
--- $Date: 2003/10/06 17:19:16 $
+-- $Date: 2003/10/06 18:38:48 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -770,7 +770,9 @@ package body Giant.Gsl.Runtime is
       elsif Is_Gsl_Edge_Set (Obj) then
          if Graph_Lib.Edge_Id_Sets.Is_Empty (Get_Value (Gsl_Edge_Set (Obj)))
          then
-            return Gsl_Null;
+            Ada.Exceptions.Raise_Exception
+              (Gsl_Runtime_Error'Identity,
+               "Script 'get_first': non-empty set expected.");
          else
             return Gsl_Type (Create_Gsl_Edge_Id
               (Graph_Lib.Edge_Id_Sets.First
