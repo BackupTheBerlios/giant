@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.15 $
 --  $Author: schwiemn $
---  $Date: 2003/06/17 15:01:35 $
+--  $Date: 2003/06/17 15:41:14 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -753,7 +753,6 @@ package body Giant.Vis_Windows is
         (Vis_Window.All_Managed_Selections, Dummy_Data_Element);
 
       Graph_Lib.Selections.Destroy (Dummy_Selection);
-
       return Return_Data_Element.Is_Faded_Out;
    end Is_Faded_Out;
 
@@ -785,6 +784,12 @@ package body Giant.Vis_Windows is
       Change_Data_Element := Selection_Data_Sets.Get
         (Vis_Window.All_Managed_Selections, Dummy_Data_Element);
       Change_Data_Element.Is_Faded_Out := True;
+      
+      Selection_Data_Sets.Remove
+        (Vis_Window.All_Managed_Selections, Dummy_Data_Element);
+      Selection_Data_Sets.Insert
+        (Vis_Window.All_Managed_Selections, Change_Data_Element);
+                  
       Graph_Lib.Selections.Destroy (Dummy_Selection);
    end Fade_Out_Selection;
 
@@ -816,6 +821,12 @@ package body Giant.Vis_Windows is
       Change_Data_Element := Selection_Data_Sets.Get
         (Vis_Window.All_Managed_Selections, Dummy_Data_Element);
       Change_Data_Element.Is_Faded_Out := False;
+      
+      Selection_Data_Sets.Remove
+        (Vis_Window.All_Managed_Selections, Dummy_Data_Element);
+      Selection_Data_Sets.Insert
+        (Vis_Window.All_Managed_Selections, Change_Data_Element);    
+            
       Graph_Lib.Selections.Destroy (Dummy_Selection);
    end Fade_In_Selection;
 

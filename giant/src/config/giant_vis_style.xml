@@ -2,7 +2,7 @@
 <!-- internal DTD - external DTD also possible -->
 <!DOCTYPE giant_visualisation_style_file [
 
-   <!ELEMENT giant_visulisation_style_file 
+   <!ELEMENT giant_visualisation_style_file 
        (global_settings,
        default_node_setting, 
        (node_class_specific_setting)*,
@@ -112,7 +112,7 @@
       line_color = "RGB:AA/AA/AA"     
       text_color = "RGB:AA/AA/AA"     
       line_style = "dotted_line"
-      show_label = "Yes" />  
+      show_label = "yes" />  
 
    <edge_class_specific_setting
       line_color = "RGB:AA/AA/AA"     

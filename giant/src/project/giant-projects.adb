@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.11 $
 --  $Author: schwiemn $
---  $Date: 2003/06/17 15:01:35 $
+--  $Date: 2003/06/17 15:41:14 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -895,7 +895,7 @@ package body Giant.Projects is
 
       Known_Vis_Iter            : Known_Vis_Windows_Hashs.Values_Iter;
       A_Vis_Window_Data_Element : Vis_Window_Data_Element;
-
+            
       Subgraphs_Iter : Subgraph_Data_Hashs.Values_Iter;
       A_Subgraph_Data_Elemet : Subgraph_Data_Elemet;
       Subgraph_File_Name : Ada.Strings.Unbounded.Unbounded_String;
@@ -917,15 +917,17 @@ package body Giant.Projects is
           (Project.All_Project_Vis_Windows);
 
       while Known_Vis_Windows_Hashs.More (Known_Vis_Iter) loop
-
-
       
-
          Known_Vis_Windows_Hashs.Next
            (Known_Vis_Iter, A_Vis_Window_Data_Element);
+           
 
 
---         A_Vis_Window_Data_Element
+ A_Vis_Window_Data_Element
+
+
+         Write_Vis_Window_To_File
+
 
       end loop;
 
