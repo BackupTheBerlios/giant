@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-merging_iterators.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-merging_iterators.adb,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/06/18 13:41:30 $
+--  $Date: 2003/07/09 10:38:33 $
 --
 ------------------------------------------------------------------------------
 
@@ -158,7 +158,7 @@ package body Giant.Merging_Iterators is
 
       Head_Item : Single_Iterator;
    begin
-      Merger.Current_Is_Available := Single_Iterator_Queues.Is_Empty
+      Merger.Current_Is_Available := not Single_Iterator_Queues.Is_Empty
         (Merger.Queue);
       if Merger.Current_Is_Available then
          Head_Item := Single_Iterator_Queues.Get_Head (Merger.Queue);
@@ -190,7 +190,9 @@ package body Giant.Merging_Iterators is
    begin
       Merger.Current := Merger.Next;
       Merger.Current_Is_Available := Merger.Next_Is_Available;
-      Update_Next (Merger);
+      if Merger.Current_Is_Available then
+         Update_Next (Merger);
+      end if;
    end Forward;
 
    procedure Destroy
@@ -203,6 +205,8 @@ package body Giant.Merging_Iterators is
          Single_Iterator_Queues.Remove_Head (Merger.Queue);
          Sets.Destroy (Merger.Pool (Item.Pool_Index));
       end loop;
+      Merger.Current_Is_Available := False;
+      Merger.Next_Is_Available := False;
    end Destroy;
 
 end Giant.Merging_Iterators;

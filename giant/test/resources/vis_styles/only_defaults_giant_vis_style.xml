@@ -12,7 +12,7 @@
 
    <default_node_setting
       icon         = "node_icon1.xpm"
-      text_color   = "black"
+      text_color   = "yellow"
       border_color = "red"
       fill_color   = "black"> 
    </default_node_setting>

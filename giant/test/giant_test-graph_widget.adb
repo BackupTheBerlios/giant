@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant_test-graph_widget.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant_test-graph_widget.adb,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/07/08 19:41:48 $
+--  $Date: 2003/07/09 10:38:33 $
 --
 ------------------------------------------------------------------------------
 
@@ -136,8 +136,8 @@ begin
      (Widget  => Mini_Map,
       Watched => Graph_Widget);
 
-   Gtk.Scrolled_Window.Gtk_New (Scroller);
-   Gtk.Scrolled_Window.Add (Scroller, Graph_Widget);
+--   Gtk.Scrolled_Window.Gtk_New (Scroller);
+--   Gtk.Scrolled_Window.Add (Scroller, Graph_Widget);
 
    Gtk.Button.Gtk_New (Move_Button, "Move Visual");
    Gtk.Button.Gtk_New (Resize_Button, "Resize");
@@ -158,7 +158,7 @@ begin
      (Box     => Horiz_Box,
       Spacing => 5);
    Gtk.Box.Add (Horiz_Box, User_Box);
-   Gtk.Box.Add (Horiz_Box, Scroller);
+   Gtk.Box.Add (Horiz_Box, Graph_Widget);--Scroller);
 
    Gtk.Window.Gtk_New (Main_Window);
    Gtk.Window.Add (Main_Window, Horiz_Box);
@@ -186,7 +186,7 @@ begin
    Gtk.Window.Show_All (Main_Window);
 
 
-   Giant.Graph_Lib.Load ("/home/stsopra/giant/graphs/rfg_examp.iml");
+   Giant.Graph_Lib.Load ("resources/rfg_examp.iml");
    --  selection erzeugen,
    Selection := Giant.Graph_Lib.Selections.Create ("Funny_Selection");
    Test_Log.Debug ("Funny_Selection created.");

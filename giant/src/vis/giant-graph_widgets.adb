@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.16 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.17 $
 --  $Author: keulsn $
---  $Date: 2003/07/08 19:45:21 $
+--  $Date: 2003/07/09 10:38:33 $
 --
 ------------------------------------------------------------------------------
 
@@ -438,11 +438,28 @@ package body Giant.Graph_Widgets is
    end Get_Current_Node_Height;
 
    procedure Update_Size
-     (Widget : access Graph_Widget_Record'Class;
-      Edges  : in     Vis_Edge_Sets.Set;
-      Nodes  : in     Vis_Node_Sets.Set) is
+     (Widget   : access Graph_Widget_Record'Class;
+      Edge_Set : in     Vis_Edge_Sets.Set;
+      Node_Set : in     Vis_Node_Sets.Set) is
+
+      Edge_Iterator : Vis_Edge_Sets.Iterator;
+      Edge          : Vis_Data.Vis_Edge_Id;
+      Node_Iterator : Vis_Node_Sets.Iterator;
+      Node          : Vis_Data.Vis_Node_Id;
    begin
-      null;
+      Edge_Iterator := Vis_Edge_Sets.Make_Iterator (Edge_Set);
+      while Vis_Edge_Sets.More (Edge_Iterator) loop
+         Vis_Edge_Sets.Next (Edge_Iterator, Edge);
+         Drawing.Update_Edge_Size (Widget, Edge);
+      end loop;
+      Vis_Edge_Sets.Destroy (Edge_Iterator);
+
+      Node_Iterator := Vis_Node_Sets.Make_Iterator (Node_Set);
+      while Vis_Node_Sets.More (Node_Iterator) loop
+         Vis_Node_Sets.Next (Node_Iterator, Node);
+         Drawing.Update_Node_Size (Widget, Node);
+      end loop;
+      Vis_Node_Sets.Destroy (Node_Iterator);
    end Update_Size;
 
    --  Settings must have been Set_Up
@@ -485,9 +502,9 @@ package body Giant.Graph_Widgets is
       States.Changed_Visual (Widget);
 
       Update_Size
-        (Widget => Widget,
-         Edges  => Widget.Unsized_Edges,
-         Nodes  => Widget.Unsized_Nodes);
+        (Widget   => Widget,
+         Edge_Set => Widget.Unsized_Edges,
+         Node_Set => Widget.Unsized_Nodes);
 
       Position_And_Insert (Widget.Unsized_Edges, Widget.Unsized_Nodes);
       Position_And_Insert (Widget.Locked_Edges, Widget.Locked_Nodes);

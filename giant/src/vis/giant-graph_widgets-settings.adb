@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.11 $
+--  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.12 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 18:39:23 $
+--  $Date: 2003/07/09 10:38:33 $
 --
 ------------------------------------------------------------------------------
 
@@ -734,9 +734,19 @@ package body Giant.Graph_Widgets.Settings is
          Width  :    out Glib.Gint;
          Height :    out Glib.Gint) is
       begin
-         Icon := Icons (Index).Icon;
-         Width := Icons (Index).Width;
-         Height := Icons (Index).Height;
+         Settings_Logger.Debug
+           ("Get_Icon (" & Integer'Image (Index) & " ), Range = (" &
+            Integer'Image (Icons'First) & " -" & Integer'Image (Icons'Last) &
+            " )");
+         if Index in Icons'Range then
+            Icon := Icons (Index).Icon;
+            Width := Icons (Index).Width;
+            Height := Icons (Index).Height;
+         else
+            Icon := Gdk.Pixmap.Null_Pixmap;
+            Width := 0;
+            Height := 0;
+         end if;
       end Get_Icon;
 
       procedure Get_Annotation_Icon

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.8 $
 --  $Author: keulsn $
---  $Date: 2003/07/08 19:41:48 $
+--  $Date: 2003/07/09 10:38:33 $
 --
 ------------------------------------------------------------------------------
 
@@ -38,6 +38,7 @@ with Giant.Graph_Widgets.States;
 with Giant.Logger;
 
 package body Giant.Graph_Widgets.Drawing is
+
 
    use Vis.Absolute;
 
@@ -743,7 +744,7 @@ package body Giant.Graph_Widgets.Drawing is
            (Widget, Node,
             Icon, Width, Height);
          Draw_Icon (Icon, Width, Height);
-         if False then  --  Settings.Is_Annotated (Widget, Node) then
+         if Vis_Data.Is_Annotated (Node) then
             Settings.Get_Annotation_Icon
               (Widget,
                Icon, Width, Height);
@@ -906,7 +907,8 @@ package body Giant.Graph_Widgets.Drawing is
       Origin           : Vis.Absolute.Vector_2d :=
         Get_Top_Left (Widget.Drawing.Buffer_Area);
    begin
-      Drawing_Logger.Debug ("Update_Buffer_Nodes");
+      Drawing_Logger.Debug
+        ("Update_Buffer_Nodes, Origin = " & Vis.Absolute.Image (Origin));
       Vis_Data.Start_Node_Refresh
         (Manager         => Widget.Manager,
          Display_Area    => Widget.Drawing.Buffer_Area,
@@ -1025,7 +1027,11 @@ package body Giant.Graph_Widgets.Drawing is
          Y        => 0,
          Source   => Widget.Drawing.Buffer,
          Source_X => 0,
-         Source_Y => 0);
+         Source_Y => 0,
+         Width    => Glib.Gint
+                       (Vis.Absolute.Get_Width (Widget.Drawing.Buffer_Area)),
+         Height   => Glib.Gint
+                       (Vis.Absolute.Get_Height (Widget.Drawing.Buffer_Area)));
       --  Update_Temporary (Widget);
    end Update_Display;
 
@@ -1184,6 +1190,7 @@ package body Giant.Graph_Widgets.Drawing is
    begin
       Gdk.GC.Gdk_New (Widget.Drawing.Clip_Open, Widget.Drawing.Clip_Mask);
       Gdk.GC.Set_Foreground (Widget.Drawing.Clip_Open, White);
+--      Gdk.GC.Set_Function (Widget.Drawing.Clip_Open, Gdk.Types.Set);
 
       Gdk.GC.Gdk_New (Widget.Drawing.Clip_Close, Widget.Drawing.Clip_Mask);
       Gdk.GC.Set_Foreground (Widget.Drawing.Clip_Close, Black);
@@ -1204,6 +1211,10 @@ package body Giant.Graph_Widgets.Drawing is
          Window => Window,
          Width  => Width,
          Height => Height);
+      Drawing_Logger.Debug
+        ("Display size = " & Vis.Absolute.Image
+         (Vis.Absolute.Combine_Vector
+          (Vis.Absolute_Int (Width), Vis.Absolute_Int (Height))));
 
       Calculate_Buffer_Size (Widget, Width, Height);
       --  Buffer area, centered on (0, 0)
