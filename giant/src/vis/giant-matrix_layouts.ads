@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-matrix_layouts.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-matrix_layouts.ads,v $, $Revision: 1.3 $
 --  $Author: koppor $
---  $Date: 2003/07/01 23:16:36 $
+--  $Date: 2003/07/02 11:59:43 $
 --
 ------------------------------------------------------------------------------
 --
@@ -51,7 +51,8 @@ package Giant.Matrix_Layouts is
    --  Parameters (cp. specification 11.2.2: Matrixlayout / Parameter):
    --
    --    Selection_To_Layout:
-   --      Selection containing the nodes and edges to layout
+   --      Selection containing the nodes to layout
+   --      Edges are ignored
    --
    --    Widget:
    --      Graph_Widet where the nodes to layout reside
@@ -88,12 +89,16 @@ package Giant.Matrix_Layouts is
       Next_Action :    out Evolutions.Evolution_Action);
 
 private
+   type Layout_State is (Init, Calc);
+
    type Matrix_Layout_Record is
      new Evolutions.Concurrent_Evolution with record
         Widget          : Giant.Graph_Widgets.Graph_Widget;
         Widget_Lock     : Giant.Graph_Widgets.Lock_Type;
-        The_Selection   : Giant.Graph_Lib.Selections.Selection;
+        Nodes_To_Layout : Giant.Graph_Lib.Node_Id_Set;
         Target_Position : Giant.Vis.Logic.Vector_2d;
+        State           : Layout_State;
+        Width           : Natural;
      end record;
 
 end Giant.Matrix_Layouts;
