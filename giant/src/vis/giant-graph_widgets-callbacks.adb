@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.12 $
+--  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.13 $
 --  $Author: keulsn $
---  $Date: 2003/07/21 19:01:06 $
+--  $Date: 2003/07/22 00:11:23 $
 --
 ------------------------------------------------------------------------------
 
@@ -116,6 +116,12 @@ package body Giant.Graph_Widgets.Callbacks is
       end if;
    end Process_Mouse_Click;
 
+   procedure Cancel_Click
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      States.End_Click (Widget);
+   end Cancel_Click;
+
    procedure Begin_Mouse_Move_Action
      (Widget : access Graph_Widget_Record'Class;
       Mode   : in     Selection_Modify_Type) is
@@ -132,12 +138,14 @@ package body Giant.Graph_Widgets.Callbacks is
          --  Drag
          States.Begin_Drag (Widget);
          States.Changed_Temporary (Widget);
---           Iterator := Vis_Node_Sets.Make_Iterator (Get_Floating_Nodes (Widget));
---           while Vis_Node_Sets.More (Iterator) loop
---              Vis_Node_Sets.Next (Iterator, Node);
---              Vis_Data.Drop_Node (Widget.Manager, Node);
---           end loop;
---           Vis_Node_Sets.Destroy (Iterator);
+         --  Remove moved nodes from region manager
+         States.Changed_Visual (Widget);
+         Iterator := Vis_Node_Sets.Make_Iterator (Get_Floating_Nodes (Widget));
+         while Vis_Node_Sets.More (Iterator) loop
+            Vis_Node_Sets.Next (Iterator, Node);
+            Vis_Data.Drop_Node (Widget.Manager, Node);
+         end loop;
+         Vis_Node_Sets.Destroy (Iterator);
          Redraw (Widget);
       elsif Vis_Data."/=" (States.Get_Click_Edge (Widget), null) then
          --  Drag on edge --> ignore
@@ -147,6 +155,38 @@ package body Giant.Graph_Widgets.Callbacks is
          States.Begin_Rectangle (Widget);
       end if;
    end Begin_Mouse_Move_Action;
+
+   procedure Drop
+     (Widget : access Graph_Widget_Record'Class) is
+
+      Lock : Lock_Type;
+   begin
+      --  user has dropped some nodes
+      Lock_All_Content (Widget, Lock);
+      Move_Nodes
+        (Widget => Widget,
+         Nodes  => Get_Floating_Nodes (Widget),
+         Offset => Positioning.Get_Logic
+                     (Widget, States.Get_Mouse_Move_Distance (Widget)));
+      States.End_Drag (Widget);
+      States.Changed_Temporary (Widget);
+      Release_Lock (Widget, Lock);
+   end Drop;
+
+   procedure Cancel_Drag
+     (Widget : access Graph_Widget_Record'Class) is
+
+      Lock : Lock_Type;
+   begin
+      Lock_All_Content (Widget, Lock);
+      Move_Nodes
+        (Widget => Widget,
+         Nodes  => Get_Floating_Nodes (Widget),
+         Offset => Vis.Logic.Zero_2d);
+      States.End_Drag (Widget);
+      States.Changed_Temporary (Widget);
+      Release_Lock (Widget, Lock);
+   end Cancel_Drag;
 
 
    --------------------------
@@ -460,6 +500,17 @@ package body Giant.Graph_Widgets.Callbacks is
         Vis.Absolute.Get_Top_Left (Drawing.Get_Visible_Area (Widget));
       Value                   : Boolean;
    begin
+      if States.Is_Drag_Current (Widget) then
+         Cancel_Drag (Widget);
+         return True;
+      elsif States.Is_Rectangle_Current (Widget) then
+         --  Cancel_Rectangle (Widget);
+         return True;
+      elsif States.Is_Click_Current (Widget) then
+         Cancel_Click (Widget);
+         return True;
+      end if;
+
       Relative_Click_Position := Vis.Absolute.Combine_Vector
         (X => Vis.Absolute_Int (Gdk.Event.Get_X (Event)),
          Y => Vis.Absolute_Int (Gdk.Event.Get_Y (Event)));
@@ -542,7 +593,6 @@ package body Giant.Graph_Widgets.Callbacks is
 
       Modifiers : Gdk.Types.Gdk_Modifier_Type := Gdk.Event.Get_State (Event);
       Mode      : Selection_Modify_Type;
-      Lock      : Lock_Type;
    begin
       if (Glib."=" (Gdk.Event.Get_Button (Event), Left_Button)) then
          Gdk.Main.Pointer_Ungrab (Gdk.Event.Get_Time (Event));
@@ -560,16 +610,7 @@ package body Giant.Graph_Widgets.Callbacks is
             States.Changed_Temporary (Widget);
             Redraw (Widget);
          elsif States.Is_Drag_Current (Widget) then
-            --  user has dropped some nodes
-            Lock_All_Content (Widget, Lock);
-            Move_Nodes
-              (Widget => Widget,
-               Nodes  => Get_Floating_Nodes (Widget),
-               Offset => Positioning.Get_Logic
-                           (Widget, States.Get_Mouse_Move_Distance (Widget)));
-            States.End_Drag (Widget);
-            States.Changed_Temporary (Widget);
-            Release_Lock (Widget, Lock);
+            Drop (Widget);
          end if;
 
          return True;

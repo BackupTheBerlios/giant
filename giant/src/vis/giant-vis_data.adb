@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.29 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.30 $
 --  $Author: keulsn $
---  $Date: 2003/07/21 19:01:06 $
+--  $Date: 2003/07/22 00:11:23 $
 --
 ------------------------------------------------------------------------------
 
@@ -1147,21 +1147,29 @@ package body Giant.Vis_Data is
       Area    : in out Vis.Absolute.Rectangle_2d) is
 
       Top_Left_Position     : Region_Position;
+      Bottom_Right_Point    : Vis.Absolute.Vector_2d;
       Bottom_Right_Position : Region_Position;
+      Top_Left_Extent       : Vis.Absolute.Rectangle_2d;
+      Bottom_Right_Extent   : Vis.Absolute.Rectangle_2d;
    begin
       --  Find top-left and bottom-right regions
       Top_Left_Position := Get_Region_Position
         (Manager, Vis.Absolute.Get_Top_Left (Area));
+      Top_Left_Extent := Get_Region_Extent (Manager, Top_Left_Position);
+
+      Bottom_Right_Point := Vis.Absolute."-"
+        (Vis.Absolute."+"
+          (Vis.Absolute.Get_Bottom_Right (Top_Left_Extent),
+           Vis.Absolute.Get_Size (Area)),
+         Vis.Absolute.Combine_Vector (-1, -1));
       Bottom_Right_Position := Get_Region_Position
-        (Manager, Vis.Absolute.Get_Bottom_Right (Area));
+        (Manager, Bottom_Right_Point);
+      Bottom_Right_Extent := Get_Region_Extent
+        (Manager, Bottom_Right_Position);
       --  Take top-left and bottom-right points of these regions
       Area := Vis.Absolute.Combine_Rectangle
-        (Top_Left     => Vis.Absolute.Get_Top_Left
-                           (Get_Region_Extent
-                            (Manager, Top_Left_Position)),
-         Bottom_Right => Vis.Absolute.Get_Bottom_Right
-                           (Get_Region_Extent
-                            (Manager, Bottom_Right_Position)));
+        (Top_Left     => Vis.Absolute.Get_Top_Left (Top_Left_Extent),
+         Bottom_Right => Vis.Absolute.Get_Bottom_Right (Bottom_Right_Extent));
    end Optimize_Drawing_Area;
 
    generic
@@ -1183,129 +1191,114 @@ package body Giant.Vis_Data is
       use Vis.Logic;
 
       procedure Add_Line_Bottom_To_Top
-        (Starting_Point : in     Vis.Absolute.Vector_2d;
-         Ending_Point   : in     Vis.Absolute.Vector_2d) is
+        (Bottom_Point : in     Vis.Absolute.Vector_2d;
+         Top_Point    : in     Vis.Absolute.Vector_2d;
+         Space_Around : in     Vis.Absolute_Natural) is
 
-         Left_To_Right : constant Boolean :=
-           Get_X (Starting_Point) <= Get_X (End_Point);
-
-         function Get_Outer_Position_X
-           (Point_X            : in     Vis.Logic_Float;
-            Horizontal_Profile : in     Vis.Logic_Float)
-           return Vis.Absolute_Int is
-
-            X : Vis.Absolute_Int;
-         begin
-            if Left_To_Right then
-               X := Vis.Absolute_Int (Point_X - Horizontal_Profile);
-            else
-               X := Vis.Absolute_Int (Point_X + Horizontal_Profile + 0.5);
-            end if;
-            return Get_Position_X_At_X (Manager, X);
-         end Get_Outer_Position_X;
-
-         function Get_Inner_Position_X
-           (Point_X            : in     Vis.Logic_Float;
-            Horizontal_Profile : in     Vis.Logic_Float)
-           return Vis.Absolute_Int is
-
-            X : Vis.Absolute_Int;
-         begin
-            if Left_To_Right then
-               X := Vis.Absolute_Int (Point_X + Horizontal_Profile + 0.5);
-            else
-               X := Vis.Absolute_Int (Point_X - Horizontal_Profile);
-            end if;
-            return Get_Position_X_At_X (Manager, X);
-         end Get_Inner_Position_X;
-
-         Line_Start            : Vis.Logic.Vector_2d;
-         Difference            : Vis.Logic.Vector_2d;
-         Alpha                 : Vis.Logic_Float;
-         Horizontal_Profile    : Vis.Logic_Float;
-         Min_Y                 : Vis.Absolute_Int;
-         Max_Y                 : Vis.Absolute_Int;
-         Done                  : Boolean;
-         Current_Y             : Vis.Absolute_Int;
-         X                     : Vis.Logic_Float;
-         Inner_Position_X      : Vis.Absolute_Int;
-         Outer_Position_X      : Vis.Absolute_Int;
-         Position              : Region_Position;
-         Min_Position_X        : Vis.Absolute_Int;
-         Max_Position_X        : Vis.Absolute_Int;
+         Line             : Vis.Logic.Vector_2d;
+         Middle_Line_From : Vis.Logic.Vector_2d;
+         Middle_Line_To   : Vis.Logic.Vector_2d;
+         Inner_Line_From  : Vis.Logic.Vector_2d;
+         Inner_Line_To    : Vis.Logic.Vector_2d;
+         Outer_Line_From  : Vis.Logic.Vector_2d;
+         Outer_Line_To    : Vis.Logic.Vector_2d;
+         Direction        : Vis.Logic.Vector_2d;
+         Co_Direction     : Vis.Logic.Vector_2d;
+         Current_Top      : Vis.Logic_Float;
+         Intersect_X      : Vis.Logic_Float;
+         Outer_X          : Vis.Absolute_Int;
+         Inner_X          : Vis.Absolute_Int;
+         Min_X            : Vis.Absolute_Int;
+         Max_X            : Vis.Absolute_Int;
+         Current_Y        : Vis.Absolute_Int;
+         Spacing          : Vis.Logic_Float := Vis.Logic_Float (Space_Around);
       begin
-         pragma Assert (Get_Y (Starting_Point) >= Get_Y (Ending_Point));
-         Line_Start := Vis.To_Logic (Starting_Point);
-         Difference := Vis.To_Logic (Ending_Point - Starting_Point);
+         pragma Assert (Get_Y (Bottom_Point) > Get_Y (Top_Point));
+         Middle_Line_From := Vis.To_Logic (Bottom_Point);
+         Middle_Line_To   := Vis.To_Logic (Top_Point);
+         Line := Middle_Line_To - Middle_Line_From;
+         Direction := Line / Numerics.Sqrt (Line * Line);
+         --  Rotated to the right by Pi/2
+         Co_Direction := Combine_Vector
+           (X => Get_Y (Direction),
+            Y => -Get_X (Direction));
 
-         Alpha := Numerics.Arctan (Get_Y (Difference), Get_X (Difference));
+         --  Add Spacing to middle line
+         Middle_Line_From := Middle_Line_From - Spacing * Direction;
+         Middle_Line_To   := Middle_Line_To   + Spacing * Direction;
+         Line := Middle_Line_To - Middle_Line_From;
 
-         Horizontal_Profile := Vis.To_Logic_Float ((Thickness + 3) / 2)
-           / abs Numerics.Sin (Alpha);
+         --  Calculate outer and inner line in distance 'Spacing' to the
+         --  middle line
+         if Get_X (Direction) < 0.0 then
+            Inner_Line_From := Middle_Line_From + Spacing * Co_Direction;
+            Outer_Line_From := Middle_Line_From - Spacing * Co_Direction;
+         else
+            pragma Assert (Get_X (Direction) > 0.0);
+            Inner_Line_From := Middle_Line_From - Spacing * Co_Direction;
+            Outer_Line_From := Middle_Line_From + Spacing * Co_Direction;
+         end if;
+         pragma Assert (Get_Y (Outer_Line_From) <= Get_Y (Inner_Line_From));
+         Inner_Line_To := Inner_Line_From + Line;
+         Outer_Line_To := Outer_Line_From + Line;
 
-         Min_Y := Get_Y (Ending_Point) - (Thickness + 3) / 2;
-         Max_Y := Get_Y (Starting_Point) + (Thickness + 3) / 2;
-
-         --  Process regions line by line, starting at bottom then ascending
-         --  to top
-
-         --  use 'Position' to keep track of the current region's position
-         Set_Y (Position, Get_Position_Y_At_Y (Manager, Max_Y));
-         --  'Current_Y' reflects the horizontal lines directly below the
-         --  starting point, then above the region at Position and at last
-         --  directly above the end point
-         Current_Y := Max_Y;
-         --  'X' is the horizontal intersection coordinate of the line
-         --  with the horizontal line at 'Current_Y'
-         X := Vis.Intersects_Line_Horizontal_Line_X
-           (Origin     => Line_Start,
-            Direction  => Difference,
-            Horizontal => Vis.Logic_Float (Current_Y) - 0.5);
-         --  the drawn line intersects the horizontal line at 'Current_Y'
-         --  between the position-columns 'Outer_Position_X'
-         --  and 'Inner_Position_X'
-         Outer_Position_X := Get_Outer_Position_X (X, Horizontal_Profile);
-         --  use any valid value for Position.X, only used for the call
-         --  to 'Get_Region_Extent', will then be overwritten
-         Set_X (Position, 0);
-         Done := False;
+         Outer_X := Get_Position_X_At_X
+           (Manager,
+            Vis.Absolute_Int (Get_X (Outer_Line_From)));
+         Current_Y := Get_Position_Y_At_Y
+           (Manager,
+            Vis.Absolute_Int (Get_Y (Inner_Line_From)));
          loop
-            --  next horizontal line
-            Current_Y := Get_Top (Get_Region_Extent (Manager, Position));
-            --  above ending point?
-            if Current_Y <= Min_Y then
-               --  if yes, set directly above point and finish
-               Current_Y := Min_Y;
-               Done := True;
+            Current_Top := Vis.Logic_Float
+              (Get_Top (Get_Region_Extent
+                          (Manager,
+                           Combine_Vector (Outer_X, Current_Y)))) - 0.5;
+            if Current_Top > Get_Y (Inner_Line_To) then
+               --  inner line has intersection with Current_Top
+               Intersect_X := Vis.Intersects_Line_Horizontal_Line_X
+                 (Origin     => Inner_Line_From,
+                  Direction  => Inner_Line_To - Inner_Line_From,
+                  Horizontal => Current_Top);
+               Inner_X := Get_Position_X_At_X
+                 (Manager,
+                  Vis.Absolute_Int (Intersect_X));
+            else
+               --  inner line does not intersect Current_Top
+               --  use last X touched by inner line
+               Inner_X := Get_Position_X_At_X
+                 (Manager,
+                  Vis.Absolute_Int (Get_X (Inner_Line_To)));
             end if;
-            --  intersection with the new 'Current_Y'
-            X := Vis.Intersects_Line_Horizontal_Line_X
-              (Origin     => Line_Start,
-               Direction  => Difference,
-               Horizontal => Vis.Logic_Float (Current_Y) - 0.5);
-            --  update 'Inner_Position_X' only. 'Outer_Position_X' is taken
-            --  from the previous iteration (at the previous 'Current_Y')
-            Inner_Position_X := Get_Inner_Position_X (X, Horizontal_Profile);
 
-            --  add all positions between 'Outer_Position_X' and
-            --  'Inner_Position_X'
+            -- add Inner_X .. Outer_X, Current_Y
             Set_Min_Max
-              (Value_1 => Inner_Position_X,
-               Value_2 => Outer_Position_X,
-               Min     => Min_Position_X,
-               Max     => Max_Position_X);
-            for Pos_X in Min_Position_X .. Max_Position_X loop
-               Set_X (Position, Pos_X);
-               Hit (Position);
+              (Value_1 => Inner_X,
+               Value_2 => Outer_X,
+               Min     => Min_X,
+               Max     => Max_X);
+            for X in Min_X .. Max_X loop
+               Hit (Combine_Vector (X, Current_Y));
             end loop;
 
-            --  Exit if top reached
-            exit when Done;
+            --  Finish when outer line completely below Current_Top
+            exit when Current_Top <= Get_Y (Outer_Line_To);
 
-            --  Update 'Outer_Position_X' to the current 'Current_Y'
-            Outer_Position_X := Get_Outer_Position_X (X, Horizontal_Profile);
-            --  Step one line of regions higher
-            Set_Y (Position, Get_Y (Position) - 1);
+            if Current_Top < Get_Y (Outer_Line_From) then
+               --  outer line has intersection with Current_Bottom
+               Intersect_X := Vis.Intersects_Line_Horizontal_Line_X
+                 (Origin     => Outer_Line_From,
+                  Direction  => Outer_Line_To - Outer_Line_From,
+                  Horizontal => Current_Top);
+               Outer_X := Get_Position_X_At_X
+                 (Manager,
+                  Vis.Absolute_Int (Intersect_X));
+            else
+               --  outer line starts above Current_Top
+               --  use old value of Outer_X
+               null;
+            end if;
+
+            Current_Y := Current_Y - 1;
          end loop;
       end Add_Line_Bottom_To_Top;
 
@@ -1325,10 +1318,10 @@ package body Giant.Vis_Data is
             Min     => Min_Y,
             Max     => Max_Y);
          Area := Vis.Absolute.Combine_Rectangle
-           (X_1 => Vis.Absolute.Get_X (Start_Point) - (Thickness + 1) / 2,
-            X_2 => Vis.Absolute.Get_X (Start_Point) + (Thickness + 1) / 2,
-            Y_1 => Min_Y - (Thickness + 1) / 2,
-            Y_2 => Max_Y + (Thickness + 1) / 2);
+           (X_1 => Vis.Absolute.Get_X (Start_Point) - (Thickness + 3) / 2,
+            X_2 => Vis.Absolute.Get_X (Start_Point) + (Thickness + 3) / 2,
+            Y_1 => Min_Y - (Thickness + 3) / 2,
+            Y_2 => Max_Y + (Thickness + 3) / 2);
 
          Pool := Create_Position_Pool_From_Area (Manager, Area);
          Make_Position_Iterator (Pool, Iterator);
@@ -1345,10 +1338,10 @@ package body Giant.Vis_Data is
             Min     => Min_X,
             Max     => Max_X);
          Area := Vis.Absolute.Combine_Rectangle
-           (X_1 => Min_X - (Thickness + 1) / 2,
-            X_2 => Max_X + (Thickness + 1) / 2,
-            Y_1 => Vis.Absolute.Get_Y (Start_Point) - (Thickness + 1) / 2,
-            Y_2 => Vis.Absolute.Get_Y (Start_Point) + (Thickness + 1) / 2);
+           (X_1 => Min_X - (Thickness + 3) / 2,
+            X_2 => Max_X + (Thickness + 3) / 2,
+            Y_1 => Vis.Absolute.Get_Y (Start_Point) - (Thickness + 3) / 2,
+            Y_2 => Vis.Absolute.Get_Y (Start_Point) + (Thickness + 3) / 2);
 
          Pool := Create_Position_Pool_From_Area (Manager, Area);
          Make_Position_Iterator (Pool, Iterator);
@@ -1360,10 +1353,10 @@ package body Giant.Vis_Data is
       elsif Vis.Absolute.Get_Y (Start_Point) > Vis.Absolute.Get_Y (End_Point)
       then
          --  Ascending line
-         Add_Line_Bottom_To_Top (Start_Point, End_Point);
+         Add_Line_Bottom_To_Top (Start_Point, End_Point, (Thickness + 3) / 2);
       else
          --  Descending line
-         Add_Line_Bottom_To_Top (End_Point, Start_Point);
+         Add_Line_Bottom_To_Top (End_Point, Start_Point, (Thickness + 3) / 2);
       end if;
    end Add_Lines_Positions;
 

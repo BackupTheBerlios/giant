@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.10 $
 --  $Author: keulsn $
---  $Date: 2003/07/20 23:20:04 $
+--  $Date: 2003/07/22 00:11:23 $
 --
 ------------------------------------------------------------------------------
 
@@ -440,8 +440,9 @@ package body Giant.Graph_Widgets.States is
      (Widget : access Graph_Widget_Record'Class)
      return Boolean is
    begin
-      return Has_Temporary_Changed (Widget) or else
-        Has_Display_Changed (Widget);
+      return not Is_Locked (Widget) and then
+        (Has_Temporary_Changed (Widget) or else
+         Has_Display_Changed (Widget));
    end Must_Queue_Draw;
 
    function Has_Display_Changed
