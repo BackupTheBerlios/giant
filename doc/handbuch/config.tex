@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.17 $
-%  $Date: 2003/09/19 18:01:21 $
+%  $RCSfile: config.tex,v $, $Revision: 1.18 $
+%  $Date: 2003/09/19 19:50:36 $
 %  $Author: birdy $
 %
 %  Description:
@@ -20,7 +20,8 @@
   \item \label{config-allgemeines-punkt2}
   \index{Konfigurationsdatei!globale}
   Es gibt eine \gq{globale Konfigurationsdatei}, die sich im
-  GIANT-Stamm-Verzeichnis unter etc/global\_config.xml befindet.
+  GIANT-Stamm-Verzeichnis unter\\
+  etc/global\_config.xml befindet.
   
   Zudem kann es beliebig 
   viele weitere XML-Dateien zur Konfiguration der weiter unten beschriebenen 
@@ -296,7 +297,7 @@ Für die Visualisierungsstile gelten die folgenden Konventionen:
   Jeder Visualisierungsstil erhält einen Namen. Unter diesem Namen ist der 
   Visualisierungsstil für jedes Anzeigefenster einzeln auswählbar.
   Der Name des Visualisierungsstil ist der Dateiname der XML-Datei
-  ohne Endung .XML.
+  ohne Endung .xml.
  
   \subsection {Generelle Einstellungen innerhalb des Visualisierungsstils}
     \begin{enumerate}
@@ -381,7 +382,10 @@ sich im User\_VIS\_DIRECTORY befinden.\\
 Bei Namensgleichheit zweier solcher XML-Dateien in beiden
 Verzeichnissen wird nur die Datei im User\_VIS\_DIRECTORY
 beachtet, genauer gesagt ersetzen diese Einstellungen die
-zunächst aus GIANT\_VIS\_DIRECTORY geladenen Einstellungen.
+zunächst aus GIANT\_VIS\_DIRECTORY geladenen Einstellungen.\\
+Wird bei der Auswahl von Knoten oder Kanten durch Wildcards
+oder Namen eine oder mehrere Kanten doppelt definiert, so gilt
+die zuletzt festgelegte Definition.
 
 
 Der Aufbau der XML-Dateien ist wie folgt durch die Datei
@@ -397,7 +401,7 @@ Hier ein konkretes Beispiel einer solchen Datei (Beispiel 1):
 °<!--  Beginn des Beispiels 1 -->°\\
 
 In jeder Datei wird die Hintergrundfarbe durch \\
-°<global_settings vis_window_background_color="RGB:20/20/20"/>°\\
+°<global_settings vis_window_background_color="#202020"/>°\\
 festgelegt.\\
 
 Jede Knotendefinition, ob für einen oder mehrere Knoten, besteht
@@ -416,8 +420,8 @@ aus folgenden Elementen:
 Alle Knoten, die nicht später behandelt werden, werden durch\\
 °<default_node_setting>°\\
 °  icon         = "test_node_icon_default_1.xpm"°\\
-°  text_color   = "RGB:AA/AA/AA"°\\
-°  border_color = "RGB:AA/AA/AA"°\\
+°  text_color   = "#AAAAAA"°\\
+°  border_color = "#AAAAAA"°\\
 °  fill_color   = "white">°\\
 °</default_node_setting>°\\
 genauer festgelegt.\\
@@ -482,8 +486,8 @@ wird in einem Block festgelegt, wie alle Kanten, die nicht
 später festgelegt werden, dargestellt werden.\\
 
 °<default_edge_setting°\\
-°    line_color = "RGB:AA/AA/A1"°\\     
-°    text_color = "RGB:AA/AA/A2"°\\     
+°    line_color = "#AAAAA1"°\\     
+°    text_color = "#AAAAA2"°\\     
 °    line_style = "continuous_line"°\\      
 °    show_label = "no" />°\\
 
@@ -526,8 +530,8 @@ Es gibt folgende Möglichkeiten, Kanten festzulegen:\\
 Das im o.G. Beispiel innerhalb eines <edge\_class\_specific\_setting> Blocks verwendete Konstrukt\\
 
 °<edge_class°\\
-°     start_node_class = "Example1"°\\
-°     attribute_name   = "Example2" />° 
+°     start_node_class = "O_Node"°\\
+°     attribute_name   = "SLoc" />° 
 
 Inkludiert alle Kanten, die von den genannten Knoten ausgehen
 und genanntes Attribut haben. Dabei ist bei einem der beiden
@@ -538,19 +542,26 @@ bzw. von diesem Knoten ausgehen, aus.\\
 Auch die Verwendung von Vererbung ist möglich:
 
 °<super_edge_class°\\
-°     super_start_node_class = "Example3"°\\
-°     attribute_name   = "Example4" />° 
+°     super_start_node_class = "T_Node"°\\
+°     attribute_name   = "Prog_Unit" />° 
 
 Inkludiert alle Kanten, die von den genannten Knoten ausgehen
-und genanntes Attribut haben.
+und genanntes Attribut haben.\\
+
 Ausserdem werden alle passenden Kanten mit aufgenommen, die
 von allen Knotentypen unterhalb des angegebenen Knotentyps
 im IML-Baum ausgehen.\\
 Dies wäre also dasselbe, wie wenn für jeden Knotentyp unterhalb
-von Example3 im IML-Baum ein einzelner edge\_class-Eintrag
-mit dem angegebenen attribute\_name existieren würde.
+von T\_Node im IML-Baum ein einzelner edge\_class-Eintrag
+mit dem angegebenen attribute\_name Prog\_Unit existieren würde.
 Durch dieses Konstrukt können also ggf. Einträge in der Datei
 gespart werden.
+
+Hier ist wiederum auch der * Operator verwendbar, z.B.:\\
+
+°<super_edge_class°\\
+°     super_start_node_class = "TC_Boolean"°\\
+°     attribute_name   = "*" />° 
 
 Beispiel 2:\\
 
@@ -634,8 +645,8 @@ in der IML-Hierarchie unter dem bezeichneten Knoten befinden, aufgenommen.
 °      attribute_name         = "Subunits" />°  
 
 Wird bei attribute\_name eine Wildcard verwendet, so werden alle Kanten,
-die zutreffen, vom bezeichneten Knotentyp und von allen Knotentypen
-in der IML-Hierarchie darunter ausgewählt.
+die zutreffen, vom bezeichneten Knotentyp und von allen erbenden
+Knoten ausgewählt.
       
 °    <super_edge_class°\\
 °      super_start_node_class = "Op"°\\
@@ -649,7 +660,7 @@ in der IML-Hierarchie darunter ausgewählt.
 
 Jedes Projekt in GIANT besitzt eine Projektdatei, der
 Dateiname ist der Projektname erweitert durch die
-Endung .XML.\\
+Endung .xml.\\
 Die Datei ist wie folgt aufgebaut:\\ 
 
 \verbatiminput{giant_project_file.dtd}
@@ -699,6 +710,7 @@ angegeben.\\
 
 
 \subsection{Annotations-Datei}
+\label{Annotations-Datei}
 
 In der Annotations-Datei von GIANT, welche sich im Projektverzeichnis
 des dazugehörigen Projektes befindet, stehen alle Annotationen von
@@ -726,16 +738,3 @@ Hier eine Beispieldatei:\\
   
 °</giant_node_annotations_file>°\\
 
-\section {Skript-Dateien} 
-\label {Config Anfrage-Dateien}
-\index{GSL!Skriptdateien} \index{Skriptdateien}
-
-Eine Skript-Datei ist eine Textdatei, die genau ein GSL Skript enthält.
-Auf diese Art und Weise können komplexe Skripte gespeichert und 
-wiederverwendet werden.\\
-Geladen werden können solche Dateien beim Kommandozeilenaufruf 
-(siehe \ref{fa Starten von GIANT})
-oder im Dialog zur Eingabe eine Skripts 
-(vgl.\ Funktion \ref{GUI Anfragedialog}).
-Für eine exakte Spezifikation der GSL siehe Kapitel 
-\ref {GIANT Scripting Language}. 

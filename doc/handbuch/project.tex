@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: project.tex,v $, $Revision: 1.3 $
-%  $Date: 2003/08/09 20:15:05 $
+%  $RCSfile: project.tex,v $, $Revision: 1.4 $
+%  $Date: 2003/09/19 19:50:37 $
 %  $Author: birdy $
 %
 %  Description:
@@ -20,33 +20,24 @@ Ein Projekt fasst alle Arbeitsergebnisse, die der Benutzer mittels
 GIANT für einen IML-Graphen erzeugen kann, wie z.B. Anzeigefenster und
 IML-Teilgraphen, logisch zusammen.
 
-\begin {enumerate}
-
-  \item 
   Wird während des Betriebs von GIANT ein neues Projekt angelegt, so erhält 
   es automatisch eine Projektdatei.
-  
-  \item
   Ein Projekt besteht aus einem Verweis auf eine IML-Graph-Datei, auf die sich
   die gespeicherten Informationen beziehen, sowie aus den gespeicherten 
-  Informationen für IML-Teilgraphen, Anzeigefenster und Knoten-Annotationen.
+  Informationen für IML-Teilgraphen, Anzeigefenster und Knoten-Annotationen.\\
  
-  \item
   Der Name eines bereits angelegten Projektes kann mit den Mitteln von 
   GIANT nicht geändert werden (außer dadurch, dass  man das Projekt unter 
-  neuem Namen neu speichert). 
+  neuem Namen neu speichert).\\
 
-  \item
+
   Der Benutzer kann beliebig viele Projekte anlegen.
-  
-  \item
   In GIANT kann immer nur ein Projekt gleichzeitig geöffnet sein. 
   
-  \item
   Während der Arbeit mit GIANT kann ein vorhandenes Projekt 
   geladen oder ein neues Projekt angelegt werden. 
 
-  \item \index{Projekte!manuelle Modifikation}
+ \index{Projekte!manuelle Modifikation}
   Ein nicht gerade in GIANT geöffnetes Projekt kann vom Benutzer 
   beliebig modifiziert werden.
   GIANT unterstützt dies durch den Einsatz von XML (incl. DTDs). 
@@ -60,9 +51,8 @@ IML-Teilgraphen, logisch zusammen.
   Das Fehlerverhalten von GIANT gegenüber Fehlern aufgrund manueller Änderungen
   des Benutzers an einem Projekt (Editieren der Projektdatei und
   Ändern der Verwaltungsdateien) ist undefiniert, es ist also bei Manuellen Änderungen
-  mit großer Sorgfalt vorzugehen.
+  mit großer Sorgfalt vorzugehen.\\
 
-  \item
   Um Inkonsistenzen und Konflikte zu vermeiden, sollten alle Dateien, die
   zu einem Projekt gehören, im Projektverzeichnis liegen (GIANT
   macht dies automatisch immer so). Man sollte
@@ -70,10 +60,6 @@ IML-Teilgraphen, logisch zusammen.
   außerhalb der Projektverzeichnisses eintragen; verboten ist dies
   allerdings nicht. Das Verhalten von GIANT im Fehlerfall bleibt aber 
   diesbezüglich undefiniert.
-
-
-\end {enumerate}
-
 
   \subsection {Überblick über die Struktur eines Projektes}
 
@@ -115,38 +101,33 @@ IML-Teilgraphen, logisch zusammen.
 
   \subsection {Das Projektverzeichnis} \index{Projekte!Projektverzeichnis}
   \label{Project Das Projektverzeichnis} 
-  \begin {enumerate}
 
-    \item  
+  
     GIANT speichert alle Verwaltungsdateien (siehe 
     \ref {Project Verwaltungsdatei für Knoten-Annotationen},
     \ref {Project Verwaltungsdateien für Anzeigefenster} und
     \ref {Project Verwaltungsdateien für IML-Teilgraphen}) automatisch
     im Projektverzeichnis.
  
-    \item
+
     In einem Projektverzeichnis darf nur ein Projekt (insb. nur
     eine Projektdatei) abgelegt werden.
-    
-  \end {enumerate}    
+      
 
 
   \subsection {Die Projektdatei} \index{Projekte!Projektdatei}
   \label{Project Die Projektdatei} 
-  \begin {enumerate}
 
-    \item
+
+
     Die Projektdatei liegt als XML-Datei vor.
-
-    \item
-    Die Projektdatei befindet sich im Projektverzeichnis und enthält 
+    Sie befindet sich im Projektverzeichnis und enthält 
     Informationen, die zur Identifikation des zu einem Projekt gehörenden 
     IML-Graphen nötig sind. 
   
-    \item
-    Der Name der Projektdatei entspricht dem Namen des Projektes.
+    Der Name der Projektdatei entspricht dem Namen des Projektes.\\
 
-    \item \index{Projektdatei!Referenzen}
+    \index{Projektdatei!Referenzen}
     Die Projektdatei enthält Referenzen zu allen Dateien, die Bestandteil
     des Projektes sind (Verwaltungsdateien für IML-Teilgraphen und
     Anzeigefenster, sowie die Verwaltungsdatei für Knoten-Annotationen).
@@ -154,10 +135,9 @@ IML-Teilgraphen, logisch zusammen.
     denen aber keine Referenz in der Projektdatei existiert, gehören
     nicht zum Projekt.
 
-    \item
     Der Pfad zu der Datei, die den IML-Graphen enthält, ist in der 
     Projektdatei gespeichert. 
-  \end {enumerate}
+
   
  
   \subsection {Prüfung der IML-Graph Datei} 
@@ -174,20 +154,12 @@ IML-Teilgraphen, logisch zusammen.
   \index{Projekte!Verwaltungsdateien für Anzeigefenster}
   \index{Verwaltungsdateien}
 
-  \begin {enumerate}
-  
-    \item
-    Diese Datei ist eine Binärdatei.
-  
-    \item
+    Die Verwaltungsdateien für Anzeigefenster sind Binärdateien.
     Zu jedem Anzeigefenster gibt es eine Verwaltungsdatei. 
-    
-    \item
     Diese Verwaltungsdatei enthält alle Informationen zur kompletten 
     Rekonstruktion eines Anzeigefensters. Alle Informationen werden
-    in binärer Form gespeichert.
+    in binärer Form gespeichert.\\
  
-  \end {enumerate}
   Innerhalb dieser Verwaltungsdatei werden folgende Informationen gespeichert:
  
   \begin {enumerate}
@@ -220,19 +192,13 @@ IML-Teilgraphen, logisch zusammen.
   \index{Projekte!Verwaltungsdateien für IML-Teilgraphen}
   \index{Verwaltungsdateien}
 
-  \begin {enumerate}
-  
-    \item
-    Diese Datei ist eine Binärdatei.
 
-    \item
+    Die Verwaltungsdatei für IML-Teilgraphen ist eine Binärdatei.
     Für jeden IML-Teilgraphen gibt es eine eigene Verwaltungsdatei.
-    
-    \item
     Sämtliche erzeugten IML-Teilgraphen werden in Verwaltungsdateien in 
     binärer Form gespeichert. 
 
-  \end{enumerate}
+
   
   
   \subsection {Die Verwaltungsdatei für Knoten-Annotationen}
@@ -242,16 +208,13 @@ IML-Teilgraphen, logisch zusammen.
   \index{Verwaltungsdateien}
   \index{Knoten-Annotationen}
 
-  \begin {enumerate}
-  
-   \item
-   Diese Datei liegt als XML Datei vor.
+   Die Verwaltungsdatei für Knoten-Annotationen liegt als XML Datei vor.
 
-   \item
    Alle Knoten-Annotationen des Projektes werden in genau einer 
-   Verwaltungsdatei gespeichert.
+   solchen Verwaltungsdatei gespeichert. Weitere Informationen
+   zu dieser Datei befinden sich in Abschnitt \ref{Annotations-Datei}.
   
-  \end{enumerate}
+
   
 
  
@@ -277,15 +240,12 @@ IML-Teilgraphen, logisch zusammen.
   \label{Persistenz!Anzeigefenster}
   \index{Persistenz!Anzeigefenster}
 
-  \begin {enumerate}
-
-    \item 
     Beim Speichern von Anzeigefenstern in Verwaltungsdateien werden
     für jedes Anzeigefenster alle Informationen gespeichert, die nötig
     sind um den Zustand des Anzeigefensters zu rekonstruieren, der
     möglichst exakt dem Zustand bei der Speicherung des Anzeigefensters
     entspricht. Insbesondere werden hierbei die folgenden Bestandteile
-    des Anzeigefensters gespeichert:
+    des Anzeigefensters gespeichert:\\
   
     Alle Selektionen und Pins des Anzeigefensters.
 
@@ -294,9 +254,9 @@ IML-Teilgraphen, logisch zusammen.
     sie den Status der aktuellen Selektion hat.
 
     Die Position der Fenster-Knoten und Fenster-Kanten des 
-    Anzeigefensters.
+    Anzeigefensters.\\
 
-    \item  \index{Persistenz!Visualisierungsstile}
+    \index{Persistenz!Visualisierungsstile}
     Für den gewählten Visualisierungsstil des Anzeigefensters wird
     nur der Name gespeichert, da die Visualisierungsstile über
     die Konfigurationsdateien beliebig editiert
@@ -304,20 +264,16 @@ IML-Teilgraphen, logisch zusammen.
     Anzeigefensters aus der Verwaltungsdatei kein Visualisierungsstil
     gefunden, dessen Name dem gespeicherten entspricht, so
     wird für das Anzeigefenster statt dessen ein 
-    Standard-Visualisierungsstil verwendet.
+    Standard-Visualisierungsstil verwendet.\\
       
-
-    \item
     Sämtliche dem Projekt bekannten Anzeigefenster (alle Anzeigefenster zu 
     denen es eine entsprechende Verwaltungsdatei gibt) werden in 
-    der Liste über die Anzeigefenster angezeigt.
+    der Liste über die Anzeigefenster angezeigt.\\
    
-    \item 
     Zu jedem Anzeigefenster eines Projektes gibt es eine Verwaltungsdatei.
     Bei neu erzeugten Anzeigefenstern wird diese Verwaltungsdatei beim
-    ersten Speichern angelegt.
+    ersten Speichern angelegt.\\
 
-    \item
     Wird ein geöffnetes Anzeigefenster geschlossen, 
     so fragt GIANT nach, ob es eventuelle Änderungen speichern soll
     oder nicht. Falls ja, werden eventuelle Änderungen in die für das 
@@ -325,48 +281,33 @@ IML-Teilgraphen, logisch zusammen.
     anderenfalls bleibt der Zustand des Anzeigefensters nach der letzten
     Speicherung vorhanden (die zugehörige Verwaltungsdatei wird nicht 
     verändert).
-
-    \item
     Modifikationen (z.B. das Verschieben von Fenster-Knoten) 
     auf einem Anzeigefenster werden nicht automatisch
     nach deren Durchführung gespeichert (so kann notfalls ein
     Rückgängig durchgeführt werden).
 
-  \end {enumerate}
-
   %===
   \subsection {Persistenz von IML-Teilgraphen}
   \index{Persistenz!IML-Teilgraphen}
 
-  \begin {enumerate}
-
-    \item
     Alle in einem Projekt bereits vorhandenen IML-Teilgraphen werden in einer 
     entsprechenden Liste angezeigt.
-  
-    \item
     Neu erzeugte IML-Teilgraphen und Änderungen an bestehenden 
     IML-Teilgraphen können nur über \gq{Project - Save (As..)} (siehe oben) 
-    gespeichert werden.
+    gespeichert werden.\\
        
-    \item
     Wird das Programm beendet, ohne das zuvor \gq{Project - Save (As..)} ausgeführt 
     worden ist, so gehen alle nicht gespeicherten Informationen zu den 
     IML-Teilgraphen verloren (alle zwischenzeitlich ausgeführten Modifikationen 
     und alle zwischenzeitlich neu erzeugten IML-Teilgraphen). 
     Der Zustand nach dem letzten Speichern bleibt dann erhalten.
 
-    \item
     Modifikationen an bestehenden IML-Teilgraphen werden nicht automatisch 
     gespeichert. Zu neu erzeugten IML-Teilgraphen wird nicht automatisch
-    eine Verwaltungsdatei erzeugt.
+    eine Verwaltungsdatei erzeugt.\\
   
-    \item
     IML-Teilgraphen können gelöscht werden. Falls vorhanden, wird dann auch
     die entsprechende Verwaltungsdatei ebenfalls sofort gelöscht.
-  \end {enumerate}
-  
-  
   
 \subsection {Persistenz von Knoten-Annotationen}  
 \label{Project Persistenz von Knoten-Annotationen} 

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: functions.tex,v $, $Revision: 1.18 $
-%  $Date: 2003/09/19 18:01:22 $
+%  $RCSfile: functions.tex,v $, $Revision: 1.19 $
+%  $Date: 2003/09/19 19:50:36 $
 %  $Author: birdy $
 %
 %  Description: 
@@ -11,12 +11,12 @@
 
 \label{Kapitel-Funktionale Anforderungen}
 
-\section{Über dieses Kapitel}    
-
-
-Wichtige Informationen zur Persitzenz der Projekte in GIANT,
-welche Informationen jeweils gespeichert werden, finden sich
-im Abschnitt \ref{Project Persistenz der Projekte}.
+%\section{Über dieses Kapitel}    
+%
+%
+%Wichtige Informationen zur Persitzenz der Projekte in GIANT,
+%welche Informationen jeweils gespeichert werden, finden sich
+%im Abschnitt \ref{Project Persistenz der Projekte}.
 
 \section {Kommandozeilenaufruf} \label{fa Starten von GIANT}
 
@@ -41,7 +41,11 @@ ist die optional anzugebende globale Konfigurationsdatei, siehe Abschnitt
 Die Option °-h° steht für Hilfe, mit °-v° kann die Programmversion von
 GIANT angezeigt werden.\\
 Wenn ein Graph-File angegeben wird und °project-file° nicht existiert, wird
-ein neues Projekt mit diesem Namen erzeugt.
+ein neues Projekt mit diesem Namen erzeugt.\\
+
+Ein Beispiel für den Kommandozeilenaufruf von GIANT ist:\\
+
+°./giant projects/sample.project -g graphs/mygraph.xml°\\
 
 \end{enumerate}
 
@@ -413,14 +417,13 @@ Subgraph List.
     
     \subsubsection{Kanten-Popup-Menü} \label{Kanten-Popup-Menü}
     Wenn in der Vis Pane mit der rechten Maustaste auf eine Kante
-    geklickt wird, öffnet sich das folgende
-    Popup-Menü:
-     \begin{itemize}
-       \item Zoom to edge\\
-         Dieser Menüpunkt zoomt so, daß die gewählte Kante gut im Anzeigefenster
-	 sichtbar ist.
-     \end{itemize}
-     	Als weitere Menüpunkte im Popup-Menü erscheinen die im GIANT-Config-File
+    geklickt wird, öffnet sich ein Popup-Menü:
+%*     \begin{itemize}
+%*       \item Zoom to edge\\
+%*         Dieser Menüpunkt zoomt so, daß die gewählte Kante gut im Anzeigefenster
+%*	 sichtbar ist.
+%*     \end{itemize}
+     	Als Menüpunkte im Popup-Menü erscheinen die im GIANT-Config-File
 	definierten kontextsensitiven GSL-Skripte. Mehr Informationen hierzu finden
 	sich in Abschnitt \ref{Config-GSL-Context-Scripts}.
 	      Mit diesem Menü können die GSL-Skripte im Untermenü schnell auf die
@@ -674,8 +677,8 @@ Subgraph List.
        \label{Skript-Dialog-Pic} 
     \end{figure}
 
-Der Skriptdialog \gq{Query Dialog} (siehe Abbildung \ref{Skript-Dialog-Pic})
-hat zuoberst ein Textfeld \gq{Query Text},
+Der Skriptdialog (siehe Abbildung \ref{Skript-Dialog-Pic})
+hat zuoberst ein Textfeld,
 in das ein GSL Skript eingegeben werden kann.
 
 Unter Query Text befinden sich folgende Buttons:
@@ -771,14 +774,20 @@ Bestandteile des Dialoges sind:
     \end{figure}
 
 Der Layoutalgorithmen Dialog (siehe Abbildung \ref{Layout-Algorithm-Dialog-Pic}) 
-bietet folgende Möglichkeiten:
+wird über Popup-Menüs auf Selektionen aufgerufen und bietet folgende Möglichkeiten:
 
 \begin {enumerate} 
  \item Anzeige der zu layoutenden Selektion mit dem zu layoutenden Fenster
  \item {Auswahl des Layoutalgorithmus}\\
        Über die Tabs im Fenster kann der Layoutalgorithmus ausgewählt werden,
        in der aktuellen Version stehen zur Auswahl: Matrix, Tree Layout,
-       Other (für spätere Erweiterungen).
+       Other (für spätere Erweiterungen).\\
+       Das Tree-Layout ordnet die Knoten als Baum an, dessen Wurzel anhand
+       der ID des Knotens (welche u.a. mit dem Knoten-Informationsfenster, siehe
+        \ref{Knoten-Informationsfenster}, festgestellt
+       werden kann) festgelegt wird.\\
+       Das Matrix-Layout ordnet die Knoten in einer Matrix an.\\
+       
  \item Ggf. Eingabefeld für die ID des Wurzelknotens bei Treelayouts
  \item {Ggf. Auswahl der für das Layout der Knoten zu berücksichtigenden Klassenmengen
         (class sets, siehe \ref{Config-Klassenmengen} und \ref{Klassenmenge}) bei semantischen Tree-Layouts.}\\
@@ -844,11 +853,9 @@ Mit dem Button Okay kann bestätigt werden, mit dem Button Cancel abgebrochen wer
        \label{Error-Window-Pic}
     \end{figure}
 
-Ein allgemeiner Fehlerdialog (siehe Abbildung \ref{Error-Window-Pic}) 
-ist ein Fenster \gq{Error Window}
-mit dem Titel \gq{Error}. Im Fenster befindet sich ein Label zur
-Ausgabe der Fehlermeldung und ein Button mit der standardmäßigen 
-Beschriftung \gq{OK}. 
+Im Fenster eines allgemeinen Fehlerdialoges (siehe Abbildung \ref{Error-Window-Pic})
+befindet sich die Fehlermeldung und ein \gq{OK}-Button, mit dem das
+Fenster geschlossen werden kann.. 
 
 \section{Sicherheitsabfrage}\label{Sicherheitsabfrage}
 \index{Sicherheitsabfrage}
@@ -861,13 +868,8 @@ Beschriftung \gq{OK}.
     \end{figure}
     
 Eine allgemeine Sicherheitsabfrage (siehe Abbildung \ref{Confirmation-Window-Pic}) 
-ist ein Fenster (\gq{Confirmation Window}) mit dem
-Titel \gq{Confirmation}. Im Fenster ist
-ein Fragetext und ein Button mit der standardmäßigen Beschriftung
-Beschriftung \gq{Yes}, sowie ein Button mit der standardmäßigen Beschriftung
-\gq{No}. In dem Fragetext steht jeweils kontextabhängig 
-die Information, die der  Benutzer zur Beantwortung der Sicherheitsabfrage
-benötigt.\\
+besitzt einen
+Fragetext und die zwei Buttons \gq{Yes} und \gq{No}.
 Ggf. kann mit einem Radiobutton festgelegt werden, daß Sicherheitsabfragen
 des jeweiligen Types in Zukunft nicht mehr angezeigt werden (z.B. \gq{Do not
 show delete confirmations again}).
