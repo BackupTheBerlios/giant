@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.15 $
+--  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.16 $
 --  $Author: schwiemn $
---  $Date: 2003/06/17 19:40:13 $
+--  $Date: 2003/06/18 16:40:05 $
 --
 --  ----------------
 --  This package realizes a container that administrates the components
@@ -181,7 +181,22 @@ package Giant.Vis_Windows is
    function Get_Name
      (Vis_Window : in Visual_Window_Access)
       return String;
-
+      
+   ---------------------------------------------------------------------------
+   --  Changes the name of a visualisation window.
+   --
+   --  Parameters:
+   --    Visual_Window - The instance of the ADT whose name should
+   --      be changed.
+   --    New_Name - The new name for that visualisation window.
+   --  Raises:
+   --    Visual_Window_Access_Not_Initialized_Exception - Raised if a not
+   --      initialized instance of "Vis_Window_Data_Access" is passed
+   --      as parameter.               
+   procedure Change_Name
+     (Vis_Window : in Visual_Window_Access;
+      New_Name   : in String);
+      
    ---------------------------------------------------------------------------
    --  Equal function - to instances of the ADT having the
    --  same name are regarded as equal. This is necessary because of the

@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.15 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.16 $
 --  $Author: schwiemn $
---  $Date: 2003/06/17 15:41:14 $
+--  $Date: 2003/06/18 16:40:05 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -332,8 +332,28 @@ package body Giant.Vis_Windows is
      (Vis_Window : in Visual_Window_Access)
      return String is
    begin
+   
+      if Vis_Window = null then
+         raise Visual_Window_Access_Not_Initialized_Exception;
+      end if;
+      
       return Ada.Strings.Unbounded.To_String (Vis_Window.Vis_Window_Name);
    end Get_Name;
+   
+   ---------------------------------------------------------------------------
+              
+   procedure Change_Name
+     (Vis_Window : in Visual_Window_Access;
+      New_Name   : in String) is
+   begin  
+       
+      if Vis_Window = null then
+         raise Visual_Window_Access_Not_Initialized_Exception;
+      end if;
+      
+      Vis_Window.Vis_Window_Name := 
+        Ada.Strings.Unbounded.To_Unbounded_String (New_Name);
+   end Change_Name;
 
    ---------------------------------------------------------------------------
    function Is_Equal
