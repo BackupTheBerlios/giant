@@ -11,7 +11,7 @@
            value="./annotation_dir/document.xpm" />
            
   <setting name="Icon_relative_to_aps_path_root" 
-           value="document.xpm" />
+           value="./document.xpm" />
            
   <setting name="Icon_should_not_be_found" 
            value="./resources/config_glob_test/annotation_dir/document.xpm" />
