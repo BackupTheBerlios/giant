@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.11 $
--- $Author: schwiemn $
--- $Date: 2003/09/23 20:54:31 $
+-- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.12 $
+-- $Author: keulsn $
+-- $Date: 2003/09/24 12:37:05 $
 --
 with Giant.File_Management;             -- from GIANT
 with Giant.XML_File_Access;             -- from GIANT
@@ -38,7 +38,8 @@ with DOM.Core.Documents; -- from xmlada
 with DOM.Core.Nodes;     -- from xmlada
 with DOM.Core.Elements;  -- from xmlada
 
-with GIANT.Logger;
+with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 
 package body Giant.Config.Class_Sets is
 
