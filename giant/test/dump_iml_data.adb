@@ -20,13 +20,13 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: dump_iml_data.adb,v $, $Revision: 1.9 $
+--  $RCSfile: dump_iml_data.adb,v $, $Revision: 1.10 $
 --  $Author: koppor $
---  $Date: 2003/10/01 19:01:13 $
+--  $Date: 2003/10/01 21:54:18 $
 --
 -- -----
--- Used to Dump the Content (Node Classes and attributes of an iml Graph)
--- into the logger.
+-- Used to dump content (node classes, attributes, nodes and edges of an
+--   IML Graph into the logger.
 --
 with Giant; use Giant;
 with Giant.Graph_Lib;
@@ -75,14 +75,18 @@ procedure dump_iml_data is
 
          Logger.Info ("Edges in");
          for I in Edges_In'Range loop
-            Logger.Info (Graph_Lib.Node_Id_Image
-                         (Graph_Lib.Get_Source_Node (Edges_In (I))));
+            Logger.Info
+              (Graph_Lib.Edge_Id_Image (Edges_In (I)) & " (" &
+               Graph_Lib.Node_Id_Image
+               (Graph_Lib.Get_Source_Node (Edges_In(I))) & ")");
          end loop;
 
          Logger.Info ("Edges out");
          for I in Edges_Out'Range loop
-            Logger.Info (Graph_Lib.Node_Id_Image
-                         (Graph_Lib.Get_Target_Node (Edges_Out (I))));
+            Logger.Info
+              (Graph_Lib.Edge_Id_Image (Edges_Out (I)) & " (" &
+               Graph_Lib.Node_Id_Image
+               (Graph_Lib.Get_Source_Node (Edges_Out(I))) & ")");
          end loop;
 
          Output_All_Attributes (Node);
@@ -93,6 +97,8 @@ procedure dump_iml_data is
 
       All_Nodes : Graph_Lib.Node_Id_Set;
    begin
+      Logger.Info ("All nodes:");
+
       All_Nodes := Graph_Lib.Get_All_Nodes;
 
       Apply (All_Nodes);
@@ -100,13 +106,44 @@ procedure dump_iml_data is
       Graph_Lib.Node_Id_Sets.Destroy (All_Nodes);
    end Output_All_Nodes;
 
+   procedure Output_All_Edges is
+
+      procedure Execute (Edge : in Graph_Lib.Edge_Id) is
+      begin
+         Logger.Info
+           (Graph_Lib.Edge_Id_Image (Edge) & ": " &
+            Graph_Lib.Node_Id_Image
+            (Graph_Lib.Get_Source_Node (Edge)) & " --> " &
+            Graph_Lib.Node_Id_Image
+            (Graph_Lib.Get_Target_Node (Edge)) & " [" &
+            Graph_Lib.Get_Edge_Class_Tag
+            (Graph_Lib.Get_Edge_Class_Id (Edge)) & "]"
+            );
+      end Execute;
+
+      procedure Apply is new Graph_Lib.Edge_Id_Sets.Apply
+        (Execute => Execute);
+
+      All_Edges : Graph_Lib.Edge_Id_Set;
+   begin
+      Logger.Info ("All edges:");
+
+      All_Edges := Graph_Lib.Get_All_Edges;
+
+      Apply (All_Edges);
+
+      Graph_Lib.Edge_Id_Sets.Destroy (All_Edges);
+   end Output_All_Edges;
+
    procedure Load_And_Dump_Graph
    is
    begin
-      Graph_Lib.Load ("resources/rfg_examp.iml");
-      --  Graph_Lib.Load ("resources/graphs/concept_analysis.iml");
+      --  Graph_Lib.Load ("resources/rfg_examp.iml");
+      Graph_Lib.Load ("resources/graphs/concept_analysis.iml");
+      --  Graph_Lib.Load ("resources/graphs/wget.iml");
       --  Graph_Lib.Load ("resources/graphs/httpd.iml");
       Output_All_Nodes;
+      Output_All_Edges;
       Graph_Lib.Unload;
    end Load_And_Dump_Graph;
 
