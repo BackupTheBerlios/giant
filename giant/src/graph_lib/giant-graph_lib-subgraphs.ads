@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.15 $
+--  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.16 $
 --  $Author: koppor $
---  $Date: 2003/07/15 15:44:39 $
+--  $Date: 2003/07/22 09:00:02 $
 --
 ------------------------------------------------------------------------------
 --
@@ -126,6 +126,24 @@ package Giant.Graph_Lib.Subgraphs is
    function Get_All_Edges
      (Graph : in Subgraph)
      return Edge_Id_Set;
+
+   ---------------------------------------------------------------------------
+   --  Returns:
+   --    true   if given node is member in given subgraph
+   --    false  otherwise
+   function Is_Member
+     (The_Subgraph  : in Subgraph;
+      Edge          : in Edge_Id)
+     return Boolean;
+
+   ---------------------------------------------------------------------------
+   --  Returns:
+   --    true   if given node is member in given subgraph
+   --    false  otherwise
+   function Is_Member
+     (The_Subgraph  : in Subgraph;
+      Node          : in Node_Id)
+     return Boolean;
 
    ---------------
    --  Streams  --
