@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-evolutions.ads,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/06/01 19:12:28 $
+--  $Date: 2003/06/02 16:29:18 $
 --
 ------------------------------------------------------------------------------
 --
@@ -448,6 +448,16 @@ private                       -- Private Part --
    -- Private primitive subprograms --
    -- for Evolution                 --
    -----------------------------------
+
+   function Logging_Name
+     (Individual : access Evolution'Class)
+     return String;
+
+
+   function Validate
+     (Individual : access Evolution'Class)
+     return Boolean;
+
 
    procedure Update_Visuals
      (Individual    : access Evolution'Class;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/06/02 00:23:10 $
+--  $Date: 2003/06/02 16:29:18 $
 --
 ------------------------------------------------------------------------------
 
@@ -217,6 +217,33 @@ package body Giant.Evolutions is
       return Individual.Complexity;
    end Get_Complexity;
 
+   function Logging_Name
+     (Individual : access Evolution'Class)
+     return String is
+
+      package Ops is new Ptr_Ops
+        (T => Evolution, T_Ptr => Evolution_Class_Access);
+
+   begin
+      return "Individual"
+        & Ops.Image (Evolution_Class_Access (Individual))
+        & " of type " & Ada.Tags.External_Tag (Individual'Tag);
+   end Logging_Name;
+
+   function Validate
+     (Individual : access Evolution'Class)
+     return Boolean is
+   begin
+      if Get_Next_Action (Individual) = Cancel then
+         Evolution_Logger.Debug
+           ("Validation failed (because Next_Action set to Cancel) for "
+            & Logging_Name (Individual)
+            & ". Possibly Initialize was not called.");
+         return False;
+      end if;
+      return True;
+   end Validate;
+
    procedure Update_Visuals
      (Individual    : access Evolution'Class;
       Progress_Bar  : in     Gtk.Progress_Bar.Gtk_Progress_Bar := null;
@@ -286,11 +313,6 @@ package body Giant.Evolutions is
    procedure Set_Next_Action
      (Individual  : access Evolution'Class;
       Next_Action : in     Evolution_Action) is
-
-      package Evolution_Ptr_Ops is new Ptr_Ops
-        (T     => Evolution,
-         T_Ptr => Evolution_Class_Access);
-
    begin
       --  'Next_Action' may be out of range if the out-Parameter was not
       --  assigned any value in the last call to 'Step' or
@@ -300,9 +322,7 @@ package body Giant.Evolutions is
          Individual.Next_Action := Next_Action;
       else
          Evolution_Logger.Error
-           ("Individual"
-            & Evolution_Ptr_Ops.Image (Evolution_Class_Access (Individual))
-            & " of type " & Ada.Tags.External_Tag (Individual'Tag)
+           (Logging_Name (Individual)
             & " requested an illegal Next_Action (Pos ="
             & Integer'Image (Evolution_Action'Pos (Next_Action))
             & "). Use Cancel instead.");
@@ -374,13 +394,15 @@ package body Giant.Evolutions is
       Progress_Cancel : in     Gtk.Button.Gtk_Button             := null;
       Started         :    out Boolean) is
    begin
-      Driver_Controller.Start_Driver
-        (Individual,
-         Started,
-         Progress_Dialog,
-         Progress_Bar,
-         Progress_Text,
-         Progress_Cancel);
+      if Validate (Individual) then
+         Driver_Controller.Start_Driver
+           (Individual,
+            Started,
+            Progress_Dialog,
+            Progress_Bar,
+            Progress_Text,
+            Progress_Cancel);
+      end if;
    end Start_Calculation;
 
    procedure Start_Sub_Calculation
@@ -392,19 +414,21 @@ package body Giant.Evolutions is
       Master_Child     : Concurrent_Evolution_Class_Access :=
         Get_Concurrent_Child (Master);
    begin
-      while Has_Child (Sub_Insert_Point) loop
-         Sub_Insert_Point := Get_Concurrent_Child (Sub_Insert_Point);
-      end loop;
-      Set_Concurrent_Child (Sub_Insert_Point, Master_Child);
-      if Master_Child /= null then
-         Set_Concurrent_Parent (Master_Child, Sub_Insert_Point);
+      if Validate (Sub_Calculation) then
+         while Has_Child (Sub_Insert_Point) loop
+            Sub_Insert_Point := Get_Concurrent_Child (Sub_Insert_Point);
+         end loop;
+         Set_Concurrent_Child (Sub_Insert_Point, Master_Child);
+         if Master_Child /= null then
+            Set_Concurrent_Parent (Master_Child, Sub_Insert_Point);
+         end if;
+         Set_Concurrent_Child
+           (Master,
+            Concurrent_Evolution_Class_Access (Sub_Calculation));
+         Set_Concurrent_Parent
+           (Sub_Calculation,
+            Concurrent_Evolution_Class_Access (Master));
       end if;
-      Set_Concurrent_Child
-        (Master,
-         Concurrent_Evolution_Class_Access (Sub_Calculation));
-      Set_Concurrent_Parent
-        (Sub_Calculation,
-         Concurrent_Evolution_Class_Access (Master));
    end Start_Sub_Calculation;
 
    procedure Set_Concurrent_Child
@@ -459,13 +483,15 @@ package body Giant.Evolutions is
       Progress_Cancel : in     Gtk.Button.Gtk_Button             := null;
       Started         :    out Boolean) is
    begin
-      Start_Iterative_Driver
-        (Individual,
-         Started,
-         Progress_Dialog,
-         Progress_Bar,
-         Progress_Text,
-         Progress_Cancel);
+      if Validate (Individual) then
+         Start_Iterative_Driver
+           (Individual,
+            Started,
+            Progress_Dialog,
+            Progress_Bar,
+            Progress_Text,
+            Progress_Cancel);
+      end if;
    end Start_Calculation;
 
    procedure Start_Sub_Calculation
@@ -477,15 +503,17 @@ package body Giant.Evolutions is
       Master_Child     : Evolution_Class_Access :=
         Get_Child (Master);
    begin
-      while Has_Child (Sub_Insert_Point) loop
-         Sub_Insert_Point := Get_Child (Sub_Insert_Point);
-      end loop;
-      Set_Child (Sub_Insert_Point, Master_Child);
-      if Master_Child /= null then
-         Set_Parent (Master_Child, Sub_Insert_Point);
+      if Validate (Sub_Calculation) then
+         while Has_Child (Sub_Insert_Point) loop
+            Sub_Insert_Point := Get_Child (Sub_Insert_Point);
+         end loop;
+         Set_Child (Sub_Insert_Point, Master_Child);
+         if Master_Child /= null then
+            Set_Parent (Master_Child, Sub_Insert_Point);
+         end if;
+         Set_Child (Master, Evolution_Class_Access (Sub_Calculation));
+         Set_Parent (Sub_Calculation, Evolution_Class_Access (Master));
       end if;
-      Set_Child (Master, Evolution_Class_Access (Sub_Calculation));
-      Set_Parent (Sub_Calculation, Evolution_Class_Access (Master));
    end Start_Sub_Calculation;
 
 
