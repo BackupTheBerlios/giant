@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.4 $
-%  $Date: 2003/02/16 19:25:07 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.5 $
+%  $Date: 2003/02/16 20:54:57 $
 %  $Author: birdy $
 %
 %  Description:
@@ -45,6 +45,17 @@ WINDOW\_LIST hat die Spalten WINDOW\_NAME und WINDOW\_OPEN. In WINDOW\_NAME
 wird der Name der Anzeigefenster dargestellt, in WINDOW\_OPEN befindet
 sich entweder ein Strich-Symbol (Fenster nicht geöffnet) oder ein Häkchensymbol
 (Fenster geöffnet). 
+
+SUBGRAPH\_LIST hat die Spalten Subgraph Name (SUBGRAPH\_NAME),
+Nodes (SUBGRAPH\_NODES), Edges (SUBGRAPH\_EDGES) und Highlight Color
+(SUBGRAPH\_HIGHLIGHT\_COL).
+
+In Subgraph Name stehen die (benutzerdefinierten) Namen der existierenden
+Subgraphen, in Nodes die Anzahl der Knoten des Subgraphen,
+in Edges die Anzahl der Kanten und in Highlight Color ein Kästchen mit der Farbe,
+die verwendet wird, wenn dieser Subgraph markiert wird.
+
+
 
 \subsection{Buttons von WINDOW\_LIST}
 
@@ -111,6 +122,9 @@ angegeben werden kann.
 Die angegebene Datei wird gelesen und das darin
 gespeicherte Fenster in WINDOW\_LIST eingefügt.
 
+
+% ------------------------------
+
 \subsection{Buttons von SUBGRAPH\_LIST}
 
 Die Menüleiste von SUBGRAPH\_LIST hat folgende Buttons:
@@ -118,7 +132,20 @@ Die Menüleiste von SUBGRAPH\_LIST hat folgende Buttons:
 \subsubsection{hervorheben}
 
 Graphische Hervorhebung des in SUBGRAPH\_LIST angewählten
-Teilgraphen in allen Fenstern
+Teilgraphen in allen Fenstern mit der unter SUBGRAPH\_COL
+festgelegten Farbe.
+
+\subsubsection{Hervorhebungsfarbe ändern}
+
+Änderung der Farbe, mit der der Subgraph hervorgehoben
+wird, wenn die Funktion hervorheben benutzt wird.
+Beit Betätigung dieses Buttons erscheint ein GTK
+Color chooser, mit dem der Nutzer die Hervorhebungsfarbe
+des Subgraphen einstellen kann.
+Nach Bestätigung der Farbe im Color chooser mit OK
+ändert sich die Farbe des Farbkästchens des betreffenden
+Subgraphen in der Spalte Highlight Color von SUBGRAPH\_LIST.
+Bei Betätigung von Cancel ändert sich die Farbe nicht.
 
 \subsubsection{hervorheben aufheben}
 
@@ -237,7 +264,7 @@ Mit dieser Funktion kann ein Teilgraph als Datei gespeichert werden.
 
 Bei Klick auf den Button Teilgraphen exportieren wird ein Dateifenster
 geöffnet, in dem ein Dateiname mit Pfad festgelegt werden kann, unter
-dem der Teilgraph gespeichert wird.
+dem der in SUBGRAPH\_LIST selektierte Teilgraph gespeichert wird.
 Falls die Datei schon existiert, erscheint ein Dialog
 Datei existiert schon - überschreiben? Ja / Nein.
 Bei Klick auf Nein wird der Dialog geschlossen und nichts passiert,
@@ -249,7 +276,7 @@ SUBGRAPH\_LIST) abgespeichert.
 
 Bei Klick auf den Button Teilgraphen importieren wird ein Dateifenster
 geöffnet, in dem ein Dateiname mit Pfad festgelegt werden kann, unter
-dem der Teilgraph gespeichert wird.
+dem der in SUBGRAPH\_LIST selektierte Teilgraph gespeichert wird.
 Falls der Name des Teilgraphen schon in der Liste existiert, erscheint
 ein Fenster SUBGRAPH\_IMPORT\_DUPNAME Name des Teilgraphen <Name>
 Existiert schon, bitte Ersatznamen angeben und OK klicken, oder Abbruch
@@ -260,6 +287,12 @@ wird der Teilgraph unter dem Namen SUBGRAPH\_IMPORT\_NEWNAME importiert,
 bei Abbruch passiert nichts und das Fenster wird geschlossen.
 Sollte auch SUBGRAPH\_IMPORT\_NEWNAME schon existieren, so wird
 ein zusätzliches fehlerfenster Fenster Dieser Name existiert schon angezeigt.
+
+
+\subsection{Anzeigefenster}
+
+In Anzeigefenstern (DISPLAY\_WINDOW) werden Graphen visualisiert.
+
 
 \subsection{Knoten-Informationsfenster}
 
@@ -426,9 +459,6 @@ Teilgraph (Name) überschreiben? JA / NEIN.
 Bei NEIN wird das QUERY\_OVERWRITE Fenster wieder geschlossen,
 bei JA werden QUERY\_OVERWRITE und QUERY\_RESULT geschlossen
 und der bisherige Teilgraph mit dem neuen Ergebnis überschrieben.
-
-
-\subsection{Dialog für Mengenoperationen}
 
 \subsection{Allgemeiner Texteingabedialog}
 Für Namen (Pins, Selektionen, Anzeigfenster ...)
