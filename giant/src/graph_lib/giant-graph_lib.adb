@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.29 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.30 $
 --  $Author: koppor $
---  $Date: 2003/06/27 16:49:38 $
+--  $Date: 2003/06/27 16:54:55 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -811,6 +811,8 @@ package body Giant.Graph_Lib is
               IML_Node_ID_Hashed_Mappings.Fetch
               (IML_Node_ID_Mapping,
                Storables.Get_Node_ID (CurNode.IML_Node));
+
+            --  FIXME: they are duplicated edges!!
 
             Convert_Edges( CurNode.Edges_In,  NewNode.Incoming_Edges);
             Convert_Edges( CurNode.Edges_Out, NewNode.Outgoing_Edges);
