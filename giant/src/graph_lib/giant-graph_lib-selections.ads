@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.19 $
+--  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.20 $
 --  $Author: koppor $
---  $Date: 2003/07/14 19:24:20 $
+--  $Date: 2003/07/14 19:52:14 $
 --
 ------------------------------------------------------------------------------
 --
@@ -279,4 +279,3 @@ private
      (Selection_Record, Selection);
 
 end Giant.Graph_Lib.Selections;
-
