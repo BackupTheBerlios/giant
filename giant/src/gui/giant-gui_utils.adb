@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.20 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.21 $
 -- $Author: squig $
--- $Date: 2003/07/15 11:50:26 $
+-- $Date: 2003/07/18 14:27:39 $
 --
 
 with Glib;
@@ -319,5 +319,42 @@ package body Giant.Gui_Utils is
       Gtk.Widget.Grab_Default (Widget);
       Result := Gtk.Window.Activate_Default (Window);
    end;
+
+   function To_Display_Name
+     (Highlight_Status : in Projects.Subgraph_Highlight_Status)
+     return String
+   is
+   begin
+      case (Highlight_Status) is
+        when Projects.Color_1 =>
+           return -"Color 1";
+        when Projects.Color_2 =>
+           return -"Color 2";
+        when Projects.Color_3 =>
+           return -"Color 3";
+        when Projects.None =>
+           return "";
+      end case;
+   end To_Display_Name;
+
+   function To_Display_Name
+     (Highlight_Status : in Vis_Windows.Selection_Highlight_Status)
+     return String
+   is
+   begin
+      case (Highlight_Status) is
+        when Vis_Windows.Current_Selection =>
+           return "#####";
+        when Vis_Windows.Color_1 =>
+           return -"Color 1";
+        when Vis_Windows.Color_2 =>
+           return -"Color 2";
+        when Vis_Windows.Color_3 =>
+           return -"Color 3";
+        when Vis_Windows.None =>
+           return "";
+      end case;
+   end To_Display_Name;
+
 
 end Giant.Gui_Utils;

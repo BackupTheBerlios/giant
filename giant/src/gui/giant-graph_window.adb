@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.37 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.38 $
 --  $Author: squig $
---  $Date: 2003/07/18 12:59:04 $
+--  $Date: 2003/07/18 14:27:39 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -470,7 +470,7 @@ package body Giant.Graph_Window is
          --  nothing to do, reset text
          Update_Zoom_Level (Window);
       elsif (Zoom_String = -"Whole Graph") then
-         null;
+         Controller.Zoom_To_All (Get_Window_Name (Window));
       else
          if (Zoom_String (Zoom_String'Last) = '%') then
             Zoom_Level := Vis.Zoom_Level'Value
@@ -583,15 +583,15 @@ package body Giant.Graph_Window is
       Gtk.Menu.Append (Window.Selection_List_Menu, New_Menu_Separator);
       Submenu := New_Sub_Menu (Window.Selection_List_Menu, -"Highlight");
       Gtk.Menu.Append (Submenu, New_Menu_Item
-                       (-"Color 1",
+                       (Gui_Utils.To_Display_Name (Vis_Windows.Color_1),
                         Highlight_Status_Color_1.On_Highlight'Access,
                         Window));
       Gtk.Menu.Append (Submenu, New_Menu_Item
-                       (-"Color 2",
+                       (Gui_Utils.To_Display_Name (Vis_Windows.Color_2),
                         Highlight_Status_Color_2.On_Highlight'Access,
                         Window));
       Gtk.Menu.Append (Submenu, New_Menu_Item
-                       (-"Color 3",
+                       (Gui_Utils.To_Display_Name (Vis_Windows.Color_3),
                         Highlight_Status_Color_3.On_Highlight'Access,
                         Window));
       Gtk.Menu.Append (Window.Selection_List_Menu, New_Menu_Item
@@ -1001,11 +1001,8 @@ package body Giant.Graph_Window is
 
       Gui_Utils.String_Clists.Set_Cell_Style
         (List, Row, 2, Window.Styles (Highlighted));
-      if (Highlighted /= Vis_Windows.None) then
-         Gui_Utils.String_Clists.Set_Text (List, Row, 2, -"#####");
-      else
-         Gui_Utils.String_Clists.Set_Text (List, Row, 2, -"");
-      end if;
+      Gui_Utils.String_Clists.Set_Text
+        (List, Row, 2, Gui_Utils.To_Display_Name (Highlighted));
    end Update_Selection;
 
    procedure Add_Selection

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.15 $
+--  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.16 $
 --  $Author: squig $
---  $Date: 2003/07/03 18:41:20 $
+--  $Date: 2003/07/18 14:27:39 $
 --
 ------------------------------------------------------------------------------
 --
@@ -52,6 +52,8 @@ with Gtk.Widget;
 with Gtk.Window;
 
 with Giant.Data_Clists;
+with Giant.Projects;
+with Giant.Vis_Windows;
 
 package Giant.Gui_Utils is
 
@@ -223,6 +225,14 @@ package Giant.Gui_Utils is
    procedure Set_Default
      (Window : access Gtk.Window.Gtk_Window_Record'Class;
       Widget : access Gtk.Widget.Gtk_Widget_Record'Class);
+
+   function To_Display_Name
+     (Highlight_Status : in Projects.Subgraph_Highlight_Status)
+     return String;
+
+   function To_Display_Name
+     (Highlight_Status : in Vis_Windows.Selection_Highlight_Status)
+     return String;
 
 end Giant.Gui_Utils;
 

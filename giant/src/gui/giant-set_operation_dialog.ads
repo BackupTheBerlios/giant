@@ -20,18 +20,17 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-set_operation_dialog.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-set_operation_dialog.ads,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/06/19 16:38:06 $
+--  $Date: 2003/07/18 14:27:39 $
 --
 ------------------------------------------------------------------------------
 --
--- Provides a progress dialog.
 --
--- Emits the "cancelled" callback when the cancel button is pressed.
 --
 
 with Gtk.Combo;
+with Gtk.Enums;
 with Gtk.Gentry;
 
 with Giant.Default_Dialog;
@@ -41,19 +40,43 @@ package Giant.Set_Operation_Dialog is
    type Set_Operation_Dialog_Record is
      new Default_Dialog.Default_Dialog_Record with private;
 
-   type Set_Operation_Dialog_Access is access all Set_Operation_Dialog_Record'Class;
+   type Set_Operation_Dialog_Access is
+     access all Set_Operation_Dialog_Record'Class;
+
+   type Operation_Type is (Difference, Intersection, Union);
+
+   Invalid_Operation_Entered : exception;
 
    procedure Create
-     (Dialog : out Set_Operation_Dialog_Access);
+     (Dialog :    out Set_Operation_Dialog_Access;
+      Items  : in     Gtk.Enums.String_List.Glist);
 
    procedure Initialize
-     (Dialog  : access Set_Operation_Dialog_Record'Class);
+     (Dialog : access Set_Operation_Dialog_Record'Class;
+      Items  : in     Gtk.Enums.String_List.Glist);
 
-   function Can_Hide
+   function Get_Left_Source
+     (Dialog : access Set_Operation_Dialog_Record)
+     return String;
+
+   function Get_Right_Source
+     (Dialog : access Set_Operation_Dialog_Record)
+     return String;
+
+   function Get_Operation
+     (Dialog : access Set_Operation_Dialog_Record)
+     return Operation_Type;
+
+   function Get_Target
+     (Dialog : access Set_Operation_Dialog_Record)
+     return String;
+
+   function Validate
      (Dialog : access Set_Operation_Dialog_Record)
      return Boolean;
 
 private
+
    type Set_Operation_Dialog_Record is
      new Default_Dialog.Default_Dialog_Record with record
         Left_Source : Gtk.Combo.Gtk_Combo;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.49 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.50 $
 --  $Author: squig $
---  $Date: 2003/07/18 12:59:04 $
+--  $Date: 2003/07/18 14:27:39 $
 --
 
 with Ada.Exceptions;
@@ -72,7 +72,7 @@ with Giant.Logger;
 with Giant.Main_Window.Actions;
 with Giant.Node_Info_Dialog;
 with Giant.Projects;
-with Giant.Set_Operation_Dialog;
+with Giant.Subgraph_Operation_Dialog;
 
 package body Giant.Main_Window is
 
@@ -466,10 +466,10 @@ package body Giant.Main_Window is
    procedure On_Subgraph_Set_Operation
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
-      Dialog : Set_Operation_Dialog.Set_Operation_Dialog_Access;
+      Dialog : Subgraph_Operation_Dialog.Subgraph_Operation_Dialog_Access;
    begin
-      Set_Operation_Dialog.Create (Dialog);
-      Set_Operation_Dialog.Show_All (Dialog);
+      Subgraph_Operation_Dialog.Create (Dialog);
+      Subgraph_Operation_Dialog.Show_All (Dialog);
    end On_Subgraph_Set_Operation;
 
    ---------------------------------------------------------------------------
@@ -748,13 +748,16 @@ package body Giant.Main_Window is
       Submenu := New_Sub_Menu (Subgraph_List_Menu, -"Highlight");
       Gtk.Menu.Append (Submenu,
                        New_Highlight_Menu_Item
-                       (-"Color 1", Projects.Color_1));
+                       (Gui_Utils.To_Display_Name (Projects.Color_1),
+                        Projects.Color_1));
       Gtk.Menu.Append (Submenu,
                        New_Highlight_Menu_Item
-                       (-"Color 2", Projects.Color_2));
+                       (Gui_Utils.To_Display_Name (Projects.Color_2),
+                        Projects.Color_2));
       Gtk.Menu.Append (Submenu,
                        New_Highlight_Menu_Item
-                       (-"Color 3", Projects.Color_3));
+                       (Gui_Utils.To_Display_Name (Projects.Color_3),
+                        Projects.Color_3));
       Gtk.Menu.Append (Subgraph_List_Menu,
                        New_Highlight_Menu_Item
                        (-"Unhighlight In All Windows", Projects.None));
@@ -853,27 +856,25 @@ package body Giant.Main_Window is
 
       Subgraph : Graph_Lib.Subgraphs.Subgraph
         := Projects.Get_Subgraph (Controller.Get_Project, Name);
+      Highlight_Status : Projects.Subgraph_Highlight_Status
+        := Projects.Get_Highlight_Status (Controller.Get_Project, Name);
    begin
       if (Styles (Projects.Color_1) = null) then
          Initialize_Styles;
       end if;
 
       Gui_Utils.String_Clists.Set_Text (List, Row, 0, Name);
-      Gui_Utils.String_Clists.Set_Text (List, Row, 1,
-                              Natural'Image (Graph_Lib.Subgraphs.Get_Node_Count (Subgraph)));
-      Gui_Utils.String_Clists.Set_Text (List, Row, 2,
-                              Natural'Image (Graph_Lib.Subgraphs.Get_Edge_Count (Subgraph)));
+      Gui_Utils.String_Clists.Set_Text
+        (List, Row, 1,
+         Natural'Image (Graph_Lib.Subgraphs.Get_Node_Count (Subgraph)));
+      Gui_Utils.String_Clists.Set_Text
+        (List, Row, 2,
+         Natural'Image (Graph_Lib.Subgraphs.Get_Edge_Count (Subgraph)));
 
-
-      Gui_Utils.String_Clists.Set_Cell_Style (List, Row, 3,
-                                    Styles (Projects.Get_Highlight_Status
-                                            (Controller.Get_Project, Name)));
-      if (Projects.Get_Highlight_Status
-          (Controller.Get_Project, Name) = Projects.None) then
-         Gui_Utils.String_Clists.Set_Text (List, Row, 3, "");
-      else
-         Gui_Utils.String_Clists.Set_Text (List, Row, 3, "#####");
-      end if;
+      Gui_Utils.String_Clists.Set_Cell_Style
+        (List, Row, 3, Styles (Highlight_Status));
+      Gui_Utils.String_Clists.Set_Text
+        (List, Row, 3, Gui_Utils.To_Display_Name (Highlight_Status));
    end Update_Subgraph;
 
    procedure Add_Subgraph

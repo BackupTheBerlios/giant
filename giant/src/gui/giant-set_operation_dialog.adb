@@ -20,154 +20,49 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-set_operation_dialog.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-set_operation_dialog.adb,v $, $Revision: 1.10 $
 --  $Author: squig $
---  $Date: 2003/07/15 15:27:31 $
+--  $Date: 2003/07/18 14:27:39 $
 --
 
 with Ada.Strings.Unbounded;
 
 with Glib;
 with Gtk.Box;
-with Gtk.Enums; use Gtk.Enums;
 with Gtk.Table;
 with Gtk.Widget;
 with Gtk.Window;
-
-with String_Lists;
 
 with Giant.Controller;
 with Giant.Default_Dialog;
 with Giant.Dialogs;
 with Giant.Projects;
-with Giant.Gui_Utils; use Giant.Gui_Utils;
+with Giant.Gui_Utils;
 
 package body Giant.Set_Operation_Dialog is
-
-   ---------------------------------------------------------------------------
-   --  Helpers
-   ---------------------------------------------------------------------------
-
-   function Get_Left_Source
-     (Dialog : access Set_Operation_Dialog_Record'Class)
-     return String
-   is
-   begin
-      return Gtk.Gentry.Get_Chars (Gtk.Combo.Get_Entry (Dialog.Left_Source));
-   end;
-
-   function Get_Right_Source
-     (Dialog : access Set_Operation_Dialog_Record'Class)
-     return String
-   is
-   begin
-      return Gtk.Gentry.Get_Chars (Gtk.Combo.Get_Entry (Dialog.Right_Source));
-   end;
-
-   function Get_Target
-     (Dialog : access Set_Operation_Dialog_Record'Class)
-     return String
-   is
-   begin
-      return Gtk.Gentry.Get_Chars (Dialog.Target);
-   end;
-
-   ---------------------------------------------------------------------------
-   --  Callbacks
-   ---------------------------------------------------------------------------
-
-   function Can_Hide
-     (Dialog : access Set_Operation_Dialog_Record)
-     return Boolean
-   is
-      use type Default_Dialog.Response_Type;
-
-      -- the reason for closing the dialog
-      Response : Default_Dialog.Response_Type;
-   begin
-      Response := Get_Response (Dialog);
-
-      if (Get_Response (Dialog) = Default_Dialog.Response_Okay) then
-         if (Get_Target (Dialog) = "") then
-            Dialogs.Show_Error_Dialog
-              (-"Please provide a name for the target.");
-            return False;
-         end if;
-
-         declare
-            Input : Gtk.Gentry.Gtk_Entry
-              := Gtk.Combo.Get_Entry (Dialog.Operation);
-            Operation : String := Gtk.Gentry.Get_Chars (Input);
-         begin
-            if (Operation = -"Difference") then
-               Controller.Subgraph_Difference (Get_Left_Source (Dialog),
-                                               Get_Right_Source (Dialog),
-                                               Get_Target (Dialog));
-            elsif (Operation = -"Intersection") then
-               Controller.Subgraph_Intersection (Get_Left_Source (Dialog),
-                                                 Get_Right_Source (Dialog),
-                                                 Get_Target (Dialog));
-            elsif (Operation = -"Union") then
-               Controller.Subgraph_Union (Get_Left_Source (Dialog),
-                                          Get_Right_Source (Dialog),
-                                          Get_Target (Dialog));
-            else
-               Dialogs.Show_Error_Dialog (-"Please select a valid operation.");
-               return False;
-            end if;
-         exception
-            when Projects.Subgraph_Is_Not_Part_Of_Project_Exception =>
-               Dialogs.Show_Error_Dialog (-"Please select valid sources.");
-               return False;
-            when Projects.Subgraph_Is_Already_Part_Of_Project_Exception =>
-               Dialogs.Show_Error_Dialog
-                 (-"The target name is already used. Please try a different name.");
-               return False;
-         end;
-      end if;
-
-      return True;
-   end Can_Hide;
 
    ---------------------------------------------------------------------------
    --  Initializers
    ---------------------------------------------------------------------------
 
    procedure Create
-     (Dialog : out Set_Operation_Dialog_Access)
+     (Dialog :    out Set_Operation_Dialog_Access;
+      Items  : in     Gtk.Enums.String_List.Glist)
    is
    begin
       Dialog := new Set_Operation_Dialog_Record;
-      Initialize (Dialog);
+      Initialize (Dialog, Items);
    end Create;
 
-   function Get_Subgraphs
-     return String_List.Glist
-   is
-      Source : String_Lists.List;
-      Target : String_List.Glist;
-      Iterator : String_Lists.ListIter;
-      Name : Ada.Strings.Unbounded.Unbounded_String;
-   begin
-      Source := Projects.Get_All_Subgraphs (Controller.Get_Project);
-      Iterator := String_Lists.MakeListIter (Source);
-      while String_Lists.More (Iterator) loop
-         String_Lists.Next (Iterator, Name);
-         String_List.Append (Target, Ada.Strings.Unbounded.To_String (Name));
-      end loop;
-      String_Lists.Destroy (Source);
-
-      return Target;
-   end;
-
    procedure Initialize
-     (Dialog  : access Set_Operation_Dialog_Record'Class)
+     (Dialog : access Set_Operation_Dialog_Record'Class;
+      Items  : in     Gtk.Enums.String_List.Glist)
    is
+      use Giant.Gui_Utils;
       use type Glib.Guint;
 
       Table : Gtk.Table.Gtk_Table;
-      Operations : String_List.Glist;
-      Subgraphs : String_List.Glist := Get_Subgraphs;
+      Operations : Gtk.Enums.String_List.Glist;
       Row : Glib.Guint := 0;
    begin
       Default_Dialog.Initialize (Dialog, -"Set Operation",
@@ -180,15 +75,15 @@ package body Giant.Set_Operation_Dialog is
 
       --  left source
       Gtk.Combo.Gtk_New (Dialog.Left_Source);
-      if (String_List.Length (Subgraphs) > 0) then
-         Gtk.Combo.Set_Popdown_Strings (Dialog.Left_Source, Subgraphs);
+      if (Gtk.Enums.String_List.Length (Items) > 0) then
+         Gtk.Combo.Set_Popdown_Strings (Dialog.Left_Source, Items);
       end if;
       Add_Row (Table, Row, New_Label (-"Left Source"), Dialog.Left_Source);
 
       --  operation
-      String_List.Append (Operations, -"Difference");
-      String_List.Append (Operations, -"Intersection");
-      String_List.Append (Operations, -"Union");
+      Gtk.Enums.String_List.Append (Operations, -"Difference");
+      Gtk.Enums.String_List.Append (Operations, -"Intersection");
+      Gtk.Enums.String_List.Append (Operations, -"Union");
 
       Gtk.Combo.Gtk_New (Dialog.Operation);
       Gtk.Combo.Set_Popdown_Strings (Dialog.Operation, Operations);
@@ -197,8 +92,8 @@ package body Giant.Set_Operation_Dialog is
 
       --  right source
       Gtk.Combo.Gtk_New (Dialog.Right_Source);
-      if (String_List.Length (Subgraphs) > 0) then
-         Gtk.Combo.Set_Popdown_Strings (Dialog.Right_Source, Subgraphs);
+      if (Gtk.Enums.String_List.Length (Items) > 0) then
+         Gtk.Combo.Set_Popdown_Strings (Dialog.Right_Source, Items);
       end if;
       Add_Row (Table, Row, New_Label (-"Right Source"), Dialog.Right_Source);
 
@@ -212,6 +107,72 @@ package body Giant.Set_Operation_Dialog is
       Gtk.Gentry.Gtk_New (Dialog.Target);
       Add_Row (Table, Row, New_Label (-"Target"), Dialog.Target);
    end;
+
+   ---------------------------------------------------------------------------
+   --  Inspectors
+   ---------------------------------------------------------------------------
+
+   function Get_Left_Source
+     (Dialog : access Set_Operation_Dialog_Record)
+     return String
+   is
+   begin
+      return Gtk.Gentry.Get_Chars (Gtk.Combo.Get_Entry (Dialog.Left_Source));
+   end;
+
+   function Get_Right_Source
+     (Dialog : access Set_Operation_Dialog_Record)
+     return String
+   is
+   begin
+      return Gtk.Gentry.Get_Chars (Gtk.Combo.Get_Entry (Dialog.Right_Source));
+   end;
+
+   function Get_Operation
+     (Dialog : access Set_Operation_Dialog_Record)
+     return Operation_Type
+   is
+      Operation : String
+        := Gtk.Gentry.Get_Chars (Gtk.Combo.Get_Entry (Dialog.Operation));
+   begin
+      if (Operation = -"Difference") then
+         return Difference;
+      elsif (Operation = -"Intersection") then
+         return Intersection;
+      elsif (Operation = -"Union") then
+         return Union;
+      end if;
+
+      raise Invalid_Operation_Entered;
+   end;
+
+   function Get_Target
+     (Dialog : access Set_Operation_Dialog_Record)
+     return String
+   is
+   begin
+      return Gtk.Gentry.Get_Chars (Dialog.Target);
+   end;
+
+   function Validate
+     (Dialog : access Set_Operation_Dialog_Record)
+     return Boolean
+   is
+      Operation : Operation_Type;
+   begin
+      if (Get_Target (Dialog) = "") then
+         Controller.Show_Error (-"Please provide a name for the target.");
+         return False;
+      end if;
+
+      Operation := Get_Operation (Dialog);
+
+      return True;
+   exception
+     when Invalid_Operation_Entered =>
+        Controller.Show_Error (-"Please select a valid operation.");
+        return False;
+   end Validate;
 
 end Giant.Set_Operation_Dialog;
 

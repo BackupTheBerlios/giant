@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.38 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.39 $
 --  $Author: squig $
---  $Date: 2003/07/18 12:59:04 $
+--  $Date: 2003/07/18 14:27:39 $
 --
 ------------------------------------------------------------------------------
 --
@@ -500,6 +500,9 @@ package Giant.Controller is
    procedure Set_Zoom_Level
      (Window_Name : in     String;
       Zoom_Level  : in out Vis.Zoom_Level);
+
+   procedure Zoom_To_All
+     (Window_Name : in String);
 
 private
 

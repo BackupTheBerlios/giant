@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.59 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.60 $
 --  $Author: squig $
---  $Date: 2003/07/18 12:59:04 $
+--  $Date: 2003/07/18 14:27:39 $
 --
 
 with Ada.Strings.Unbounded;
@@ -706,14 +706,28 @@ package body Giant.Controller is
       Name        : in String)
    is
       Window : Vis_Windows.Visual_Window_Access
-        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+        := Projects.Get_Visualisation_Window (Current_Project,
+                                              Window_Name);
       Previous_Selection_Name : String
         := Vis_Windows.Get_Current_Selection (Window);
+      Selection : Graph_Lib.Selections.Selection
+        := Get_Selection (Window_Name, Name);
+      Previous_Selection : Graph_Lib.Selections.Selection
+        := Get_Selection (Window_Name, Previous_Selection_Name);
    begin
       if (Name /= Previous_Selection_Name) then
          Unhighlight_Selection (Window_Name, Name);
-
          Vis_Windows.Set_Current_Selection (Window, Name);
+
+         --  do not call Highlight_Selection, the highlight status of
+         --  the current selection can not be modified
+         Graph_Widgets.Remove_Local_Highlighting
+           (Vis_Windows.Get_Graph_Widget (Window), Previous_Selection,
+            To_Selection_Hightlight_ID (Vis_Windows.Current_Selection));
+         Graph_Widgets.Add_Local_Highlighting
+           (Vis_Windows.Get_Graph_Widget (Window), Selection,
+            To_Selection_Hightlight_ID (Vis_Windows.Current_Selection));
+
          Gui_Manager.Update_Selection (Window_Name, Previous_Selection_Name);
          Gui_Manager.Update_Selection (Window_Name, Name);
       else
@@ -1197,8 +1211,7 @@ package body Giant.Controller is
       use type Vis.Zoom_Level;
 
       Window : Vis_Windows.Visual_Window_Access
-        := Projects.Get_Visualisation_Window (Current_Project,
-                                              Window_Name);
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
       Widget : Graph_Widgets.Graph_Widget
         := Vis_Windows.Get_Graph_Widget (Window);
    begin
@@ -1212,6 +1225,16 @@ package body Giant.Controller is
       Graph_Widgets.Set_Zoom_Level (Widget, Zoom_Level);
       Gui_Manager.Update_Zoom_Level (Window_Name);
    end Set_Zoom_Level;
+
+   procedure Zoom_To_All
+     (Window_Name : in String)
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+   begin
+      Graph_Widgets.Zoom_To_All (Vis_Windows.Get_Graph_Widget (Window));
+      Gui_Manager.Update_Zoom_Level (Window_Name);
+   end Zoom_To_All;
 
 end Giant.Controller;
 
