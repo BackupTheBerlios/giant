@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.23 $
--- $Author: squig $
--- $Date: 2003/06/19 16:38:06 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.24 $
+-- $Author: schwiemn $
+-- $Date: 2003/06/20 08:57:39 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -336,7 +336,17 @@ package Giant.Projects is
       (Project               : in Project_Access;
        New_Project_Name      : in String;
        New_Project_Directory : in String);
-
+      
+   ---------------------------------------------------------------------------
+   -- Same functionality as "Store_Whole_Project_As" -> just a wrapper.
+   --
+   -- Parameters:
+   --   New_Project_File_Name - The full name (incl. absolute path) of a
+   --   new Project File (xml file).     
+   procedure Store_Whole_Project_As_For_File
+      (Project               : in Project_Access;
+       New_Project_File_Name : in String);
+       
    ---------------------------------------------------------------------------
    -- Returns the name of a project
    --

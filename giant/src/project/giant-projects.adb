@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.25 $
---  $Author: squig $
---  $Date: 2003/06/19 16:38:06 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.26 $
+--  $Author: schwiemn $
+--  $Date: 2003/06/20 08:57:39 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -1187,7 +1187,7 @@ package body Giant.Projects is
    --
    -- New_Project_Directory - An absolute Path that ends with a
    --   directory separator is required !!!
-   procedure General_Store_Hole_Project
+   procedure General_Store_Whole_Project
      (Project                   : in Project_Access;
       Change_Project_Files      : in Boolean;
       New_Project_Name          : in String;
@@ -1432,7 +1432,7 @@ package body Giant.Projects is
       -- Update Project XML File (MUST happen at the end - not before)
       ---------------------------
       Write_Project_XML_File (Project);
-   end General_Store_Hole_Project;
+   end General_Store_Whole_Project;
 
 
    ----------------------------------------------------------------------------
@@ -1445,7 +1445,7 @@ package body Giant.Projects is
       end if;
 
       -- do not migrate
-      General_Store_Hole_Project
+      General_Store_Whole_Project
         (Project                   => Project,
          Change_Project_Files      => False,
          New_Project_Name          => "",
@@ -1488,7 +1488,7 @@ package body Giant.Projects is
           (Ada.Strings.Unbounded.To_String (Abs_Project_Directory)));
 
       -- migrate
-      General_Store_Hole_Project
+      General_Store_Whole_Project
         (Project                   => Project,
          Change_Project_Files      => True,
          New_Project_Name          => New_Project_Name,
@@ -1496,7 +1496,22 @@ package body Giant.Projects is
            Ada.Strings.Unbounded.To_String
              (Abs_Project_Directory));
    end Store_Whole_Project_As;
-
+   
+   --------------------------------------------------------------------------- 
+   procedure Store_Whole_Project_As_For_File
+      (Project               : in Project_Access;
+       New_Project_File_Name : in String) is
+   begin
+        
+      Store_Whole_Project_As
+        (Project           => Project,
+         New_Project_Name      =>
+           File_Management.Calculate_Name_For_File (New_Project_File_Name),
+         New_Project_Directory =>
+           File_Management.Return_Dir_Path_For_File_Path 
+             (New_Project_File_Name));   
+   end Store_Whole_Project_As_For_File;
+        
    ---------------------------------------------------------------------------
    function Get_Project_Name
      (Project : in Project_Access)
