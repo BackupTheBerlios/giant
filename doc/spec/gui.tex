@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.82 $
-%  $Date: 2003/04/19 15:30:21 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.83 $
+%  $Date: 2003/04/19 15:53:08 $
 %  $Author: birdy $
 %
 %  Description: 
@@ -308,7 +308,7 @@ Subgraph List (4 Spalten).
     In Knoten-Informationsfenstern (\gq{Node Info}) können nähere Informationen
     zu Knoten angezeigt werden.
     
-    Im Fenster wird die ID und der Typ des Knotens dargestellt,
+    Im Fenster wird die ID und die Klasse des Knotens dargestellt,
     darunter befinden sich untereinander drei getrennt
     scrollbare Listen, Attributes, Successor Nodes und
     Predecessor Nodes.
@@ -333,8 +333,8 @@ Subgraph List (4 Spalten).
       Kante mit zwei Spalten:
     
     \begin{enumerate}
-      \item ID (Typ der abgehenden Kante)
-      \item Type (ID des Knotens, zu dem sie führt)
+      \item ID (ID der abgehenden Kante)
+      \item Class (Klasse des Knotens, zu dem sie führt)
     \end{enumerate}    
 
     \subsection{Liste Predecessor Nodes}
@@ -344,7 +344,7 @@ Subgraph List (4 Spalten).
 
       \begin{enumerate}
         \item ID (ID des Knotens, von dem sie kommt)
-        \item Type (Typ der ankommenden Kante)
+        \item Class (Klasse der ankommenden Kante)
       \end{enumerate}
 
 \section{Skriptdialog} \label{GUI Anfragedialog}
@@ -444,7 +444,7 @@ Der Dialog Layoutalgorithmen (\ref{Layout-Algorithm-Dialog-Pic}) bietet folgende
  \item {Eingabe der zu berücksichtigenden Kanten bei semantischen Layouts
  	Hierbei können mittels der Buttons \gq{>>} und \gq{<<} die 
         verfügbaren
-	definierten Listen von Knoten- und Kantentypen zwischen den beiden
+	definierten Listen von Knoten- und Kantenklassen zwischen den beiden
 	Spalten \gq{Available} und \gq{Use For Layout} 
         hin und her geschoben werden.
 	Nur Kantenlisten, die sich in der \gq{Use For Layout} Spalte befinden,
