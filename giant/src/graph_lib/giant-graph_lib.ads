@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.10 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.11 $
 --  $Author: koppor $
---  $Date: 2003/06/13 17:57:10 $
+--  $Date: 2003/06/14 11:45:00 $
 --
 
 --  Bauhaus / IML
@@ -153,6 +153,7 @@ package Giant.Graph_Lib is
    Node_Does_Not_Exist           : exception;
    Node_Class_Does_Not_Exist     : exception;
    Node_Attribute_Does_Not_Exist : exception;
+   Edge_Does_Not_Exist           : exception;
    Edge_Class_Does_Not_Exist     : exception;
 
    Wrong_Attribute_Type          : exception;
