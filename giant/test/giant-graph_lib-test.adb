@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.15 $
+--  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.16 $
 --  $Author: koppor $
---  $Date: 2003/07/14 17:05:29 $
+--  $Date: 2003/07/14 17:50:28 $
 --
 
 with Ada.Text_IO;
@@ -92,6 +92,7 @@ package body Giant.Graph_Lib.Test is
 
    Root : Node_Id;
 
+   ---------------------------------------------------------------------------
    procedure Output_Attributes (Node : in Node_Id) is
       Iter : Node_Attribute_Iterator;
       Attr : Node_Attribute_Id;
@@ -130,6 +131,7 @@ package body Giant.Graph_Lib.Test is
       Root := Get_Root_Node;
    end Init;
 
+   ---------------------------------------------------------------------------
    procedure Output_RootNode (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
    begin
@@ -191,6 +193,7 @@ package body Giant.Graph_Lib.Test is
       Node_Id_Sets.Destroy (All_Nodes);
    end Enums;
 
+   ---------------------------------------------------------------------------
    procedure Check_Counts (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
    begin
@@ -233,6 +236,8 @@ package body Giant.Graph_Lib.Test is
 
    end Check_Counts;
 
+   ---------------------------------------------------------------------------
+   --  TBD: find out for what this test was meant for
    procedure Edge_Set_Test (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
    begin
@@ -285,6 +290,47 @@ package body Giant.Graph_Lib.Test is
       Edge_Id_Sets.Destroy (All_Edges_Indirectly);
    end All_Edges_Test;
 
+   ---------------------------------------------------------------------------
+   procedure Check_All_Node_Classes_Consistency
+     (R : in out AUnit.Test_Cases.Test_Case'Class)
+   is
+
+      ------------------------------------------------------------------------
+      function Get_Via_Hashmap return Node_Class_Id_Sets.Set
+      is
+         Set      : Node_Class_Id_Set;
+
+         Iter     : Node_Class_Id_Hashed_Mappings.Keys_Iter;
+         CurClass : Node_Class_Id;
+
+      begin
+         Set  := Node_Class_Id_Sets.Empty_Set;
+         Iter := Node_Class_Id_Hashed_Mappings.Make_Keys_Iter
+           (Node_Class_Id_Mapping);
+
+         while Node_Class_Id_Hashed_Mappings.More (Iter) loop
+            Node_Class_Id_Hashed_Mappings.Next (Iter, CurClass);
+            Node_Class_Id_Sets.Insert (Set, CurClass);
+         end loop;
+
+         return Set;
+      end Get_Via_Hashmap;
+
+      Via_Hashmap : Node_Class_Id_Sets.Set;
+      Via_Lib     : Node_Class_Id_Sets.Set;
+
+   begin
+      Via_Hashmap := Get_Via_Hashmap;
+      Via_Lib     := Get_All_Node_Class_Ids;
+
+      Assert (Node_Class_Id_Sets."=" (Via_Hashmap, Via_Lib),
+              "All known node classes are not equal");
+
+      Node_Class_Id_Sets.Destroy (Via_Hashmap);
+      Node_Class_Id_Sets.Destroy (Via_Lib);
+   end Check_All_Node_Classes_Consistency;
+
+   ---------------------------------------------------------------------------
    procedure Done (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
    begin
@@ -292,6 +338,7 @@ package body Giant.Graph_Lib.Test is
       Giant.Graph_Lib.Destroy;
    end Done;
 
+   ---------------------------------------------------------------------------
    procedure Edge_Id_Null_Test (R : in out AUnit.Test_Cases.Test_Case'Class) is
 
       Node          : Giant.Graph_Lib.Node_Id;
@@ -336,6 +383,8 @@ package body Giant.Graph_Lib.Test is
       Register_Routine (T, Edge_Set_Test'Access, "Edge_Set_Test");
       Register_Routine (T, All_Edges_Test'Access, "All Edges Test");
       Register_Routine (T, Edge_Id_Null_Test'Access, "Edge_Id = null Test");
+      Register_Routine (T, Check_All_Node_Classes_Consistency'Access,
+                        "Check_All_Node_Classes_Consistency");
       Register_Routine (T, Done'Access, "Done");
    end Register_Tests;
 
