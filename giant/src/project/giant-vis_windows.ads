@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.23 $
+--  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.24 $
 --  $Author: schwiemn $
---  $Date: 2003/06/30 12:17:02 $
+--  $Date: 2003/06/30 12:25:52 $
 --
 --  ----------------
 --  This package realizes a container that administrates the components
@@ -798,7 +798,7 @@ package Giant.Vis_Windows is
    --      as parameter.
    --    Pin_Does_Already_Exist_Exception - Raised if "New_Pin_Name" does
    --      already exist.
-   procedure Change_Name 
+   procedure Change_Pin_Name 
       (Vis_Window   : in Visual_Window_Access;
        Pin_Name     : in String;
        New_Pin_Name : in String);

@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.24 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.25 $
 --  $Author: schwiemn $
---  $Date: 2003/06/30 12:17:02 $
+--  $Date: 2003/06/30 12:25:52 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -1046,7 +1046,7 @@ package body Giant.Vis_Windows is
    
    
    ---------------------------------------------------------------------------
-   procedure Change_Name 
+   procedure Change_Pin_Name 
       (Vis_Window   : in Visual_Window_Access;
        Pin_Name     : in String;
        New_Pin_Name : in String) is
@@ -1074,7 +1074,7 @@ package body Giant.Vis_Windows is
         (New_Pin_Name);
       
       Pin_Sets.Insert (Vis_Window.Set_Of_All_Pins, Change_Pin);   
-   end Change_Name;
+   end Change_Pin_Name;
 
    ---------------------------------------------------------------------------
    procedure Remove_Pin
