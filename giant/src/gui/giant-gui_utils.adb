@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.13 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.14 $
 -- $Author: squig $
--- $Date: 2003/06/21 21:04:02 $
+-- $Date: 2003/06/23 11:30:45 $
 --
 
 with Glib;
@@ -198,25 +198,27 @@ package body Giant.Gui_Utils is
       return Frame;
    end Add_Frame;
 
-   function Add_Scrollbar_And_Frame
-     (Widget : access Gtk.Widget.Gtk_Widget_Record'Class;
-      Title  : in     String)
-     return Gtk.Frame.Gtk_Frame
+   function Add_Scrollbars
+     (Widget : access Gtk.Widget.Gtk_Widget_Record'Class)
+     return Gtk.Scrolled_Window.Gtk_Scrolled_Window
    is
-     Frame : Gtk.Frame.Gtk_Frame;
      Scrolled_Window : Gtk.Scrolled_Window.Gtk_Scrolled_Window;
    begin
       Gtk.Scrolled_Window.Gtk_New (Scrolled_Window);
       Gtk.Scrolled_Window.Set_Policy (Scrolled_Window, Policy_Automatic,
                                       Policy_Automatic);
       Gtk.Scrolled_Window.Add (Scrolled_Window, Widget);
+      return Scrolled_Window;
+   end Add_Scrollbars;
 
-      Gtk.Frame.Gtk_New (Frame, Title);
-      Gtk.Frame.Set_Shadow_Type (Frame, Shadow_Etched_In);
-      Gtk.Frame.Add (Frame, Scrolled_window);
-
-      return Frame;
-   end Add_Scrollbar_And_Frame;
+   function Add_Scrollbars_And_Frame
+     (Widget : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Title  : in     String)
+     return Gtk.Frame.Gtk_Frame
+   is
+   begin
+      return Add_Frame (Add_Scrollbars (Widget), Title);
+   end Add_Scrollbars_And_Frame;
 
    function New_Column_Label
      (Title : in String)

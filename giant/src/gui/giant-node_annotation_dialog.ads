@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-node_annotation_dialog.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-node_annotation_dialog.ads,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/06/20 16:47:35 $
+--  $Date: 2003/06/23 11:30:45 $
 --
 ------------------------------------------------------------------------------
 --
@@ -54,6 +54,9 @@ package Giant.Node_Annotation_Dialog is
 
    procedure Initialize
      (Dialog : access Node_Annotation_Dialog_Record'Class);
+
+   procedure Show
+     (Node : in Graph_Lib.Node_Id);
 
 private
    type Node_Annotation_Dialog_Record is

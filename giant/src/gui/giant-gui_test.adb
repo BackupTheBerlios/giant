@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_test.adb,v $, $Revision: 1.13 $
+-- $RCSfile: giant-gui_test.adb,v $, $Revision: 1.14 $
 -- $Author: squig $
--- $Date: 2003/06/23 10:41:10 $
+-- $Date: 2003/06/23 11:30:45 $
 --
 with Gtk.Main;
 
@@ -70,7 +70,7 @@ begin
 
    Progress_Dialog.Create (My_Progress_Dialog, "Activity Test", "Message");
    Progress_Dialog.Set_Activity_Mode (My_Progress_Dialog, True);
-   Progress_Dialog.Set_Value (My_Progress_Dialog, 10.0);
+   Progress_Dialog.Set_Value (My_Progress_Dialog, 250.0);
    Progress_Dialog.Show_All (My_Progress_Dialog);
 
 --     Graph_Window.Create (My_Graph_Window);

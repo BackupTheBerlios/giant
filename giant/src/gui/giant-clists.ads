@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-clists.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-clists.ads,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/06/20 18:03:14 $
+--  $Date: 2003/06/23 11:30:45 $
 --
 --  Provides an enhanced Gtk.Clist.
 --
@@ -47,6 +47,9 @@ package Giant.Clists is
    procedure Initialize
      (List    : access Giant_Clist_Record'Class;
       Columns : in     Glib.Gint);
+
+   procedure Columns_Autosize
+     (List  : access Giant_Clist_Record);
 
    procedure Connect_Popup_Menu
      (List : access Giant_Clist_Record;

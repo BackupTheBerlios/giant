@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-node_annotation_dialog.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-node_annotation_dialog.adb,v $, $Revision: 1.5 $
 --  $Author: squig $
---  $Date: 2003/06/23 10:41:10 $
+--  $Date: 2003/06/23 11:30:45 $
 --
 
 with Glib;
@@ -108,5 +108,14 @@ package body Giant.Node_Annotation_Dialog is
       Add_Button (Dialog,
                   New_Button (-"Delete", On_Delete_Button_Clicked'Access));
    end;
+
+   procedure Show
+     (Node : in Graph_Lib.Node_Id)
+   is
+      Dialog : Node_Annotation_Dialog_Access;
+   begin
+      Create (Dialog, Node);
+      Show_All (Dialog);
+   end Show;
 
 end Giant.Node_Annotation_Dialog;

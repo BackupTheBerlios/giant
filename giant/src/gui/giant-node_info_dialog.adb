@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-node_info_dialog.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-node_info_dialog.adb,v $, $Revision: 1.5 $
 --  $Author: squig $
---  $Date: 2003/06/23 09:27:43 $
+--  $Date: 2003/06/23 11:30:45 $
 --
 
 with Interfaces.C.Strings;
@@ -32,10 +32,11 @@ with Gtk.Box;
 with Gtk.Button;
 with Gtk.Table;
 with Gtk.Widget;
-with Gtk.Enums; use Gtk.Enums;
+with Gtk.Enums;
 with Gtkada.Types;
 
-with Giant.Gui_Utils; use Giant.Gui_Utils;
+with Giant.Gui_Utils;
+with Giant.Node_Annotation_Dialog;
 
 package body Giant.Node_Info_Dialog is
 
@@ -43,23 +44,34 @@ package body Giant.Node_Info_Dialog is
    --  Callbacks
    ---------------------------------------------------------------------------
 
+   procedure On_Annotate_Button_Clicked
+     (Source : access Gtk.Button.Gtk_Button_Record'Class)
+   is
+      Dialog : Node_Info_Dialog_Access
+        := Node_Info_Dialog_Access (Gtk.Widget.Get_Toplevel
+                                    (Gtk.Widget.Gtk_Widget (Source)));
+   begin
+      Node_Annotation_Dialog.Show (Dialog.Node);
+   end On_Annotate_Button_Clicked;
+
    procedure On_Pick_Button_Clicked
      (Source : access Gtk.Button.Gtk_Button_Record'Class)
    is
-      Dialog : Node_Info_Dialog_Access;
+      Dialog : Node_Info_Dialog_Access
+        := Node_Info_Dialog_Access (Gtk.Widget.Get_Toplevel
+                                    (Gtk.Widget.Gtk_Widget (Source)));
    begin
-      Dialog := Node_Info_Dialog_Access (Gtk.Widget.Get_Toplevel
-                                   (Gtk.Widget.Gtk_Widget (Source)));
-      -- FIX: delete info
+      -- FIX: pick node
+      null;
    end On_Pick_Button_Clicked;
 
    procedure On_Update_Button_Clicked
      (Source : access Gtk.Button.Gtk_Button_Record'Class)
    is
-      Dialog : Node_Info_Dialog_Access;
+      Dialog : Node_Info_Dialog_Access
+        := Node_Info_Dialog_Access (Gtk.Widget.Get_Toplevel
+                                    (Gtk.Widget.Gtk_Widget (Source)));
    begin
-      Dialog := Node_Info_Dialog_Access (Gtk.Widget.Get_Toplevel
-                                   (Gtk.Widget.Gtk_Widget (Source)));
       Set_Node (Dialog, Dialog.Node);
    end On_Update_Button_Clicked;
 
@@ -78,6 +90,8 @@ package body Giant.Node_Info_Dialog is
    procedure Initialize
      (Dialog : access Node_Info_Dialog_Record'class)
    is
+      use Giant.Gui_Utils;
+
       Center_Box : Gtk.Box.Gtk_Vbox;
       Table : Gtk.Table.Gtk_Table;
       Row : Glib.Guint := 0;
@@ -106,15 +120,16 @@ package body Giant.Node_Info_Dialog is
 
       --  attributes
       Clists.Create (Dialog.Attribute_List, 2);
-      Clists.Set_Column_Title (Dialog.Attribute_List, 0, -"Name");
+      Clists.Set_Column_Title (Dialog.Attribute_List, 0, -"Attribute");
       Clists.Set_Column_Title (Dialog.Attribute_List, 1, -"Value");
       Gtk.Box.Pack_Start (Center_Box,
-                          Add_Scrollbar_And_Frame (Dialog.Attribute_List,
-                                                   -"Attributes"),
+                          Add_Scrollbars (Dialog.Attribute_List),
                           expand => True, Fill => True,
                           Padding => DEFAULT_SPACING);
 
       --  buttons
+      Add_Button (Dialog,
+                  New_Button (-"Annotate", On_Annotate_Button_Clicked'Access));
       Add_Button (Dialog,
                   New_Button (-"Update", On_Update_Button_Clicked'Access));
       Add_Button (Dialog,
@@ -142,6 +157,7 @@ package body Giant.Node_Info_Dialog is
       Row_Data : Gtkada.Types.Chars_Ptr_Array (0 .. 1);
       Iterator : Graph_Lib.Node_Attribute_Iterator;
       Attribute : Graph_Lib.Node_Attribute_Id;
+      Width : Glib.Gint;
    begin
       Dialog.Node := Node;
 
@@ -169,5 +185,8 @@ package body Giant.Node_Info_Dialog is
          Row := Clists.Append (Dialog.Attribute_List, Row_Data);
          Gtkada.Types.Free (Row_Data);
       end loop;
+
+      --  resize columns
+      Width := Clists.Columns_Autosize (Dialog.Attribute_List);
    end Set_Node;
 end Giant.Node_Info_Dialog;

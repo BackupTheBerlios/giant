@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.ads,v $, $Revision: 1.6 $
+--  $RCSfile: giant-default_dialog.ads,v $, $Revision: 1.7 $
 --  $Author: squig $
---  $Date: 2003/06/22 21:54:21 $
+--  $Date: 2003/06/23 11:30:45 $
 --
 ------------------------------------------------------------------------------
 --
@@ -62,8 +62,10 @@ package Giant.Default_Dialog is
       Buttons : in     Button_Type);
 
    procedure Add_Button
-     (Dialog : access Default_Dialog_Record;
-      Button : in     Gtk.Button.Gtk_Button);
+     (Dialog   : access Default_Dialog_Record;
+      Button   : in     Gtk.Button.Gtk_Button;
+      Add_Left : in     Boolean               := True);
+
 
    function Add_Icon_Box
      (Dialog        : access Default_Dialog_Record;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.9 $
+--  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.10 $
 --  $Author: squig $
---  $Date: 2003/06/20 18:03:14 $
+--  $Date: 2003/06/23 11:30:45 $
 --
 ------------------------------------------------------------------------------
 --
@@ -133,7 +133,11 @@ package Giant.Gui_Utils is
       Left  : access Gtk.Misc.Gtk_Misc_Record'Class;
       Right : access Gtk.Misc.Gtk_Misc_Record'Class);
 
-   function Add_Scrollbar_And_Frame
+   function Add_Scrollbars
+     (Widget : access Gtk.Widget.Gtk_Widget_Record'Class)
+     return Gtk.Scrolled_Window.Gtk_Scrolled_Window;
+
+   function Add_Scrollbars_And_Frame
      (Widget : access Gtk.Widget.Gtk_Widget_Record'class;
       Title  : in String)
      return Gtk.Frame.Gtk_Frame;

@@ -1,4 +1,4 @@
-all : 
+all : gui_test
 	make -C ../../ all
 
 clists :

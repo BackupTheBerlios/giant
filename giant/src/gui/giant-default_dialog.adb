@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.11 $
+--  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.12 $
 --  $Author: squig $
---  $Date: 2003/06/22 23:03:19 $
+--  $Date: 2003/06/23 11:30:45 $
 --
 
 with Ada.Text_Io; use Ada.Text_Io;
@@ -157,27 +157,28 @@ package body Giant.Default_Dialog is
       --  buttons
       if (Buttons = Button_Close) then
          Button := New_Button (-"Close", On_Close_Button_Clicked'access);
-         Gtk.Hbutton_Box.Add (Dialog.Button_Box, Button);
+         Add_Button (Dialog, Button, False);
          Gtk.Button.Grab_Default (Button);
       elsif (Buttons = Button_Okay_Cancel) then
          Button := New_Button (-"Okay", On_Okay_Button_Clicked'access);
-         Gtk.Hbutton_Box.Add (Dialog.Button_Box, Button);
+         Add_Button (Dialog, Button, False);
          Gtk.Button.Grab_Default (Button);
       elsif (Buttons = Button_Yes_No
              or else Buttons = Button_Yes_No_Cancel) then
          Button := New_Button (-"Yes", On_Yes_Button_Clicked'access);
-         Gtk.Hbutton_Box.Add (Dialog.Button_Box, Button);
+         Add_Button (Dialog, Button, False);
          Gtk.Button.Grab_Default (Button);
-         Gtk.Hbutton_Box.Add (Dialog.Button_Box,
-                              New_Button (-"No", On_No_Button_Clicked'access));
+         Add_Button (Dialog, New_Button (-"No",
+                                         On_No_Button_Clicked'access),
+                     False);
       end if;
 
       if (Buttons = Button_Cancel
           or else Buttons = Button_Okay_Cancel
           or else Buttons = Button_Yes_No_Cancel) then
-         Gtk.Hbutton_Box.Add (Dialog.Button_Box,
-                              New_Button (-"Cancel",
-                                          On_Cancel_Button_Clicked'access));
+         Add_Button (Dialog, New_Button (-"Cancel",
+                                         On_Cancel_Button_Clicked'access),
+                     False);
       end if;
 
       --  horizontal separator
@@ -198,11 +199,17 @@ package body Giant.Default_Dialog is
    ---------------------------------------------------------------------------
 
    procedure Add_Button
-     (Dialog : access Default_Dialog_Record;
-      Button : in Gtk.Button.Gtk_Button)
+     (Dialog   : access Default_Dialog_Record;
+      Button   : in     Gtk.Button.Gtk_Button;
+      Add_Left : in     Boolean               := True)
    is
    begin
       Gtk.Hbutton_Box.Add (Dialog.Button_Box, Button);
+      if (Add_Left) then
+         --  the button box seems to ignore pack_end and pack_start
+         --  therefore reordering is used as a workaround
+         Gtk.Hbutton_Box.Reorder_Child (Dialog.Button_Box, Button, 0);
+      end if;
    end;
 
    function Add_Icon_Box

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-clists.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-clists.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/06/20 18:03:14 $
+--  $Date: 2003/06/23 11:30:45 $
 --
 
 with Ada.Strings.Unbounded;
@@ -195,6 +195,13 @@ package body Giant.Clists is
       return -1;
    end Get_Selected_Row;
 
+   procedure Columns_Autosize
+     (List  : access Giant_Clist_Record)
+   is
+      Width : Glib.Gint;
+   begin
+      Width := Columns_Autosize (List);
+   end Columns_Autosize;
 
    procedure Connect_Popup_Menu
      (List : access Giant_Clist_Record;

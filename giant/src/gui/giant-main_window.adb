@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.22 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.23 $
 --  $Author: squig $
---  $Date: 2003/06/22 23:03:19 $
+--  $Date: 2003/06/23 11:30:45 $
 --
 
 with Ada.Strings.Unbounded;
@@ -534,10 +534,10 @@ package body Giant.Main_Window is
       String_Clists.Create (Window_List, 2, Update_Window'Access);
       String_Clists.Connect_Popup_Menu (Window_List, Window_List_Menu);
 
-      String_Clists.Set_Column_Title (Window_List, 0, -"Name");
+      String_Clists.Set_Column_Title (Window_List, 0, -"Window");
       String_Clists.Set_Column_Title (Window_List, 1, -"Status");
 
-      Gtk.Paned.Add (Pane, Add_Scrollbar_And_Frame (Window_List, -"Windows"));
+      Gtk.Paned.Add (Pane, Add_Scrollbars (Window_List));
 
       --  sub graph list popup menu
       Gtk.Menu.Gtk_New (Subgraph_List_Menu);
@@ -569,12 +569,12 @@ package body Giant.Main_Window is
       String_Clists.Set_Show_Titles (Subgraph_List, True);
       String_Clists.Connect_Popup_Menu (Subgraph_List, Subgraph_List_Menu);
 
-      String_Clists.Set_Column_Title (Subgraph_List, 0, -"Name");
+      String_Clists.Set_Column_Title (Subgraph_List, 0, -"Subgraph");
       String_Clists.Set_Column_Title (Subgraph_List, 1, -"Nodes");
       String_Clists.Set_Column_Title (Subgraph_List, 2, -"Edges");
       String_Clists.Set_Column_Title (Subgraph_List, 3, -"Highlight Color");
 
-      Gtk.Paned.Add (Pane, Add_Scrollbar_And_Frame (Subgraph_List, -"Subgraphs"));
+      Gtk.Paned.Add (Pane, Add_Scrollbars (Subgraph_List));
       --  status bar
       Gtk.Status_Bar.Gtk_New (Status_Bar);
       Gtk.Box.Pack_End (Box, Status_Bar, Expand => False, Fill => True,

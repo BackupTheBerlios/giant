@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.10 $
 --  $Author: squig $
---  $Date: 2003/06/22 23:03:19 $
+--  $Date: 2003/06/23 11:30:45 $
 --
 
 with Glib;
@@ -222,7 +222,7 @@ package body Giant.Graph_Window is
       String_Clists.Set_Column_Title (Window.Pin_List, 0, -"Name");
 
       Gtk.Paned.Add1 (Left_Paned,
-                      Add_Scrollbar_And_Frame (Window.Pin_List, -"Pins"));
+                      Add_Scrollbars_And_Frame (Window.Pin_List, -"Pins"));
 
       --  selections list menu
       Gtk.Menu.Gtk_New (Window.Selection_List_Menu);
@@ -247,8 +247,8 @@ package body Giant.Graph_Window is
       String_Clists.Set_Column_Title (Window.Selection_List, 1, -"Color");
 
       Gtk.Paned.Add2 (Left_Paned,
-                      Add_Scrollbar_And_Frame (Window.Selection_List,
-                                               -"Selections"));
+                      Add_Scrollbars_And_Frame (Window.Selection_List,
+                                                -"Selections"));
 
       --  visualization style
       Gtk.Option_Menu.Gtk_New (Window.Vis_Style_Menu);
