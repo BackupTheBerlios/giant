@@ -21,7 +21,7 @@ testxml_val :
 evolution :
 	make -C ../ MAIN=test/giant_test-evolution EXEC=test/evolution all
 
-graphlib :
+graph_lib :
 	make -C ../ MAIN=test/graphlib_test EXEC=test/graphlib_test all
 
 matrix_layouts :
