@@ -1,3 +1,13 @@
+% ==============================================================================
+%  $RCSfile: spec.sty,v $, $Revision: 1.6 $
+%  $Date: 2003/02/13 19:38:00 $
+%  $Author: schulzgt $
+%
+%  Description:
+%
+% ==============================================================================
+
+%===============================================================================
 % TODO:
 %   Bei leeren Vorbedinungen keine TeX-Fehlermeldung
 %   Also dass
@@ -5,10 +15,10 @@
 %     \end{precond}
 %   ohne was dazwischen funktioniert.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Begriffslexikon                                                             %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%===============================================================================
+% Begriffslexikon
+%
 \newenvironment{nomenclature}
 {\begin{itemize}}
 {\end{itemize}}
@@ -25,11 +35,8 @@
 \newcommand{\term}[3]{\item \textbf{#1} (#2)\\#3}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Use-Cases                                                                   %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Use-Case
+%===============================================================================
+% Use-Cases
 %
 %  Parameter
 %
@@ -40,24 +47,28 @@
 {\clearpage\section{#2}\ifx#1\undefined\else\label{#1}\fi}
 {}
 
-% Akteure
-\newenvironment{actors}
-{\subsection{Akteure}\begin{itemize}}
-{\end{itemize}}
-
-\newcommand{\actor}{\item }
-
-% Einstiegspunkte als enumeration
-\newenvironment{entries}
-{\subsection{Einstiegspunkte}\begin{enumerate}}
+% Vor- und Nachbedingungen als enumeration
+\newenvironment{precond}
+{\subsection{Vorbedingung}\begin{enumerate}}
 {\end{enumerate}}
 
-% Ablauf
+\newenvironment{postsuccess}
+{\subsection{Nachbedingung Erfolg}\begin{enumerate}}
+{\end{enumerate}}
+
+\newenvironment{postfail}
+{\subsection{Nachbedingung Fehlschlag}\begin{enumerate}}
+{\end{enumerate}}
+
+% Bedingung
+\newcommand{\cond}{\item }
+
+% Beschreibung
 \newenvironment{proc}
 {\subsection{Beschreibung}\begin{enumerate}}
 {\end{enumerate}}
 
-% Unterpunkte fuer Ablauf
+% Unterpunkte für die Beschreibung
 \newenvironment{subproc}
 {\begin{enumerate}
     \setlength{\itemsep}{0ex plus 0.2ex}     
@@ -79,18 +90,6 @@
 {\end{itemize}}
 
 \newcommand{\astep}[1]{\item Bei Punkt \ref{#1}:\\}
-
-% Vor- und Nachbedingungen als enumeration
-\newenvironment{precond}
-{\subsection{Vorbedingung}\begin{enumerate}}
-{\end{enumerate}}
-
-\newenvironment{postcond}
-{\subsection{Nachbedingung}\begin{enumerate}}
-{\end{enumerate}}
-
-% Bedingung
-\newcommand{\cond}{\item }
 
 %%% Local Variables: 
 %%% mode: plain-tex
