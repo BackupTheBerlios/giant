@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-node_annotations.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-node_annotations.adb,v $, $Revision: 1.2 $
 --  $Author: schwiemn $
---  $Date: 2003/05/27 08:56:23 $
+--  $Date: 2003/05/27 09:57:08 $
 --
 package body Giant.Node_Annotations is
 
@@ -85,7 +85,7 @@ package body Giant.Node_Annotations is
       ------------------------
       XML_Annotation_Nodes_List :=
         DOM.Core.Documents.Get_Elements_By_Tag_Name
-        (Annotation_XML_Document, "node_class");
+        (Annotation_XML_Document, "node_annotation");
        
       for I in 0 .. DOM.Core.Nodes.Length 
         (XML_Annotation_Nodes_List) - 1 loop
@@ -93,7 +93,15 @@ package body Giant.Node_Annotations is
          XML_Annotation_Node := DOM.Core.Nodes.Item 
            (XML_Annotation_Nodes_List, I);
            
-         XML_Annotation_Text_Node :=   
+         -- the text node that holds the annotation
+         XML_Annotation_Text_Node := DOM.Core.Nodes.First_Child
+            (XML_Annotation_Node);
+                         
+         
+         -- check whether the iml node does exist
+         -- ignore not existing nodes
+         !!!!!!!!!!!!!!!!!!!!!
+         
          
            
          
