@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-make_room_dialog.adb,v $, $Revision: 1.3 $
---  $Author: squig $
---  $Date: 2003/07/10 21:01:40 $
+--  $RCSfile: giant-make_room_dialog.adb,v $, $Revision: 1.4 $
+--  $Author: schwiemn $
+--  $Date: 2003/09/16 15:51:44 $
 --
 
 with Ada.IO_Exceptions;
@@ -83,7 +83,7 @@ package body Giant.Make_Room_Dialog is
       --  spin button
       Gtk.Adjustment.Gtk_New (Dialog.Pixel_Adjustment,
                               Value => 0.0, Lower => 0.0,
-                              Upper => 100.0, Step_Increment => 1.0,
+                              Upper => 5000.0, Step_Increment => 1.0,
                               Page_Increment => 1.0, Page_Size => 1.0);
       Gtk.Spin_Button.Gtk_New (Pixel_Button, Dialog.Pixel_Adjustment,
                                Climb_Rate => 1.0, The_Digits => 0);
