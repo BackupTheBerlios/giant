@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.29 $
---  $Author: schwiemn $
---  $Date: 2003/06/24 18:23:30 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.30 $
+--  $Author: squig $
+--  $Date: 2003/06/24 22:11:24 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -253,20 +253,18 @@ package body Giant.Projects is
    begin
 
       -- check if file exists, create new one if necessary
-      if (GNAT.OS_Lib.Is_Writable_File (File_Path) = True) then
-
+      if (not GNAT.OS_Lib.Is_Writable_File (File_Path)) then
          Ada.Streams.Stream_IO.Create
            (Stream_File,
             Ada.Streams.Stream_IO.Out_File,
             File_Path);
 
-         Ada.Streams.Stream_IO.Close (Stream_File);
+      else
+         Ada.Streams.Stream_IO.Open
+           (Stream_File,
+            Ada.Streams.Stream_IO.Out_File,
+            File_Path);
       end if;
-
-      Ada.Streams.Stream_IO.Open
-        (Stream_File,
-         Ada.Streams.Stream_IO.Out_File,
-         File_Path);
 
       Ada_Stream := Ada.Streams.Stream_IO.Stream (Stream_File);
       Bauhaus_Out_Stream := Bauhaus_IO.Make_Internal (Ada_Stream);
@@ -336,20 +334,18 @@ package body Giant.Projects is
    begin
 
       -- check if file exists, create new one if necessary
-      if (GNAT.OS_Lib.Is_Writable_File (File_Path) = True) then
+      if (not GNAT.OS_Lib.Is_Writable_File (File_Path)) then
 
          Ada.Streams.Stream_IO.Create
            (Stream_File,
             Ada.Streams.Stream_IO.Out_File,
             File_Path);
-
-         Ada.Streams.Stream_IO.Close (Stream_File);
+      else
+         Ada.Streams.Stream_IO.Open
+           (Stream_File,
+            Ada.Streams.Stream_IO.Out_File,
+            File_Path);
       end if;
-
-      Ada.Streams.Stream_IO.Open
-        (Stream_File,
-         Ada.Streams.Stream_IO.Out_File,
-         File_Path);
 
       Ada_Stream := Ada.Streams.Stream_IO.Stream (Stream_File);
       Bauhaus_Out_Stream := Bauhaus_IO.Make_Internal (Ada_Stream);
@@ -573,7 +569,7 @@ package body Giant.Projects is
       Ada.Text_IO.Set_Output (Ada.Text_IO.Standard_Output);
       Ada.Text_IO.Close (Project_File);
    end Write_Project_XML_File;
-      
+
    ----------------------------------------------------------------------------
    procedure Free_Project_Access is new Ada.Unchecked_Deallocation
      (Project_Element, Project_Access);
@@ -844,9 +840,9 @@ package body Giant.Projects is
         Integer'Value (
                        (DOM.Core.Elements.Get_Attribute
                         (Data_XML_Node, "iml_graph_checksum")));
-                                         
+
       New_Project_Access.All_Subgraphs := Subgraph_Data_Hashs.Create;
-                                    
+
       --  check whether correct iml graph is loaded
       ---------------------------------------------
       if not Is_Correct_IML_Graph_Loaded
@@ -855,8 +851,8 @@ package body Giant.Projects is
          --  now deep deallocation necessary
          Free_Project_Access (New_Project_Access);
          raise Wrong_IML_Graph_Loaded_Exception;
-      end if;                  
-                                                
+      end if;
+
       -- calculate path relative to project directory if necessary
       New_Project_Access.Node_Annotations_File :=
         Ada.Strings.Unbounded.To_Unbounded_String

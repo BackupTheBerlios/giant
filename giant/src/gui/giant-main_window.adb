@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.30 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.31 $
 --  $Author: squig $
---  $Date: 2003/06/24 19:48:27 $
+--  $Date: 2003/06/24 22:11:24 $
 --
 
 with Ada.Strings.Unbounded;
@@ -207,7 +207,8 @@ package body Giant.Main_Window is
    begin
       declare
          Filename : String := Gtkada.File_Selection.File_Selection_Dialog
-           (-"Save Project", "",
+           (-"Save Project",
+            Projects.Get_Project_File_Name (Controller.Get_Project),
             Dir_Only => False, Must_Exist => False);
       begin
          if (Filename /= "") then
