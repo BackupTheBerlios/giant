@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: project.tex,v $, $Revision: 1.25 $
-%  $Date: 2003/03/29 01:52:04 $
+%  $RCSfile: project.tex,v $, $Revision: 1.26 $
+%  $Date: 2003/03/29 12:59:26 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -67,7 +67,7 @@ IML-Teilgraphen, logisch zusammen.
          \ref {Project Verwaltungsdateien für Anzeigefenster} und
          \ref {Project Verwaltungsdateien für IML-Teilgraphen}) hinzufügen
   oder die zugehörige IML-Graph Datei ändern.\\
-  Das Fehrhalten von GIANT gegenüber Fehlern aufgrund manueller Änderungen
+  Das Fehlerverhalten von GIANT gegenüber Fehlern aufgrund manueller Änderungen
   des Benutzers an einem Projekt (Editieren der Projektdatei und
   Ändern der Verwaltungsdateien) ist undefiniert.
 
@@ -76,8 +76,8 @@ IML-Teilgraphen, logisch zusammen.
   zu einem Projekt gehören, im Projektverzeichnis liegen (GIANT
   macht dies automatisch immer so). Man sollte
   in die Projektdatei also manuell keine Referenzen auf Verwaltungsdateien
-  ausserhalb der Projektverzeichnisses eintragen; verboten ist dies
-  alledings nicht. Das Verhalten von GIANT im Fehlerfall bleibt aber 
+  außerhalb der Projektverzeichnisses eintragen; verboten ist dies
+  allerdings nicht. Das Verhalten von GIANT im Fehlerfall bleibt aber 
   diesbezüglich undefiniert.
 
 
@@ -89,7 +89,8 @@ IML-Teilgraphen, logisch zusammen.
   \begin {enumerate}
 
     \item  
-    Sämtliche Dateien, die die Informationen für ein Projekt enthalten,
+    Sämtliche Dateien, die zu einem Projekt gehörige Informationen  
+    enthalten,
     befinden sich in diesem Verzeichnis. GIANT speichert alle
     Verwaltungsdateien (siehe 
     \ref {Project Verwaltungsdatei für Knoten-Annotationen},
@@ -123,7 +124,7 @@ IML-Teilgraphen, logisch zusammen.
     des Projektes sind (Verwaltungsdateien für IML-Teilgraphen und
     Anzeigefenster, sowie die Verwaltungsdatei für Knoten-Annotationen).
     Verwaltungsdateien, die zwar im Projektverzeichnis liegen, zu
-    denen aber keine Referenz in der Projekdatei existiert, gehören
+    denen aber keine Referenz in der Projektdatei existiert, gehören
     nicht zum Projekt.
 
     \item
@@ -174,9 +175,9 @@ IML-Teilgraphen, logisch zusammen.
   \end {enumerate}
  
   Der für das Anzeigefenster gewählte Visualisierungsstiel wird zwar mit 
-  gespeichert, da die Viualisierungsstiele völlig unabhängig von den 
+  gespeichert, da die Visualisierungsstile völlig unabhängig von den 
   Projekten über Konfigurationsdateien realisiert werden, 
-  kann nicht gerantiert werden, dass der gewünschte Stiel beim Laden 
+  kann nicht garantiert werden, dass der gewünschte Stiel beim Laden 
   des Projektes auch wieder gefunden wird,
   in diesem Fall wird dann ein \gq{Standard-Stil} verwendet.
 
@@ -251,7 +252,7 @@ IML-Teilgraphen, logisch zusammen.
     für jedes Anzeigefenster alle Informationen gespeichert, die nötig
     sind um den Zustand des Anzeigefensters zu rekonstruieren, der
     möglichst exakt dem Zustand bei der Speicherung des Anzeigefensters
-    entspricht. Inbesondere werden hierbei die folgenden Bestandteile
+    entspricht. Insbesondere werden hierbei die folgenden Bestandteile
     des Anzeigefensters gespeichert:
 
       \subitem
@@ -267,7 +268,7 @@ IML-Teilgraphen, logisch zusammen.
 
     \item  \index{Persistenz!Visualisierungsstile}
     Für den gewählten Visualisierungsstil des Anzeigefensters wird
-    nur der Name gespeichert, da die Visualisierungstile über
+    nur der Name gespeichert, da die Visualisierungsstile über
     die Konfigurationsdateien beliebig editiert
     und auch gelöscht werden können. Wird beim Laden eines
     Anzeigefensters aus der Verwaltungsdatei kein Visualisierungstil
@@ -350,7 +351,7 @@ verwaltet werden.
   
    \item
    Änderungen bestehender oder neu erzeugte Knoten-Annotationen werden nur
-   über die Funktionaliät \gq{Alles Speichern} (siehe 
+   über die Funktionalität \gq{Alles Speichern} (siehe 
    \ref{Alles Speichern}) in die 
    Verwaltungsdatei für Knoten-Annotationen (siehe   
    \ref {Project Verwaltungsdatei für Knoten-Annotationen}) geschrieben.

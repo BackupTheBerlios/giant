@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.18 $
-%  $Date: 2003/03/29 01:52:04 $
+%  $RCSfile: config.tex,v $, $Revision: 1.19 $
+%  $Date: 2003/03/29 12:59:26 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -27,7 +27,7 @@
   Unterverzeichnis seines Home-Verzeichnisses abgelegt werden. Findet
   GIANT beim Start ein derartiges Verzeichnis, so werden die
   Einstellungen aus der dort vorgefundenen Konfigurationsdatei, sowie
-  die dort vorgefundenen Visualisierungstile geladen.
+  die dort vorgefundenen Visualisierungsstile geladen.
  
 \end {enumerate}
 
@@ -72,7 +72,7 @@ Einstellungen vorgenommen werden.
 
 \section {Visualisierungsstile} \label{Config Visualisierungsstile}
 \index{Visulisierungsstile!Konfiguration}
-\index{Konfiguration!Visulisierungsstile}
+\index{Konfiguration!Visualisierungsstile}
 
 Der Benutzer kann beliebig viele Visualisierungsstile definieren.
 Mittels dieser Visualisierungsstile kann die Darstellung von
@@ -157,7 +157,7 @@ Für die Visualisierungsstile gelten die folgenden Konventionen:
     \item Ein Icon für die Knotenklasse (Verweis auf eine entsprechende 
           Bilddatei). Das Icon muss im Pixmap Format bei 16*16 Pixel
           vorliegen.
-    \item Eine Liste der Attribute der Knotenklasse, welche dirket innerhalb 
+    \item Eine Liste der Attribute der Knotenklasse, welche direkt innerhalb 
           des Anzeigefensters in dem \gq(Rechteck) für den Knoten dargestellt 
           werden sollen.
     \item Die Füllfarbe des \gq{Rechtecks} in welchem die Attribute zu dem 
@@ -189,5 +189,9 @@ Auf diese Art und Weise können komplexe Anfragen gespeichert und
 wiederverwendet werden.\\
 Erstellt werden können solche Anfrage-Dateien entweder manuell oder
 automatisch aus einer eingegebenen Anfrage.
-Geldaden werden können solche Dateien beim Kommandozeilenaufruf
-oder im entsprechenden Dialog zur Eingabe einer Anfrage.
+Geladen werden können solche Dateien beim Kommandozeilenaufruf 
+(siehe hierzu \ref{fa Starten von GIANT})
+oder im Dialog zur Eingabe einer Anfrage 
+(vgl.\ UseCase \ref{UC Anfrage laden}).
+Für eine exakte Spezifikation der GQSL siehe Kapitel 
+\ref {GIANT Query Skripting Language}. 

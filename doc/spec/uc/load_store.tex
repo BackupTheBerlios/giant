@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: load_store.tex,v $, $Revision: 1.10 $
-%  $Date: 2003/03/28 18:37:17 $
+%  $RCSfile: load_store.tex,v $, $Revision: 1.11 $
+%  $Date: 2003/03/29 12:59:27 $
 %  $Author: schwiemn $
 %
 %  Description: Use-Cases für Lade- und Speicherfunktionalität
@@ -8,15 +8,15 @@
 % ==============================================================================
 
 \begin{uc}[Neues Projekt]{UC: Neues Projekt}
-\index{Projekte!neus Projekt erstellen}
+\index{Projekte!neues Projekt erstellen}
   Erstellt ein neues GIANT Projekt. Ein eventuell bereits geöffnetes
   Projekt wird dabei geschlossen, wobei Änderungen auf Nachfrage 
   vorher gespeichert werden.
   Weitere wichtige Informationen, die in engem Zusammenhang mit 
   diesem UseCase stehen, sind unter dem Abschnitt 
   \ref{Project Persistenz der Projekte} zu finden.\\
-  Zulässige Namen für Projekte sind unter Abschnitt \ref{afa zulaessige Namen}
-  spezifiziert.
+  Zulässige Namen für Projekte sind unter Abschnitt 
+  \ref{afa Zulaessige Namen} spezifiziert.
   
   
   \begin{precond}
@@ -60,7 +60,7 @@
 
     \step[4]
     Dann bestätigt er seine Eingabe mit OK.\\
-    Existiert die eingegbene Projektdatei bereits, 
+    Existiert die eingegebene Projektdatei bereits, 
     erscheint eine Fehlermeldung gemäß den unter Abschnitt 
     \ref{afa Fehlerverhalten} beschriebenen Konventionen.\\
     Existiert in dem Projektverzeichnis bereits eine andere Projektdatei, so 
@@ -98,11 +98,11 @@
   vorher gespeichert werden. \\ 
   Sollte der Benutzer die XML-Dateien 
   innerhalb des Projektverzeichnisses (siehe 
-  \ref{Project Das Projektverzeichnis}) manuell modifziert haben, so
+  \ref{Project Das Projektverzeichnis}) manuell modifiziert haben, so
   dass diese von den durch GIANT automatisch erstellten Dateien
   abweichen, so wird keinerlei Garantie für das korrekte Öffnen
-  des Projektes übernommen. Des weiteren bleibt das Verhalten
-  bezüglich eventuell auftretender Fehler unspezifiziert.
+  des Projektes übernommen. Das Verhalten
+  bezüglich eventuell auftretender Fehler ist undefiniert.
 
   \begin{precond}
     \cond Das Programm ist gestartet.
@@ -258,7 +258,7 @@ Speichert alle Informationen zu einem Projekt in eine neue Projektdatei
   
     \step[3]  
     Der Benutzer bestätigt seine Eingabe mit OK.\\
-    Existiert die eingebene Datei schon, erscheint eine Fehlermeldung.\\
+    Existiert die eingegebene Datei schon, erscheint eine Fehlermeldung.\\
     Existiert in dem Projektverzeichnis bereits eine andere Projektdatei, so 
     erscheint eine entsprechende Fehlermeldung.\\
   

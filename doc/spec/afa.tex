@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: afa.tex,v $, $Revision: 1.9 $
-%  $Date: 2003/03/28 21:57:12 $
+%  $RCSfile: afa.tex,v $, $Revision: 1.10 $
+%  $Date: 2003/03/29 12:59:26 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung allgemeiner funktionaler Anforderungen - UseCase
@@ -111,7 +111,7 @@ Hier wird beschrieben, wie GIANT dem Benutzer über
 den aktuellen Systemzustand informiert.
 
    \subsection{\gq{I am busy Feedback}}
-   Während der der Berechnung durch Layoutalgorithmen und Anfragen 
+   Während der Berechnung durch Layoutalgorithmen und Anfragen 
    informiert GIANT den Benutzer laufend, dass es gerade mit Berechnungen 
    beschäftigt ist. Dies keine über eine der beiden 
    hier beschriebenen Möglichkeiten geschehen:
@@ -147,7 +147,7 @@ Unzulässige Namen werden generell abgelehnt und führen zu einer Fehlermeldung.
     \begin {enumerate}
   
       \item
-      Groß- und Kleibuchstaben des deutschen Alphabetes. Nicht zulässig sind
+      Groß- und Kleinbuchstaben des deutschen Alphabetes. Nicht zulässig sind
       Umlaute und das Zeichen ''"s''.
     
       \item
@@ -180,7 +180,7 @@ Unzulässige Namen werden generell abgelehnt und führen zu einer Fehlermeldung.
           \index{Anzeigefenster!zulässige Namen}
     
     \item Name einer Selektion: STANDARD NAME \\
-          Dieser Name muss für jede Selektionn 
+          Dieser Name muss für jede Selektion 
 	  innerhalb eines Anzeigefensters eindeutig sein.
           \index{Selektionen!zulässige Namen}
     
@@ -196,7 +196,7 @@ Unzulässige Namen werden generell abgelehnt und führen zu einer Fehlermeldung.
 Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
 
   \subsection {Selektieren von Fenster-Knoten und Fenster-Kanten in 
-               Anzeigefenstern} \index{selektieren}
+               Anzeigefenstern}
   \label {Selektieren von Fenster-Knoten und Fenster-Kanten in 
                Anzeigefenstern} 
 
@@ -216,19 +216,19 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
    werden deselektiert.
    
    \item Selektieren durch Anklicken mittels Shift + linke Maustatste.\\
-   Falls nocht nicht selektiert wird der angeklickte Fenster-Knoten oder die
+   Falls noch nicht selektiert wird der angeklickte Fenster-Knoten oder die
    angeklickte Fenster-Kante zu der aktuellen Selektion hinzugefügt.
    Falls bereits selektiert wird der Fenster-Knoten oder die Fenster-Kante 
    aus der aktuellen Selektion entfernt.
    
    \index{Rahmen}
-   \item Selektieren durch Aufziehen eines Rahmens mittes gedrückter 
+   \item Selektieren durch Aufziehen eines Rahmens mittels gedrückter 
    linker Maustaste.\\
    Alle Fenster-Knoten und Fenster-Kanten innerhalb des Rahmens werden 
    selektiert, alle Fenster-Knoten und Fenster-Kanten außerhalb des 
    Rahmens werden deselektiert.
    
-   \item Selektieren durch Aufziehen eines Rahmens mittes 
+   \item Selektieren durch Aufziehen eines Rahmens mittels 
    Shift + gedrückte linke Maustaste.\\
    Alle Fenster-Knoten und Kanten innerhalb des Rahmens, 
    die noch nicht selektiert sind, werden der aktuellen Selektion 
@@ -247,7 +247,7 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
   \index{Selektionen!aktuelle Selektion}
 	       
   Abgesehen von den hier beschriebenen Punkten, verhält sich die aktuelle
-  Selektion wie jede andere Selektion. Falls nicht expilzit anders 
+  Selektion wie jede andere Selektion. Falls nicht explizit anders 
   spezifiziert, ist insbesondere jeder UseCase für Selektionen auch auf die 
   aktuelle Selektion anwendbar.
 	       
@@ -414,7 +414,7 @@ in Anzeigefenster}
     \item
     Knoten und Kanten des IML-Teilgraphen, die nicht als Fenster-Knoten und
     Fenster-Kanten im entsprechenden Anzeigefenster vorhanden sind, werden
-    irgnoriert.
+    ignoriert.
  
   \end {enumerate}
   
@@ -446,7 +446,7 @@ in Anzeigefenster}
 
   
   Beim \gq{Entfernen} von Fenster-Knoten und Fenster-Kanten aus einem
-  Anzeigefenster werden nur die grafischen Repäsentationen der Knoten und
+  Anzeigefenster werden nur die grafischen Repräsentationen der Knoten und
   Kanten des Bauhaus-IML-Graphen in dem betroffenen Anzeigefenster gelöscht.
   Die IML-Knoten und IML-Kanten des IML-Graphen bleiben davon unberührt.
   Grundsätzlich gelten beim \gq{Entfernen} die im Folgenden beschriebenen

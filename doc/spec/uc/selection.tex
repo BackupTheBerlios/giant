@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: selection.tex,v $, $Revision: 1.10 $
-%  $Date: 2003/03/29 01:52:04 $
+%  $RCSfile: selection.tex,v $, $Revision: 1.11 $
+%  $Date: 2003/03/29 12:59:27 $
 %  $Author: schwiemn $
 %
 %  Description: Use-Cases für die Selektionen
@@ -81,7 +81,8 @@ zurückgestuft werden.
           {UC: Selektion graphisch hervorheben}
 	  
 Dieser UseCase dient zum Hervorheben von Selektionen innerhalb eines
-Anzeigefensters (siehe auch \ref {hervorheben von Knoten und Kanten}).
+Anzeigefensters (siehe hierzu auch 
+auch \ref {hervorheben von Knoten und Kanten}).
 
   \begin{precond}
     \cond Es gibt ein Anzeigefenster mit mindestens einer Selektion.
@@ -103,9 +104,9 @@ Anzeigefensters (siehe auch \ref {hervorheben von Knoten und Kanten}).
     \step[1]
     Der Benutzer startet den UseCase mit einem Rechtsklick 
     auf die gewünschte Selektion in der
-    Selektionsauswahlliste \ref{Selektionsauswahlliste}
+    Selektionsauswahlliste (siehe \ref{Selektionsauswahlliste})
     und wählt im zugehörigen PopUp Menü den Eintrag
-    \gq{Highlight Selection  Color1} aus.
+    \gq{Highlight Selection  Color 1 (2,3)} aus.
   
     \step[2]
     GIANT hebt die Selektion mit der entsprechenden Farbe hervor.
@@ -180,7 +181,7 @@ Mit diesem UseCase können neue, leere Selektionen angelegt werden.
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase mit Rechtsklick auf die
-    die Selektionsauswahlliste (siehe \ref{Selektionsauswahlliste}
+    Selektionsauswahlliste (siehe \ref{Selektionsauswahlliste}
     und wählt im Popup-Menü den Eintrag
     \gq{New Selection} aus.
     
@@ -319,7 +320,7 @@ werden (siehe auch  \ref{Aktuelle Selektion vs Selektionen}).
 
   \begin{postsuccess}
     \cond 
-    Die entsprechenden Änderungen an der Selektion werden von Giant
+    Die entsprechenden Änderungen an der Selektion werden von GIANT
     sofort durchgeführt und übernommen.
     
   \end{postsuccess}
@@ -383,7 +384,7 @@ Leitet eine Selektion aus einem IML-Teilgraphen ab
     den Eintrag \gq{Create Window Selection from IML Subgraph} aus.
      
     \step[2]
-    GIANT zeigt den allgemeinen Texteingabediolog \ref{DIALOG-WINDOW}.
+    GIANT zeigt den allgemeinen Texteingabedialog \ref{DIALOG-WINDOW}.
       	    
     \step[3]
     Der Benutzer gibt einen Namen für die neu zu erstellende Selektion ein
