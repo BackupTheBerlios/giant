@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-mini_maps.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-mini_maps.adb,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/06/09 01:13:39 $
+--  $Date: 2003/06/09 18:07:36 $
 --
 ------------------------------------------------------------------------------
 
@@ -111,6 +111,10 @@ package body Giant.Mini_Maps is
          Window => Window,
          Width  => Width,
          Height => Height);
+      Gdk.Window.Set_Back_Pixmap
+        (Window          => Window,
+         Pixmap          => Widget.Buffer,
+         Parent_Relative => False);
    end Resize_Buffer;
 
    procedure Destroy_Buffer
@@ -599,6 +603,10 @@ package body Giant.Mini_Maps is
 
       Area : Gdk.Rectangle.Gdk_Rectangle;
    begin
+      --  Clear has happened before this is called.
+      --  Correct Buffer is set as background pixmap therefore
+      --  nothing needs to be drawn if 'not Widget.Polluted'
+
       --  Relevant Fields in Event: Area, Count, Graphics_Expose
       --  type: Expose
       Gtk.Handlers.Emit_Stop_By_Name (Widget, "expose_event");
@@ -611,19 +619,15 @@ package body Giant.Mini_Maps is
 
       if Widget.Polluted then
          Draw_Mini_Map (Widget);
+         Area := Gdk.Event.Get_Area (Event);
+         --  Buffer is background pixmap --> gdk redraws after clear
+         Gdk.Window.Clear_Area
+           (Get_Window (Widget),
+            Area.X,
+            Area.Y,
+            Glib.Gint (Area.Width),
+            Glib.Gint (Area.Height));
       end if;
-
-      Area := Gdk.Event.Get_Area (Event);
-      Gdk.Drawable.Draw_Pixmap
-        (Drawable => Get_Window (Widget),
-         Gc       => Widget.Background_Gc,
-         Src      => Widget.Buffer,
-         Xsrc     => Area.X,
-         Ysrc     => Area.Y,
-         Xdest    => Area.X,
-         Ydest    => Area.Y,
-         Width    => Glib.Gint (Area.Width),
-         Height   => Glib.Gint (Area.Height));
 
       return True;
    end On_Expose_Event;
