@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-progress_dialog.adb,v $, $Revision: 1.7 $
---  $Author: schulzgt $
---  $Date: 2003/06/20 15:05:52 $
+--  $RCSfile: giant-progress_dialog.adb,v $, $Revision: 1.8 $
+--  $Author: squig $
+--  $Date: 2003/06/23 10:41:10 $
 --
 
 with Glib;
@@ -74,7 +74,7 @@ package body Giant.Progress_Dialog is
       Gtk.Object.Initialize_Class_Record
         (Dialog, Signals, Class_Record);
 
-      Box := Default_Dialog.Get_Center_Box (Dialog);
+      Box := Get_Center_Box (Dialog);
 
       Gtk.Label.Gtk_New (Dialog.Progress_Label, Message);
       Gtk.Box.Pack_Start (Box, Dialog.Progress_Label, Expand => False,
@@ -97,14 +97,14 @@ package body Giant.Progress_Dialog is
      (Dialog : access Progress_Dialog_Record)
      return Boolean
    is
+      use type Default_Dialog.Response_Type;
+
       -- the reason for closing the dialog
       Response : Default_Dialog.Response_Type;
-      use Default_Dialog;
    begin
-      Response := Default_Dialog.Get_Response (Dialog);
+      Response := Get_Response (Dialog);
 
-      if (Default_Dialog.Get_Response (Dialog)
-          = Default_Dialog.Response_Cancel) then
+      if (Get_Response (Dialog) = Default_Dialog.Response_Cancel) then
          -- the cancel button was pressed
          Progress_Dialog_Callback.Emit_By_Name (Dialog, "cancelled");
       end if;

@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_test.adb,v $, $Revision: 1.12 $
+-- $RCSfile: giant-gui_test.adb,v $, $Revision: 1.13 $
 -- $Author: squig $
--- $Date: 2003/06/13 12:47:58 $
+-- $Date: 2003/06/23 10:41:10 $
 --
 with Gtk.Main;
 
@@ -42,12 +42,12 @@ with Giant.Logger;
 procedure Giant.Gui_Test
 is
 --     My_Gsl_Dialog : Gsl_Dialog.Gsl_Dialog_Access;
---     My_Progress_Dialog : Progress_Dialog.Progress_Dialog_Access;
-   My_Graph_Window : Graph_Window.Graph_Window_Access;
-   My_Node_Annotation_Dialog :
-     Node_Annotation_Dialog.Node_Annotation_Dialog_Access;
-   Node_Access : Giant.Graph_Lib.Node_Id;
-   My_Make_Room_Dialog : Make_Room_Dialog.Make_Room_Dialog_Access;
+   My_Progress_Dialog : Progress_Dialog.Progress_Dialog_Access;
+--     My_Graph_Window : Graph_Window.Graph_Window_Access;
+--     My_Node_Annotation_Dialog :
+--       Node_Annotation_Dialog.Node_Annotation_Dialog_Access;
+--     Node_Access : Giant.Graph_Lib.Node_Id;
+--     My_Make_Room_Dialog : Make_Room_Dialog.Make_Room_Dialog_Access;
 begin
    Default_Logger.Init;
    --Config.Initialize_Config_Data ("/etc/giant/giantrc", ".giantrc");
@@ -62,28 +62,28 @@ begin
 --       Gsl_Dialog.Create (My_Gsl_Dialog);
 --       Gsl_Dialog.Show_All (My_Gsl_Dialog);
 
---     Progress_Dialog.Create (My_Progress_Dialog, "Progress Test", "Message");
---     Progress_Dialog.Show_All (My_Progress_Dialog);
---     Progress_Dialog.Set_Value (My_Progress_Dialog, 50.0);
---     Progress_Dialog.Set_Progress_Text (My_Progress_Dialog,
---                                        "Value %v von %u = %p");
+   Progress_Dialog.Create (My_Progress_Dialog, "Progress Test", "Message");
+   Progress_Dialog.Show_All (My_Progress_Dialog);
+   Progress_Dialog.Set_Value (My_Progress_Dialog, 50.0);
+   Progress_Dialog.Set_Progress_Text (My_Progress_Dialog,
+                                      "Value %v von %u = %p");
 
---     Progress_Dialog.Create (My_Progress_Dialog, "Activity Test", "Message");
---     Progress_Dialog.Set_Activity_Mode (My_Progress_Dialog, True);
---     Progress_Dialog.Set_Value (My_Progress_Dialog, 10.0);
---     Progress_Dialog.Show_All (My_Progress_Dialog);
+   Progress_Dialog.Create (My_Progress_Dialog, "Activity Test", "Message");
+   Progress_Dialog.Set_Activity_Mode (My_Progress_Dialog, True);
+   Progress_Dialog.Set_Value (My_Progress_Dialog, 10.0);
+   Progress_Dialog.Show_All (My_Progress_Dialog);
 
-   Graph_Window.Create (My_Graph_Window);
-   Graph_Window.Show_All (My_Graph_Window);
+--     Graph_Window.Create (My_Graph_Window);
+--     Graph_Window.Show_All (My_Graph_Window);
 
-   Graph_Lib.Create ("../../../src/vis_test/rfg_examp.iml");
-   Node_Access := Graph_Lib.Get_Root_Node;
+--     Graph_Lib.Create ("../../../src/vis_test/rfg_examp.iml");
+--     Node_Access := Graph_Lib.Get_Root_Node;
 
-   Node_Annotation_Dialog.Create (My_Node_Annotation_Dialog, Node_Access);
-   Node_Annotation_Dialog.Show_All (My_Node_Annotation_Dialog);
+--     Node_Annotation_Dialog.Create (My_Node_Annotation_Dialog, Node_Access);
+--     Node_Annotation_Dialog.Show_All (My_Node_Annotation_Dialog);
 
-   Make_Room_Dialog.Create (My_Make_Room_Dialog);
-   Make_Room_Dialog.Show_All (My_Make_Room_Dialog);
+--     Make_Room_Dialog.Create (My_Make_Room_Dialog);
+--     Make_Room_Dialog.Show_All (My_Make_Room_Dialog);
 
 --     Main_Window.Show;
 

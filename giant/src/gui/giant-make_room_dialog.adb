@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-make_room_dialog.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-make_room_dialog.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/05 11:08:50 $
+--  $Date: 2003/06/23 10:41:10 $
 --
 
 with Ada.IO_Exceptions;
@@ -42,9 +42,9 @@ package body Giant.Make_Room_Dialog is
      (Dialog : access Make_Room_Dialog_Record)
      return Boolean
    is
+      use type Default_Dialog.Response_Type;
    begin
-      if (Default_Dialog."=" (Default_Dialog.Get_Response (Dialog),
-							  Default_Dialog.Response_Okay)) then
+      if (Get_Response (Dialog) = Default_Dialog.Response_Okay) then
          -- the okay button was pressed
          -- FIX: make room
          null;
@@ -64,43 +64,43 @@ package body Giant.Make_Room_Dialog is
    procedure Initialize
      (Dialog : access Make_Room_Dialog_Record'class)
    is
-	  Pixel_Button : Gtk.Spin_Button.Gtk_Spin_Button;
-	  Label : Gtk.Label.Gtk_Label;
-	  Center_Box : Gtk.Box.Gtk_Vbox;
-	  Pixel_Box : Gtk.Box.Gtk_Hbox;
+      Pixel_Button : Gtk.Spin_Button.Gtk_Spin_Button;
+      Label : Gtk.Label.Gtk_Label;
+      Center_Box : Gtk.Box.Gtk_Vbox;
+      Pixel_Box : Gtk.Box.Gtk_Hbox;
    begin
       Default_Dialog.Initialize (Dialog, -"Make Room",
                                  Default_Dialog.Button_Okay_Cancel);
-	  
-	  --  center box
-	  Center_Box := Default_Dialog.Get_Center_Box (Dialog);
-	  Label := New_Label(-"Create an empty space by shifting away all nodes from the selected point.");
-	  Gtk.Label.Set_Line_Wrap (Label, True);
-	  
-	  Gtk.Box.Pack_Start (Center_Box, Label, Expand => False,
-                         Fill => False, Padding => DEFAULT_SPACING);
-	  
+
+      --  center box
+      Center_Box := Get_Center_Box (Dialog);
+      Label := New_Label(-"Create an empty space by shifting away all nodes from the selected point.");
+      Gtk.Label.Set_Line_Wrap (Label, True);
+
+      Gtk.Box.Pack_Start (Center_Box, Label, Expand => False,
+                          Fill => False, Padding => DEFAULT_SPACING);
+
       --  spin button
-	  Gtk.Adjustment.Gtk_New (Dialog.Pixel_Adjustment,
+      Gtk.Adjustment.Gtk_New (Dialog.Pixel_Adjustment,
                               Value => 0.0, Lower => 0.0,
                               Upper => 100.0, Step_Increment => 1.0,
                               Page_Increment => 1.0, Page_Size => 1.0);
-	  Gtk.Spin_Button.Gtk_New (Pixel_Button, Dialog.Pixel_Adjustment,
-							   Climb_Rate => 1.0, The_Digits => 0);
-	  Gtk.Spin_Button.Set_Numeric (Pixel_Button, True);
-	  Gtk.Spin_Button.Set_Value (Pixel_Button, DEFAULT_VALUE);
-	  
-	  --  pixel label
-	  Gtk.Box.Gtk_New_Hbox (Pixel_Box);
-	  Gtk.Box.Pack_Start (Center_Box, Pixel_Box, Expand => False,
-						  Fill => False, Padding => DEFAULT_SPACING);
-	  
-	  Gtk.Box.Pack_Start (Pixel_Box, Pixel_Button, Expand => False,
+      Gtk.Spin_Button.Gtk_New (Pixel_Button, Dialog.Pixel_Adjustment,
+                               Climb_Rate => 1.0, The_Digits => 0);
+      Gtk.Spin_Button.Set_Numeric (Pixel_Button, True);
+      Gtk.Spin_Button.Set_Value (Pixel_Button, DEFAULT_VALUE);
+
+      --  pixel label
+      Gtk.Box.Gtk_New_Hbox (Pixel_Box);
+      Gtk.Box.Pack_Start (Center_Box, Pixel_Box, Expand => False,
                           Fill => False, Padding => DEFAULT_SPACING);
-	  Gtk.Box.Pack_Start (Pixel_Box, New_Label(-"Pixels"), Expand => False,
+
+      Gtk.Box.Pack_Start (Pixel_Box, Pixel_Button, Expand => False,
                           Fill => False, Padding => DEFAULT_SPACING);
-	  
-	  Set_Default (Dialog, Pixel_Button);
+      Gtk.Box.Pack_Start (Pixel_Box, New_Label(-"Pixels"), Expand => False,
+                          Fill => False, Padding => DEFAULT_SPACING);
+
+      Set_Default (Dialog, Pixel_Button);
    end;
 
 end Giant.Make_Room_Dialog;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-node_annotation_dialog.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-node_annotation_dialog.adb,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/06/12 13:58:14 $
+--  $Date: 2003/06/23 10:41:10 $
 --
 
 with Glib;
@@ -59,13 +59,9 @@ package body Giant.Node_Annotation_Dialog is
      (Dialog : access Node_Annotation_Dialog_Record)
      return Boolean
    is
-      --  the reason for closing the dialog
-      Response : Default_Dialog.Response_Type;
-      use Default_Dialog;
+      use type Default_Dialog.Response_Type;
    begin
-      Response := Default_Dialog.Get_Response (Dialog);
-      if (Default_Dialog.Get_Response (Dialog)
-          = Default_Dialog.Response_Okay) then
+      if (Get_Response (Dialog) = Default_Dialog.Response_Okay) then
          -- the okay button was pressed
          -- FIX: save annotation
          null;
@@ -102,16 +98,15 @@ package body Giant.Node_Annotation_Dialog is
                                       Policy_Always);
       Gtk.Scrolled_Window.Add (Scrolled_Window, Dialog.Text_Area);
 
-      Default_Dialog.Set_Center_Widget (Dialog, Scrolled_Window);
+      Set_Center_Widget (Dialog, Scrolled_Window);
       Set_Default (Dialog, Dialog.Text_Area);
 
       -- FIX: set node annotation
       Set_Text (Dialog, "Annotation");
 
       -- buttons
-      Default_Dialog.Add (Dialog,
-                          New_Button (-"Delete",
-                                      On_Delete_Button_Clicked'Access));
+      Add_Button (Dialog,
+                  New_Button (-"Delete", On_Delete_Button_Clicked'Access));
    end;
 
 end Giant.Node_Annotation_Dialog;
