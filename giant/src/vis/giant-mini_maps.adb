@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-mini_maps.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-mini_maps.adb,v $, $Revision: 1.11 $
 --  $Author: keulsn $
---  $Date: 2003/09/12 20:30:13 $
+--  $Date: 2003/09/16 22:21:12 $
 --
 ------------------------------------------------------------------------------
 
@@ -434,6 +434,13 @@ package body Giant.Mini_Maps is
 
       Widget.Transformation := Vis.Get_Transformation_Rect_Into_Rect_Centered
         (Logical_Area, Window_Rect);
+
+      if Vis.Get_Zoom_Level (Widget.Transformation) >
+        Vis.Zoom_Level'Safe_Last then
+
+         Clear (Window_Rect);
+         return;
+      end if;
 
       Target_Rect := Vis.Transform
         (Widget.Transformation, Logical_Area);
