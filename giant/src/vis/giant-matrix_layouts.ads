@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-matrix_layouts.ads,v $, $Revision: 1.5 $
+--  $RCSfile: giant-matrix_layouts.ads,v $, $Revision: 1.6 $
 --  $Author: koppor $
---  $Date: 2003/07/03 15:06:58 $
+--  $Date: 2003/07/04 16:55:56 $
 --
 ------------------------------------------------------------------------------
 --
@@ -43,9 +43,11 @@ package Giant.Matrix_Layouts is
    type Matrix_Layout is access all Matrix_Layout_Record'Class;
 
    ---------------------------------------------------------------------------
-   --  Maximum number of nost to be layouted in one run
+   --  Maximum number of nost to be processed in one run
    Max_Nodes_In_One_Run : constant := 100;
 
+   ---------------------------------------------------------------------------
+   --  Distance of two neighbours
    X_Distance           : constant := 1.0;
 
    ---------------------
