@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: product.tex,v $, $Revision: 1.4 $
-%  $Date: 2003/02/14 14:34:49 $
+%  $RCSfile: product.tex,v $, $Revision: 1.5 $
+%  $Date: 2003/02/14 16:09:09 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -15,16 +15,16 @@
 \section{IML-Teilgraphen und Selektionen}
 Hinsichtlich der logischen Zusammenfassung von Knoten und Kanten
 unterscheidet GIANT mit den IML-Teilgraphen und den Selektionen
-einmal ein globales Modell (unabhängig von Anzeigefenstern) und ein 
+ein globales Modell (unabhängig von Anzeigefenstern) und ein 
 lokales Modell, welches an ein bestimtes Anzeigefenster gebunden ist.\\ 
 Diese IML-Teilgraphen und Selektionen können natürlich ineinander umgewandelt 
 werden.
 
-
   \subsection{IML-Teilgraphen}
   Ein IML-Teilgraph beschreibt eine Knoten und Kantenmenge aus dem IML-Graph, welche 
-  einen Teilgraphen des IML-Graphen darstellt, d.h. jede Kante hat einen Start- und 
-  einen Zielknoten. Die Knoten und Kanten von IML-Teilgraphen können in Anzeigefenstern
+  einen wirklichen Teilgraphen des IML-Graphen darstellt, d.h. jede Kante hat einen Start- und 
+  einen Zielknoten.\\
+  Die Knoten und Kanten von IML-Teilgraphen können in Anzeigefenstern
   hervorgehoben werden, des weiteren können die Knoten und Kanten von
   IML-Teilgraphen in Anzeigefenstern layouted und dargestellt werden.\\
   Die IML-Teilgraphen sind aber völlig unabhängig von den Anzeigefenstern und enthalten
@@ -32,22 +32,24 @@ werden.
 
   \subsection{Selektionen}
   Selektionen stellen die lokale Variante von Knoten- und Kantenmengen dar. Sie sind
-  immer einem festen Anzeigefenster zugeordnet. 
+  immer einem festen Anzeigefenster zugeordnet.\\
+  Selektionen können bleibige Knoten und Kanten umfassen, ohne dass diese einen Teilgraphen
+  bilden müssen.\\
+  Jeder Knoten und jede Kante einer Selektion muss auch im Anzeigfenster visualisiert sein.
 
 \section{Anzeigefenster}
 
-Anzeigefenster sind die Fenster von GIANT in denen eine benutzerdefinierte Auswahl
+Anzeigefenster sind die Fenster von GIANT, in denen eine benutzerdefinierte Auswahl
 von Knoten und Kanten visualisiert wird. Es kann beliebig viele Anzeigefenster geben
 und jedes Anzeigefenster kann beliebig viele Selektionen haben.
 
   \subsection{Pins}
-  Da selten alle zu einem Azeigeinhalt gehörenden Knoten und Kanten insgesamt sichtbar
+  Da selten alle zu einem Anzeigeinhalt gehörenden Knoten und Kanten insgesamt sichtbar
   dargestellt werden können (da es zu viele sind) kann sich der Benutzer zu jedem
   Anzeigefenster eine Liste von Pins anlegen. In den Pins wird jeweils
   die Position des sichtbaren Anzeigeinhaltes und die Zoomstufe gespeichert, so
   dass zu beliebigen Zeitpunkten der jeweilige sichtbare Anzeigeinahlt rekonstruiert
   werden kann.
-
 
   \subsection{Visualisierungsstiele}
   Mittels sogenannter Visualisierungsstiele kann der Benutzer zur Laufzeit von GIANT
@@ -64,10 +66,10 @@ und jedes Anzeigefenster kann beliebig viele Selektionen haben.
 
 \section{Drei-Stufen-Konzept}
 
-Die im Folgenden Beschriebenen drei Schritte sollen dem Benutzer die Möglichkeit,
-von den Knoten und Kanten des IML-Graphen ausgehend geeignete Teilgraphen zur
-in Anzeigefenstern zu visualisieren. Rein logisch und von der Gestaltung der
-Gestaltung der UseCases her, werden diese drei Schritte sequentiell nacheinander
+Die im Folgenden beschriebenen drei Schritte sollen dem Benutzer die Möglichkeit bieten,
+von den Knoten und Kanten des IML-Graphen ausgehend geeignete Teilgraphen
+in Anzeigefenstern zu visualisieren. Rein logisch und von der Gestaltung 
+der UseCases her, werden diese drei Schritte sequentiell nacheinander
 ausgeführt. Die komplexe Anfragesprache erlaubt es aber, diese Schritte 
 quasi \gq{auf einen Schlag} durchzuführen.
 
@@ -81,10 +83,9 @@ quasi \gq{auf einen Schlag} durchzuführen.
 
   \item Einfügen dieser IML-Teilgraphen in ein Anzeigefenster unter Anwendung eines
         Layoutalgorithmus. Innerhalb des Anzeigefensters ist der eingefügte IML-Teilgraph
-        dann als Selektion sichtbar.
+        dann als Selektion weiterhin greifbar.
 
 \end {enumerate}
-
 
 
 
@@ -92,24 +93,30 @@ quasi \gq{auf einen Schlag} durchzuführen.
 EVENTEULL EIGENES KAPITEL, WELCHES ALLES DAZU BEHANDELT; SO DASS MAN DIES NICHT BEI
 DEN USE CASES KLÄREN MUSS.
 
-
-
-
-
 SOLLTE UNEBDINGT UNMITTELBAR VOR DER USECASE BESCHREIBUNG STEHEN
 
 
 \section{Starten von GIANT}
-NORMALER STARTVORGANG ohne Über gabe ienes
-
-\subsection{Starten von GIANT mit Kommandozeilenparametern}
-
-
-
+NORMALER STARTVORGANG ohne Übergabe von Kommandozeilenparameter
 
 
 \subsection{Starten von GIANT mit Kommandozeilenparametern}
+
+
 Erläuterung der Kommandozeilenparameter
 
-\subsection{Beenden von GIANT}
-Beenden durch Mausklick oder Alt+F4.
+\section{Beenden von GIANT}
+
+Durch Schließen des HAUPTFENSTERS oder durch Auswah des entsprechenden Eintages im Hauptmenü
+oder durch ALT+F4 kann GIANT beendet werden.\\
+Ablauf:
+
+\begin {enumerate}
+
+  \item Der Benutzer gibt das Kommando zum Beenden von GIANT.
+  \item GIANT fragt nach, ob das Projekt gespeichert werden soll.
+
+  (PROJEKT SPEICHERN) (ENTSPRCHENDER DIALOG MUSS IN DIE GUI)
+
+
+\end {enumerate}
