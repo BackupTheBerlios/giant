@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.10 $
 --  $Author: koppor $
---  $Date: 2003/06/28 22:17:30 $
+--  $Date: 2003/07/07 13:16:44 $
 
 package body Giant.Graph_Lib.Subgraphs is
 
@@ -158,6 +158,25 @@ package body Giant.Graph_Lib.Subgraphs is
       Selections.Destroy
         (Selections.Selection (SubGraph_To_Destroy));
    end Destroy;
+
+   ---------------------------------------------------------------------------
+   function Get_All_Nodes
+     (Graph : in Subgraph)
+     return Node_Id_Set
+   is
+   begin
+      return Selections.Get_All_Nodes
+        (Selections.Selection (Graph));
+   end Get_All_Nodes;
+
+   ---------------------------------------------------------------------------
+   function Get_All_Edges
+     (Graph : in Subgraph)
+     return Edge_Id_Set
+   is
+   begin
+      return Selections.Get_All_Edges (Selections.Selection (Graph));
+   end Get_All_Edges;
 
    ---------------------------------------------------------------------------
    function Get_Edge_Count
@@ -307,8 +326,7 @@ package body Giant.Graph_Lib.Subgraphs is
          --  if less than half of the nodes are to be removed,
          --    it's faster to check all incoming and outgoing edges
          --    of the nodes to be removed
-         Apply (Selections.Get_All_Nodes
-                (Selections.Selection (Subgraph_To_Modify)));
+         Apply (Get_All_Nodes);
       else
          --  if more than half of the nodes are to be removed
          --    it's faster to check all edges in the selection
@@ -431,8 +449,7 @@ package body Giant.Graph_Lib.Subgraphs is
       Clone : Edge_Id_Sets.Set;
 
    begin
-      Clone := Edge_Id_Sets.Copy
-        (Selections.Get_All_Edges (Selections.Selection (Graph)));
+      Clone := Edge_Id_Sets.Copy (Get_All_Edges);
       Apply (Clone);
       Edge_Id_Sets.Destroy (Clone);
    end Ensure_Graph_Edge_Properties;

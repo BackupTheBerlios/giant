@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.12 $
+--  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.13 $
 --  $Author: koppor $
---  $Date: 2003/06/28 22:18:08 $
+--  $Date: 2003/07/07 13:16:08 $
 --
 ------------------------------------------------------------------------------
 --
@@ -107,6 +107,25 @@ package Giant.Graph_Lib.Subgraphs is
    function Get_Node_Count
      (Graph : in Subgraph)
      return Natural;
+
+   ---------------------------------------------------------------------------
+   --  RESULT MAY NOT BE MODIFIED
+   --
+   --  Returns:
+   --    All Nodes included in given subgraph
+   --
+   function Get_All_Nodes
+     (Graph : in Subgraph)
+     return Node_Id_Set;
+
+   ---------------------------------------------------------------------------
+   --  RESULT MAY NOT BE MODIFIED
+   --
+   --  Returns:
+   --    All Nodes included in selection
+   function Get_All_Edges
+     (Graph : in Subgraph)
+     return Edge_Id_Set;
 
    ---------------
    --  Streams  --
