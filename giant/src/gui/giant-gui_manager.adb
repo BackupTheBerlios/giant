@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.16 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.17 $
 --  $Author: squig $
---  $Date: 2003/06/25 17:28:05 $
+--  $Date: 2003/06/26 09:41:53 $
 --
 
 with Ada.Strings.Unbounded;
@@ -306,7 +306,6 @@ package body Giant.Gui_Manager is
       Ask_For_Confirmation : in Boolean)
      return Boolean
    is
-      Closed : Boolean;
       Window : Graph_Window.Graph_Window_Access;
    begin
       if (not Gui_Initialized) then
@@ -319,24 +318,19 @@ package body Giant.Gui_Manager is
          return True;
       end if;
 
-      if (Ask_For_Confirmation) then
-         Closed := Graph_Window.Close (Window);
-      else
-         Graph_Window.Hide (Window);
-         Closed := True;
+      if (not Graph_Window.Close (Window, Ask_For_Confirmation)) then
+         return False;
       end if;
 
-      if (Closed) then
-         Graph_Window_Lists.DeleteItem (Open_Windows, Window);
+      Graph_Window_Lists.DeleteItem (Open_Windows, Window);
 
-         --  deallocate
-         Graph_Window.Destroy (Window);
+      --  deallocate
+      Graph_Window.Destroy (Window);
 
-         --  update status
-         Main_Window.Update_Window (Name);
-      end if;
+      --  update status
+      Main_Window.Update_Window (Name);
 
-      return Closed;
+      return True;
    end Close;
 
    function Get_Open_Window (Name : in String)
@@ -452,5 +446,12 @@ package body Giant.Gui_Manager is
          Graph_Window.Set_Crosshair_Mode (Window, Activate);
       end loop;
    end Set_Crosshair_Mode;
+
+   procedure Update_Window
+     (Name : in String)
+   is
+   begin
+      Main_Window.Update_Window (Name);
+   end Update_Window;
 
 end Giant.Gui_Manager;

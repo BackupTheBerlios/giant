@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.ads,v $, $Revision: 1.10 $
+--  $RCSfile: giant-main_window.ads,v $, $Revision: 1.11 $
 --  $Author: squig $
---  $Date: 2003/06/25 16:07:51 $
+--  $Date: 2003/06/26 09:41:53 $
 --
 --  Provides the main window. The main window is only instanciated once.
 --
@@ -75,9 +75,21 @@ package Giant.Main_Window is
    --  Other Methods
    ---------------------------------------------------------------------------
 
+   ---------------------------------------------------------------------------
+   --  Called by listeners of the "can_close_project" signal to
+   --  cancel the close operation.
+   --
+   --  This is a ugly workaround because it seems to be impossible to
+   --  define custom signals that have a return value.
+   procedure Cancel_Close_Project;
+
    function Close_Project
      (Ask_For_Confirmation : in Boolean := True)
      return Boolean;
+
+   procedure Connect_Can_Close_Project
+     (Callback : in     Gui_Utils.Widget_Callback.Marshallers.Void_Marshaller.Handler;
+      Widget   : access Gtk.Widget.Gtk_Widget_Record'Class);
 
    procedure Connect_Close_Project
      (Callback : in     Gui_Utils.Widget_Callback.Marshallers.Void_Marshaller.Handler;

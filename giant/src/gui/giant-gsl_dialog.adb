@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.8 $
 --  $Author: squig $
---  $Date: 2003/06/23 12:40:58 $
+--  $Date: 2003/06/26 09:41:53 $
 --
 
 with Ada.IO_Exceptions;
@@ -41,6 +41,7 @@ with Gtk.Widget;
 with Giant.Controller;
 with Giant.Dialogs;
 with Giant.Gui_Utils;
+with Giant.Main_Window;
 
 package body Giant.Gsl_Dialog is
 
@@ -143,8 +144,8 @@ package body Giant.Gsl_Dialog is
 
    ---------------------------------------------------------------------------
    --  Returns:
-   --    True, if file can be purged; False, otherwise
-   function Save_Unchanged
+   --    False, if user cancelled or data was not modified; True, otherwise
+   function Save_Changes
      (Dialog : access Gsl_Dialog_Record'Class)
       return Boolean
    is
@@ -177,6 +178,16 @@ package body Giant.Gsl_Dialog is
    --  Callbacks
    ---------------------------------------------------------------------------
 
+   procedure On_Can_Close_Project
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+      Dialog : Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
+   begin
+      if (not Save_Changes (Dialog)) then
+         Main_Window.Cancel_Close_Project;
+      end if;
+   end On_Can_Close_Project;
+
    procedure On_Open_Button_Clicked
      (Source : access Gtk.Button.Gtk_Button_Record'Class)
    is
@@ -192,7 +203,7 @@ package body Giant.Gsl_Dialog is
          Success : Boolean;
       begin
          if (Filename /= "") then
-            if (Save_Unchanged (Dialog)) then
+            if (Save_Changes (Dialog)) then
                Dialog.Filename
                  := Ada.Strings.Unbounded.To_Unbounded_String (Filename);
                Success := Read (Dialog, Filename);
@@ -232,7 +243,7 @@ package body Giant.Gsl_Dialog is
    begin
       Response := Get_Response (Dialog);
 
-      if (not Save_Unchanged (Dialog)) then
+      if (not Save_Changes (Dialog)) then
          return False;
       end if;
 
@@ -293,7 +304,12 @@ package body Giant.Gsl_Dialog is
 
       Editable_Callback.Connect
         (Dialog.Text_Area, "changed",
-         Editable_Callback.To_Marshaller (On_Text_Area_Changed'Access));
+         Editable_Callback.To_Marshaller
+         (On_Text_Area_Changed'Access));
+
+      --  connect close project
+      Main_Window.Connect_Can_Close_Project
+        (On_Can_Close_Project'Access, Dialog);
    end;
 
 end Giant.Gsl_Dialog;

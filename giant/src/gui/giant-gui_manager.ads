@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.15 $
+--  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.16 $
 --  $Author: squig $
---  $Date: 2003/06/25 17:28:05 $
+--  $Date: 2003/06/26 09:41:53 $
 --
 --  Stores the window records. Handles the controller updates. Provides
 --  a facade for the gui.
@@ -137,6 +137,9 @@ package Giant.Gui_Manager is
 
    procedure Set_Crosshair_Mode
      (Activate : in Boolean);
+
+   procedure Update_Window
+     (Name : in String);
 
 end Giant.Gui_Manager;
 

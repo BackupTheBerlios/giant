@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.13 $
+--  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.14 $
 --  $Author: squig $
---  $Date: 2003/06/24 19:25:57 $
+--  $Date: 2003/06/26 09:41:53 $
 --
 ------------------------------------------------------------------------------
 --
@@ -71,7 +71,7 @@ package Giant.Gui_Utils is
    package Clist_Callback is new
      Gtk.Handlers.Callback (Gtk.Clist.Gtk_Clist_Record);
 
-   package Clist_Return_Callback is new
+   package Clist_Boolean_Callback is new
      Gtk.Handlers.Return_Callback (Gtk.Clist.Gtk_Clist_Record, Boolean);
 
    package Editable_Callback is new
@@ -83,7 +83,7 @@ package Giant.Gui_Utils is
    package Widget_Callback is new
      Gtk.Handlers.Callback (Gtk.Widget.Gtk_Widget_Record);
 
-   package Widget_Return_Callback is new
+   package Widget_Boolean_Callback is new
      Gtk.Handlers.Return_Callback (Gtk.Widget.Gtk_Widget_Record, Boolean);
 
    ---------------------------------------------------------------------------

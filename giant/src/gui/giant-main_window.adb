@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.34 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.35 $
 --  $Author: squig $
---  $Date: 2003/06/25 18:59:59 $
+--  $Date: 2003/06/26 09:41:53 $
 --
 
 with Ada.Exceptions;
@@ -66,7 +66,7 @@ with Giant.Graph_Lib;
 with Giant.Graph_Lib.Subgraphs;
 with Giant.Gsl_Dialog;
 with Giant.Gui_Manager;
-with Giant.Gui_Utils; use Giant.Gui_Utils;
+with Giant.Gui_Utils;
 with Giant.Logger;
 with Giant.Node_Info_Dialog;
 with Giant.Projects;
@@ -82,24 +82,22 @@ package body Giant.Main_Window is
       Projects.Subgraph_Highlight_Status);
 
    procedure Update_Subgraph
-     (List : access String_Clists.Giant_Data_Clist_Record;
+     (List : access Gui_Utils.String_Clists.Giant_Data_Clist_Record;
       Row  : in     Glib.Gint;
       Name : in     String);
 
    procedure Update_Window
-     (List : access String_Clists.Giant_Data_Clist_Record;
+     (List : access Gui_Utils.String_Clists.Giant_Data_Clist_Record;
       Row  : in     Glib.Gint;
       Name : in     String);
 
    --  signal stuff
 
-   package Main_Window_Callback is new
-     Gtk.Handlers.Callback (Main_Window_Record);
-
    Class_Record : System.Address := System.Null_Address;
 
    Signals : constant Gtkada.Types.Chars_Ptr_Array :=
-     (1 => Interfaces.C.Strings.New_String ("close_project"));
+     (1 => Interfaces.C.Strings.New_String ("can_close_project"),
+      2 => Interfaces.C.Strings.New_String ("close_project"));
 
    --  main window instance
    Window : Main_Window_Access;
@@ -114,14 +112,17 @@ package body Giant.Main_Window is
    Project_Quit_Menu_Item : Gtk.Menu_Item.Gtk_Menu_Item;
 
    Window_List_Menu : Gtk.Menu.Gtk_Menu;
-   Window_List : String_Clists.Giant_Data_Clist;
+   Window_List : Gui_Utils.String_Clists.Giant_Data_Clist;
 
    Subgraph_List_Menu : Gtk.Menu.Gtk_Menu;
-   Subgraph_List : String_Clists.Giant_Data_Clist;
+   Subgraph_List : Gui_Utils.String_Clists.Giant_Data_Clist;
 
    Status_Bar : Gtk.Status_Bar.Gtk_Status_Bar;
 
    Styles : array (Projects.Subgraph_Highlight_Status) of Gtk.Style.Gtk_Style;
+
+   --  ugly workaround, see Close_Project
+   Can_Close_Project : Boolean;
 
    ---------------------------------------------------------------------------
    --  Helper Methods
@@ -131,14 +132,14 @@ package body Giant.Main_Window is
      return String
    is
    begin
-      return String_Clists.Get_Selected_Item (Subgraph_List);
+      return Gui_Utils.String_Clists.Get_Selected_Item (Subgraph_List);
    end Get_Selected_Subgraph;
 
    function Get_Selected_Window
      return String
    is
    begin
-      return String_Clists.Get_Selected_Item (Window_List);
+      return Gui_Utils.String_Clists.Get_Selected_Item (Window_List);
    end Get_Selected_Window;
 
    Loaded: Boolean;
@@ -186,6 +187,10 @@ package body Giant.Main_Window is
       else
          Set_Title (Window, "GIANT");
 
+         --  clear lists
+         Gui_Utils.String_Clists.Clear (Subgraph_List);
+         Gui_Utils.String_Clists.Clear (Window_List);
+
          --  active a few items that can be selected when no project
          --  is loaded
          Gtk.Menu_Item.Set_Sensitive (Project_Menu_Item, True);
@@ -193,6 +198,9 @@ package body Giant.Main_Window is
          Gtk.Menu_Item.Set_Sensitive (Project_Open_Menu_Item, True);
          Gtk.Menu_Item.Set_Sensitive (Project_Quit_Menu_Item, True);
       end if;
+
+      Gui_Utils.String_Clists.Set_Sensitive (Subgraph_List, Loaded);
+      Gui_Utils.String_Clists.Set_Sensitive (Window_List, Loaded);
    end Set_Project_Loaded;
 
 
@@ -555,7 +563,8 @@ package body Giant.Main_Window is
         := Config.Global_Data.Get_Subgraph_Highlight_Color (Config_Id);
       Color := Gdk.Color.Parse (Config.Get_Color_Value (Color_Access));
 
-      Style := Gtk.Style.Copy (String_Clists.Get_Style (Subgraph_List));
+      Style := Gtk.Style.Copy
+        (Gui_Utils.String_Clists.Get_Style (Subgraph_List));
       Gtk.Style.Set_Base (Style, State_Normal, Color);
       Gtk.Style.Set_Background (Style, State_Selected, Color);
       return Style;
@@ -564,7 +573,8 @@ package body Giant.Main_Window is
    procedure Initialize_Styles
    is
    begin
-      Styles (Projects.None) := String_Clists.Get_Style (Subgraph_List);
+      Styles (Projects.None)
+        := Gui_Utils.String_Clists.Get_Style (Subgraph_List);
       Styles (Projects.Color_1) := Initialize_Style (Config.Global_Data.Color_1);
       Styles (Projects.Color_2) := Initialize_Style (Config.Global_Data.Color_2);
       Styles (Projects.Color_3) := Initialize_Style (Config.Global_Data.Color_3);
@@ -572,6 +582,8 @@ package body Giant.Main_Window is
 
    function Initialize_Menu
      return Gtk.Menu_Bar.Gtk_Menu_Bar is
+      use Giant.Gui_Utils;
+
       Menu_Bar : Gtk.Menu_Bar.Gtk_Menu_Bar;
       Menu : Gtk.Menu.Gtk_Menu;
       Item : Gtk.Menu_Item.Gtk_Menu_Item;
@@ -645,6 +657,8 @@ package body Giant.Main_Window is
    end New_Highlight_Menu_Item;
 
    procedure Initialize is
+      use Giant.Gui_Utils;
+
       Box : Gtk.Box.Gtk_Vbox;
       Submenu : Gtk.Menu.Gtk_Menu;
    begin
@@ -744,9 +758,9 @@ package body Giant.Main_Window is
       Default_Logger.Set_Listener (On_Log_Message'Access);
 
       --  connect close button
-      Widget_Return_Callback.Connect
+      Widget_Boolean_Callback.Connect
         (Window, "delete_event",
-         Widget_Return_Callback.To_Marshaller (On_Delete'Access));
+         Widget_Boolean_Callback.To_Marshaller (On_Delete'Access));
 
       Initialize_Styles;
    end Initialize;
@@ -756,19 +770,19 @@ package body Giant.Main_Window is
    ---------------------------------------------------------------------------
 
    procedure Update_Window
-     (List : access String_Clists.Giant_Data_Clist_Record;
+     (List : access Gui_Utils.String_Clists.Giant_Data_Clist_Record;
       Row  : in     Glib.Gint;
       Name : in     String)
    is
    begin
-      String_Clists.Set_Text (List, Row, 0, Name);
+      Gui_Utils.String_Clists.Set_Text (List, Row, 0, Name);
       if (Gui_Manager.Is_Window_Open (Name)) then
-         String_Clists.Set_Text (List, Row, 1, -"Open");
+         Gui_Utils.String_Clists.Set_Text (List, Row, 1, -"Open");
       elsif (Projects.Is_Vis_Window_Memory_Loaded
              (Controller.Get_Project, Name)) then
-         String_Clists.Set_Text (List, Row, 1, -"Loaded");
+         Gui_Utils.String_Clists.Set_Text (List, Row, 1, -"Loaded");
       else
-         String_Clists.Set_Text (List, Row, 1, -"");
+         Gui_Utils.String_Clists.Set_Text (List, Row, 1, -"");
       end if;
    end Update_Window;
 
@@ -776,21 +790,21 @@ package body Giant.Main_Window is
      (Name : in String)
    is
    begin
-      String_Clists.Add (Window_List, Name);
+      Gui_Utils.String_Clists.Add (Window_List, Name);
    end Add_Window;
 
    procedure Update_Window
      (Name : in String)
    is
    begin
-      String_Clists.Update (Window_List, Name);
+      Gui_Utils.String_Clists.Update (Window_List, Name);
    end Update_Window;
 
    procedure Remove_Window
      (Name : in String)
    is
    begin
-      String_Clists.Remove (Window_List, Name);
+      Gui_Utils.String_Clists.Remove (Window_List, Name);
    end Remove_Window;
 
    ---------------------------------------------------------------------------
@@ -798,21 +812,21 @@ package body Giant.Main_Window is
    ---------------------------------------------------------------------------
 
    procedure Update_Subgraph
-     (List : access String_Clists.Giant_Data_Clist_Record;
+     (List : access Gui_Utils.String_Clists.Giant_Data_Clist_Record;
       Row  : in     Glib.Gint;
       Name : in     String)
    is
       Subgraph : Graph_Lib.Subgraphs.Subgraph
         := Projects.Get_Subgraph (Controller.Get_Project, Name);
    begin
-      String_Clists.Set_Text (List, Row, 0, Name);
-      String_Clists.Set_Text (List, Row, 1,
+      Gui_Utils.String_Clists.Set_Text (List, Row, 0, Name);
+      Gui_Utils.String_Clists.Set_Text (List, Row, 1,
                               Natural'Image (Graph_Lib.Subgraphs.Get_Node_Count (Subgraph)));
-      String_Clists.Set_Text (List, Row, 2,
+      Gui_Utils.String_Clists.Set_Text (List, Row, 2,
                               Natural'Image (Graph_Lib.Subgraphs.Get_Edge_Count (Subgraph)));
 
 
-      String_Clists.Set_Cell_Style (List, Row, 3,
+      Gui_Utils.String_Clists.Set_Cell_Style (List, Row, 3,
                                     Styles (Projects.Get_Highlight_Status
                                             (Controller.Get_Project, Name)));
    end Update_Subgraph;
@@ -821,26 +835,32 @@ package body Giant.Main_Window is
      (Name : in String)
    is
    begin
-      String_Clists.Add (Subgraph_List, Name);
+      Gui_Utils.String_Clists.Add (Subgraph_List, Name);
    end Add_Subgraph;
 
    procedure Update_Subgraph
      (Name : in String)
    is
    begin
-      String_Clists.Update (Subgraph_List, Name);
+      Gui_Utils.String_Clists.Update (Subgraph_List, Name);
    end Update_Subgraph;
 
    procedure Remove_Subgraph
      (Name : in String)
    is
    begin
-      String_Clists.Remove (Subgraph_List, Name);
+      Gui_Utils.String_Clists.Remove (Subgraph_List, Name);
    end Remove_Subgraph;
 
    ---------------------------------------------------------------------------
    --  Public Methods
    ---------------------------------------------------------------------------
+
+   procedure Cancel_Close_Project
+   is
+   begin
+      Can_Close_Project := False;
+   end Cancel_Close_Project;
 
    function Close_Project
      (Ask_For_Confirmation : in Boolean := True)
@@ -851,6 +871,15 @@ package body Giant.Main_Window is
       Response : Default_Dialog.Response_Type;
    begin
       if (Ask_For_Confirmation) then
+         Can_Close_Project := True;
+         --  notify all open dialogs
+         Gui_Utils.Widget_Callback.Emit_By_Name
+           (Window, "can_close_project");
+         if (not Can_Close_Project) then
+            --  a dialog or window could not be closed
+            return False;
+         end if;
+
          Response := Dialogs.Show_Confirmation_Dialog
            (-"The project has changed. Save changes?",
             Default_Dialog.Button_Yes_No_Cancel);
@@ -862,7 +891,7 @@ package body Giant.Main_Window is
       end if;
 
       --  notify all open dialogs
-      Main_Window_Callback.Emit_By_Name (Window, "close_project");
+      Gui_Utils.Widget_Callback.Emit_By_Name (Window, "close_project");
 
       --  disable widgets
       Set_Project_Loaded (False);
@@ -870,13 +899,25 @@ package body Giant.Main_Window is
       return True;
    end Close_Project;
 
-   procedure Connect_Close_Project
-     (Callback : in     Widget_Callback.Marshallers.Void_Marshaller.Handler;
+   procedure Connect_Can_Close_Project
+     (Callback : in     Gui_Utils.Widget_Callback.Marshallers.Void_Marshaller.Handler;
       Widget   : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
    begin
-      Widget_Callback.Object_Connect
-        (Window, "close_project", Widget_Callback.To_Marshaller (Callback),
+      Gui_Utils.Widget_Callback.Object_Connect
+        (Window, "can_close_project",
+         Gui_Utils.Widget_Callback.To_Marshaller (Callback),
+         Widget);
+   end Connect_Can_Close_Project;
+
+   procedure Connect_Close_Project
+     (Callback : in     Gui_Utils.Widget_Callback.Marshallers.Void_Marshaller.Handler;
+      Widget   : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+   begin
+      Gui_Utils.Widget_Callback.Object_Connect
+        (Window, "close_project",
+         Gui_Utils.Widget_Callback.To_Marshaller (Callback),
          Widget);
    end Connect_Close_Project;
 
@@ -903,7 +944,7 @@ package body Giant.Main_Window is
          Integer (Get_Allocation_Height (Window)));
       Config_Settings.Set_Setting
         ("Main_Window.Separator",
-         Integer (String_Clists.Get_Allocation_Height (Window_List)));
+         Integer (Gui_Utils.String_Clists.Get_Allocation_Height (Window_List)));
 
       return True;
    end Hide;

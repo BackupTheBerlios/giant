@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.16 $
+--  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.17 $
 --  $Author: squig $
---  $Date: 2003/06/25 16:07:51 $
+--  $Date: 2003/06/26 09:41:53 $
 --
 
 with Ada.Text_Io; use Ada.Text_Io;
@@ -186,9 +186,9 @@ package body Giant.Default_Dialog is
       Set_Position (Dialog, Win_Pos_Mouse);
 
       --  connect close button
-      Widget_Return_Callback.Connect
+      Widget_Boolean_Callback.Connect
         (Dialog, "delete_event",
-         Widget_Return_Callback.To_Marshaller (On_Delete'Access));
+         Widget_Boolean_Callback.To_Marshaller (On_Delete'Access));
 
       --  connect close project
       Main_Window.Connect_Close_Project (On_Close_Project'Access, Dialog);

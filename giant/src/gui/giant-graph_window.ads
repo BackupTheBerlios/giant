@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.11 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.12 $
 --  $Author: squig $
---  $Date: 2003/06/25 16:07:51 $
+--  $Date: 2003/06/26 09:41:53 $
 --
 ------------------------------------------------------------------------------
 --
@@ -51,7 +51,8 @@ package Giant.Graph_Window is
    Null_Graph_Window : Graph_Window_Access := null;
 
    function Close
-     (Window : access Graph_Window_Record'Class)
+     (Window               : access Graph_Window_Record'Class;
+      Ask_For_Confirmation : in     Boolean)
      return Boolean;
 
    procedure Create
@@ -116,7 +117,7 @@ private
         Zoom_Combo : Gtk.Combo.Gtk_Combo;
         Zoom_Entry : Gtk.Gentry.Gtk_Entry;
 
-        Is_Dirty : Boolean := False;
+        Is_Modified : Boolean := False;
 
         --  the data record from projects
         Visual_Window : Vis_Windows.Visual_Window_Access;

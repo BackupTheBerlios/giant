@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.24 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.25 $
 --  $Author: squig $
---  $Date: 2003/06/25 18:59:59 $
+--  $Date: 2003/06/26 09:41:53 $
 --
 
 with Ada.Strings.Unbounded;
@@ -510,7 +510,12 @@ package body Giant.Controller is
      return Boolean
    is
    begin
-      return Gui_Manager.Close (Name, Ask_For_Confirmation);
+      if (Gui_Manager.Close (Name, Ask_For_Confirmation)) then
+         Projects.Free_Memory_For_Vis_Window (Current_Project, Name);
+         Gui_Manager.Update_Window (Name);
+         return True;
+      end if;
+      return False;
    end Close_Window;
 
    procedure Create_Window
@@ -528,9 +533,9 @@ package body Giant.Controller is
    procedure Open_Window
      (Name : in String)
    is
-      Window : Vis_Windows.Visual_Window_Access;
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Name);
    begin
-      Window := Projects.Get_Visualisation_Window (Current_Project, Name);
       Gui_Manager.Open (Window);
    end Open_Window;
 

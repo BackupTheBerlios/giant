@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.15 $
 --  $Author: squig $
---  $Date: 2003/06/24 10:43:05 $
+--  $Date: 2003/06/26 09:41:53 $
 --
 
 with Glib;
@@ -41,6 +41,7 @@ with Giant.Gui_Manager;
 with Giant.Gui_Manager.Crosshair;
 with Giant.Gui_Utils;
 with Giant.Input_Dialog;
+with Giant.Main_Window;
 
 package body Giant.Graph_Window is
 
@@ -91,8 +92,52 @@ package body Giant.Graph_Window is
    end Get_Window_Name;
 
    ---------------------------------------------------------------------------
+   --  Returns:
+   --    False, if user cancelled or data was not modified; True, otherwise
+   function Save_Changes
+     (Window : access Graph_Window_Record'Class)
+     return Boolean
+   is
+      use type Default_Dialog.Response_Type;
+
+      Response : Default_Dialog.Response_Type;
+   begin
+      if (Window.Is_Modified) then
+         Response := Dialogs.Show_Confirmation_Dialog
+           (-"The content has changed. Save changes?",
+            Default_Dialog.Button_Yes_No_Cancel);
+         if (Response = Default_Dialog.Response_Yes) then
+            Controller.Save_Window (Get_Window_Name (Window));
+         elsif (Response = Default_Dialog.Response_Cancel) then
+            return False;
+         end if;
+     end if;
+     return True;
+   end Save_Changes;
+
+   ---------------------------------------------------------------------------
    --  Callbacks
    ---------------------------------------------------------------------------
+
+   procedure On_Can_Close_Project
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
+   begin
+      if (not Save_Changes (Window)) then
+         Main_Window.Cancel_Close_Project;
+      end if;
+   end On_Can_Close_Project;
+
+   procedure On_Close_Project
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
+      Closed : Boolean;
+   begin
+      Closed := Controller.Close_Window
+        (Get_Window_Name (Gtk.Widget.Get_Toplevel (Source)), False);
+   end On_Close_Project;
 
    function On_Close
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
@@ -419,10 +464,15 @@ package body Giant.Graph_Window is
       Gtk.Paned.Pack2 (Window.Split_Pane, New_Label ("Graph Widget"),
                        Resize => True, Shrink => False);
 
-      -- listen for the close button
-      Widget_Return_Callback.Connect
+      --  listen for the close button
+      Widget_Boolean_Callback.Connect
         (Window, "delete_event",
-         Widget_Return_Callback.To_Marshaller (On_Close'Access));
+         Widget_Boolean_Callback.To_Marshaller (On_Close'Access));
+
+      --  connect close project
+      Main_Window.Connect_Can_Close_Project
+        (On_Can_Close_Project'Access, Window);
+      Main_Window.Connect_Close_Project (On_Close_Project'Access, Window);
    end;
 
    ---------------------------------------------------------------------------
@@ -430,21 +480,13 @@ package body Giant.Graph_Window is
    ---------------------------------------------------------------------------
 
    function Close
-     (Window : access Graph_Window_Record'Class)
+     (Window               : access Graph_Window_Record'Class;
+      Ask_For_Confirmation : in     Boolean)
      return Boolean
    is
-      use type Default_Dialog.Response_Type;
-
-      Response : Default_Dialog.Response_Type;
    begin
-      if (Window.Is_Dirty) then
-         Response := Dialogs.Show_Confirmation_Dialog
-           (-"The content has changed. Save changes?",
-            Default_Dialog.Button_Yes_No_Cancel);
-         if (Response = Default_Dialog.Response_Yes) then
-            -- FIX: save changes
-            null;
-         elsif (Response = Default_Dialog.Response_Cancel) then
+      if (Ask_For_Confirmation) then
+         if (not Save_Changes (Window)) then
             return False;
          end if;
       end if;
