@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.1 $
-%  $Date: 2003/02/13 03:15:14 $
-%  $Author: schulzgt $
+%  $RCSfile: gui.tex,v $, $Revision: 1.2 $
+%  $Date: 2003/02/16 13:25:39 $
+%  $Author: birdy $
 %
 %  Description:
 %
@@ -9,7 +9,17 @@
 
 \section{Über die Benutzeroberfläche}
 
+GIANT besitzt eine graphische Benutzeroberfläche, die per Maus zu
+bedienen ist. Ausgewählte Funktionen können auch per Tastatur ausgelöst
+werden.
+
 \section{Beschreibung der GUI}    
+
+Diese Beschreibung beschreibt alle Elemente der GUI. Sofern nicht anders
+angegeben, sind hintereinander angegebene Elemente (z.B. Listeneinträge)
+immer von links nach rechts oder von oben nach unten beschrieben.
+Sofern nicht anders angegeben, sind alle Ausgaben immer linksbündig
+formatiert.
 
 \subsection{Das Hauptmenü}   
 Kill-Button, der automatisch alle 
@@ -25,9 +35,141 @@ werden (DIES SOLLTE EVETUELL AUCH IN DIE ANFRAGESPRACHE).
 
 \subsection{Knoten-Informationsfenster}
 
+In Knoten-Informationsfenstern (NODE\_INFO) können nähere Informationen
+zu Knoten angezeigt werden.
+Es kann beliebig viele Knoten-Informationsfenster geben, jedoch nur
+eines pro Knoten.
+
+Zuoberst im Fenster wird die Knotentyp und Knoten-ID dargestellt
+(TYPE und ID), Format: "Knoten: TYPE, ID: ID) darunter befinden sich
+(jeweils untereinander) drei getrennt scrollbare Listen:
+
+Die Liste ATTRIBUTES enthält alle Attribute des Knotens, hat zwei Spalten
+ATTRIBUTE und VALUE, in denen für jedes Attribut der Attributname und
+der Wert des Attributes angezeigt werden.
+
+Die Liste SUCCESSOR\_EDGES hat eine Zeile für jede vom Knoten abgehende
+Kante mit drei Spalten: EDGE\_TYPE, NODE\_TYPE, NODE\_ID, in denen
+der Typ der abgehenden Kante, der Typ des Knotens, zu dem sie führt und
+die ID des Knotens, zu dem sie führt, dargestellt werden.
+
+Die Liste PREDECESSOR\_NODES hat eine Zeile für jede am Knoten ankommende
+Kante mit drei Spalten: EDGE\_TYPE, NODE\_TYPE, NODE\_ID, in denen
+der Typ der ankommenden Kante, der Typ des Knotens, von dem sie kommt und
+die ID des Knotens, von dem sie kommt, dargestellt werden.
+
+Unter den drei Listen befinden sich nebeneinander mittig zwei Buttons
+CLOSE und PICK.
+Der CLOSE-Button schliesst durch Mausklick das Informationsfenster,
+das Informationsfenster kann auch durch Druecken von ** geschlossen
+werden.
+Mit dem PICK-Button kann man einen anderen Knoten auswählen, dessen
+Information das Knoten-Informationsfenster nun anzeigen soll.
+Durch Klick auf den PICK-Button verwandelt sich der Mauscursor,
+wenn möglich, in ein Fadenkreuz, es kann dann durch Klick in eines
+der Graphenfenster auf deinen Knoten dieser Knoten für die Anzeige
+ausgewählt werden.
+
 \subsection{Fenster für Minimap} %Falls in extra Fenster
 
 \subsection{Anfrage Dialog}
+
+Der Anfragedialog hat zuoberst ein Textfeld QUERY\_TEXT,
+in dem der Text der Anfrage eingegeben werden kann.
+Durch Klicken auf die darunterliegenden Listen kann
+Text in QUERY\_TEXT eingefügt werden.
+
+Der unter QUERY\_TEXT liegende Teil des Fensters
+ist im Wesentlichen dreigeteilt.
+Er besitzt vier nebeneinanderliegende scrollbare Listen,
+NODE\_CLASS\_LIST , EDGE\_CLASS\_LIST , ATTRIB\_LIST,
+SUBGRAPH\_LIST
+genannt Knotenklassenliste, Kantenklassenliste,
+Attributliste und Teilgraphenliste.
+
+Über den ersten drei Listen von links nach rechts befinden
+sich drei Eingabefelder, genannt NODE\_WILDCARD , EDGE\_WILDCARD,
+ATTRIB\_WILDCARD. Neben diesen Feldern befindet sich jeweils ein
+Button
+Show.
+
+Ueber der Kantenklassen-Liste und der Knotenklassenliste befindet
+sich zusätzlich je ein Eingabefeld  nur Knotentyp (EDGE\_NODETYPE
+und ATTRIB\_NODETYPE), sowie je ein danebenliegender Button 
+Aus Knotenklassenliste uebernehmen (EDGE\_USE\_NODETYPE
+und ATTRIB\_USE\_NODETYPE).
+
+Unter den Listen befinden sich Buttons Anfrage Starten
+(QUERY\_START), Abbruch (QUERY\_CANCEL), Anfrage laden
+(QUERY\_LOAD), Anfrage speichern (QUERY\_SAVE),
+eine Combobox beschriftet mit letzte 5 Anfragen (QUERY\_LATEST)
+und neben dieser ein Button Laden (LOAD\_QUERY\_LATEST).
+
+Der Nutzer kann nun in der Knotenklassenliste
+links eine Knotenklasse durch einfachklicks
+auswaehlen, die Darstellung kann durch einen
+Eintrag im NODE\_WILDCARD-Feld auf zur Wildcard
+passende Knotenklassennamen eingeschränkt werden.
+Die Liste wird nach Klicken von Show anhand der
+Wildcards neu aufgebaut.
+
+In der Kantenklassenliste werden alle Kantenklassen
+dargestellt, die Liste kann durch das EDGE\_WILDCARD
+Feld anhand der Kantennamen eingeschraenkt werden.
+Die Liste wird nach Klicken von Show anhand der
+Wildcards neu aufgebaut.
+In EDGE\_NODETYPE kann festgelegt werden, dass nur
+Kanten, die als vom eingegebenen Knotentyp
+abgehend existieren, angezeigt werden, hier sind
+keine Wildcards möglich.
+Durch einfaches Klicken auf den Button Aus Knotenklassenliste
+uebernehmen kann der in der linken Liste
+ausgewählte Knotenname in das Feld EDGE\_NODETYPE
+uebernommen werden.
+
+In der Attributliste werden alle Attribute
+dargestellt, die Liste kann durch das ATTRIB\_WILDCARD
+Feld anhand der Attributsnamen eingeschraenkt werden.
+Die Liste wird nach Klicken von Show anhand der
+Wildcards neu aufgebaut.
+In ATTRIB\_NODETYPE kann festgelegt werden, dass nur
+Attribute, die als vom eingegebenen Knotentyp
+abgehend existieren, angezeigt werden, hier sind
+keine Wildcards möglich.
+Durch einfaches Klicken auf den Button Aus Knotenklassenliste
+uebernehmen kann der in der linken Liste
+ausgewählte Knotenname in das Feld ATTRIB\_NODETYPE
+uebernommen werden.
+
+In der Teilgraphenliste befinden sich alle z.Z. definierten
+Teilgraphen, sowie zuoberst ein Eintrag IML-Graph,
+welcher für den gesamten IML-Graphen steht.
+
+Wenn auf Listenelemente doppelt geklickt wird, wird
+der Name des betreffenden Listenelementes
+am Ende des Textes im Anfragefenster angehängt.
+
+Die Anfrage wird durch Eintippen des Textes per
+Tastatur in QUERY\_TEXT formuliert, wobei
+die drei Listen als Eingabehilfe verwendet
+werden koennen.
+Die Anfrage wird durch QUERY\_START gestartet,
+durch QUERY\_CANCEL wird das Fenster nach
+einer positiven Sicherheitsabfrage Wollen Sie wirklich
+das Anfragefenster ohne Speichern schliessen?
+geschlossen.
+Durch QUERY\_LOAD erhaelt man ein GTK-Dateiauswahlfenster
+zum Laden einer gespeicherten Anfrage, beim Klick
+auf QUERY\_SAVE geht ein GTK-Dateiauswahlfenster
+auf, in dem der Name der zu speichernden Anfrage
+festgelegt werden kann.
+Mittels QUERY\_LATEST und LOAD\_QUERY\_LATEST kann
+ggf. schneller auf die letzten 5 Anfragen
+zugegriffen werden.
+Vor jedem Laden einer Anfrage wird eine
+Sicherheitsabfrage Alte Anfrage nicht gespeichert - Wollen
+Sie wirklich eine neue Anfrage laden? gestellt,
+wenn QUERY\_TEXT nicht leer ist.
 
 \subsection{Darstellung von Attributen}
 Bietet Übersicht über alle Knotenklassen (mit zugehörigen Attributen), alle Attribute und
