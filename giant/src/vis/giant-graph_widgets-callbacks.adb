@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.20 $
---  $Author: squig $
---  $Date: 2003/09/09 15:31:24 $
+--  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.21 $
+--  $Author: keulsn $
+--  $Date: 2003/09/10 14:56:09 $
 --
 ------------------------------------------------------------------------------
 
@@ -823,58 +823,56 @@ package body Giant.Graph_Widgets.Callbacks is
       Click_Position := Vis.Absolute."+"
         (Window_Origin, Relative_Click_Position);
 
-      if (Glib."=" (Gdk.Event.Get_Button (Event), Left_Button)) then
-         --  left button
-         if States.Is_Action_Mode_Current (Widget) then
-            --  action mode, signal event
-            Location := Positioning.Get_Logic (Widget, Click_Position);
-            Node := Vis_Data.Get_Node_At (Widget.Manager, Click_Position);
-            if Vis_Data."/=" (Node, null) then
-               Notifications.Action_Mode_Button_Press_Event_Node
+      if States.Is_Action_Mode_Current (Widget) then
+         --  action mode, signal event
+         Location := Positioning.Get_Logic (Widget, Click_Position);
+         Node := Vis_Data.Get_Node_At (Widget.Manager, Click_Position);
+         if Vis_Data."/=" (Node, null) then
+            Notifications.Action_Mode_Button_Press_Event_Node
+              (Widget   => Widget,
+               Event    => Event,
+               Location => Positioning.Get_Logic (Widget, Click_Position),
+               Node     => Node);
+         else
+            Edge := Vis_Data.Get_Edge_At (Widget.Manager, Click_Position);
+            if Vis_Data."/=" (Edge, null) then
+               Notifications.Action_Mode_Button_Press_Event_Edge
                  (Widget   => Widget,
                   Event    => Event,
-                  Location => Positioning.Get_Logic (Widget, Click_Position),
-                  Node     => Node);
+                  Location => Location,
+                  Edge     => Edge);
             else
-               Edge := Vis_Data.Get_Edge_At (Widget.Manager, Click_Position);
-               if Vis_Data."/=" (Edge, null) then
-                  Notifications.Action_Mode_Button_Press_Event_Edge
-                    (Widget   => Widget,
-                     Event    => Event,
-                     Location => Location,
-                     Edge     => Edge);
-               else
-                  Notifications.Action_Mode_Button_Press_Event_Background
-                    (Widget   => Widget,
-                     Event    => Event,
-                     Location => Location);
-               end if;
+               Notifications.Action_Mode_Button_Press_Event_Background
+                 (Widget   => Widget,
+                  Event    => Event,
+                  Location => Location);
             end if;
+         end if;
+         return True;
+      elsif (Glib."=" (Gdk.Event.Get_Button (Event), Left_Button)) then
+         --  left button
+         Node := Vis_Data.Get_Node_At (Widget.Manager, Click_Position);
+         if Vis_Data."/=" (Node, null) then
+            --  pressed on node
+            Grab_Mouse (Widget, Gdk.Event.Get_Time (Event));
+            States.Begin_Click_On_Node
+              (Widget => Widget,
+               Point  => Click_Position,
+               Node   => Node);
          else
-            --  must handle click
-            Node := Vis_Data.Get_Node_At (Widget.Manager, Click_Position);
-            if Vis_Data."/=" (Node, null) then
-               --  pressed on node
-               Grab_Mouse (Widget, Gdk.Event.Get_Time (Event));
-               States.Begin_Click_On_Node
+            Edge := Vis_Data.Get_Edge_At (Widget.Manager, Click_Position);
+            Grab_Mouse (Widget, Gdk.Event.Get_Time (Event));
+            if Vis_Data."/=" (Edge, null) then
+               --  pressed on edge
+               States.Begin_Click_On_Edge
                  (Widget => Widget,
                   Point  => Click_Position,
-                  Node   => Node);
+                  Edge   => Edge);
             else
-               Edge := Vis_Data.Get_Edge_At (Widget.Manager, Click_Position);
-               Grab_Mouse (Widget, Gdk.Event.Get_Time (Event));
-               if Vis_Data."/=" (Edge, null) then
-                  --  pressed on edge
-                  States.Begin_Click_On_Edge
-                    (Widget => Widget,
-                     Point  => Click_Position,
-                     Edge   => Edge);
-               else
-                  --  pressed on background
-                  States.Begin_Click_On_Background
-                    (Widget => Widget,
-                     Point  => Click_Position);
-               end if;
+               --  pressed on background
+               States.Begin_Click_On_Background
+                 (Widget => Widget,
+                  Point  => Click_Position);
             end if;
          end if;
          return True;
