@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.11 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.12 $
 --  $Author: squig $
---  $Date: 2003/06/21 21:04:02 $
+--  $Date: 2003/06/23 19:19:34 $
 --
 
 with Ada.Strings.Unbounded;
@@ -98,16 +98,6 @@ package body Giant.Gui_Manager is
 
       --  add selections
    end;
-
---     package body Crosshair_Action_Package is
-
---        procedure Execute (Custom_Object : in Data_Type)
---        is
---        begin
---           null;
---        end;
-
---     end Crosshair_Action_Package;
 
    ---------------------------------------------------------------------------
    --  Main Application
@@ -415,5 +405,18 @@ package body Giant.Gui_Manager is
       Window := Get_Open_Window (New_Name);
       Graph_Window.Update_Title (Window);
    end Rename_Window;
+
+   procedure Set_Crosshair_Mode
+     (Activate : in Boolean)
+   is
+      Iterator : Graph_Window_Lists.ListIter;
+      Window : Graph_Window.Graph_Window_Access;
+   begin
+      Iterator := Graph_Window_Lists.MakeListIter (Open_Windows);
+      while Graph_Window_Lists.More (Iterator) loop
+         Graph_Window_Lists.Next (Iterator, Window);
+         Graph_Window.Set_Crosshair_Mode (Window, Activate);
+      end loop;
+   end Set_Crosshair_Mode;
 
 end Giant.Gui_Manager;

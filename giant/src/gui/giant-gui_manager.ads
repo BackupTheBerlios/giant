@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.9 $
+--  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.10 $
 --  $Author: squig $
---  $Date: 2003/06/20 16:47:35 $
+--  $Date: 2003/06/23 19:19:34 $
 --
 --  Stores the window records. Handles the controller updates. Provides
 --  a facade for the gui.
@@ -31,33 +31,11 @@
 --    ADT
 --
 
---  with Giant.Graph_Widgets;
---  with Giant.Graph_Widgets.Notifications;
 with Giant.Graph_Window;
 with Giant.Vis;
 with Giant.Vis_Windows;
 
 package Giant.Gui_Manager is
-
---     type Crosshair_Action_Callback is access function
---       (Widget   : access Graph_Widgets.Graph_Widget_Record'Class;
---        Action   : in     Graph_Widgets.Notifications.Crosshair_Action_Type;
---        Location : in     Vis.Logic.Vector_2d)
---       return Boolean;
-
---     generic
---        type Data_Type is private;
---     package Crosshair_Action_Package is
-
---        procedure Execute (Custom_Object : in Data_Type);
-
---     private
-
---        Custom_Object : Data_Type;
-
---     end Crosshair_Action_Package;
-
---     Pending_Action : Crosshair_Action_Callback;
 
    ---------------------------------------------------------------------------
    --  Main Application
@@ -143,6 +121,9 @@ package Giant.Gui_Manager is
    procedure Rename_Window
      (Old_Name : in String;
       New_Name : in String);
+
+   procedure Set_Crosshair_Mode
+     (Activate : in Boolean);
 
 end Giant.Gui_Manager;
 

@@ -21,9 +21,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.17 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.18 $
 --  $Author: squig $
---  $Date: 2003/06/23 17:33:34 $
+--  $Date: 2003/06/23 19:19:34 $
 --
 
 with Ada.Strings.Unbounded;
@@ -43,9 +43,10 @@ package body Giant.Controller is
    package Logger is new Giant.Logger("giant.controller");
 
    type Subgraph_Operation_Type is access function
-     (Left  : in Graph_Lib.Subgraphs.Subgraph;
-      Right : in Graph_Lib.Subgraphs.Subgraph)
-   return Graph_Lib.Subgraphs.Subgraph;
+     (Left        : in Graph_Lib.Subgraphs.Subgraph;
+      Right       : in Graph_Lib.Subgraphs.Subgraph;
+      Target_Name : in String)
+     return Graph_Lib.Subgraphs.Subgraph;
 
    ---------------------------------------------------------------------------
    --  Projects
@@ -271,7 +272,7 @@ package body Giant.Controller is
       Subgraph : Graph_Lib.Subgraphs.Subgraph
         := Projects.Get_Subgraph (Current_Project, Subgraph_Name);
       Selection : Graph_Lib.Selections.Selection
-        := Graph_Lib.Subgraphs.Create_Selection (Subgraph);
+        := Graph_Lib.Subgraphs.Create_Selection (Subgraph, Name);
    begin
       Vis_Windows.Add_Selection (Window, Selection);
       Gui_Manager.Add_Selection (Window_Name, Name);
@@ -390,10 +391,8 @@ package body Giant.Controller is
       Source : Graph_Lib.Subgraphs.Subgraph
         := Projects.Get_Subgraph (Current_Project, Source_Name);
       Target : Graph_Lib.Subgraphs.Subgraph
-        := Graph_Lib.Subgraphs.Clone (Source);
+        := Graph_Lib.Subgraphs.Clone (Source, Target_Name);
    begin
-      Graph_Lib.Subgraphs.Rename (Target, Target_Name);
-
       Projects.Add_Subgraph (Current_Project, Target);
       Gui_Manager.Add_Subgraph (Target_Name);
    end Duplicate_Subgraph;
@@ -437,8 +436,7 @@ package body Giant.Controller is
       Right := Projects.Get_Subgraph (Current_Project, Right_Name);
 
       --  operation
-      Target := Operation (Left, Right);
-      Graph_Lib.Subgraphs.Rename (Target, Target_Name);
+      Target := Operation (Left, Right, Target_Name);
 
       --  add to project
       Projects.Add_Subgraph (Current_Project, Target);

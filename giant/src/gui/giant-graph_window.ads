@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.9 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.10 $
 --  $Author: squig $
---  $Date: 2003/06/20 18:03:14 $
+--  $Date: 2003/06/23 19:19:34 $
 --
 ------------------------------------------------------------------------------
 --
@@ -69,6 +69,10 @@ package Giant.Graph_Window is
 
    procedure Update_Title
      (Window : access Graph_Window_Record'Class);
+
+   procedure Set_Crosshair_Mode
+     (Widget : access Graph_Window_Record'Class;
+      Enable : in     Boolean);
 
    ---------------------------------------------------------------------------
    --  Pin Methods

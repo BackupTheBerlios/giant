@@ -20,12 +20,13 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.25 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.26 $
 --  $Author: squig $
---  $Date: 2003/06/23 16:15:41 $
+--  $Date: 2003/06/23 19:19:34 $
 --
 
 with Ada.Strings.Unbounded;
+with Ada.Unchecked_Deallocation;
 with Interfaces.C.Strings;
 
 with Gdk.Event;
@@ -374,8 +375,13 @@ package body Giant.Main_Window is
    procedure On_Subgraph_List_Create_Selection
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
+      Subgraph_Name : String := Get_Selected_Subgraph;
+      Action : Create_Selection_Action_Access;
    begin
-      null;
+      Action := new
+        Create_Selection_Action_Type(Subgraph_Name'Length);
+      Action.Subgraph_Name := Subgraph_Name;
+      Gui_Manager.Crosshair.Enqueue(Action);
    end On_Subgraph_List_Create_Selection;
 
    procedure On_Subgraph_List_Duplicate
@@ -755,5 +761,33 @@ package body Giant.Main_Window is
          Gtk.Menu_Item.Set_Sensitive (Project_Quit_Menu_Item, True);
       end if;
    end Set_Project_Loaded;
+
+   ---------------------------------------------------------------------------
+   --  Subgraph Crosshair
+   ---------------------------------------------------------------------------
+
+   procedure Destroy is new Ada.Unchecked_Deallocation
+     (Create_Selection_Action_Type'Class, Create_Selection_Action_Access);
+
+   procedure Cancel
+     (Action : access Create_Selection_Action_Type)
+   is
+      P : Create_Selection_Action_Access
+        := Create_Selection_Action_Access (Action);
+   begin
+      Destroy (P);
+   end;
+
+   procedure Execute
+     (Action : access Create_Selection_Action_Type;
+      Window : access Graph_Window.Graph_Window_Record'Class)
+   is
+   begin
+      Controller.Create_Selection_From_Subgraph
+        (Vis_Windows.Get_Name
+         (Graph_Window.Get_Vis_Window (Window)),
+          Action.Subgraph_Name,
+          Action.Subgraph_Name);
+   end;
 
 end Giant.Main_Window;

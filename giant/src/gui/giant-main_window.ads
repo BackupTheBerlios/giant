@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.ads,v $, $Revision: 1.7 $
+--  $RCSfile: giant-main_window.ads,v $, $Revision: 1.8 $
 --  $Author: squig $
---  $Date: 2003/06/19 16:38:06 $
+--  $Date: 2003/06/23 19:19:34 $
 --
 --  Provides the main window. The main window is only instanciated once.
 --
@@ -30,8 +30,11 @@
 --    ADO
 --
 
+with Giant.Graph_Window;
 with Giant.Vis_Windows;
 with Giant.Valid_Names;
+with Giant.Gui_Manager;
+with Giant.Gui_Manager.Crosshair;
 
 package Giant.Main_Window is
 
@@ -80,5 +83,26 @@ package Giant.Main_Window is
 
    procedure Set_Project_Loaded
      (Loaded : in Boolean);
+
+private
+
+   ---------------------------------------------------------------------------
+   --  Subgraph Crosshair
+   ---------------------------------------------------------------------------
+
+   type Create_Selection_Action_Type (Name_Length : Positive) is new
+     Gui_Manager.Crosshair.Crosshair_Action_Type with record
+        Subgraph_Name : String(1 .. Name_Length);
+     end record;
+
+   type Create_Selection_Action_Access is
+     access all Create_Selection_Action_Type'Class;
+
+   procedure Cancel
+     (Action : access Create_Selection_Action_Type);
+
+   procedure Execute
+     (Action : access Create_Selection_Action_Type;
+      Window : access Graph_Window.Graph_Window_Record'Class);
 
 end Giant.Main_Window;

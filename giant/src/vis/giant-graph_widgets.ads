@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.6 $
---  $Author: keulsn $
---  $Date: 2003/06/23 16:18:36 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.7 $
+--  $Author: squig $
+--  $Date: 2003/06/23 19:19:34 $
 --
 ------------------------------------------------------------------------------
 --
@@ -501,7 +501,7 @@ package Giant.Graph_Widgets is
    procedure Add_Global_Highlighting
      (Widget     : access Graph_Widget_Record'Class;
       Subgraph   : access Graph_Lib.Subgraphs.Subgraph;
-      Color      : in     Config.IML_Subgraph_High_Light_ID);
+      Color      : in     Config.Subgraph_High_Light_ID);
 
    ----------------------------------------------------------------------------
    --  Removes a highlight color from all the edges and nodes in a subgraph.
@@ -513,7 +513,7 @@ package Giant.Graph_Widgets is
    procedure Remove_Global_Highlighting
      (Widget     : access Graph_Widget_Record'Class;
       Subgraph   : access Graph_Lib.Subgraphs.Subgraph;
-      Color      : in     Config.IML_Subgraph_High_Light_ID);
+      Color      : in     Config.Subgraph_High_Light_ID);
 
    ----------------------------------------------------------------------------
    --  Deletes all highlight colors from all the edges and all nodes in

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.11 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.12 $
 --  $Author: squig $
---  $Date: 2003/06/23 17:33:34 $
+--  $Date: 2003/06/23 19:19:34 $
 --
 
 with Glib;
@@ -271,7 +271,8 @@ package body Giant.Graph_Window is
 
       --  pins
       Gui_Utils.String_Clists.Create (Window.Pin_List, 1, Update_Pin'Access);
-      Gui_Utils.String_Clists.Connect_Popup_Menu (Window.Pin_List, Window.Pin_List_Menu);
+      Gui_Utils.String_Clists.Connect_Popup_Menu
+        (Window.Pin_List, Window.Pin_List_Menu);
 
       Gui_Utils.String_Clists.Set_Column_Title (Window.Pin_List, 0, -"Pin");
 
@@ -284,23 +285,24 @@ package body Giant.Graph_Window is
                                       Window));
       Gtk.Menu.Gtk_New (Window.Selection_List_Menu);
       Gtk.Menu.Append (Window.Selection_List_Menu,
-                       New_Menu_Item (-"Rename",
-                                      On_Selection_List_Rename'Access,
+                       New_Menu_Item (-"Rename", On_Selection_List_Rename'Access,
                                       Window));
       Gtk.Menu.Gtk_New (Window.Selection_List_Menu);
       Gtk.Menu.Append (Window.Selection_List_Menu,
-                       New_Menu_Item (-"Delete",
-                                      On_Selection_List_Delete'Access,
+                       New_Menu_Item (-"Delete", On_Selection_List_Delete'Access,
                                       Window));
 
       --  selections
-      Gui_Utils.String_Clists.Create (Window.Selection_List, 2, Update_Selection'Access);
+      Gui_Utils.String_Clists.Create (Window.Selection_List, 2,
+                                      Update_Selection'Access);
       Gui_Utils.String_Clists.Set_Show_Titles (Window.Selection_List, True);
       Gui_Utils.String_Clists.Connect_Popup_Menu
         (Window.Selection_List, Window.Selection_List_Menu);
 
-      Gui_Utils.String_Clists.Set_Column_Title (Window.Selection_List, 0, -"Selection");
-      Gui_Utils.String_Clists.Set_Column_Title (Window.Selection_List, 1, -"Color");
+      Gui_Utils.String_Clists.Set_Column_Title
+        (Window.Selection_List, 0, -"Selection");
+      Gui_Utils.String_Clists.Set_Column_Title
+        (Window.Selection_List, 1, -"Color");
 
       Gtk.Paned.Add2 (Left_Paned,
                       Add_Scrollbars (Window.Selection_List));
@@ -419,6 +421,14 @@ package body Giant.Graph_Window is
       Set_Title (Window, Vis_Windows.Get_Name (Window.Visual_Window));
    end Update_Title;
 
+   procedure Set_Crosshair_Mode
+     (Widget : access Graph_Window_Record'Class;
+      Enable : in     Boolean)
+   is
+   begin
+      null;
+   end Set_Crosshair_Mode;
+
    ---------------------------------------------------------------------------
    --  Pin Methods
    ---------------------------------------------------------------------------
@@ -438,7 +448,7 @@ package body Giant.Graph_Window is
    is
    begin
       Gui_Utils.String_Clists.Add (Window.Pin_List, Name);
-   end;
+   end Add_Pin;
 
    procedure Remove_Pin
      (Window : access Graph_Window_Record'Class;
@@ -446,7 +456,7 @@ package body Giant.Graph_Window is
    is
    begin
       Gui_Utils.String_Clists.Remove (Window.Pin_List, Name);
-   end;
+   end Remove_Pin;
 
    procedure Update_Pin
      (Window : access Graph_Window_Record'Class;
@@ -454,7 +464,7 @@ package body Giant.Graph_Window is
    is
    begin
       Gui_Utils.String_Clists.Update (Window.Pin_List, Name);
-   end;
+   end Update_Pin;
 
    ---------------------------------------------------------------------------
    --  Selection Methods
@@ -475,7 +485,7 @@ package body Giant.Graph_Window is
    is
    begin
       Gui_Utils.String_Clists.Add (Window.Selection_List, Name);
-   end;
+   end Add_Selection;
 
    procedure Remove_Selection
      (Window : access Graph_Window_Record'Class;
@@ -483,7 +493,7 @@ package body Giant.Graph_Window is
    is
    begin
       Gui_Utils.String_Clists.Remove (Window.Selection_List, Name);
-   end;
+   end Remove_Selection;
 
    procedure Update_Selection
      (Window : access Graph_Window_Record'Class;
@@ -491,6 +501,6 @@ package body Giant.Graph_Window is
    is
    begin
       Gui_Utils.String_Clists.Update (Window.Selection_List, Name);
-   end;
+   end Update_Selection;
 
 end Giant.Graph_Window;
