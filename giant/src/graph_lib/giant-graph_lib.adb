@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.72 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.73 $
 --  $Author: koppor $
---  $Date: 2003/09/18 16:58:47 $
+--  $Date: 2003/09/18 17:38:24 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -1701,7 +1701,7 @@ package body Giant.Graph_Lib is
    is
    begin
       pragma Assert
-        (Get_Node_Attribute_Class_Id (Attribute) /= Class_Natural);
+        (Get_Node_Attribute_Class_Id (Attribute) = Class_Natural);
 
       return IML_Reflection.Natural_Field (Attribute.all).Get_Value
         (Node.IML_Node);
@@ -1858,14 +1858,45 @@ package body Giant.Graph_Lib is
    begin
       pragma Assert (Get_Node_Attribute_Class_Id (Attribute) = Class_String);
 
-      declare
-         Enum       : IML_Reflection.Enumerator_Field :=
-           IML_Reflection.Enumerator_Field (Attribute.all);
-         Enum_Value : Natural;
-      begin
-         Enum_Value := Enum.Get_Value (Node.IML_Node);
-         return Enum.Type_Id.Enumerators (Enum_Value).all;
-      end;
+      --  handling for Literal_Types
+      if Attribute.all in Literal_Types.Char_Literal_Field then
+         declare
+            Char  : Literal_Types.Char_Literal_Field :=
+              Literal_Types.Char_Literal_Field (Attribute.all);
+            Value : Literal_Types.Char_Literal_Type :=
+              Char.Get_Value (Node.IML_Node);
+         begin
+            return  Literal_Types.Char_Literal_Type'Image (Value);
+         end;
+      elsif Attribute.all in Literal_Types.Int_Literal_Field then
+         declare
+            Int  : Literal_Types.Int_Literal_Field :=
+              Literal_Types.Int_Literal_Field (Attribute.all);
+            Value : Literal_Types.Int_Literal_Type :=
+              Int.Get_Value (Node.IML_Node);
+         begin
+            return Literal_Types.Int_Literal_Type'Image (Value);
+         end;
+      elsif Attribute.all in Literal_Types.Real_Literal_Field then
+         declare
+            Real  : Literal_Types.Real_Literal_Field :=
+              Literal_Types.Real_Literal_Field (Attribute.all);
+            Value : Literal_Types.Real_Literal_Type :=
+              Real.Get_Value (Node.IML_Node);
+         begin
+            return Literal_Types.Real_Literal_Type'Image (Value);
+         end;
+      else
+         --  handling for enumerators
+         declare
+            Enum       : IML_Reflection.Enumerator_Field :=
+              IML_Reflection.Enumerator_Field (Attribute.all);
+            Enum_Value : Natural :=
+              Enum.Get_Value (Node.IML_Node);
+         begin
+            return Enum.Type_Id.Enumerators (Enum_Value).all;
+         end;
+      end if;
    end Get_Node_Attribute_String_Value;
 
    ----------------------------------------------------------------------------
