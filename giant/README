@@ -3,8 +3,8 @@ REQUIREMENTS
 In order to run giant the following components need to be installed on
 the system:
 
- * GtkAda 1.2.12
- * X11/R6
+ * gnat 3.14p
+ * GtkAda 2.2
 
 RUN
 
