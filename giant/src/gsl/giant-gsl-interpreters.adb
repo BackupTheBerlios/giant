@@ -21,8 +21,8 @@
 -- First Author: Gerrit Schulz
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
--- $Author: schulzgt $
--- $Date: 2003/08/29 14:27:46 $
+-- $Author: keulsn $
+-- $Date: 2003/09/02 13:19:07 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -233,7 +233,7 @@ package body Giant.Gsl.Interpreters is
 
    ---------------------------------------------------------------------------
    --
-   function Create_Parameter_List 
+   function Create_Parameter_List
       return Gsl_Params is
 
       Param : Gsl_Params;
@@ -319,9 +319,9 @@ package body Giant.Gsl.Interpreters is
 
       -- initilze the evolution object, comlexity is 0
       Default_Logger.Debug
-        ("Interpreter: Initilize evolution.", "Giant.Gsl.Interpreter");
+        ("Interpreter: Initiliaze evolution.", "Giant.Gsl.Interpreter");
       Initialize (Individual, 0);
-      
+
       -- handling of exceptions
       exception
          when Syntax_Error : Gsl_Syntax_Error =>
@@ -350,7 +350,7 @@ package body Giant.Gsl.Interpreters is
 
       Individual.Params := Params;
 
-      -- initialize the execution and the result stack with 
+      -- initialize the execution and the result stack with
       -- the following layout
       --
       -- |                                                       |
@@ -408,7 +408,7 @@ package body Giant.Gsl.Interpreters is
         then
            Next_Action := Evolutions.Finish;
         elsif Interpreter (Individual) /= Current_Interpreter then
-           Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
+           Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
              "Runtime error: Invalid interpreter.");
         else
            -- get a gsl command from the execution stack
@@ -427,9 +427,10 @@ package body Giant.Gsl.Interpreters is
            Next_Action := Evolutions.Run;
 
            -- only for debug
-           Log_Execution_Stack;
-           Log_Result_Stack;
-           Default_Logger.Debug ("________________________________________");
+           -- Log_Execution_Stack;
+           -- Log_Result_Stack;
+           -- Default_Logger.Debug
+           --   ("________________________________________");
         end if;
         -- exit the processing if script execution is finished or
         -- if a given time limit is over
@@ -495,7 +496,7 @@ package body Giant.Gsl.Interpreters is
       end loop;
       Default_Logger.Debug ("", "Giant.Gsl");
    end Log_Execution_Stack;
-   
+
    ---------------------------------------------------------------------------
    --
    procedure Log_Result_Stack is
@@ -585,7 +586,7 @@ package body Giant.Gsl.Interpreters is
       if Gsl_Var_Hashed_Mappings.Is_Bound (AR.Vars, To_Unbounded_String (Name))
       then
          -- variable already exists, raise Exception
-         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
            "Runtime error: Variable '" & Name & "' already exists.");
       else
          Gsl_Var_Hashed_Mappings.Bind
@@ -606,13 +607,13 @@ package body Giant.Gsl.Interpreters is
       while AR /= null loop
          if Gsl_Var_Hashed_Mappings.Is_Bound
            (AR.Vars, To_Unbounded_String (Name)) then
-            return; 
+            return;
          end if;
          -- next iteration look in the parent Activation_Record
          AR := AR.Parent;
       end loop;
       -- variable was not found, raise Exception
-      Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
+      Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
         "Runtime error: Variable '" & Name & "' was not found.");
    end Exists_Var;
 
@@ -637,7 +638,7 @@ package body Giant.Gsl.Interpreters is
          AR := AR.Parent;
       end loop;
       -- variable was not found, raise Exception
-      Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
+      Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
         "Runtime error: Variable '" & Name & "' was not found.");
    end Get_Var;
 
@@ -655,7 +656,7 @@ package body Giant.Gsl.Interpreters is
       while AR /= null loop
          if Gsl_Var_Hashed_Mappings.Is_Bound
            (AR.Vars, To_Unbounded_String (Name)) then
-            Gsl_Var_Hashed_Mappings.Unbind 
+            Gsl_Var_Hashed_Mappings.Unbind
               (AR.Vars, To_Unbounded_String (Name));
             Gsl_Var_Hashed_Mappings.Bind
               (AR.Vars, To_Unbounded_String (Name), Value);
@@ -666,7 +667,7 @@ package body Giant.Gsl.Interpreters is
          AR := AR.Parent;
       end loop;
       -- variable was not found, raise Exception
-      Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
+      Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
         "Runtime error: Variable '" & Name & "' was not found.");
    end Set_Var;
 

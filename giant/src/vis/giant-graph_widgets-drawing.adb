@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.29 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.30 $
 --  $Author: keulsn $
---  $Date: 2003/09/02 04:49:38 $
+--  $Date: 2003/09/02 13:19:08 $
 --
 ------------------------------------------------------------------------------
 
@@ -869,8 +869,8 @@ package body Giant.Graph_Widgets.Drawing is
          Iterator := Settings.Get_Node_Attributes (Widget, Node);
          while Graph_Lib.Node_Attribute_Filters.More (Iterator) loop
             Move (Attrib_Name_Rect, Line_Feed);
-            pragma Assert
-              (Get_Bottom (Attrib_Name_Rect) <= Get_Bottom (Draw_Rect));
+            --  pragma Assert
+            --    (Get_Bottom (Attrib_Name_Rect) <= Get_Bottom (Draw_Rect));
             Move (Attrib_Value_Rect, Line_Feed);
 
             Graph_Lib.Node_Attribute_Filters.Next (Iterator, Attribute);
