@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/10 11:59:45 $
+-- $Date: 2003/06/13 13:09:50 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -60,6 +60,20 @@ private
    
    procedure Destroy_Activation_Record
      (AR : Activation_Record);
+
+   procedure Create_Var
+     (Gsl_Interpreter : access Interpreter_Record;
+      Name            : String);
+
+   function Get_Var
+     (Gsl_Interpreter : access Interpreter_Record;
+      Name            : String)
+      return Gsl_Type;
+
+   procedure Set_Var
+     (Gsl_Interpreter : access Interpreter_Record;
+      Name            : String;
+      Value           : Gsl_Type);
 
    ---------------------------------------------------------------------------
    -- the GSL interpreter, inherits Iterative_Evolution 
