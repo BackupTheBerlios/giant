@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.17 $
+--  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.18 $
 --  $Author: keulsn $
---  $Date: 2003/08/16 17:08:18 $
+--  $Date: 2003/08/19 12:21:25 $
 --
 ------------------------------------------------------------------------------
 
@@ -630,6 +630,7 @@ package body Giant.Graph_Widgets.Callbacks is
 
       Edge                    : Vis_Data.Vis_Edge_Id;
       Node                    : Vis_Data.Vis_Node_Id;
+      Location                : Vis.Logic.Vector_2d;
       Relative_Click_Position : Vis.Absolute.Vector_2d;
       Click_Position          : Vis.Absolute.Vector_2d;
       Window_Origin           : Vis.Absolute.Vector_2d :=
@@ -664,10 +665,29 @@ package body Giant.Graph_Widgets.Callbacks is
          --  left button
          if States.Is_Action_Mode_Current (Widget) then
             --  action mode, signal event
-            Notifications.Action_Mode_Button_Press_Event
-              (Widget   => Widget,
-               Event    => Event,
-               Location => Positioning.Get_Logic (Widget, Click_Position));
+            Location := Positioning.Get_Logic (Widget, Click_Position);
+            Node := Vis_Data.Get_Node_At (Widget.Manager, Click_Position);
+            if Vis_Data."/=" (Node, null) then
+               Notifications.Action_Mode_Button_Press_Event_Node
+                 (Widget   => Widget,
+                  Event    => Event,
+                  Location => Positioning.Get_Logic (Widget, Click_Position),
+                  Node     => Node);
+            else
+               Edge := Vis_Data.Get_Edge_At (Widget.Manager, Click_Position);
+               if Vis_Data."/=" (Edge, null) then
+                  Notifications.Action_Mode_Button_Press_Event_Edge
+                    (Widget   => Widget,
+                     Event    => Event,
+                     Location => Location,
+                     Edge     => Edge);
+               else
+                  Notifications.Action_Mode_Button_Press_Event_Background
+                    (Widget   => Widget,
+                     Event    => Event,
+                     Location => Location);
+               end if;
+            end if;
          else
             --  must handle click
             Node := Vis_Data.Get_Node_At (Widget.Manager, Click_Position);
@@ -697,19 +717,20 @@ package body Giant.Graph_Widgets.Callbacks is
          end if;
          return True;
       elsif (Glib."=" (Gdk.Event.Get_Button (Event), Right_Button)) then
+         Location := Positioning.Get_Logic (Widget, Click_Position);
          --  right button
          Node := Vis_Data.Get_Node_At (Widget.Manager, Click_Position);
          if Vis_Data."/=" (Node, null) then
-            Notifications.Node_Popup (Widget, Event, Node);
+            Notifications.Node_Popup (Widget, Event, Location, Node);
          else
             Edge := Vis_Data.Get_Edge_At (Widget.Manager, Click_Position);
             if Vis_Data."/=" (Edge, null) then
-               Notifications.Edge_Popup (Widget, Event, Edge);
+               Notifications.Edge_Popup (Widget, Event, Location, Edge);
             else
                Notifications.Background_Popup
                  (Widget   => Widget,
                   Event    => Event,
-                  Location => Positioning.Get_Logic (Widget, Click_Position));
+                  Location => Location);
             end if;
          end if;
          return True;

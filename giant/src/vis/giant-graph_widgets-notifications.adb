@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-notifications.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-graph_widgets-notifications.adb,v $, $Revision: 1.5 $
 --  $Author: keulsn $
---  $Date: 2003/08/02 16:27:43 $
+--  $Date: 2003/08/19 12:21:25 $
 --
 ------------------------------------------------------------------------------
 
@@ -46,9 +46,10 @@ package body Giant.Graph_Widgets.Notifications is
    end Background_Popup;
 
    procedure Edge_Popup
-     (Widget : access Graph_Widget_Record'Class;
-      Event  : in     Gdk.Event.Gdk_Event_Button;
-      Edge   : in     Vis_Data.Vis_Edge_Id) is
+     (Widget   : access Graph_Widget_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event_Button;
+      Location : in     Vis.Logic.Vector_2d;
+      Edge     : in     Vis_Data.Vis_Edge_Id) is
 
       Graph_Edge : Graph_Lib.Edge_Id := Vis_Data.Get_Graph_Edge (Edge);
    begin
@@ -56,19 +57,20 @@ package body Giant.Graph_Widgets.Notifications is
         ("Edge_Popup node " &
          Graph_Lib.Node_Id_Image (Graph_Lib.Get_Source_Node (Graph_Edge))  &
          "'s edge " & Graph_Lib.Get_Edge_Tag (Graph_Edge));
-      Handlers.Emit_Edge_Popup_Event (Widget, Event, Graph_Edge);
+      Handlers.Emit_Edge_Popup_Event (Widget, Event, Location, Graph_Edge);
    end Edge_Popup;
 
    procedure Node_Popup
-     (Widget : access Graph_Widget_Record'Class;
-      Event  : in     Gdk.Event.Gdk_Event_Button;
-      Node   : in     Vis_Data.Vis_Node_Id) is
+     (Widget   : access Graph_Widget_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event_Button;
+      Location : in     Vis.Logic.Vector_2d;
+      Node     : in     Vis_Data.Vis_Node_Id) is
 
       Graph_Node : Graph_Lib.Node_Id := Vis_Data.Get_Graph_Node (Node);
    begin
       Notification_Logger.Debug
         ("Node_Popup on " & Graph_Lib.Node_Id_Image (Graph_Node));
-      Handlers.Emit_Node_Popup_Event (Widget, Event, Graph_Node);
+      Handlers.Emit_Node_Popup_Event (Widget, Event, Location, Graph_Node);
    end Node_Popup;
 
    procedure Selection_Changed
@@ -86,16 +88,43 @@ package body Giant.Graph_Widgets.Notifications is
          Difference => Difference);
    end Selection_Changed;
 
-   procedure Action_Mode_Button_Press_Event
+   procedure Action_Mode_Button_Press_Event_Background
      (Widget   : access Graph_Widget_Record'Class;
       Event    : in     Gdk.Event.Gdk_Event_Button;
       Location : in     Vis.Logic.Vector_2d) is
    begin
-      Notification_Logger.Debug
-        ("User has pressed a mouse button during action mode. Location ="
-         & Vis.Logic.Image (Location));
-      Handlers.Emit_Action_Mode_Button_Press_Event (Widget, Event, Location);
-   end Action_Mode_Button_Press_Event;
+      --  Notification_Logger.Debug
+      --    ("User has pressed a mouse button on the background during " &
+      --     "action mode. Location = " & Vis.Logic.Image (Location));
+      Handlers.Emit_Action_Mode_Button_Press_Event_Background
+        (Widget, Event, Location);
+   end Action_Mode_Button_Press_Event_Background;
+
+   procedure Action_Mode_Button_Press_Event_Edge
+     (Widget   : access Graph_Widget_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event_Button;
+      Location : in     Vis.Logic.Vector_2d;
+      Edge     : in     Vis_Data.Vis_Edge_Id) is
+   begin
+      --  Notification_Logger.Debug
+      --    ("User has pressed a mouse button on an edge during action " &
+      --     "mode Location = " & Vis.Logic.Image (Location));
+      Handlers.Emit_Action_Mode_Button_Press_Event_Edge
+        (Widget, Event, Location, Vis_Data.Get_Graph_Edge (Edge));
+   end Action_Mode_Button_Press_Event_Edge;
+
+   procedure Action_Mode_Button_Press_Event_Node
+     (Widget   : access Graph_Widget_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event_Button;
+      Location : in     Vis.Logic.Vector_2d;
+      Node     : in     Vis_Data.Vis_Node_Id) is
+   begin
+      --  Notification_Logger.Debug
+      --    ("User has pressed a mouse button during action mode." &
+      --     " Location = " & Vis.Logic.Image (Location));
+      Handlers.Emit_Action_Mode_Button_Press_Event_Node
+        (Widget, Event, Location, Vis_Data.Get_Graph_Node (Node));
+   end Action_Mode_Button_Press_Event_Node;
 
    procedure Logical_Area_Changed
      (Widget : access Graph_Widget_Record'Class;

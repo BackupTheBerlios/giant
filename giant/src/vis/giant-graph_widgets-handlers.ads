@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-handlers.ads,v $, $Revision: 1.9 $
+--  $RCSfile: giant-graph_widgets-handlers.ads,v $, $Revision: 1.10 $
 --  $Author: keulsn $
---  $Date: 2003/07/22 18:21:32 $
+--  $Date: 2003/08/19 12:21:25 $
 --
 ------------------------------------------------------------------------------
 --
@@ -60,29 +60,29 @@ package Giant.Graph_Widgets.Handlers is
 
 
    ----------------------------------------------------------------------------
+   --  Information if a mouse click happened on the background, an edge
+   --  or on a node within a graph widget
+   type Pressed_On_Type is (On_Background, On_Edge, On_Node);
+
+   ----------------------------------------------------------------------------
    --  "edge_popup_event" on an edge within a graph widget
-   type Edge_Popup_Action is
-      record
-         Event    : Gdk.Event.Gdk_Event_Button;
-         Edge     : Graph_Lib.Edge_Id;
-      end record;
-
-   ----------------------------------------------------------------------------
-   --  "node_popup_event" on an edge within a graph widget
-   type Node_Popup_Action is
-      record
-         Event    : Gdk.Event.Gdk_Event_Button;
-         Node     : Graph_Lib.Node_Id;
-      end record;
-
-   ----------------------------------------------------------------------------
+   --  "node_popup_event" on a node within a graph widget
    --  "button_press_event" on the graph widget while it was in action mode
-   type Button_Press_Action is
+   type Button_Press_Action (Pressed_On : Pressed_On_Type) is
       record
          --  The event given through "button_press_event"
          Event    : Gdk.Event.Gdk_Event_Button;
          --  The logical location where the event happened in the graph
          Location : Vis.Logic.Vector_2d;
+         --  The object on that the "button_press_event" happened, if any
+         case Pressed_On is
+            when On_Edge =>
+               Edge : Graph_Lib.Edge_Id;
+            when On_Node =>
+               Node : Graph_Lib.Node_Id;
+            when others =>
+               null;
+         end case;
       end record;
 
    ----------------------------------------------------------------------------
@@ -112,32 +112,6 @@ package Giant.Graph_Widgets.Handlers is
      (Args : in Gtk.Arguments.Gtk_Args;
       Num  : in Natural)
      return Vis.Logic.Rectangle_2d;
-
-   ----------------------------------------------------------------------------
-   --  Conversion function for Marshallers
-   --
-   --  Parameters
-   --    Args - The GtkAda argument array
-   --    Num  - The Index of an argument in 'Args'
-   --  Returns:
-   --    The 'Edge_Popup_Action' at index 'Num' in 'Args'
-   function To_Edge_Popup_Action
-     (Args : in Gtk.Arguments.Gtk_Args;
-      Num  : in Natural)
-     return Edge_Popup_Action;
-
-   ----------------------------------------------------------------------------
-   --  Conversion function for Marshallers
-   --
-   --  Parameters
-   --    Args - The GtkAda argument array
-   --    Num  - The Index of an argument in 'Args'
-   --  Returns:
-   --    The 'Node_Popup_Action' at index 'Num' in 'Args'
-   function To_Node_Popup_Action
-     (Args : in Gtk.Arguments.Gtk_Args;
-      Num  : in Natural)
-     return Node_Popup_Action;
 
    ----------------------------------------------------------------------------
    --  Conversion function for Marshallers
@@ -212,7 +186,7 @@ package Giant.Graph_Widgets.Handlers is
    --    Action - The user action inside 'Widget'
    type Edge_Popup_Event_Cb is access procedure
      (Widget : access Graph_Widget_Record'Class;
-      Action : in     Edge_Popup_Action);
+      Action : in     Button_Press_Action);
 
    --  Package providing the 'Connect' subprograms, if no user data is needed.
    package Edge_Popup_Cbs renames Graph_Widget_Callbacks;
@@ -220,9 +194,10 @@ package Giant.Graph_Widgets.Handlers is
    ----------------------------------------------------------------------------
    --  Emits the signal.
    procedure Emit_Edge_Popup_Event
-     (Widget : access Graph_Widget_Record'Class;
-      Event  : in     Gdk.Event.Gdk_Event_Button;
-      Edge   : in     Graph_Lib.Edge_Id);
+     (Widget   : access Graph_Widget_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event_Button;
+      Location : in     Vis.Logic.Vector_2d;
+      Edge     : in     Graph_Lib.Edge_Id);
 
 
    ------------------------
@@ -241,7 +216,7 @@ package Giant.Graph_Widgets.Handlers is
    --    Action - The user action inside 'Widget'
    type Node_Popup_Event_Cb is access procedure
      (Widget : access Graph_Widget_Record'Class;
-      Action : in     Node_Popup_Action);
+      Action : in     Button_Press_Action);
 
    --  Package providing the 'Connect' subprograms, if no user data is needed.
    package Node_Popup_Cbs renames Graph_Widget_Callbacks;
@@ -249,9 +224,10 @@ package Giant.Graph_Widgets.Handlers is
    ----------------------------------------------------------------------------
    --  Emits the signal.
    procedure Emit_Node_Popup_Event
-     (Widget : access Graph_Widget_Record'Class;
-      Event  : in     Gdk.Event.Gdk_Event_Button;
-      Node   : in     Graph_Lib.Node_Id);
+     (Widget   : access Graph_Widget_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event_Button;
+      Location : in     Vis.Logic.Vector_2d;
+      Node     : in     Graph_Lib.Node_Id);
 
 
    -----------------------
@@ -307,10 +283,26 @@ package Giant.Graph_Widgets.Handlers is
 
    ----------------------------------------------------------------------------
    --  Emits the signal.
-   procedure Emit_Action_Mode_Button_Press_Event
+   procedure Emit_Action_Mode_Button_Press_Event_Background
      (Widget   : access Graph_Widget_Record'Class;
       Event    : in     Gdk.Event.Gdk_Event_Button;
       Location : in     Vis.Logic.Vector_2d);
+
+   ----------------------------------------------------------------------------
+   --  Emits the signal.
+   procedure Emit_Action_Mode_Button_Press_Event_Edge
+     (Widget   : access Graph_Widget_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event_Button;
+      Location : in     Vis.Logic.Vector_2d;
+      Edge     : in     Graph_Lib.Edge_Id);
+
+   ----------------------------------------------------------------------------
+   --  Emits the signal.
+   procedure Emit_Action_Mode_Button_Press_Event_Node
+     (Widget   : access Graph_Widget_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event_Button;
+      Location : in     Vis.Logic.Vector_2d;
+      Node     : in     Graph_Lib.Node_Id);
 
 
    ----------------------------

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-notifications.ads,v $, $Revision: 1.7 $
+--  $RCSfile: giant-graph_widgets-notifications.ads,v $, $Revision: 1.8 $
 --  $Author: keulsn $
---  $Date: 2003/07/20 23:20:04 $
+--  $Date: 2003/08/19 12:21:25 $
 --
 ------------------------------------------------------------------------------
 --
@@ -60,26 +60,30 @@ package Giant.Graph_Widgets.Notifications is
    --  one specific edge.
    --
    --  Parameters:
-   --    Widget - The graph widget
-   --    Event - The gdk source event
-   --    Edge   - The edge, the PopUp Menu is requested for
+   --    Widget   - The graph widget
+   --    Event    - The gdk source event
+   --    Location - Position where the mouse was pressed
+   --    Edge     - The edge, the PopUp Menu is requested for
    procedure Edge_Popup
-     (Widget : access Graph_Widget_Record'Class;
-      Event  : in     Gdk.Event.Gdk_Event_Button;
-      Edge   : in     Vis_Data.Vis_Edge_Id);
+     (Widget   : access Graph_Widget_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event_Button;
+      Location : in     Vis.Logic.Vector_2d;
+      Edge     : in     Vis_Data.Vis_Edge_Id);
 
    ----------------------------------------------------------------------------
    --  Informs the controller that the user has requested a PopUp Menu for
    --  one specific node.
    --
    --  Parameters:
-   --    Widget - The graph widget
-   --    Event - The gdk source event
-   --    Node   - The node, the PopUp Menu is requested for
+   --    Widget   - The graph widget
+   --    Event    - The gdk source event
+   --    Location - Position where the mouse was pressed
+   --    Node     - The node, the PopUp Menu is requested for
    procedure Node_Popup
-     (Widget : access Graph_Widget_Record'Class;
-      Event  : in     Gdk.Event.Gdk_Event_Button;
-      Node   : in     Vis_Data.Vis_Node_Id);
+     (Widget   : access Graph_Widget_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event_Button;
+      Location : in     Vis.Logic.Vector_2d;
+      Node     : in     Vis_Data.Vis_Node_Id);
 
 
    -----------------------
@@ -111,7 +115,8 @@ package Giant.Graph_Widgets.Notifications is
    ----------------------------------------------------------------------------
    --  Emits the 'Graph_Widgets.Handlers.Action_Mode_Button_Press_Event'
    --  to inform any listener that the user has performed a
-   --  "button_press_event" while the graph widget was in action mode.
+   --  "button_press_event" on empty background while the graph widget was
+   --  in action mode.
    --
    --  Note that the graph widget remains in action mode after this signal.
    --  If action mode should be canceled, call 'Cancel_Action_Mode'
@@ -122,10 +127,54 @@ package Giant.Graph_Widgets.Notifications is
    --               details.
    --    Location - The location where the event happened in logical
    --               coordinates.
-   procedure Action_Mode_Button_Press_Event
+   procedure Action_Mode_Button_Press_Event_Background
      (Widget   : access Graph_Widget_Record'Class;
       Event    : in     Gdk.Event.Gdk_Event_Button;
       Location : in     Vis.Logic.Vector_2d);
+
+   ----------------------------------------------------------------------------
+   --  Emits the 'Graph_Widgets.Handlers.Action_Mode_Button_Press_Event'
+   --  to inform any listener that the user has performed a
+   --  "button_press_event" on an edge while the graph widget was in
+   --  action mode.
+   --
+   --  Note that the graph widget remains in action mode after this signal.
+   --  If action mode should be canceled, call 'Cancel_Action_Mode'
+   --
+   --  Parameters:
+   --    Widget   - The graph widget
+   --    Event    - The event obtained from GtkAda. See 'Gdk.Event' for
+   --               details.
+   --    Location - The location where the event happened in logical
+   --               coordinates.
+   --    Edge     - The edge on that the button was pressed
+   procedure Action_Mode_Button_Press_Event_Edge
+     (Widget   : access Graph_Widget_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event_Button;
+      Location : in     Vis.Logic.Vector_2d;
+      Edge     : in     Vis_Data.Vis_Edge_Id);
+
+   ----------------------------------------------------------------------------
+   --  Emits the 'Graph_Widgets.Handlers.Action_Mode_Button_Press_Event'
+   --  to inform any listener that the user has performed a
+   --  "button_press_event" on a node while the graph widget was in
+   --  action mode.
+   --
+   --  Note that the graph widget remains in action mode after this signal.
+   --  If action mode should be canceled, call 'Cancel_Action_Mode'
+   --
+   --  Parameters:
+   --    Widget   - The graph widget
+   --    Event    - The event obtained from GtkAda. See 'Gdk.Event' for
+   --               details.
+   --    Location - The location where the event happened in logical
+   --               coordinates.
+   --    Node     - The node on that the button was pressed
+   procedure Action_Mode_Button_Press_Event_Node
+     (Widget   : access Graph_Widget_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event_Button;
+      Location : in     Vis.Logic.Vector_2d;
+      Node     : in     Vis_Data.Vis_Node_Id);
 
 
    --------------------------
