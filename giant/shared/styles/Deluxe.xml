@@ -19,10 +19,11 @@
   </default_node_setting>
     
     
+  <!-- 1. OK-->
   <node_class_specific_setting 
     icon         = "../icons/vis_deluxe/Prog_Unit.xpm"
-    text_color   = "#FFFFFF"
-    border_color = "#000000"
+    text_color   = "#00FFFF"
+    border_color = "#00FFFF"
     fill_color   = "#FF0000"> 
     
     <node_attribute attribute_name  = "SLoc"/>   
@@ -33,10 +34,11 @@
   </node_class_specific_setting>
 
 
+  <!-- 2. OK-->
   <node_class_specific_setting 
     icon         = "../icons/vis_deluxe/Routine.xpm"
     text_color   = "#FFFFFF"
-    border_color = "#000000"
+    border_color = "#00FFFF"
     fill_color   = "#920000"> 
     
     <node_attribute attribute_name  = "SLoc"/>   
@@ -47,52 +49,55 @@
                 
     <super_node_class   super_node_class_name = "Routine"/> 
   </node_class_specific_setting>
+  
+
+  <!-- 3. OK -->  
+  <node_class_specific_setting 
+    icon         = "../icons/vis_deluxe/Value.xpm"
+    text_color   = "#FF00FF"
+    border_color = "#000000"
+    fill_color   = "#00FF00"> 
+    
+    <node_attribute attribute_name  = "SLoc"/>   
+    <node_attribute attribute_name  = "Parent"/>     
+                
+    <super_node_class   super_node_class_name = "Value"/> 
+  </node_class_specific_setting>
 
 
 
 
   <!-- ................................................................. -->
   <default_edge_setting
-    line_color = "#"     
-    text_color = "#000000"     
-    line_style = "continuous_line"      
+    line_color = "#F4F4F4"     
+    text_color = "#F4F4F4"     
+    line_style = "dotted_line"      
     show_label = "no" />  
     
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
     
+  <!-- 1. OK -->  
   <edge_class_specific_setting
-    line_color = "#920000"
-    text_color = "#000000"
+    line_color = "#00FFFF"
+    text_color = "#00FFFF"
+    line_style = "continuous_line"
+    show_label = "yes"> 
+           
+    <edge_class
+      start_node_class = "*"
+      attribute_name   = "Parent" />           
+    
+  </edge_class_specific_setting>   
+  
+  
+      
+  <edge_class_specific_setting
+    line_color = "#FF0000"
+    text_color = "#FF0000"
     line_style = "continuous_line"
     show_label = "yes"> 
            
     <super_edge_class
-      super_start_node_class = "Routine"
+      super_start_node_class = "Prog_Unit"
       attribute_name         = "*" />                
     
   </edge_class_specific_setting> 
