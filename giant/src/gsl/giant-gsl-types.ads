@@ -21,7 +21,7 @@
 --
 -- $RCSfile: giant-gsl-types.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/02 20:41:03 $
+-- $Date: 2003/08/26 14:00:00 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -400,39 +400,47 @@ package Giant.Gsl.Types is
    ---------------------------------------------------------------------------
 
    type Reference_Type is (Var, Subgraph, Selection);
-   type Gsl_Var_Reference_Record (Size : Natural) is new 
-     Gsl_Type_Record with private;
+   type Gsl_Var_Reference_Record
+     (Size         : Natural;
+      Context_Size : Natural) is new Gsl_Type_Record with private;
    type Gsl_Var_Reference is access all Gsl_Var_Reference_Record;
 
    ---------------------------------------------------------------------------
    --
    function Create_Gsl_Var_Reference
-     (Ref_Type : Reference_Type;
-      Ref_Name : String) 
-      return Gsl_Var_Reference;
+     (Ref_Type : in Reference_Type;
+      Ref_Name : in String;
+      Context  : in String := "")
+      return Gsl_Var_Reference;   
 
    ---------------------------------------------------------------------------
    --
    function Is_Gsl_Var_Reference
-     (Var : Gsl_Type)
+     (Var : in Gsl_Type)
       return Boolean;
 
    ---------------------------------------------------------------------------
    --
    function Is_Gsl_Global_Reference
-     (Var : Gsl_Type)
+     (Var : in Gsl_Type)
       return Boolean;
 
    ---------------------------------------------------------------------------
    --
    function Get_Ref_Type
-     (Var : Gsl_Var_Reference)
+     (Var : in Gsl_Var_Reference)
       return Reference_Type;
 
    ---------------------------------------------------------------------------
    --
    function Get_Ref_Name
-     (Var : Gsl_Var_Reference)
+     (Var : in Gsl_Var_Reference)
+      return String;
+
+   ---------------------------------------------------------------------------
+   --
+   function Get_Ref_Context
+     (Var : in Gsl_Var_Reference)
       return String;
 
    ---------------------------------------------------------------------------
@@ -605,10 +613,13 @@ private
 
    ---------------------------------------------------------------------------
    -- Gsl_Var_Reference
-   type Gsl_Var_Reference_Record (Size : Natural) is new Gsl_Type_Record with
+   type Gsl_Var_Reference_Record
+     (Size         : Natural;
+      Context_Size : Natural) is new Gsl_Type_Record with
       record
          Ref_Type : Reference_Type;
          Ref_Name : String (1 .. Size);
+         Context  : String (1 .. Context_Size);
       end record;
 
    ---------------------------------------------------------------------------

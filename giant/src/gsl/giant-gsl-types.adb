@@ -20,9 +20,9 @@
 --
 -- First Author: Gerrit Schulz
 --
--- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.16 $
+-- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.17 $
 -- $Author: schulzgt $
--- $Date: 2003/08/12 09:33:56 $
+-- $Date: 2003/08/26 14:00:00 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Tags;
@@ -712,15 +712,17 @@ package body Giant.Gsl.Types is
    ---------------------------------------------------------------------------
    --
    function Create_Gsl_Var_Reference
-     (Ref_Type : Reference_Type;
-      Ref_Name : String)
+     (Ref_Type : in Reference_Type;
+      Ref_Name : in String;
+      Context  : in String := "")
       return Gsl_Var_Reference is
 
       Var : Gsl_Var_Reference;
    begin
-      Var := new Gsl_Var_Reference_Record (Ref_Name'Length);
+      Var := new Gsl_Var_Reference_Record (Ref_Name'Length, Context'Length);
       Var.Ref_Type := Ref_Type;
       Var.Ref_Name := Ref_Name;
+      Var.Context  := Context;
       return Var;
    end;
 
@@ -770,7 +772,16 @@ package body Giant.Gsl.Types is
       return String is
    begin
       return Var.Ref_Name;
-   end; 
+   end;
+
+   ---------------------------------------------------------------------------
+   --
+   function Get_Ref_Context
+     (Var : Gsl_Var_Reference)
+      return String is
+   begin
+      return Var.Context;
+   end;
 
    ---------------------------------------------------------------------------
    --
@@ -780,7 +791,8 @@ package body Giant.Gsl.Types is
 
       Var        : Gsl_Var_Reference;
    begin
-      Var := new Gsl_Var_Reference_Record (Object.Ref_Name'Length);
+      Var := new Gsl_Var_Reference_Record
+        (Object.Ref_Name'Length, Object.Context'Length);
       Var.all := Object.all;
       return Gsl_Type (Var);
    end Copy;
