@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.16 $
-%  $Date: 2003/02/19 09:41:20 $
-%  $Author: schwiemn $
+%  $RCSfile: gui.tex,v $, $Revision: 1.17 $
+%  $Date: 2003/02/19 10:59:53 $
+%  $Author: birdy $
 %
 %  Description: Bis zu Revision 1.6 sind UseCase-artige Beschreibungen enthalten,
 %  die f¸r UseCases n¸tzlich sein kˆnnten. 
@@ -25,6 +25,10 @@ angegeben, sind hintereinander angegebene Elemente (z.B. Listeneintr‰ge)
 immer von links nach rechts oder von oben nach unten beschrieben.
 Sofern nicht anders angegeben, sind alle Ausgaben immer linksb¸ndig
 formatiert.
+Jedes Hauptmen¸ und jedes PopUpMen¸ bekommt in dieser Spezifikation einen
+eindeutigen Namen.
+Jedes Untermen¸ (horizontal) heist MEN‹NAME-UNTERMEN‹NAME
+Jeder Eintag (vertikal) heiﬂt MEN‹NAME-UNTERMEN‹NAME-EINTRAGSNAME
 
 \section {Main Window}
 
@@ -59,6 +63,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
        \begin{enumerate}
           %Dient zum Filtern von Annotationen deren Knoten nicht mehr
 	  %visualisiert sind.
+	  % -- Wird nicht beim Lˆschen eines Knotens auch dessen Annotation gelˆscht? Philipp
           \item Delete annotations having no visible Node
         \end{enumerate}
 	
@@ -187,6 +192,10 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     >>>>>>>> hier fehlen noch Punkte
     \begin{enumerate}
       \item Show Node Info Window
+      \item Hide Node
+      \item Show Parent
+      \item Show Children
+      
     \end{enumerate}
     
 
@@ -330,6 +339,16 @@ Titel \gq{GIANT Error}. Im Fenster ist
 ein Fehlertext Text ERROR\_LABEL und ein Button OK\_BUTTON mit der
 Beschriftung OK\_LABEL.
 Defaultm‰ﬂig ist der Button mit \gq{OK} beschriftet.
+
+\section{Sicherheitsabfrage}
+
+Eine allgemeine Sicherheitsabfrage ist ein Fenster CONFIRMATION\_WINDOW mit dem
+Titel \gq{GIANT Confirmation Prompt}. Im Fenster ist
+ein Fragetext Text CONFIRMATION\_LABEL und ein Button YES\_BUTTON mit der
+Beschriftung YES\_LABEL, sowie ein NO\_BUTTON mit der Beschriftung
+NO\_LABEL.
+Defaultm‰ﬂig ist der YES\_BUTTON mit \gq{Yes} beschriftet, NO\_BUTTON
+mit \gq{No}.
 
 \section{Auswahl von Dateien}
 
