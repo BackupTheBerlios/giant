@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-matrix_layouts.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-matrix_layouts.adb,v $, $Revision: 1.5 $
 --  $Author: koppor $
---  $Date: 2003/07/03 01:15:32 $
+--  $Date: 2003/07/03 01:19:41 $
 --
 
 with Ada.Numerics.Generic_Elementary_Functions;
@@ -123,9 +123,9 @@ package body Giant.Matrix_Layouts is
          end Min;
 
          function Max
-           (A : in Natural;
-            B : in Natural)
-           return Natural
+           (A : in Float;
+            B : in Float)
+           return Float
          is
          begin
             if A > B then
@@ -149,6 +149,11 @@ package body Giant.Matrix_Layouts is
             --  TBD: find next node by a breadth-first-search
             --       (according to spec)
             Set_Position_Of_Top_Node (Layout.Current_Position);
+
+            --  TBD: Graph_Widgets.Get_Node_Height is not available!!
+            Layout.Current_Row_Height := Max
+              (Layout.Current_Row_Height,
+               20.0);
 
             Layout.Current_Column := Layout.Current_Column + 1;
             Vis.Logic.Set_X
