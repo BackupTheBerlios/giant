@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/10 11:56:20 $
+-- $Date: 2003/06/22 22:53:23 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -129,5 +129,28 @@ package body Giant.Gsl is
          end case;
       end if;
    end Log_Syntax_Node;
+
+   function Log_Gsl_Type
+     (Var : Gsl_Type) 
+      return String is
+   begin
+      if Var = Gsl_Null then
+         return "Gsl_Null";
+      elsif Var'Tag = Gsl_String_Record'Tag then
+         return "Gsl_String";
+      elsif Var'Tag = Gsl_Boolean_Record'Tag then
+         return "Gsl_Boolean";
+      elsif Var'Tag = Gsl_Natural_Record'Tag then
+         return "Gsl_Natural";
+      elsif Var'Tag = Gsl_List_Record'Tag then
+         return "Gsl_List";
+      elsif Var'Tag = Gsl_Var_Reference_Record'Tag then
+         return "Gsl_Var_Reference";
+      elsif Var'Tag = Gsl_Script_Reference_Record'Tag then
+         return "Gsl_Script_Reference";
+      else
+         return "Unknown Type";
+      end if;
+   end Log_Gsl_Type;
 
 end Giant.Gsl;

@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/13 13:08:29 $
+-- $Date: 2003/06/22 22:53:23 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -41,8 +41,10 @@ with Giant.Default_Logger;
 
 package Giant.Gsl is
 
-   Var_Not_Found      : exception;
-   Var_Already_Exists : exception;
+   Var_Not_Found              : exception;
+   Var_Already_Exists         : exception;
+   Wrong_Number_Of_Parameters : exception;
+   Gsl_Runtime_Error          : exception;
 
    ---------------------------------------------------------------------------
    -- Gsl_Type - parent class for all types in GSL defined in Gsl.Types
@@ -60,10 +62,14 @@ package Giant.Gsl is
    -- represents the type Gsl_Null and works as null-pointer for Gsl_Type 
    Gsl_Null : constant Gsl_Type;
 
+   ---------------------------------------------------------------------------
+   -- possible types of Syntax_Nodes
    type Node_Type is (Literal, Visible_Var, Global_Var, Visible_Ref,
-                       Var_Creation, Global_Ref, Script_Decl, List, Sequence,
-                       Script_Activation);
+                      Var_Creation, Global_Ref, Script_Decl, List, Sequence,
+                      Script_Activation, Script_Exec, AR_Destroy);
 
+   ---------------------------------------------------------------------------
+   -- Syntax_Node is the type used in the Syntax Tree and the Execution Stack
    type Syntax_Node_Record is private;
    type Syntax_Node is access all Syntax_Node_Record;
 
@@ -72,6 +78,10 @@ package Giant.Gsl is
    procedure Log_Syntax_Node
      (Node : Syntax_Node);
 
+   function Log_Gsl_Type
+     (Var : Gsl_Type)
+      return String;
+
    ---------------------------------------------------------------------------
    -- from Reuse
    package Execution_Stacks is new Stacks_Unbounded
@@ -79,11 +89,6 @@ package Giant.Gsl is
 
    package Result_Stacks is new Stacks_Unbounded
      (Elem_Type => Gsl_Type);
-
-   ---------------------------------------------------------------------------
-   -- 
-   --type Gsl_Var_Record is private;
-   --type Gsl_Var is access all Gsl_Var_Record;
 
    ---------------------------------------------------------------------------
    -- instantiation of Hashed_Mappings for GSL variables
@@ -98,7 +103,7 @@ package Giant.Gsl is
       Hash => Gsl_Var_Hash);
 
    ---------------------------------------------------------------------------
-   -- Activation Record 
+   -- Activation Record used in the Gsl Interpreter 
    type Activation_Record_Record is private;
    type Activation_Record is access all Activation_Record_Record;
 
@@ -115,7 +120,7 @@ private
    Gsl_Null : constant Gsl_Type := null;
 
    ---------------------------------------------------------------------------
-   -- type for the nodes in the syntax tree
+   -- Syntax_Node is the type used in the Syntax Tree and the Execution Stack
    type Syntax_Node_Record is
       record
          N_Type  : Node_Type;
@@ -128,15 +133,7 @@ private
    Null_Node : constant Syntax_Node := null;
 
    ---------------------------------------------------------------------------
-   --
-   --type Gsl_Var_Record is
-   --   record
-   --      Name  : Unbounded_String;
-   --      Value : Gsl_Type;
-   --   end record;
-
-   ---------------------------------------------------------------------------
-   --
+   -- Activation Record used in the Gsl Interpreter 
    type Activation_Record_Record is
       record
          Parent : Activation_Record; 
