@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger-test.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-default_logger-test.adb,v $, $Revision: 1.5 $
 --  $Author: squig $
---  $Date: 2003/06/18 17:32:02 $
+--  $Date: 2003/07/09 16:22:35 $
 --
 
 with Ada.Text_IO;
@@ -35,14 +35,16 @@ package body Giant.Default_Logger.Test is
    procedure Test_Init (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
    begin
-      Assert (Ada.Text_IO.Is_Open (Out_File), "Is_Open");
+      Assert (Ada.Text_IO.Is_Open (Out_File), "Not Is_Open");
    end;
 
    procedure Test_Get_Level_String (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
    begin
-      Assert (Get_Level_String (Level_Info) = "INFO", "Level_Info");
-      Assert (Get_Level_String (Level_Debug) = "DEBUG", "Level_Debug");
+      Assert (Get_Level_String (Level_Info) = "INFO ",
+              "Level_Info not INFO");
+      Assert (Get_Level_String (Level_Debug) = "DEBUG",
+              "Level_Debug not DEBUG");
    end;
 
    function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is

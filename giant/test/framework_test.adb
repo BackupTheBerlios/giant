@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: framework_test.adb,v $, $Revision: 1.10 $
+--  $RCSfile: framework_test.adb,v $, $Revision: 1.11 $
 --  $Author: squig $
---  $Date: 2003/07/02 19:03:42 $
+--  $Date: 2003/07/09 16:22:35 $
 --
 with AUnit.Test_Suites; use AUnit.Test_Suites;
 with AUnit.Test_Runner;
@@ -37,6 +37,10 @@ with Giant.File_Management.Test;
 with Giant.Graph_Lib.Test;
 with Giant.Graph_Lib.Node_Attribute_Filters.Test;
 with Giant.Graph_Lib.Subgraphs.Test;
+with Giant.Gsl_Support.Test;
+with Giant.Layout_Factory.Test;
+with Giant.Matrix_Layouts.Test;
+with Giant.Node_Annotations.Test;
 with Giant.Projects.Test;
 with Giant.Valid_Names.Test;
 with Giant.Vis_Windows.Test;
@@ -44,29 +48,51 @@ with Giant.XML_File_Access.Test;
 
 procedure Framework_Test is
 
-   function Suite return Access_Test_Suite is
+   function Default_Suite
+     return Access_Test_Suite
+   is
       Result : Access_Test_Suite := new Test_Suite;
    begin
---        Add_Test (Result, new Giant.Config.Test.Test_Case);
---        Add_Test (Result, new Giant.Config.Vis_Styles.Test.Test_Case);
---        Add_Test (Result, new Giant.Default_Logger.Test.Test_Case);
---        Add_Test (Result, new Giant.File_Management.Test.Test_Case);
---        Add_Test (Result, new Giant.Graph_Lib.Test.Test_Case);
---        Add_Test (Result, new Giant.Graph_Lib.Node_Attribute_Filters.Test.Test_Case);
---        Add_Test (Result, new Giant.Graph_Lib.Subgraphs.Test.Test_Case);
---        Add_Test (Result, new Giant.Projects.Test.Test_Case);
---        Add_Test (Result, new Giant.Valid_Names.Test.Test_Case);
---        Add_Test (Result, new Giant.Vis_Windows.Test.Test_Case);
---        Add_Test (Result, new Giant.XML_File_Access.Test.Test_Case);
+      Add_Test (Result, new Giant.Config.Test.Test_Case);
+      Add_Test (Result, new Giant.Config.Vis_Styles.Test.Test_Case);
+      Add_Test (Result, new Giant.Default_Logger.Test.Test_Case);
+      Add_Test (Result, new Giant.File_Management.Test.Test_Case);
+      Add_Test (Result, new Giant.Graph_Lib.Test.Test_Case);
+      Add_Test (Result, new Giant.Graph_Lib.Node_Attribute_Filters.Test.Test_Case);
+      Add_Test (Result, new Giant.Graph_Lib.Subgraphs.Test.Test_Case);
+      Add_Test (Result, new Giant.Gsl_Support.Test.Test_Case);
+      Add_Test (Result, new Giant.Layout_Factory.Test.Test_Case);
+      Add_Test (Result, new Giant.Matrix_Layouts.Test.Test_Case);
+      Add_Test (Result, new Giant.Node_Annotations.Test.Test_Case);
+      Add_Test (Result, new Giant.Projects.Test.Test_Case);
+      Add_Test (Result, new Giant.Valid_Names.Test.Test_Case);
+      Add_Test (Result, new Giant.Vis_Windows.Test.Test_Case);
+      return Result;
+   end Default_Suite;
+
+   function Reuse_Suite
+     return Access_Test_Suite
+   is
+      Result : Access_Test_Suite := new Test_Suite;
+   begin
       Add_Test (Result, new Hashed_Mappings_Test.Test_Case);
       return Result;
-   end Suite;
+   end Reuse_Suite;
 
-   procedure Run is new AUnit.Test_Runner (Suite);
+   function Memory_Leak_Suite
+     return Access_Test_Suite
+   is
+      Result : Access_Test_Suite := new Test_Suite;
+   begin
+      Add_Test (Result, new Giant.XML_File_Access.Test.Test_Case);
+      return Result;
+   end Memory_Leak_Suite;
+
+   procedure Run is new AUnit.Test_Runner (Default_Suite);
 
 begin
-   Giant.Default_Logger.Init;
-   Giant.Default_Logger.Debug ("Starting Test...");
+   Giant.Default_Logger.Init ("debug.log");
+   Giant.Default_Logger.Info ("Running Tests...");
 
    Run;
 

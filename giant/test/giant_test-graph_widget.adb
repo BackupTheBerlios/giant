@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant_test-graph_widget.adb,v $, $Revision: 1.4 $
---  $Author: keulsn $
---  $Date: 2003/07/09 10:38:33 $
+--  $RCSfile: giant_test-graph_widget.adb,v $, $Revision: 1.5 $
+--  $Author: squig $
+--  $Date: 2003/07/09 16:22:35 $
 --
 ------------------------------------------------------------------------------
 
@@ -124,7 +124,7 @@ begin
    Giant.Graph_Lib.Initialize;
 
    Giant.Config.Vis_Styles.Initialize_Config_Vis_Styles
-     (Resources_Root_Dir     => "/home/steffen/giant/giant/test",
+     (Resources_Root_Dir     => "",
       GIANT_VIS_Directory    => "",
       User_Vis_Directory     => "",
       Default_Vis_Style_File =>

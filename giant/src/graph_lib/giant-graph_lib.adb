@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.48 $
---  $Author: koppor $
---  $Date: 2003/07/08 13:47:26 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.49 $
+--  $Author: squig $
+--  $Date: 2003/07/09 16:22:34 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -942,22 +942,22 @@ package body Giant.Graph_Lib is
          is
 
             Edge_Array         : Edge_Id_Array_Access;
-            Current_Edge_Index : Natural;
+            Current_Edge_Index : Integer := First_Index;
 
             procedure Execute (Edge : Edge_Id)
             is
             begin
-               Current_Edge_Index := Current_Edge_Index + 1;
                Edge_Array (Current_Edge_Index) := Edge;
+               Current_Edge_Index := Current_Edge_Index + 1;
             end Execute;
 
             procedure Apply is new Edge_Id_Sets.Apply
               (Execute => Execute);
 
+            Last_Index : Integer
+              := First_Index + Edge_Id_Sets.Size (Edges_Set) - 1;
           begin
-             Edge_Array := new Edge_Id_Array
-               (First_Index..Edge_Id_Sets.Size (Edges_Set) - First_Index + 1);
-             Current_Edge_Index := Edge_Array'First - 1;
+             Edge_Array := new Edge_Id_Array (First_Index .. Last_Index);
              Apply (Edges_Set);
              return Edge_Array;
           end Convert_Edge_Set_To_Edge_Array;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger.ads,v $, $Revision: 1.7 $
+--  $RCSfile: giant-default_logger.ads,v $, $Revision: 1.8 $
 --  $Author: squig $
---  $Date: 2003/07/08 16:07:32 $
+--  $Date: 2003/07/09 16:22:35 $
 --
 ------------------------------------------------------------------------------
 --
@@ -128,7 +128,9 @@ package Giant.Default_Logger is
 
 
    ---------------------------------------------------------------------------
-   --  Returns a string representation of Level.
+   --  Returns a string representation of Level. The string is filled
+   --  with spaces so that the length of the returned string is the
+   --  same for all levels.
    --
    --  Parameters:
    --    Level - The level to convert
