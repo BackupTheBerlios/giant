@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 03:35:59 $
+--  $Date: 2003/07/08 19:41:48 $
 --
 ------------------------------------------------------------------------------
 
@@ -75,6 +75,13 @@ package body Giant.Graph_Widgets.States is
       Widget.States.Action_Mode := False;
    end Disable_Action_Mode;
 
+   function Is_Action_Mode_Current
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean is
+   begin
+      return Widget.States.Action_Mode;
+   end Is_Action_Mode_Current;
+
 
    -----------
    -- Locks --
@@ -94,14 +101,42 @@ package body Giant.Graph_Widgets.States is
    procedure Destroy_Lock
      (Widget : access Graph_Widget_Record'Class;
       Lock   : in     Lock_Type) is
+
+      Lock_Removed : Boolean;
    begin
       Lock_Sets.Remove_If_Exists
         (A_Set   => Widget.States.Locks,
-         Element => Lock);
+         Element => Lock,
+         Found   => Lock_Removed);
       if Lock_Sets.Is_Empty (Widget.States.Locks) then
          Widget.States.Highest_Lock := 0;
+         if Lock_Removed then
+            Widget.States.Lock_Flush_Pending := True;
+         end if;
       end if;
    end Destroy_Lock;
+
+   function Is_Valid_Lock
+     (Widget : access Graph_Widget_Record'Class;
+      Lock   : in     Lock_Type)
+     return Boolean is
+   begin
+      return Lock_Sets.Is_Member (Widget.States.Locks, Lock);
+   end Is_Valid_Lock;
+
+   function Must_Flush_Locked_Content
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean is
+   begin
+      return Widget.States.Lock_Flush_Pending and then
+        Gtk.Widget.Realized_Is_Set (Widget);
+   end Must_Flush_Locked_Content;
+
+   procedure Flush_Locked_Content
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Widget.States.Lock_Flush_Pending := False;
+   end Flush_Locked_Content;
 
 
    -------------------------
@@ -125,26 +160,11 @@ package body Giant.Graph_Widgets.States is
    -- State Inquiries --
    ---------------------
 
-   function Is_Valid_Lock
-     (Widget : access Graph_Widget_Record'Class;
-      Lock   : in     Lock_Type)
-     return Boolean is
-   begin
-      return Lock_Sets.Is_Member (Widget.States.Locks, Lock);
-   end Is_Valid_Lock;
-
    function Has_Display_Changed
      (Widget : access Graph_Widget_Record'Class)
      return Boolean is
    begin
       return Widget.States.Visual_Polluted;
    end Has_Display_Changed;
-
-   function Is_Action_Mode_Current
-     (Widget : access Graph_Widget_Record'Class)
-     return Boolean is
-   begin
-      return Widget.States.Action_Mode;
-   end Is_Action_Mode_Current;
 
 end Giant.Graph_Widgets.States;

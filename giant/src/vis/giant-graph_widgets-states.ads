@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-states.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-graph_widgets-states.ads,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 03:35:59 $
+--  $Date: 2003/07/08 19:41:48 $
 --
 ------------------------------------------------------------------------------
 --
@@ -64,6 +64,11 @@ package Giant.Graph_Widgets.States is
    procedure Disable_Action_Mode
      (Widget : access Graph_Widget_Record'Class);
 
+   --  Returns True if and only if 'Widget' is in action mode
+   function Is_Action_Mode_Current
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean;
+
 
    -----------
    -- Locks --
@@ -76,6 +81,22 @@ package Giant.Graph_Widgets.States is
    procedure Destroy_Lock
      (Widget : access Graph_Widget_Record'Class;
       Lock   : in     Lock_Type);
+
+   function Is_Valid_Lock
+     (Widget : access Graph_Widget_Record'Class;
+      Lock   : in     Lock_Type)
+     return Boolean;
+
+   --  Returns True if the last lock was released, but no flush operation
+   --  has happened yet.
+   function Must_Flush_Locked_Content
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean;
+
+   --  Must be called when all locked modifications are being applied.
+   --  'Must_Flush_Locked_Content' will return False after.
+   procedure Flush_Locked_Content
+     (Widget : access Graph_Widget_Record'Class);
 
 
    ------------------------
@@ -93,19 +114,9 @@ package Giant.Graph_Widgets.States is
    -- State Inquiries --
    ---------------------
 
-   function Is_Valid_Lock
-     (Widget : access Graph_Widget_Record'Class;
-      Lock   : in     Lock_Type)
-     return Boolean;
-
    --  Returns True if any visible content on the graph widget might have
    --  changed and the visual buffer must be updated.
    function Has_Display_Changed
-     (Widget : access Graph_Widget_Record'Class)
-     return Boolean;
-
-   --  Returns True if and only if 'Widget' is in action mode
-   function Is_Action_Mode_Current
      (Widget : access Graph_Widget_Record'Class)
      return Boolean;
 

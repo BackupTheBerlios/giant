@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.6 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 03:35:59 $
+--  $Date: 2003/07/08 19:41:48 $
 --
 ------------------------------------------------------------------------------
 
@@ -43,8 +43,14 @@ with Giant.Graph_Widgets.Drawing;
 with Giant.Graph_Widgets.Handlers;
 with Giant.Graph_Widgets.Settings;
 with Giant.Graph_Widgets.States;
+with Giant.Logger;
 
 package body Giant.Graph_Widgets.Callbacks is
+
+
+   package Callbacks_Logger is new Logger
+     (Name => "Giant.Graph_Widgets.Callbacks");
+
 
    --------------------------
    -- Explicit Marshallers --
@@ -224,6 +230,9 @@ package body Giant.Graph_Widgets.Callbacks is
    begin
       Settings.Set_Up (Widget);
       Drawing.Set_Up (Widget);
+      if States.Must_Flush_Locked_Content (Widget) then
+         Flush_Locked (Widget);
+      end if;
       -----------------------------------raise Unimplemented;
    end After_Realize;
 
@@ -299,6 +308,7 @@ package body Giant.Graph_Widgets.Callbacks is
       end if;
 
       if States.Has_Display_Changed (Widget) then
+         Callbacks_Logger.Debug ("Updating Display");
          Gdk_Area := Gdk.Event.Get_Area (Event);
          Area := Vis.Absolute.Combine_Rectangle
            (X_1 => Vis.Absolute_Int (Gdk_Area.X),

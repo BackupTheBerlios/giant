@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.7 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 03:35:59 $
+--  $Date: 2003/07/08 19:41:48 $
 --
 ------------------------------------------------------------------------------
 
@@ -35,11 +35,15 @@ with Glib;
 with Giant.Graph_Lib.Node_Attribute_Filters;
 with Giant.Graph_Widgets.Settings;
 with Giant.Graph_Widgets.States;
+with Giant.Logger;
 
 package body Giant.Graph_Widgets.Drawing is
 
    use Vis.Absolute;
-   use type Vis.Absolute_Int;
+
+
+   package Drawing_Logger is new Logger
+     (Name => "Giant.Graph_Widgets.Drawing");
 
 
    type Layer_Clipping_Array is array (Positive range <>) of
@@ -818,7 +822,9 @@ package body Giant.Graph_Widgets.Drawing is
 
       Inner_Rect : Vis.Absolute.Rectangle_2d;
    begin
+      Drawing_Logger.Debug ("Draw_Node");
       if Vis_Data.Is_Hidden (Node) then
+         Drawing_Logger.Debug ("Hidden.");
          return;
       end if;
 
@@ -900,6 +906,7 @@ package body Giant.Graph_Widgets.Drawing is
       Origin           : Vis.Absolute.Vector_2d :=
         Get_Top_Left (Widget.Drawing.Buffer_Area);
    begin
+      Drawing_Logger.Debug ("Update_Buffer_Nodes");
       Vis_Data.Start_Node_Refresh
         (Manager         => Widget.Manager,
          Display_Area    => Widget.Drawing.Buffer_Area,
@@ -922,6 +929,10 @@ package body Giant.Graph_Widgets.Drawing is
                Current_Clipping := Clipping_Queues.Get_Head (Clipping.all);
                exit when Vis_Data.Is_Below
                  (Current_Layer, Current_Clipping.Height);
+               Drawing_Logger.Debug
+                 ("... Apply_Clipping: " &
+                  Vis.Absolute.Image (Current_Clipping.Area) & ", Origin: " &
+                  Vis.Absolute.Image (Origin));
                Apply_Clipping (Widget, Current_Clipping.all, Origin);
                Clipping_Queues.Remove_Head (Clipping.all);
                --  memorize 'Current_Clipping' to close the clip mask when done
@@ -929,6 +940,9 @@ package body Giant.Graph_Widgets.Drawing is
                Clip_Count := Clip_Count + 1;
             end loop;
 
+            Drawing_Logger.Debug
+              ("... Draw_Node: " &
+               Vis.Absolute.Image (Vis_Data.Get_Extent (Current_Node)));
             Draw_Node
               (Widget, Widget.Drawing.Buffer, Current_Node, Origin);
 
@@ -938,12 +952,17 @@ package body Giant.Graph_Widgets.Drawing is
          --  close clip mask
          while Clip_Count > Clip_Array'First loop
             Clip_Count := Clip_Count - 1;
+            Drawing_Logger.Debug
+              ("... Revert_Clipping: " &
+               Vis.Absolute.Image (Clip_Array (Clip_Count).Area) &
+               ", Origin: " & Vis.Absolute.Image (Origin));
             Revert_Clipping (Widget, Clip_Array (Clip_Count).all, Origin);
             Vis_Data.Free (Clip_Array (Clip_Count));
          end loop;
       end;
 
       Vis_Data.End_Node_Refresh (Clipping, Nodes);
+      Drawing_Logger.Debug ("... Nodes done.");
    end Update_Buffer_Nodes;
 
 
@@ -957,6 +976,7 @@ package body Giant.Graph_Widgets.Drawing is
       Buffer_Origin : Vis.Absolute.Vector_2d :=
         Get_Top_Left (Widget.Drawing.Buffer_Area);
    begin
+      Drawing_Logger.Debug ("Update_Buffer_Background");
       Vis_Data.Start_Refresh_Background
         (Manager         => Widget.Manager,
          Display_Area    => Widget.Drawing.Buffer_Area,
@@ -966,6 +986,8 @@ package body Giant.Graph_Widgets.Drawing is
       Iterator := Rect_Lists.MakeListIter (Rectangles);
       while Rect_Lists.More (Iterator) loop
          Rect_Lists.Next (Iterator, Area);
+         Drawing_Logger.Debug
+           ("... Background rectangle: " & Vis.Absolute.Image (Area));
          Draw_Filled
            (Drawable  => Widget.Drawing.Buffer,
             Gc        => Widget.Drawing.Background,
@@ -974,6 +996,7 @@ package body Giant.Graph_Widgets.Drawing is
       end loop;
 
       Vis_Data.End_Refresh_Background (Rectangles);
+      Drawing_Logger.Debug ("... Background done.");
    end Update_Buffer_Background;
 
 
@@ -982,6 +1005,7 @@ package body Giant.Graph_Widgets.Drawing is
    procedure Update_Buffer
      (Widget : access Graph_Widget_Record'Class) is
    begin
+      Drawing_Logger.Debug ("Update_Buffer");
       Update_Buffer_Background (Widget);
       Update_Buffer_Edges (Widget);
       Update_Buffer_Nodes (Widget);
@@ -992,6 +1016,7 @@ package body Giant.Graph_Widgets.Drawing is
      (Widget : access Graph_Widget_Record'Class;
       Area   : in     Vis.Absolute.Rectangle_2d) is
    begin
+      Drawing_Logger.Debug ("Update_Display: " & Vis.Absolute.Image (Area));
       Update_Buffer (Widget);
       Gdk.Drawable.Copy_Area
         (Dest     => Widget.Drawing.Display,
@@ -1084,21 +1109,21 @@ package body Giant.Graph_Widgets.Drawing is
       Window : Gdk.Window.Gdk_Window := Get_Window (Widget);
    begin
       Gdk.GC.Gdk_New (Widget.Drawing.Node_Border, Window);
-      Gdk.GC.Set_Clip_Mask
-        (Widget.Drawing.Node_Border, Widget.Drawing.Clip_Mask);
+--        Gdk.GC.Set_Clip_Mask
+--          (Widget.Drawing.Node_Border, Widget.Drawing.Clip_Mask);
       Gdk.GC.Gdk_New (Widget.Drawing.Node_Fill, Window);
-      Gdk.GC.Set_Clip_Mask
-        (Widget.Drawing.Node_Fill, Widget.Drawing.Clip_Mask);
+--        Gdk.GC.Set_Clip_Mask
+--          (Widget.Drawing.Node_Fill, Widget.Drawing.Clip_Mask);
       Gdk.GC.Gdk_New (Widget.Drawing.Node_Text, Window);
-      Gdk.GC.Set_Clip_Mask
-        (Widget.Drawing.Node_Text, Widget.Drawing.Clip_Mask);
+--        Gdk.GC.Set_Clip_Mask
+--          (Widget.Drawing.Node_Text, Widget.Drawing.Clip_Mask);
       Gdk.GC.Set_Font
         (Widget.Drawing.Node_Text, Settings.Get_Node_Font (Widget));
 
       for I in Vis_Data.Highlight_Type loop
          Gdk.GC.Gdk_New (Widget.Drawing.Node_Light (I), Window);
-         Gdk.GC.Set_Clip_Mask
-           (Widget.Drawing.Node_Light (I), Widget.Drawing.Clip_Mask);
+--           Gdk.GC.Set_Clip_Mask
+--             (Widget.Drawing.Node_Light (I), Widget.Drawing.Clip_Mask);
          Gdk.GC.Set_Foreground
            (Widget.Drawing.Node_Light (I),
             Settings.Get_Highlight_Color (Widget, I));
@@ -1120,8 +1145,8 @@ package body Giant.Graph_Widgets.Drawing is
    begin
       for I in Edge_Style_Type loop
          Gdk.GC.Gdk_New (Widget.Drawing.Edge_Line (I), Window);
-         Gdk.GC.Set_Clip_Mask
-           (Widget.Drawing.Edge_Line (I), Widget.Drawing.Clip_Mask);
+--           Gdk.GC.Set_Clip_Mask
+--             (Widget.Drawing.Edge_Line (I), Widget.Drawing.Clip_Mask);
       end loop;
       Gdk.GC.Set_Dashes
         (Gc          => Widget.Drawing.Edge_Line (Dashed_Line),
@@ -1133,15 +1158,15 @@ package body Giant.Graph_Widgets.Drawing is
          Dash_List   => Dots);
 
       Gdk.GC.Gdk_New (Widget.Drawing.Edge_Label, Window);
-      Gdk.GC.Set_Clip_Mask
-        (Widget.Drawing.Edge_Label, Widget.Drawing.Clip_Mask);
+--        Gdk.GC.Set_Clip_Mask
+--          (Widget.Drawing.Edge_Label, Widget.Drawing.Clip_Mask);
       Gdk.GC.Set_Font
         (Widget.Drawing.Edge_Label, Settings.Get_Edge_Font (Widget));
 
       for I in Vis_Data.Highlight_Type loop
          Gdk.GC.Gdk_New (Widget.Drawing.Edge_Light (I), Window);
-         Gdk.GC.Set_Clip_Mask
-           (Widget.Drawing.Edge_Light (I), Widget.Drawing.Clip_Mask);
+--           Gdk.GC.Set_Clip_Mask
+--             (Widget.Drawing.Edge_Light (I), Widget.Drawing.Clip_Mask);
          Gdk.GC.Set_Foreground
            (Widget.Drawing.Edge_Light (I),
             Settings.Get_Highlight_Color (Widget, I));

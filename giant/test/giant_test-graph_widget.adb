@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant_test-graph_widget.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant_test-graph_widget.adb,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 18:39:23 $
+--  $Date: 2003/07/08 19:41:48 $
 --
 ------------------------------------------------------------------------------
 
@@ -46,11 +46,16 @@ with Giant.Config.Vis_Styles;
 with Giant.Default_Logger;
 with Giant.File_Management;
 with Giant.Graph_Lib;
+with Giant.Graph_Lib.Selections;
 with Giant.Graph_Widgets;
+with Giant.Logger;
 with Giant.Mini_Maps;
 with Giant.Vis;
 
 procedure Giant_Test.Graph_Widget is
+
+   package Test_Log is new Giant.Logger
+     (Name => "Test_Prog");
 
    function On_Main_Window_Delete_Event
      (Window : access Gtk.Window.Gtk_Window_Record'Class)
@@ -101,6 +106,8 @@ procedure Giant_Test.Graph_Widget is
    Quit_Button   : Gtk.Button.Gtk_Button;
    Main_Window   : Gtk.Window.Gtk_Window;
    Scroller      : Gtk.Scrolled_Window.Gtk_Scrolled_Window;
+   Lock          : Giant.Graph_Widgets.Lock_Type;
+   Selection     : Giant.Graph_Lib.Selections.Selection;
 begin
    Giant.Default_Logger.Init;
    Gdk.Threads.Init;
@@ -177,6 +184,26 @@ begin
       Marsh  => Button_Cb.To_Marshaller (On_Main_Window_Quit_Clicked'Access));
 
    Gtk.Window.Show_All (Main_Window);
+
+
+   Giant.Graph_Lib.Load ("/home/stsopra/giant/graphs/rfg_examp.iml");
+   --  selection erzeugen,
+   Selection := Giant.Graph_Lib.Selections.Create ("Funny_Selection");
+   Test_Log.Debug ("Funny_Selection created.");
+   Giant.Graph_Lib.Selections.Add_Node
+     (Selection, Giant.Graph_Lib.Get_Root_Node);
+   Test_Log.Debug
+     ("Root node added, nodes count = " &
+      Natural'Image (Giant.Graph_Lib.Selections.Get_Node_Count (Selection)));
+   --  einfügen
+   Giant.Graph_Widgets.Insert_Selection (Graph_Widget, Selection, Lock);
+   Test_Log.Debug ("Selection inserted.");
+   Giant.Graph_Widgets.Release_Lock (Graph_Widget, Lock);
+   Test_Log.Debug ("Lock released.");
+   --  fertig
+   Giant.Graph_Lib.Selections.Destroy (Selection);
+   Test_Log.Debug ("Selection destroyed.");
+
 
    Gdk.Threads.Enter;
    Gtk.Main.Main;

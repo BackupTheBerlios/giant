@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.17 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.18 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 18:39:23 $
+--  $Date: 2003/07/08 19:41:48 $
 --
 ------------------------------------------------------------------------------
 --
@@ -584,6 +584,15 @@ package Giant.Vis_Data is
       Edge    : in     Vis_Edge_Id);
 
    ----------------------------------------------------------------------------
+   --  Returns True if 'Edge' is contained in a region manager,
+   --  False otherwise.
+   --  Note:
+   --    An edge can be contained in one region manager at most.
+   function Has_Manager
+     (Edge    : in     Vis_Edge_Id)
+     return Boolean;
+
+   ----------------------------------------------------------------------------
    --  Inserts one node into the set of managed nodes. All content above the
    --  visual representation of that node and the visual representation
    --  itself are polluted.
@@ -597,6 +606,15 @@ package Giant.Vis_Data is
    procedure Drop_Node
      (Manager : in out Region_Manager;
       Node    : in     Vis_Node_Id);
+
+   ----------------------------------------------------------------------------
+   --  Returns True if 'Node' is contained in a region manager,
+   --  False otherwise.
+   --  Note:
+   --    An edge can be contained in one region manager at most.
+   function Has_Manager
+     (Node    : in     Vis_Node_Id)
+     return Boolean;
 
    ----------------------------------------------------------------------------
    --  Pollutes all content above the visual representation of one edge

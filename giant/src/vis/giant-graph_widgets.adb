@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.15 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.16 $
 --  $Author: keulsn $
---  $Date: 2003/07/08 19:41:48 $
+--  $Date: 2003/07/08 19:45:21 $
 --
 ------------------------------------------------------------------------------
 
@@ -438,8 +438,11 @@ package body Giant.Graph_Widgets is
    end Get_Current_Node_Height;
 
    procedure Update_Size
-     () is
+     (Widget : access Graph_Widget_Record'Class;
+      Edges  : in     Vis_Edge_Sets.Set;
+      Nodes  : in     Vis_Node_Sets.Set) is
    begin
+      null;
    end Update_Size;
 
    --  Settings must have been Set_Up

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-positioning.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-graph_widgets-positioning.adb,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 03:35:59 $
+--  $Date: 2003/07/08 19:41:48 $
 --
 ------------------------------------------------------------------------------
 
@@ -189,6 +189,10 @@ package body Giant.Graph_Widgets.Positioning is
          Zoom   => Zoom);
    end Set_Zoom;
 
+
+   -----------------
+   -- Positioning --
+   -----------------
 
    procedure Update_Node_Position
      (Widget : access Graph_Widget_Record'Class;

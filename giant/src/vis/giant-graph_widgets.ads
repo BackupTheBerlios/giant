@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.23 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.24 $
 --  $Author: keulsn $
---  $Date: 2003/07/08 09:42:13 $
+--  $Date: 2003/07/08 19:41:48 $
 --
 ------------------------------------------------------------------------------
 --
@@ -147,9 +147,10 @@ package Giant.Graph_Widgets is
    --  Raises
    --    ...
    procedure Read_Graph_Widget
-     (Stream : in     Bauhaus_IO.In_Stream_Type;
-      Widget :    out Graph_Widget;
-      Pool   : in     Node_Annotations.Node_Annotation_Access);
+     (Stream      : in     Bauhaus_IO.In_Stream_Type;
+      Widget      :    out Graph_Widget;
+      Style       : in     Config.Vis_Styles.Visualisation_Style_Access;
+      Annotations : in     Node_Annotations.Node_Annotation_Access);
 
    ----------------------------------------------------------------------------
    --  Outputs a graph widget to 'Stream'. It can then be read into memory
@@ -946,7 +947,7 @@ private                    -- private part --
       Graph_Edge : in     Graph_Lib.Edge_Id;
       Edge       :    out Vis_Data.Vis_Edge_Id);
 
-   --  looks up an existing node or creates a new one if necessary
+   --  looks up an existing node or creates a new one if necessary.
    procedure Find_Or_Create
      (Widget     : access Graph_Widget_Record'Class;
       Graph_Node : in     Graph_Lib.Node_Id;
@@ -964,6 +965,15 @@ private                    -- private part --
       Graph_Node : in     Graph_Lib.Node_Id)
      return Vis_Data.Vis_Node_Id;
 
+   --  flushes the locking-sets into the region manager
+   procedure Flush_Locked
+     (Widget : access Graph_Widget_Record'Class);
+
+   --  updates the positioning
+   procedure Update_Positioning
+     (Widget : access Graph_Widget_Record'Class;
+      Edges  : in     Vis_Edge_Sets.Set;
+      Nodes  : in     Vis_Node_Sets.Set);
 
    ----------------------------------------------------------------------------
    --  Default size of a graph widget
@@ -1000,14 +1010,15 @@ private                    -- private part --
 
    type States_Type is
       record
-         Drawing_Ready   : Boolean       := False;
+         Drawing_Ready      : Boolean       := False;
 
-         Visual_Polluted : Boolean       := True;
+         Visual_Polluted    : Boolean       := True;
 
-         Action_Mode     : Boolean       := False;
+         Action_Mode        : Boolean       := False;
 
-         Highest_Lock    : Lock_Type     := 0;
-         Locks           : Lock_Sets.Set := Lock_Sets.Empty_Set;
+         Highest_Lock       : Lock_Type     := 0;
+         Locks              : Lock_Sets.Set := Lock_Sets.Empty_Set;
+         Lock_Flush_Pending : Boolean       := False;
       end record;
 
 
@@ -1088,23 +1099,25 @@ private                    -- private part --
    type Graph_Widget_Record is new Gtk.Widget.Gtk_Widget_Record with
       record
          --  Must only be used by subpackage Drawing
-         Drawing     : Drawing_Type;
+         Drawing       : Drawing_Type;
          --  Must only be used by subpackage Positioning
-         Positioning : Positioning_Type;
+         Positioning   : Positioning_Type;
          --  Must only be used by subpackage Settings
-         Settings    : Settings_Type;
+         Settings      : Settings_Type;
          --  Must only be used by subpackage States
-         States      : States_Type;
+         States        : States_Type;
 
          --  The following must not be used by any subpackage
-         Edge_Map     : Edge_Id_Mappings.Mapping;
-         Edge_Layers  : Vis_Data.Layer_Pool;
-         Node_Map     : Node_Id_Mappings.Mapping;
-         Node_Layers  : Vis_Data.Layer_Pool;
-         Manager      : Vis_Data.Region_Manager;
+         Edge_Map      : Edge_Id_Mappings.Mapping;
+         Edge_Layers   : Vis_Data.Layer_Pool;
+         Node_Map      : Node_Id_Mappings.Mapping;
+         Node_Layers   : Vis_Data.Layer_Pool;
+         Manager       : Vis_Data.Region_Manager;
 
-         Locked_Edges : Vis_Edge_Sets.Set;
-         Locked_Nodes : Vis_Node_Sets.Set;
+         Locked_Edges  : Vis_Edge_Sets.Set;
+         Unsized_Edges : Vis_Edge_Sets.Set;
+         Locked_Nodes  : Vis_Node_Sets.Set;
+         Unsized_Nodes : Vis_Node_Sets.Set;
       end record;
 
 end Giant.Graph_Widgets;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.15 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 18:39:23 $
+--  $Date: 2003/07/08 19:41:48 $
 --
 ------------------------------------------------------------------------------
 
@@ -1204,6 +1204,13 @@ package body Giant.Vis_Data is
       Position_Sets.Destroy (Positions);
    end Insert_Edge;
 
+   function Has_Manager
+     (Edge    : in     Vis_Edge_Id)
+     return Boolean is
+   begin
+      return not Region_Lists.IsEmpty (Edge.Regions);
+   end Has_Manager;
+
    procedure Drop_Edge
      (Manager : in out Region_Manager;
       Edge    : in     Vis_Edge_Id) is
@@ -1226,6 +1233,8 @@ package body Giant.Vis_Data is
       Iterator : Position_Iterator;
       Region   : Region_Id;
    begin
+      Vis_Data_Logger.Debug
+        ("Insert_Node: " & Vis.Absolute.Image (Get_Extent (Node)));
       Pool := Create_Position_Pool_From_Area (Manager, Get_Extent (Node));
       Make_Position_Iterator (Pool, Iterator);
       while Has_More (Iterator) loop
@@ -1234,11 +1243,21 @@ package body Giant.Vis_Data is
             Position => Get_Current (Iterator),
             Region   => Region);
          Next (Iterator);
+         Vis_Data_Logger.Debug
+           ("... into Region: " &
+            Vis.Absolute.Image (Get_Region_Extent (Region)));
          Region_Lists.Attach (Region, Node.Regions);
          Add_Node_To_Region (Region, Node);
          Add_Node_Pollution (Region, Node);
       end loop;
    end Insert_Node;
+
+   function Has_Manager
+     (Node    : in     Vis_Node_Id)
+     return Boolean is
+   begin
+      return not Region_Lists.IsEmpty (Node.Regions);
+   end Has_Manager;
 
    procedure Drop_Node
      (Manager : in out Region_Manager;

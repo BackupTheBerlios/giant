@@ -6,7 +6,7 @@
 
    <!-- ................................................................. -->
    <global_settings
-      vis_window_background_color="white"/> 
+      vis_window_background_color="blue"/> 
 
    <!-- ................................................................. -->
 
@@ -14,7 +14,7 @@
       icon         = "node_icon1.xpm"
       text_color   = "black"
       border_color = "red"
-      fill_color   = "blue"> 
+      fill_color   = "black"> 
    </default_node_setting>
 
 
