@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: visulization.tex,v $, $Revision: 1.4 $
-%  $Date: 2003/02/14 17:22:43 $
+%  $RCSfile: visulization.tex,v $, $Revision: 1.5 $
+%  $Date: 2003/02/14 17:54:45 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -12,9 +12,8 @@ Genaue Beschreibung der Visualisierung des Graphen in einem Anzeigefenster.
 \section{Visualisierungsstiele}
 Der Benutzer kann über XML-Konfigurationsdateien beliebige viele Visualisierungsstiele
 erzeugen. Über einen Visualisierungsstiel kann er definieren, wie Knoten und
-Kanten von Graphen in den Anzeigefenstern dargestellt werden, wobei er die 
-Einstellungen für Knoten und Kanten differenziert für die verschiedenen Knoten- und
-Kantenklassen des IML-Graphen vornehmen kann.\\
+Kanten von Graphen in den Anzeigefenstern dargestellt werden. Diese Einstellungen kann er 
+differenziert für die verschiedenen Knoten- und Kantenklassen des IML-Graphen vornehmen.\\
 Zu jedem Anzeigefenster gibt es eine Liste aus der zur Laufzeit ein 
 entsprechender vordefinierter Visualisierungsstiel ausgewählt werden kann.\\
 Auf diese Art und Weise kann der Benutzer also je nach aktuellem Bedarf
@@ -25,10 +24,10 @@ die Darstellung im Anzeigefenster ändern.
 
 \section{Visualisierung von Knoten}
 Hier wird die Visualisierung eines Knotens auf dem Anzeigeinhalt innerhalb eines Anzeigefensters 
-beschrieben. Die Tatsächliche Darstellung hängt stark von der aktuellen Zoomstufe und dem gewählten
+beschrieben. Die tatsächliche Darstellung hängt stark von der aktuellen Zoomstufe und dem gewählten
 Visualisierungsstiel ab.
 
-  \subsection {Grafik}
+  \subsection {Grafik zur Visualisierung von Knoten und Kanten}
   HIER EVENTUELL SKIZZE EINFÜGEN; WELCHE DAS AUSSEHEN EINES KNOTENS BESCHREIBT
 
 
@@ -41,8 +40,8 @@ Visualisierungsstiel ab.
 
   \subsection {Knoten-Icon}
   Jeder Knoten kann über ein vordefiniertes Icon verfügen, welches im linken oberen Eck des
-  Knoten-Rechtecks dargestellt wird.
-
+  Knoten-Rechtecks dargestellt wird. Alle Knoten für die kein Icon definiert wurde, müssen
+  ein \gq{Default-Icon} haben.
 
   \subsection {Klassenname und ID}
   Der Name der Knotenklasse und die eindeutige ID eines Knotens werden innerhalb des 
@@ -68,15 +67,17 @@ umgelenkt.
   viele Kantenknickpunkt hinweg zum Zielknoten.\\
   
   \begin{itemize}   
-    \item Kantenknickpunkte werden als kleine Rauten dargestellt
-    \item Die Farbe der Kantenknickpunkte entspricht der Farbe für die Linie der Kante
+    \item Kantenknickpunkte werden als kleine Rauten dargestellt.
+    \item Die Farbe der Kantenknickpunkte entspricht der Farbe für die Linie der Kante.
   \end{itemize}
 
   Layoutalgorithmen, die diese Kantenknickpunkt automatisch erzeugen sind momentan nicht vorgesehen.
 
 
   \subsection{Vorhandene Kanten nicht anzeigen}
-
+  In den Konfigurationsdateien kann genau eingestellt werden, wann eine Kante angezeigt werden soll
+  und wann nicht. So kann verhindert werden, dass Kanten deren Start- oder Zielknoten nicht im 
+  sichtbaren Anzeigeinhalt liegen angezeigt werden.
 
 
 \section {Hervorheben von Knoten und Kanten}
@@ -117,43 +118,36 @@ unterschiedbar hervorgehoben werden.
     \item Jeder Knoten eines IML-Teilgraphen wird dadurch hervorgehoben, dass er mit einem weiteren
           rechteckigen Rahmen versehen wird, der eine konfigurierbare Farbe hat.
 
-      \item Jede Kante wird dadurch hervorgehoben, dass ihre Linie, dicker gezeichnet wird..
-    \end {itemize}  
+     \item Jede Kante wird dadurch hervorgehoben, dass ihre Linie, dicker gezeichnet wird..
+   \end {itemize}  
  
   Gehört ein Knoten zu mehrern hervorgehobenen IML-Teilgraphen, so erhält der zusätzliche Rahmen die Farbe, 
   die der des zuletzt hervorgehobenen IML-Teilgraphen entspreicht.
 
-
   \subsection {Über Selektionen und IML-Teilgraphen gleichzeitig hervorgehobene Kanten}
   Die Kante wird gemäß der Selektion entsprechend eingefärbt, ihre Line wird dicker gezeichnet.
-  
-
+ 
 
   \subsection {Anmerkung}
   Wie weiter unten beschrieben kann der Kunde über die Konfigurationsdateien einstellen mit welchen Farben
   Selektionen und IML-Teilgraphen hervorgehoben werden sollen, und mit welchen Farben Knoten und Kanten
   (je nach Klasse) generell eingefärbt werden. Es macht natürlich keinen Sinn, für das Einfärben von
-  Knoten und Kanten  hier die gleiche oder eine zu ähnliche Farbe zu wählen, wie für das hervorheben 
+  Knoten und Kanten hier eine gleiche oder eine sehr ähnliche Farbe zu wählen, wie für das hervorheben 
   von Selektionen.
-
-
-
 
 
 \section {Detailstufen beim Zoomen}
 Je nach Zoomstufe erhöht sich die Anzahl der im Anzeigefenster dargestellten Knoten und Kanten.
-Beim Herauszoomen müssen also Details verringert werden, dies geschieht bei GIANT in mehreren
+Beim Herauszoomen müssen also Details abstrahiert werden, dies geschieht bei GIANT in mehreren
 Stufen.\\
 Eine exakte Spezifikation der Detailstufen, insbesondere ab welcher Zoomstufe welche 
 Detailstufe gewählt wird, ist an dieser Stelle nicht sinnvoll. Optimale Parameter
-hierfür werdeb im Laufe der Implementierung ermittelt.\\
+hierfür werden im Laufe der Implementierung ermittelt.\\
 Beim Herauszoomen wird GIANT zuerst versuchen, die Größe der Knoten-Rechtecke durch
 Verringerung der Schriftgröße zu verringern. Erst wenn die Schrift klein genug ist
 (aber noch gut lesbar) wird GIANT Elemente der Knoten- und Kantendarstellung entfernen.
 
-
-
-Auf jeden Fall wird es aber die folgenden Detailstufen geben:
+Es wird hierzu die folgenden Detailstufen geben:
 
   \subsection {Maximale Details}
   Bei maximaler bis hoher Zoomstufe (nahe ans Bild herangezoomt).\\
@@ -176,11 +170,11 @@ Auf jeden Fall wird es aber die folgenden Detailstufen geben:
   Bei sehr geringer Zoomstufe.\\
   Die Kantenknickpunkte werden nicht mehr explizit angezeigt (geknickte Kanten bleiben aber natürlich
   geknickt).\\
-  Bei Knoten wird nur noch das reine Knoten-Rechteck mit Rahmen und Füllfarbe angezeigt.
+  Bei Knoten wird nur noch das reine Knoten-Rechteck mit Rahmen und Füllfarbe angezeigt (kein Icon mehr).
 
   \subsection {Minimale Details}
-  Bei minimaler Zoomstufe.\\
-  Die Verbleibenden Knoten-Rechtecke werden immer kleiner, bis sie ihre minimale größe Erreicht haben.
+  Bei sehr geringer bis hin zur minimalen Zoomstufe.\\
+  Die Knoten-Rechtecke werden immer kleiner gezeichnet, bis sie ihre minimale Größe erreicht haben.
 
 
 
@@ -189,8 +183,12 @@ Zu jedem Anzeigefenster gibt es genau eine Minimap, welche den gesamten Anzeigei
 abstrahiert darstellt. Die Minimap bietet die folgende Funktionalität:
 \begin {itemize}
 
-  \item test
+  \item Die Größe der Minimap entspricht der eines um den 
 
+  \item Der aktuell sichtbare Anzeigeinhalt wird auf der Minimap mit seiner relativen
+  Position und Größe im Verhältnis zum abstrahierten Anzeigeinhalt dargestellt.
+
+  \item Durch angklicken entsprechender Punkte kann mittels der Minimap gescrollt werden.
 
 
 \end {itemize}
