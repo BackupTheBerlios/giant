@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/06/10 15:43:34 $
+--  $Date: 2003/06/12 17:01:26 $
 --
 ------------------------------------------------------------------------------
 --
@@ -55,16 +55,30 @@ package Giant.Vis_Data is
    type Layer_Type is private;
 
    ----------------------------------------------------------------------------
-   --  Tests if 'High' is a layer situated higher than 'Low'
+   --  Tests if 'Low' is a layer situated below the layer of 'High'
    --
    --  Parameters:
-   --    High - The first layer
-   --    Low  - The second layer
+   --    Low  - The first layer
+   --    High - The second layer
    --  Returns:
-   --    True if 'High' is higher than 'Low', False otherwise.
-   function Is_Above
-     (High : in     Layer_Type;
-      Low  : in     Layer_Type)
+   --    True if 'Low' is below 'High', False otherwise.
+   function Is_Below
+     (Low  : in     Layer_Type;
+      High : in     Layer_Type)
+     return Boolean;
+
+   ----------------------------------------------------------------------------
+   --  Tests if 'Low' is a layer situated below the layer of 'High' or
+   --  if 'Low = High'
+   --
+   --  Parameters:
+   --    Low  - The first layer
+   --    High - The second layer
+   --  Returns:
+   --    True if 'Low' is below or at level with 'High', False otherwise.
+   function Is_Below_Or_Equal
+     (Low  : in     Layer_Type;
+      High : in     Layer_Type)
      return Boolean;
 
 
@@ -78,23 +92,41 @@ package Giant.Vis_Data is
    type Layer_Pool is private;
 
    ----------------------------------------------------------------------------
-   --  Resets 'Pool' so it contains only the bottom layer
+   --  The layer for which:
+   --  for all L : Layer_Pool: Is_Below_Or_Equal (Bottom_Layer, L)
+   Bottom_Layer : constant Layer_Pool;
+
+   ----------------------------------------------------------------------------
+   --  The layer for which:
+   --  for all L : Layer_Pool: Is_Below_Or_Equal (L, Top_Layer)
+   Top_Layer : constant Layer_Pool;
+
+   ----------------------------------------------------------------------------
+   --  Resets 'Pool' so it contains only 'Bottom_Layer'
    procedure Reset_Pool
      (Pool : in out Layer_Pool);
 
    ----------------------------------------------------------------------------
    --  Gets the highest layer in 'Pool'
-   function Get_Highest
+   function Get_Highest_Layer
      (Pool : in     Layer_Pool)
      return Layer_Type;
 
    ----------------------------------------------------------------------------
-   --  Adds a new layer to 'Pool' that will be top layer in 'Pool'
+   --  Adds a new layer to 'Pool' that will be the highest layer in 'Pool'
+   --  Precondition:
+   --    Is_Below (Get_Highest_Layer, Top_Layer)
+   --  Raises:
+   --    Constraint_Error if Precondition not satisfied
    procedure Enlarge_Pool
      (Pool : in out Layer_Pool);
 
    ----------------------------------------------------------------------------
-   --  Removes the top layer from 'Pool'
+   --  Removes the highest layer from 'Pool'
+   --  Precondition:
+   --    Is_Below (Bottom_Layer, Get_Highest_Layer (Pool))
+   --  Raises:
+   --    Constraint_Error if Precondition not satisfied
    procedure Shrink_Pool
      (Pool : in out Layer_Pool);
 
@@ -118,7 +150,7 @@ package Giant.Vis_Data is
    --  Total ordering on Vis_Edge_Id
    --  Returns:
    --    True if 'Left' is situated in a layer above 'Right', False else
-   function Is_Edge_Above
+   function Is_Edge_Below
      (Left  : in     Vis_Edge_Id;
       Right : in     Vis_Edge_Id)
      return Boolean;
@@ -127,7 +159,7 @@ package Giant.Vis_Data is
    --  Set of 'Vis_Edge_Id's
    package Vis_Edge_Sets is new Ordered_Sets
      (Item_Type  => Vis_Edge_Id,
-      "<"        => Is_Edge_Above);
+      "<"        => Is_Edge_Below);
 
    type Vis_Edge_Id_Array is array (Positive range <>) of Vis_Edge_Id;
    type Vis_Edge_Id_Array_Access is access Vis_Edge_Id_Array;
@@ -147,7 +179,7 @@ package Giant.Vis_Data is
    --  Total ordering on Vis_Node_Id
    --  Returns:
    --    True if 'Left' is situated in a layer above 'Right', False else
-   function Is_Node_Above
+   function Is_Node_Below
      (Left  : in     Vis_Node_Id;
       Right : in     Vis_Node_Id)
      return Boolean;
@@ -156,7 +188,7 @@ package Giant.Vis_Data is
    --  Set of 'Vis_Node_Id's
    package Vis_Node_Sets is new Ordered_Sets
      (Item_Type  => Vis_Node_Id,
-      "<"        => Is_Node_Above);
+      "<"        => Is_Node_Below);
 
    type Vis_Node_Id_Array is array (Positive range <>) of Vis_Node_Id;
    type Vis_Node_Id_Array_Access is access Vis_Node_Id_Array;
@@ -170,9 +202,16 @@ package Giant.Vis_Data is
    --  Type used to manage a graph within a two dimensional embedding
    --  provides functionality to add edges and nodes, to remove them and
    --  to find intersection among them.
-   --  Should be limited type, but is not to allow objects of this type
-   --  to be fields in gtk-widget-types (which are not limited)
+   --  Should be limited type, but is not in order to allow objects of this
+   --  type to be fields in gtk-widget-types (which are not limited).
+   --  The Assignment is nevertheless forbidden and
+   --  will raise 'Region_Manager_Assignment_Unimplemented'
    type Region_Manager is new Ada.Finalization.Controlled with private;
+
+   ----------------------------------------------------------------------------
+   --  Is raised in the Adjust subprogram for Region_Manager. Assignment
+   --  of Region_Manager instances is not implemented.
+   Region_Manager_Assignment_Unimplemented : exception;
 
    package Rectangle_2d_Lists is new Lists
      (ItemType => Vis.Absolute.Rectangle_2d);
@@ -189,8 +228,8 @@ package Giant.Vis_Data is
    --
    --  Note:
    --    There is no 'Done_Region_Manager'. Any necessary finalization will
-   --    be handled implicitely since 'Region_Manager' is a descendant of
-   --    'Ada.Finalization.Limited_Controlled'.
+   --    be handled implicitly since 'Region_Manager' is a descendant of
+   --    'Ada.Finalization.Controlled'.
    --  Parameters:
    --    Manager         - The object to initialize
    --    Size            - Estimate of the size of the display region
@@ -346,12 +385,12 @@ package Giant.Vis_Data is
    --    * 'End_Refresh_Operation' must be called after the refresh operation
    --      is done to deallocate storage.
    procedure Start_Refresh_Foreground
-     (Manager      : in out Region_Manager;
-      Display_Area : in     Vis.Absolute.Rectangle_2d;
-      Refresh_Area :    out Rectangle_2d_Lists.List;
-      Edges        :    out Vis_Edge_Id_Array_Access;
-      Nodes        :    out Vis_Node_Id_Array_Access;
-      Refresh_Done : in     Boolean := True);
+     (Manager         : in out Region_Manager;
+      Display_Area    : in     Vis.Absolute.Rectangle_2d;
+      Refresh_Area    :    out Rectangle_2d_Lists.List;
+      Edges           :    out Vis_Edge_Id_Array_Access;
+      Nodes           :    out Vis_Node_Id_Array_Access;
+      Refresh_Pending : in     Boolean                   := True);
 
    ----------------------------------------------------------------------------
    --  Deallocates the storage used by 'Start_Refresh_Foreground'. This
@@ -471,13 +510,17 @@ private
    type Region_Record is limited
       record
          --  Size of this region
-         Extent           : Vis.Absolute.Rectangle_2d;
+         Extent             : Vis.Absolute.Rectangle_2d;
          --  All contents in this region above the level are polluted
+         --  The field 'Pollution_On_Edges' determines whether this
+         --  height applies to Edges and Nodes or only to Nodes.
          Pollution_Height : Layer_Type;
+         --  Does Pollution_Height apply to Edges and Nodes or only to Nodes?
+         Pollution_On_Edges : Boolean;
          --  Edges possibly contained in or intersecting this region
-         Edges            : Vis_Edge_Sets.Set;
+         Edges              : Vis_Edge_Sets.Set;
          --  Nodes possibly contained in or intersecting this region
-         Nodes            : Vis_Node_Sets.Set;
+         Nodes              : Vis_Node_Sets.Set;
       end record;
 
    type Region_Manager is new Ada.Finalization.Controlled with
