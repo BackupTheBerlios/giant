@@ -20,11 +20,13 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.20 $
--- $Author: schwiemn $
--- $Date: 2003/07/15 11:57:48 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.21 $
+-- $Author: squig $
+-- $Date: 2003/07/18 15:59:50 $
 --
 --
+
+with Ada.Exceptions;
 with Ada.Streams;
 with Ada.Streams.Stream_IO;
 with Ada.Strings.Fixed;
@@ -145,7 +147,7 @@ package body Giant.File_Management is
       GNAT.Directory_Operations.Close (GNAT_Directory);
       return File_Names_List;
    end Get_Filtered_Files_From_Directory;
-   
+
    ---------------------------------------------------------------------------
    function Locate_File_In_Directories
      (Directory_List : in String_Lists.List;
@@ -154,34 +156,34 @@ package body Giant.File_Management is
 
       Iter : String_Lists.ListIter;
       -- A potential directory
-      Pot_Directory : Ada.Strings.Unbounded.Unbounded_String;      
+      Pot_Directory : Ada.Strings.Unbounded.Unbounded_String;
 
    begin
-   
+
        Iter := String_Lists.MakeListIter (Directory_List);
-        
+
        while String_Lists.More(Iter) loop
-       
+
           String_Lists.Next (Iter, Pot_Directory);
 
           -- ignore not existing / invalid directories
-          if GNAT.OS_Lib.Is_Directory 
-            (Ada.Strings.Unbounded.To_String (Pot_Directory)) then                 
-             begin                               
+          if GNAT.OS_Lib.Is_Directory
+            (Ada.Strings.Unbounded.To_String (Pot_Directory)) then
+             begin
                 return Get_Absolute_Path_To_File_From_Relative
                   (Ada.Strings.Unbounded.To_String (Pot_Directory),
-                   File_Name);            
+                   File_Name);
              exception
                 when File_Does_Not_Exist_Exception =>
                   null;
-             end;            
-          end if; 
+             end;
+          end if;
        end loop;
-      
+
        -- return empty String if no file could be located
        return "";
    end Locate_File_In_Directories;
-            
+
    ---------------------------------------------------------------------------
    procedure Delete_File (File_Name : in String) is
 
@@ -242,22 +244,22 @@ package body Giant.File_Management is
 
    ---------------------------------------------------------------------------
    procedure Create_Dir_Path (Dir_Path : in String) is
-   
+
       Dir_Separator : Character := GNAT.OS_Lib.Directory_Separator;
    begin
-          
-      for I in Dir_Path'range loop      
-        if (Dir_Path (I) = Dir_Separator) or (I = Dir_Path'Last) then          
-           if not GNAT.OS_Lib.Is_Directory (Dir_Path (Dir_Path'First .. I)) 
-           then         
-              
-              GNAT.Directory_Operations.Make_Dir 
-                (Dir_Path (Dir_Path'First .. I));                                      
+
+      for I in Dir_Path'range loop
+        if (Dir_Path (I) = Dir_Separator) or (I = Dir_Path'Last) then
+           if not GNAT.OS_Lib.Is_Directory (Dir_Path (Dir_Path'First .. I))
+           then
+
+              GNAT.Directory_Operations.Make_Dir
+                (Dir_Path (Dir_Path'First .. I));
            end if;
-        end if;      
-      end loop;               
+        end if;
+      end loop;
    end Create_Dir_Path;
-      
+
    ---------------------------------------------------------------------------
    function Get_Absolute_Path_To_File_From_Relative
      (Start_Dir : in String;
@@ -306,9 +308,9 @@ package body Giant.File_Management is
       return Ada.Strings.Unbounded.To_String (Abs_Path);
 
    exception
-      when others =>
+      when E : others =>
          GNAT.Directory_Operations.Change_Dir (Old_Exec_Dir);
-         raise File_Does_Not_Exist_Exception;
+         Ada.Exceptions.Reraise_Occurrence (E);
    end Get_Absolute_Path_To_File_From_Relative;
 
 
@@ -380,7 +382,7 @@ package body Giant.File_Management is
    ---------------------------------------------------------------------------
    function Get_Absolute_Path_From_Relative
      (Start_Dir    : in String;
-      Rel_Path : in String) 
+      Rel_Path : in String)
      return String is
 
       -- store "working directory for the execution environment"
@@ -395,7 +397,7 @@ package body Giant.File_Management is
 
       if (GNAT.OS_Lib.Is_Directory (Start_Dir) = False) then
 
-         -- if an invalid start directory is passed the file 
+         -- if an invalid start directory is passed the file
          -- obviously could not be found
          raise Abs_Path_Could_Not_Be_Calculated_Exception;
       end if;
@@ -566,71 +568,71 @@ package body Giant.File_Management is
    end Get_User_Config_Path;
 
    ---------------------------------------------------------------------------
-   procedure Deallocate_Argument_List_Content 
-     (The_Arg_List : in out GNAT.OS_Lib.Argument_List) is 
-   
+   procedure Deallocate_Argument_List_Content
+     (The_Arg_List : in out GNAT.OS_Lib.Argument_List) is
+
    begin
-   
+
       for I In The_Arg_List'Range loop
-      
-         GNAT.OS_Lib.Free (The_Arg_List (I));            
+
+         GNAT.OS_Lib.Free (The_Arg_List (I));
       end loop;
-   end Deallocate_Argument_List_Content;   
-   
+   end Deallocate_Argument_List_Content;
+
    ---------------------------------------------------------------------------
    procedure Free_Argument_List_Access is new Ada.Unchecked_Deallocation
      (GNAT.OS_Lib.Argument_List, GNAT.OS_Lib.Argument_List_Access);
-   
+
    ---------------------------------------------------------------------------
    function Substitute_Sub_Strings
      (Source : in String;
       Needle : in String;
-      Fork   : in String) 
-     return String is                 
-      
+      Fork   : in String)
+     return String is
+
       use Ada.Strings.Unbounded;
-            
-      Result : Ada.Strings.Unbounded.Unbounded_String;      
+
+      Result : Ada.Strings.Unbounded.Unbounded_String;
       Pos    : Integer;
    begin
-   
+
       if (Source'Length >= Needle'Length) then
-      
+
          Result     := Ada.Strings.Unbounded.Null_Unbounded_String;
          Pos := Source'First;
-         
-         loop            
+
+         loop
             exit when not (Pos <= (Source'Last));
-               
-            if (Pos <= Source'Last - Needle'Length + 1)            
-              and then (Source (Pos .. (Pos + Needle'Length - 1)) = Needle) 
-              then         
-               
+
+            if (Pos <= Source'Last - Needle'Length + 1)
+              and then (Source (Pos .. (Pos + Needle'Length - 1)) = Needle)
+              then
+
                -- Substitution
                Ada.Strings.Unbounded.Append (Result, Fork);
-               Pos := Pos + Needle'Length;                                         
-            else              
-               Ada.Strings.Unbounded.Append (Result, Source (Pos));                                
+               Pos := Pos + Needle'Length;
+            else
+               Ada.Strings.Unbounded.Append (Result, Source (Pos));
                Pos := Pos + 1;
             end if;
          end loop;
-         
-         return Ada.Strings.Unbounded.To_String (Result);      
+
+         return Ada.Strings.Unbounded.To_String (Result);
       else
-      
+
         return Source;
       end if;
    end Substitute_Sub_Strings;
-   
+
    ---------------------------------------------------------------------------
    procedure Execute
      (Command : in String)
    is
       use GNAT.OS_Lib;
-   
+
       Args   : GNAT.OS_Lib.Argument_List_Access;
       Pid    : GNAT.OS_Lib.Process_Id;
-      Prog   : GNAT.OS_Lib.String_Access;            
+      Prog   : GNAT.OS_Lib.String_Access;
    begin
       Args := GNAT.OS_Lib.Argument_String_To_List (Command);
       Prog := GNAT.OS_Lib.Locate_Exec_On_Path (Args (Args'First).all);
@@ -650,39 +652,39 @@ package body Giant.File_Management is
          Free_Argument_List_Access (Args);
       end if;
    end Execute;
-   
+
    ---------------------------------------------------------------------------
    procedure Execute_External_Editor
      (Command  : in String;
       Filename : in String;
       Line     : in Natural;
       Column   : in Natural) is
-      
+
       Parsed_Command_String : Ada.Strings.Unbounded.Unbounded_String;
    begin
-   
-      Parsed_Command_String := 
+
+      Parsed_Command_String :=
         Ada.Strings.Unbounded.To_Unbounded_String (Command);
-   
+
       Parsed_Command_String := Ada.Strings.Unbounded.To_Unbounded_String
         (Substitute_Sub_Strings
           (Ada.Strings.Unbounded.To_String (Parsed_Command_String),
-           "%l", 
+           "%l",
            Ada.Strings.Fixed.Trim (Integer'Image(Line), Ada.Strings.Both)));
-   
+
       Parsed_Command_String := Ada.Strings.Unbounded.To_Unbounded_String
         (Substitute_Sub_Strings
           (Ada.Strings.Unbounded.To_String (Parsed_Command_String),
-           "%c", 
+           "%c",
            Ada.Strings.Fixed.Trim (Integer'Image(Column), Ada.Strings.Both)));
-                  
+
       Parsed_Command_String := Ada.Strings.Unbounded.To_Unbounded_String
         (Substitute_Sub_Strings
           (Ada.Strings.Unbounded.To_String (Parsed_Command_String),
-           "%f", 
+           "%f",
            Filename));
-           
-      Execute (Ada.Strings.Unbounded.To_String (Parsed_Command_String));                          
+
+      Execute (Ada.Strings.Unbounded.To_String (Parsed_Command_String));
    end Execute_External_Editor;
-      
+
 end Giant.File_Management;

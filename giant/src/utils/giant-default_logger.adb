@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.11 $
+--  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.12 $
 --  $Author: squig $
---  $Date: 2003/07/10 16:26:35 $
+--  $Date: 2003/07/18 15:59:50 $
 --
 
 with Ada.IO_Exceptions;
@@ -110,6 +110,7 @@ package body Giant.Default_Logger is
       if (Ada.Text_IO.Is_Open (Out_File)) then
          Ada.Text_IO.Put_Line(Out_File, " " & Exception_Name (Error));
          Ada.Text_IO.Put_Line(Out_File, " " & Exception_Message (Error));
+         Ada.Text_IO.Flush (Out_File);
       end if;
 --     exception
 --       when others =>

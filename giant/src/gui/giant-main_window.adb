@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.51 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.52 $
 --  $Author: squig $
---  $Date: 2003/07/18 15:40:31 $
+--  $Date: 2003/07/18 15:59:50 $
 --
 
 with Ada.Exceptions;
@@ -243,7 +243,7 @@ package body Giant.Main_Window is
       declare
          --FIX: default directory
          Project_Filename : String := Gtkada.File_Selection.File_Selection_Dialog
-           (-"Select Project File", "test/resources/",
+           (-"Enter New Project File", "test/resources/",
             Dir_Only => False, Must_Exist => False);
       begin
          if (Project_Filename /= "") then
