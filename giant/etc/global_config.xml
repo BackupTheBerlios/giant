@@ -31,7 +31,7 @@
   <!-- Settings for scripts in menus -->
   <setting name="GSL.No_Param" value="Open Entire Graph:Open HPG:Search For Routine:Create Complete Subgraph" />
   <setting name="GSL.No_Param_Context" value="" />
-  <setting name="GSL.Node_Id_Param" value="Get Adjacent Nodes" />
+  <setting name="GSL.Node_Id_Param" value="Get Adjacent Nodes:Get Statements:Trace Function Call" />
   <setting name="GSL.Edge_Id_Param" value="" />
   <setting name="GSL.Subgraph_Param" value="To Window" />
   <setting name="GSL.Selection_Param" value="Get Successors" />
