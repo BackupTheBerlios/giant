@@ -4,6 +4,10 @@ This file contains short descriptions of what has changed between
 GIANT releases. Only major changes are included here, see ChangeLog
 in the source directory for details.
 
+Version ?
+
+ * ported to IML-lib 20030923
+
 Version 1.1.1 (2003-09-24)
 
  * Enhanced GSL editor
