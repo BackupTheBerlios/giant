@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.23 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.24 $
 --  $Author: squig $
---  $Date: 2003/06/18 18:40:37 $
+--  $Date: 2003/06/18 21:22:16 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -621,6 +621,10 @@ package body Giant.Projects is
 
       -- check whether the xml file is a file that describes project
       begin
+         Logger.Debug ("reading project file "
+                       & Ada.Strings.Unbounded.To_String
+                       (Absolute_Project_File_Name));
+
          XML_File_Access.Load_XML_File_Validated
            (Ada.Strings.Unbounded.To_String
              (Absolute_Project_File_Name),
