@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-string_split.adb,v $, $Revision: 1.3 $
---  $Author: schwiemn $
---  $Date: 2003/07/02 10:56:29 $
+--  $RCSfile: giant-string_split.adb,v $, $Revision: 1.4 $
+--  $Author: koppor $
+--  $Date: 2003/07/02 11:18:50 $
 --
 
 with Ada.Strings.Unbounded;
@@ -45,7 +45,13 @@ package body Giant.String_Split is
       begin
          I := Ada.Strings.Fixed.Index (Source, Pattern);
 
-         if I >= Source'First then
+         if I < Source'First then
+            -- Case for strings that do not hold a separator pattern;
+            String_Lists.Attach
+              (List,
+               Ada.Strings.Unbounded.To_Unbounded_String (Source));
+         else
+            --  I >= Source'First
             --  Index has found the pattern
 
             if I = Source'First then
@@ -54,8 +60,6 @@ package body Giant.String_Split is
                String_Lists.Attach
                  (List,
                   Ada.Strings.Unbounded.Null_Unbounded_String);
-                  
-            
             else
                --  attach the full found string
                String_Lists.Attach
@@ -65,28 +69,23 @@ package body Giant.String_Split is
             end if;
 
             if I = Source'Last then
-               --  if there is no string at the end, attach a null string
+               --  if there is no string at the end,
                --    (i.e. Source looks like "X,")
+               --     attach a null string and finish
                String_Lists.Attach
                  (List,
                   Ada.Strings.Unbounded.Null_Unbounded_String);
             else
                --  there is more to split
                --    (i.e. Source looks like "X,Y"
+               --  recursively split
                Split_String
                  (Source (I + Pattern'Length .. Source'Last),
                   Pattern,
                   List);
             end if;
          end if;
-                                   
-         -- Case for strings that do not hold a separator pattern;
-         If I = 0 then 
-            String_Lists.Attach
-               (List,
-                Ada.Strings.Unbounded.To_Unbounded_String (Source));                                      
-         end if;
-         
+
       end Split_String;
 
       Res : String_Lists.List;
