@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: project.tex,v $, $Revision: 1.6 $
-%  $Date: 2003/02/13 12:10:00 $
+%  $RCSfile: project.tex,v $, $Revision: 1.7 $
+%  $Date: 2003/02/13 12:18:58 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -65,27 +65,23 @@ von Reflektion zum IML-Graphen unterstützt wird.
 
   \subsection{Verwaltungsdateien für IML-Teilgraphen}
   Sämtliche erzeugten IML-Teilgraphen werden ebenfalls in Verwaltungsdateien gespeichert. 
-  Für jeden IML-Teilgraphen gibt es
+  Für jeden IML-Teilgraphen gibt es eine eigene Verwaltungsdatei deren Namen dem des 
+  IML-Teilgraphen entspricht.
  
-
-
- 
-
-    
-
-
-  \subsection {Verwaltungsdateien für IML-Teilgraphen}
-  Sämtliche IML-Teilgraphen 
-
-  \subsection{Verwaltungsdatei für Anfragen}
+  \subsection {Verwaltungsdatei für Anfragen}
   KANN er auch SELBER mittels Paste und Copy im Emacs machen.
+  SOLLTEN WIR NICHT UNBEDINGT IN DER SPEZ ZUSAGEN.
+
+\section {Greundlegendes Verhalten von GIANT beim Speichern von Projekten} 
+
+Beim Beenden von GIANT werden automatisch alle zum Speichern markierten Anzeigefenster
+und alle IML-Teilgraphen in die entsprechenden Verwaltungsdateien geschrieben. Nicht
+zum Speichern markierte Anzeigefenster gehen verloren.\\
+Dieses Speichern kann der Benutzer auch explizit während des Betriebs von GIANT 
 
 
 
-
-
-\section {Verhalten von GIANT beim Speichern} 
-
+  Im HAUPTMENÜ sind alle für das Projekt definierten Anzeigefenster
 
 \subsection{Verwaltungsdateien für Anzeigefenster}
 In einem Unterverzeichnis des Projektverzeichnisses werden jeweils in einzelnen Dateien.
