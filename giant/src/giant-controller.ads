@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.34 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.35 $
 --  $Author: squig $
---  $Date: 2003/07/10 21:01:40 $
+--  $Date: 2003/07/14 22:28:11 $
 --
 ------------------------------------------------------------------------------
 --
@@ -285,6 +285,10 @@ package Giant.Controller is
       Name        : in String)
      return Graph_Lib.Selections.Selection;
 
+   function Get_Current_Selection
+     (Window_Name : in String)
+     return Graph_Lib.Selections.Selection;
+
    procedure Hide_Selection
      (Window_Name : in String;
       Name        : in String);
@@ -296,10 +300,11 @@ package Giant.Controller is
 
    procedure Insert_Selection
      (Window_Name           : in String;
+      Selection_Name        : in String;
       Selection             : in Graph_Lib.Selections.Selection;
       Layout_Name           : in String;
       Position              : in Vis.Logic.Vector_2d := Vis.Logic.Zero_2d;
-      Additional_Parameters : in String := "");
+      Additional_Parameters : in String );
 
    function Remove_Selection
      (Window_Name          : in String;
@@ -482,7 +487,7 @@ package Giant.Controller is
 
 private
 
-   Current_Project : Projects.Project_Access;
+   Current_Project : Projects.Project_Access := Projects.Null_Project;
    Project_Loaded : Boolean := False;
    Project_Changed : Boolean := False;
 

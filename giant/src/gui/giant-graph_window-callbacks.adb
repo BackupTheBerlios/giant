@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.8 $
 --  $Author: squig $
---  $Date: 2003/07/11 12:58:49 $
+--  $Date: 2003/07/14 22:28:11 $
 --
 
 with Ada.Unchecked_Conversion;
@@ -116,26 +116,6 @@ package body Giant.Graph_Window.Callbacks is
                       Activate_Time => Gdk.Event.Get_Time (Event.Event));
    end On_Background_Popup;
 
---     procedure On_Background_Popup
---       (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
---        Args   : in     Gtk.Arguments.Gtk_Args)
---     is
---        type Button_Press_Action_Access is
---          access constant Graph_Widgets.Handlers.Button_Press_Action;
-
---        function Convert is new Ada.Unchecked_Conversion
---          (Source => System.Address, Target => Button_Press_Action_Access);
-
---        Action : Button_Press_Action_Access;
---        Window : Graph_Window_Access := Graph_Window_Access (Source);
---     begin
---        Action := Convert (Gtk.Arguments.Get_Nth (Args, 1));
---        Gtk.Menu.Show_All (Window.Background_Menu);
---        Gtk.Menu.Popup (Window.Background_Menu,
---                        Button => Gdk.Event.Get_Button (Action.Event),
---                        Activate_Time => Gdk.Event.Get_Time (Action.Event));
---     end On_Background_Popup;
-
    procedure On_Edge_Popup
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
       Event  : in     Graph_Widgets.Handlers.Edge_Popup_Action)
@@ -162,12 +142,34 @@ package body Giant.Graph_Window.Callbacks is
    end On_Node_Popup;
 
    procedure On_Selection_Changed
-     (Widget     : access Gtk.Widget.Gtk_Widget_Record'Class;
+     (Source     : access Gtk.Widget.Gtk_Widget_Record'Class;
       Action     : in     Graph_Widgets.Notifications.Selection_Change_Type;
       Difference : in     Graph_Lib.Selections.Selection)
    is
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
+      Selection : Graph_Lib.Selections.Selection
+        := Controller.Get_Current_Selection (Get_Window_Name (Window));
    begin
-      null;
+      case (Action) is
+         when Graph_Widgets.Notifications.Insert =>
+            Graph_Lib.Selections.Add_Node_Set
+              (Selection, Graph_Lib.Selections.Get_All_Nodes (Difference));
+            Graph_Lib.Selections.Add_Edge_Set
+              (Selection, Graph_Lib.Selections.Get_All_Edges (Difference));
+         when Giant.Graph_Widgets.Notifications.Remove =>
+            Graph_Lib.Selections.Remove_Node_Set
+              (Selection, Graph_Lib.Selections.Get_All_Nodes (Difference));
+            Graph_Lib.Selections.Remove_Edge_Set
+              (Selection, Graph_Lib.Selections.Get_All_Edges (Difference));
+         when Giant.Graph_Widgets.Notifications.Change =>
+            Graph_Lib.Selections.Clear (Selection);
+            Graph_Lib.Selections.Add_Node_Set
+              (Selection, Graph_Lib.Selections.Get_All_Nodes (Difference));
+            Graph_Lib.Selections.Add_Edge_Set
+              (Selection, Graph_Lib.Selections.Get_All_Edges (Difference));
+         when Giant.Graph_Widgets.Notifications.Clear =>
+            Graph_Lib.Selections.Clear (Selection);
+      end case;
    end On_Selection_Changed;
 
    ---------------------------------------------------------------------------

@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.15 $
---  $Author: koppor $
---  $Date: 2003/06/28 22:18:48 $
+--  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.16 $
+--  $Author: squig $
+--  $Date: 2003/07/14 22:28:11 $
 
 with Untagged_Ptr_Ops;
 
@@ -99,6 +99,15 @@ package body Giant.Graph_Lib.Selections is
    begin
       Apply (Node_Set);
    end Add_Node_Set;
+
+   ---------------------------------------------------------------------------
+   procedure Clear
+      (Selection_To_Modify : in out Selection)
+   is
+   begin
+      Node_Id_Sets.Remove_All (Selection_To_Modify.Nodes);
+      Edge_Id_Sets.Remove_All (Selection_To_Modify.Edges);
+   end Clear;
 
    ---------------------------------------------------------------------------
    function Clone

@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.20 $
---  $Author: koppor $
---  $Date: 2003/07/14 19:52:14 $
+--  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.21 $
+--  $Author: squig $
+--  $Date: 2003/07/14 22:28:11 $
 --
 ------------------------------------------------------------------------------
 --
@@ -235,6 +235,11 @@ package Giant.Graph_Lib.Selections is
    procedure Remove_Edge_Set
       (Selection_To_Modify : in out Selection;
        Edge_Set            : in     Edge_Id_Set);
+
+   ---------------------------------------------------------------------------
+   --  Removes all edges and nodes.
+   procedure Clear
+      (Selection_To_Modify : in out Selection);
 
    ----------------------
    --  Set-operations  --

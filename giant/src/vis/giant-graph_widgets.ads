@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.29 $
---  $Author: keulsn $
---  $Date: 2003/07/12 16:19:27 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.30 $
+--  $Author: squig $
+--  $Date: 2003/07/14 22:28:11 $
 --
 ------------------------------------------------------------------------------
 --
@@ -324,7 +324,7 @@ package Giant.Graph_Widgets is
    --    = {}
    procedure Remove_Selection
      (Widget    : access Graph_Widget_Record'Class;
-      Selection : access Graph_Lib.Selections.Selection);
+      Selection : in     Graph_Lib.Selections.Selection);
 
    ----------------------------------------------------------------------------
    --  Removes all edges and nodes from 'Widget'

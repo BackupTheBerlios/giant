@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.52 $
---  $Author: koppor $
---  $Date: 2003/07/14 15:27:57 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.53 $
+--  $Author: squig $
+--  $Date: 2003/07/14 22:28:11 $
 --
 
 with Ada.Strings.Unbounded;
@@ -30,7 +30,9 @@ with Ada.Text_IO;
 
 with String_Lists;
 
+with Giant.Config;
 with Giant.Config_Settings;
+with Giant.Config.Vis_Styles;
 with Giant.Dialogs;
 with Giant.Evolutions;
 with Giant.File_Management;
@@ -161,23 +163,16 @@ package body Giant.Controller is
    ---------------------------------------------------------------------------
 
    procedure Apply_Layout
-     (Layout_Name           : in String;
-      Window_Name           : in String;
-      Selection_Name        : in String;
-      Position              : in Vis.Logic.Vector_2d;
+     (Window                : in Vis_Windows.Visual_Window_Access;
+      Selection             : in Graph_Lib.Selections.Selection;
+      Lock                  : in Graph_Widgets.Lock_Type;
+      Layout_Name           : in String;
+      Position              : in Vis.Logic.Vector_2d              := Vis.Logic.Zero_2d;
       Additional_Parameters : in String)
    is
-      Window : Vis_Windows.Visual_Window_Access
-        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
-      Selection : Graph_Lib.Selections.Selection
-        := Vis_Windows.Get_Selection (Window, Selection_Name);
-      Lock : Graph_Widgets.Lock_Type;
-
       Evolution : Evolutions.Evolution_Class_Access;
       Started : Boolean;
    begin
-      Graph_Widgets.Lock_Selection (Vis_Windows.Get_Graph_Widget (Window),
-                                    Selection, Lock);
       Layout_Factory.Create (Algorithm => Layout_Name,
                              Selection_To_Layout => Selection,
                              Widget => Vis_Windows.Get_Graph_Widget (Window),
@@ -192,6 +187,25 @@ package body Giant.Controller is
                                      -"Layout is calculated..."),
                                     Started);
       --  Evolutions.Start_Calculation_Blocked (Evolution);
+   end Apply_Layout;
+
+   procedure Apply_Layout
+     (Layout_Name           : in String;
+      Window_Name           : in String;
+      Selection_Name        : in String;
+      Position              : in Vis.Logic.Vector_2d;
+      Additional_Parameters : in String)
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+      Selection : Graph_Lib.Selections.Selection
+        := Vis_Windows.Get_Selection (Window, Selection_Name);
+      Lock : Graph_Widgets.Lock_Type;
+   begin
+      Graph_Widgets.Lock_Selection (Vis_Windows.Get_Graph_Widget (Window),
+                                    Selection, Lock);
+      Apply_Layout (Window, Selection, Lock, Layout_Name, Position,
+                    Additional_Parameters);
    end Apply_Layout;
 
    ---------------------------------------------------------------------------
@@ -269,7 +283,7 @@ package body Giant.Controller is
       Logger.Info (-"Closing current project");
 
       Project_Loaded := False;
-      --FIX: Current_Project := null;
+      Current_Project := Projects.Null_Project;
 
       Projects.Deallocate_Project_Deep (Current_Project);
       Graph_Lib.Unload;
@@ -446,9 +460,11 @@ package body Giant.Controller is
       Window : Vis_Windows.Visual_Window_Access
         := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
    begin
-      -- FIX: center graph_widget on pin
-      null;
-   end;
+      Graph_Widgets.Set_Location_And_Zoom_Level
+        (Vis_Windows.Get_Graph_Widget (Window),
+         Vis_Windows.Get_Position (Window, Name),
+         Vis_Windows.Get_Zoom (Window, Name));
+   end Show_Pin;
 
    ---------------------------------------------------------------------------
    --  Selections
@@ -478,8 +494,13 @@ package body Giant.Controller is
         := Projects.Get_Subgraph (Current_Project, Subgraph_Name);
       Selection : Graph_Lib.Selections.Selection
         := Graph_Lib.Subgraphs.Create_Selection (Subgraph, Name);
+      Lock : Graph_Widgets.Lock_Type;
    begin
       Vis_Windows.Add_Selection (Window, Selection);
+      Graph_Widgets.Insert_Selection
+        (Vis_Windows.Get_Graph_Widget (Window), Selection, Lock);
+      Graph_Widgets.Release_Lock
+        (Vis_Windows.Get_Graph_Widget (Window), Lock);
       Gui_Manager.Add_Selection (Window_Name, Name);
    end Create_Selection_From_Subgraph;
 
@@ -510,6 +531,17 @@ package body Giant.Controller is
       return Vis_Windows.Does_Selection_Exist (Window, Name);
    end Exists_Selection;
 
+   function Get_Current_Selection
+     (Window_Name : in String)
+      return Graph_Lib.Selections.Selection
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+   begin
+      return Vis_Windows.Get_Selection
+        (Window, Vis_Windows.Get_Current_Selection (Window));
+   end Get_Current_Selection;
+
    function Get_Selection
      (Window_Name : in String;
       Name        : in String)
@@ -520,6 +552,17 @@ package body Giant.Controller is
    begin
       return Vis_Windows.Get_Selection (Window, Name);
    end Get_Selection;
+
+--     function Get_Selection_Hightlight_ID
+--       (Highlight_Status : in Vis_Windows.Selection_Highlight_Status)
+--       return Config.Global_Data.Selection_High_Light_ID
+--     is
+--     begin
+--        case (Vis_Windows.Color_1) is
+--           when Vis_Windows.Selection_Highlight_Status =>
+--              return Config.Global_Data.Color_1;
+--        end case;
+--     end Get_Selection_Hightlight_ID;
 
    procedure Hide_Selection
      (Window_Name : in String;
@@ -540,22 +583,37 @@ package body Giant.Controller is
    is
       Window : Vis_Windows.Visual_Window_Access
         := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+      Selection : Graph_Lib.Selections.Selection
+        := Get_Selection (Window_Name, Name);
+--        Color : Config.Global_Data.Selection_High_Light_ID
+--          := Get_Selection_Hightlight_ID (Highlight_Status);
    begin
-      Vis_Windows.Set_Highlight_Status
-        (Window, Name, Highlight_Status);
+      Vis_Windows.Set_Highlight_Status (Window, Name, Highlight_Status);
+--        Graph_Widgets.Add_Local_Highlighting
+--          (Projects.Get_Graph_Widget (Window), Selection, Color);
       Gui_Manager.Update_Selection (Window_Name, Name);
    end;
 
    procedure Insert_Selection
      (Window_Name           : in String;
+      Selection_Name        : in String;
       Selection             : in Graph_Lib.Selections.Selection;
       Layout_Name           : in String;
-      Position              : in Vis.Logic.Vector_2d := Vis.Logic.Zero_2d;
-      Additional_Parameters : in String := "")
+      Position              : in Vis.Logic.Vector_2d            := Vis.Logic.Zero_2d;
+      Additional_Parameters : in String)
    is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+      Lock : Graph_Widgets.Lock_Type;
    begin
-      -- FIX
-      null;
+      Vis_Windows.Add_Selection (Window, Selection);
+      Graph_Widgets.Insert_Selection
+        (Vis_Windows.Get_Graph_Widget (Window), Selection, Lock);
+      Gui_Manager.Add_Selection (Window_Name, Selection_Name);
+      if (Layout_Name /= "") then
+         Apply_Layout (Window, Selection, Lock, Layout_Name, Position,
+                       Additional_Parameters);
+      end if;
    end Insert_Selection;
 
    function Remove_Selection
@@ -567,6 +625,8 @@ package body Giant.Controller is
    is
       Window : Vis_Windows.Visual_Window_Access
         := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+      Selection : Graph_Lib.Selections.Selection
+        := Get_Selection (Window_Name, Name);
    begin
       if (Vis_Windows.Get_Standard_Selection (Window) = Name) then
          --  we need to raise this before Gui_Manager.Remove_Selection
@@ -575,11 +635,16 @@ package body Giant.Controller is
       end if;
 
       if (Gui_Manager.Remove_Selection (Window_Name, Name)) then
+         --  FIX : unhighlight
+         if (Remove_Content) then
+            --  remove the selection from display before it is destroyed
+            Graph_Widgets.Remove_Selection
+              (Vis_Windows.Get_Graph_Widget (Window), Selection);
+         end if;
          Vis_Windows.Remove_Selection (Window, Name);
          return True;
-      else
-         return False;
       end if;
+      return False;
    end Remove_Selection;
 
    procedure Rename_Selection
@@ -820,11 +885,15 @@ package body Giant.Controller is
    is
       Window : Vis_Windows.Visual_Window_Access
         := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+      Style : Config.Vis_Styles.Visualisation_Style_Access
+        := Config.Vis_Styles.Initialize_Vis_Style_By_Name (Name);
    begin
       Logger.Debug ("setting vis style for " & Window_Name & ": "
                     & Name);
 
-      --Vis_Windows.Set_Vis_Style (Window, Name);
+      Vis_Windows.Set_Vis_Style (Window, Name);
+      Graph_Widgets.Set_Vis_Style (Vis_Windows.Get_Graph_Widget (Window),
+                                   Style);
       Gui_Manager.Update_Vis_Style (Window_Name);
    end Set_Vis_Style;
 
