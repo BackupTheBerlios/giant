@@ -1,7 +1,10 @@
 % =============================================================================
 %  $RCSfile: non_functionals.tex,v $ 
-%  $Date: 2003/03/28 21:57:12 $
-%  $Author: schwiemn $ 
+
+%  $Date: 2003/03/31 01:40:35 $
+
+%  $Author: squig $ 
+
 %
 %  Description: Non Functional Requirements für die Spezifikation
 
@@ -60,7 +63,9 @@ verfügen (also alle Systeme auf denen GTK/ADA 1.2.12 lauffähig ist).
 Explizit während der Entwicklung getestet
 werden kann dies aber nur für Sun Solaris und Linux.
 
+
   \subsection {Wartbarkeit}
+
 Das System soll sich durch ein hohes Maß an Wartbarkeit und Erweiterbarkeit 
 auszeichnen.
 Wartbarkeit und Erweiterbarkeit gehen hierbei über Performance. 
@@ -70,24 +75,50 @@ durch entsprechende Kapselung und Strukturierung des Entwurfes
 
 
 
+
+
+
+
 \section {Mengengerüst}
+
   Ein explizites Mengengerüst, z.B. hinsichtlich der minimalen und maximalen Anzahl von 
+
   darstellbaren Knoten, gibt es nicht. 
 
 
+
+
+
   \subsection {Verfügbarer Hauptspeicher als einziges ``Mengengerüst''}
+
 Größenbeschränkungen (z.B. Größe der zu ladenden IML-Graph-Datei, 
+
 Anzahl Knoten in einem Anzeigefenster ...) 
+
 sollen sich alleine aus dem verfügbaren Arbeitsspeicher ergeben. Falls der verfügbare Arbeitsspeicher erschöpft ist, 
+
 soll das System nicht abstützen, sondern vielmehr die entsprechende Aktion kontrolliert abbrechen und dem Benutzer 
+
 ein Weiterarbeiten ermöglichen.
 
 
+
+
+
   \section {Unterstützung paralleler Rechner}
+
 Layoutalgorithmen werden zur Unterstützung paralleler Rechner in separaten Threads ausgeführt. 
+
 Die einzelnen Layoutalgorithmen sind nicht parallel. In einem Anzeigefenster kann immer nur ein es können 
+
 aber mehrere Layoutalgorithmen in verschiedenen Anzeigefenstern gleichzeitig laufen.
+
 !!! Dieser Satz ist irghendwie komisch !!!! <<<<<<<<>>>>>>>
+
+
+
+
+
 
 
 
