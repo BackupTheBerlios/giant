@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: project.tex,v $, $Revision: 1.2 $
-%  $Date: 2003/08/09 14:28:28 $
+%  $RCSfile: project.tex,v $, $Revision: 1.3 $
+%  $Date: 2003/08/09 20:15:05 $
 %  $Author: birdy $
 %
 %  Description:
@@ -59,10 +59,11 @@ IML-Teilgraphen, logisch zusammen.
   oder die zugehörige IML-Graph Datei ändern.\\
   Das Fehlerverhalten von GIANT gegenüber Fehlern aufgrund manueller Änderungen
   des Benutzers an einem Projekt (Editieren der Projektdatei und
-  Ändern der Verwaltungsdateien) ist undefiniert.
+  Ändern der Verwaltungsdateien) ist undefiniert, es ist also bei Manuellen Änderungen
+  mit großer Sorgfalt vorzugehen.
 
   \item
-  Um Inkonsistenzen und Konflikte zu vermeiden sollten alle Dateien, die
+  Um Inkonsistenzen und Konflikte zu vermeiden, sollten alle Dateien, die
   zu einem Projekt gehören, im Projektverzeichnis liegen (GIANT
   macht dies automatisch immer so). Man sollte
   in die Projektdatei also manuell keine Referenzen auf Verwaltungsdateien
@@ -89,9 +90,9 @@ IML-Teilgraphen, logisch zusammen.
   
      \item Verwaltungsdateien für Anzeigefenster. \\
            Jedes zum Projekt 
-           gehörende Anzeigefenster hat -- sobald es zum ersten
-           mal gespeichert wurde 
-           (siehe Funktion \ref{Anzeigefenster speichern}) --
+           gehörende Anzeigefenster hat, sobald es zum ersten
+           mal durch Benutzen der \gq{Project - Save} oder \gq{Save As..} Funktion im
+	   Pulldown Menü des Hauptfensters gespeichert wurde,
            seine eigene Verwaltungsdatei. 
            Siehe hierzu auch  
            \ref {Project Verwaltungsdateien für Anzeigefenster}.
@@ -103,8 +104,8 @@ IML-Teilgraphen, logisch zusammen.
            Ein IML-Teilgraph verfügt nicht sofort nach seiner
            Erstellung über eine Verwaltungsdatei; diese Datei wird
            erst erzeugt, wenn das gesamte Projekt nach Erstellung des
-           IML-Teilgraphen gespeichert wird (siehe z.B. Funktion 
-           \ref{Projekt speichern}).
+           IML-Teilgraphen gespeichert wird (\gq{Project - Save} oder \gq{Save As..}
+	   im Pulldown Menü des Hauptfensters).
 
      \item Genau einer Verwaltungsdatei für alle Knoten-Annotationen
            (siehe \ref {Project Verwaltungsdatei für Knoten-Annotationen}).
@@ -209,8 +210,8 @@ IML-Teilgraphen, logisch zusammen.
   Projekten über XML-Dateien (siehe 
   \ref{Config Visualisierungsstile}) konfiguriert bzw. definiert werden, 
   kann nicht garantiert werden, dass der gewünschte Stil beim Laden 
-  des Projektes auch wieder gefunden wird,
-  in diesem Fall wird dann ein \gq{Standard-Stil} verwendet.
+  des Projektes auch wieder gefunden wird. Sollte der Stil nicht gefunden werden,
+  wird dann ein \gq{Standard-Stil} verwendet.
 
 
   \subsection {Verwaltungsdateien für IML-Teilgraphen}  
@@ -259,7 +260,7 @@ IML-Teilgraphen, logisch zusammen.
 \section {Grundlegendes Verhalten von GIANT beim Speichern von Projekten} 
 \index{Projekte!Speichern von Projekten}  
 
-  \subsection{\gq{Alles Speichern}}\label{Alles Speichern}
+  \subsection{\gq{Project - Save / Project - Save As.. Pulldown-Menü}}\label{Alles Speichern}
   Diese Funktionalität wird von entsprechenden Funktionen genutzt. 
   Hierbei werden alle Anzeigefenster, IML-Teilgraphen 
   und Knoten-Annotationen in die Verwaltungsdateien geschrieben, 
@@ -268,7 +269,7 @@ IML-Teilgraphen, logisch zusammen.
   der offenen Anzeigefenster wird ohne explizite Rückfrage beim Benutzer
   in die Verwaltungsdateien geschrieben.
   Der Zustand der persistenten Informationen in den Verwaltungsdateien
-  entspricht nach Ausführung von \gq{Alles Speichern} exakt dem Zustand 
+  entspricht nach Ausführung von \gq{Project - Save (As..)} exakt dem Zustand 
   des innerhalb von GIANT geöffneten Projektes.
 
   %===
@@ -345,11 +346,11 @@ IML-Teilgraphen, logisch zusammen.
   
     \item
     Neu erzeugte IML-Teilgraphen und Änderungen an bestehenden 
-    IML-Teilgraphen können nur über \gq{Alles Speichern} (siehe oben) 
+    IML-Teilgraphen können nur über \gq{Project - Save (As..)} (siehe oben) 
     gespeichert werden.
        
     \item
-    Wird das Programm beendet, ohne das zuvor \gq{Alles Speichern} ausgeführt 
+    Wird das Programm beendet, ohne das zuvor \gq{Project - Save (As..)} ausgeführt 
     worden ist, so gehen alle nicht gespeicherten Informationen zu den 
     IML-Teilgraphen verloren (alle zwischenzeitlich ausgeführten Modifikationen 
     und alle zwischenzeitlich neu erzeugten IML-Teilgraphen). 
@@ -379,7 +380,7 @@ verwaltet werden.
   
    \item
    Änderungen bestehender oder neu erzeugte Knoten-Annotationen werden nur
-   über die Funktionalität \gq{Alles Speichern} (siehe 
+   über die Funktionalität \gq{Project - Save (As..)} (siehe 
    \ref{Alles Speichern}) in die 
    Verwaltungsdatei für Knoten-Annotationen (siehe   
    \ref {Project Verwaltungsdatei für Knoten-Annotationen}) geschrieben.

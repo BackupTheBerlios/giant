@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.13 $
-%  $Date: 2003/08/09 14:28:28 $
+%  $RCSfile: config.tex,v $, $Revision: 1.14 $
+%  $Date: 2003/08/09 20:15:05 $
 %  $Author: birdy $
 %
 %  Description:
@@ -48,7 +48,7 @@ Hier das File giant\_config\_file.dtd:
 
 \verbatiminput{giant_config_file.dtd}
 
-Hier sind die möglichen Einstellungen, die im Config-File sein können, aufgelistet,
+Im Folgenden sind die möglichen Einstellungen, die im Config-File sein können, aufgelistet,
 jeweils mit ihrem Defaultwert. Wenn die betreffenden Daten im Config-File
 nicht existieren, so wird der im Folgenden als Beispiel angegebene Wert von
 GIANT als default verwendet.
@@ -77,7 +77,7 @@ in der Shell des Betriebssystemes bei Aufruf von GIANT befindet, verwendet.
 °<absolute_path_root root_directory  = "." />°
 
 Das folgende Directory gibt an, in welchem Verzeichnis die Bilder von GIANT
-gesucht werden, wenn andere Erweiterungen (Expansionen) fehlschlagen:
+gesucht werden, wenn andere Pfad-Erweiterungen (Expansionen) fehlschlagen:
 
 °<setting name = "Resources_Directory" value="." />°
 
@@ -132,7 +132,7 @@ untere Bereich des Hauptfensters mit der unteren Liste anfängt:
 °<setting name = "Main_Window.Separator" value="230" />°
 
 Hier kann festgelegt werden, ob bei Löschoperationen eine
-Sicherheitsabfrage erfolgen soll (***** welche Löschoperationen genau?)
+Sicherheitsabfrage erfolgen soll:
 
 °<setting name = "Confirm.Delete" value="true" />°
 
@@ -162,6 +162,7 @@ Hier nun ein Beispiel-Configfile (global\_config.xml) :
   auf die Datei, welche das GSL-Skript enthält, spezifiziert.
   Der Makro kann dann aus einem Popup-Menü heraus aufgerufen werden, wobei
   dann das in der Datei stehende GSL Skript ausgeführt wird.
+  ****** Hier mehr Info dazu, sobald implementiert.
 
   \subsection {Farbe von Hervorhebungen}
   \index{hervorheben!Farben konfigurieren}
@@ -182,14 +183,14 @@ Hier nun ein Beispiel-Configfile (global\_config.xml) :
 Der Benutzer kann beliebig viele Visualisierungsstile definieren.
 Mittels dieser Visualisierungsstile kann die Darstellung von
 Fenster-Knoten und Fenster-Kanten dynamisch zur Laufzeit geändert werden
-(siehe auch 
-\ref{Den Visualisierungsstil eines Anzeigefensters ändern}).
-Weitere Informationen zur Visualisierung von Fenster-Knoten und
-Fenster-Kanten sind unter den Abschnitten
-\ref{Visualization Visualisierung von Kanten} und
-\ref{Visualization Visualisierung von Knoten} zu finden.\\
-Für die Visualisierungsstile gelten die folgenden Konventionen:
+(siehe auch \ref{GUI Stilauswahl-Combobox}).
+%Weitere Informationen zur Visualisierung von Fenster-Knoten und
+%Fenster-Kanten sind unter den Abschnitten
+%\ref{Visualization Visualisierung von Kanten} und
+%\ref{Visualization Visualisierung von Knoten} zu finden.\\
+% *** refs zeigen ins Leere
 
+Für die Visualisierungsstile gelten die folgenden Konventionen:
 
 \begin {enumerate}
 
@@ -533,7 +534,8 @@ im ersten Beispiel erklärt.
 
 \verbatiminput{test_vis_style_5_inheritance.xml}
 
-\subsection{Config-Dateien für Class-Sets}
+\subsection{Config-Dateien für Class-Sets (Klassenmengen)}
+\label{Config-Klassenmengen}
 
 Ein Class Set ist eine durch ein XML-File festgelegte Menge von Knotenklassen
 und Kantenklassen. Der Dateiname des XML-Files gibt den Namen des Class

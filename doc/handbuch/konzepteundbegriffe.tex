@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: konzepteundbegriffe.tex,v $, $Revision: 1.5 $
-%  $Date: 2003/08/09 14:28:28 $
+%  $RCSfile: konzepteundbegriffe.tex,v $, $Revision: 1.6 $
+%  $Date: 2003/08/09 20:15:05 $
 %  $Author: birdy $
 %
 %  Description:
@@ -51,10 +51,13 @@ Eine Knotenklasse (Node Class) ergibt sich aus der Einteilung der IML-Knoten
 des IML-Graphen in verschiedene Klassen, wie sie sich aus der
 IML-Graph-Bibliothek von Bauhaus ergibt.\\
 
-Eine Klassenmenge (Class Set) ist eine durch die IML-Graph Bibliothek
-vorgegebene Zusammenfassung von Kantenklassen und Knotenklassen.
+\label{Klassenmenge}
+Eine Klassenmenge (Class Set) ist eine durch IML-Dateien festgelegte
+Zusammenfassung von Kantenklassen und Knotenklassen.
 Es kann mehrere Klassenmengen geben. Die selben Knotenklassen und 
 Kantenklassen können gleichzeitig zu mehreren Klassenmengen gehören.\\
+Der Aufbau dieser Klasenmengendateien ist in Kapitel \ref{Config-Klassenmengen}
+beschrieben.
 
 Eine Knoten-Annotationen (Node Annotation ist eine eine textuelle
 Beschreibung zu einem bestimmten Knoten des IML-Graphen, die der Nutzer
@@ -110,19 +113,64 @@ Fenster-Kanten unterscheidbar gemacht werden.\\
 \section {Allgemeine Bedienkonzepte} \index{Bedienkonzepte}
 Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
 
-  \subsection {Selektieren von Fenster-Knoten und Fenster-Kanten in 
+ 
+
+  \subsection{Standard-Selektion}
+  \label{Standard-Selektion}
+  \index{Standard-Selektion}
+ 
+  Jedes Anzeigefenster hat genau eine Standard-Selektion. Diese
+  Selektion wird bei der Erzeugung des Fensters angelegt und ist zu
+  Anfang leer. Die Standard-Selektion kann nicht gelöscht
+  werden. Abgesehen davon verhält sich die Standard-Selektion wie vom
+  Benutzer angelegte Selektionen.
+    
+  \subsection {Aktuelle Selektion} 
+               \label{Aktuelle Selektion vs Selektionen}
+
+  \index{Aktuelle Selektion}
+               
+  \begin{enumerate}
+  
+  \item Es gibt zu jedem Anzeigefenster beliebig viele Selektionen
+    (mindestens aber eine -- die Standard-Selektion),
+    davon ist immer eine die aktuelle Selektion.
+    
+    \item 
+    Das oben beschriebene Selektieren mittels der linken Maustaste 
+    und weiterer Funktionstasten (siehe 
+    \ref{Selektieren von Fenster-Knoten und Fenster-Kanten in Anzeigefenstern}) 
+    betrifft immer nur die aktuelle Selektion. \\
+    Alle anderen Selektionen können zwar hervorgehoben werden, aber nicht 
+    durch das Selektieren mittels linker Maustaste etc. geändert werden.
+      
+    \item
+    Der Benutzer kann jederzeit mittels Kontextmenü bestimmen, welche der
+    Selektionen eines Anzeigefensters die aktuelle Selektion ist.
+    
+    \item 
+    Die aktuelle Selektion wird immer hervorgehoben. 
+  
+  \end {enumerate}
+  
+  
+
+  \index{Selektieren}
+  
+   \subsection {Selektieren von Fenster-Knoten und Fenster-Kanten in 
                Anzeigefenstern}
   \label {Selektieren von Fenster-Knoten und Fenster-Kanten in 
                Anzeigefenstern} 
-
-  \index{Selektieren}
   
   Hier werden die Abläufe zur Selektion und Deselektion einzelner
   Fenster-Knoten und Fenster-Kanten mittels der Maus und
   Tastatur aufgezählt.\\
   Die so erzielte Auswahl bezieht sich immer auf die aktuelle
-  Selektion (siehe Selektionsauswahlliste im Fenster).
-    
+  Selektion (siehe Selektionsauswahlliste im Fenster, Abschnitt
+  \ref{Selektionsauswahlliste}).\\
+  Änderungen der Selektionen sind auch in der Selektionsauswahlliste im
+  Fenster sichtbar.\\
+   
   Allgemein gilt: Selektiert werden kann mit der Maus durch Klick
   mit der linken Maustaste oder Aufziehen eines Rahmens mittels der
   gedrückten linken Maustaste.
@@ -181,47 +229,7 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
   
   \end{enumerate}
 
-  Der Nutzer kann z.B. 
 
-  \subsection{Standard-Selektion}
-  \label{Standard-Selektion}
-  \index{Standard-Selektion}
- 
-  Jedes Anzeigefenster hat genau eine Standard-Selektion. Diese
-  Selektion wird bei der Erzeugung des Fensters angelegt und ist zu
-  Anfang leer. Die Standard-Selektion kann nicht gelöscht
-  werden. Abgesehen davon verhält sich die Standard-Selektion wie vom
-  Benutzer angelegte Selektionen.
-    
-  \subsection {Aktuelle Selektion} 
-               \label{Aktuelle Selektion vs Selektionen}
-
-  \index{Aktuelle Selektion}
-               
-  \begin{enumerate}
-  
-  \item Es gibt zu jedem Anzeigefenster beliebig viele Selektionen
-    (mindestens aber eine -- die Standard-Selektion),
-    davon ist immer eine die aktuelle Selektion.
-    
-    \item 
-    Das oben beschriebene Selektieren mittels der linken Maustaste 
-    und weiterer Funktionstasten (siehe 
-    \ref{Selektieren von Fenster-Knoten und Fenster-Kanten in Anzeigefenstern}) 
-    betrifft immer nur die aktuelle Selektion. \\
-    Alle anderen Selektionen können zwar hervorgehoben werden, aber nicht 
-    durch das Selektieren mittels linker Maustaste etc. geändert werden.
-      
-    \item
-    Der Benutzer kann jederzeit mittels Kontextmenü bestimmen, welche der
-    Selektionen eines Anzeigefensters die aktuelle Selektion ist.
-    
-    \item 
-    Die aktuelle Selektion wird immer hervorgehoben. 
-  
-  \end {enumerate}
-  
-  
   
 \section {Verhalten beim Einfügen von IML-Teilgraphen und Selektionen
 in Anzeigefenster}
@@ -424,14 +432,14 @@ in Anzeigefenster}
   \index{Fenster-Knoten!auseinanderschieben}
   \index{auseinanderschieben}
   
-Sollen Fenster-Knoten auf dem Anzeigeinhalt automatisch
-auseinandergeschoben werden, so geschieht dies nach dem hier beschriebenen
-Modus.
+Sollen Fenster-Knoten auf dem Anzeigeinhalt
+auseinandergeschoben werden, so geschieht dies wie hier beschrieben
+und dürfte schneller von der Hand gehen als das manuelle
+Auseinanderschieben durch verschieben jedes einzelnen Knotens.
 GIANT stellt diese Funktionalität dem Benutzer über eine
 Funktion zur manuellen Ausführung zur Verfügung. Ein automatisches 
 \gq{Auseinanderschieben von Fenster-Knoten} durch GIANT selbst ist
-nicht vorgesehen, der Entwurf wird aber eine einfache Erweiterbarkeit
-von GIANT diesbezüglich unterstützen.
+nicht vorgesehen.
 
 \begin {enumerate}
 

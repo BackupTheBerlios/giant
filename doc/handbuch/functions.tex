@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: functions.tex,v $, $Revision: 1.10 $
-%  $Date: 2003/08/09 14:28:28 $
+%  $RCSfile: functions.tex,v $, $Revision: 1.11 $
+%  $Date: 2003/08/09 20:15:05 $
 %  $Author: birdy $
 %
 %  Description: 
@@ -9,19 +9,34 @@
 %
 % ==============================================================================
 
+\label{Kapitel-Funktionale Anforderungen}
 
 \section{Über dieses Kapitel}    
 
-Hier werden alle Elemente der Benutzeroberfläche (Anzeigeelemente und
-aktive Elemente wie Menüs etc.) von GIANT beschrieben.
-Sofern nicht anders angegeben, sind hintereinander angegebene Elemente
-(z.B. Listeneinträge) immer von links nach rechts oder von oben nach
-unten beschrieben.
-Alle Ausgaben sind immer linksbündig formatiert, sofern nicht anders
-vermerkt.
+
 Wichtige Informationen zur Persitzenz der Projekte in GIANT,
 welche Informationen jeweils gespeichert werden, finden sich
 im Abschnitt \ref{Project Persistenz der Projekte}.
+
+\section {Kommandozeilenaufruf}
+
+Giant kann wie folgt von der Kommandozeile aus gestartet werden:
+
+\begin{enumerate}
+ \item{Ohne Parameter:}\\
+
+°./giant°
+
+ \item{Mit Parametern, [] bedeutet \gq{optional}, | bedeutet \gq{oder}:}\\
+
+°./giant project-file [-g graph-file] [-e script-file] | -h | -v°
+
+project-file ist der Filename der Projektdatei, graph-file der Filename
+des IML-Graphen, script-file ein auszuführendes GSL-Skript.
+Die Option -h steht für Hilfe, -v für ausführlicheres Output auf
+der Konsole (z.B. xterm).
+
+\end{enumerate}
 
 \clearpage
 \section {Main Window}
@@ -33,6 +48,8 @@ im Abschnitt \ref{Project Persistenz der Projekte}.
    \label{Main-Window-Pic}
 \end{figure}
 
+\clearpage
+
 %Ergänzungen by Martin
 Jede Instanz von GIANT hat genau ein Hauptfenster. \index{Hauptfenster}
 Im Hauptfenster (siehe Abbildung \ref{Main-Window-Pic}) werden die
@@ -42,8 +59,8 @@ IML-Teilgraphen des aktuell geöffneten Projektes (siehe
 Über Popup-Menüs können IML-Teilgraphen
 und Anzeigefenster manipuliert werden.
 
-Im Fenster befinden sich zwei Listen, Window List (2 Spalten), und
-Subgraph List (4 Spalten).
+Im Fenster befinden sich zwei Listen, Window List und
+Subgraph List.
 
 
   \subsection {Kopfzeile}
@@ -118,7 +135,7 @@ Subgraph List (4 Spalten).
 	  Es werden alle
           bestehenden Knoten-Annotationen des Projektes, für die es in
           Anzeigefenstern und IML-Teilgraphen keine Fenster-Knoten und
-          Graph-Knoten gibt, gelöscht.
+          Graph-Knoten gibt, aus der Annotationsdatei gelöscht.
 	  
           \item {Execute GSL Script}
 	  
@@ -132,7 +149,7 @@ Subgraph List (4 Spalten).
 
     \subsubsection {Untermenü Info }  \label{Main-Window-Info}     
        \begin{enumerate}
-          \item {About GIANT}
+          \item {About GIANT}\\
 	  Dieser Menüpunkt gibt ein Fenster mit Informationen zur
 	  GIANT Programmversion und zu den Autoren aus.
         \end{enumerate}
@@ -205,8 +222,7 @@ Subgraph List (4 Spalten).
       in Nodes die Anzahl der Graph-Knoten des jeweiligen IML-Teilgraphen, 
       in Edges die Anzahl der Graph-Kanten und in Highlighted befindet sich
       ein Kästchen in der
-      Farbe, die für die Hervorhebung des IML-Teilgraphen verwendet wird
-      (siehe hierzu auch \ref{hervorheben von Knoten und Kanten}).
+      Farbe, die für die Hervorhebung des IML-Teilgraphen verwendet wird.
       Bei nicht hervorgehobenen IML-Teilgraphen wird dieses Kästchen
       nicht angezeigt.
 
@@ -262,10 +278,10 @@ Subgraph List (4 Spalten).
   In Anzeigefenstern (Visualization Windows) werden Teile des IML-Graphen
   visualisiert.  Sie erscheinen im großen quadratischen rechten Teil
   (\gq{Vis Pane}) des Fensters. Die Vis Pane enthält den Anzeigeinhalt
-  des Fensters.  Im linken Viertel des Fensters, der Toolbar
+  des Fensters.  Im linken Teil des Fensters, der Toolbar
   (\gq{Vis Toolbar}) befinden sich untereinander die
   MiniMap, Pinliste, Selektionsliste, die Stilauswahl-Combobox und die
-  Zoom-Kontrolle. 
+  Zoom-Kontrolle. Dieser Teil kann horizontal verschoben werden.
   \index{Zoom-Kontrolle}
   \index{Visualisierungsstile!Stilauswahl-Combobox}
 
@@ -279,8 +295,9 @@ Subgraph List (4 Spalten).
  Rahmen repräsentiert, der innerhalb der MiniMap durch Mausklicks
  versetzt werden kann. Je nach Zoomstufe ist dieser Rahmen größer
  oder kleiner. Wird der Rahmen versetzt, wird der sichtbare Anzeigeinhalt
- in der Vis Pane entsprechend angepasst (siehe auch Funktion 
- \ref{Verschieben des sichtbaren Anzeigeinhaltes über die Minimap}).
+ in der Vis Pane entsprechend angepasst.\\
+ Vergrößert sich die von Knoten bedeckte Fläche im Fenster, z.B. durch
+ Einfügen von Teilgraphen, so verändert sich auch die Minimap entsprechend.
 
   \subsection{Visualisierung der Knoten}
 
@@ -331,6 +348,10 @@ Subgraph List (4 Spalten).
 	        \item{Nach dem nächsten Speichern des Projektes ist die Annotation
 		      dauerhaft gelöscht.}
 	     \end{itemize} 
+          \item {Execute GSL Script on Node ****}\\
+	      Mit diesem Menü können die GSL-Skripte im Untermenü schnell auf den
+	      Knoten bezogen ausgeführt werden, d.h. ihnen wird die ID des Knotens
+	      als Parameter übergeben.
           \end{enumerate}
       \label{Change Node Annotation}
       \label{Delete Node Annotation}
@@ -344,6 +365,8 @@ Subgraph List (4 Spalten).
     \label{Empty Vis Pane Right click}
     \begin{enumerate}
       \item Make Room\\
+        Mittels dieses Menüpunktes können Knoten auseinandergeschoben werden,
+	um Platz zu schaffen.
         \begin{itemize}
          \item{Der Nutzer führt einen Rechtsklick auf eine leere Stelle des
 	 sichtbaren Anzeigeinhalts in einem Anzeigefenster durch und wählt im erscheinenden
@@ -359,7 +382,7 @@ Subgraph List (4 Spalten).
          \item{GIANT schiebt die Knoten entsprechend auseinander.}
         \end{itemize}
       \item New Pin\\
-         Mittels dieses Menüpunktes kann ein neuer Pin angelegt werden.
+         Mittels dieses Menüpunktes kann ein neuer Pin (siehe \ref{VIS-PANE-Pins})angelegt werden.
 	 \begin{itemize} 
 	     \item{Der Benutzer führt einen Rechtsklick auf den Anzeigeinhalt eines
     		Anzeigefensters durch und wählt aus dem Popup-Menü 
@@ -403,7 +426,7 @@ Subgraph List (4 Spalten).
        \begin{itemize}
 	  \item{GIANT öffnet einen allgemeinen Texteingabedialog}
 	  \item{Der Benutzer gibt dort einen zulässigen Namen 
-           (siehe \ref{afa Zulaessige Namen}) für die neue Selektion 
+           (siehe \ref{afa Bezeichnertypen}) für die neue Selektion 
            ein und bestätigt mit OK.}
 	  \item{Eine neue Selektion mit dem vorgegebenen Namen
            ist angelegt und erscheint in der Liste der Selektionen.
@@ -530,8 +553,7 @@ Subgraph List (4 Spalten).
       \item Zoom To Make Selection Fill Window\\
          Der im Fenster sichtbare Anzeigeinhalts wird durch automatisches Zoomen
          und Scrollen so verändert, dass die ausgewählte Selektion vollständig
-	 sichtbar ist. Die Detailstufe (siehe \ref{Visualization Detailstufen})
-	 wurde ggf. automatisch angepasst.
+	 sichtbar ist.
       \item Copy Selection\\
           Diese Funktion dient zum Kopieren von Selektionen innerhalb eines Anzeigefensters.
 	  \begin{itemize}
@@ -637,27 +659,6 @@ Subgraph List (4 Spalten).
             auch direkt über einen entsprechenden Dialog 
             (siehe \ref{Common-Set-Operation-Dialog}) ausführen, welcher mit dieser
 	    Funktion aufgerufen werden kann.\\
-	    Im Falle einer Mengenvereinigung umfasst, die neue Selektion TARGET alle
-            Fenster-Knoten und Fenster-Kanten aus der LEFT\_SOURCE Selektion und der 
-            RIGHT\_SOURCE Selektion.\\
-	    Im Falle einer Mengendifferenz umfasst, die neue Selektion TARGET alle
-            Fenster-Knoten und Fenster-Kanten aus der LEFT\_SOURCE Selektion, 
-            die nicht Bestandteil der  RIGHT\_SOURCE Selektion sind.\\
-	    Im Falle eines Mengenschnitts umfasst, die neue Selektion TARGET alle
-            Fenster-Knoten und Fenster-Kanten, die der LEFT\_SOURCE Selektion und der 
-            RIGHT\_SOURCE Selektion gemeinsam angehören.\\
-	    \begin{itemize}
-	       \item{Der Benutzer startet die Funktion über durch Auswahl des
-                     Menüpunktes \gq{Selection Set Operation} 
-                     aus dem Popup-Menü in der Selektionsauswahlliste (siehe
-                     \ref{Selektionsauswahlliste}).
-		     GIANT öffnet den Set-Operation-Dialog.}
-	       \item{Der Benutzer wählt dort die beiden Quell-Selektionen (LEFT\_SOURCE und 
-                     RIGHT\_SOURCE) aus, bestimmt die durchzuführende Mengenoperation und
-		     gibt unter TARGET den Namen der neu zu erzeugenden Selektion 
-                     ein. Dann bestätigt er die Eingabe mit OK.}
-	       \item{GIANT führt die Mengenoperation aus.}
-	    \end{itemize}
 	    
     \end{enumerate}    
 
@@ -682,21 +683,28 @@ Subgraph List (4 Spalten).
 
   In der ComboBox zur Zoom-Kontrolle befindet sich
   neben den vorgegebenen Zoomstufen \index{Zoomstufe} noch der
-  Eintrag \gq{Fit in Window}, welcher dafür sorgt, daß der gesamte Graph im
+  Eintrag \gq{Whole Graph}, welcher dafür sorgt, daß der gesamte Graph im
   Fenster sichtbar ist.
   
   Mittels der Buttons \gq{+}und \gq{-} kann die Zoomstufe nach oben bzw. unten
   verändert werden, pro Klick verändert sie sich um einen bestimmten Betrag.
+  
   Mittels \gq{Pick Edge} kann Scrolling und Zoomstufe automatisch so eingestellt werden,
   daß eine ausgewählte Kante komplett sichtbar ist, dazu wird \gq{Pick Edge} und
   danach die auszuwählende Kante angeklickt.
-  
+  % ****** Kommt das noch? Sonst rauswerfen.
  
     \subsection{Scrollbars}
     \label{Scrolleisten}
     
-    Mit den beiden Scrollbars am unteren und rechten Rand des Anzeigefensters
-    kann der sichtbare Anzeigeinhalt gescrollt werden.
+    Der sichtbare Anzeigeinhalt kann folgendermassen gescrollt werden:
+    \begin{itemize}
+      \item{Durch Bewegen des sichtbaren Bereiches in der Minimap mit der Maus}
+      \item{Durch Klicken mit der linken Maustaste auf eine leere Stelle des 
+            sichtbaren Anzeigeinhalts, festhalten der Maustaste und Bewegen des
+	    Mauszeigers aus dem Fenster heraus in die entsprechende Richtung
+	    (oben, unten, links oder rechts).}
+    \end{itemize}
 
 \clearpage
 \section{Knoten-Informationsfenster} \label{Knoten-Informationsfenster}
@@ -725,10 +733,10 @@ Subgraph List (4 Spalten).
     ein Fensterknoten angeklickt, das Knoten-Informationsfenster öffnet sich.\\
     
     Die Informationen zu dem ausgewählten
-    Fenster-Knoten werden dann im Knoten-Informationsfenster dargestellt
-    (siehe hierzu auch Funktion 
-    \ref {Details zu Knoten in einem bestehenden Informationsfenster anzeigen}).\\
-    Das Knoten-Informationsfenster enthält folgende Elemente:
+    Fenster-Knoten werden dann im Knoten-Informationsfenster dargestellt.\\
+    
+    Das Knoten-Informationsfenster enthält, neben der Anzeige von Knoten-ID
+    und Knoten-Typ, folgende Elemente:
     
     \subsection{Liste Attributes}
     
@@ -740,29 +748,29 @@ Subgraph List (4 Spalten).
         \item Value (der Attributwert)
       \end{enumerate}
     
-    \subsection{Liste Successor Nodes}
-    
-      Die Liste Successor Nodes hat eine Zeile für jede vom Knoten abgehende
-      Kante mit zwei Spalten:
-    
-    \begin{enumerate}
-      \item ID (die ID des Nachfolger-Knotens)  
-      %Changed by Martin Class -> Type da sonst Inkonsistent zu Abbildung
-      %Eigentlich hätte die Grafik geändert werden müssen
-      \item Type (die Kantenklasse der abgehenden Kante)
-    \end{enumerate}    
-
-    \subsection{Liste Predecessor Nodes}
-      
-      Die Liste Predecessor Nodes hat eine Zeile für jede beim Knoten eingehende
-      Kante mit zwei Spalten:
-
-      \begin{enumerate}
-        \item ID (die ID des Vorgänger-Knotens)
-        %Changed by Martin Class -> Type da sonst Inkonsistent zu Abbildung
-        %Eigentlich hätte die Grafik geändert werden müssen
-        \item Type (die Kantenklasse der eingehenden Kante)
-      \end{enumerate}
+%    \subsection{Liste Successor Nodes}
+%    
+%      Die Liste Successor Nodes hat eine Zeile für jede vom Knoten abgehende
+%      Kante mit zwei Spalten:
+%    
+%    \begin{enumerate}
+%      \item ID (die ID des Nachfolger-Knotens)  
+%      %Changed by Martin Class -> Type da sonst Inkonsistent zu Abbildung
+%      %Eigentlich hätte die Grafik geändert werden müssen
+%      \item Type (die Kantenklasse der abgehenden Kante)
+%    \end{enumerate}
+%
+%    \subsection{Liste Predecessor Nodes}
+%      
+%      Die Liste Predecessor Nodes hat eine Zeile für jede beim Knoten eingehende
+%      Kante mit zwei Spalten:
+%
+%      \begin{enumerate}
+%        \item ID (die ID des Vorgänger-Knotens)
+%        %Changed by Martin Class -> Type da sonst Inkonsistent zu Abbildung
+%        %Eigentlich hätte die Grafik geändert werden müssen
+%        \item Type (die Kantenklasse der eingehenden Kante)
+%      \end{enumerate}
 
 \clearpage
 \section{Skriptdialog} \label{GUI Anfragedialog}
@@ -789,7 +797,7 @@ Unter Query Text befinden sich folgende Buttons:
 	   Mit diesem Button kann das im Textfeld eingetippte Skript gespeichert werden.
 	   Nach dem Klick auf diesen Button erscheint ein Dateiauswahlfenster, nach
 	   Festlegen eines Dateinamens wird das Skript unter diesem Namen gespeichert.
-        \item OK\\
+        \item Okay\\
 	   Führt das eingegebene Skript aus.
         \item Cancel
 	   Schließt das Fenster ohne Ausführung oder Speicherung des Skriptes.
@@ -829,7 +837,7 @@ dient dazu, Mengenoperationen über
 Selektionen und
 IML-Teilgraphen durchzuführen.
 Die Mengenoperation lässt sich wie folgt beschreiben:\\
-TARGET := LEFT\_SOURCE <op> RIGHT\_SOURCE \\
+TARGET := LEFT\_SOURCE <Operation> RIGHT\_SOURCE \\
 
 
 Bestandteile des Dialoges sind:
@@ -841,7 +849,7 @@ Bestandteile des Dialoges sind:
  Bei einer Mengenoperation über IML-Teilgraphen, werden alle IML-Teilgraphen
  des Projektes angezeigt, von denen dann einer ausgewählt werden kann.
  
- \item <op> Combobox\\
+ \item <Operation> Combobox\\
  Mengenoperation, die ausgeführt werden soll; auswählbar sind: Union, Difference oder Intersection.
 
  \item RIGHT\_SOURCE Combobox\\
@@ -873,19 +881,17 @@ Bestandteile des Dialoges sind:
 Der Layoutalgorithmen Dialog (siehe Abbildung \ref{Layout-Algorithm-Dialog-Pic}) 
 bietet folgende Möglichkeiten:
 
-\begin {enumerate}
- \item Auswahl des Layoutalgorithmus
- \item Ggf. Anzeige der zu layoutenden Selektion
+\begin {enumerate} 
+ \item Anzeige der zu layoutenden Selektion mit dem zu layoutenden Fenster
+ \item {Auswahl des Layoutalgorithmus}\\
+       Über die Tabs im Fenster kann der Layoutalgorithmus ausgewählt werden,
+       in der aktuellen Version stehen zur Auswahl: Matrix, Tree Layout,
+       Other (für spätere Erweiterungen).
  \item Ggf. Eingabefeld für die ID des Wurzelknotens bei Treelayouts
- \item {Eingabe der zu berücksichtigenden Klassenmengen bei semantischen Layouts,
- 	Hierbei können mittels der Buttons \gq{>>} und \gq{<<} die 
-        verfügbaren
-	definierten Klassenmengen zwischen den beiden
-	Spalten \gq{Available} und \gq{Use For Layout} 
-        hin und her geschoben werden.
-	Nur Klassenmengen, die sich in der \gq{Use For Layout} Spalte befinden,
-	werden für das Layout berücksichtigt.
-        }
+ \item {Ggf. Auswahl der für das Layout der Knoten zu berücksichtigenden Klassenmengen
+        (class sets, siehe \ref{Config-Klassenmengen} und \ref{Klassenmenge}) bei semantischen Tree-Layouts.}\\
+	Nur Klassenmengen, die in der Liste per Mausklick markiert worden sind
+	(Mehrfachmarkierungen sind möglich), werden für das Layout berücksichtigt.
  \item OK Button
  \item Cancel Button
 \end {enumerate}
@@ -907,8 +913,9 @@ Beschreibung von verschiedenen GUI Elementen zur Eingabe von Daten.
 Der Knoten-Annotations-Dialog (siehe Abbildung 
 \ref{Node-Annotation-Dialog-Pic}) besteht aus einem Fenster mit einem
 Label, welches die ID des Knotens anzeigt, und einem Textfeld für den Annotationstext.
-Mittels der beiden Buttons OK und Cancel können die Änderungen im
-Textfeld übernommen oder verworfen werden.  
+Mittels der beiden Buttons Okay und Cancel können die Änderungen im
+Textfeld übernommen oder verworfen werden. Der Button Delete kann dazu
+verwendet werden, das Textfeld zu leeren.
 \index{Knoten-Annotationen}
 
 
@@ -928,7 +935,7 @@ wird in einem Textfeld als Zahl
 eingegeben, um wie viel
 Pixel die Fenster-Knoten an einer vorher markierten Stelle auseinandergeschoben 
 werden sollen.
-Mit dem Button OK kann bestätigt werden, mit dem Button Cancel abgebrochen werden.
+Mit dem Button Okay kann bestätigt werden, mit dem Button Cancel abgebrochen werden.
 
 \clearpage
 \section{Ausgabe von Fehlermeldungen}
@@ -966,7 +973,10 @@ ein Fragetext und ein Button mit der standardmäßigen Beschriftung
 Beschriftung \gq{Yes}, sowie ein Button mit der standardmäßigen Beschriftung
 \gq{No}. In dem Fragetext steht jeweils kontextabhängig 
 die Information, die der  Benutzer zur Beantwortung der Sicherheitsabfrage
-benötigt.
+benötigt.\\
+Ggf. kann mit einem Radiobutton festgelegt werden, daß Sicherheitsabfragen
+des jeweiligen Types in Zukunft nicht mehr angezeigt werden (z.B. \gq{Do not
+show delete confirmations again}).
 
 \clearpage
 
@@ -987,10 +997,11 @@ des Standard-Filechooser-Dialogs (siehe Abbildung \ref{Filechooser-Window-Pic}).
 Dieser Dialog ist Bestandteil der Widget-Bibliothek von GTK.
 
 
+% ******** Gibt es den Fadenkreuz-Cursor?
 \section{Fadenkreuz-Cursor}
 \label{Fadenkreuzcursor}
         Der Cursor verwandelt sich nach Auswahl bestimmter
-        Funktionen (siehe z.B. Funktion \ref{Platz schaffen}) in ein Fadenkreuz.
+        Funktionen (siehe z.B. Funktion \ref{Platz Schaffen-Dialog}) in ein Fadenkreuz.
         Durch Linksklick auf einen Fenster-Knoten oder eine 
         Fenster-Kante in einem Anzeigefenster  
         wird diese(r) für die jeweilige Funktion ausgewählt. 
