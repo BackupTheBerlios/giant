@@ -1,6 +1,6 @@
 % =============================================================================
-%  $RCSfile: gsl.tex,v $ $Revision: 1.15 $
-%  $Date: 2003/08/26 10:54:07 $
+%  $RCSfile: gsl.tex,v $ $Revision: 1.16 $
+%  $Date: 2003/09/02 13:35:03 $
 %  $Author: keulsn $
 %
 %  Description: Spezifikation der GIANT Scripting Language
@@ -42,7 +42,7 @@
 % subsubsections nummerieren
 \setcounter{secnumdepth}{3}
 
-\newcommand\version{Version 1.3\xspace}
+\newcommand\version{Version 1.4\xspace}
 %\newcommand\version{\today\xspace}
 
 % header
@@ -1793,7 +1793,7 @@ existiert.}
 \begin{scriptdef}{remove\_from\_window}
 \sparam{window\_name}{\tstring}{Name eines Anzeigefensters}
 \sparam{remove\_content}{\tobjectset}{Zu entfernende IML-Knoten und IML-Kanten}
-\sresult{\tnatural}{Anzahl der entfernten IML-Knoten und IML-Kanten}
+\sresult{\toknull}{}
 \saction{Entfernt alle diejenigen IML-Knoten und IML-Kanten, die sowohl
 in remove\_content als auch in dem Anzeigefenster mit mit Name window\_name
 enthalten sind aus dem Anzeigefenster. Zusätzlich werden alle Fenster-Kanten
