@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.98 $
---  $Author: squig $
---  $Date: 2003/09/23 13:23:17 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.99 $
+--  $Author: koppor $
+--  $Date: 2003/10/07 16:34:46 $
 --
 
 with Ada.Strings.Unbounded;
@@ -1181,9 +1181,6 @@ package body Giant.Controller is
       Subgraph : Graph_Lib.Subgraphs.Subgraph;
    begin
       Subgraph := Graph_Lib.Subgraphs.Create (Name);
---        Graph_Lib.Subgraphs.Add_Node_Set (Subgraph, Graph_Lib.Get_All_Nodes);
---        Graph_Lib.Subgraphs.Add_Edge_Set (Subgraph, Graph_Lib.Get_All_Edges);
-
       Add_Subgraph (Subgraph);
    end Create_Subgraph;
 
