@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/03 13:47:05 $
+-- $Date: 2003/07/07 12:06:39 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -31,14 +31,14 @@ with Ada.Tags;
 use  Ada.Tags;
 with Ada.Exceptions;
 
+with GNAT.Regpat;
+
 with Giant.Graph_Lib;
 use type Giant.Graph_Lib.Edge_Id;
 use type Giant.Graph_Lib.Node_Id;
 
 with Giant.Gsl.Interpreters;
-use  Giant.Gsl.Interpreters;
 with Giant.Gsl.Compilers;
-with Giant.Gsl.Types;
 with Giant.Gsl.Syntax_Tree;
 with Giant.GSL_Support;
 
@@ -50,24 +50,23 @@ package body Giant.Gsl.Runtime is
      (Parameter : Gsl_List)
       return Gsl_Type is
 
+      use Giant.Gsl.Interpreters;
+
       Var   : Gsl_Type;
       Value : Gsl_Type;
    begin
-      Default_Logger.Debug ("Interpreter: Runtime_Set called.", "Giant.Gsl");
       if Get_List_Size (Parameter) /= 2 then
-         Ada.Exceptions.Raise_Exception
-           (Gsl_Runtime_Error'Identity, "Script 'set' requires " &
-             "2 Parameters");
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
+           "Script 'set': Expecting 2 parameters");
       end if;
       Var := Get_Value_At (Parameter, 1);
       if Var'Tag /= Gsl_Var_Reference_Record'Tag then
-         Ada.Exceptions.Raise_Exception
-           (Gsl_Runtime_Error'Identity, "Gsl_Var_Reference expected.");
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'set': Gsl_Var_Reference expected.");
       else
          Value := Get_Value_At (Parameter, 2);
          Set_Var (Get_Ref_Name (Gsl_Var_Reference (Var)), Value);
       end if;
-
       return Gsl_Null;
    end Runtime_Set;
 
@@ -77,6 +76,7 @@ package body Giant.Gsl.Runtime is
      (Parameter : Gsl_List)
       return Gsl_Type is
 
+      use Giant.Gsl.Interpreters;
       use Giant.Gsl.Compilers;
       use Giant.Gsl.Syntax_Tree;
 
@@ -93,9 +93,8 @@ package body Giant.Gsl.Runtime is
       RS := Get_Current_Result_Stack;
 
       if Get_List_Size (Parameter) /= 3 then
-         Ada.Exceptions.Raise_Exception
-           (Gsl_Runtime_Error'Identity, "Script 'if' requires " &
-             "3 parameters.");
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'if': Expecting 3 parameters.");
       end if;
       Cond := Get_Value_At (Parameter, 1);
       True_Branch := Get_Value_At (Parameter, 2);
@@ -141,8 +140,39 @@ package body Giant.Gsl.Runtime is
    function Runtime_Loop
      (Parameter : Gsl_List)
       return Gsl_Type is
+
+      use Giant.Gsl.Interpreters;
+      use Giant.Gsl.Compilers;
+      use Giant.Gsl.Syntax_Tree;
+
+      Script   : Gsl_Type;
+      Loop_Cmd : Syntax_Node;
+      Comp     : Compiler;
+      ES       : Execution_Stacks.Stack;
    begin
-      Default_Logger.Debug ("Interpreter: Runtime_Loop called.", "Giant.Gsl");
+      Comp := Get_Current_Compiler;
+      ES := Get_Current_Execution_Stack;
+      if Get_List_Size (Parameter) /= 1 then
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'loop': Expecting 1 parameter.");
+      end if;
+      Script := Get_Value_At (Parameter, 1);
+      if Script'Tag = Gsl_Script_Reference_Record'Tag then
+         Loop_Cmd := Create_Node (Script_Loop, 
+           Get_Script_Node (Gsl_Script_Reference (Script)), Null_Node);
+         Execution_Stacks.Push (ES, Loop_cmd);
+
+         -- set the new activation record
+         Set_Activation_Record (Create_Activation_Record
+           (Get_Activation_Record (Gsl_Script_Reference (Script))));
+
+         -- push the code of the script
+         Execution_Stacks.Push (ES, Get_Execution_Stack (Comp,
+           Get_Script_Node (Gsl_Script_Reference (Script))));
+      else
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'loop': Gsl_Script_Reference expected.");
+      end if; 
       return Gsl_Null;
    end Runtime_Loop;
 
@@ -152,8 +182,8 @@ package body Giant.Gsl.Runtime is
      (Parameter : Gsl_List)
       return Gsl_Type is
    begin
-      Ada.Exceptions.Raise_Exception
-        (Gsl_Runtime_Error'Identity, "Runtime Error.");
+      Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
+        "Runtime Error.");
       return Gsl_Null;
    end Runtime_Error;
 
@@ -163,6 +193,7 @@ package body Giant.Gsl.Runtime is
      (Parameter : Gsl_List)
       return Gsl_Type is
 
+      use Giant.Gsl.Interpreters;
       use Giant.Gsl.Compilers;
       use Giant.Gsl.Syntax_Tree;
 
@@ -361,8 +392,36 @@ package body Giant.Gsl.Runtime is
    function Runtime_In_Regexp
      (Parameter : Gsl_List)
       return Gsl_Type is
+
+      use GNAT.Regpat;
+
+      Regexp  : Gsl_Type;
+      Data    : Gsl_Type;
+      Res     : Gsl_Boolean;
    begin
-      return Gsl_Null;
+      if Get_List_Size (Parameter) /= 2 then
+         Ada.Exceptions.Raise_Exception
+           (Gsl_Runtime_Error'Identity, "Script 'in_regexp' requires " &
+             "2 parameters.");
+      end if;
+      Data:= Get_Value_At (Parameter, 1);
+      Regexp := Get_Value_At (Parameter, 2);
+
+      if (Data = Gsl_Null) or (Regexp = Gsl_Null) then
+         Ada.Exceptions.Raise_Exception
+           (Gsl_Runtime_Error'Identity, "Parameter with type Gsl_Null.");
+
+      elsif (Data'Tag = Gsl_String_Record'Tag) and
+            (Regexp'Tag = Gsl_String_Record'Tag) then
+         Res := Create_Gsl_Boolean (Match (Get_Value (Gsl_String (Regexp)), 
+                                           Get_Value (Gsl_String (Data))));
+         return Gsl_Type (Res);
+
+      else
+         Ada.Exceptions.Raise_Exception
+           (Gsl_Runtime_Error'Identity, "Script 'in_regexp' requires " &
+             "parameters with tpye Gsl_String.");
+      end if;
    end Runtime_In_Regexp;
 
    ---------------------------------------------------------------------------
