@@ -18,28 +18,49 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.3 $
---  $Author: squig $
---  $Date: 2003/06/03 22:05:21 $
---
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.4 $
+--  $Author: koppor $
+--  $Date: 2003/06/09 21:24:19 $
+
+--  from ADA
+with Ada.Unchecked_Deallocation;
 
 --  from Bauhaus
-with Giant.Constant_Ptr_Hashs;
-with Giant.Ptr_Normal_Hashs;
 with Hashed_Mappings;
+with Ptr_Hashs;
 with SLocs;
 with Storables;
+with IML_Graphs;
 with IML.IO;
 with IML_Node_IDs;
-with IML_Graphs;
+with IML_Reflection;
+with IML_Roots;
+
+--  from Giant
+with Giant.Constant_Ptr_Hashs;
+with Giant.Ptr_Normal_Hashs;
+with Giant.Lists;
+
+with Giant.Logger;
+
 
 pragma Elaborate_All (Giant.Constant_Ptr_Hashs);
 pragma Elaborate_All (Giant.Ptr_Normal_Hashs);
 pragma Elaborate_All (Hashed_Mappings);
+pragma Elaborate_All (Ptr_Hashs);
+
 
 package body Giant.Graph_Lib is
 
+   package My_Logger is new Logger("giant.graph_lib");
+
    Invalid_Node_Attribute_Id : constant Node_Attribute_Id := null;
+
+   --  reference to loaded IML-Graph
+   --  Created in "Create"
+   --  Destroyed in "Destroy"
+   IML_Graph : IML_Graphs.IML_Graph;
+
 
    --------------------------------------
    --  Hashing for Node_Attribute_Ids  --
@@ -157,7 +178,7 @@ package body Giant.Graph_Lib is
       return
         (Left.Source_Node    < Right.Source_Node) or
         (Left.Target_Node    < Right.Target_Node) or
-        (Left.Node_Attribute < Right.Node_Attribute);
+        (Left.Attribute      < Right.Attribute);
    end "<";
 
    ---------------------------------------------------------------------------
@@ -293,19 +314,465 @@ package body Giant.Graph_Lib is
    -- Create the internal representation of the IML-Graph  --
    ----------------------------------------------------------
    procedure Create (Path_To_IML_File : in String) is
-      Root_Node : Storables.Storable;
+
+      -----------------------------------------------------------
+      --  Data-Structore for temporary graph used for loading  --
+      -----------------------------------------------------------
+
+      package Load_Nodes is
+
+         type Node_Record;
+         type Node_Access is access all Node_Record;
+
+         type Edge_Record is record
+            Source : Node_Access;
+            Target : Node_Access;
+         end record;
+
+         type Edge_Access is access Edge_Record;
+
+         package Edge_Lists is new Giant.Lists
+           (ItemType => Edge_Access);
+
+         type Node_Record is record
+            Edges_In      : Edge_Lists.List;
+            Edges_Out     : Edge_Lists.List;
+            IML_Node      : Storables.Storable;
+
+            --  Used at conversion from temporary structure to
+            --  internal structure
+            Internal_Node : Node_Id;
+         end record;
+
+         --  Creates an edge in the internal structure
+         procedure Create_Edge
+           (Edge_Source : in Node_Access;
+            Edge_Target : in Node_Access);
+
+         --  Creates a node in the internal structure
+         --  they are NOT collected in an internal list
+         --  The caller has to handle the destroyage
+         function Create_Node
+           (IMLNode : Storables.Storable)
+           return Node_Access;
+
+         --  Destroys the node and all outgoing edges
+         --  ! The edges pointing to this node are /not/ destroyed
+         procedure Destroy_Node (NodeToDestroy : in out Node_Access);
+
+         package Node_Queues is new Giant.Lists (ItemType => Node_Access);
+         subtype Node_Queue is Node_Queues.List;
+
+      end Load_Nodes;
+
+      package body Load_Nodes is
+
+         procedure Create_Edge
+           (Edge_Source : in Node_Access;
+            Edge_Target : in Node_Access) is
+
+            Edge : Edge_Access := new Edge_Record;
+         begin
+            Edge.Source := Edge_Source;
+            Edge.Target := Edge_Target;
+
+            Edge_Lists.Attach (Edge_Target.Edges_In, Edge);
+            Edge_Lists.Attach (Edge_Source.Edges_Out, Edge);
+         end Create_Edge;
+
+         function Create_Node
+           (IMLNode : Storables.Storable)
+           return Node_Access is
+            NewNode : Node_Access := new Node_Record;
+         begin
+            NewNode.IML_Node  := IMLNode;
+            NewNode.Edges_In  := Edge_Lists.Create;
+            NewNode.Edges_Out := Edge_Lists.Create;
+            return NewNode;
+         end Create_Node;
+
+         procedure Destroy_Node (NodeToDestroy : in out Node_Access) is
+
+            procedure Free_Node is new Ada.Unchecked_Deallocation
+              (Node_Record, Node_Access);
+
+            procedure Free_Edge is new Ada.Unchecked_Deallocation
+              (Edge_Record, Edge_Access);
+
+            procedure DestroyDeep_Edges is new Edge_Lists.DestroyDeep
+              (Dispose => Free_Edge);
+
+         begin
+            DestroyDeep_Edges (NodeToDestroy.Edges_Out);
+            Free_Node (NodeToDestroy);
+         end Destroy_Node;
+
+      end Load_Nodes;
+
+
+      -----------------------------
+      --  Hashing for IML_Nodes  --
+      -----------------------------
+
+      --  Oriented on vis_test.iml_graph_loader
+      package IML_Node_Mapper is
+         procedure Create;
+         procedure Destroy;
+
+         ---------------------------------------------------------------------
+         --  Gets an node out of the hashtable
+         --  Creates it, if it doesn't exist
+         --
+         --  Parameters:
+         --    Created': True,  if a mapping was created
+         --              False, if a mapping already existed
+         procedure Get
+           (Iml_Node : in     Storables.Storable;
+            Node     :    out Load_Nodes.Node_Access;
+            Created  :    out Boolean);
+      end IML_Node_Mapper;
+
+      package body IML_Node_Mapper is
+
+         package Storable_Hashs is new Ptr_Hashs
+           (T     => Storables.Storable_Class,
+            T_Ptr => Storables.Storable);
+
+         package Mapping_Iml_LoadNodes is new Hashed_Mappings
+           (Key_Type   => Storables.Storable,
+            Hash       => Storable_Hashs.Integer_Hash,
+            Value_Type => Load_Nodes.Node_Access);
+
+         Mapping : Mapping_Iml_LoadNodes.Mapping;
+
+         procedure Create is
+         begin
+            Mapping := Mapping_Iml_LoadNodes.Create;
+         end Create;
+
+         procedure Destroy is
+         begin
+            Mapping_Iml_LoadNodes.Destroy (Mapping);
+         end Destroy;
+
+         procedure Get
+           (Iml_Node : in     Storables.Storable;
+            Node     :    out Load_Nodes.Node_Access;
+            Created  :    out Boolean) is
+         begin
+            if Mapping_Iml_LoadNodes.Is_Bound (Mapping, Iml_Node) then
+               Node := Mapping_Iml_LoadNodes.Fetch (Mapping, Iml_Node);
+               Created := False;
+            else
+               Node := Load_Nodes.Create_Node (Iml_Node);
+               Mapping_Iml_LoadNodes.Bind (Mapping, Iml_Node, Node);
+               Created := True;
+            end if;
+         end Get;
+
+      end IML_Node_Mapper;
+
+      ------------------------------------------------------------------------
+      --  Parameters:
+      --    Queue' : All generated nodes will be stored there
+      procedure ConvertIMLGraphToTempStructure
+        (Queue : out Load_Nodes.Node_Queue)
+      is
+
+         procedure ProcessQueue is
+
+            --  Does all necessary things, if there's an edge from
+            --    a Node to an IML_Node
+            procedure Process_Edge
+              (Source_Node : in Load_Nodes.Node_Access;
+               Target      : in Storables.Storable) is
+
+               Created     : Boolean;
+               Target_Node : Load_Nodes.Node_Access;
+            begin
+               IML_Node_Mapper.Get (Target, Target_Node,  Created);
+
+               if Created then
+                  Load_Nodes.Node_Queues.Attach (Queue, Target_Node);
+               end if;
+
+               Load_Nodes.Create_Edge (Source_Node, Target_Node);
+            end Process_Edge;
+
+            Node  : Load_Nodes.Node_Access;
+
+            ------------------------------------------------------------------
+            --  Processes an edge-attribute
+            procedure Process_Attribute
+              (IML_Node  : in Storables.Storable;
+               Attribute : in IML_Reflection.Edge_Field) is
+
+               Target : Storables.Storable;
+            begin
+               Target := Attribute.Get_Target (IML_Roots.IML_Root (IML_Node));
+               if Storables."/=" (Target, null) then
+                  Process_Edge (Node, Target);
+               else
+                  My_Logger.Info ("Edge_Field with null target ignored");
+               end if;
+            end Process_Attribute;
+
+            ------------------------------------------------------------------
+            --  Processes a list-attribute
+            procedure Process_Attribute
+              (IML_Node  : in Storables.Storable;
+               Attribute : in IML_Reflection.List_Field) is
+
+               Iter   : IML_Reflection.List_Iterator;
+               Target : Storables.Storable;
+            begin
+               Iter := Attribute.Make_Iterator (IML_Node);
+               while IML_Reflection.More (Iter) loop
+                  IML_Reflection.Next (Iter, Target);
+                  Process_Edge (Node, Target);
+               end loop;
+            end Process_Attribute;
+
+            ------------------------------------------------------------------
+            --  Processes a set-attribute
+            procedure Process_Attribute
+              (IML_Node  : in Storables.Storable;
+               Attribute : in IML_Reflection.Set_Field) is
+
+               Iter   : IML_Reflection.Set_Iterator;
+               Target : Storables.Storable;
+            begin
+               Iter := Attribute.Make_Iterator (IML_Node);
+               while IML_Reflection.More (Iter) loop
+                  IML_Reflection.Next (ITer, Target);
+                  Process_Edge (Node, Target);
+               end loop;
+            end Process_Attribute;
+
+            Iter      : Load_Nodes.Node_Queues.ListIter;
+
+            Class     : IML_Reflection.Class_ID;
+            Attribute : IML_Reflection.Field_ID;
+
+         begin
+            Iter := Load_Nodes.Node_Queues.MakeListIter (Queue);
+
+            while Load_Nodes.Node_Queues.More (Iter) loop
+               Node := Load_Nodes.Node_Queues.CurrentElement (Iter);
+
+               if Node.IML_Node.all in IML_Roots.IML_Root_Class'Class then
+                  --  we process only nodes below IML_Root and no other
+                  --  storables
+
+                  Class := IML_Roots.Get_Class_ID
+                    (IML_Roots.IML_Root (Node.IML_Node));
+
+                  for I in Class.Fields'Range loop
+                     Attribute := Class.Fields (I);
+                     if Attribute.all in IML_Reflection.Edge_Field'Class then
+                        Process_Attribute
+                          (Node.IML_Node,
+                           IML_Reflection.Edge_Field (Attribute.all));
+                     elsif Attribute.all in
+                       IML_Reflection.List_Field'Class then
+                        Process_Attribute
+                          (Node.IML_Node,
+                           IML_Reflection.List_Field (Attribute.all));
+                     elsif Attribute.all in
+                       IML_Reflection.Set_Field'Class then
+                        Process_Attribute
+                          (Node.IML_Node,
+                           IML_Reflection.Set_Field (Attribute.all));
+                     elsif (Attribute.all in
+                            IML_Reflection.Identifier_Field'Class) or
+                       (Attribute.all in
+                        IML_Reflection.Builtin_Field'Class) then
+                        null;
+                     else
+                        My_Logger.Error ("Unknown IML_Reflection.Field");
+                     end if;
+                  end loop;
+
+               end if;
+               Load_Nodes.Node_Queues.MoveNext (Iter);
+            end loop;
+         end ProcessQueue;
+
+         Root_Node : Storables.Storable;
+         Created   : Boolean;
+         Node      : Load_Nodes.Node_Access;
+
+      begin
+         Queue := Load_Nodes.Node_Queues.Create;
+
+         Root_Node := Storables.Storable
+           (IML_Graphs.Get_Raw_Graph (IML_Graph));
+
+         Iml_Node_Mapper.Get (Root_Node, Node, Created);
+
+         Load_Nodes.Node_Queues.Attach (Queue, Node);
+
+         ProcessQueue;
+      end ConvertIMLGraphToTempStructure;
+
+      -------------------------------------------------------------------------
+      --  Converts generated temporary structure to the structure
+      --  which is defined by Node_Record etc.
+      --
+      --  Parameters:
+      --    Queue: Queue containing all nodes in temporary structure
+      procedure ConvertTempStructureToUsedStructure
+        (Queue : in Load_Nodes.Node_Queue) is
+
+         --  Precondition:
+         --    Size of TargtArray == Length(SourceList)
+         procedure ConvertEdges
+           (SourceList  : in     Load_Nodes.Edge_Lists.List;
+            TargetArray :    out Edge_Id_Array) is
+
+            EdgeIter : Load_Nodes.Edge_Lists.ListIter;
+            CurEdge  : Load_Nodes.Edge_Access;
+
+         begin
+            EdgeIter := Load_Nodes.Edge_Lists.MakeListIter (SourceList);
+
+            for I in TargetArray'Range loop
+               Load_Nodes.Edge_Lists.Next (EdgeIter, CurEdge);
+
+               TargetArray (I) := new Edge_Record;
+               TargetArray (I).Source_Node := CurEdge.Source.Internal_Node;
+               TargetArray (I).Target_Node := CurEdge.Target.Internal_Node;
+            end loop;
+         end ConvertEdges;
+
+         NodeIter : Load_Nodes.Node_Queues.ListIter;
+         CurNode  : Load_Nodes.Node_Access; --  of the temporary structure
+
+         NewNode  : Node_Id; --  of the internal structure
+
+      begin
+         IML_Node_ID_Mapping := IML_Node_ID_Hashed_Mappings.Create;
+
+         --  Convert nodes
+         NodeIter := Load_Nodes.Node_Queues.MakeListIter (Queue);
+         while Load_Nodes.Node_Queues.More (NodeIter) loop
+            Load_Nodes.Node_Queues.Next (NodeIter, CurNode);
+
+            NewNode := new Node_Record
+              (Number_Of_Incoming_Edges =>
+                 Load_Nodes.Edge_Lists.Length (CurNode.Edges_In),
+               Number_Of_Outgoing_Edges =>
+                 Load_Nodes.Edge_Lists.Length (CurNode.Edges_Out)
+               );
+
+            NewNode.IML_Node := CurNode.IML_Node;
+
+            IML_Node_ID_Hashed_Mappings.Bind
+              (IML_Node_ID_Mapping,
+               Storables.Get_Node_ID (NewNode.IML_Node),
+               NewNode);
+
+            --  set variable to enable edge-conversion
+            CurNode.Internal_Node := NewNode;
+         end loop;
+
+         --  Convert edges
+         NodeIter := Load_Nodes.Node_Queues.MakeListIter (Queue);
+         while Load_Nodes.Node_Queues.More (NodeIter) loop
+            Load_Nodes.Node_Queues.Next (NodeIter, CurNode);
+
+            ConvertEdges( CurNode.Edges_In,  NewNode.Incoming_Edges);
+            ConvertEdges( CurNode.Edges_Out, NewNode.Outgoing_Edges);
+         end loop;
+
+      end ConvertTempStructureToUsedStructure;
+
+      -------------------------------------------------------------------------
+      --  Destroys the temporary structure,
+      --  frees all memory
+      --  Queue is deallocated, too
+      procedure DestroyTemporaryStructure
+        (Queue : in out Load_Nodes.Node_Queue) is
+
+         procedure Dispose
+            (Node  : in out Load_Nodes.Node_Access) is
+         begin
+            Load_Nodes.Destroy_Node (Node);
+         end Dispose;
+
+         procedure DestroyDeep_Nodes is new
+           Load_Nodes.Node_Queues.DestroyDeep (Dispose => Dispose);
+
+      begin
+         DestroyDeep_Nodes (Queue);
+      end DestroyTemporaryStructure;
+
    begin
-      Root_Node :=
-      --  init: IML_Node_Id_Mapping
-      null;
+      --  Load Graph into memory
+      begin
+         IML_Graph := IML.IO.Load (Path_To_IML_File);
+      exception
+         when Storables.Load_Failure =>
+            raise Load_Error;
+      end;
+
+      Iml_Node_Mapper.Create;
+
+      declare
+         Queue : Load_Nodes.Node_Queue;
+      begin
+         ConvertIMLGraphToTempStructure (Queue);
+         ConvertTempStructureToUsedStructure (Queue);
+         DestroyTemporaryStructure (Queue);
+      end;
+
+      Iml_Node_Mapper.Destroy;
+
    end Create;
 
-   -------------
-   -- Destroy --
-   -------------
-
+   ---------------------------------------------------------------------------
    procedure Destroy is
+
+      procedure DestroyAllNodes is
+
+         procedure FreeEdgeId is new Ada.Unchecked_Deallocation
+           (Edge_Record,
+            Edge_Id);
+
+         procedure FreeNodeId is new Ada.Unchecked_Deallocation
+           (Node_Record,
+            Node_Id);
+
+         Iter    : IML_Node_ID_Hashed_Mappings.Values_Iter;
+         CurNode : Node_Id;
+      begin
+         --  There is no Hashed_Mappings.DestroyDeep, therefore we have to do
+         --  this by hand
+
+         Iter := IML_Node_ID_Hashed_Mappings.Make_Values_Iter
+           (IML_Node_ID_Mapping);
+
+         while IML_Node_ID_Hashed_Mappings.More (Iter) loop
+            IML_Node_ID_Hashed_Mappings.Next (Iter, CurNode);
+
+            --  remove all the edges out of the memory
+            for I in CurNode.Outgoing_Edges'Range loop
+               FreeEdgeId (CurNode.Outgoing_Edges (I));
+            end loop;
+
+            FreeNodeId (CurNode);
+
+         end loop;
+
+         IML_Node_ID_Hashed_Mappings.Destroy (IML_Node_ID_Mapping);
+      end DestroyAllNodes;
+
    begin
+      DestroyAllNodes;
+
+      IML_Node_ID_Hashed_Mappings.Destroy (IML_Node_ID_Mapping);
+
+      --  Unload IML_Graph - not supported by IML
       null;
    end Destroy;
 

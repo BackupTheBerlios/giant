@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.3 $
 --  $Author: koppor $
---  $Date: 2003/06/01 13:38:39 $
+--  $Date: 2003/06/09 21:24:37 $
 --
 
 --  Bauhaus / IML
@@ -54,9 +54,11 @@ package Giant.Graph_Lib is
    --  unique Id of one single node in the duplicated IML-Graph
    --
    --  It is constant throughout one runtime
+   --  "access constant" could not be used, since an unchecked_deallocation
+   --  is impossible then
    --
    --  Node_Id_Image is invariant over multiple runs of GIANT
-   type Node_Id is access constant Node_Record;
+   type Node_Id is access Node_Record;
 
    ---------------------------------------------------------------------------
    type Node_Class is limited private;
@@ -153,6 +155,7 @@ package Giant.Graph_Lib is
    --  Exceptions  --
    ------------------
 
+   Load_Error                    : exception;
    Node_Does_Not_Exist           : exception;
    Node_Class_Does_Not_Exist     : exception;
    Node_Attribute_Does_Not_Exist : exception;
@@ -271,7 +274,7 @@ package Giant.Graph_Lib is
    --  Initializes the graph
    --
    --  Raises:
-   --    exceptions if something is going wrong
+   --    Load_Error if something has gone wrong
    procedure Create (Path_To_IML_File : in String);
 
    ---------------------------------------------------------------------------
@@ -704,7 +707,7 @@ private
      (Number_Of_Incoming_Edges : Natural;
       Number_Of_Outgoing_Edges : Natural) is
    limited record
-      Iml_Node       : Storables.Storable;
+      IML_Node       : Storables.Storable;
       Incoming_Edges : Edge_Id_Array (1 .. Number_Of_Incoming_Edges);
       Outgoing_Edges : Edge_Id_Array (1 .. Number_Of_Outgoing_Edges);
    end record;
@@ -715,15 +718,16 @@ private
      record
         Source_Node                   : Node_Id;
         Target_Node                   : Node_Id;
-        Node_Attribute                : Node_Attribute_Id;
 
-   --   =0 : n/a
-   --  /=0 : element# of list/set where attribute was included
-   --        TBD: for what is that needed?
+        --  Indicates from which attribute this edge was generated from
+        Attribute                     : Node_Attribute_Id;
+
+        --   =0 : n/a
+        --  /=0 : element# of list/set where attribute was included
         Node_Attribute_Element_Number : Natural;
      end record;
 
-   type Edge_Id is access constant Edge_Record;
+   type Edge_Id is access Edge_Record;
 
 
    ---------------------------------------------------------------------------
