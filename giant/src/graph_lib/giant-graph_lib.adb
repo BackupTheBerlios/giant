@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.59 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.60 $
 --  $Author: koppor $
---  $Date: 2003/07/30 07:40:30 $
+--  $Date: 2003/08/12 09:39:26 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -2102,5 +2102,55 @@ package body Giant.Graph_Lib is
 
       Iterator.CurrentIndex := Iterator.CurrentIndex + 1;
    end Next;
+
+   ---------------------------------------------------------------------------
+   procedure Read_Edge_Id
+     (Stream : in     Bauhaus_Io.In_Stream_Type;
+      Edge   :    out Edge_Id)
+   is
+      Edge_Internal_Id         : Positive;
+   begin
+      Bauhaus_Io.Read_Natural (Stream, Edge_Internal_Id);
+      Edge := All_Edges (Edge_Internal_Id);
+   end Read_Edge_Id;
+
+   ---------------------------------------------------------------------------
+   procedure Read_Node_Id
+     (Stream : in     Bauhaus_Io.In_Stream_Type;
+      Node   :    out Node_Id)
+   is
+      Len : Natural;
+   begin
+      Bauhaus_Io.Read_Natural (Stream, Len);
+
+      declare
+         Image : String (1..Len);
+      begin
+         Bauhaus_Io.Read_String (Stream, Image);
+         Node := Node_Id_Value (Image);
+
+         --  TBD: an exception could be risen here
+      end;
+   end Read_Node_Id;
+
+   ----------------------------------------------------------------------
+   procedure Write_Edge_Id
+     (Stream : in Bauhaus_Io.Out_Stream_Type;
+      Edge   : in Edge_Id)
+   is
+   begin
+      Bauhaus_Io.Write_Natural (Stream, Edge.Internal_Id);
+   end Write_Edge_Id;
+
+   ----------------------------------------------------------------------
+   procedure Write_Node_Id
+     (Stream : in Bauhaus_Io.Out_Stream_Type;
+      Node   : in Node_Id)
+   is
+      Image : String := Node_Id_Image (Node);
+   begin
+      Bauhaus_Io.Write_Natural (Stream, Image'Length);
+      Bauhaus_Io.Write_String  (Stream, Image);
+   end Write_Node_Id;
 
 end Giant.Graph_Lib;
