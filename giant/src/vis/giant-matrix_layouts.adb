@@ -20,16 +20,19 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-matrix_layouts.adb,v $, $Revision: 1.7 $
---  $Author: koppor $
---  $Date: 2003/07/03 15:28:59 $
+--  $RCSfile: giant-matrix_layouts.adb,v $, $Revision: 1.8 $
+--  $Author: squig $
+--  $Date: 2003/07/10 16:26:35 $
 --
 
 with Ada.Numerics.Generic_Elementary_Functions;
 
 with Giant.Graph_Lib;
+with Giant.Logger;
 
 package body Giant.Matrix_Layouts is
+
+   package Logger is new Giant.Logger("giant.matrix_layouts");
 
    ---------------------------------------------------------------------------
    function Initialize
@@ -178,6 +181,7 @@ package body Giant.Matrix_Layouts is
       end Do_Calculation;
 
    begin
+      Logger.Warn ("Matrix Layout");
       case Layout.State is
          when Init =>
             case Graph_Lib.Node_Id_Sets.Size (Layout.Nodes_To_Layout) is

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.46 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.47 $
 --  $Author: squig $
---  $Date: 2003/07/08 16:07:32 $
+--  $Date: 2003/07/10 16:26:35 $
 --
 
 with Ada.Exceptions;
@@ -456,7 +456,7 @@ package body Giant.Main_Window is
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
    begin
-      Controller.Create_Subgraph;
+      Controller.Create_Subgraph (Controller.Get_Unique_Name);
    end On_Subgraph_New;
 
    procedure On_Subgraph_Set_Operation

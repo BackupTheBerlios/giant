@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.11 $
 --  $Author: squig $
---  $Date: 2003/07/08 16:07:32 $
+--  $Date: 2003/07/10 16:26:35 $
 --
 
 with Ada.IO_Exceptions;
@@ -82,6 +82,12 @@ package body Giant.Default_Logger is
             Ada.Text_IO.Put (Out_File, Composed_Message);
             Ada.Text_IO.New_Line (Out_File);
             Ada.Text_IO.Flush (Out_File);
+
+            if (Level >= Level_Warn) then
+               Ada.Text_IO.Put (Ada.Text_Io.Standard_Error, Composed_Message);
+               Ada.Text_IO.New_Line (Ada.Text_Io.Standard_Error);
+               Ada.Text_IO.Flush (Ada.Text_Io.Standard_Error);
+            end if;
          else
             Ada.Text_IO.Put (Ada.Text_Io.Standard_Error, Composed_Message);
             Ada.Text_IO.New_Line (Ada.Text_Io.Standard_Error);

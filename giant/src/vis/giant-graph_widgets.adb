@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.18 $
---  $Author: keulsn $
---  $Date: 2003/07/10 00:16:54 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.19 $
+--  $Author: squig $
+--  $Date: 2003/07/10 16:26:35 $
 --
 ------------------------------------------------------------------------------
 
@@ -442,8 +442,8 @@ package body Giant.Graph_Widgets is
      (Widget    : access Graph_Widget_Record'Class)
      return Vis.Logic_Float is
    begin
-      raise Unimplemented;
-      return 0.0;
+      --FIX: raise Unimplemented;
+      return 100.0;
    end Get_Current_Maximum_Node_Width;
 
    function Get_Current_Node_Width
@@ -451,8 +451,8 @@ package body Giant.Graph_Widgets is
       Node   : in     Graph_Lib.Node_Id)
      return Vis.Logic_Float is
    begin
-      raise Unimplemented;
-      return 0.0;
+      --FIX: raise Unimplemented;
+      return 100.0;
    end Get_Current_Node_Width;
 
    function Get_Current_Node_Height
@@ -460,8 +460,8 @@ package body Giant.Graph_Widgets is
       Node   : in     Graph_Lib.Node_Id)
      return Vis.Logic_Float is
    begin
-      raise Unimplemented;
-      return 0.0;
+      --FIX: raise Unimplemented;
+      return 100.0;
    end Get_Current_Node_Height;
 
    procedure Update_Size

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.45 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.46 $
 --  $Author: squig $
---  $Date: 2003/07/10 14:04:50 $
+--  $Date: 2003/07/10 16:26:35 $
 --
 
 with Ada.Strings.Unbounded;
@@ -615,7 +615,7 @@ package body Giant.Controller is
    ---------------------------------------------------------------------------
 
    procedure Create_Subgraph
-     (Name : in String := "Unknown")
+     (Name : in String)
    is
       Subgraph : Graph_Lib.Subgraphs.Subgraph;
       Unique_Name : String := Get_Unique_Name (Name);
@@ -819,6 +819,12 @@ package body Giant.Controller is
       Window := Vis_Windows.Create_New (Unique_Name);
       Projects.Add_Visualisation_Window (Current_Project, Window);
       Gui_Manager.Add_Window (Unique_Name);
+      -- FIX: remove vvv
+      Create_Subgraph (Unique_Name & "_");
+      Create_Selection_From_Subgraph (Subgraph_Name => Unique_Name & "_",
+                                      Window_Name   => Unique_Name,
+                                      Name          => Unique_Name);
+      -- FIX: remove ^^^
       Open_Window (Unique_Name);
    end Create_Window;
 

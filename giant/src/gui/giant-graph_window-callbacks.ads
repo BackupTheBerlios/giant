@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_window-callbacks.ads,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/07/10 13:13:21 $
+--  $Date: 2003/07/10 16:26:35 $
 --
 ------------------------------------------------------------------------------
 --
@@ -64,8 +64,12 @@ package Giant.Graph_Window.Callbacks is
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
       Event  : in     Graph_Widgets.Handlers.Button_Press_Action);
 
+   procedure On_Edge_Popup
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event  : in     Graph_Widgets.Handlers.Edge_Popup_Action);
+
    procedure On_Node_Popup
-     (Widget : access Gtk.Widget.Gtk_Widget_Record'Class;
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
       Event  : in     Graph_Widgets.Handlers.Node_Popup_Action);
 
    procedure On_Selection_Changed

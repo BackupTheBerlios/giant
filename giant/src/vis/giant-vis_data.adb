@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.19 $
---  $Author: keulsn $
---  $Date: 2003/07/10 16:05:51 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.20 $
+--  $Author: squig $
+--  $Date: 2003/07/10 16:26:36 $
 --
 ------------------------------------------------------------------------------
 
@@ -156,8 +156,10 @@ package body Giant.Vis_Data is
       Layer       : in     Layer_Type;
       Inflections : in     Natural := 0)
      return Vis_Edge_Id is
+
+      Edge : Vis_Edge_Id;
    begin
-      return new Vis_Edge_Record'
+      Edge := new Vis_Edge_Record'
         (Number_Of_Points  => Inflections + 2,
          Edge              => Graph_Edge,
          Source            => Source,
@@ -173,6 +175,11 @@ package body Giant.Vis_Data is
          Regions           => Region_Lists.Create,
          Flags             => (Hidden => False, Annotated => False,
                                Highlight_Type => False));
+
+      Vis_Edge_Lists.Attach (Edge, Source.Outgoing_Edges);
+      Vis_Edge_Lists.Attach (Edge, Target.Incoming_Edges);
+
+      return Edge;
    end Create_Edge;
 
    procedure Destroy

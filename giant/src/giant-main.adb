@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.30 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.31 $
 --  $Author: squig $
---  $Date: 2003/07/08 16:07:32 $
+--  $Date: 2003/07/10 16:26:35 $
 --
 --
 ------------------------------------------------------------------------------
@@ -71,43 +71,54 @@ is
       Project_Filename : String_Access := new String' ("");
       Graph_Filename   : String_Access := new String' ("");
       Script_Filename  : String_Access := new String' ("");
+
+      procedure Handle_Switch
+        (Switch : Character)
+      is
+      begin
+         case Switch is
+           when 'e' =>
+              --  "execute"
+              Free (Script_Filename);
+              Script_Filename := new String'(GNAT.Command_Line.Parameter);
+           when 'g' =>
+              --  "graph"
+              Free (Graph_Filename);
+              Graph_Filename := new String'(GNAT.Command_Line.Parameter);
+           when 'h' =>
+              --  "help"
+                   Put_Help;
+                   GNAT.OS_Lib.OS_Exit (0);
+           when 'n' =>
+              --  "nogui"
+              Start_Gui := False;
+           when 'v' =>
+              --  "version"
+              Ada.Text_IO.Put_Line ("version: " & Version);
+              GNAT.OS_Lib.OS_Exit (0);
+           when others =>
+              --  should not happen
+              Logger.Warn ("Invalid command line switch: "
+                           & GNAT.Command_Line.Full_Switch);
+         end case;
+      end Handle_Switch;
+
    begin
       GNAT.Command_Line.Initialize_Option_Scan;
 
       loop
          case GNAT.Command_Line.Getopt
-           ("-execute: -e: -graph: -g: -help -h -n -nogui -version -v ")
+           ("e: g: h n v -execute: -graph: -help -nogui -version")
          is
            --  long option names
            when '-' =>
-              case GNAT.Command_Line.Full_Switch
-                (GNAT.Command_Line.Full_Switch'First + 1) is
-                when 'e' =>
-                   --  "execute"
-                   Free (Script_Filename);
-                   Script_Filename := new String'(GNAT.Command_Line.Parameter);
-                when 'g' =>
-                   --  "graph"
-                   Free (Graph_Filename);
-                   Graph_Filename := new String'(GNAT.Command_Line.Parameter);
-                when 'h' =>
-                   --  "help"
-                   Put_Help;
-                   GNAT.OS_Lib.OS_Exit (0);
-                when 'n' =>
-                   --  "nogui"
-                   Start_Gui := False;
-                when 'v' =>
-                   --  "version"
-                   Ada.Text_IO.Put_Line ("version: " & Version);
-                   GNAT.OS_Lib.OS_Exit (0);
-               when others =>
-                  null;
-              end case;
+              Handle_Switch (GNAT.Command_Line.Full_Switch
+                             (GNAT.Command_Line.Full_Switch'First + 1));
            when ASCII.Nul =>
               exit;
            when others =>
-              null;
+              Handle_Switch (GNAT.Command_Line.Full_Switch
+                             (GNAT.Command_Line.Full_Switch'First));
          end case;
       end loop;
 
@@ -133,6 +144,12 @@ is
             Free (Script_Filename);
          end if;
       end if;
+   exception
+     when Gnat.Command_Line.Invalid_Switch =>
+        Ada.Text_IO.Put_Line (Ada.Text_IO.Standard_Error, "Invalid argument.");
+        Ada.Text_IO.New_Line (Ada.Text_IO.Standard_Error);
+        Put_Help;
+        GNAT.OS_Lib.OS_Exit (1);
    end Parse_Arguments;
 
    procedure New_Test_Project

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-layout_dialog-widgets.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-layout_dialog-widgets.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/07/08 16:07:32 $
+--  $Date: 2003/07/10 16:26:35 $
 
 with Glib;
 with Gtk.Table;
@@ -32,6 +32,7 @@ with String_Lists;
 
 with Giant.Config;
 with Giant.Config.Class_Sets;
+with Giant.Graph_Lib;
 with Giant.Gui_Utils;
 
 package body Giant.Layout_Dialog.Widgets is
@@ -165,7 +166,8 @@ package body Giant.Layout_Dialog.Widgets is
      return String
    is
    begin
-      return "";
+      return Graph_Lib.Node_Id_Image (Graph_Lib.Get_Root_Node)
+        & ";";
    end Get_Layout_Parameters;
 
    ---------------------------------------------------------------------------

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger.ads,v $, $Revision: 1.8 $
+--  $RCSfile: giant-default_logger.ads,v $, $Revision: 1.9 $
 --  $Author: squig $
---  $Date: 2003/07/09 16:22:35 $
+--  $Date: 2003/07/10 16:26:35 $
 --
 ------------------------------------------------------------------------------
 --
@@ -41,8 +41,8 @@ package Giant.Default_Logger is
    ---------------------------------------------------------------------------
    --  Represents the severity level of a log message. Higher levels include
    --  all lower levels (i.e. filtering for DEBUG catches all messages).
-   type Level_Type is (Level_Off, Level_Fatal, Level_Error, Level_Warn,
-                       Level_Info, Level_Debug);
+   type Level_Type is (Level_Off, Level_Debug, Level_Info,
+                       Level_Fatal, Level_Error, Level_Warn);
 
    type Logger_Listener is access
      procedure (Level   : in Level_Type;

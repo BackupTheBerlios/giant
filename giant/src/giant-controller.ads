@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.31 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.32 $
 --  $Author: squig $
---  $Date: 2003/07/08 16:07:31 $
+--  $Date: 2003/07/10 16:26:35 $
 --
 ------------------------------------------------------------------------------
 --
@@ -315,7 +315,7 @@ package Giant.Controller is
    ---------------------------------------------------------------------------
 
    procedure Create_Subgraph
-     (Name : in String := "Unknown");
+     (Name : in String);
 
    procedure Duplicate_Subgraph
      (Source_Name : in String;

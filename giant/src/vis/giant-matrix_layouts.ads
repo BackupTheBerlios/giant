@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-matrix_layouts.ads,v $, $Revision: 1.6 $
---  $Author: koppor $
---  $Date: 2003/07/04 16:55:56 $
+--  $RCSfile: giant-matrix_layouts.ads,v $, $Revision: 1.7 $
+--  $Author: squig $
+--  $Date: 2003/07/10 16:26:35 $
 --
 ------------------------------------------------------------------------------
 --
@@ -37,8 +37,9 @@ with Giant.Vis;
 
 package Giant.Matrix_Layouts is
 
+   --  could also be Concurrent, but for debugging purpose
    type Matrix_Layout_Record is
-     new Evolutions.Concurrent_Evolution with private;
+     new Evolutions.Iterative_Evolution with private;
 
    type Matrix_Layout is access all Matrix_Layout_Record'Class;
 
@@ -48,7 +49,7 @@ package Giant.Matrix_Layouts is
 
    ---------------------------------------------------------------------------
    --  Distance of two neighbours
-   X_Distance           : constant := 1.0;
+   X_Distance           : constant := 10.0;
 
    ---------------------
    --  Initilization  --
@@ -101,7 +102,7 @@ private
    type Layout_State is (Init, Calc);
 
    type Matrix_Layout_Record is
-     new Evolutions.Concurrent_Evolution with record
+     new Evolutions.Iterative_Evolution with record
         --  Init by Initialize
         Widget          : Graph_Widgets.Graph_Widget;
         Widget_Lock     : Graph_Widgets.Lock_Type;
