@@ -20,89 +20,24 @@
 --
 -- First Author: Gerrit Schulz
 --
--- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.2 $
+-- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.3 $
 -- $Author: schulzgt $
--- $Date: 2003/06/10 11:57:25 $
+-- $Date: 2003/06/13 13:07:08 $
 --
-with Unchecked_Deallocation;
+with Ada.Unchecked_Deallocation;
 
 package body Giant.Gsl.Types is
 
-   --procedure Free is new Unchecked_Deallocation
-   --  (Gsl_Boolean_Record,
-   --   Gsl_Boolean);
-
-
    ---------------------------------------------------------------------------
-   -- creates a new Gsl_Boolean var initialized with 'Value' 
-   function Create_Gsl_Boolean (Value : Boolean) return Gsl_Boolean is
+   -- Gsl_Node_Id
+   function Create_Gsl_Node_Id return Gsl_Node_Id is
 
-      Var : Gsl_Boolean;
+      Var : Gsl_Node_Id;
    begin
-      Var := new Gsl_Boolean_Record;
-      Var.Value := Value;
+      Var := new Gsl_Node_Id_Record;
       return Var;
-   end Create_Gsl_Boolean;
+   end Create_Gsl_Node_Id;
 
-
-   ---------------------------------------------------------------------------
-   -- creates a new Gsl_Natural var 
-   function Create_Gsl_Natural return Gsl_Natural is
-
-      Var : Gsl_Natural;
-   begin
-      Var := new Gsl_Natural_Record;
-      Var.Value := 0;
-      return Var;
-   end;
-
-   ---------------------------------------------------------------------------
-   -- creates a new Gsl_String var initialized with 'Value'
-   function Create_Gsl_String
-     (Value : String)
-      return Gsl_String is
-
-      Var : Gsl_String;
-   begin
-      Var := new Gsl_String_Record (Value'Length);
-      Var.Value := Value;
-      return Var;
-   end;
-
-   ---------------------------------------------------------------------------
-   -- creates a new Gsl_Var_Reference
-   function Create_Gsl_Var_Reference
-     (Ref_Type : Reference_Type;
-      Ref_Name : String)
-      return Gsl_Var_Reference is
-
-      Var : Gsl_Var_Reference;
-   begin
-      Var := new Gsl_Var_Reference_Record (Ref_Name'Length);
-      Var.Ref_Type := Ref_Type;
-      Var.Ref_Name := Ref_Name;
-      return Var;
-   end;
-
-   ---------------------------------------------------------------------------
-   -- creates a new Gsl_Script_Decl
-   function Create_Gsl_Script_Reference
-     (Parameter_List : Syntax_Node;
-      Script_Node    : Syntax_Node)
-      return Gsl_Script_Reference is
-
-      Var : Gsl_Script_Reference;
-   begin
-      Var := new Gsl_Script_Reference_Record;
-      Var.Parameter_List := Parameter_List;
-      Var.Script_Node := Script_Node;
-      Var.Parent_Activation_Record := null;
-      return Var;
-   end;
-
- 
-   ---------------------------------------------------------------------------
-   -- get and set values for Gsl_Node_Id
    function Get_Value
      (Var : Gsl_Node_Id)
       return Node_Id is
@@ -117,8 +52,36 @@ package body Giant.Gsl.Types is
       null;
    end Set_Value;
 
+   function Copy
+     (Object : access Gsl_Node_Id_Record)
+      return Gsl_Type is
+   begin
+      return Gsl_Null;
+   end Copy;
+
+   --procedure Free is new Ada.Unchecked_Deallocation
+   --  (Gsl_Node_Id_Record, Gsl_Node_Id);
+
+   procedure Destroy
+     (Object : out Gsl_Node_Id) is
+
+      procedure Free is new Ada.Unchecked_Deallocation
+        (Gsl_Node_Id_Record, Gsl_Node_Id);
+
+   begin
+      Free (Object);
+   end Destroy;
+
    ---------------------------------------------------------------------------
-   -- get and set values for Gsl_Edge_Id
+   -- Gsl_Edge_Id
+   function Create_Gsl_Edge_Id return Gsl_Edge_Id is
+
+      Var : Gsl_Edge_Id;
+   begin
+      Var := new Gsl_Edge_Id_Record;
+      return Var;
+   end Create_Gsl_Edge_Id;
+
    function Get_Value
      (Var : Gsl_Edge_Id)
       return Edge_Id is
@@ -132,9 +95,34 @@ package body Giant.Gsl.Types is
    begin
       null;
    end Set_Value;
-      
+
+   function Copy
+     (Object : access Gsl_Edge_Id_Record)
+      return Gsl_Type is
+   begin
+      return Gsl_Null;
+   end Copy;
+
+   procedure Destroy
+     (Object : out Gsl_Edge_Id) is
+
+      procedure Free is new Ada.Unchecked_Deallocation
+        (Gsl_Edge_Id_Record, Gsl_Edge_Id);
+
+   begin
+      Free (Object);      
+   end Destroy;
+
    ---------------------------------------------------------------------------
-   -- get and set values for Gsl_Node_Set
+   -- Gsl_Node_Set
+   function Create_Gsl_Node_Set return Gsl_Node_Set is
+
+      Var : Gsl_Node_Set;
+   begin
+      Var := new Gsl_Node_Set_Record;
+      return Var;
+   end Create_Gsl_Node_Set;
+
    function Get_Value
      (Var : Gsl_Node_Set)
       return Node_Set is
@@ -149,8 +137,33 @@ package body Giant.Gsl.Types is
       null;
    end Set_Value;
 
+   function Copy
+     (Object : access Gsl_Node_Set_Record)
+      return Gsl_Type is
+   begin
+      return Gsl_Null;
+   end Copy;
+
+   procedure Destroy
+     (Object : out Gsl_Node_Set) is
+
+      procedure Free is new Ada.Unchecked_Deallocation
+        (Gsl_Node_Set_Record, Gsl_Node_Set);
+
+   begin
+      Free (Object);
+   end Destroy;
+ 
    ---------------------------------------------------------------------------
-   -- get and set values for Gsl_Edge_Set
+   -- Gsl_Edge_Set
+   function Create_Gsl_Edge_Set return Gsl_Edge_Set is
+
+      Var : Gsl_Edge_Set;
+   begin
+      Var := new Gsl_Edge_Set_Record;
+      return Var;
+   end Create_Gsl_Edge_Set;
+
    function Get_Value
      (Var : Gsl_Edge_Set)
       return Edge_Set is
@@ -160,13 +173,41 @@ package body Giant.Gsl.Types is
 
    procedure Set_Value
      (Var   : Gsl_Edge_Set;
-      Value : Edge_Set)is
+      Value : Edge_Set) is
    begin
       null;
    end Set_Value;
-      
+
+   function Copy
+     (Object : access Gsl_Edge_Set_Record)
+      return Gsl_Type is
+   begin
+      return Gsl_Null;
+   end Copy;
+
+   procedure Destroy
+     (Object : out Gsl_Edge_Set) is
+
+      procedure Free is new Ada.Unchecked_Deallocation
+        (Gsl_Edge_Set_Record, Gsl_Edge_Set);
+
+   begin
+      Free (Object);
+   end Destroy;
+
    ---------------------------------------------------------------------------
-   -- get and set values for Gsl_String
+   -- Gsl_String
+   function Create_Gsl_String
+     (Value : String)
+      return Gsl_String is
+
+      Var : Gsl_String;
+   begin
+      Var := new Gsl_String_Record (Value'Length);
+      Var.Value := Value;
+      return Var;
+   end;
+
    function Get_Value
      (Var : Gsl_String)
       return String is
@@ -181,8 +222,38 @@ package body Giant.Gsl.Types is
       Var.Value := Value; 
    end Set_Value;
 
+   function Copy
+     (Object : access Gsl_String_Record)
+      return Gsl_Type is
+
+      Var : Gsl_String;
+   begin
+      Var := new Gsl_String_Record (Object.Size);
+      Var.all := Object.all;
+      return Gsl_Type (Var);
+   end Copy;
+
+   procedure Destroy
+     (Object : out Gsl_String) is
+
+      procedure Free is new Ada.Unchecked_Deallocation
+        (Gsl_String_Record, Gsl_String);
+
+   begin
+      Free (Object);
+   end Destroy;
+
    ---------------------------------------------------------------------------
-   -- get and set values for Gsl_Boolean
+   -- Gsl_Boolean
+   function Create_Gsl_Boolean (Value : Boolean) return Gsl_Boolean is
+
+      Var : Gsl_Boolean;
+   begin
+      Var := new Gsl_Boolean_Record;
+      Var.Value := Value;
+      return Var;
+   end Create_Gsl_Boolean;
+
    function Get_Value
      (Var : Gsl_Boolean)
       return Boolean is
@@ -196,9 +267,39 @@ package body Giant.Gsl.Types is
    begin
       Var.Value := Value;
    end Set_Value;
+
+   function Copy
+     (Object : access Gsl_Boolean_Record)
+      return Gsl_Type is
+
+      Var : Gsl_Boolean;
+   begin
+      Var := new Gsl_Boolean_Record;
+      Var.all := Object.all;
+      return Gsl_Type (Var);
+   end;
       
+   procedure Destroy
+     (Object : out Gsl_Boolean) is
+
+      procedure Free is new Ada.Unchecked_Deallocation
+        (Gsl_Boolean_Record, Gsl_Boolean);
+
+   begin
+      Free (Object);
+   end Destroy;
+
    ---------------------------------------------------------------------------
-   -- get and set values for Gsl_Natural
+   -- Gsl_Natural
+   function Create_Gsl_Natural return Gsl_Natural is
+
+      Var : Gsl_Natural;
+   begin
+      Var := new Gsl_Natural_Record;
+      Var.Value := 0;
+      return Var;
+   end;
+  
    function Get_Value
      (Var : Gsl_Natural)
       return Natural is
@@ -213,8 +314,29 @@ package body Giant.Gsl.Types is
       Var.Value := Value;
    end Set_Value;
 
+   function Copy
+     (Object : access Gsl_Natural_Record)
+      return Gsl_Type is
+
+      Var : Gsl_Natural;
+   begin
+      Var := new Gsl_Natural_Record;
+      Var.all := Object.all;
+      return Gsl_Type (Var);
+   end Copy;
+
+   procedure Destroy
+     (Object : out Gsl_Natural) is
+   
+      procedure Free is new Ada.Unchecked_Deallocation
+        (Gsl_Natural_Record, Gsl_Natural);
+
+    begin
+      Free (Object);
+   end Destroy;
+
    ---------------------------------------------------------------------------
-   -- access routines for Gsl_List
+   -- Gsl_List
    function Get_List_Size
      (Var      : Gsl_List)
       return Natural is
@@ -236,16 +358,39 @@ package body Giant.Gsl.Types is
       Value    : Gsl_Type) is
    begin
       null;
-   end Set_Value_At;
-   
-   ---------------------------------------------------------------------------
-   -- access routines for Gsl_Var_Reference
-   function Get_Ref_Name
-     (Var : Gsl_Var_Reference)
-      return String is
+   end Set_Value_At; 
+
+   function Copy
+     (Object : access Gsl_List_Record)
+      return Gsl_Type is
    begin
-      return Var.Ref_Name;
-   end; 
+      return Gsl_Null;
+   end Copy;
+
+   procedure Destroy
+     (Object : out Gsl_List) is
+
+      procedure Free is new Ada.Unchecked_Deallocation
+        (Gsl_List_Record, Gsl_List);
+
+   begin
+      Free (Object);
+   end Destroy;
+
+   ---------------------------------------------------------------------------
+   -- Gsl_Var_Reference
+   function Create_Gsl_Var_Reference
+     (Ref_Type : Reference_Type;
+      Ref_Name : String)
+      return Gsl_Var_Reference is
+
+      Var : Gsl_Var_Reference;
+   begin
+      Var := new Gsl_Var_Reference_Record (Ref_Name'Length);
+      Var.Ref_Type := Ref_Type;
+      Var.Ref_Name := Ref_Name;
+      return Var;
+   end;
 
    function Get_Ref_Type
      (Var : Gsl_Var_Reference)
@@ -253,5 +398,65 @@ package body Giant.Gsl.Types is
    begin
       return Var.Ref_Type;
    end;
-	
+
+   function Get_Ref_Name
+     (Var : Gsl_Var_Reference)
+      return String is
+   begin
+      return Var.Ref_Name;
+   end; 
+
+   function Copy
+     (Object : access Gsl_Var_Reference_Record)
+      return Gsl_Type is
+   begin
+      return Gsl_Null;
+   end Copy;
+
+   --procedure Free is new Ada.Unchecked_Deallocation
+   --  (Gsl_Var_Reference_Record, Gsl_Var_Reference);
+
+   procedure Destroy
+     (Object : out Gsl_Var_Reference) is
+
+      procedure Free is new Ada.Unchecked_Deallocation
+        (Gsl_Var_Reference_Record, Gsl_Var_Reference);
+
+   begin
+      Free (Object);
+   end Destroy;
+
+   ---------------------------------------------------------------------------
+   -- Gsl_Script_Decl
+   function Create_Gsl_Script_Reference
+     (Parameter_List : Syntax_Node;
+      Script_Node    : Syntax_Node)
+      return Gsl_Script_Reference is
+
+      Var : Gsl_Script_Reference;
+   begin
+      Var := new Gsl_Script_Reference_Record;
+      Var.Parameter_List := Parameter_List;
+      Var.Script_Node := Script_Node;
+      Var.Parent_Activation_Record := null;
+      return Var;
+   end;
+
+   function Copy
+     (Object : access Gsl_Script_Reference_Record)
+      return Gsl_Type is
+   begin
+      return Gsl_Null;
+   end Copy;
+   
+   procedure Destroy
+     (Object : out Gsl_Script_Reference) is
+
+      procedure Free is new Ada.Unchecked_Deallocation
+        (Gsl_Script_Reference_Record, Gsl_Script_Reference);
+
+   begin
+      Free (Object);
+   end Destroy;
+
 end Giant.Gsl.Types;
