@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: afa.tex,v $, $Revision: 1.15 $
-%  $Date: 2003/04/06 21:14:52 $
-%  $Author: squig $
+%  $RCSfile: afa.tex,v $, $Revision: 1.16 $
+%  $Date: 2003/04/15 23:20:14 $
+%  $Author: schwiemn $
 %
 %  Description: Beschreibung allgemeiner funktionaler Anforderungen - UseCase
 %               übergreifend.
@@ -15,28 +15,23 @@
 \label{afa Fehlerverhalten}
 
 Beim Auftreten von Fehlern während des Betriebs von GIANT werden
-wann immer möglich die folgenden Konventionen eingehalten.
+die folgenden Konventionen eingehalten. GIANT verhält sich bezüglich der 
+Fehlerbehandlung konsistent. Das im Folgenden beschriebene Fehlerverhalten gilt 
+daher für das gesamte System. Abweichungen von diesem Verhalten werden gegebenenfalls 
+an der entsprechenden Stelle explizit spezifiziert.
 
 \begin {enumerate}
   \item
   Fehlermeldungen \index{Fehlermeldungen} werden grundsätzlich über
-  einen allgemeinen Fehlerdialog
-  ausgegeben (siehe auch \ref {GUI Ausgabe von Fehlermeldungen}). 
+  einen allgemeinen Fehlerdialog ausgegeben 
+  (siehe auch \ref {GUI Ausgabe von Fehlermeldungen}). 
   Ist dies nicht möglich, wird die Fehlermeldung
   über die Kommandozeile ausgegeben.
-  
-\item GIANT verhält sich bezüglich der Fehlerbehandlung konsistent.
-  Das im Folgenden beschriebene Fehlerverhalten gilt daher für das
-  gesamte System.
-
-  \item
-  Abweichungen von diesem Verhalten werden gegebenenfalls an der 
-  entsprechenden Stelle explizit spezifiziert.
 
   \item
   Sollten mehrere Fehler, wie z.B. Eingabefehler, gleichzeitig auftreten,
   so werden die entsprechenden Fehlermeldungen falls möglich 
-  in dem allgemeinen Fehlerdialog \gq{auf einen Schlag}
+  über den allgemeinen Fehlerdialog \gq{auf einen Schlag}
   an den Benutzer ausgegeben.
    
 
@@ -53,9 +48,9 @@ wann immer möglich die folgenden Konventionen eingehalten.
 
     \item
     Stellt das System dann eine unzulässige oder fehlende Eingabe fest, so
-    erscheint der allgemeine Fehlerdialog mit einer Mitteilung
-    zur Fehlerursache.
-  
+    erscheint der allgemeine Fehlerdialog mit einem Hinweis, welche Daten
+    falsch eingegeben wurden bzw.\ fehlen.
+   
     \item
     Nach Schließen des Fehlerdialoges kehrt das System zu der Stelle, die
     im Ablauf unmittelbar vor der Fehlerüberprüfung lag, zurück. Also
@@ -67,21 +62,25 @@ wann immer möglich die folgenden Konventionen eingehalten.
 
   \subsection {Ungültige oder unvollständige Eingaben bei Kommandozeilenaufruf}
   \index{Fehlerverhalten!Kommandozeilenaufruf}
-  Der Start von GIANT wird abgebrochen. Auf der Kommandozeile wird eine
-  Meldung mit Hinweisen zur Fehlerursache ausgegeben.
+  Gibt der Benutzer beim Start von GIANT über Kommandozeile ungültige oder unvollständige
+  Eingabendaten (z.B. für die Kommandozeilenparameter) an, so wird der
+  Start von GIANT abgebrochen. Auf der Kommandozeile wird dann eine entsprechende 
+  Fehlermeldung mit Nennung der fehlenden oder ungültigen Daten ausgegeben.
 
   \subsection {Fehler beim Einlesen von Dateien}
   \index{Fehlerverhalten!Einlesen von Dateien}  
 
   \begin{enumerate}
-    \item Können zum Betrieb von GIANT nötige Dateien nicht an der 
+    \item Können zum Betrieb von GIANT nötige Dateien (wie z.B. die
+          Konfigurationsdateien) nicht an der 
           dafür vorgesehenen Position gefunden werden, so wird das 
           System mit einer entsprechenden Fehlermeldung beendet.
           In dieser Fehlermeldung werden die nicht gefundenen Dateien
-          und der Pfad, der von GIANT durchsucht wurde, angegeben.
+          und der Pfad, an dem diese eigentlich zu finden sein müssten, 
+          angegeben.
           
     \item Das Verhalten bei allen anderen möglichen Fehlern, die im Zusammenhang
-          mit dem Zugriff auf Dateien auftreten (fehlende Zugriffsrechte, 
+          mit dem Zugriff auf Dateien auftreten können (fehlende Zugriffsrechte, 
           defekte Sektoren etc.), ist undefiniert.
 
   \end{enumerate} 
@@ -107,14 +106,11 @@ wann immer möglich die folgenden Konventionen eingehalten.
 
 \section {Grundlegendes Feedbackverhalten} \index{Feedbackverhalten}
 
-Hier wird beschrieben, wie GIANT dem Benutzer über  
-den aktuellen Systemzustand informiert.
+Während der Berechnung durch Layoutalgorithmen und Anfragen 
+informiert GIANT den Benutzer laufend, dass es gerade mit Berechnungen 
+beschäftigt ist. Dies kann über eine der beiden 
+hier beschriebenen Möglichkeiten geschehen:
 
-   \subsection{\gq{I am busy Feedback}}
-   Während der Berechnung durch Layoutalgorithmen und Anfragen 
-   informiert GIANT den Benutzer laufend, dass es gerade mit Berechnungen 
-   beschäftigt ist. Dies keine über eine der beiden 
-   hier beschriebenen Möglichkeiten geschehen:
    \begin {enumerate}
    
      \item 
@@ -122,9 +118,11 @@ den aktuellen Systemzustand informiert.
      Inhalt, so dass erkennbar ist, dass das System noch läuft.
      
      \item \index{Progressbar}
-     Anzeige einer Progressbar, der über den aktuellen Fortschritt
+     Anzeige eines Progressbars, der über den aktuellen Fortschritt
      einer Berechnung informiert, ohne dabei den Gesamtaufwand zu 
-     kennen.     
+     kennen. Dieser Progressbar protokolliert also nur die
+     bisher geleistete Arbeit (z.B. die Anzahl der Knoten, welche
+     bereits layouted wurden; siehe hierzu auch \ref{GUI-Fortschrittsanzeige}).
      
    \end {enumerate}
 
@@ -142,19 +140,22 @@ Unzulässige Namen werden generell abgelehnt und führen zu einer Fehlermeldung.
 
 
     \subsubsection {Der String \gq{STANDARD NAME}}
-    Ein String, der nur die im Folgenden beschriebenen Zeichen enthalten darf.\\
+    Hier wird ein String spezifiziert, der nur die im Folgenden 
+    beschriebenen Zeichen enthalten darf.\\
     Zulässige Zeichen sind:
     \begin {enumerate}
   
       \item
-      Groß- und Kleinbuchstaben des deutschen Alphabets. Nicht zulässig sind
-      Umlaute und das Zeichen ''"s''.
+      Die Lateinischen Groß- und Kleinbuchstaben; nicht zulässig sind
+      Umlaute und das Zeichen ''"s''. Zulässig sind also nur die 
+      ASCII-Zeichen 65 bis 90 und 97 bis 122 (gemäß Definition 
+      der ISO-8859-Zeichensätze).
+   
+      \item
+      Die Ziffern ''0'' bis ''9'' (ASCII-Zeichen 48 bis 57)
     
       \item
-      Die Ziffern ''0'' bis ''9''.
-    
-      \item
-      Das Zeichen ''\_''. 
+      Das Zeichen ''\_'' (ASCII-Zeichen 95).
      
     \end {enumerate}
 
@@ -206,6 +207,12 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
   Fenster-Knoten und Fenster-Kanten spezifiziert.
     
   \begin{enumerate}
+
+   \item Alle selektierten Fenster-Knoten und Fenster-Kanten deselektieren.\\
+   Wird mit der linken Maustaste auf einen Punkt des sichtbaren Anzeigeinhaltes
+   geklickt, unter dem sich keine Fenster-Knoten bzw. Fenster-Kanten befinden,
+   so werden alle bis dahin selektierten Fenster-Knoten und Fenster-Kanten
+   deselektiert.
   
    \item Selektieren durch Anklicken mit linker Maustaste.\\
    Nur der angeklickte Fenster-Knoten oder die angeklickte Fenster-Kante 
@@ -234,6 +241,14 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
    Alle Fenster-Knoten und Kanten innerhalb des Rahmens, 
    die bereits selektiert
    sind, werden aus der aktuellen Selektion entfernt.
+
+   \item Selektieren durch Aufziehen eines Rahmens mittels 
+   Control + gedrückte linke Maustaste.\\
+   Alle Fenster-Knoten und Kanten innerhalb des Rahmens, 
+   die noch nicht selektiert sind, werden der aktuellen Selektion 
+   hinzugefügt. Fenster-Knoten und Kanten innerhalb und außerhalb 
+   des Rahmens, die bereits selektiert sind, bleiben selektiert.
+   
   
   \end{enumerate}
   
@@ -318,10 +333,9 @@ in Anzeigefenster}
    \subsection {Automatisches Erzeugen neuer Selektionen im Zielfenster}
    Sämtliche Fenster-Knoten und Fenster-Kanten, die in einem Schritt in
    ein Anzeigefenster eingefügt werden, werden dort automatisch
-   zur aktuellen Selektion und können dann vom Benutzer 
-   mit einem Namen versehen werden und als Selektion gespeichert werden.
-   
-   
+   zur Standard-Selektion, der alte Inhalt der Standard-Selektion geht dabei verloren
+   und die Standard-Selektion bekommt den Status der aktuellen Selektion.
+    
    \subsection{Einfügen von Selektionen in Anzeigefenster}
       \label{Einfügen von Selektionen in Anzeigefenster}
 
@@ -349,8 +363,9 @@ in Anzeigefenster}
      visualisiert ist. 
      
      \item
-     Die neu eingefügte Selektion ist nun auch dem entsprechenden 
-     Anzeigefenster (dort wo sie eingefügt wurde) als Selektion bekannt.
+     Die neu eingefügte Selektion ist in dem entsprechenden 
+     Anzeigefenster (dort wo sie eingefügt wurde) als Standard-Selektion 
+     vorhanden, der alte Inhalt der Standard-Selektion wird überschrieben.
    
    \end{enumerate}
      
@@ -360,9 +375,7 @@ in Anzeigefenster}
    \index{IML-Teilgraphen!Einfügen in Anzeigefenster}
 
    Hier wird das grundlegende Verhalten des Systems 
-   beim Einfügen von IML-Teilgraphen
-   in Anzeigefenster (Kopieren einer Selektion aus einem Anzeigefenster
-   in ein anderes) beschrieben.
+   beim Einfügen von IML-Teilgraphen in Anzeigefenster beschrieben.
    
    \begin{enumerate}
    
@@ -373,7 +386,7 @@ in Anzeigefenster}
      \item
      Die Graph-Knoten und Graph-Kanten des IML-Teilgraphen werden dann
      genau wie eine Selektion in das Anzeigefenster eingefügt, dies geschieht
-     dann zu den gleichen Bedingungen, wie oben unter 
+     dann zu den gleichen Bedingungen, wie unter 
      \ref{Einfügen von Selektionen in Anzeigefenster} beschrieben.
        
    \end{enumerate} 
@@ -442,15 +455,15 @@ in Anzeigefenster}
   Beim \gq{Entfernen} von Fenster-Knoten und Fenster-Kanten aus einem
   Anzeigefenster werden nur die graphischen Repräsentationen der Knoten und
   Kanten des Bauhaus-IML-Graphen in dem betroffenen Anzeigefenster gelöscht.
-  Die IML-Knoten und IML-Kanten des IML-Graphen bleiben davon unberührt.
-  Grundsätzlich gelten beim \gq{Entfernen} die im Folgenden beschriebenen
-  Konventionen.
- 
+  Graph-Knoten und Graph-Kanten von IML-Teilgraphen bleiben davon unberührt.
  
   \subsection {Entfernen aller Knoten und Kanten einer Selektion}
     \label {Entfernen aller Knoten und Kanten einer Selektionen}
 
     \index{Selektionen!Entfernen von Knoten und Kanten}
+
+  Beim Entfernen aller Fenster-Knoten und Fenster-Kanten einer Selektion
+  gelten die folgenden Konventionen:
   
   \begin {enumerate}
   

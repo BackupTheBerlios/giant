@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: product.tex,v $, $Revision: 1.38 $
-%  $Date: 2003/04/07 18:53:13 $
-%  $Author: squig $
+%  $RCSfile: product.tex,v $, $Revision: 1.39 $
+%  $Date: 2003/04/15 23:20:14 $
+%  $Author: schwiemn $
 %
 %  Description: Beschreibung des Produktes. Übersicht über die Funktionen
 %               und allgemeine Bedienkonzepte.
@@ -26,7 +26,7 @@ Für weitere Informationen zu Projekten siehe Kapitel \ref{GIANT
 
 % ==============================================================================
 \section{IML-Teilgraphen und Selektionen}
-Hinsichtlich der logischen Zusammenfassung von Knoten und Kanten unterscheidet
+Hinsichtlich der logischen Zusammenfassung von IML-Knoten und IML-Kanten unterscheidet
 GIANT IML-Teilgraphen und Selektionen.
 
   \subsection{IML-Teilgraphen} \index{IML-Teilgraphen}
@@ -74,18 +74,18 @@ haben.
   Laufzeit von GIANT beeinflussen.  Da über entsprechende XML-Dateien
   verschiedene Visualisierungsstile definiert werden können, kann
   GIANT so
-  an spezifische Problemstellungen angepasst werden.\\
-  Weitere Informationen sind in Abschnitt \ref{Config
-    Visualisierungsstile} verfügbar.
+  an spezifische Problemstellungen angepasst werden.
+  Weitere Informationen hierzu sind in Abschnitt \ref{Config
+    Visualisierungsstile} zu finden.
 
 \section{Knoten-Annotationen} 
 \index{Knoten-Annotationen}
 
 Jeder Knoten kann mit einer textuellen Annotation versehen werden.
 Diese Annotation kann in einem Fenster außerhalb des Anzeigefensters
-zur Anzeige gebracht und bearbeitet werden.\\
-Weitere Informationen sind in Abschnitt \ref{Project Persistenz von
-Knoten-Annotationen} verfügbar.
+zur Anzeige gebracht und bearbeitet werden.
+Für weitere Informationen zu diesem Thema siehe Abschnitt \ref{Project Persistenz von
+Knoten-Annotationen}.
 
 % ==============================================================================
 \section{Anfragen} \index{GQSL} \index{Anfragesprache}
@@ -103,26 +103,26 @@ Detail spezifiziert.
 \section{Drei-Stufen-Konzept} \index{Drei-Stufen-Konzept}
 
 Die im Folgenden beschriebenen drei Schritte sollen dem Benutzer die Möglichkeit
-bieten, von den Knoten und Kanten des IML-Graphen ausgehend geeignete
-Teilgraphen in Anzeigefenstern zu visualisieren. Von der
-Gestaltung der UseCases her, werden diese drei Schritte sequentiell nacheinander
-ausgeführt, dies ist aber nicht zwingend nötig.
-
+bieten, von den IML-Knoten und IML-Kanten des IML-Graphen ausgehend geeignete
+IML-Teilgraphen in Anzeigefenstern zu visualisieren. 
+Die Funktionalität von GIANT ist so konzipiert, dass zur Visualisierung
+von IML-Graphen in Anzeigefenstern diese drei Schritte sequentiell
+nacheinander ausgeführt werden. Mittels der Anfragesprache GQSL 
+(siehe \ref{GIANT Query Skripting Language}) und mittels der über die 
+GUI zugänglichen UseCases (beschrieben ab Kapitel \ref{Kapitel-Funktionale Anforderungen})
+kann der Benutzer diese Schritte wahlweise einzeln \gq{Step by Step} oder auch 
+\gq{auf einen Schlag}, d.h. durch Eingabe einer einzigen Anfrage, ausführen.\\
+Der \gq{Visualisierungsvorgang} von IML-Graphen ist aber rein logisch betrachtet
+in die folgenden drei Schritte unterteilt:
 
 \begin {enumerate}
-  \item Erzeugen geeigneter IML-Teilgraphen, d.h.\ Auswahl geeigneter Knoten 
-        und Kanten aus dem IML-Graphen mittels der Anfragesprache.
+  \item Erzeugen geeigneter IML-Teilgraphen, d.h.\ Auswahl geeigneter IML-Knoten 
+        und IML-Kanten aus dem IML-Graphen mittels der Anfragesprache GQSL.
   
   \item Einfügen dieser IML-Teilgraphen in ein Anzeigefenster unter Anwendung
   eines Layoutalgorithmus. \index{Layoutalgorithmen} 
   
   \item Weitere Bearbeitung der Fenster-Knoten und Fenster-Kanten (wie z.B.
-  Verschieben, Annotieren und Erzeugen von Selektionen).
-  
+  Verschieben, Annotieren und Erzeugen von Selektionen)
+
 \end {enumerate}
-
-
-
-
-
-

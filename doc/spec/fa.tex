@@ -1,7 +1,7 @@
 % =============================================================================
-%  $RCSfile: fa.tex,v $, $Revision: 1.29 $
-%  $Date: 2003/04/08 13:28:24 $
-%  $Author: squig $
+%  $RCSfile: fa.tex,v $, $Revision: 1.30 $
+%  $Date: 2003/04/15 23:20:14 $
+%  $Author: schwiemn $
 %
 %  Description:
 %
@@ -15,11 +15,8 @@ Aktor im Sinne der anschließend spezifizierten UseCases ist immer die
 Person, die den IML-Browser GIANT gerade bedient, also der 
 \gq{Benutzer}. Neben dem \gq{Benutzer} sind keine weiteren Aktoren 
 vorgesehen.\\
-
-
-  \subsection{Anforderungen an den Aktor \gq{Benutzer}}
-  Zur Bedienung von GIANT muss der Benutzer über 
-  die folgenden Kenntnisse verfügen:
+Zur Bedienung von GIANT muss der Benutzer über die folgenden 
+Kenntnisse verfügen:
 
   \begin{enumerate}
     \item Erfahrung im Umgang mit graphischen Benutzeroberflächen und 
@@ -43,33 +40,58 @@ die folgenden Optionen.
 
   \subsection {Mögliche Parameter} \index{Kommandozeilenparameter}
 
-  GIANT kann folgendermaßen gestartet werden:\\\\
+  GIANT kann folgendermaßen via Kommandozeile gestartet werden:\\\\
+
   \verb+giant [(-n file -i file|-l file) [-e file]|-h]+\\\\
 
-  Hier werden die Parameter im einzelnen erklärt:
+  Die Klammerung orientiert sich an den gängigen Linux-Konventionen,
+  wie sie z.B. innerhalb von \gq{Manpages} verwendet werden.\\
+  Ausdrücke in eckigen Klammern \gq{[ ... ]} sind optional, 
+  wobei Alternativen durch einen senkrechten Strich \gq{[ A | B ]}, 
+  getrennt werden. Es darf in diesem Fall also entweder der
+  Ausdruck A oder der Ausdruck B oder gar nichts stehen. \\
+  Bei Ausdrücke in runden Klammern werden alternative
+  Ausdrücke ebenfalls durch einen senkrechten Strich getrennt \gq{( A | B )}, 
+  es muss aber immer genau einer der alternativen Ausdrücke (hier also
+  entweder A oder B) verwendet werden.\\
+  Anstelle der hier angegebenen Kurzform kann natürlich auch
+  die unten beschriebene Lanngform der Parameter verwendet werden.\\
+  Mit \gq{file} ist immer der qualifizierende Name für eine
+  Datei gemeint, also der Dateiname samt Erweiterung und 
+  Pfad (gemäß den Konventionen des verwendeten Betriebssystems).\\\\
+
+  Anschließend werden nun die Parameter im Einzelnen erläutert:
+
 
   \begin {enumerate}
 
   \item
-    \verb+--newproject=Pfad+ oder \verb+-n Pfad+
+    \verb+--newproject=file+ oder \verb+-n file+
 
-    Angabe des Pfades für die neu zu erstellenden Projektdatei.  Die
-    Datei darf nicht vorhanden sein. Das Verzeichnis der Projektdatei ist
-    automatisch Projektverzeichnis und muss bereits existieren.
+    Angabe des Pfades und des Namens für die neu zu erstellende 
+    Projektdatei.  Die Datei darf nicht bereits vorhanden sein. 
+    Das Verzeichnis der Projektdatei -- also das letzte
+    Verzeichnis im Pfad -- ist automatisch das Projektverzeichnis 
+    und muss bereits existieren. In diesem Verzeichnis darf sich
+    keine weitere Projektdatei befinden.
+    
 
-    \verb+--iml=Pfad+ oder \verb+-i Pfad+
+    \verb+--iml=file+ oder \verb+-i file+
 
-    Angabe des Pfades zu einer existierenden IML-Graph Datei.
+    Angabe einer existierenden IML-Graph Datei als Grundlage für ein
+    neu zu erstellendes Projekt.
     
   \item 
-    \verb+--loadproject=Pfad+ oder \verb+-l Pfad+
+    \verb+--loadproject=file+ oder \verb+-l file+
 
-    Angabe des Pfades zu einer existierenden Projektdatei.
+    Angabe einer existierenden Projektdatei. Das entsprechende Projekt wird
+    dann beim Start von GIANT geladen.
           
   \item
-    \verb+--execute=Pfad+ oder \verb+-e Pfad+
+    \verb+--execute=file+ oder \verb+-e file+
 
-    Pfad zu einer Datei in der ein GQSL Skript gespeichert ist.
+    Angabe einer Datei in der ein GQSL Skript gespeichert ist. Dieses GQSL Skript
+    wird dann beim Start von GIANT ausgeführt.
   
   \item 
     \verb+--help+ oder \verb+-h+
@@ -80,7 +102,7 @@ die folgenden Optionen.
       
   \subsection {Mögliche Aufrufe}
 
-  Hier werden mögliche Parameterfolgen zum Start von GIANT via
+  Hier werden beispielhaft mögliche Parameterfolgen zum Start von GIANT via
   Kommandozeile erläutert.
 
   \begin {enumerate}
@@ -110,7 +132,7 @@ die folgenden Optionen.
 Ablauf:
 
 \begin {enumerate}
-  \item GIANT wählt \gq{Quit} im Hauptmenü 
+  \item Der Benutzer wählt \gq{Quit} im Hauptmenü.
     
   \item Ist ein Projekt geöffnet, so fragt GIANT nach, ob das Projekt
     gespeichert werden soll. Falls der Benutzer das Speichern ablehnt,
@@ -119,6 +141,13 @@ Ablauf:
       Speichern} beschriebene Funktionalität ausgeführt.
      
   \item GIANT wird beendet.
+
+Muss GIANT aufgrund eines schwerwiegenden Fehlers beendet werden 
+(man könnte hier auch von einem Programmabsturz reden), so bleibt der Zustand
+der Projektdateien unspezifiziert, schlimmstenfalls sind diese dannach unbrauchbar.
+
+
+
     
 \end {enumerate}
   
