@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.23 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.24 $
 --  $Author: koppor $
---  $Date: 2003/06/27 16:50:13 $
+--  $Date: 2003/06/28 19:08:44 $
 --
 
 with Giant.Constant_Ptr_Hashs;
@@ -124,7 +124,10 @@ package Giant.Graph_Lib is
 
    ---------------------------------------------------------------------------
    --  Needed for Node_Record, used to store incoming and outgoing edges
-   type Edge_Id_Array is array (Positive range <>) of Edge_Id;
+   --
+   --  (Positive range <>) is used in the implementation, but
+   --    Edge_Id_Array_Routines need (Integer range <>)
+   type Edge_Id_Array is array (Integer range <>) of Edge_Id;
 
    ---------------------------------------------------------------------------
    type Edge_Id_Array_Access is access Edge_Id_Array;
@@ -746,7 +749,14 @@ package Giant.Graph_Lib is
 private
 
    ---------------------------------------------------------------------------
+   --  Stores all edges of the graph
    All_Edges : Edge_Id_Array_Access;
+
+   ---------------------------------------------------------------------------
+   --  This constant is needed to allow a direct mapping from
+   --    Edge_Id.Internal_Id into the array
+   --  "direct mapping" means without needing to add or substract any offset
+   All_Edges_First_Index : constant := 1;
 
    ---------------------------------------------------------------------------
    --  Represents a single node of the IML_Graph
