@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/05/23 17:13:21 $
+--  $Date: 2003/06/14 17:10:20 $
 --
 --
 ------------------------------------------------------------------------------
@@ -30,29 +30,24 @@
 --  The GIANT main program.
 --
 
-with Gdk.Threads;
-with Gtk.Main;
-
+with Giant.Controller;
 with Giant.Default_Logger;
 with Giant.Logger;
-with Giant.Main_Window;
 
 procedure Giant.Main
 is
    package Main_Logger is new Logger("giant.main");
+   --Current_Project : Projects.Project_Access;
 begin
    Giant.Default_Logger.Init;
 
    Main_Logger.Debug ("initializing gtk");
 
-   Gtk.Main.Set_Locale;
-   Gtk.Main.Init;
-   Gdk.Threads.Init;
+--     Current_Project := Projects.Create_Empty_Project
+--       (Valid_Names.To_Standard_Name ("GiantTest"), "testdata",
+--        "../src/vis_test/rfg_examp.iml", 0);
 
-   Gdk.Threads.Enter;
-   Main_Window.Show;
-   Gtk.Main.Main;
-   Gdk.Threads.Leave;
+   Controller.Show;
 
    Main_Logger.Debug ("closing giant");
 
