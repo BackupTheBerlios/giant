@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.17 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.18 $
 --  $Author: koppor $
---  $Date: 2003/06/25 11:38:05 $
+--  $Date: 2003/06/25 16:40:40 $
 --
 
 --  Bauhaus / IML
@@ -216,10 +216,11 @@ package Giant.Graph_Lib is
    --  Sets  --
    ------------
 
-   -----------------------------------------------------------------------
-   --  This package provides set and iterator operations. The
-   --  functionality is not reimplented but offered using Ordered_Sets.
-   --
+   ------------------------------------------------------------------------
+   --  This package provides set and iterator operations.                --
+   --  Functionality is not reimplented but offered using Ordered_Sets.  --
+   ------------------------------------------------------------------------
+
    --  Read and Write will not be used and therefore are not
    --  instantiated.
    package Node_Id_Sets is
@@ -279,16 +280,23 @@ package Giant.Graph_Lib is
    ------------------------
 
    ---------------------------------------------------------------------------
-   --  Initializes the graph
+   --  Inits Node_Class_Ids and Edge_Class_Ids
+   procedure Initialize;
+
+   ---------------------------------------------------------------------------
+   --  Loads the graph
    --
    --  Raises:
    --    Load_Error if something has gone wrong
-   procedure Create (Path_To_IML_File : in String);
+   procedure Load (Path_To_IML_File : in String);
 
    ---------------------------------------------------------------------------
    --  Unloads the graph from the memory
-   procedure Destroy;
+   procedure Unload;
 
+   ---------------------------------------------------------------------------
+   --  Cleans up memory
+   procedure Destroy;
 
    ----------------------
    -- Existance-Checks --

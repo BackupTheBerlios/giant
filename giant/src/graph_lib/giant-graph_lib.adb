@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.22 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.23 $
 --  $Author: koppor $
---  $Date: 2003/06/25 15:02:22 $
+--  $Date: 2003/06/25 16:40:30 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -324,58 +324,72 @@ package body Giant.Graph_Lib is
       return Edge_Class;
    end Convert_Node_Class_Node_Attribute_To_Edge_Class_Id;
 
-   ----------------------------------------------------------
-   -- Create the internal representation of the IML-Graph  --
-   ----------------------------------------------------------
-   procedure Create (Path_To_IML_File : in String) is
+   -----------------------------
+   --  Basical init-routines  --
+   -----------------------------
 
-      procedure Initialize_Node_Class_Id_Mapping is
-         All_Classes : IML_Reflection.Classes;
-         Cur_Class   : Node_Class_Id;
-         Hash_Data   : Node_Class_Id_Hash_Data_Access;
-      begin
-         Node_Class_Id_Mapping := Node_Class_Id_Hashed_Mappings.Create;
+   ---------------------------------------------------------------------------
+   procedure Initialize
+   is
+      All_Classes : IML_Reflection.Classes;
+      Cur_Class   : Node_Class_Id;
+      Hash_Data   : Node_Class_Id_Hash_Data_Access;
+   begin
+      Node_Class_Id_Mapping := Node_Class_Id_Hashed_Mappings.Create;
 
-         All_Classes := IML_Classes.Get_All_Classes;
+      All_Classes := IML_Classes.Get_All_Classes;
 
-         for I in All_Classes'Range loop
-            Cur_Class := All_Classes (I);
+      for I in All_Classes'Range loop
+         Cur_Class := All_Classes (I);
 
-            Hash_Data := new Node_Class_Id_Hash_Data;
-            Hash_Data.Node_Attribute_Id_Mapping :=
-              Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.Create;
+         Hash_Data := new Node_Class_Id_Hash_Data;
+         Hash_Data.Node_Attribute_Id_Mapping :=
+           Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.Create;
 
-            Node_Class_Id_Hashed_Mappings.Bind
+         Node_Class_Id_Hashed_Mappings.Bind
               (Node_Class_Id_Mapping,
                Cur_Class,
                Hash_Data);
 
-            for J in Cur_Class.Fields'Range loop
-               declare
-                  Cur_Field : IML_Reflection.Field_Id := Cur_Class.Fields (J);
-               begin
-                  if (Cur_Field.all in IML_Reflection.Edge_Field) or
-                    (Cur_Field.all in IML_Reflection.List_Field) or
-                    (Cur_Field.all in IML_Reflection.Set_Field) then
-                     declare
-                        New_Edge_Class : Edge_Class_Id;
-                     begin
-                        New_Edge_Class := new Edge_Class;
-                        New_Edge_Class.Source_Node_Class := Cur_Class;
-                        New_Edge_Class.Source_Node_Attribute := Cur_Field;
+         for J in Cur_Class.Fields'Range loop
+            declare
+               Cur_Field : IML_Reflection.Field_Id := Cur_Class.Fields (J);
+            begin
+               if (Cur_Field.all in IML_Reflection.Edge_Field) or
+                 (Cur_Field.all in IML_Reflection.List_Field) or
+                 (Cur_Field.all in IML_Reflection.Set_Field) then
+                  declare
+                     New_Edge_Class : Edge_Class_Id;
+                  begin
+                     New_Edge_Class := new Edge_Class;
+                     New_Edge_Class.Source_Node_Class := Cur_Class;
+                     New_Edge_Class.Source_Node_Attribute := Cur_Field;
 
-                        Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.Bind
-                          (Hash_Data.Node_Attribute_Id_Mapping,
-                           Cur_Field,
-                           New_Edge_Class);
-                     end;
-                  end if;
-               end;
-            end loop;
-
+                     Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.Bind
+                       (Hash_Data.Node_Attribute_Id_Mapping,
+                        Cur_Field,
+                        New_Edge_Class);
+                  end;
+               end if;
+            end;
          end loop;
 
-      end Initialize_Node_Class_Id_Mapping;
+      end loop;
+   end Initialize;
+
+   ---------------------------------------------------------------------------
+   procedure Destroy
+   is
+   begin
+      --  Destroy_Node_Class_Id_Mapping
+      --  TBD: deep-destroy!
+      null;
+   end Destroy;
+
+   -----------------------------------------------------------
+   --  Create the internal representation of the IML-Graph  --
+   -----------------------------------------------------------
+   procedure Load (Path_To_IML_File : in String) is
 
       -----------------------------------------------------------
       --  Data-Structore for temporary graph used for loading  --
@@ -821,13 +835,10 @@ package body Giant.Graph_Lib is
       end;
 
       Iml_Node_Mapper.Destroy;
-
-      Initialize_Node_Class_Id_Mapping;
-
-   end Create;
+   end Load;
 
    ---------------------------------------------------------------------------
-   procedure Destroy is
+   procedure Unload is
 
       procedure DestroyAllNodes is
 
@@ -863,21 +874,13 @@ package body Giant.Graph_Lib is
          IML_Node_ID_Hashed_Mappings.Destroy (IML_Node_ID_Mapping);
       end DestroyAllNodes;
 
-      procedure Destroy_Node_Class_Id_Mapping is
-      begin
-         --  TBD: deep-destroy!
-         null;
-      end Destroy_Node_Class_Id_Mapping;
-
    begin
-      Destroy_Node_Class_Id_Mapping;
-
       DestroyAllNodes;
 
       IML_Node_ID_Hashed_Mappings.Destroy (IML_Node_ID_Mapping);
 
       --  Unload IML_Graph - not supported by IML
-   end Destroy;
+   end Unload;
 
    ---------------------------------------------------------------------------
    function Does_Edge_Class_Exist
