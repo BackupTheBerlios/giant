@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.39 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.40 $
 --  $Author: koppor $
---  $Date: 2003/07/30 07:39:43 $
+--  $Date: 2003/08/12 09:38:18 $
 --
 --  TBD:
 --    * Write into comment, when the routine may be used
@@ -40,6 +40,7 @@ with Storables;
 with SLocs; --  used at private part
 
 --  Bauhaus / Reuse
+with Bauhaus_Io;
 with Ordered_Sets;
 with Lists;
 
@@ -873,6 +874,30 @@ package Giant.Graph_Lib is
 
    ---------------------------------------------------------------------------
    function Hash_Edge_Class_Id (Key : in Edge_Class_Id) return Integer;
+
+   ---------------
+   --  Streams  --
+   ---------------
+
+   ---------------------------------------------------------------------------
+   procedure Read_Edge_Id
+     (Stream : in     Bauhaus_Io.In_Stream_Type;
+      Edge   :    out Edge_Id);
+
+   ---------------------------------------------------------------------------
+   procedure Read_Node_Id
+     (Stream : in     Bauhaus_Io.In_Stream_Type;
+      Node   :    out Node_Id);
+
+   ----------------------------------------------------------------------
+   procedure Write_Edge_Id
+     (Stream : in Bauhaus_Io.Out_Stream_Type;
+      Edge   : in Edge_Id);
+
+   ----------------------------------------------------------------------
+   procedure Write_Node_Id
+     (Stream : in Bauhaus_Io.Out_Stream_Type;
+      Node   : in Node_Id);
 
 private
 
