@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: konzepteundbegriffe.tex,v $, $Revision: 1.3 $
-%  $Date: 2003/08/05 15:01:02 $
+%  $RCSfile: konzepteundbegriffe.tex,v $, $Revision: 1.4 $
+%  $Date: 2003/08/05 16:30:52 $
 %  $Author: birdy $
 %
 %  Description:
@@ -18,8 +18,6 @@ Eine tabellarische Beschreibung der einzelnen Begriffe findet sich
 in der Spezifikation von GIANT, Kapitel Begriffslexikon.
 
 \section{Begriffe}
-
-
 
 Eine Anfrage (Query) beschreibt einen Vorgang, bei dem
 über geeignete Kriterien IML-Knoten und IML-Kanten aus dem IML-Graphen
@@ -120,7 +118,23 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
   \index{Selektieren}
   
   Hier werden die Abläufe zur Selektion und Deselektion einzelner
-  Fenster-Knoten und Fenster-Kanten spezifiziert.
+  Fenster-Knoten und Fenster-Kanten mittels der Maus und
+  Tastatur aufgezählt.\\
+  Die so erzielte Auswahl bezieht sich immer auf die aktuelle
+  Selektion (siehe Selektionsauswahlliste im Fenster).
+    
+  Allgemein gilt: Selektiert werden kann mit der Maus durch Klick
+  mit der linken Maustaste oder Aufziehen eines Rahmens mittels der
+  gedrückten linken Maustaste.
+    
+  Falls während des Selektierens mit der Maus (beide Methoden) die Shift-Taste
+  auf der Tastatur gedrückt gehalten wird, so werden die markierten
+  Knoten und Kanten der bisherigen Selektion hinzugefügt, bzw. entfernt, wenn diese
+  schon hinzugefügt waren.
+  Wird während des Aufziehens eines Rahmens mit der linken Maustaste
+  die Control-Taste auf der Tastatur niedergedrückt gehalten, so
+  werden alle Knoten und Kanten innerhalb des Rahmens hinzugefügt, egal,
+  ob diese schon markiert waren.
     
   \begin{enumerate}
 
@@ -139,7 +153,7 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
    \item Selektieren durch Anklicken mittels Shift + linke Maustaste.\\
    Falls noch nicht selektiert wird der angeklickte Fenster-Knoten oder die
    angeklickte Fenster-Kante zu der aktuellen Selektion hinzugefügt.
-   Falls bereits selektiert wird der Fenster-Knoten oder die Fenster-Kante 
+   Falls bereits selektiert, wird der Fenster-Knoten oder die Fenster-Kante 
    aus der aktuellen Selektion entfernt.
    
    \index{Rahmen}
@@ -164,10 +178,11 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
    die noch nicht selektiert sind, werden der aktuellen Selektion 
    hinzugefügt. Fenster-Knoten und Kanten innerhalb und außerhalb 
    des Rahmens, die bereits selektiert sind, bleiben selektiert.
-   
   
   \end{enumerate}
-  
+
+  Der Nutzer kann z.B. 
+
   \subsection{Standard-Selektion}
   \label{Standard-Selektion}
   \index{Standard-Selektion}
@@ -198,13 +213,11 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
     durch das Selektieren mittels linker Maustaste etc. geändert werden.
       
     \item
-    Der Benutzer kann jederzeit bestimmen, welche der Selektionen eines
-    Anzeigefensters die aktuelle Selektion ist (siehe UseCase 
-    \ref {Selektion zur aktuellen Selektion machen}).
+    Der Benutzer kann jederzeit mittels Kontextmenü bestimmen, welche der
+    Selektionen eines Anzeigefensters die aktuelle Selektion ist.
     
     \item 
-    Die aktuelle Selektion wird immer hervorgehoben (siehe hierzu auch   
-    \ref{Hervorheben von Selektionen und der aktuelle Selektion}). 
+    Die aktuelle Selektion wird immer hervorgehoben. 
   
   \end {enumerate}
   
@@ -223,10 +236,8 @@ in Anzeigefenster}
 
    \subsection {Vorgabe der Zielposition} \index{Zielposition}
      \label{Vorgabe der Zielposition}
-   Für bestimmte UseCases (siehe z.B.\ UseCase 
-   \ref{IML-Teilgraph in Anzeigefenster einfügen})
-   muss der Benutzer manuell Zielpositionen innerhalb eines 
-   zu bestimmenden Anzeigefensters auswählen. An dieser
+   Für bestimmte Funktionen muss der Benutzer manuell Zielpositionen
+   innerhalb eines zu bestimmenden Anzeigefensters auswählen. An dieser
    Zielposition werden dann z.B. neue Fenster-Knoten eingefügt. Ablauf:
    
    \begin {enumerate}
