@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.9 $
-%  $Date: 2003/08/05 13:40:46 $
+%  $RCSfile: config.tex,v $, $Revision: 1.10 $
+%  $Date: 2003/08/05 17:25:11 $
 %  $Author: birdy $
 %
 %  Description:
@@ -309,6 +309,8 @@ Für die Visualisierungsstile gelten die folgenden Konventionen:
 \subsection{Config-Dateien f"ur Visualisierungsstile}
 
 Jeder Visualisierungsstil wird durch eine XML-Datei beschrieben.
+Der Dateiname sollte dem Namen des Visualisierungsstils
+mit der Endung .xml entsprechen.
 Der Aufbau der XML-Dateien ist wie folgt durch die Datei
 giant\_vis\_style\_file.dtd spezifiziert:
 
@@ -563,6 +565,36 @@ in der IML-Hierarchie darunter ausgewählt.
 °  </associated_edge_classes>°
  
 °</giant_class_set_file>°
+
+\subsection{Annotations-Datei}
+
+In der Annotations-Datei von GIANT, welche sich im Projektverzeichnis
+des dazugehörigen Projektes befindet, stehen alle Annotationen von
+Knoten. Der Dateiname ist node\_annotations.xml.\\
+
+In dieser Datei sind alle Annotationen von Knoten anhand der Knoten-ID
+abgelegt. Es ist selbstverständlich auch möglich, diese Datei durch
+andere Programme automatisiert zu erstellen und sie dann vor dem Laden
+des Projektes in GIANT an die richtige Stelle zu kopieren.
+Einträge von nicht existierenden Knoten werden ignoriert.\\
+
+Hier eine Beispieldatei:\\
+
+°<?xml version="1.0" encoding="ISO-8859-1"?>°
+°<!DOCTYPE giant_node_annotations_file °
+°  SYSTEM "giant_node_annotations_file.dtd">°
+
+°<giant_node_annotations_file>°
+
+°<node_annotation node_id    = "1"°
+°                 annotation = "This is a very important node" />°
+                 
+°<node_annotation node_id    = "3"°
+°                 annotation = "This is a node that does not exist" />°
+  
+°</giant_node_annotations_file>°
+
+
 
 \section {Skript-Dateien} 
 \label {Config Anfrage-Dateien}
