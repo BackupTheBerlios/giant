@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.14 $
-%  $Date: 2003/02/27 19:58:07 $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.15 $
+%  $Date: 2003/02/27 22:01:53 $
 %  $Author: birdy $
 %
 %  Description: Use-Cases für die Fensterfunktionalität der GUI
@@ -410,15 +410,16 @@ Siehe auch
   \begin{proc}    
   
     \step[1]
-    Der UseCase führt einen Rechtsklick auf die entsprechende Selektion durch
+    Der User führt einen Rechtsklick auf die entsprechende Selektion durch
     \ref{Selektionsauswahlliste} und wählt im 
-    entsprechenden PopUp Menü den Eintrag \ref{Delete Selection} (Delete Selection) aus.
+    entsprechenden PopUp Menü den Eintrag (Delete Selection) aus.
       
     
     \step[2]
     GIANT zeigt die Sicherheitsabfrage (siehe \ref{Sicherheitsabfrage}) 
     und fragt nach, ob es die Selektion samt ihrer Knoten und Kanten
     wirklich löschen soll.
+    (\gq{Really delete Selection xy from its window including Nodes and Edges?})
     
     \step[3]
     Der Benutzer bestätigt mit YES.
@@ -557,9 +558,12 @@ Siehe hierzu auch \ref{Auseinanderschieben von Fenster-Knoten}.
     Fläche in der VIS\_PANE und Auswahl von Make Room.
     
     \step[2]
+    GIANT zeigt in der Statuszeile im Hauptfenster \gq{Select Position in Display Window
+    for Making of Room}
     Der Benutzer gibt den Punkt um den herum die Fenster-Knoten (und damit
     automatisch auch die Fenster-Kanten) auseinander geschoben werden
     sollen über das Fadenkreuz vor. \ref{Fadenkreuzcursor}
+    Die Statuszeile im Hauptfenster schaltet auf Normalmodus zurück.
      
     \step[3] 
     GIANT zeigt einen Dialog an, in dem der Benutzer auswählt, um welchen 
@@ -601,12 +605,21 @@ Mit diesem UseCase kann ein neuer Pin erzeugt werden.
   
   \begin{proc}    
     \step[1]
-    Der Benutzer führt einen Rechtklick auf den Anziegeinhalt des
-    entsprechenden Anzeigefensters durch und wählt aus dem PopUp
-    Menü \ref{Empty Vis Pane Right click} den Eintrag \gq{New Pin} aus.
-      
+    
+    Zur Durchführung gibt es zwei Möglichkeiten:
+    
+    \begin{enumerate}
+     \item
+      Der Benutzer führt einen Rechtklick auf den Anziegeinhalt des
+      entsprechenden Anzeigefensters durch und wählt aus dem PopUp
+      Menü \ref{Empty Vis Pane Right click} den Eintrag \gq{New Pin} aus.
+     \item   
+      Der Benutzer wählt in der PIN\_LIST (\ref{VIS-PANE-Pins}) nach
+      Rechtsklick auf der Liste im Kontextmenü \gq{New Pin} aus.
+    \end{enumerate}
     \step[2] 
-    GIANT öffnet den allgemeinen Texteingabedialog \ref{DIALOG-WINDOW}.
+    GIANT öffnet den allgemeinen Texteingabedialog \ref{DIALOG-WINDOW},
+    \gq{Please enter name for new pin}
       
     \step[3] 
     Der Benutzer gibt dort einen zulässigen Namen für den neuen Pin
@@ -691,7 +704,7 @@ Löscht einen Pin.
   \begin{proc}    
     \step[1]
     Der Benutzer öffnet das entsprechende PopUp Menü durch Rechtsklick
-    auf den Pin in \ref{VIS-PANE-Pins} und wählt den Eintrag \gq{Pin löschen} aus.
+    auf den Pin in \ref{VIS-PANE-Pins} und wählt den Eintrag \gq{Delete Pin} aus.
 
      
     \step[2]
