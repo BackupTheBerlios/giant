@@ -20,12 +20,13 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.63 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.64 $
 --  $Author: squig $
---  $Date: 2003/09/17 08:22:29 $
+--  $Date: 2003/09/17 10:49:55 $
 --
 
 with Ada.Unchecked_Deallocation;
+with Ada.Text_IO;
 
 with Gdk.Color;
 with Glib;
@@ -1239,12 +1240,17 @@ package body Giant.Graph_Window is
    procedure Update_Zoom_Level
      (Window : access Graph_Window_Record)
    is
+      package Zoom_Level_IO is new Ada.Text_IO.Float_IO(Vis.Zoom_Level);
+
       Zoom_Level : Vis.Zoom_Level
         := Graph_Widgets.Get_Zoom_Level (Window.Graph);
+      Zoom_String : String(1 .. 12);
    begin
+      Zoom_Level_IO.Put
+        (Zoom_String, Zoom_Level * 100.0, Aft => 2, Exp => 0);
+      --Vis.Zoom_Level'Image (Zoom_Level * 100.0)
       Gtk.Gentry.Set_Text (Gtk.Combo.Get_Entry (Window.Zoom_Combo),
-                           Integer'Image
-                           (Integer (Zoom_Level * 100.0)) & "%");
+                           Zoom_String & "%");
    end Update_Zoom_Level;
 
 end Giant.Graph_Window;

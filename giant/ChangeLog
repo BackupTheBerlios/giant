@@ -1,5 +1,7 @@
 2003-09-17  Steffen Pingel  <squig@users.sourceforge.net>
 
+	* src/gui/giant-graph_window.adb: More precise zoom level output. 
+
 	* src/gui/giant-default_dialog.adb: Fixed cancel button response
 	code (Bug #929).
 
