@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.8 $
 --  $Author: koppor $
---  $Date: 2003/07/07 19:56:05 $
+--  $Date: 2003/07/07 23:41:04 $
 --
 ------------------------------------------------------------------------------
 --  Variables are named according to the paper
@@ -33,8 +33,11 @@
 with Giant.Matrix_Layouts;
 
 with Giant.Config;
+with Giant.Logger;
 
 package body Giant.Tree_Layouts is
+
+   package My_Logger is new Logger ("Tree_Layout");
 
    ---------------------------------------------------------------------------
    function Initialize
@@ -166,15 +169,16 @@ package body Giant.Tree_Layouts is
                   FirstWalk_Part_One_Stacks.Push
                     (Layout.FirstWalk_Part_One_Stack, W);
 
-                  Part_Two_Data.V := V;
                   Part_Two_Data.W := W;
-                  if W = V.Rightmost_Child then
+                  if W = V.Leftmost_Child then
                      Part_Two_Data.DefaultAncestor := V.Leftmost_Child;
                   else
                      --  null indicates, that the defaultancestor of
                      --    the last call to Apportion has to be taken
                      Part_Two_Data.DefaultAncestor := null;
                   end if;
+                  FirstWalk_Part_Two_Stacks.Push
+                    (Layout.FirstWalk_Part_Two_Stack, Part_Two_Data);
 
                   W := W.Left_Silbling;
                end loop;
@@ -197,35 +201,163 @@ package body Giant.Tree_Layouts is
       ------------------------------------------------------------------------
       procedure FirstWalk_Part_Two
       is
-         Nodes_Processed    : Natural := 0;
-         Part_Two_Data      : FirstWalk_Part_Two_Data_Record;
 
          ---------------------------------------------------------------------
-         --  Adjust DefaultAncestor of next item of the stack
-         procedure Adjust_DefaultAncestor is
-            Part_Two_Next_Data : FirstWalk_Part_Two_Data_Record;
+         procedure Part_After_Apportion (V : in Node_Layout_Data)
+         is
+
+            procedure ExecuteShifts (V : in Node_Layout_Data)
+            is
+               Shift  : Vis.Logic_Float;
+               Change : Vis.Logic_Float;
+               W      : Node_Layout_Data;
+            begin
+               Shift  := 0.0;
+               Change := 0.0;
+               W := V.Rightmost_Child;
+               while W /= null loop
+                  W.Prelim := W.Prelim + Shift;
+                  W.Modf   := W.Modf   + Shift;
+                  Change   := Change   + W.Change;
+                  Shift    := Shift    + W.Shift + Change;
+
+                  W := W.Left_Silbling;
+               end loop;
+            end ExecuteShifts;
+
+            MidPoint : Vis.Logic_Float;
+            W        : Node_Layout_Data;
+
          begin
-            FirstWalk_Part_Two_Stacks.Pop
-              (Layout.FirstWalk_Part_Two_Stack, Part_Two_Next_Data);
-
-            if Part_Two_Next_Data.DefaultAncestor = null then
-               Part_Two_Next_Data.DefaultAncestor :=
-                 Part_Two_Data.DefaultAncestor;
+            ExecuteShifts (V);
+            MidPoint :=
+              (V.Leftmost_Child.Prelim + V.Rightmost_Child.Prelim) / 2.0;
+            W := V.Left_Silbling;
+            if W /= null then
+               V.Prelim := W.Prelim + Layout.Distance;
+               V.Modf   := V.Prelim - MidPoint;
+            else
+               V.Prelim := MidPoint;
             end if;
-
-            FirstWalk_Part_Two_Stacks.Push
-              (Layout.FirstWalk_Part_Two_Stack, Part_Two_Next_Data);
-         end Adjust_DefaultAncestor;
+         end Part_After_Apportion;
 
          ---------------------------------------------------------------------
          procedure Apportion
-           (V               : in Node_Layout_Data;
+           (V               : in     Node_Layout_Data;
             DefaultAncestor : in out Node_Layout_Data)
          is
+
+            ------------------------------------------------------------------
+            function NextLeft (V : in Node_Layout_Data)
+                              return Node_Layout_Data
+            is
+            begin
+               if V.Leftmost_Child /= null then
+                  return V.Leftmost_Child;
+               else
+                  return V.Thread;
+               end if;
+            end NextLeft;
+
+            ------------------------------------------------------------------
+            function NextRight (V : in Node_Layout_Data)
+                              return Node_Layout_Data
+            is
+            begin
+               if V.Rightmost_Child /= null then
+                  return V.Rightmost_Child;
+               else
+                  return V.Thread;
+               end if;
+            end NextRight;
+
+            ------------------------------------------------------------------
+            procedure MoveSubtree
+              (WM    : in Node_Layout_Data;
+               WP    : in Node_Layout_Data;
+               Shift : in Vis.Logic_Float)
+            is
+               Subtrees : Vis.Logic_Float;
+            begin
+               Subtrees  := Vis.Logic_Float
+                 (WP.Silbling_Number - WM.Silbling_Number);
+               WP.Change := WP.Change - Shift/Subtrees;
+               WP.Shift  := WP.Shift  + Shift;
+               WM.Change := WM.Change + Shift/Subtrees;
+               WP.Prelim := WP.Prelim + Shift;
+               WP.Modf   := WP.Modf   + Shift;
+            end MoveSubtree;
+
+            ------------------------------------------------------------------
+            function Ancestor
+              (VIM             : in Node_Layout_Data;
+               V               : in Node_Layout_Data;
+               DefaultAncestor : in Node_Layout_Data)
+              return Node_Layout_Data
+            is
+            begin
+               if Are_Silblings (VIM.Ancestor, V) then
+                  return VIM.Ancestor;
+               else
+                  return DefaultAncestor;
+               end if;
+            end Ancestor;
+
+            VIP, VOP, VIM, VOM : Node_Layout_Data;
+            SIP, SOP, SIM, SOM : Vis.Logic_Float;
+
+            Shift              : Vis.Logic_Float;
+
+            W                  : Node_Layout_Data;
          begin
-            --  TBD
-            null;
+            W := V.Left_Silbling;
+            if W /= null then
+               VIP := V;
+               VOP := V;
+               VIM := W;
+               VOM := VIP.Leftmost_Silbling;
+               SIP := VIP.Modf;
+               SOP := VOP.Modf;
+               SIM := VIM.Modf;
+               SOM := VOM.Modf;
+               while (NextRight (VIM) /= null) and
+                 (NextLeft (VOP) /= null) loop
+                  VIM := NextRight (VIM);
+                  VIP := NextLeft (VIP);
+                  VOM := NextLeft (VOM);
+                  VOP := NextRight (VOP);
+                  VOP.Ancestor := V;
+                  Shift := (VIM.Prelim + SIM) - (VIP.Prelim + SIP)
+                    + Layout.Distance;
+                  if Shift > 0.0 then
+                     MoveSubtree
+                       (Ancestor (VIM, V, DefaultAncestor),
+                        V,
+                        Shift);
+                     SIP := SIP + Shift;
+                     SOP := SOP + Shift;
+                  end if;
+                  SIM := SIM + VIM.Modf;
+                  SIP := SIP + VIP.Modf;
+                  SOM := SOM + VOM.Modf;
+                  SOP := SOP + VOP.Modf;
+               end loop;
+
+               if (NextRight (VIM) /= null) and (NextRight (VOP) = null) then
+                  VOP.Thread := NextRight (VIM);
+                  VOP.Modf   := VOP.Modf + SIM - SOP;
+               end if;
+
+               if (NextLeft (VIP) /= null) and (NextLeft (VOM) = null) then
+                  VOM.Thread := NextLeft (VIP);
+                  VOM.Modf   := VOM.Modf + SIP - SOM;
+                  DefaultAncestor := V;
+               end if;
+            end if;
          end Apportion;
+
+         Nodes_Processed    : Natural := 0;
+         Part_Two_Data      : FirstWalk_Part_Two_Data_Record;
 
       begin
 
@@ -238,8 +370,25 @@ package body Giant.Tree_Layouts is
             Apportion (Part_Two_Data.W,
                        Part_Two_Data.DefaultAncestor);
 
-            Adjust_DefaultAncestor;
-            --  Adjust DefaultAncestor of next node if necessary
+            --  Adjust DefaultAncestor of next item of the stack
+            --  And adjust values of parent if necessary
+            declare
+               Part_Two_Next_Data : FirstWalk_Part_Two_Data_Record;
+            begin
+               FirstWalk_Part_Two_Stacks.Pop
+                 (Layout.FirstWalk_Part_Two_Stack, Part_Two_Next_Data);
+
+               if Part_Two_Next_Data.DefaultAncestor = null then
+                  Part_Two_Next_Data.DefaultAncestor :=
+                    Part_Two_Data.DefaultAncestor;
+               else
+                  --  next element are children of another parent
+                  Part_After_Apportion (Part_Two_Data.W.Parent);
+               end if;
+
+               FirstWalk_Part_Two_Stacks.Push
+                 (Layout.FirstWalk_Part_Two_Stack, Part_Two_Next_Data);
+            end;
 
             Nodes_Processed := Nodes_Processed + 1;
          end loop;
@@ -248,40 +397,69 @@ package body Giant.Tree_Layouts is
 
          if FirstWalk_Part_Two_Stacks.Is_Empty
            (Layout.FirstWalk_Part_Two_Stack) then
-            Layout.State := FirstWalk_Run_Part_Three;
+            Layout.State := SecondWalk_Start;
             Next_Action  := Evolutions.Run;
          else
             Next_Action  := Evolutions.Run;
          end if;
       end FirstWalk_Part_Two;
 
-      -----------------------------------------------------------------------
-      procedure FirstWalk_Part_Three
+      procedure SecondWalk
       is
+         Nodes_Processed       : Natural := 0;
 
-         Nodes_Processed : Natural := 0;
-         V               : Node_Layout_Data;
+         SecondWalk_Data       : SecondWalk_Data_Record;
+         New_SecondWalk_Data   : SecondWalk_Data_Record;
+
+         W                     : Node_Layout_Data;
+
+         New_Relative_Position : Vis.Logic.Vector_2d;
 
       begin
          while (Nodes_Processed <= Max_Nodes_In_One_Run) and
-           not FirstWalk_Part_Three_Stacks.Is_Empty
-           (Layout.FirstWalk_Part_Three_Stack) loop
-            FirstWalk_Part_Three_Stacks.Pop
-              (Layout.FirstWalk_Part_Three_Stack, V);
+           not SecondWalk_Stacks.Is_Empty (Layout.SecondWalk_Stack) loop
+            SecondWalk_Stacks.Pop
+              (Layout.SecondWalk_Stack, SecondWalk_Data);
+
+            New_Relative_Position := Vis.Logic.Combine_Vector
+              (X => SecondWalk_Data.V.Prelim + SecondWalk_Data.M,
+               Y => Level_Mappings.Fetch
+               (Layout.Level_Heights,
+                SecondWalk_Data.V.Level));
+
+            Graph_Widgets.Set_Top_Middle
+              (Layout.Widget,
+               SecondWalk_Data.V.Node,
+               Vis.Logic."+" (New_Relative_Position,
+                              Layout.Target_Position),
+               Layout.Widget_Lock);
+
+            W := SecondWalk_Data.V.Leftmost_Child;
+            while W /= null loop
+               New_SecondWalk_Data.V := W;
+               New_SecondWalk_Data.M :=
+                 SecondWalk_Data.M + SecondWalk_Data.V.Modf;
+               SecondWalk_Stacks.Push
+                 (Layout.SecondWalk_Stack,
+                  New_SecondWalk_Data);
+
+               W := W.Right_Silbling;
+            end loop;
 
             Nodes_Processed := Nodes_Processed + 1;
          end loop;
 
          Evolutions.Advance_Progress (Layout, Nodes_Processed);
 
-         if FirstWalk_Part_Three_Stacks.Is_Empty
-           (Layout.FirstWalk_Part_Three_Stack) then
-            Layout.State := SecondWalk_Start;
+         if SecondWalk_Stacks.Is_Empty
+           (Layout.SecondWalk_Stack) then
+            Layout.State := Matrix;
             Next_Action  := Evolutions.Run;
          else
             Next_Action  := Evolutions.Run;
          end if;
-      end FirstWalk_Part_Three;
+
+      end SecondWalk;
 
    begin
       case Layout.State is
@@ -312,7 +490,13 @@ package body Giant.Tree_Layouts is
                   Next_Action  := Evolutions.Synchronize;
             end case;
 
-         when Init_Run =>
+         when Init_Run_Part_One =>
+            My_Logger.Error ("unreachable code executed: Init_Run_Part_One");
+            Layout.State := Init_Run_Part_Two;
+            Next_Action  := Evolutions.Synchronize;
+
+         when Init_Run_Part_Two =>
+            My_Logger.Error ("unreachable code executed: Init_Run_Part_Two");
             Layout.State := FirstWalk_Start;
             Next_Action  := Evolutions.Run;
 
@@ -328,9 +512,6 @@ package body Giant.Tree_Layouts is
 
          when FirstWalk_Run_Part_Two =>
             FirstWalk_Part_Two;
-
-         when FirstWalk_Run_Part_Three =>
-            FirstWalk_Part_Three;
 
          when SecondWalk_Start =>
             declare
@@ -348,8 +529,7 @@ package body Giant.Tree_Layouts is
             Next_Action  := Evolutions.Run;
 
          when SecondWalk_Run =>
-            Layout.State := Matrix;
-            Next_Action  := Evolutions.Run;
+            SecondWalk;
 
          when Matrix =>
             Start_Matrix_Layout;
@@ -373,7 +553,8 @@ package body Giant.Tree_Layouts is
       function Generate_Node_Layout_Data
         (Node              : in Graph_Lib.Node_Id;
          Level             : in Positive;
-         Leftmost_Silbling : in Node_Layout_Data := null)
+         Leftmost_Silbling : in Node_Layout_Data := null;
+         Parent            : in Node_Layout_Data := null)
         return Node_Layout_Data
       is
          Data : Node_Layout_Data;
@@ -396,12 +577,40 @@ package body Giant.Tree_Layouts is
             Data.Leftmost_Silbling := Leftmost_Silbling;
          end if;
 
+         Data.Parent         := Parent;
+
          Data.Leftmost_Child := null;
 
          --  all others will be initialized later
 
          return Data;
       end Generate_Node_Layout_Data;
+
+      ------------------------------------------------------------------
+      --  add/adjustcurrent_node_height in mapping having always the
+      --    highest hight of the level
+      procedure Adjust_Level_Height
+        (Node  : in Graph_Lib.Node_Id;
+         Level : in Positive) is
+
+         Cur_Height    : Vis.Logic_Float;
+         Stored_Height : Vis.Logic_Float;
+
+      begin
+         Cur_Height := Graph_Widgets.Get_Current_Node_Height
+           (Layout.Widget, Node);
+
+         if Level_Mappings.Is_Bound (Layout.Level_Heights, Level) then
+            Stored_Height := Level_Mappings.Fetch
+              (Layout.Level_Heights, Level);
+            if Stored_Height < Cur_Height then
+               Level_Mappings.Unbind (Layout.Level_Heights, Level);
+               Level_Mappings.Bind   (Layout.Level_Heights, Level, Cur_Height);
+            end if;
+         else
+            Level_Mappings.Bind (Layout.Level_Heights, Level, Cur_Height);
+         end if;
+      end Adjust_Level_Height;
 
       ------------------------------------------------------------------------
       --  Inits the Init_Calculation, so that a break in the initialization
@@ -423,11 +632,11 @@ package body Giant.Tree_Layouts is
            Node_Layout_Data_Lists.MakeList (Layout.Tree_Root);
          Layout.Queue_Last := Layout.Queue;
 
-         --  FirstWalk-Stacks
+         Layout.Level_Heights := Level_Mappings.Create;
+         Adjust_Level_Height (Layout.Root_Node, 1);
+
          Layout.FirstWalk_Part_One_Stack   := FirstWalk_Part_One_Stacks.Create;
          Layout.FirstWalk_Part_Two_Stack   := FirstWalk_Part_Two_Stacks.Create;
-         Layout.FirstWalk_Part_Three_Stack :=
-           FirstWalk_Part_Three_Stacks.Create;
 
          Layout.SecondWalk_Stack := SecondWalk_Stacks.Create;
 
@@ -435,13 +644,13 @@ package body Giant.Tree_Layouts is
            Graph_Widgets.Get_Current_Maximum_Node_Width (Layout.Widget) * 1.1;
 
          --  next step is the "normal" initialize of the treelayout
-         Layout.State := Init_Run;
+         Layout.State := Init_Run_Part_One;
          Next_Action  := Evolutions.Synchronize;
       end Init_Calculation_Start;
 
       ------------------------------------------------------------------------
       --  Converts Nodes_To_Layout to Layout_Tree
-      procedure Init_Calculation_Run
+      procedure Init_Calculation_Part_One
       is
 
          ---------------------------------------------------------------------
@@ -514,11 +723,15 @@ package body Giant.Tree_Layouts is
 
                         Silbling_Count := Silbling_Count + 1;
 
-                        --  TBD: add/adjustcurrent_node_height to tree
-                        --    of heights
+                        Adjust_Level_Height
+                          (Node, Parent_Data.Level + 1);
 
                         Data := Generate_Node_Layout_Data
-                          (Node, Parent_Data.Level, Leftmost_Silbling);
+                          (Node              => Node,
+                           Level             => Parent_Data.Level + 1,
+                           Leftmost_Silbling => Leftmost_Silbling,
+                           Parent            => Parent_Data);
+
                         Data.Silbling_Number := Silbling_Count;
 
                         if Silbling_Count = 1 then
@@ -591,19 +804,49 @@ package body Giant.Tree_Layouts is
             --    (i.e. in Layout.Queue are only leaves)
             --  or there are no more Node_Layout_Datas to process
             --  --> proceed to next step
-            Layout.State := FirstWalk_Start;
-            Next_Action  := Evolutions.Run;
+            Layout.State := Init_Run_Part_Two;
+            Next_Action  := Evolutions.Synchronize;
          else
             Next_Action := Evolutions.Synchronize;
          end if;
-      end Init_Calculation_Run;
+      end Init_Calculation_Part_One;
+
+      ----------------------------------------------------------------------
+      --  Adjust level heights, so that for each level the height from 0.0
+      --  is stored
+      procedure Init_Calculation_Part_Two
+      is
+         Level       : Positive;
+         Cur_Height  : Vis.Logic_Float;
+         Last_Height : Vis.Logic_Float := 0.0;
+      begin
+         Level := 1;
+
+         --  could be implemented more effienctly using the height of the tree
+         --  (i.e. for Level in 1..Layout.Tree_Height loop)
+         --  But Layout.Tree_Height is not available and would be needed only
+         --  for this
+         while Level_Mappings.Is_Bound (Layout.Level_Heights, Level) loop
+            Cur_Height := Level_Mappings.Fetch  (Layout.Level_Heights, Level);
+            Level_Mappings.Unbind (Layout.Level_Heights, Level);
+            Cur_Height  := Cur_Height + Last_Height;
+            Last_Height := Cur_Height;
+            Level_Mappings.Bind (Layout.Level_Heights, Level, Cur_Height);
+
+            Level := Level +1;
+         end loop;
+
+         Evolutions.Advance_Progress (Layout, Level - 1);
+      end Init_Calculation_Part_Two;
 
    begin
       case Layout.State is
          when Init_Start =>
             Init_Calculation_Start;
-         when Init_Run =>
-            Init_Calculation_Run;
+         when Init_Run_Part_One =>
+            Init_Calculation_Part_One;
+         when Init_Run_Part_Two =>
+            Init_Calculation_Part_Two;
          when others =>
             Next_Action  := Evolutions.Run;
       end case;
@@ -618,6 +861,13 @@ package body Giant.Tree_Layouts is
    begin
       return (First.Leftmost_Silbling = Second.Leftmost_Silbling);
    end Are_Silblings;
+
+   ---------------------------------------------------------------------------
+   function Id (P : in Positive) return Positive
+   is
+   begin
+      return P;
+   end Id;
 
 end Giant.Tree_Layouts;
 
