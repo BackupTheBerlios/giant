@@ -30,6 +30,9 @@ matrix_layouts :
 layout_factory :
 	make -C ../ MAIN=test/layout_factory_test EXEC=test/layout_factory_test all
 
+gsl:
+	make -C ../ MAIN=test/gsl_test EXEC=test/gsl_test
+
 all:
 	make -C ../ all
 
