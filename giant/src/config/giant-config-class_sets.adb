@@ -20,26 +20,28 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.13 $
+-- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.14 $
 -- $Author: koppor $
--- $Date: 2003/10/01 22:59:09 $
+-- $Date: 2003/10/01 23:13:24 $
 --
-with Giant.File_Management;             -- from GIANT
-with Giant.XML_File_Access;             -- from GIANT
-with Giant.Edge_Class_Proc;             -- from GIANT
-with Giant.IML_Class_Inheritance_Proc;  -- from GIANT
 
-with Unbounded_String_Hash; -- from Bauhaus IML "Reuse.src"
-
-with Tree_Readers;       -- from xmlada
-
-with DOM.Core;           -- from xmlada
-with DOM.Core.Documents; -- from xmlada
-with DOM.Core.Nodes;     -- from xmlada
-with DOM.Core.Elements;  -- from xmlada
-
+--  from GIANT
+with Giant.File_Management;
+with Giant.XML_File_Access;
+with Giant.Edge_Class_Proc;
+with Giant.IML_Class_Inheritance_Proc;
 with Giant.Logger;
 pragma Elaborate_All (Giant.Logger);
+
+-- from Bauhaus IML "Reuse.src"
+with Unbounded_String_Hash;
+
+-- from xmlada
+with DOM.Core;
+with DOM.Core.Documents;
+with DOM.Core.Nodes;
+with DOM.Core.Elements;
+with Tree_Readers;
 
 package body Giant.Config.Class_Sets is
 
