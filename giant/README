@@ -20,3 +20,26 @@ COMPILE
 Extract the archives located in the src/ directory and adopt the
 Makefile in the giant directory to suite your local installation. Use
 make to compile giant.
+
+QUICKSTART
+
+1. mkdir test-project
+2. ./giant
+
+You see the GIANT-Mainwindow
+
+3. Select Project / New
+
+"Enter New Project File" is opened
+
+4. Change dir to test-project
+5. type in "test" in Selection
+6. Press OK
+
+"Select IML File" appears
+
+7. Choose your favourite IML-File (IML-Version 20030825)
+
+8. Select Scripts / Open Entire Graph
+
+9. Have fun.
