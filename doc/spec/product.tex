@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: product.tex,v $, $Revision: 1.7 $
-%  $Date: 2003/02/17 15:50:58 $
+%  $RCSfile: product.tex,v $, $Revision: 1.8 $
+%  $Date: 2003/02/17 17:32:29 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung des Produktes. Übersicht über die Funktionen
@@ -90,14 +90,14 @@ ausgeführt, dies ist aber nicht zwingend nötig.
 % DIREKT VOR USECASES UND NACH GUI
 \section{Fehlerverhalten}
 
+Fehlermeldungen werden grundsätzlich über den STANDARD-FEHLERDIOLOG
+ausgegeben. Ist dies nicht möglich, wird eine entsprechende Fehlermeldung
+über Kommandozeile ausgegeben.
 GIANT soll sich bezüglich der Fehlerbehandlung konsistent verhalten.
 Das im folgenden beschriebene Fehlervarhalten gilt daher pauschal für
 das gesamte System, Abweichungen von diesem Verhalten werden
 gegebenenfalls an der entsprechenden Stelle (z.B.\ bei dem jeweiligen
 UseCase) explizit spezifiziert.\\
-Fehlermeldungen werden grundsätzlich über den STANDARD-FEHLERDIOLOG
-ausgegeben. Ist dies nicht möglich, wird eine entsprechende Fehlermeldung
-über Kommandozeile ausgegeben.
 
   \subsection {Ungültige oder unvollständige Eingaben bei Dialogen}
   Eingaben in Dialoge etc. werden immer dann geprüft, wenn der Benutzer
@@ -120,34 +120,30 @@ ausgegeben. Ist dies nicht möglich, wird eine entsprechende Fehlermeldung
   \subsection {Fehler beim Einlesen von Dateien}
   Aufgrund der Vielzahl der hierbei möglichen Fehlern (technische Defekte etc.)
   kann das Verhalten grundsätlich nicht spezifiziert werden.
-  Generell ist folgendes Verhalten angestrebt:
+  Generell gilt:
   
   \begin{enumerate}
     \item Können zum Betrieb von GIANT nötige Dateien nicht an der 
           dafür vorgesehenen Position gefunden werden, so wird das 
           System mit einer entsprechenden Fehlermeldung beendet.
 
+    \item Das Verhalten bei anderen möglichen Fehlern ( 
+          fehlende Zugriffsrechte, defekte Sektoren etc.) ist 
+          undefiniert.
   \end{enumerate} 
-
-  Ein anderes Verhalten (z.B. die Eingabemöglichkeit für einen alternativen
-  Pfad) wird gegebenenfalls an entsprechender Stelle explizit spezifiziert.
-
 
 
   \subsection {Einlesen unzulässiger Daten über Dateien}
 
   \begin {enumerate}
     \item
-    Falls nicht für die entsprechenden Dateien explizit spezifiziert, 
-    verfügt GIANT über keine Mechanismen, die speziell darauf
+    GIANT verfügt über keine Mechanismen, die speziell darauf
     ausgelegt sind, die Korrektheit von Daten, die aus Dateien gelesen werden,
     zu prüfen.
     \item
-
-
-    bricht wird das
-    System mit einer entsprechenden Fehlermeldung ab
-
+    Stellt das System fest, dass eine einzulesende Datei ungültige 
+    Daten enthält, so wird das System mit einer entsprechenden Fehlermeldung
+    abgeborchen.
   \end {enumerate}
 
 

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: project.tex,v $, $Revision: 1.11 $
-%  $Date: 2003/02/13 15:28:13 $
+%  $RCSfile: project.tex,v $, $Revision: 1.12 $
+%  $Date: 2003/02/17 17:32:29 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -12,36 +12,74 @@
 \section {Persistenz über Projekte}
 
 GIANT speichert persistente Informationen in so genannten Projekten.
-Ein Projekt besteht aus einem Verweis auf eine IML-Graph-Datei, auf die sich
-die gespeicherten Informationen beziehen, sowie aus gespeicherten Informationen für
-IML-Teilgraphen und Anzeigefenster.\\
-Jedes Projekt hat einen vom Benutzer definierbaren Namen, dieser Name entspricht dem Namen der 
-Projektdatei und wird innerhalb des IML-Browsers angezeigt.
-Der Name eines bereits angelegten Projektes kann nicht geändert werden (außer dadurch, dass
-man das Projekt neu speichert und das alte löscht). 
-Der Benutzer kann beliebig viele Projekte erzeugen.\\
-Während der Arbeit mit GIANT kann jederzeit ein Projekt geladen werden, wobei immer nur ein
-Projekt gleichzeitig geöffnet sein darf. Voraussetzung hierfür ist allerdings, dass dies 
-von der Reflektion zum IML-Graphen unterstützt wird.
+\begin {enumerate}
+
+  \item
+  Ein Projekt besteht aus einem Verweis auf eine IML-Graph-Datei, auf die sich
+  die gespeicherten Informationen beziehen, sowie aus gespeicherten 
+  Informationen für IML-Teilgraphen und Anzeigefenster.
+ 
+  \item
+  Jedes Projekt hat einen vom Benutzer definierbaren Namen, dieser Name 
+  entspricht dem Namen der Projektdatei und wird innerhalb des IML-Browsers 
+  angezeigt.
+
+  \item
+  Der Name eines bereits angelegten Projektes kann mit den Mitteln von 
+  GIANT nicht geändert werden (außer dadurch, dass  man das Projekt unter 
+  neuem Namen neu speichert). 
+
+  \item
+  Der Benutzer kann beliebig viele Projekte erzeugen.
+
+  \item
+  Während der Arbeit mit GIANT kann jederzeit ein Projekt geladen werden, 
+  wobei immer nur ein Projekt gleichzeitig geöffnet sein darf. 
+  Voraussetzung hierfür ist allerdings, dass dies 
+  in der Reflektion zum IML-Graphen unterstützt wird.
+
+\end {enumerate}
+
 
   \subsection {Das Projektverzeichnis}
-  In dem Projektverzeichnis liegt die Projektdatei, der Name des Projektverzeichnisses ist beliebig.
-  Im Projektverzeichnis befinden sich ein Unterverzeichnis für die Verwaltungsdateien für Anzeigefenster  
-  und ein Unterverzeichnis für die Verwaltungsdateien für IML-Teilgraphen. 
-  \\In jedem Projektverzeichnis darf nur ein Projekt gespeichert werden.
+  \begin {enumerate}
+
+    \item  
+    Sämtliche Dateien, die die Informationen für ein Projekt halten
+    befinden sich per Default in diesem Verzeichnis. 
+
+    \item
+    In einem Projektverzeichnis können mehrere Projekte abgelegt werden.
+
+  \end {enumerate}    
+
 
   \subsection {Die Projektdatei}
-  Die Projektdatei befindet sich im Projektverzeichnis und enthält Informationen, 
-  die zur Identifikation des zu einem Projekt gehörenden IML-Graphen nötig sind. 
-  Der Name der Projektdatei entspricht dem Namen des Projektes.
+  \begin {enumerate}
 
-  \subsection {Der zugehörige IML-Graph}
-  Der Pfad zu der Datei, die den IML-Graphen enthält, ist in der Projektdatei gespeichert. 
-  Alternativ dazu kann der Benutzer den Pfad zur IML-Graph Datei auch selbst eingeben.
+    \item
+    Die Projektdatei befindet sich im Projektverzeichnis und enthält 
+    Informationen, die zur Identifikation des zu einem Projekt gehörenden 
+    IML-Graphen nötig sind. 
+  
+    \item
+    Der Name der Projektdatei entspricht dem Namen des Projektes.
+
+    \item
+    Die Projektdatei enthält Referenzen zu allen Dateien, die Bestandteil
+    des Projektes sind (Verwaltungsdateien für IML-Teilgraphen und
+    Anzeigefenster).
+
+    \item
+    Der Pfad zu der Datei, die den IML-Graphen enthält, ist in der Projektdatei 
+    gespeichert. 
+  \end {enumerate}
+  
  
   \subsection {Prüfung der IML-Graph Datei}
-  Die Reflektion muss für jede IML-Graph Datei eine möglichst eindeutige Prüfsumme berechnen können.
-  Beim Laden eines Projektes wird überprüft, ob die in der Projektdatei gespeicherte Prüfsumme
+  Die Reflektion muss für jede IML-Graph Datei eine möglichst eindeutige 
+  Prüfsumme berechnen können. Beim Laden eines Projektes wird überprüft, 
+  ob die in der Projektdatei gespeicherte Prüfsumme
   der Prüfsumme der zu ladenden IML-Graph Datei entspricht. 
   Das Verhalten von GIANT für den Fall, dass eine IML-Graph Datei geladen wird, 
   die zwar die passende Prüfsumme hat, aber nicht den IML-Graphen enthält, 
@@ -49,72 +87,109 @@ von der Reflektion zum IML-Graphen unterstützt wird.
 
   \subsection {Verwaltungsdateien für Anzeigefenster}
   Für jedes gespeicherte Anzeigefenster gibt es eine Verwaltungsdatei. 
-  Diese Verwaltungsdatei enthält alle Informationen zur kompletten Rekonstruktion 
-  eines Anzeigefensters. Gespeichert werden insbesondere:
+  Diese Verwaltungsdatei enthält alle Informationen zur kompletten 
+  Rekonstruktion eines Anzeigefensters. Gespeichert werden insbesondere:
  
-  \begin {itemize}
+  \begin {enumerate}
  
-    \item Der komplette Anzeigeinahlt (alle visualisierten Knoten und Kanten mit Position).
+    \item Der komplette Anzeigeinhalt 
+          (alle visualisierten Knoten und Kanten mit Position).
     \item Alle Pins (gespeicherte sichtbare Anzeigeinhalte).
     \item Alle dem Anzeigefenster bekannten Selektion.
  
-  \end {itemize}
+  \end {enumerate}
  
-  Die VISUALISIERUNGSSTIELE (für jedes Anzeigefenster kann ein VISUALISIERUNGSSTIEL ausgewählt werden)
-  werden aber nicht gespeichert, da sie von der Konfiguartionsdatei vorgegeben werden.
+  Der gewählte Visualisierungsstiel wird aber nicht gespeichert, 
+  da die Viualisierungsstiele völlig unabhängig von den Projekten über
+  Konfigurationsdateien realisiert werden.
+
+
 
   \subsection {Verwaltungsdateien für IML-Teilgraphen}
-  Sämtliche erzeugten IML-Teilgraphen werden ebenfalls in Verwaltungsdateien gespeichert. 
-  Für jeden IML-Teilgraphen gibt es eine eigene Verwaltungsdatei deren Namen dem des 
-  IML-Teilgraphen entspricht.
+  Sämtliche erzeugten IML-Teilgraphen werden in Verwaltungsdateien gespeichert. 
+  Für jeden IML-Teilgraphen gibt es eine eigene Verwaltungsdatei 
+  deren Namen dem des IML-Teilgraphen entspricht.
  
  
 %===================
 \section {Grundlegendes Verhalten von GIANT beim Speichern von Projekten} 
   
 
-  \subsection{Funktion \gq{Alles Speichern}}
-  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>EVENTUELL USE CASE Alles Speichern<<<<\\
-  Beim Beenden von GIANT wird gefragt, ob alles gespeichert werden soll oder nicht.
-  Falls ja werden alle Anzeigefenster und IML-Teilgraphen in die Verwaltungsdateien
-  geschrieben, falls nein bleibt der Zustand nach dem letzten Speichern erhalten.
-  \gq{alles Speichern} kann auch während dem Betrieb von GIANT durch den Benutzer veranlasst werden.
+  \subsection{\gq{Alles Speichern}}
+  Diese Funktionalität wird durch entsprechende UseCases dem Benutzer zur
+  Verfügung gestellt. Hierbei werden alle Anzeigefenster und IML-Teilgraphen 
+  in die Verwaltungsdateien geschrieben, wobei alle Änderungen an
+  noch offenen Anzeigefenstern berücksichtigt werden.
 
   %===
   \subsection {Persistenz von Anzeigefenstern}
-  Hinsichtlich der Persitenz von Anzeigenfenstern sind folgende Fälle zu unterscheiden:
+  \begin {enumerate}
 
-    \subsubsection {Persistente Anzeigefenster}
-    Alle im Projekt bereits vorhandenen Anzeigefenster (alle Anzeigefenster zu denen es eine entsprechende
-    Verwaltungsdatei gibt) werden auf der GUI in der Liste über die Anzeigefenster angezeigt, 
-    egal ob sie geöffnet oder nicht. Sie können aus dann dieser Liste ausgewählt und geöffnet werden.\\
-    Wird ein solches Anzeigefenster geschlossen, so fragt GIANT nach, ob es eventuelle Änderungen speichern soll
-    oder nicht. Falls ja, werden eventuelle Änderungen in die für das Anzeigefenster bereits 
-    vorhandene Verwaltungsdatei geschrieben, anderenfalls bleibt der Zustand des Anzeigefensters nach der letzten
-    Speicherung vorhanden (die zugehörige Verwaltungsdatei wird nicht verändert).
+    \item
+    Sämtliche dem Projekt bekannten Anzeigefenster (alle Anzeigefenster zu 
+    denen es eine entsprechende Verwaltungsdatei gibt) werden auf der GUI in 
+    der Liste über die Anzeigefenster angezeigt, egal ob sie geöffnet oder 
+    nicht. 
 
-    Ein persistentes Anzeigefenster kann gelöscht werden, hierbei werden alle Information über das Anzeigefenster einschließlich
+    \item 
+    Zu jedem Anzeigefenster eines Projektes gibt es eine Verwaltungsdatei,
+    beim Öffnen eines neuen Fensters wird diese Datei automatisch mit
+    erzeugt.
+
+    \item
+    Wird ein geöffnetes Anzeigefenster geschlossen, 
+    so fragt GIANT nach, ob es eventuelle Änderungen speichern soll
+    oder nicht. Falls ja, werden eventuelle Änderungen in die für das 
+    Anzeigefenster vorhandene Verwaltungsdatei geschrieben, 
+    anderenfalls bleibt der Zustand des Anzeigefensters nach der letzten
+    Speicherung vorhanden (die zugehörige Verwaltungsdatei wird nicht 
+    verändert).
+
+    \item
+    Modifikationen (z.B. das Verschieben von Knoten) 
+    auf einem Anzeigefenster werden nicht automatisch
+    nach deren Durchführung gespeichert (so kann notfalls ein
+    Undo durchgeführt werden).
+
+    \item
+    Ein zu einem Projekt gehörendes Anzeigefenster kann gelöscht werden, 
+    hierbei werden alle Information über das Anzeigefenster einschließlich
     der Verwaltungsdatei vernichtet.
-    \\ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>EVENTUELL USE CASE - Löschen persistenter Anzeigefenster<<<<
-
-    \subsubsection{Nicht persistente Anzeigefenster}
-    Nicht persistente Anzeigefenster (typischerweise vom Benutzer neu erzeugte Anzeigefenster) werden in der
-    entsprechenden Liste nur solange sie geöffnet sind auch angezeigt. Beim Schließen eines solchen Anzeigefensters fragt
-    GIANT nach, ob er das Anzeigefenster speichern soll oder nicht. Durch das Speichern wird dieses Fenster dann
-    zu einem persistenten Anzeigefenster und erhält eine eigene Verwaltungsdatei. Wird nicht gespeichert, so gehen
-    alle zugehörigen Informationen verloren.
+    >>>>>>>>>>>>>>>>USE CASE - Löschen persistenter Anzeigefenster
+  \end {enumerate}
 
   %===
   \subsection {Persistenz von IML-Teilgraphen}
-  Alle in einem Projekt bereits vorhandenen IML-Teilgraphen werden auf der GUI angezeigt (in einer entsprechenden Liste).
-  IML-Teilgraphen können über die Funktion \gq{Alles Speichern} (siehe oben) gespeichert werden.
-  Wird das Programm beendet, ohne das zuvor die Funktion \gq{Alles Speichern} ausgeführt wird, so gehen 
-  alle nicht gespeicherten Informationen zu den IML-Teilgraphen verloren. Der Zustand des Projektes 
-  nach dem letzten Speichern bleibt dann erhalten.
-  Beim Ausführen der Funktion \gq{Alles Speichern} werden sämtliche Änderungen für die IML-Teilgraphen 
-  in die Verwaltungsdateien geschrieben. Verwaltungsdateien für IML-Teilgraphen, die zwischendurch gelöscht
-  wurden, werden ebenfalls gelöscht. Für neu angelegte IML-Teilgraphen werden dann Verwaltungsdateien erzeugt.
-  Selektiv kann auch ein einzelner IML-Teilgraph gespeichert werden, hierbei wird dann die bereits bestehende
-  Verwaltungsdatei aktualisiert oder neu erzeugt, falls es für diesen IML-Teilgraphen noch keine Verwaltungsdatei
-  gibt.
+  \begin {enumerate}
 
+    \item
+    Alle in einem Projekt bereits vorhandenen IML-Teilgraphen werden auf der 
+    GUI angezeigt (in einer entsprechenden Liste).
+  
+    \item
+    Neu erzeugte IML-Teilgraphen und Änderungen an bestehenden 
+    IML-Teilgraphen können über \gq{alles Speichern} (siehe oben) 
+    gespeichert werden.
+       
+    \item
+    Wird das Programm beendet, ohne das zuvor \gq{Alles Speichern} ausgeführt 
+    worden ist, so gehen  alle nicht gespeicherten Informationen zu den 
+    IML-Teilgraphen verloren (alle zwischenzeitlich ausgeführten Modifikationen 
+    und alle zwischenzeitlich neu erzeugten IML-Teilgraphen). 
+    Der Zustand des Projektes  nach dem letzten Speichern bleibt dann erhalten.
+
+    \item
+    Modifikationen an bestehenden IML-Teilgraphen werden nicht automatisch 
+    gespeichert, zu neu erzeugten IML-Teilgraphen wird nicht automatisch
+    eine Verwaltungsdatei erzeugt.
+    \\
+    NÖTIG; DA SONST ANFRAGEN EVENTUELL AUSGEBREMST.
+    IM GEGENSATZ ZU ANZEIGEFENSTERN KANN MAN IML-TEILGRAPHEN NICHT ÖFFNEN
+    IM GEGENSATZ ZU ANZEIGEFENSTERN (fliegen beim Schließen aus dem
+    speicher raus) WERDEN ALL IML-TEILGRAPHEN puaschal im
+    SPEICHER GEHALTEN.
+
+    \item
+    IML-Teilgraphen können gelöscht werden. Falls vorhanden wird dann auch
+    die entsprechende Verwaltungsdatei ebenfalls sofort gelöscht.
+  \end {enumerate}

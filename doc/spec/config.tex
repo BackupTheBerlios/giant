@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.5 $
-%  $Date: 2003/02/17 15:50:58 $
+%  $RCSfile: config.tex,v $, $Revision: 1.6 $
+%  $Date: 2003/02/17 17:32:29 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -27,47 +27,55 @@ die anschließend beschriebenen Einstellungen vorgenommen.
   \subsection {Farbe von Hervorhebungen}
   Einstellung der Farben mittels derer Selektionen oder IML-Teilgraphen 
   hervorgehoben werden.
-  \begin {itemize}
+  \begin {enumerate}
     \item Eine beliebige Farbe für die aktuelle Selektion.
     \item Drei beliebige (sinnvoll wären verschiedene) Farben für das
           Hervorheben weiterer Selektionen.
-    \item Vier beliebige (sinnvoll wären verschiedene) farben für das 
+    \item Vier beliebige (sinnvoll wären verschiedene) Farben für das 
           Hervorheben von IML-Teilgraphen.
-  \end {itemize}
+  \end {enumerate}
 
 
 \section {Visualisierungsstiele}
-Für jeden Visualisierungsstiel muss es eine entsprechende XML-Datei geben. 
-Ein Visualisierungsstiel beschreibt wie die Knoten und Kanten des 
-IML-Graphen innerhalb eines Anzeigefensters grafisch dargestellt 
-werden können.\\
-In einem Visualisierungsstiel können klassenspezifische Einstellungen 
-vorgenommen werden,
-die nur für Knoten und Kanten gelten, die zu den entsprechenden Klassen gehören.
-Bei jeder klassenspezifischen Einstellung für Knoten und Kanten kann daher 
-eine Liste der betroffenen
-Knoten- und Kantenklassen angegeben werden, für die diese Einstellungen 
-gelten sollen.\\
-Wird eine Kanten- oder eine Knotenklasse innerhalb eines Visualisierungsstieles 
-mehreren 
-klassenspezifischen Einstellungen zugeordnet, führt dies zu keinem Fehler, 
-es bleibt aber
-unspezifiziert, welche Einstellung tatsächlich genommen wird.
+\begin {enumerate}
+
+  \item
+  Für jeden Visualisierungsstiel muss es eine entsprechende XML-Datei geben. 
+
+  \item
+  Ein Visualisierungsstiel beschreibt wie die Knoten und Kanten des 
+  IML-Graphen innerhalb eines Anzeigefensters grafisch dargestellt 
+  werden können.
+
+  \item
+  In einem Visualisierungsstiel können klassenspezifische Einstellungen 
+  vorgenommen werden, die nur für Knoten und Kanten gelten, 
+  die zu den entsprechenden Klassen gehören.
+  Bei jeder klassenspezifischen Einstellung für Knoten und Kanten kann daher 
+  eine Liste der betroffenen Knoten- und Kantenklassen angegeben werden, 
+  für die diese Einstellungen gelten sollen.
+
+  \item
+  Wird eine Kanten- oder eine Knotenklasse innerhalb eines
+  Visualisierungsstieles mehreren klassenspezifischen Einstellungen zugeordnet, 
+  führt dies zu keinem Fehler, es bleibt aber unspezifiziert, 
+  welche Einstellung tatsächlich genommen wird.
+
+  \item
+  Es gibt immer einen Default-Visualisierungsstiel (von GIANT fest
+  vorgegeben).
+
+\end {enumerate}
+
 
   \subsection {Name des Visualisierungsstiels}
   Jeder Visualisierungsstiel erhält einen Namen. Unter diesem Namen ist der 
   Visualisierungsstiel in der GUI (bei den Anzeigefenstern) auswählbar.
-  Der Name muss nicht eindeutig sein oder dem Namen der Datei, 
-  in der der Visualisierungssteil gespeichert ist, entsprechen.
-
+ 
   \subsection {Einstellungen innerhalb des Visualisierungsstiels}
-    \begin{itemize}
+    \begin{enumerate}
       \item Die Hintergrundfarbe im Anzeigefenster.
-      \item Die Position der Kantenbeschriftung. 
-        \subitem Immer im sichtbaren Anzeigeinhalt.
-        \subitem Pauschal in der Mitte der Kante. 
-        \subitem Am Startknoten.
-        \subitem Am Zielknoten.
+
       \item Wann Kanten im sichtbaren Anzeigeinhalt angezeigt werden sollen.
       >>>>>>>>>>>>>>>>>>>>>>>      ACHTUNG - ES KANN AUCH SCHLEIFEN GEBEN
         \subitem Nur falls Start- und Zielknoten ebenfalls im sichtbaren 
@@ -77,14 +85,14 @@ unspezifiziert, welche Einstellung tatsächlich genommen wird.
         \subitem Auch anzeigen falls nur Zielknoten im sichtbaren Anzeigeinhalt.
         \subitem Auch anzeigen falls weder Start- und Zielknoten im sichtbaren 
                  Anzeigeinhalt. 
-    \end{itemize}
+    \end{enumerate}
 
 
   \subsection {Klassenspezifische Einstellungen für Knoten}
-  Folgende  Einstellungen können für Knotenklassen vorgenommen werden.
-  Des weiteren muss eine DEFAULT-Einstellung erstellt werden, die für alle
+  Folgende  Einstellungen können für Knotenklassen vorgenommen werden. 
+  Es muss eine DEFAULT-Einstellung erstellt werden, die für alle
   Knotenklassen angewendet wird, für die nichts anderes definiert ist.
-  \begin{itemize}  
+  \begin{enumerate}  
     \item Ein Icon für die Knotenklasse (Verweis auf eine entsprechende 
           Bilddatei). Das Icon muss im Pixmap Format bei 32*32 Pixel
           vorliegen.
@@ -97,19 +105,19 @@ unspezifiziert, welche Einstellung tatsächlich genommen wird.
     \item Die Farbe des Rahmens für das \gq{Viereck} in welchem die 
           Attribute zu dem Knoten dargestellt werden.
 
-  \end{itemize}
+  \end{enumerate}
 
   
   \subsection {Klassenspezifische Einstellungen für Kanten}
-  Folgende Einstellungen können für Kantenklassen vorgenommen werden. 
-  Des weiteren muss eine DEFAULT-Einstellung erstellt werden, die für alle
+  Folgende Einstellungen können für Kantenklassen vorgenommen werden. \\
+  Es muss eine DEFAULT-Einstellung erstellt werden, die für alle
   Kantenklassen angewendet wird, für die nichts anderes definiert ist.
-  \begin{itemize}
+  \begin{enumerate}
     \item Die Farbe der Kante.
     \item Die Art der Linie der Kante (normal, gestrichelt).
     \item Ob die Kante mit ihrer Kantenklasse beschriftet werden soll oder 
           nicht.
-  \end{itemize}
+  \end{enumerate}
 
 
 
