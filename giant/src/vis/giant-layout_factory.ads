@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.ads,v $, $Revision: 1.5 $
+--  $RCSfile: giant-layout_factory.ads,v $, $Revision: 1.6 $
 --  $Author: koppor $
---  $Date: 2003/07/03 01:12:17 $
+--  $Date: 2003/07/04 15:14:13 $
 --
 ------------------------------------------------------------------------------
 --
@@ -35,6 +35,7 @@ with Giant.Evolutions;
 with Giant.Graph_Widgets;
 with Giant.Graph_Lib;
 with Giant.Graph_Lib.Selections;
+with Giant.Vis;
 
 package Giant.Layout_Factory is
 
@@ -71,6 +72,10 @@ package Giant.Layout_Factory is
    --      The selection is locked by the caller (i.e. the lock is set and
    --        the factory has not to care about setting the lock)
    --
+   --   Target_Position:
+   --      Position of a certain node, meaning is depending on the
+   --        layout-algorithm
+   --
    --    Additonal_Parameters:
    --       String containing special parameters
    --       for the given layout algorithm. The layout
@@ -90,28 +95,28 @@ package Giant.Layout_Factory is
    --  Currently implemented algorithms with their additional parameters:
    --
    --  "matrix":
-   --    Format:  <Target_Position>
-   --    Example: "(2,2)"
+   --     no additional parameters needed
    --
-   --    Meaning:
-   --      <Target_Position>  upper left corner of matrix
+   --     Target_Position: Position of the upper left corner
    --
    --  "tree":
-   --     Format:  <Root_Node_ID>; <Target_Position>; <List_Of_Class_Set_Names>
-   --     Example: "5; (2,5); ("Aber", "Hallo")"
+   --     Format:  <Root_Node_ID>; <List_Of_Class_Set_Names>
+   --     Example: "5; ("Aber", "Hallo")"
    --              It is not possible to use " or ; in a classsetname!
    --
    --     Meaning:
-   --      Root_Node_Id       : The root-node of the tree to layout
-   --      Class_Set_Names    : Names of ClassSet containing node-classes
+   --       Root_Node_Id    : The root-node of the tree to layout
+   --       Class_Set_Names : Names of ClassSet containing node-classes
    --                           and edge-classes to layout
-   --      Target_Position    : Position on window, where the root-node has to
-   --                           be placed
+   --
+   --       Target_Position : Position on window, where the root-node has to
+   --                            be placed
    procedure Create
      (Algorithm             : in     String;
       Selection_To_Layout   : in     Graph_Lib.Selections.Selection;
       Widget                : in     Graph_Widgets.Graph_Widget;
       Widget_Lock           : in     Graph_Widgets.Lock_Type;
+      Target_Position       : in     Giant.Vis.Logic.Vector_2d;
       Additional_Parameters : in     String;
       Layout_Evolution      :    out Evolutions.Evolution_Class_Access);
 

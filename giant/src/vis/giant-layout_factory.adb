@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.4 $
 --  $Author: koppor $
---  $Date: 2003/07/03 01:13:08 $
+--  $Date: 2003/07/04 15:14:30 $
 --
 
 with Ada.Exceptions;
@@ -31,7 +31,6 @@ with Ada.Strings.Unbounded;
 
 with Giant.Matrix_Layouts;
 with Giant.Tree_Layouts;
-with Giant.Vis;
 with Giant.String_Split;
 
 with String_Lists;
@@ -44,6 +43,7 @@ package body Giant.Layout_Factory is
       Selection_To_Layout   : in     Graph_Lib.Selections.Selection;
       Widget                : in     Graph_Widgets.Graph_Widget;
       Widget_Lock           : in     Graph_Widgets.Lock_Type;
+      Target_Position       : in     Giant.Vis.Logic.Vector_2d;
       Additional_Parameters : in     String;
       Layout_Evolution      :    out Evolutions.Evolution_Class_Access)
    is
@@ -104,19 +104,15 @@ package body Giant.Layout_Factory is
       end Get_Vector_2d;
 
       -------------------------------------------------------------------------
+      --  Parameters:
+      --    Data: aren't parsed, since matrix doesn't get
+      --          any additional parameters
+      --          It is got here to ensure consistency with the calling of
+      --          the other layouts
       procedure Parse_Matrix_Parameters
         (Data : in String)
       is
-         Target_Position : Giant.Vis.Logic.Vector_2d;
       begin
-         begin
-            Target_Position := Get_Vector_2d (Additional_Parameters);
-         exception
-           when Invalid_Format =>
-              Ada.Exceptions.Raise_Exception
-                (Invalid_Format'Identity,"Wrong format at Target_Position");
-         end;
-
          Layout_Evolution := Giant.Evolutions.Evolution_Class_Access
            (Matrix_Layouts.Initialize
             (Widget,
@@ -133,7 +129,6 @@ package body Giant.Layout_Factory is
         (Data : in String)
       is
          Root_Node       : Giant.Graph_Lib.Node_Id;
-         Target_Position : Giant.Vis.Logic.Vector_2d;
          --  Class_Set_
 
          Parameters        : String_Lists.List;
@@ -145,7 +140,7 @@ package body Giant.Layout_Factory is
          Parameters := String_Split.Split_String (Data, ";");
 
          --  Check amount of parameters
-         if String_Lists.Length (Parameters) /= 3 then
+         if String_Lists.Length (Parameters) /= 2 then
             --  /= 3 is possible, since the list of classes
             --       is comma-separated and the parameter-list ";"-separated
             Layout_Evolution := null;
@@ -167,17 +162,7 @@ package body Giant.Layout_Factory is
                                                "Invalid root node");
          end;
 
-         --  Get Target_Position
-         String_Lists.Next (Iter, Current_Parameter);
-         begin
-            Target_Position := Get_Vector_2d
-              (Ada.Strings.Unbounded.To_String (Current_Parameter));
-         exception
-            when Invalid_Format =>
-               Ada.Exceptions.Raise_Exception
-                 (Invalid_Format'Identity,
-                  "Wrong format at Target_Position");
-         end;
+         --  Class_sets
 
          Layout_Evolution := Giant.Evolutions.Evolution_Class_Access
            (Tree_Layouts.Initialize
@@ -188,15 +173,16 @@ package body Giant.Layout_Factory is
              Root_Node));
       end Parse_Tree_Parameters;
 
+      Trimmed_Parameters : String :=
+        Ada.Strings.Fixed.Trim (Additional_Parameters, Ada.Strings.Both);
+
    begin
       --  case for algorithms
       --  the called functions also set the out-parameters
       if Algorithm = "matrix" then
-         Parse_Matrix_Parameters
-           (Ada.Strings.Fixed.Trim (Additional_Parameters, Ada.Strings.Both));
+         Parse_Matrix_Parameters (Trimmed_Parameters);
       elsif Algorithm = "tree" then
-         Parse_Tree_Parameters
-           (Ada.Strings.Fixed.Trim (Additional_Parameters, Ada.Strings.Both));
+         Parse_Tree_Parameters (Trimmed_Parameters);
       else
          Layout_Evolution := null;
          raise Unknown_Algorithm;
