@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.28 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.29 $
 --  $Author: schwiemn $
---  $Date: 2003/06/22 16:22:47 $
+--  $Date: 2003/06/24 18:23:30 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -573,6 +573,10 @@ package body Giant.Projects is
       Ada.Text_IO.Set_Output (Ada.Text_IO.Standard_Output);
       Ada.Text_IO.Close (Project_File);
    end Write_Project_XML_File;
+      
+   ----------------------------------------------------------------------------
+   procedure Free_Project_Access is new Ada.Unchecked_Deallocation
+     (Project_Element, Project_Access);
 
 
    ---------------------------------------------------------------------------
@@ -836,12 +840,23 @@ package body Giant.Projects is
         (DOM.Core.Elements.Get_Attribute
          (Data_XML_Node, "iml_graph_file_path"));
 
-
       New_Project_Access.Bauhaus_IML_Graph_File_Checksum :=
         Integer'Value (
                        (DOM.Core.Elements.Get_Attribute
                         (Data_XML_Node, "iml_graph_checksum")));
+                                         
+      New_Project_Access.All_Subgraphs := Subgraph_Data_Hashs.Create;
+                                    
+      --  check whether correct iml graph is loaded
+      ---------------------------------------------
+      if not Is_Correct_IML_Graph_Loaded
+        (New_Project_Access.Bauhaus_IML_Graph_File_Checksum) then
 
+         --  now deep deallocation necessary
+         Free_Project_Access (New_Project_Access);
+         raise Wrong_IML_Graph_Loaded_Exception;
+      end if;                  
+                                                
       -- calculate path relative to project directory if necessary
       New_Project_Access.Node_Annotations_File :=
         Ada.Strings.Unbounded.To_Unbounded_String
@@ -855,7 +870,6 @@ package body Giant.Projects is
 
       -- Load all subgraphs into main memory
       --------------------------------------
-      New_Project_Access.All_Subgraphs := Subgraph_Data_Hashs.Create;
 
       XML_Nodes_List :=
         DOM.Core.Documents.Get_Elements_By_Tag_Name
@@ -900,7 +914,6 @@ package body Giant.Projects is
       -- in order to check consistency each vis window will be loaded
       -- into the main memory (only one window at once) and closed afterwards.
       ---------------------------------------------------------------------
-      New_Project_Access.All_Vis_Windows := Known_Vis_Windows_Hashs.Create;
 
       XML_Nodes_List :=
         DOM.Core.Documents.Get_Elements_By_Tag_Name
@@ -968,17 +981,6 @@ package body Giant.Projects is
       --  deallocate storrage
       -----------------------
       Tree_Readers.Free(Project_Tree_Reader);
-
-
-      --  check whether correct iml graph is loaded
-      ---------------------------------------------
-      if not Is_Correct_IML_Graph_Loaded
-        (New_Project_Access.Bauhaus_IML_Graph_File_Checksum ) then
-
-         --  deallocate whole project if check failes
-         Deallocate_Project_Deep (New_Project_Access);
-         raise Wrong_IML_Graph_Loaded_Exception;
-      end if;
 
       return New_Project_Access;
    end Load_Project;
@@ -1099,10 +1101,6 @@ package body Giant.Projects is
          Bauhaus_IML_Graph_File          => Bauhaus_IML_Graph_File,
          Bauhaus_IML_Graph_File_Checksum => Bauhaus_IML_Graph_File_Checksum);
    end Create_Empty_Project_For_File;
-
-   ----------------------------------------------------------------------------
-   procedure Free_Project_Access is new Ada.Unchecked_Deallocation
-     (Project_Element, Project_Access);
 
    ----------------------------------------------------------------------------
    procedure Deallocate_Project_Deep (Project : in out Project_Access) is

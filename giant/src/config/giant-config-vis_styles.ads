@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.ads,v $, $Revision: 1.3 $
+-- $RCSfile: giant-config-vis_styles.ads,v $, $Revision: 1.4 $
 -- $Author: schwiemn $
--- $Date: 2003/06/11 12:00:17 $
+-- $Date: 2003/06/24 18:23:30 $
 --
 -- ----------------
 -- This package provides the functionality needed to manage
@@ -46,11 +46,11 @@
 --
 -- 2. You may now query for the abstract data objects describing the
 -- visualisation styles using the functionality of part
--- "A - Mangement of Visualisation Styles".
+-- "B - Mangement of Visualisation Styles".
 --
 -- 3. Before a variable of type Visualisation_Style may be used as
--- a parameter for the functions specified in part C.1, C.2 and C.3, the
--- variable has to be initialized by calling
+-- a parameter for the functions specified in part C.0, C.1, C.2 and C.3, 
+-- the variable has to be initialized by calling
 -- -> function Initialize_Vis_Style_By_Name
 --
 -- 4. After that, the information needed to draw window nodes and window
@@ -61,44 +61,6 @@
 -- styles has to be deallocated by calling
 -- the procedure Clear_Config_Vis_Styles
 --
--- Note
---
--- 1. Color_Access:
---
--- Its is guaranteed that every Instance of "Color Access" returned by the
--- subprograms of this package point to the same color string if
--- it represents the same color.
---
--- That means for two Instances C1 and C2 of Config.Color_Access
---
--- If Config.Get_Color_Value (C1) = Config.Get_Color_Value (C2)
--- then C1 = C2
--- If Config.Get_Color_Value (C1) /= Config.Get_Color_Value (C2)
--- then C1 /= C2
---
--- Therefore, it is guaranteed that the Hash Values are equal
--- If Get_Color_Value (C1) = Get_Color_Valze (C2)
--- then Hash_Color_Access (C1) = Hash_Color_Access (C2)
--- ("Hash_Color_Access" see package Config).
---
--- 2. Gtkada.Types.Chars_Ptr_Array:
---
--- The Pointer "Chars_Ptr_Array_Access" to Chars_Ptr_Arrays
--- returned from the function "Get_Icon_For_Node_Class" represents an icon.
---
--- If (even for different visualisation styles) two NodeClasses
--- A and B use the same icon then the two Chars_Ptr_Arrays
--- are equal and the two Pointers are Equal, that means:
--- PA := Get_Node_Icon(Style_X, Node_Class_A)
--- PB := Get_Node_Icon(Style_Y, Node_Class_B)
---
--- PA = PB if and only if PA.all = PB.all
---
--- So it is guaranteed that the same icon file is only loaded
--- once into the main memory.
---
---with Ada.Strings.Unbounded;
-
 with String_Lists;    -- from Bauhaus IML "Reuse.src"
 with Hashed_Mappings; -- from Bauhaus IML "Reuse.src"
 pragma Elaborate_All (Hashed_Mappings);
@@ -175,8 +137,8 @@ package Giant.Config.Vis_Styles is
    --
    -- ----
    -- Important: The name of a visualisation style is defined by the name of
-   -- its IML file (e.g. name: "my_vis" -> file: "my_vis.xml)
-   -- The name of a visualisation style ("vis-style") is unique,
+   -- its file (e.g. name: "my_vis" -> file: "my_vis.xml)
+   -- The name of a visualisation style is unique,
    -- each vis-style is identified by its name.
    --
    -- To guarantee the uniqueness of the name, the following rules are defined:
@@ -199,8 +161,17 @@ package Giant.Config.Vis_Styles is
    -- a default-vis-style.
    -- It does not matter if there are no vis-styles in "GIANT_Vis_Directory"
    -- and "User_Vis_Directory".
-   -- ----------
+   -- ----
+   -- 
+   -- This subrogram will try to expand relative paths inside a vis style
+   -- (e.g. the node class icons) this expansion is done the following 
+   -- way:
    --
+   --   1. Expand using the directory there the xml file for the
+   --      visualisation style is located. If no file is found:
+   --   2. Expand using "Root_Path" as root. If no file is found then:
+   --   3. Try to ignore that setting.
+   --  
    -- Note
    --   All xml files in the directories passed by the parameters
    --   "GIANT_Vis_Directory" and "User_Vis_Directory" are regarded
@@ -214,6 +185,9 @@ package Giant.Config.Vis_Styles is
    -- Parameters:
    --   You should only pass ABSOLUTE PATHS for the following parameters.
    --
+   --   Resources_Root_Dir - The path to a directory towards that realtive 
+   --     paths should be expanded if expansion towards the directory there 
+   --     the read xml file is stored fails.
    --   GIANT_Vis_Directory - A path to a directory there the visualisation
    --     styles for all users of an installation of GIANT are found.
    --     GIANT_Vis_Directory may be an empty string, then this parameter
@@ -232,8 +206,9 @@ package Giant.Config.Vis_Styles is
    --   Illegal_Default_Vis_Style_Exception - raised if the xml file for
    --     the default visualisation style does not correspond to the
    --     requirements for a xml file describing visualisation styles.
-   procedure Initialize_Config_Vis_Styles
-     (GIANT_Vis_Directory    : in String;
+   procedure Initialize_Config_Vis_Styles   
+     (Resources_Root_Dir     : in String;
+      GIANT_Vis_Directory    : in String;
       User_Vis_Directory     : in String;
       Default_Vis_Style_File : in String);
 
@@ -353,6 +328,46 @@ package Giant.Config.Vis_Styles is
 
 
    ---------------------------------------------------------------------------
+   -- C.0
+   -- Encoded Colors
+   --
+   -- All functions returneing color values for e.g. the line color
+   -- of an edge return integer id's
+   -- by using this id as index for an Color_Access_Array_Access
+   -- you may retrieve an pointer to the string describing the color.
+   ---------------------------------------------------------------------------
+   
+   ---------------------------------------------------------------------------
+   -- holds all colors
+   type Color_Access_Array is array (integer range <>) 
+     of Color_Access;
+   
+   type Color_Access_Array_Access is access Color_Access_Array;
+   
+   ---------------------------------------------------------------------------
+   -- Returns an pointer to an array that holds all Colors used for
+   -- the visualisation styles.
+   -- Using the encoding integer id as index you may use this array for
+   -- retrieving the real color e.g. used to draw the line of an edge.
+   --
+   -- The array holds pointers to string (in GIANT we use RGB Strings
+   -- to describe colores) but this is not checked at this point, 
+   -- therefore the array may hold strings that do not describe colors
+   -- according to your color moddel.
+   --
+   -- You may not deallocate the result.  
+   --
+   -- Returns:
+   --   A Pointer to an array holding all colors.
+   --   May return a pointer
+   --   to an array with Length=0 if no icons files have been found.
+   -- Raises:
+   --   Config_Vis_Styles_Not_Initialized_Exception - raised if this
+   --     subprogram is called before "Initialize_Config_Vis_Styles"
+   function Get_All_Colors return Color_Access_Array_Access;
+
+
+   ---------------------------------------------------------------------------
    -- C.1
    -- Global visualisation data
    -- Access to visualisation data for the hole visualisation window
@@ -362,14 +377,10 @@ package Giant.Config.Vis_Styles is
    -- Returns the background color for a visualisation window specified
    -- by the visualisation style.
    --
-   -- Note
-   --  The returned parameter is a pointer into the internal data structure.
-   --  After the deallocation of this ADO, you will have a dangling pointer.
-   --
    -- Parameters:
    --   Vis_Style - A visualisation style.
    -- Returns:
-   --   A pointer to a String that describes a color.
+   --   An encoding id integer for the color.
    -- Raises
    --   Config_Vis_Styles_Not_Initialized_Exception - raised if this
    --     subprogram is called before "Initialize_Config_Vis_Styles"
@@ -377,7 +388,7 @@ package Giant.Config.Vis_Styles is
    --     if the passed parameter was not initialized.
    function Get_Vis_Window_Background_Color
      (Vis_Style : in Visualisation_Style_Access)
-     return Color_Access;
+     return Integer;
 
 
    ---------------------------------------------------------------------------
@@ -386,35 +397,56 @@ package Giant.Config.Vis_Styles is
    -- Access to visualisation data for node classes which is
    -- defined by a Visualisation Style
    ---------------------------------------------------------------------------
+            
+   ---------------------------------------------------------------------------
+   -- holds absolute paths for all icon files
+   type Node_Icons_Array is array (integer range <>) 
+     of Ada.Strings.Unbounded.Unbounded_String;
+   
+   type Node_Icons_Array_Access is access Node_Icons_Array;
+      
+   ---------------------------------------------------------------------------
+   -- Returns an pointer to an array that holds all absolute paths to
+   -- files that describe icons (xpm). We only garantee that this file
+   -- exists but not that it is a valid xpm file.
+   --
+   -- Using the encoding integer returned for a Node_Class 
+   -- as index you may retrieve the incon file for that node class.
+   --
+   -- You may not deallocate the result.  
+   --
+   -- Returns:
+   --   An Array holding absolute paths to files. 
+   --   May return a pointer
+   --   to an array with Length=0 if no icons files have been found.
+   -- Raises:
+   --   Config_Vis_Styles_Not_Initialized_Exception - raised if this
+   --     subprogram is called before "Initialize_Config_Vis_Styles"
+   function Get_All_Node_Icons return Node_Icons_Array_Access;
 
    ---------------------------------------------------------------------------
-   -- Returns the icon of the node class.
-   -- For the sake of performance, a pointer has to be returned and no
-   -- value parameter.
+   -- Returns the encoding id of the icon used for this node class.
    --
-   -- Note
-   --  The returned parameter is a pointer into the internal data structure.
-   --  After the deallocation of this ADO, you will have a dangling pointer.
-   --
-   --  Under no circumstances you are allowed to DEALLOCATE the returned
-   --  pointer. Deallocation will destroy the internal data model
-   --  of this ADO.
+   -- Note you may retrieve the icon file itself with:
+   --   "Get_All_Node_Icons (Get_Node_Icon (My_Vis_Style, A_Node_Class))"
+   --   i.e. means the encoding id returned by this function is the index
+   --   of the unbounded string holding the absolute path to an icon file
+   --   in the corresponding instance of "Node_Icons_Array_Access"
    --
    -- Parameters:
    --   Vis_Style - A visulisation style.
    --   Node_Class - An ID of an existing node class of the iml graph.
    -- Returns:
-   --   A Pointer to a character pointer array that holds the data
-   --   describing an image.
+   --   An Integer Value that represents an Icon.
    -- Raises:
    --   Config_Vis_Styles_Not_Initialized_Exception - raised if this
    --     subprogram is called before "Initialize_Config_Vis_Styles"
    --   Visualisation_Style_Access_Not_Initialized_Exception - raised
    --     if the passed parameter "Vis_Style" was not initialized.
-   function Get_Node_Icon
+   function Get_Node_Icon_Encoding
      (Vis_Style  : in Visualisation_Style_Access;
       Node_Class : in Graph_Lib.Node_Class_Id)
-     return Chars_Ptr_Array_Access;
+     return Integer;
 
    ---------------------------------------------------------------------------
    -- Returns a special filter that is used to determine
@@ -446,15 +478,11 @@ package Giant.Config.Vis_Styles is
    ---------------------------------------------------------------------------
    -- Returns the border color of the node rectangle.
    --
-   -- Note
-   --  The returned parameter is a pointer into the internal data structure.
-   --  After the deallocation of this ADO, you will have a dangling pointer.
-   --
    -- Parameters:
    --   Vis_Style - A visualisation style.
    --   Node_Class - An ID of an existing node class of the iml graph.
    -- Returns:
-   --   A pointer to a String that describes a color.
+   --   An encoding id integer for the color.
    -- Raises
    --   Config_Vis_Styles_Not_Initialized_Exception - raised if this
    --     subprogram is called before "Initialize_Config_Vis_Styles"
@@ -463,20 +491,16 @@ package Giant.Config.Vis_Styles is
    function Get_Border_Color
      (Vis_Style  : in Visualisation_Style_Access;
       Node_Class : in Graph_Lib.Node_Class_Id)
-     return Color_Access;
+     return Integer;
 
    ---------------------------------------------------------------------------
    -- Returns the fill color for the node rectangle of a window node.
-   --
-   -- Note
-   --  The returned parameter is a pointer into the internal data structure.
-   --  After the deallocation of this ADO, you will have a dangling pointer.
    --
    -- Parameters:
    --   Vis_Style - A visualisation style.
    --   Node_Class - An ID of an existing node class of the iml graph.
    -- Returns:
-   --   A pointer to a String that describes a color.
+   --   An encoding id integer for the color.
    -- Raises
    --   Config_Vis_Styles_Not_Initialized_Exception - raised if this
    --     subprogram is called before "Initialize_Config_Vis_Styles"
@@ -485,22 +509,18 @@ package Giant.Config.Vis_Styles is
    function Get_Fill_Color
      (Vis_Style  : in Visualisation_Style_Access;
       Node_Class : in Graph_Lib.Node_Class_Id)
-     return Color_Access;
+     return Integer;
 
    ---------------------------------------------------------------------------
    -- Returns the color used to display node attributes
    -- and the values of this attributes inside the
    -- node rectangle of a window node.
    --
-   -- Note
-   --  The returned parameter is a pointer into the internal data structure.
-   --  After the deallocation of this ADO, you will have a dangling pointer.
-   --
    -- Parameters:
    --   Vis_Style - A visualisation style.
    --   Node_Class - An ID of an existing node class of the iml graph.
    -- Returns:
-   --   A pointer to a String that describes a color.
+   --   An encoding id integer for the color.
    -- Raises
    --   Config_Vis_Styles_Not_Initialized_Exception - raised if this
    --     subprogram is called before "Initialize_Config_Vis_Styles"
@@ -509,7 +529,7 @@ package Giant.Config.Vis_Styles is
    function Get_Text_Color
      (Vis_Style  : in Visualisation_Style_Access;
       Node_Class : in Graph_Lib.Node_Class_Id)
-     return Color_Access;
+     return Integer;
 
 
    ---------------------------------------------------------------------------
@@ -524,15 +544,11 @@ package Giant.Config.Vis_Styles is
    -- visualisation style. This color is used to draw the line of a window
    -- edge.
    --
-   -- Note
-   --  The returned parameter is a pointer into the internal data structure.
-   --  After the deallocation of this ADO you will have a dangling pointer.
-   --
    -- Parameters:
    --   Vis_Style - A visualisation style.
    --   Edge_Class - An ID of an existing edge class of the iml graph.
    -- Returns:
-   --   A pointer to a String that describes a color.
+   --   An encoding id integer for the color.
    -- Raises
    --   Config_Vis_Styles_Not_Initialized_Exception - raised if this
    --     subprogram is called before "Initialize_Config_Vis_Styles"
@@ -541,21 +557,17 @@ package Giant.Config.Vis_Styles is
    function Get_Line_Color
      (Vis_Style  : in Visualisation_Style_Access;
       Edge_Class : in Graph_Lib.Edge_Class_Id)
-     return Color_Access;
+     return Integer;
 
    ---------------------------------------------------------------------------
    -- Returns the color used to display the name of the edge class
    -- in the visualisation window.
    --
-   -- Note
-   --  The returned parameter is a pointer into the internal data structure.
-   --  After the deallocation of this ADO, you will have a dangling pointer.
-   --
    -- Parameters:
    --   Vis_Style - A visualisation style.
    --   Edge_Class - An ID of an existing edge class of the iml graph.
    -- Returns:
-   --   A pointer to a String that describes a color.
+   --   An encoding id integer for the color.
    -- Raises
    --   Config_Vis_Styles_Not_Initialized_Exception - raised if this
    --     subprogram is called before "Initialize_Config_Vis_Styles"
@@ -564,7 +576,7 @@ package Giant.Config.Vis_Styles is
    function Get_Text_Color
      (Vis_Style  : in Visualisation_Style_Access;
       Edge_Class : in Graph_Lib.Edge_Class_Id)
-     return Color_Access;
+     return Integer;
 
    ---------------------------------------------------------------------------
    -- Returns the line style for an edge class.
@@ -611,14 +623,14 @@ private
    type Global_Vis_Data_Rec is record
 
       -- Background Color of the Visualisation WIndow
-      Visualisation_Window_Background_Color : Color_Access;
+      Visualisation_Window_Background_Color_Encoding : Integer;
    end record;
 
    -- settings for a node class in the space of a visualisation style
    type Node_Class_Vis_Data is record
 
-      -- the Icon of a Node Class
-      Icon             : Chars_Ptr_Array_Access;
+      -- the Ecncoded Icon of a Node Class
+      Icon_Encoding         : Integer := 0; -- (zero means not initialized)
 
       -- represents the attributes of a node class that are
       -- directly visible on the visualisation window content
@@ -626,31 +638,31 @@ private
 
       -- the border color of the node rectangle (the rectangle
       -- representing a window node)
-      Border_Color     : Color_Access;
+      Border_Color_Encoding : Integer := 0;
 
       -- the fill color of the node rectangle
-      Fill_Color       : Color_Access;
+      Fill_Color_Encoding   : Integer := 0;
 
       -- the text color for the data displayed inside the node rectangle
       -- (the attributes and their values).
-      Text_Color       : Color_Access;
+      Text_Color_Encoding   : Integer := 0;
    end record;
 
    -- settings for a edge class in the space of a visualisation style
    type Edge_Class_Vis_Data is record
 
       -- The color of the edge line
-      Line_Color : Color_Access;
+      Line_Color_Encoding : Integer := 0;
 
       -- The color of the text for the edge class
-      Text_Color : Color_Access;
+      Text_Color_Encoding : Integer := 0;
 
       -- The line style
-      Line_Style : Edge_Line_Style;
+      Line_Style          : Edge_Line_Style;
 
       -- determines whether the name of the edge class should be visible
       -- on the visible window content
-      Label      : Boolean;
+      Label               : Boolean;
    end record;
 
    package Node_Class_Id_Hashed_Mappings is new Hashed_Mappings
