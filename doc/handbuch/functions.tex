@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: functions.tex,v $, $Revision: 1.5 $
-%  $Date: 2003/07/03 12:41:00 $
+%  $RCSfile: functions.tex,v $, $Revision: 1.6 $
+%  $Date: 2003/07/03 16:52:36 $
 %  $Author: birdy $
 %
 %  Description: 
@@ -436,36 +436,76 @@ Subgraph List (4 Spalten).
        jetzt der des Mittelpunktes eines die verschobene Selektion umspannenden
        Rechtecks.}
      \end{itemize}
-      \item Show Selection % war: Fade In Selection      
-
-      \item Show all % Neu gemaess Daniel Simon
-
-      \item Hide Selection % war: Fade Out Selection
-
-      \item Layout Selection
-
-      \item Create New IML Subgraph From This Selection % 
+      \item Show Selection\\
+            Mit dieser Funktion können ausgeblendete Selektionen und alle dazugehörigen
+            Fenster-Knoten und Fenster-Kanten wieder eingeblendet
+	    werden.
+	 \begin{itemize}
+	    \item{Der Benutzer führt einen Rechtsklick mit der Maus auf
+            eine ausgeblendete Selektion in der Selektionsauswahlliste (siehe \ref{Selektionsauswahlliste})
+	    durch und wählt im Popup-Menü den Eintrag \gq{Show Selection} aus.}
+         \end{itemize}
+      \item Show all\\
+        Mit dieser Funktion können alle ausgeblendeten Fenster-Knoten
+        und Fenster-Kanten eines Anzeigefensters wieder eingeblendet werden.
+	\begin{itemize}
+	  \item{Der Benutzer führt einen Rechtsklick mit der Maus auf
+                die Selektionsauswahlliste 
+                (siehe \ref{Selektionsauswahlliste}) durch 
+                 und wählt im Popup-Menü den Eintrag \gq{Show all} aus.}
+	\end{itemize}
+      \item Hide Selection\\
+            Mit dieser Funktion können ausgeblendete Selektionen und alle dazugehörigen
+            Fenster-Knoten und Fenster-Kanten wieder eingeblendet
+	    werden.
+	 \begin{itemize}
+	    \item{Der Benutzer führt einen Rechtsklick mit der Maus auf
+            eine eingeblendete Selektion in der Selektionsauswahlliste (siehe \ref{Selektionsauswahlliste})
+	    durch und wählt im Popup-Menü den Eintrag \gq{Hide Selection} aus.}
+         \end{itemize}
+      \item Layout Selection\\
+          Mittels dieser Funktion können Selektionen innerhalb
+          eines Anzeigefensters layoutet werden.
+          Die verfügbaren Layoutalgorithmen sind in Kapitel 
+          \ref{Layoutalgorithmen} beschrieben.
+	  
+	  Hat der Benutzer einen Layoutalgorithmus während der
+          Berechnung des Layouts abgebrochen, 
+          so bleiben die Positionen aller Fenster-Knoten des Anzeigefensters
+          unverändert.
+	  
+	  \begin{itemize}
+	   \item{Der Benutzer wählt aus der Selektionsauswahlliste (siehe
+            \ref{Selektionsauswahlliste}) die Selektion aus, deren
+            Fenster-Knoten layoutet werden sollen. Hierzu führt er einen
+            Rechtsklick auf die Selektion durch und wählt im Popup-Menü den
+            Eintrag \gq{Layout Selection} aus.}
+           \item{GIANT zeigt einen Dialog zur Auswahl und Konfiguration des
+            gewünschten Layoutalgorithmus 
+            (siehe \ref{Layoutalgorithmen-Dialog}). Der Benutzer wählt
+	    in diesem Dialog den gewünschten Layoutalgorithmus aus.}
+	   % ***** Evtl. geändert im Endprodukt
+	  \end{itemize}
+      \item Create New IML Subgraph From This Selection\\
       
-      \item Highlight Selection (Menü)
+      \item Highlight Selection (Menü)\\
         \begin{enumerate}
         \item Color 1
         \item Color 2
         \item Color 3
         \end{enumerate}
 	
-      \item Unhighlight Selection % OK
+      \item Unhighlight Selection\\
         
-      \item Zoom To Make Selection Fill Window % OK
+      \item Zoom To Make Selection Fill Window\\
      
-      \item Copy Selection
+      \item Copy Selection\\
       
-      \item Copy Selection Keeping Existing Layout % OK
-      \item Copy Selection Changing Existing Layout % OK
-      \item Delete Selection % OK
-      \item Delete Nodes and Edges of Selection
-      \item Selection Set Operation % Changed by Martin
-      
-    %  \item Set Layout Algorithm For Selection --- deleted by Philipp
+      \item Copy Selection Keeping Existing Layout\\
+      \item Copy Selection Changing Existing Layout\\
+      \item Delete Selection\\
+      \item Delete Nodes and Edges of Selection\\
+      \item Selection Set Operation\\
       
     \end{enumerate}    
 
