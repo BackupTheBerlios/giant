@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/10 11:56:20 $
+-- $Date: 2003/06/13 13:08:29 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -41,10 +41,20 @@ with Giant.Default_Logger;
 
 package Giant.Gsl is
 
+   Var_Not_Found      : exception;
+   Var_Already_Exists : exception;
+
    ---------------------------------------------------------------------------
    -- Gsl_Type - parent class for all types in GSL defined in Gsl.Types
    type Gsl_Type_Record is abstract tagged private;
    type Gsl_Type is access all Gsl_Type_Record'Class;
+
+   function Copy
+     (Object : access Gsl_Type_Record)
+      return Gsl_Type is abstract;
+
+   procedure Destroy
+     (Object : out Gsl_Type) is abstract;
 
    ---------------------------------------------------------------------------
    -- represents the type Gsl_Null and works as null-pointer for Gsl_Type 
@@ -72,8 +82,8 @@ package Giant.Gsl is
 
    ---------------------------------------------------------------------------
    -- 
-   type Gsl_Var_Record is private;
-   type Gsl_Var is access all Gsl_Var_Record;
+   --type Gsl_Var_Record is private;
+   --type Gsl_Var is access all Gsl_Var_Record;
 
    ---------------------------------------------------------------------------
    -- instantiation of Hashed_Mappings for GSL variables
@@ -84,7 +94,7 @@ package Giant.Gsl is
 
    package Gsl_Var_Hashed_Mappings is new Hashed_Mappings
      (Key_Type => Unbounded_String,
-      Value_Type => Gsl_Var,
+      Value_Type => Gsl_Type,
       Hash => Gsl_Var_Hash);
 
    ---------------------------------------------------------------------------
@@ -119,11 +129,11 @@ private
 
    ---------------------------------------------------------------------------
    --
-   type Gsl_Var_Record is
-      record
-         Name  : Unbounded_String;
-         Value : Gsl_Type;
-      end record;
+   --type Gsl_Var_Record is
+   --   record
+   --      Name  : Unbounded_String;
+   --      Value : Gsl_Type;
+   --   end record;
 
    ---------------------------------------------------------------------------
    --
