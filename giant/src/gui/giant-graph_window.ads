@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/06/17 16:58:34 $
+--  $Date: 2003/06/17 20:28:40 $
 --
 ------------------------------------------------------------------------------
 --
@@ -50,12 +50,22 @@ package Giant.Graph_Window is
 
    type Graph_Window_Access is access all Graph_Window_Record'Class;
 
+   Null_Graph_Window : Graph_Window_Access := null;
+
+   function Close
+     (Window : access Graph_Window_Record'Class)
+     return Boolean;
+
    procedure Create
      (Window        :    out Graph_Window_Access;
       Visual_Window : in     Vis_Windows.Visual_Window_Access);
 
    procedure Initialize
      (Window : access Graph_Window_Record'Class);
+
+   function Get_Vis_Window
+     (Window : access Graph_Window_Record'Class)
+     return Vis_Windows.Visual_Window_Access;
 
 private
    type Graph_Window_Record is
@@ -68,6 +78,8 @@ private
         Vis_Style_Menu : Gtk.Option_Menu.Gtk_Option_Menu;
         Zoom_Combo : Gtk.Combo.Gtk_Combo;
         Zoom_Entry : Gtk.Gentry.Gtk_Entry;
+
+        Is_Dirty : Boolean := False;
 
         --  the data record from projects
         Visual_Window : Vis_Windows.Visual_Window_Access;

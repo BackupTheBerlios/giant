@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.6 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.7 $
 -- $Author: squig $
--- $Date: 2003/06/16 21:48:30 $
+-- $Date: 2003/06/17 20:28:40 $
 --
 
 with Glib;
@@ -252,8 +252,9 @@ package body Giant.Gui_Utils is
          Value : in     Data_Type)
          return Glib.Gint
       is
+         use type Glib.Gint;
       begin
-         for I in 1..Gtk.Clist.Get_Rows (List) loop
+         for I in 0 .. Gtk.Clist.Get_Rows (List) - 1 loop
             if (Data.Get (List, I) = Value) then
                return I;
             end if;

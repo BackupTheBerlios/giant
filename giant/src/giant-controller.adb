@@ -21,9 +21,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.6 $
 --  $Author: squig $
---  $Date: 2003/06/17 16:58:34 $
+--  $Date: 2003/06/17 20:28:40 $
 --
 
 with Giant.Graph_Lib;
@@ -63,6 +63,16 @@ package body Giant.Controller is
    begin
       return Current_Project;
    end;
+
+   function Close_Window
+     (Name : in String)
+     return Boolean
+   is
+      Window : Vis_Windows.Visual_Window_Access;
+   begin
+      Window := Projects.Get_Visualisation_Window (Current_Project, Name);
+      return Gui_Manager.Close (Window);
+   end Close_Window;
 
    procedure Create_Window
      (Name : in String := "Unknown")

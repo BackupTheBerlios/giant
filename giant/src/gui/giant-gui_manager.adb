@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/06/17 16:58:34 $
+--  $Date: 2003/06/17 20:28:40 $
 --
 
 with Gdk.Threads;
@@ -68,11 +68,58 @@ package body Giant.Gui_Manager is
       Main_Window.Add_Window (Name);
    end Add_Window;
 
-   procedure Close (Visual_Window : Vis_Windows.Visual_Window_Access)
+   function Close
+     (Visual_Window : Vis_Windows.Visual_Window_Access)
+     return Boolean
    is
+      Closed : Boolean;
+      Window : Graph_Window.Graph_Window_Access;
    begin
-      null;
+      Window := Get_Open_Window (Vis_Windows.Get_Name (Visual_Window));
+      Closed := Graph_Window.Close (Window);
+
+      if (Closed) then
+         Graph_Window_Lists.DeleteItem (Open_Windows, Window);
+
+         --  deallocate
+         Graph_Window.Destroy (Window);
+
+         --  update status
+         Main_Window.Update_Window (Vis_Windows.Get_Name (Visual_Window));
+      end if;
+
+      return Closed;
    end Close;
+
+   function Get_Open_Window (Name : in String)
+     return Graph_Window.Graph_Window_Access
+   is
+      Iterator : Graph_Window_Lists.ListIter;
+      Window : Graph_Window.Graph_Window_Access;
+   begin
+      Iterator := Graph_Window_Lists.MakeListIter (Open_Windows);
+
+      while Graph_Window_Lists.More (Iterator) loop
+         Graph_Window_Lists.Next (Iterator, Window);
+         if (Vis_Windows.Get_Name (Graph_Window.Get_Vis_Window (Window))
+             = Name) then
+            --FIX: Graph_Window_Lists.Destroy (Iterator);
+            return Window;
+         end if;
+      end loop;
+
+      -- FIX: Destroy (Iterator);
+      return Graph_Window.Null_Graph_Window;
+   end Get_Open_Window;
+
+   function Is_Window_Open
+     (Name : in String)
+     return Boolean
+   is
+      use type Graph_Window.Graph_Window_Access;
+   begin
+      return (Get_Open_Window (Name) /= Graph_Window.Null_Graph_Window);
+   end Is_Window_Open;
 
    procedure Open (Visual_Window : Vis_Windows.Visual_Window_Access)
    is
@@ -82,6 +129,9 @@ package body Giant.Gui_Manager is
       Graph_Window_Lists.Attach (Open_Windows, Window);
 
       Graph_Window.Show_All (Window);
+
+      --  update status
+      Main_Window.Update_Window (Vis_Windows.Get_Name (Visual_Window));
    end Open;
 
    procedure Remove_Window

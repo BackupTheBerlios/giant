@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/06/17 16:58:34 $
+--  $Date: 2003/06/17 20:28:40 $
 --
 --  Stores the window records. Handles the controller updates. Provides
 --  a facade for the gui.
@@ -31,6 +31,7 @@
 --    ADT
 --
 
+with Giant.Graph_Window;
 with Giant.Vis_Windows;
 
 package Giant.Gui_Manager is
@@ -48,9 +49,19 @@ package Giant.Gui_Manager is
    procedure Add_Window
      (Name : in String);
 
-   procedure Close (Visual_Window : Vis_Windows.Visual_Window_Access);
+   function Close
+     (Visual_Window : Vis_Windows.Visual_Window_Access)
+     return Boolean;
 
-   procedure Open (Visual_Window : Vis_Windows.Visual_Window_Access);
+   function Get_Open_Window (Name : in String)
+     return Graph_Window.Graph_Window_Access;
+
+   function Is_Window_Open
+     (Name : in String)
+     return Boolean;
+
+   procedure Open
+     (Visual_Window : Vis_Windows.Visual_Window_Access);
 
    procedure Remove_Window
      (Name : in String);

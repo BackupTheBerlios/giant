@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/06/17 16:58:34 $
+--  $Date: 2003/06/17 20:28:40 $
 --
 
 with Glib;
@@ -32,16 +32,25 @@ with Gtk.Enums; use Gtk.Enums;
 with Gtk.Menu_Item;
 with Gtk.Widget;
 
+with Giant.Controller;
+with Giant.Default_Dialog;
 with Giant.Gui_Utils; use Giant.Gui_Utils;
 
 package body Giant.Graph_Window is
 
-   function On_Delete
-     (Source : access Gtk.Widget.Gtk_Widget_Record'Class) return Boolean is
+   function On_Close
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+      return Boolean
+   is
+     Window : Graph_Window_Access;
+     Closed : Boolean;
    begin
-      Hide (Graph_Window_Access (Source));
+      Window := Graph_Window_Access (Gtk.Widget.Get_Toplevel (Source));
+
+      Closed := Controller.Close_Window
+        (Vis_Windows.Get_Name (Window.Visual_Window));
       return True;
-   end On_Delete;
+   end On_Close;
 
    procedure On_Pick_Edge_Clicked
      (Source : access Gtk.Button.Gtk_Button_Record'Class)
@@ -223,7 +232,39 @@ package body Giant.Graph_Window is
       -- listen for the close button
       Widget_Return_Callback.Connect
         (Window, "delete_event",
-         Widget_Return_Callback.To_Marshaller (On_Delete'Access));
+         Widget_Return_Callback.To_Marshaller (On_Close'Access));
    end;
+
+   function Close
+     (Window : access Graph_Window_Record'Class)
+     return Boolean
+   is
+      use type Giant.Default_Dialog.Response_Type;
+
+      Response : Default_Dialog.Response_Type;
+   begin
+      if (Window.Is_Dirty) then
+         Response := Default_Dialog.Show_Confirmation_Dialog
+           (-"The content has changed. Save changes?",
+            Default_Dialog.Button_Yes_No_Cancel);
+         if (Response = Default_Dialog.Response_Yes) then
+            -- FIX: save changes
+            null;
+         elsif (Response = Default_Dialog.Response_Cancel) then
+            return False;
+         end if;
+      end if;
+
+      Hide (Window);
+      return True;
+   end;
+
+   function Get_Vis_Window
+     (Window : access Graph_Window_Record'Class)
+     return Vis_Windows.Visual_Window_Access
+   is
+   begin
+      return Window.Visual_Window;
+   end Get_Vis_Window;
 
 end Giant.Graph_Window;

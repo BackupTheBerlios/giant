@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.9 $
 --  $Author: squig $
---  $Date: 2003/06/17 16:58:34 $
+--  $Date: 2003/06/17 20:28:40 $
 --
 
 with Ada.Strings.Unbounded;
@@ -46,7 +46,9 @@ with Gtkada.Types;
 with Interfaces.C.Strings;
 
 with Giant.Controller;
+with Giant.Gui_Manager;
 with Giant.Gui_Utils; use Giant.Gui_Utils;
+with Giant.Projects;
 
 package body Giant.Main_Window is
 
@@ -57,6 +59,14 @@ package body Giant.Main_Window is
    Window : Gtk.Window.Gtk_Window;
    Window_List : Gtk.Clist.Gtk_Clist;
    Window_List_Menu : Gtk.Menu.Gtk_Menu;
+
+   function Get_Selected_Window
+     return String
+   is
+   begin
+      return Window_List_Data.Data.Get
+        (Window_List, Get_Selected_Row (Window_List));
+   end;
 
    function On_Delete
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class) return Boolean is
@@ -90,25 +100,22 @@ package body Giant.Main_Window is
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
    begin
-      null;
+      Controller.Open_Window (Get_Selected_Window);
    end On_Window_List_Open;
 
    procedure On_Window_List_Close
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
+      Closed : Boolean;
    begin
-      null;
+      Closed := Controller.Close_Window (Get_Selected_Window);
    end On_Window_List_Close;
 
    procedure On_Window_List_Delete
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
-      Row : Glib.Gint := Get_Selected_Row (Window_List);
    begin
-      if (Row /= -1) then
-         Controller.Remove_Window
-           (Window_List_Data.Data.Get (Window_List, Row));
-      end if;
+      Controller.Remove_Window (Get_Selected_Window);
    end On_Window_List_Delete;
 
    procedure Update_Window (Row : Glib.Gint)
@@ -116,6 +123,14 @@ package body Giant.Main_Window is
       Name: String := Window_List_Data.Data.Get (Window_List, Row);
    begin
       Gtk.Clist.Set_Text (Window_List, Row, 0, Name);
+      if (Gui_Manager.Is_Window_Open (Name)) then
+         Gtk.Clist.Set_Text (Window_List, Row, 1, -"Open");
+      elsif (Projects.Is_Vis_Window_Memory_Loaded
+             (Controller.Get_Project, Name)) then
+         Gtk.Clist.Set_Text (Window_List, Row, 1, -"Loaded");
+      else
+         Gtk.Clist.Set_Text (Window_List, Row, 1, -"");
+      end if;
    end Update_Window;
 
    function Initialize_Menu
@@ -173,7 +188,7 @@ package body Giant.Main_Window is
       Connect_Popup_Menu (Window_List, Window_List_Menu);
 
       Gtk.Clist.Set_Column_Title (Window_List, 0, -"Name");
-      Gtk.Clist.Set_Column_Title (Window_List, 1, -"Open");
+      Gtk.Clist.Set_Column_Title (Window_List, 1, -"Status");
 
       Gtk.Paned.Add (Pane, Add_Scrollbar_And_Frame (Window_List, -"Windows"));
 
