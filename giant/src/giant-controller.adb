@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.55 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.56 $
 --  $Author: squig $
---  $Date: 2003/07/15 15:27:31 $
+--  $Date: 2003/07/15 17:18:42 $
 --
 
 with Ada.Strings.Unbounded;
@@ -32,6 +32,7 @@ with String_Lists;
 
 with Giant.Config;
 with Giant.Config_Settings;
+with Giant.Config.Global_Data;
 with Giant.Config.Vis_Styles;
 with Giant.Dialogs;
 with Giant.Evolutions;
@@ -555,16 +556,24 @@ package body Giant.Controller is
       return Vis_Windows.Get_Selection (Window, Name);
    end Get_Selection;
 
---     function Get_Selection_Hightlight_ID
---       (Highlight_Status : in Vis_Windows.Selection_Highlight_Status)
---       return Config.Global_Data.Selection_High_Light_ID
---     is
---     begin
---        case (Vis_Windows.Color_1) is
---           when Vis_Windows.Selection_Highlight_Status =>
---              return Config.Global_Data.Color_1;
---        end case;
---     end Get_Selection_Hightlight_ID;
+   function Get_Selection_Hightlight_ID
+     (Highlight_Status : in Vis_Windows.Selection_Highlight_Status)
+     return Config.Global_Data.Selection_High_Light_ID
+   is
+   begin
+      case (Highlight_Status) is
+        when Vis_Windows.Color_1 =>
+           return Config.Global_Data.Color_1;
+        when Vis_Windows.Color_2 =>
+           return Config.Global_Data.Color_2;
+        when Vis_Windows.Color_3 =>
+           return Config.Global_Data.Color_3;
+        when Vis_Windows.Current_Selection =>
+           return Config.Global_Data.Current_Selection;
+        when others =>
+           raise Constraint_Error;
+      end case;
+   end Get_Selection_Hightlight_ID;
 
    procedure Hide_Selection
      (Window_Name : in String;
@@ -579,20 +588,42 @@ package body Giant.Controller is
    end Hide_Selection;
 
    procedure Highlight_Selection
-     (Window_Name      : in String;
-      Name             : in String;
-      Highlight_Status : in Vis_Windows.Selection_Highlight_Status)
+     (Window_Name       : in String;
+      Name              : in String;
+      Highlight_Status  : in Vis_Windows.Selection_Highlight_Status;
+      Unhighligt_Others : in Boolean                                := True)
    is
+      use type Vis_Windows.Selection_Highlight_Status;
+
       Window : Vis_Windows.Visual_Window_Access
         := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
       Selection : Graph_Lib.Selections.Selection
         := Get_Selection (Window_Name, Name);
---        Color : Config.Global_Data.Selection_High_Light_ID
---          := Get_Selection_Hightlight_ID (Highlight_Status);
+      Old_Highlight_Status : Vis_Windows.Selection_Highlight_Status
+        := Vis_Windows.Get_Highlight_Status (Window, Name);
    begin
-      Vis_Windows.Set_Highlight_Status (Window, Name, Highlight_Status);
---        Graph_Widgets.Add_Local_Highlighting
---          (Projects.Get_Graph_Widget (Window), Selection, Color);
+      if (Old_Highlight_Status /= Highlight_Status) then
+         if (Unhighligt_Others) then
+            --  unhighlight other selections with the same color
+            Unhighlight_Selections (Window_Name, Highlight_Status);
+         end if;
+
+         Vis_Windows.Set_Highlight_Status (Window, Name, Highlight_Status);
+         if (Highlight_Status = Vis_Windows.None) then
+            Graph_Widgets.Remove_Local_Highlighting
+              (Vis_Windows.Get_Graph_Widget (Window), Selection,
+               Get_Selection_Hightlight_ID (Old_Highlight_Status));
+         else
+            if (Old_Highlight_Status /= Vis_Windows.None) then
+               Graph_Widgets.Remove_Local_Highlighting
+                 (Vis_Windows.Get_Graph_Widget (Window), Selection,
+                  Get_Selection_Hightlight_ID (Old_Highlight_Status));
+            end if;
+            Graph_Widgets.Add_Local_Highlighting
+              (Vis_Windows.Get_Graph_Widget (Window), Selection,
+               Get_Selection_Hightlight_ID (Highlight_Status));
+         end if;
+      end if;
       Gui_Manager.Update_Selection (Window_Name, Name);
    end;
 
@@ -637,7 +668,7 @@ package body Giant.Controller is
       end if;
 
       if (Gui_Manager.Remove_Selection (Window_Name, Name)) then
-         --  FIX : unhighlight
+         Unhighlight_Selection (Window_Name, Name);
          if (Remove_Content) then
             --  remove the selection from display before it is destroyed
             Graph_Widgets.Remove_Selection
@@ -726,6 +757,33 @@ package body Giant.Controller is
    begin
       Highlight_Selection (Window_Name, Name, Vis_Windows.None);
    end Unhighlight_Selection;
+
+   procedure Unhighlight_Selections
+     (Window_Name      : in String;
+      Highlight_Status : in Vis_Windows.Selection_Highlight_Status)
+   is
+      use type Vis_Windows.Selection_Highlight_Status;
+      use Ada.Strings.Unbounded;
+
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+      List : String_Lists.List;
+      Iterator : String_Lists.ListIter;
+      Name : Ada.Strings.Unbounded.Unbounded_String;
+   begin
+      List := Vis_Windows.Get_All_Selections (Window);
+      Iterator := String_Lists.MakeListIter (List);
+      while String_Lists.More (Iterator) loop
+         String_Lists.Next (Iterator, Name);
+         if (Vis_Windows.Get_Highlight_Status (Window, To_String (Name))
+             = Highlight_Status) then
+            --  unhighlight
+            Highlight_Selection (Window_Name, To_String (Name),
+                                 Vis_Windows.None, Unhighligt_Others => False);
+         end if;
+      end loop;
+      String_Lists.Destroy (List);
+   end Unhighlight_Selections;
 
    ---------------------------------------------------------------------------
    --  Subgraphs

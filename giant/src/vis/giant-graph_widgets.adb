@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.32 $
---  $Author: keulsn $
---  $Date: 2003/07/15 11:57:31 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.33 $
+--  $Author: squig $
+--  $Date: 2003/07/15 17:18:42 $
 --
 ------------------------------------------------------------------------------
 
@@ -703,33 +703,33 @@ package body Giant.Graph_Widgets is
    end To_Global_Highlight_Type;
 
    procedure Add_Local_Highlighting
-     (Widget     : access Graph_Widget_Record'Class;
-      Selection  : access Graph_Lib.Selections.Selection;
-      Color      : in     Config.Global_Data.Selection_High_Light_ID) is
+     (Widget    : access Graph_Widget_Record'Class;
+      Selection : in     Graph_Lib.Selections.Selection;
+      Color     : in     Config.Global_Data.Selection_High_Light_ID) is
    begin
       null;
    end Add_Local_Highlighting;
 
    procedure Remove_Local_Highlighting
-     (Widget     : access Graph_Widget_Record'Class;
-      Selection  : access Graph_Lib.Selections.Selection;
-      Color      : in     Config.Global_Data.Selection_High_Light_ID) is
+     (Widget    : access Graph_Widget_Record'Class;
+      Selection : in     Graph_Lib.Selections.Selection;
+      Color     : in     Config.Global_Data.Selection_High_Light_ID) is
    begin
       null;
    end Remove_Local_Highlighting;
 
    procedure Add_Global_Highlighting
-     (Widget     : access Graph_Widget_Record'Class;
-      Subgraph   : access Graph_Lib.Subgraphs.Subgraph;
-      Color      : in     Config.Global_Data.Subgraph_High_Light_ID) is
+     (Widget   : access Graph_Widget_Record'Class;
+      Subgraph : in     Graph_Lib.Subgraphs.Subgraph;
+      Color    : in     Config.Global_Data.Subgraph_High_Light_ID) is
    begin
       null;
    end Add_Global_Highlighting;
 
    procedure Remove_Global_Highlighting
-     (Widget     : access Graph_Widget_Record'Class;
-      Subgraph   : access Graph_Lib.Subgraphs.Subgraph;
-      Color      : in     Config.Global_Data.Subgraph_High_Light_ID) is
+     (Widget   : access Graph_Widget_Record'Class;
+      Subgraph : in     Graph_Lib.Subgraphs.Subgraph;
+      Color    : in     Config.Global_Data.Subgraph_High_Light_ID) is
    begin
       null;
    end Remove_Global_Highlighting;

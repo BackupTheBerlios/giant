@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-mini_maps.adb,v $, $Revision: 1.4 $
---  $Author: keulsn $
---  $Date: 2003/07/02 16:49:15 $
+--  $RCSfile: giant-mini_maps.adb,v $, $Revision: 1.5 $
+--  $Author: squig $
+--  $Date: 2003/07/15 17:18:42 $
 --
 ------------------------------------------------------------------------------
 
@@ -120,6 +120,11 @@ package body Giant.Mini_Maps is
    function On_Button_Press_Event
      (Widget : access Mini_Map_Record'Class;
       Event  : in     Gdk.Event.Gdk_Event_Button)
+     return Boolean;
+
+   function On_Motion_Notify_Event
+     (Widget : access Mini_Map_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event_Motion)
      return Boolean;
 
    procedure On_Logical_Area_Changed
@@ -293,7 +298,13 @@ package body Giant.Mini_Maps is
         (Widget => Widget,
          Name   => "button_press_event",
          Marsh  => Button_Press_Event_Cbs.To_Marshaller
-                     (On_Button_Press_Event'Access));
+                    (On_Button_Press_Event'Access));
+      Mini_Map_Boolean_Callback.Connect
+        (Widget => Widget,
+         Name   => "motion_notify_event",
+         Marsh  => Mini_Map_Boolean_Callback.To_Marshaller
+                    (On_Motion_Notify_Event'Access));
+      Add_Events (Widget, Gdk.Types.Button1_Motion_Mask);
 
       Realize_Handling.Set_Realize (Widget);
    end Initialize;
@@ -649,6 +660,21 @@ package body Giant.Mini_Maps is
 
       return True;
    end On_Expose_Event;
+
+   function On_Motion_Notify_Event
+     (Widget : access Mini_Map_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event_Motion)
+     return Boolean
+   is
+      Point : Vis.Absolute.Vector_2d := Combine_Vector
+        (X => Vis.Absolute_Int (Gdk.Event.Get_X (Event)),
+         Y => Vis.Absolute_Int (Gdk.Event.Get_Y (Event)));
+   begin
+      Graph_Widgets.Set_Location
+        (Widget   => Widget.Watched,
+         Location => Vis.Transform_Backward (Widget.Transformation, Point));
+      return True;
+   end On_Motion_Notify_Event;
 
    function On_Button_Press_Event
      (Widget : access Mini_Map_Record'Class;

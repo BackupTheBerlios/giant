@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.36 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.37 $
 --  $Author: squig $
---  $Date: 2003/07/15 11:50:26 $
+--  $Date: 2003/07/15 17:18:42 $
 --
 ------------------------------------------------------------------------------
 --
@@ -295,9 +295,10 @@ package Giant.Controller is
       Name        : in String);
 
    procedure Highlight_Selection
-     (Window_Name      : in String;
-      Name             : in String;
-      Highlight_Status : in Vis_Windows.Selection_Highlight_Status);
+     (Window_Name       : in String;
+      Name              : in String;
+      Highlight_Status  : in Vis_Windows.Selection_Highlight_Status;
+      Unhighligt_Others : in Boolean                                := True);
 
    procedure Insert_Selection
      (Window_Name           : in String;
@@ -333,6 +334,13 @@ package Giant.Controller is
    procedure Unhighlight_Selection
      (Window_Name : in String;
       Name        : in String);
+
+   ---------------------------------------------------------------------------
+   --  Unhighlights all selections that are hightlighted with
+   --  Highlight_Status.
+   procedure Unhighlight_Selections
+     (Window_Name      : in String;
+      Highlight_Status : in Vis_Windows.Selection_Highlight_Status);
 
    ---------------------------------------------------------------------------
    --  Subgraphs
