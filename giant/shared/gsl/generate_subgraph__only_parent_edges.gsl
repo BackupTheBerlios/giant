@@ -4,7 +4,7 @@
 // First Author: Oliver Kopp
 // based on iterate_find_system.gsl
 //
-// $Id: generate_subgraph__only_parent_edges.gsl,v 1.1 2003/10/06 18:26:23 koppor Exp $
+// $Id: generate_subgraph__only_parent_edges.gsl,v 1.2 2003/10/06 23:05:56 koppor Exp $
 
 [
   set (+target_edges, empty_edge_set ());
@@ -22,7 +22,7 @@
             set (+e, get_first ('edges));
             sub ('edges, e);
             if
-             (instance_of (e, "parent_edge_class_set"),
+             (type_in (get_type(e), "parent_edge_class_set"),
               { () 
 	        [
 		add ('target_edges, e);
