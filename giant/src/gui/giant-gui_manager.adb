@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.11 $
 --  $Author: squig $
---  $Date: 2003/06/20 16:47:35 $
+--  $Date: 2003/06/21 21:04:02 $
 --
 
 with Ada.Strings.Unbounded;
@@ -134,15 +134,16 @@ package body Giant.Gui_Manager is
 
       Gdk.Threads.Enter;
 
-      --  initialize windows
+      --  initialize main window
       Main_Window.Show;
+      Gui_Initialized := True;
 
       --  initialize state
       Set_Project_Loaded (Controller.Is_Project_Loaded);
 
       -- main loop
-      Gui_Initialized := True;
       Gtk.Main.Main;
+
       Gui_Initialized := False;
 
       Gdk.Threads.Leave;

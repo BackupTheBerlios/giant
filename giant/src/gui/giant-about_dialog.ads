@@ -20,59 +20,33 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-about_dialog.ads,v $, $Revision: 1.1 $
 --  $Author: squig $
 --  $Date: 2003/06/21 21:04:02 $
 --
---
 ------------------------------------------------------------------------------
 --
---  The GIANT main program.
+-- Provides the about dialog.
 --
 
-with Giant.Config;
-with Giant.Config_Settings;
-with Giant.Config.Vis_Styles;
-with Giant.Controller;
-with Giant.Default_Logger;
-with Giant.File_Management;
-with Giant.Logger;
+with Ada.Strings.Unbounded;
 
-procedure Giant.Main
-is
-   package Logger is new Giant.Logger("giant.main");
-begin
-   Default_Logger.Init;
+with Gtk.Text;
+with Gtk.Window;
 
---     Config_Settings.Initialize_Config_Settings
---       ("src/config/giant_global_config.xml", "");
+with Giant.Default_Dialog;
 
-   -- read config
---     Config.Vis_Styles.Initialize_Config_Vis_Styles
---       ("", "", "test/resources/giant_vis_style.xml");
+package Giant.About_Dialog is
 
-   -- FIX: remove the following lines
-   declare
-   begin
-      declare
-      begin
-         File_Management.Delete_File ("test/resources/GiantTest.xml");
-      exception
-         when others =>
-            null;
-      end;
-      Controller.Create_Project ("test/resources/GiantTest.xml",
-                                 "test/resources/rfg_examp.iml");
-   exception
-      when others =>
-         null;
-   end;
+   type About_Dialog_Record is
+     new Default_Dialog.Default_Dialog_Record with private;
 
-   Logger.Debug ("starting giant");
+   type About_Dialog_Access is access all About_Dialog_Record'Class;
 
-   Controller.Show_Gui;
+   procedure Show;
 
-   Logger.Debug ("closing giant");
+private
+   type About_Dialog_Record is
+     new Default_Dialog.Default_Dialog_Record with null record;
 
-   Giant.Default_Logger.Close;
-end Giant.Main;
+end Giant.About_Dialog;

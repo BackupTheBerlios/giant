@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.12 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.13 $
 -- $Author: squig $
--- $Date: 2003/06/20 18:03:14 $
+-- $Date: 2003/06/21 21:04:02 $
 --
 
 with Glib;
@@ -83,7 +83,7 @@ package body Giant.Gui_Utils is
    is
    begin
       -- FIX: use config.getResourcePath()
-      return "icon/" & Filename;
+      return "icons/" & Filename;
    end;
 
    function Get_Selected_Row

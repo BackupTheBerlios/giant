@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.19 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.20 $
 --  $Author: squig $
---  $Date: 2003/06/20 18:03:14 $
+--  $Date: 2003/06/21 21:04:02 $
 --
 
 with Ada.Strings.Unbounded;
@@ -48,6 +48,7 @@ with Gtk.Tearoff_Menu_Item;
 with Gtkada.File_Selection;
 with Gtkada.Types;
 
+with Giant.About_Dialog;
 with Giant.Clists;
 with Giant.Controller;
 with Giant.Default_Dialog;
@@ -252,7 +253,7 @@ package body Giant.Main_Window is
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
    begin
-      null;
+      About_Dialog.Show;
    end On_Help_About;
 
    ---------------------------------------------------------------------------
@@ -627,7 +628,6 @@ package body Giant.Main_Window is
    procedure Update_Children
      (Widget : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
-
    begin
       Gtk.Widget.Set_Sensitive (Widget, Loaded);
    end;

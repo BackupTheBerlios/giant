@@ -20,25 +20,20 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.9 $
 --  $Author: squig $
---  $Date: 2003/06/20 16:47:35 $
+--  $Date: 2003/06/21 21:04:02 $
 --
 
 with Ada.Text_Io; use Ada.Text_Io;
 with Ada.Strings.Unbounded;
 
-with Gtk.Box;
-with Gtk.Button;
 with Gtk.Enums; use Gtk.Enums;
 with Gtk.Gentry;
-with Gtk.Hbutton_Box;
 with Gtk.Label;
 with Gtk.Main;
 with Gtk.Pixmap;
 with Gtk.Separator;
-with Gtk.Widget;
-with Gtk.Window;
 
 with Giant.Gui_Utils; use Giant.Gui_Utils;
 --with Giant.Utils; use Giant.Utils;
@@ -210,32 +205,45 @@ package body Giant.Default_Dialog is
    end;
 
    function Add_Icon_Box
-     (Dialog        : access Default_Dialog_Record'Class;
-      Icon_Filename : in String;
-      Message       : in String         := "")
+     (Dialog        : access Default_Dialog_Record;
+      Icon_Filename : in     String;
+      Widget        : access Gtk.Widget.Gtk_Widget_Record'Class)
      return Gtk.Box.Gtk_Hbox
    is
       Box : Gtk.Box.Gtk_Hbox;
-      Label : Gtk.Label.Gtk_Label;
       Pixmap : Gtk.Pixmap.Gtk_Pixmap;
    begin
       Gtk.Box.Gtk_New_Hbox (Box);
       Set_Center_Widget (Dialog, Box);
 
+      --  icon
       Pixmap := Gtk.Pixmap.Create_Pixmap
-        (Gui_Utils.Get_Icon(Icon_Filename), Dialog);
+        (Gui_Utils.Get_Icon (Icon_Filename), Dialog);
       --Gtk.Pixmap.Set_Alignment (Dialog.Confirmation_Msg_Pixmap, 0.5, 0.5);
-      Gtk.Box.Pack_Start (Box, pixmap, expand => True, Fill => True,
+      Gtk.Box.Pack_Start (Box, pixmap, expand => False, Fill => True,
                           Padding => DEFAULT_SPACING);
 
+      --  widget
+      Gtk.Box.Pack_Start (Box, Widget, Expand => True, Fill => True,
+                          Padding => DEFAULT_SPACING);
+
+      return Box;
+   end Add_Icon_Box;
+
+   function Add_Icon_Box
+     (Dialog        : access Default_Dialog_Record;
+      Icon_Filename : in String;
+      Message       : in String         := "")
+     return Gtk.Box.Gtk_Hbox
+   is
+      Label : Gtk.Label.Gtk_Label;
+   begin
       Gtk.Label.Gtk_New (Label, Message);
       --Set_Alignment (Dialog.Confirmation_Message, 0.5, 0.5);
       Gtk.Label.Set_Justify (Label, Justify_Center);
       Gtk.Label.Set_Line_Wrap (Label, False);
-      Gtk.Box.Pack_Start (Box, Label, Expand => True, Fill => True,
-                          Padding => DEFAULT_SPACING);
 
-      return Box;
+      return Add_Icon_Box (Dialog, Icon_Filename, Label);
    end Add_Icon_Box;
 
    procedure Set_Center_Widget
