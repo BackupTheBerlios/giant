@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.74 $
---  $Author: keulsn $
---  $Date: 2003/08/04 10:23:23 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.75 $
+--  $Author: schulzgt $
+--  $Date: 2003/08/04 10:28:38 $
 --
 
 with Ada.Strings.Unbounded;
@@ -220,7 +220,7 @@ package body Giant.Controller is
       Graph_Widgets.Lock_Selection (Vis_Windows.Get_Graph_Widget (Window),
                                     Selection, Lock);
       Apply_Layout (Window, Selection, Lock, Layout_Name, Position,
-                    Additional_Parameters);
+                    Additional_Parameters, null);
    end Apply_Layout;
 
    ---------------------------------------------------------------------------
