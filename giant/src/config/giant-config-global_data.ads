@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-global_data.ads,v $, $Revision: 1.3 $
+-- $RCSfile: giant-config-global_data.ads,v $, $Revision: 1.4 $
 -- $Author: schwiemn $
--- $Date: 2003/06/24 19:02:04 $
+-- $Date: 2003/07/02 09:07:45 $
 --
 -- -----
 -- This package holds the functionality needed to access the
@@ -38,6 +38,8 @@
 --
 with Ada.Strings.Unbounded;
 with Ada.Unchecked_Deallocation;
+
+with String_Lists; -- from Baushaus Reuse.src
 
 package Giant.Config.Global_Data is
 
@@ -110,6 +112,23 @@ package Giant.Config.Global_Data is
    --   Config_ADO_Not_Initialized_Exception - raised if this subprogram
    --     is called before "Initialize_Config_Data"
    function Get_Resources_Directory return String;
+   
+   ---------------------------------------------------------------------------
+   -- Searches all known directories there
+   -- "include gsl script files" are located and tries to find the file
+   -- File_Name. If it exists 
+   --
+   -- Returns:
+   --   An absolute path to a file
+   -- Raises:
+   --   Raises
+   --   Skript_File 
+   --
+   --   Config_ADO_Not_Initialized_Exception - raised if this subprogram
+   --     is called before "Initialize_Config_Data"
+ --  Locate_GSL_Skript_File 
+ --    (File_Name : String)   
+ --    return String;
 
    ---------------------------------------------------------------------------
    -- C
