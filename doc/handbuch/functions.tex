@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: functions.tex,v $, $Revision: 1.3 $
-%  $Date: 2003/07/02 14:35:30 $
+%  $RCSfile: functions.tex,v $, $Revision: 1.4 $
+%  $Date: 2003/07/02 16:55:40 $
 %  $Author: birdy $
 %
 %  Description: 
@@ -238,6 +238,8 @@ Subgraph List (4 Spalten).
 	     Mit diesem Menüpunkt kann ein IML-Teilgraph nach Sicherheitsabfrage
 	     gelöscht werden.
 	  \item Create Window Selection % OK
+	     Mit diesem Menüpunkt kann aus einem IML-Teilgraphen eine Fensterselektion
+	     erzeugt werden.
           \item IML Subgraph Set Operation 
         \end{enumerate}   
         
@@ -289,14 +291,46 @@ Subgraph List (4 Spalten).
  
     \subsubsection{Node-Popup-Menü}\label{Node-Popup-Menü}
     \begin{enumerate}
-      \item Show Node Info Window
-      \item Show Corresponding Source Code
-      \item Move Node
+      \item Show Node Info Window\\
+          Zeigt ein Fenster mit Informationen zum Knoten
+      \item Show Corresponding Source Code\\
+          Zeigt den zum Knoten gehörenden Source Code in einem externen Editorfenster
+      \item Move Node\\
+          Gibt dem Nutzer die Möglichkeit, den Knoten zu verschieben.
+	  Nach Auswahl dieses Menüpunktes geht GIANT in den "Paste Mode", der
+	  Fadenkreuzcursor wird sichtbar. Durch Klick mit der linken Maustaste
+	  an eine Stelle des Fensters wird der Knoten an dieser Stelle eingefügt.
       \item Annotation (Menü)
         \begin{enumerate}
-          \item Add
-          \item Change 
-          \item Delete
+          \item Add\\
+	     Mit diesem Menüpunkt läßt sich eine Annotation zu einem Knoten hinzufügen.
+	     Der Knoten ist dann graphisch als annotiert gekennzeichnet.
+	     \begin{itemize}
+	        \item{Der Nutzer führt einen Rechtsklick auf den Knoten aus, den er
+		       annotieren will und wählt im Popup-Menü \gq{Annotation - Add} an}
+	        \item{Im erscheinenden Knotenannotations-Dialog kann der Text der
+		      Annotation eingegeben werden und mit OK bestätigt werden.}
+		\item{Nach dem nächsten Speichern des Projektes ist die Annotation
+		      dauerhaft erstellt.}     
+	     \end{itemize}
+          \item Change\\
+	      Mit diesem Menüpunkt läßt sich eine Annotation eines Knotens ändern.
+	     \begin{itemize}
+	        \item{Der Nutzer führt einen Rechtsklick auf den Knoten aus, dessen
+		      Annotation er ändern will und wählt im Popup-Menü \gq{Annotation - Change} an}
+	        \item{Im erscheinenden Knotenannotations-Dialog kann der neue Text der
+		      Annotation eingegeben werden und mit OK bestätigt werden.}
+		\item{Nach dem nächsten Speichern des Projektes ist die Annotation
+		      dauerhaft geändert.}
+	     \end{itemize} 
+          \item Delete\\
+	       Mit diesem Menüpunkt läßt sich eine Annotation eines Knotens löschen.
+	       \begin{itemize}
+	        \item{Der Nutzer führt einen Rechtsklick auf den Knoten aus, dessen
+		      Annotation er löschen will und wählt im Popup-Menü \gq{Annotation - Delete} an}
+	        \item{Nach dem nächsten Speichern des Projektes ist die Annotation
+		      dauerhaft gelöscht.}
+	     \end{itemize} 
           \end{enumerate}
       \label{Change Node Annotation}
       \label{Delete Node Annotation}
@@ -309,8 +343,24 @@ Subgraph List (4 Spalten).
 
     \label{Empty Vis Pane Right click}
     \begin{enumerate}
-      \item Make Room % OK
-      \item New Pin % OK
+      \item Make Room\\
+        \begin{itemize}
+         \item{Der Nutzer führt einen Rechtsklick auf eine leere Stelle des
+	 sichtbaren Anzeigeinhalts in einem Anzeigefenster durch und wählt im erscheinenden
+	 Popup-Menü \gq{Make Room} an}
+	 \item{GIANT zeigt in der Statuszeile im Hauptfenster 
+               \gq{Select position in display window}.
+                Der Benutzer gibt den Punkt um den herum die Fenster-Knoten (und damit
+                automatisch auch die Fenster-Kanten) auseinander geschoben werden
+                 sollen über den Fadenkreuzcursor vor.}
+	 \item{GIANT zeigt einen Dialog an, in dem der Benutzer auswählt, um welchen 
+               Betrag die Fenster-Knoten auseinander geschoben werden sollen.
+	       Der Benutzer wählt einen geeigneten Betrag aus und bestätigt mit OK. }	 
+         \item{GIANT schiebt die Knoten entsprechend auseinander.}
+        \end{itemize}
+      \item New Pin
+         Mittels dieses Menüpunktes kann ein neuer Pin angelegt werden.
+	 ********
     \end{enumerate}
     
 
