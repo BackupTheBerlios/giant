@@ -20,7 +20,7 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger-test.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-config-test.ads,v $, $Revision: 1.1 $
 --  $Author: squig $
 --  $Date: 2003/06/15 12:45:42 $
 --
@@ -33,20 +33,20 @@ with Ada.Strings.Unbounded;
 
 with AUnit.Test_Cases;
 
-package Giant.Default_Logger.Test is
+package Giant.Config.Test is
 
    type Test_Case is new AUnit.Test_Cases.Test_Case with null record;
-
+   
    --  Register routines to be run:
    procedure Register_Tests (T : in out Test_Case);
-
+   
    --  Provide name identifying the test case:
    function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access;
-
+   
    --  Preparation performed before each routine:
    procedure Set_Up (T : in out Test_Case);
-
+   
    --  Cleanup performed after each routine:
    procedure Tear_Down (T :  in out Test_Case);
-
-end Giant.Default_Logger.Test;
+   
+end Giant.Config.Test;

@@ -20,23 +20,28 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: framework_test.adb,v $, $Revision: 1.1 $
+--  $RCSfile: framework_test.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/14 19:01:39 $
+--  $Date: 2003/06/15 12:45:42 $
 --
 
 with AUnit.Test_Suites; use AUnit.Test_Suites;
 with AUnit.Test_Runner;
 
---  List of tests and suites to run:
+with Giant.Config.Test;
 with Giant.Default_Logger.Test;
+with Giant.File_Management.Test;
+with Giant.Graph_Lib.Test;
 
 procedure Framework_Test is
 
    function Suite return Access_Test_Suite is
       Result : Access_Test_Suite := new Test_Suite;
    begin
+      Add_Test (Result, new Giant.Config.Test.Test_Case);
       Add_Test (Result, new Giant.Default_Logger.Test.Test_Case);
+      Add_Test (Result, new Giant.File_Management.Test.Test_Case);
+      Add_Test (Result, new Giant.Graph_Lib.Test.Test_Case);
       return Result;
    end Suite;
 

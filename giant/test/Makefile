@@ -1,4 +1,4 @@
-framework_test :
+framework_test : *-test.ad[bs] framework_test.adb
 	make -C ../ MAIN=test/framework_test EXEC=test/framework_test
 
 mini_map :

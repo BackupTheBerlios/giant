@@ -20,27 +20,49 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger-test.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-file_management-test.adb,v $, $Revision: 1.1 $
 --  $Author: squig $
 --  $Date: 2003/06/15 12:45:42 $
 --
 
-with Ada.Text_IO;
-
 with AUnit.Assertions; use AUnit.Assertions;
 with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
 
-package body Giant.Default_Logger.Test is
+with Giant.Config;
+with Giant.Default_Logger;
+
+package body Giant.File_Management.Test is
 
    procedure Test_Init (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
+	  Exec_Path : String := File_Management.Return_Dir_Path_For_File_Path
+		(Ada.Command_Line.Command_Name);
    begin
-      Assert (Ada.Text_IO.Is_Open (Out_File), "Is_Open");
+--  	  GNAT.Directory_Operations.Get_Current_Dir;
+--  	  Giant.File_Management.Set_Currunt_Working_Dir_To_Exec_Dir; 
+--  	  GNAT.Directory_Operations.Get_Current_Dir; 
+	  
+	  Assert (Giant.File_Management.Get_Absolute_Path_To_Directory_From_Relative
+			  (GNAT.Directory_Operations.Get_Current_Dir, 
+			   "resources") 
+			  = GNAT.Directory_Operations.Get_Current_Dir 
+			  & "resources/", 
+			  "Get_Absolute_Path_To_Directory_From_Relative");
+
+	  Assert (Giant.File_Management.Get_Absolute_Path_To_File_From_Relative
+			  (GNAT.Directory_Operations.Get_Current_Dir, 
+			   "resources/rfg_examp.iml") 
+			  = GNAT.Directory_Operations.Get_Current_Dir 
+			  & "resources/rfg_examp.iml", 
+			  "Get_Absolute_Path_To_File_From_Relative");
+   
+--        Assert (Exec_Path = GNAT.Directory_Operations.Get_Current_Dir,
+--  			  "Exec_Path = Current_Dir");
    end;
 
    function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is
    begin
-      return  new String'("Default_Logger");
+      return new String'("File_Management");
    end Name;
 
    procedure Register_Tests (T : in out Test_Case) is
@@ -58,4 +80,4 @@ package body Giant.Default_Logger.Test is
       Default_Logger.Close;
    end Tear_Down;
 
-end Giant.Default_Logger.Test;
+end Giant.File_Management.Test;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.5 $
 --  $Author: squig $
---  $Date: 2003/06/14 17:10:20 $
+--  $Date: 2003/06/15 12:45:42 $
 --
 --
 ------------------------------------------------------------------------------
@@ -36,12 +36,12 @@ with Giant.Logger;
 
 procedure Giant.Main
 is
-   package Main_Logger is new Logger("giant.main");
+   package Logger is new Giant.Logger("giant.main");
    --Current_Project : Projects.Project_Access;
 begin
    Giant.Default_Logger.Init;
 
-   Main_Logger.Debug ("initializing gtk");
+   Logger.Debug ("initializing gtk");
 
 --     Current_Project := Projects.Create_Empty_Project
 --       (Valid_Names.To_Standard_Name ("GiantTest"), "testdata",
@@ -49,7 +49,7 @@ begin
 
    Controller.Show;
 
-   Main_Logger.Debug ("closing giant");
+   Logger.Debug ("closing giant");
 
    Giant.Default_Logger.Close;
 end Giant.Main;

@@ -20,33 +20,45 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger-test.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-config-test.adb,v $, $Revision: 1.1 $
 --  $Author: squig $
 --  $Date: 2003/06/15 12:45:42 $
 --
-------------------------------------------------------------------------------
---
---  Provides an aunit test.
---
 
-with Ada.Strings.Unbounded;
+with AUnit.Assertions; use AUnit.Assertions;
+with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
 
-with AUnit.Test_Cases;
+with Giant.Config;
+with Giant.Default_Logger;
 
-package Giant.Default_Logger.Test is
+package body Giant.Config.Test is
 
-   type Test_Case is new AUnit.Test_Cases.Test_Case with null record;
+   procedure Test_Init (R : in out AUnit.Test_Cases.Test_Case'Class)
+   is
+   begin
+      Config.Initialize_Config_Data ("resources/global_config.xml", "");
 
-   --  Register routines to be run:
-   procedure Register_Tests (T : in out Test_Case);
+      Assert (Config.Does_Setting_Exist ("Test_Setting"), "Test_Setting");
+   end;
 
-   --  Provide name identifying the test case:
-   function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access;
+   function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is
+   begin
+      return new String'("Config");
+   end Name;
 
-   --  Preparation performed before each routine:
-   procedure Set_Up (T : in out Test_Case);
+   procedure Register_Tests (T : in out Test_Case) is
+   begin
+      Register_Routine (T, Test_Init'Access, "Init");
+   end Register_Tests;
 
-   --  Cleanup performed after each routine:
-   procedure Tear_Down (T :  in out Test_Case);
+   procedure Set_Up (T : in out Test_Case) is
+   begin
+      Default_Logger.Init;
+   end Set_Up;
 
-end Giant.Default_Logger.Test;
+   procedure Tear_Down (T : in out Test_Case) is
+   begin
+      Default_Logger.Close;
+   end Tear_Down;
+
+end Giant.Config.Test;
