@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.13 $
-%  $Date: 2003/02/24 20:27:57 $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.14 $
+%  $Date: 2003/02/27 19:58:07 $
 %  $Author: birdy $
 %
 %  Description: Use-Cases für die Fensterfunktionalität der GUI
@@ -37,7 +37,8 @@ Projektes anlegen.
     durch Auswahl von \gq{New Window}
     
     \step[2] 
-    GIANT öffnet den allgemeinen Texteingabedialog. \ref{DIALOG-WINDOW}.
+    GIANT öffnet den allgemeinen Texteingabedialog \gq{Enter Name for new Window}.
+    \ref{DIALOG-WINDOW}.
       
     \step[3] 
     Der Benutzer gibt dort einen zulässigen Namen für das neue Anzeigefenster
@@ -89,6 +90,7 @@ gehen hierbei unwiederbringlich verloren.
     \step[2] 
     Giant zeigt die allgemeine Sicherheitsabfrage und fragt nach, ob das
     Anzeigefenster wirklich gelöscht werden soll.
+    \gq{Do you really want to delete Window xy ?}
       
     \step[3] 
     Der Benutzer bestätigt mit YES.
@@ -100,7 +102,7 @@ gehen hierbei unwiederbringlich verloren.
   \end{proc}
 
   \begin{aproc}
-    \astep{3} Der Benutzer bricht die Verarbeitung mit NEIN ab.
+    \astep{3} Der Benutzer bricht die Verarbeitung mit NO ab.
   \end{aproc}
   
 \end{uc}
@@ -169,6 +171,8 @@ Mit diesem UseCase wird ein geöffnetes Anzeigefenster geschlossen.
     GIANT zeigt die allgemeine Sicherheitsabfrage 
     (siehe \ref{Sicherheitsabfrage}) und fragt nach, ob es eventuelle
     Änderungen im Anziegefenster speichern soll oder nicht.
+    \gq{Do you want to save changes made to Window xy before closing it?}
+    
     
     \step[3]
     Bestätigt der Benutzer mit YES, werden die Änderungen in die 
@@ -176,7 +180,7 @@ Mit diesem UseCase wird ein geöffnetes Anzeigefenster geschlossen.
     nicht gespeicherten Änderungen am Anzeigefenster verloren.
     
     \step[4]
-    GIANT schleißt das Anzeigefenster.
+    GIANT schließt das Anzeigefenster.
   
   \end{proc}
 
@@ -225,14 +229,18 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
   
   \begin{proc}    
     \step[1]
-    Der Benutzer startet den UseCase über das PopUp Menü \ref{SUBGRAPH-LIST-POPUP}.
+    Der Benutzer startet den UseCase über das PopUp Menü \ref{SUBGRAPH-LIST-POPUP}
+    im Hauptfenster.
     Hierdurch wird der einzufügende IML-Teilgraph bestimmt (immer
-    der IML-Teilgraph), auf dem der Rechtsklick ausgeführt wurde.
+    der IML-Teilgraph, auf dem der Rechtsklick ausgeführt wurde).
     
     \step[2] 
+    GIANT zeigt in der Statuszeile im Hauptfenster \gq{Select Position in Display Window
+    for Insertion of IML Subgraph}
     Der Benutzer wählt das entsprechende Anzeigefenster aus und
     gibt über das Fadenkreuz \ref{Fadenkreuzcursor} die Position vor, an der die neuen
     Fenster-Knoten und Fenster-Kanten eingefügt werden sollen.
+    Die Statuszeile im Hauptfenster schaltet auf Normalmodus zurück.
     
     \step[3]
     GIANT zeigt den Dialog zur Auswahl des entsprechenden Layoutalgorithmus
@@ -287,7 +295,7 @@ Siehe hierzu
 \ref{Verhalten beim Einfügen von IML-Teilgraphen und Selektionen 
 in Anzeigefenster},
 insbesondere \ref{Einfügen von Selektionen in Anzeigefenster}.
-	  
+<<<<<beide refs fehlen?>>>>>>	  
 
   \begin{precond}
     \cond Ein Projekt mit mindestens zwei geöffneten 
@@ -320,24 +328,26 @@ insbesondere \ref{Einfügen von Selektionen in Anzeigefenster}.
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase über das PopUp Menü
-    \ref{PopUp Menü Subgraph List}
+    \ref{PopUp Menü Subgraph List} im Hauptfenster.
     Durch Auswahl einer der Menüeinträge 
-    \ref{PopUp Menue Subgraph List-Old layout} oder \ref{PopUp Menue Subgraph List-New layout},
-    also Copy IML Subgraph with existing layout oder Copy IML Subgraph with new layout.
+    Copy IML Subgraph with new layout oder Copy IML Subgraph with existing layout.
 
     Hierdurch wird automatisch die Quell-Selektion bestimmt (immer
-    die Selektion), auf der der Rechtsklick ausgeführt wurde.
+    die Selektion, auf der der Rechtsklick ausgeführt wurde).
     
     \step[2] 
-    Der Benutzer wählt das entsprechende Ziel-Anzeigefenster aus und
-    gibt über das Fadenkreuz die Position vor, an der die neuen
+    Der Benutzer wählt das entsprechende Ziel-Anzeigefenster aus.
+    GIANT zeigt in der Statuszeile im Hauptfenster \gq{Select Position in Display Window
+    for Insertion of copied IML Subgraph}
+    Der Nutzer gibt gibt über das Fadenkreuz die Position vor, an der die neuen
     Fenster-Knoten und Fenster-Kanten eingefügt werden sollen.
     \ref{Fadenkreuzcursor}
+    Die Statuszeile im Hauptfenster schaltet auf Normalmodus zurück.
     
     \step[3]
     GIANT kopiert die Knoten und Kanten der 
     Quell-Selektion in das Ziel-Anzeigefenster.
-    Je nachdem welchen Eintrag der Benutzer im PopUp Menü ausgewählt hat,
+    Je nachdem, welchen Eintrag der Benutzer im PopUp Menü ausgewählt hat,
     geschieht mit den bereits im Ziel-Anzeigefenster vorhandenen Knoten
     der Quell-Selektion folgendes:
     \begin {enumerate}

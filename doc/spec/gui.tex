@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.32 $
-%  $Date: 2003/02/25 22:02:49 $
-%  $Author: squig $
+%  $RCSfile: gui.tex,v $, $Revision: 1.33 $
+%  $Date: 2003/02/27 19:58:22 $
+%  $Author: birdy $
 %
 %  Description: Bis zu Revision 1.6 sind UseCase-artige Beschreibungen enthalten,
 %  die für UseCases nützlich sein könnten. 
@@ -36,8 +36,9 @@ Im Hauptfenster (MAIN\_WINDOW), welches es nur einmal gleichzeitig
 gibt, werden vorhandene Anzeigefenster und vorhandene
 IML-Teilgraphen angezeigt. Über Popup-Menues können Teilgraphen
 und Anzeigefenster manipuliert werden.
+Eine Statuszeile befindet sich ganz oben im Fenster.
 
-Im Fenster befinden sich zwei Listen, zuoberst WINDOW\_LIST (2 Spalten),
+Darunter im Fenster befinden sich zwei Listen, zuoberst WINDOW\_LIST (2 Spalten),
 und darunter SUBGRAPH\_LIST (4 Spalten).
 
 
@@ -50,9 +51,9 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     \subsubsection {Untermenü File (Main Window)} \label{Main-Window-File}
     Im Untermenü File des Hauptfensters befinden sich folgende Einträge.  
       \begin{enumerate}
+         \item {New Project}
          \item {Load Project}
          \item {Save Project}
-         \item {New Project}
          \item{ Quit}
       \end{enumerate}    
       
@@ -74,7 +75,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
   \subsection {Statuszeile}
 
     In der Statuszeile befindet sich die Information:
-    Projektname: x , Fenster: x , IML-Knoten: x, IML-Kanten: x
+    GIANT - Project name: x , Windows: x , IML Nodes: x, IML Edges: x
 
   \subsection {Window List}
   
@@ -95,18 +96,18 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
         \label{WINDOW-LIST-POPUP}
 
         \begin{enumerate}
-          \item Open Window
-          \item Close Window
-          \item Delete Window
-          \item New Window
-          \item Insert IML Subgraph
+          \item Open Window % OK
+          \item Close Window % OK
+          \item Delete Window % OK
+          \item New Window % OK
+          \item Insert IML Subgraph % OK
           \item Export Window
           \item Import Window
           \end{enumerate}
     
   \subsection {Subgraph List}
     
-    Under der WINDOW\_LIST im Fenster befindet sich eine Liste SUBGRAPH\_LIST.
+    Unter der WINDOW\_LIST im Fenster befindet sich eine Liste SUBGRAPH\_LIST.
    
     \subsubsection {Inhalt Subgraph List} 
     
@@ -132,8 +133,8 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
           \item highlight (zum Hervorheben eines Teilgraphen in allen Fenstern mit Farbe SUBGRAPH\_COL)
           \item Change highlighting color
           \item unhighlight
-          \item Copy IML Subgraph with existing layout \label{PopUp Menue Subgraph List-Old layout}
-          \item Copy IML Subgraph with new layout \label{PopUp Menue Subgraph List-New layout}
+          \item Copy IML Subgraph with existing layout % OK
+          \item Copy IML Subgraph with new layout % OK
           \item Rename IML Subgraph
           \item Delete IML Subgraph
           \item IML Subgraph Set Operation (Union/Difference/Intersection)
@@ -389,12 +390,11 @@ Bestandteile des Dialoges sind:
 Der Dialog Layoutalgorithmen bietet folgende Möglichkeiten:
 
 \begin {enumerate}
-\item {Auswahl des Layoutalgorithmus}
-\item Eingabe der zu berücksichtigenden Kanten bei semantischen Layouts
-\item OK Button
-\item Cancel Button
-\item Textfeld zur Eingabe des Namens für die Selektion (in dem Anzeigefenster wo sie eingefügt wurde)
-
+ \item {Auswahl des Layoutalgorithmus}
+ \item Eingabe der zu berücksichtigenden Kanten bei semantischen Layouts
+ \item OK Button
+ \item Cancel Button
+ \item Textfeld zur Eingabe des Namens für die Selektion (in dem Anzeigefenster wo sie eingefügt wurde)
 \end {enumerate}
 
 
