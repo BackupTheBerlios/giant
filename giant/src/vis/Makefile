@@ -7,6 +7,9 @@ vis :
 mini_maps :
 	make -C ../../ MAIN=src/vis/giant-mini_maps all
 
+graph_widgets :
+	make -C ../../ MAIN=src/vis/giant-graph_widgets all
+
 all : 
 	make -C ../../ all
 

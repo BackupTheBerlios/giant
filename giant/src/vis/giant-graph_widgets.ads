@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/05/23 16:39:04 $
+--  $Date: 2003/06/10 13:10:42 $
 --
 ------------------------------------------------------------------------------
 --
@@ -66,6 +66,7 @@ with Gtk.Widget;
 with Hashed_Mappings;
 pragma Elaborate_All (Hashed_Mappings);
 
+with Giant.Config;
 with Giant.Config.Vis_Styles;
 with Giant.Graph_Lib;
 with Giant.Graph_Lib.Selections;

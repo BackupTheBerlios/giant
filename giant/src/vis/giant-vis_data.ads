@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/05/23 16:39:04 $
+--  $Date: 2003/06/10 13:10:42 $
 --
 ------------------------------------------------------------------------------
 --
@@ -170,7 +170,7 @@ package Giant.Vis_Data is
    --  Type used to manage a graph within a two dimensional embedding
    --  provides functionality to add edges and nodes, to remove them and
    --  to find intersection among them.
-   type Region_Manager is new Ada.Finalization.Limited_Controlled with private;
+   type Region_Manager is new Ada.Finalization.Controlled with private;
 
    package Rectangle_2d_Lists is new Lists
      (ItemType => Vis.Absolute.Rectangle_2d);
@@ -478,7 +478,7 @@ private
          Nodes            : Vis_Node_Sets.Set;
       end record;
 
-   type Region_Manager is new Ada.Finalization.Limited_Controlled with
+   type Region_Manager is new Ada.Finalization.Controlled with
       record
          Region_Width  : Vis.Absolute_Natural;
          Region_Height : Vis.Absolute_Natural;
@@ -486,9 +486,15 @@ private
       end record;
 
    ----------------------------------------------------------------------------
-   --  Inherited from Ada.Finalization.Limited_Controlled
+   --  Inherited from Ada.Finalization.Controlled
    --  Must not be called by user.
    procedure Initialize
+     (Manager : in out Region_Manager);
+
+   ----------------------------------------------------------------------------
+   --  Inherited from Ada.Finalization.Controlled
+   --  Must not be called by user.
+   procedure Adjust
      (Manager : in out Region_Manager);
 
    ----------------------------------------------------------------------------
