@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.8 $
---  $Author: squig $
---  $Date: 2003/06/22 23:03:18 $
+--  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.9 $
+--  $Author: koppor $
+--  $Date: 2003/06/23 18:14:30 $
 --
 ------------------------------------------------------------------------------
 --
@@ -62,7 +62,7 @@ package Giant.Graph_Lib.Subgraphs is
    --  Returns:
    --    Selection converted to a subgraph
    function Create
-     (Name : in String;
+     (Name                 : in String;
       Selection_To_Convert : in Graph_Lib.Selections.Selection)
      return Subgraph;
 
@@ -74,8 +74,9 @@ package Giant.Graph_Lib.Subgraphs is
    ---------------------------------------------------------------------------
    --  Creates a deep-copy of the selection
    function Clone
-      (SubGraph_To_Clone : in Subgraph)
-      return Subgraph;
+     (SubGraph_To_Clone : in Subgraph;
+      Name_Of_Result    : in String)
+     return Subgraph;
 
    ---------------------------------------------------------------------------
    procedure Rename
@@ -187,22 +188,25 @@ package Giant.Graph_Lib.Subgraphs is
    ---------------------------------------------------------------------------
    --  Creates a new selection where the two given Subgraphs are unified
    function Union
-      (Left  : in Subgraph;
-       Right : in Subgraph)
+      (Left           : in Subgraph;
+       Right          : in Subgraph;
+       Name_Of_Result : in String)
       return Subgraph;
 
    ---------------------------------------------------------------------------
    --  Creates a new selection
    function Symetric_Difference
-      (Left  : in Subgraph;
-       Right : in Subgraph)
+      (Left           : in Subgraph;
+       Right          : in Subgraph;
+       Name_Of_Result : in String)
       return Subgraph;
 
    ---------------------------------------------------------------------------
    --  Creates a new selection
    function Intersection
-      (Left  : in Subgraph;
-       Right : in Subgraph)
+      (Left           : in Subgraph;
+       Right          : in Subgraph;
+       Name_Of_Result : in String)
       return Subgraph;
 
    -------------------
@@ -213,7 +217,8 @@ package Giant.Graph_Lib.Subgraphs is
    --  Converts current subgraph to a selection
    --    having the same name
    function Create_Selection
-     (Source : in Subgraph)
+     (Source   : in Subgraph;
+      New_Name : in String)
      return Graph_Lib.Selections.Selection;
 
 private

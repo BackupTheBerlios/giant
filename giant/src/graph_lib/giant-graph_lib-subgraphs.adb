@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.5 $
---  $Author: squig $
---  $Date: 2003/06/22 23:03:18 $
+--  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.6 $
+--  $Author: koppor $
+--  $Date: 2003/06/23 18:14:18 $
 
 package body Giant.Graph_Lib.Subgraphs is
 
@@ -86,12 +86,13 @@ package body Giant.Graph_Lib.Subgraphs is
 
    ---------------------------------------------------------------------------
    function Clone
-     (SubGraph_To_Clone : in Subgraph)
+     (SubGraph_To_Clone : in Subgraph;
+      Name_Of_Result    : in String)
       return Subgraph
    is
       Res : Subgraph := new Subgraph_Record;
    begin
-      Res.Sel := Selections.Clone (SubGraph_To_Clone.Sel);
+      Res.Sel := Selections.Clone (SubGraph_To_Clone.Sel, Name_Of_Result);
       return Res;
    end Clone;
 
@@ -114,8 +115,7 @@ package body Giant.Graph_Lib.Subgraphs is
    is
       Res : Subgraph := new Subgraph_Record;
    begin
-      Res.Sel := Selections.Clone (Selection_To_Convert);
-      Rename (Res, Name);
+      Res.Sel := Selections.Clone (Selection_To_Convert, Name);
       Ensure_Graph_Edge_Properties (Res);
       return Res;
    end Create;
@@ -123,11 +123,12 @@ package body Giant.Graph_Lib.Subgraphs is
    ---------------------------------------------------------------------------
    --  Returns a clone, since the caller may not change our internal data
    function Create_Selection
-     (Source : in Subgraph)
+     (Source   : in Subgraph;
+      New_Name : in String)
       return Graph_Lib.Selections.Selection
    is
    begin
-      return Selections.Clone (Source.Sel);
+      return Selections.Clone (Source.Sel, New_Name);
    end Create_Selection;
 
    ---------------------------------------------------------------------------
@@ -168,13 +169,14 @@ package body Giant.Graph_Lib.Subgraphs is
 
    ---------------------------------------------------------------------------
    function Intersection
-     (Left  : in Subgraph;
-      Right : in Subgraph)
+     (Left           : in Subgraph;
+      Right          : in Subgraph;
+      Name_Of_Result : in String)
       return Subgraph
    is
       Res : Subgraph := new Subgraph_Record;
    begin
-      Res.Sel := Selections.Intersection (Left.Sel, Right.Sel);
+      Res.Sel := Selections.Intersection (Left.Sel, Right.Sel, Name_Of_Result);
       Ensure_Graph_Edge_Properties (Res);
       return Res;
    end Intersection;
@@ -245,26 +247,29 @@ package body Giant.Graph_Lib.Subgraphs is
 
    ---------------------------------------------------------------------------
    function Symetric_Difference
-     (Left  : in Subgraph;
-      Right : in Subgraph)
+     (Left           : in Subgraph;
+      Right          : in Subgraph;
+      Name_Of_Result : in String)
       return Subgraph
    is
       Res : Subgraph := new Subgraph_Record;
    begin
-      Res.Sel := Selections.Symetric_Difference (Left.Sel, Right.Sel);
+      Res.Sel := Selections.Symetric_Difference
+        (Left.Sel, Right.Sel, Name_Of_Result);
       Ensure_Graph_Edge_Properties (Res);
       return Res;
    end Symetric_Difference;
 
    ---------------------------------------------------------------------------
    function Union
-     (Left  : in Subgraph;
-      Right : in Subgraph)
+     (Left           : in Subgraph;
+      Right          : in Subgraph;
+      Name_Of_Result : in String)
       return Subgraph
    is
       Res : Subgraph := new Subgraph_Record;
    begin
-      Res.Sel := Selections.Union (Left.Sel, Right.Sel);
+      Res.Sel := Selections.Union (Left.Sel, Right.Sel, Name_Of_Result);
       Ensure_Graph_Edge_Properties (Res);
       return Res;
    end Union;
