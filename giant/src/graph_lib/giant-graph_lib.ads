@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.31 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.32 $
 --  $Author: koppor $
---  $Date: 2003/07/06 03:15:15 $
+--  $Date: 2003/07/07 11:26:51 $
 --
 --  TBD:
 --    * Write into comment, when the routine may be used
@@ -434,11 +434,35 @@ package Giant.Graph_Lib is
       return Edge_Id_Set;
 
    ---------------------------------------------------------------------------
+   --  The caller may do anything with the array, since a copy is made
+   --
+   --  disabled, since not needed yet
+   --
+   --  Returns:
+   --    All incoming edges of given node
+   --  function Get_Incoming_Edges
+   --   (Node : in Node_Id)
+   --   return Edge_Id_Array;
+
+   ---------------------------------------------------------------------------
+   --  The caller has to destroy this set, since a copy is made
+   --
    --  Returns:
    --    All outgoing edges of given node
    function Get_Outgoing_Edges
       (Node : in Node_Id)
       return Edge_Id_Set;
+
+   ---------------------------------------------------------------------------
+   --  The caller may do anything with the array, since a copy is made
+   --
+   --  Faster than Get_Outgoing_Edges returing a set
+   --
+   --  Returns:
+   --    All outgoing edges of given node
+   function Get_Outgoing_Edges
+      (Node : in Node_Id)
+      return Edge_Id_Array;
 
    --------------------------------
    -- Inspectors                 --
