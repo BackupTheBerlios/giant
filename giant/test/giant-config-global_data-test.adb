@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-config-global_data-test.adb,v $, $Revision: 1.13 $
+--  $RCSfile: giant-config-global_data-test.adb,v $, $Revision: 1.14 $
 --  $Author: schwiemn $
---  $Date: 2003/09/15 19:48:16 $
+--  $Date: 2003/09/15 19:50:17 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -110,8 +110,8 @@ package body Giant.Config.Global_Data.Test is
         ((Giant.Config_Settings.Get_Setting_With_Path_Expanded
            ("Icon_relative_to_aps_path_root")
           = File_Management.Get_Absolute_Path_To_File_From_Relative
-             ("./resources/config_glob_test/",
-              "./annotation_dir/document.xpm")),
+             ("./resources/config_glob_test/annotation_dir/",
+              "./document.xpm")),
          "check annotations icon relative to absolute_path_root node");          
         
         
