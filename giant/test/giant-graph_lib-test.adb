@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.9 $
 --  $Author: koppor $
---  $Date: 2003/07/01 16:38:47 $
+--  $Date: 2003/07/05 16:17:41 $
 --
 
 with Ada.Text_IO;
@@ -38,10 +38,10 @@ package body Giant.Graph_Lib.Test is
    --------------------------------------------------------------------------
    --  Parameters for the graph to use for testing
 
-     IML_Filename   : constant String :=
-       "/home/stsopra/giant/graphs/httpd.iml";
-     IML_Edge_Count : constant Integer := 2316410;
-     IML_Node_Count : constant Integer := 797777;
+--       IML_Filename   : constant String :=
+--         "/home/stsopra/giant/graphs/httpd.iml";
+--       IML_Edge_Count : constant Integer := 2316410;
+--       IML_Node_Count : constant Integer := 797777;
 
 --     IML_Filename   : constant String :=
 --       "/home/stsopra/giant/graphs/wget.iml";
@@ -53,9 +53,9 @@ package body Giant.Graph_Lib.Test is
 --     IML_Edge_Count : constant Integer := 156072;
 --     IML_Node_Count : constant Integer := 646;
 
---     IML_Filename   : constant String  := "resources/rfg_examp.iml";
---     IML_Edge_Count : constant Integer := 646;
---     IML_Node_Count : constant Integer := 216;
+     IML_Filename   : constant String  := "resources/rfg_examp.iml";
+     IML_Edge_Count : constant Integer := 646;
+     IML_Node_Count : constant Integer := 216;
 
    -------------------------------------
    --  Global variables and routines  --
@@ -109,6 +109,60 @@ package body Giant.Graph_Lib.Test is
       Logger.Debug ("Root Node with ID: " & Node_Id_Image (Root));
       Output_Attributes (Root);
    end Output_RootNode;
+
+   ---------------------------------------------------------------------------
+   --  Looks for a node with enums
+   procedure Enums
+     (R : in out AUnit.Test_Cases.Test_Case'Class)
+   is
+      All_Nodes : Node_Id_Sets.Set;
+      Node_Iter : Node_Id_Sets.Iterator;
+      Cur_Node  : Node_Id;
+      Attr_Iter : Node_Attribute_Iterator;
+      Cur_Attr  : Node_Attribute_Id;
+
+   begin
+      All_Nodes := Get_All_Nodes;
+      Node_Iter := Node_Id_Sets.Make_Iterator (All_Nodes);
+
+      while Node_Id_Sets.More (Node_Iter) loop
+         Node_Id_Sets.Next (Node_Iter, Cur_Node);
+
+         Logger.Debug (Node_Id_Image (Cur_Node));
+
+         --  TBD: find out how to inspect ada's interal class
+         --    Logger.Debug (Cur_Node.IML_Node'External_Tag);
+
+         --  crashes here - constrainterror at graphlib
+         --    don't know, why
+         Logger.Debug ("  Class: " &
+                       Get_Node_Class_Tag (Get_Node_Class_Id (Cur_Node)));
+
+         Attr_Iter := Make_Attribute_Iterator (Cur_Node);
+
+         while More (Attr_Iter) loop
+            Next (Attr_Iter, Cur_Attr);
+
+            if Cur_Attr.all in IML_Reflection.Enumerator_Field'Class then
+               declare
+                  Enum       : IML_Reflection.Enumerator_Field :=
+                    IML_Reflection.Enumerator_Field (Cur_Attr.all);
+                  Enum_Value : Natural;
+               begin
+                  Logger.Debug ("Enum " & Enum.Name & " @ " &
+                                Node_Id_Image (Cur_Node));
+                  Enum_Value := Enum.Get_Value (Cur_Node.IML_Node);
+                  Logger.Debug (Integer'Image (Enum_Value) & " " &
+                                Enum.Type_Id.Enumerators (Enum_Value).all);
+               end;
+            end if;
+
+         end loop;
+
+      end loop;
+
+      Node_Id_Sets.Destroy (All_Nodes);
+   end Enums;
 
    procedure Check_Counts (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
@@ -220,6 +274,7 @@ package body Giant.Graph_Lib.Test is
    begin
       Register_Routine (T, Init'Access, "Init");
       Register_Routine (T, Output_RootNode'Access, "Output_RootNode");
+      Register_Routine (T, Enums'Access, "Enums");
       Register_Routine (T, Check_Counts'Access, "Check_Counts");
       Register_Routine (T, Edge_Set_Test'Access, "Edge_Set_Test");
       Register_Routine (T, All_Edges_Test'Access, "All Edges Test");
