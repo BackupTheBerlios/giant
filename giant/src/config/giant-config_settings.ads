@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.2 $
+-- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.3 $
 -- $Author: schwiemn $
--- $Date: 2003/06/20 17:12:49 $
+-- $Date: 2003/06/20 19:10:28 $
 --
 -- -----
 -- This package holds the functionality needed to access and handle
@@ -53,8 +53,8 @@ package Giant.Config_Settings is
    
    --------------------------------------------------------------------------
    -- Checks whether "Val" may be converted to Integer by
-   -- Integer'Value(Val).
-   function Validate_Integer (Val : in String) return Boolean;
+   -- Integer'Value(Value).
+   function Validate_Integer (Value : in String) return Boolean;
      
    --------------------------------------------------------------------------
    -- 0.2 Default Settings
@@ -144,9 +144,9 @@ package Giant.Config_Settings is
    -- xml node hierarchy. First the file "GIANT_Config_File" is
    -- read, second the file "User_Config_File".
    -- If a setting with the same indentifier is found
-   -- twice (in GIANT_Config_File and in User_Config_File)
-   -- the setting read from GIANT_Config_File is replaced
-   -- by the setting read from User_Config_File;
+   -- twice (e.g. in GIANT_Config_File and in User_Config_File)
+   -- the setting first read is replaced
+   -- by the setting that is later read.
    --
    -- After processing the files the validators will replace all non
    -- valid setting values by the default value.
@@ -189,8 +189,9 @@ package Giant.Config_Settings is
    --  you will definitely have dangling pointers
    --
    -- Raises:
-   --   Config_ADO_Not_Initialized_Exception - raised if this subprogram
-   --     is called before "Initialize_Config_Settings"
+   --   Config_Settings_ADO_Not_Initialized_Exception - 
+   --     raised if this subprogram is called before "
+   --     Initialize_Config_Settings".
    procedure Clear_Config_Data;
 
 
@@ -219,8 +220,9 @@ package Giant.Config_Settings is
    -- Returns:
    --   True, if the config setting exists; False, otherwise.
    -- Raises:
-   --   Config_ADO_Not_Initialized_Exception - raised if this subprogram
-   --     is called before "Initialize_Config_Settings"
+   --   Config_Settings_ADO_Not_Initialized_Exception - 
+   --     raised if this subprogram is called before "
+   --     Initialize_Config_Settings".
    function Does_Setting_Exist (Name : in String)
      return Boolean;
 
@@ -234,11 +236,12 @@ package Giant.Config_Settings is
    -- Returns:
    --   The the config setting corresponding to "Name_of_Setting"
    -- Raises:
-   --   Config_ADO_Not_Initialized_Exception - raised if this subprogram
-   --     is called before "Initialize_Config_Settings".
+   --   Config_Settings_ADO_Not_Initialized_Exception - 
+   --     raised if this subprogram is called before "
+   --     Initialize_Config_Settings".
    --   Config_Setting_Does_Not_Exist_Exception - raised if there is
    --     no config setting with the name "Name";
-   function Return_Setting_As_String (Name : in String)
+   function Get_Setting_As_String (Name : in String)
      return String;
 
    ---------------------------------------------------------------------------
@@ -251,13 +254,14 @@ package Giant.Config_Settings is
    -- Returns:
    --   The config setting corresponding to "Name_of_Setting"
    -- Raises:
-   --   Config_ADO_Not_Initialized_Exception - raised if this subprogram
-   --     is called before "Initialize_Config_Settings".
+   --   Config_Settings_ADO_Not_Initialized_Exception - 
+   --     raised if this subprogram is called before "
+   --     Initialize_Config_Settings".
    --   Config_Setting_Does_Not_Exist_Exception - raised if there is
    --     no config setting with the name "Name".
    --   Config_Setting_Is_Not_An_Integer_Value - raised if the
    --     value if the setting "Name_Of_Setting" is not an integer value.
-   function Return_Setting_As_Integer (Name : in String)
+   function Get_Setting_As_Integer (Name : in String)
      return Integer;
      
      
@@ -270,8 +274,9 @@ package Giant.Config_Settings is
    --     exists). 
    --   Value - The new value for that setting.
    -- Raises: 
-   --   Config_ADO_Not_Initialized_Exception - raised if this subprogram
-   --     is called before "Initialize_Config_Settings". 
+   --   Config_Settings_ADO_Not_Initialized_Exception - 
+   --     raised if this subprogram is called before "
+   --     Initialize_Config_Settings".
    procedure Set_Setting (Name : in String; Value : in String);
    
    
@@ -285,7 +290,9 @@ package Giant.Config_Settings is
    --   Value - A integer value for the setting - will be converted
    --     to String by Integer'Image (Value).
    -- Raises: 
-   --   Config_ADO_Not_Initialized_Exception - raised if this sub
+   --   Config_Settings_ADO_Not_Initialized_Exception - 
+   --     raised if this subprogram is called before "
+   --     Initialize_Config_Settings".
    procedure Set_Setting (Name : in String; Value : in Integer);
    
    
@@ -299,6 +306,10 @@ package Giant.Config_Settings is
    -- Parameters:
    --   File_Name - The name of the file into that the settings should be
    --     written.
+   -- Raises:
+   --   Config_Settings_ADO_Not_Initialized_Exception - 
+   --     raised if this subprogram is called before "
+   --     Initialize_Config_Settings".
    procedure Store_User_Config_File (File_Name : in String);
        
 end Giant.Config_Settings;
