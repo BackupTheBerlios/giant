@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/30 16:02:35 $
+-- $Date: 2003/07/03 13:47:05 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -40,6 +40,7 @@ use  Giant.Gsl.Interpreters;
 with Giant.Gsl.Compilers;
 with Giant.Gsl.Types;
 with Giant.Gsl.Syntax_Tree;
+with Giant.GSL_Support;
 
 package body Giant.Gsl.Runtime is
 
@@ -76,22 +77,25 @@ package body Giant.Gsl.Runtime is
      (Parameter : Gsl_List)
       return Gsl_Type is
 
+      use Giant.Gsl.Compilers;
+      use Giant.Gsl.Syntax_Tree;
+
       Cond         : Gsl_Type;
       True_Branch  : Gsl_Type;
       False_Branch : Gsl_Type;
       Param        : Gsl_List;
-      Compiler     : Giant.Gsl.Compilers.Compiler;
+      Comp         : Compiler;
       ES           : Execution_Stacks.Stack;
       RS           : Result_Stacks.Stack;
    begin
-      Compiler := Get_Current_Compiler;
+      Comp := Get_Current_Compiler;
       ES := Get_Current_Execution_Stack;
       RS := Get_Current_Result_Stack;
 
       if Get_List_Size (Parameter) /= 3 then
          Ada.Exceptions.Raise_Exception
            (Gsl_Runtime_Error'Identity, "Script 'if' requires " &
-             "3 Parameters");
+             "3 parameters.");
       end if;
       Cond := Get_Value_At (Parameter, 1);
       True_Branch := Get_Value_At (Parameter, 2);
@@ -101,10 +105,9 @@ package body Giant.Gsl.Runtime is
             if True_Branch'Tag = Gsl_Script_Reference_Record'Tag then
 
                -- Script_Activation to Execution Stack
-               Execution_Stacks.Push (ES,
-                 Giant.Gsl.Compilers.Get_Execution_Stack
-                   (Compiler, Giant.Gsl.Syntax_Tree.Create_Node
-                     (Script_Activation, Null_Node, Null_Node)));
+               Execution_Stacks.Push (ES, Get_Execution_Stack
+                 (Comp, Create_Node (Script_Activation, 
+                                     Null_Node, Null_Node)));
 
                Result_Stacks.Push (RS, True_Branch);
                Param := Create_Gsl_List (0);
@@ -116,10 +119,9 @@ package body Giant.Gsl.Runtime is
             if False_Branch'Tag = Gsl_Script_Reference_Record'Tag then
 
                -- Script_Activation to Execution Stack
-               Execution_Stacks.Push (ES,
-                 Giant.Gsl.Compilers.Get_Execution_Stack
-                   (Compiler, Giant.Gsl.Syntax_Tree.Create_Node
-                     (Script_Activation, Null_Node, Null_Node)));
+               Execution_Stacks.Push (ES, Get_Execution_Stack
+                 (Comp, Create_Node (Script_Activation, 
+                                     Null_Node, Null_Node)));
 
                Result_Stacks.Push (RS, True_Branch);
                Param := Create_Gsl_List (0);
@@ -154,6 +156,45 @@ package body Giant.Gsl.Runtime is
         (Gsl_Runtime_Error'Identity, "Runtime Error.");
       return Gsl_Null;
    end Runtime_Error;
+
+   ---------------------------------------------------------------------------
+   --
+   function Runtime_Run
+     (Parameter : Gsl_List)
+      return Gsl_Type is
+
+      use Giant.Gsl.Compilers;
+      use Giant.Gsl.Syntax_Tree;
+
+      Name : Gsl_Type;
+      Comp : Compiler;
+      ES   : Execution_Stacks.Stack;
+   begin
+      Default_Logger.Debug ("Runtime_Run called");
+      Comp := Get_Current_Compiler;
+      ES := Get_Current_Execution_Stack;
+      if Get_List_Size (Parameter) /= 1 then
+         Ada.Exceptions.Raise_Exception
+           (Gsl_Runtime_Error'Identity, "Script 'run' requires " &
+             "1 parameter.");
+      end if;
+      Name := Get_Value_At (Parameter, 1);
+      if Name'Tag = Gsl_String_Record'Tag then
+         Default_Logger.Debug ("Runtime_Run: Looking for library:  " &
+                               Get_Value (Gsl_String (Name)));
+         -- push the code of the library to the execution stack 
+         Execution_Stacks.Push (ES, Get_Execution_Stack (Comp, 
+           Giant.GSL_Support.Get_GSL_Include (Get_Value (Gsl_String (Name)) 
+                                                         & ".gsl")));
+         -- remove the Gsl_Null result from the result stack in the next step
+         Execution_Stacks.Push (ES, Get_Execution_Stack (Comp,
+           Create_Node (Result_Pop, Null_Node, Null_Node)));
+         return Gsl_Null;
+      else
+         Ada.Exceptions.Raise_Exception
+           (Gsl_Runtime_Error'Identity, "Script 'run': Gsl_String expected.");
+      end if;
+   end Runtime_Run;
 
 ------------------------------------------------------------------------------
 -- arithmetic (ref. GIANT Scripting Language Specification 1.5.1.3)
