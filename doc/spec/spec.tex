@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: spec.tex,v $, $Revision: 1.28 $
-%  $Date: 2003/03/29 12:59:27 $
-%  $Author: schwiemn $
+%  $RCSfile: spec.tex,v $, $Revision: 1.29 $
+%  $Date: 2003/03/29 14:47:01 $
+%  $Author: koppor $
 %
 %  Description: Master Datei der Spezifikation
 %
@@ -11,12 +11,10 @@
                
 \usepackage{../styles/common}
 
-
 \usepackage{spec}
 
 \usepackage{makeidx}
-\usepackage{showidx}
-
+\makeindex
 
 % subsubsections nummerieren
 \setcounter{secnumdepth}{3}
@@ -30,8 +28,6 @@
 \fancyhead[LO,RE]{\slshape \leftmark}
 \fancyfoot[LE,RO]{\thepage{}}
 \fancyfoot[LO,RE]{\version}
-
-\makeindex
 
 \begin{document}
 
@@ -57,7 +53,7 @@ Studienprojekt A - IML Browser\\
 %
 % ToDo - Aus fertigem Dokument entferenen
 %
-\chapter{ToDo -- nicht in fertiger SPez.}
+\chapter*{ToDo -- nicht in fertiger SPez.}
 
 Hier Sachen beschreiben, die irgenwie beim Erstellen der Spez.\ 
 beachtet werden sollen.
@@ -259,20 +255,20 @@ dieser Begriffe für alle englischsprachigen Dokumente von GIANT vorgegeben.
 
 \include{nomenclature}
 
-
-%Der INDEX 
-
-%===============================================================================
+%==============================================================================
+%
+%  Index
+%
+\newpage
+%auch ins Inhaltsverzeichnis schreiben
+\addcontentsline{toc}{chapter}{Index}
 \printindex
 
-
-
-%===============================================================================
+%==============================================================================
 % 
 % Anhang
 %
+\newpage
 \appendix
-
-
 
 \end{document}
