@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: additional.tex,v $, $Revision: 1.17 $
-%  $Date: 2003/04/19 18:19:54 $
+%  $RCSfile: additional.tex,v $, $Revision: 1.18 $
+%  $Date: 2003/04/19 19:49:06 $
 %  $Author: birdy $
 %
 %  Description: Sonstige UseCases
@@ -65,13 +65,20 @@ Die verfügbaren Layoutalgorithmen sind im Kapitel
 
     \step[4]
     Falls der gewählte Layoutalgorithmus dies unterstützt, kann der
-    Benutzer in diesem Dialog die Typen von IML-Kanten, die beim
+    Benutzer in diesem Dialog die Klassenmengen, die beim
     Layout berücksichtigt werden sollen, vorgeben.
 
     \step[5]
     Der Benutzer bestätigt seine Eingaben mit OK.
-
+    
+    
     \step[6]
+    GIANT fordert den Anwender über die Statuszeile auf, die Zielposition
+    des Layouts anzugeben (\gq{Please click on desired target position for
+    Layout in Window}). Der Nutzer klickt mit der linken Maustaste auf
+    das Zielgebiet im Fenster.
+
+    \step[7]
     GIANT berechnet das Layout und zeigt einen Progress-Dialog 
     (siehe \ref{Progressbar-Modale}) an. 
     Während der Berechnung des Layouts ist die GUI mit Ausnahme des

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.43 $
-%  $Date: 2003/04/19 18:10:28 $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.44 $
+%  $Date: 2003/04/19 19:45:43 $
 %  $Author: birdy $
 %
 %  Description: UseCases für die Fensterfunktionalität der GUI
@@ -333,18 +333,25 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
     auch die Klassenmengen vor, die für das Layout berücksichtigt
     werden sollen (siehe Kapitel \ref{Layoutalgorithmen} für Details
     zu Layoutalgorithmen).
+    Ggf. ist der Wurzelknoten anhand seiner ID einzugeben.
            
     \step[5]
     Der Benutzer bestätigt mit OK.
+    
+    \step[6]
+    GIANT fordert den Anwender über die Statuszeile auf, die Zielposition
+    des Layouts anzugeben (\gq{Please click on desired target position for
+    Layout in Window}). Der Nutzer klickt mit der linken Maustaste auf
+    das Zielgebiet im Fenster.
           
-    \step[6] GIANT berechnet das entsprechende Layout und zeigt einen
+    \step[7] GIANT berechnet das entsprechende Layout und zeigt einen
     Dialog an, der den Benutzer über den Fortschritt der Berechnung
     informiert (siehe \ref{Progressbar-Modale}).\\
     Während der Berechnung des Layouts kann das System GIANT nicht
     bedient werden. Zugänglich ist nur der Button zum Abbruch der
     Berechnung (siehe \ref{Progressbar-Modale-Cancel}).
     
-    \step[7]
+    \step[8]
     Nach Abschluss der Berechnung fügt GIANT die Fenster-Knoten und 
     Fenster-Kanten in das entsprechende Anzeigefenster ein.
    
