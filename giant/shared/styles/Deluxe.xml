@@ -10,12 +10,11 @@
 
   <!-- ................................................................. -->
   <default_node_setting
-    icon         = "../icons/vis_deluxe/ICON_DEFAULT.xpm"
+    icon         = "../icons/vis_deluxe/DEFAULT.xpm"
     text_color   = "#000000"
     border_color = "#000000"
-    fill_color   = "#C4EDED"> 
-     
-    <node_attribute attribute_name  = "Parent"/>       
+    fill_color   = "#F4F4F4"> 
+        
     <node_attribute attribute_name  = "SLoc"/>       
   </default_node_setting>
     
