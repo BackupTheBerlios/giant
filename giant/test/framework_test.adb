@@ -20,15 +20,16 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: framework_test.adb,v $, $Revision: 1.13 $
+--  $RCSfile: framework_test.adb,v $, $Revision: 1.14 $
 --  $Author: koppor $
---  $Date: 2003/09/21 00:14:31 $
+--  $Date: 2003/10/01 21:55:02 $
 --
 with AUnit.Test_Suites; use AUnit.Test_Suites;
 with AUnit.Test_Runner;
 
 with Hashed_Mappings_Test;
 
+with Giant.Config.Class_Sets.Test;
 with Giant.Config.Test;
 with Giant.Config.Vis_Styles.Test;
 with Giant.Default_Logger;
@@ -42,9 +43,9 @@ with Giant.Gsl.Test;
 with Giant.Gsl_Support.Test;
 with Giant.Layout_Factory.Test;
 with Giant.Matrix_Layouts.Test;
-with Giant.Tree_Layouts.Test;
 with Giant.Node_Annotations.Test;
 with Giant.Projects.Test;
+with Giant.Tree_Layouts.Test;
 with Giant.Valid_Names.Test;
 with Giant.Vis_Windows.Test;
 with Giant.XML_File_Access.Test;
@@ -56,6 +57,8 @@ procedure Framework_Test is
    is
       Result : Access_Test_Suite := new Test_Suite;
    begin
+      --Add_Test (Result, new );
+      Add_Test (Result, new Giant.Config.Class_Sets.Test.Test_Case);
       Add_Test (Result, new Giant.Config.Test.Test_Case);
       Add_Test (Result, new Giant.Config.Vis_Styles.Test.Test_Case);
       Add_Test (Result, new Giant.Default_Logger.Test.Test_Case);
@@ -69,11 +72,12 @@ procedure Framework_Test is
       Add_Test (Result, new Giant.Gsl_Support.Test.Test_Case);
       Add_Test (Result, new Giant.Layout_Factory.Test.Test_Case);
       Add_Test (Result, new Giant.Matrix_Layouts.Test.Test_Case);
-      Add_Test (Result, new Giant.Tree_Layouts.Test.Test_Case);
       Add_Test (Result, new Giant.Node_Annotations.Test.Test_Case);
       Add_Test (Result, new Giant.Projects.Test.Test_Case);
+      Add_Test (Result, new Giant.Tree_Layouts.Test.Test_Case);
       Add_Test (Result, new Giant.Valid_Names.Test.Test_Case);
       Add_Test (Result, new Giant.Vis_Windows.Test.Test_Case);
+      Add_Test (Result, new Giant.XML_File_Access.Test.Test_Case);
       return Result;
    end Default_Suite;
 
