@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.11 $
+-- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.12 $
 -- $Author: schwiemn $
--- $Date: 2003/06/25 18:37:52 $
+-- $Date: 2003/06/26 13:23:55 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -1009,7 +1009,7 @@ package body Giant.Config.Vis_Styles is
             raise Invalid_Directory_Exception;
       end;
 
-      ------------------
+      ------------------------------------------------
       -- get default vis_style - this style must exist
       begin
          XML_File_Access.Load_XML_File_Validated

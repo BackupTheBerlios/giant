@@ -20,9 +20,10 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.ads,v $, $Revision: 1.9 $
--- $Author: squig $
--- $Date: 2003/06/23 16:15:41 $
+-- $RCSfile: giant-file_management.ads,v $, $Revision: 1.10 $
+
+-- $Author: schwiemn $
+-- $Date: 2003/06/26 13:23:55 $
 --
 -- -----------------------------------------------
 --
@@ -41,7 +42,7 @@ package Giant.File_Management is
 
    ---------------------------------------------------------------------------
    -- The maximum length of a file name (only the name - no path)
-   Max_File_Name_Length : constant integer := 256;
+   Max_File_Name_Length : constant integer := 512;
 
    ---------------------------------------------------------------------------
    -- Raised if an not existing of incorrect directory is passed
@@ -166,6 +167,36 @@ package Giant.File_Management is
      (Start_Dir             : in String;
       Relative_Path_To_File : in String)
      return String;
+     
+     
+   --------------------------------------------------------------------------
+   -- Calculates an relative path out of an absolute path using a absolute
+   -- path root.
+   --
+   -- Simply tries to Cut a way the Abs_Path_Root from Abs_Path.
+   --
+   -- Will return Abs_Path if no relative Path could be calculated.
+   --
+   -- Example:
+   --  Abs_Path_Root = "/home"
+   --  Abs_Path      = "/home/my_home_dir"
+   --  --> Result    = "./my_home_dir"
+   --
+   -- Parameters: 
+   --   Abs_Path_Root - An absolute path describing the root towards the
+   --     relative one should be calculated.
+   --   Abs_Path - An absolute path for that a relative one should 
+   --    be calculated.
+   -- Returns:
+   --   A String describing a relative path if such a path could be calculated,
+   --   if not Abs_Path will be returned.
+   function Get_Relative_Path_To_File_From_Absolute
+     (Abs_Path_Root : in String;
+      Abs_Path      : in String) 
+     return String;
+          
+     
+     
 
    ---------------------------------------------------------------------------
    --  Calculates an absolute path from an relative one for a directory.

@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.34 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.35 $
 --  $Author: schwiemn $
---  $Date: 2003/06/25 16:56:44 $
+--  $Date: 2003/06/26 13:23:55 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -456,6 +456,8 @@ package body Giant.Projects is
 
       Subgraphs_Iter : Subgraph_Data_Hashs.Values_Iter;
       A_Subgraph_Data_Element : Subgraph_Data_Element;
+      
+      Rel_Path := Ada.Strings.Unbounded.Unbounded_String;
 
    begin
 
@@ -508,6 +510,7 @@ package body Giant.Projects is
 
       --  write entries for the files holding the
       --  streamed visualisation windows
+      --  tries to figure out a relative path
       -------------------------------------------
       Ada.Text_IO.Put_Line
         ("  <visualisation_windows>");

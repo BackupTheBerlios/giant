@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.10 $
--- $Author: squig $
--- $Date: 2003/06/23 16:15:41 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.11 $
+-- $Author: schwiemn $
+-- $Date: 2003/06/26 13:23:55 $
 --
 --
 with Ada.Streams;
@@ -249,7 +249,48 @@ package body Giant.File_Management is
          GNAT.Directory_Operations.Change_Dir (Old_Exec_Dir);
          raise File_Does_Not_Exist_Exception;
    end Get_Absolute_Path_To_File_From_Relative;
-
+   
+         
+   ---------------------------------------------------------------------------
+   function Get_Relative_Path_To_File_From_Absolute
+     (Abs_Path_Root : in String;
+      Abs_Path      : in String) 
+     return String is
+      
+      Dir_Separator : Character := GNAT.OS_Lib.Directory_Separator;
+      
+   begin
+   
+      if (Abs_Path_Root'Length > Abs_Path'Length) then
+         return Abs_Path;
+      
+      elsif (Abs_Path_Root'Length = Abs_Path'Length) and then
+        Abs_Path_Root (Abs_Path_Root'Range) = Abs_Path (Abs_Path'Range) then
+        
+        return ("." & Dir_Separator);
+                   
+      -- calculate relative path
+      elsif (Abs_Path_Root'Length < Abs_Path'Length) and then      
+        (Abs_Path_Root (Abs_Path_Root'Range) = Abs_Path 
+          (Abs_Path'First .. Abs_Path'First + Abs_Path_Root'Length - 1)) then
+          
+         if (Abs_Path (Abs_Path'First + Abs_Path_Root'Length) 
+           = Dir_Separator) then
+           
+            return ("." & Abs_Path 
+              (Abs_Path'First + Abs_Path_Root'Length .. Abs_Path'Last));
+         else
+          
+            return ("." & Dir_Separator & Abs_Path (Abs_Path'First + 
+              Abs_Path_Root'Length .. Abs_Path'Last));
+         end if;
+      else
+      
+         return Abs_Path;
+      end if;
+   
+   end Get_Relative_Path_To_File_From_Absolute;
+      
    ---------------------------------------------------------------------------
    function Get_Absolute_Path_To_Directory_From_Relative
      (Start_Dir    : in String;
@@ -291,15 +332,12 @@ package body Giant.File_Management is
    function Return_Dir_Path_For_File_Path (File_Path : String)
                                           return String is
 
-      Path : Ada.Strings.Unbounded.Unbounded_String;
-
+      Path          : Ada.Strings.Unbounded.Unbounded_String;
       -- Position of last directory spearator in "File_Path"
       -- that separates the path from the file name;
-      Cut_Index : Integer := 0;
-
+      Cut_Index     : Integer := 0;
       Dir_Separator : Character := GNAT.OS_Lib.Directory_Separator;
-
-      Path_Found : Boolean := False;
+      Path_Found    : Boolean := False;
 
    begin
 
