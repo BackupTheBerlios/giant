@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: functions.tex,v $, $Revision: 1.4 $
-%  $Date: 2003/07/02 16:55:40 $
+%  $RCSfile: functions.tex,v $, $Revision: 1.5 $
+%  $Date: 2003/07/03 12:41:00 $
 %  $Author: birdy $
 %
 %  Description: 
@@ -358,9 +358,19 @@ Subgraph List (4 Spalten).
 	       Der Benutzer wählt einen geeigneten Betrag aus und bestätigt mit OK. }	 
          \item{GIANT schiebt die Knoten entsprechend auseinander.}
         \end{itemize}
-      \item New Pin
+      \item New Pin\\
          Mittels dieses Menüpunktes kann ein neuer Pin angelegt werden.
-	 ********
+	 \begin{itemize} 
+	     \item{Der Benutzer führt einen Rechtsklick auf den Anzeigeinhalt eines
+    		Anzeigefensters durch und wählt aus dem Popup-Menü 
+    		(siehe \ref{Empty Vis Pane Right click}) den Eintrag \gq{New Pin} aus.
+    		Der später erstellte Pin verweist dann auf die Stelle im Anzeigeinhalt,
+    		auf die der Rechtsklick durchgeführt wurde.}
+    	     \item{Der Benutzer gibt im aufgehenden Texteingabedialog einen
+	        zulässigen Namen für den neuen Pin ein und bestätigt mit OK}
+    	     \item{GIANT speichert die aktuelle Zoomstufe und die Position des sichtbaren
+    		Anzeigeinhaltes in einem neuen Pin.}
+	 \end{itemize}
     \end{enumerate}
     
 
@@ -372,8 +382,11 @@ Subgraph List (4 Spalten).
     Im Popup-Menü der Pinliste befinden sich folgende Menüpunkte:
     
     \begin{enumerate}
-      \item Focus Pin % OK
-      \item Delete Pin % OK
+      \item Focus Pin\\
+            Mittels dieses Menüpunktes kann der sichtbare Anzeigeinhalt gemäß den im Pin gespeicherten
+            Informationen gesetzt werden.
+      \item Delete Pin\\
+            Mittels dieses Menüpunktes kann der Pin aus der Pinliste gelöscht werden.
     \end{enumerate}
 
   \subsection{Selektionsauswahlliste} \label{Selektionsauswahlliste}
@@ -385,10 +398,44 @@ Subgraph List (4 Spalten).
     sich folgende Einträge:
 
     \begin{enumerate}
-      \item New Selection
-
-      \item Move Selection
-     
+      \item New Selection\\
+      Mit diesem Menüpunkt können neue, leere Selektionen angelegt werden.
+       \begin{itemize}
+	  \item{GIANT öffnet einen allgemeinen Texteingabedialog}
+	  \item{Der Benutzer gibt dort einen zulässigen Namen 
+           (siehe \ref{afa Zulaessige Namen}) für die neue Selektion 
+           ein und bestätigt mit OK.}
+	  \item{Eine neue Selektion mit dem vorgegebenen Namen
+           ist angelegt und erscheint in der Liste der Selektionen.
+           Diese neue Selektion ist leer, sie hat also keine selektierten 
+           Fenster-Knoten und Fenster-Kanten).}
+        \end{itemize}
+      \item Move Selection\\
+     Mit diesem Menüpunkt können Fenster-Knoten oder ganze Selektionen auf dem
+     Anzeigeinhalt verschoben werden. Dieses Verschieben geschieht mittels
+     \gq{Cut and Paste}.
+     \begin{itemize}
+      \item{Der Benutzer wählt die zu verschiebende Selektion oder den
+       zu verschiebenden Fenster-Knoten aus (\gq{Cut}), indem er
+       Einen Rechtsklick auf eine Selektion in der Selektionsauswahlliste
+       durchführt und im Popup-Menü \gq{Move Selection} auswählt,
+       oder einen Rechtsklick auf einen Fenster-Knoten durchführt
+       und im Popup Menü \gq{Move Node} auswählt.}
+      \item{GIANT geht in den \gq{Paste Modus} über und zeigt
+       dies in der Statusleiste des Hauptfensters an.  Der Cursor wird,
+       falls er über den sichtbaren Anzeigeinhalt eines Anzeigefensters
+       bewegt wird, zum Fadenkreuz.
+       Die Funktionalität zum Zoomen und Scrollen des Anzeigefensters
+       bleibt weiterhin verfügbar, die übrige Funktionalität von GIANT
+       wird gesperrt.}
+      \item{Der Benutzer klickt mit der linken Maustaste an eine
+       beliebige Stelle innerhalb des sichtbaren Anzeigeinhaltes des
+       Anzeigefensters.
+       GIANT verschiebt die ausgewählten Fenster-Knoten an die gewünschte
+       Stelle. Die zuvor mit dem Fadenkreuzcursor vorgegebene Position entspricht
+       jetzt der des Mittelpunktes eines die verschobene Selektion umspannenden
+       Rechtecks.}
+     \end{itemize}
       \item Show Selection % war: Fade In Selection      
 
       \item Show all % Neu gemaess Daniel Simon
