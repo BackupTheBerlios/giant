@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.13 $
+--  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.14 $
 --  $Author: koppor $
---  $Date: 2003/06/26 14:07:22 $
+--  $Date: 2003/06/26 16:01:57 $
 --
 ------------------------------------------------------------------------------
 --
@@ -64,17 +64,21 @@ package Giant.Graph_Lib.Selections is
        New_Name            : in     String);
 
    ---------------------------------------------------------------------------
-   function Get_Name
-      (Selection_To_Read : in Selection)
-      return String;
-
-   ---------------------------------------------------------------------------
    --  Don't know about the semantic
    --  Returns randomly true or false
    function "<"
       (Left  : in Selection;
        Right : in Selection)
       return Boolean;
+
+   -----------------
+   --  Inspecors  --
+   -----------------
+
+   ---------------------------------------------------------------------------
+   function Get_Name
+      (Selection_To_Read : in Selection)
+      return String;
 
    ---------------------------------------------------------------------------
    --  Returns:
@@ -89,6 +93,14 @@ package Giant.Graph_Lib.Selections is
    function Get_Node_Count
      (Sel : in Selection)
      return Natural;
+
+   ---------------------------------------------------------------------------
+   --  RESULT MAY NOT BE MODIFIED
+   --  Returns:
+   --    All Nodes included in selection
+   function Get_All_Nodes
+     (Sel : in Selection)
+     return Node_Id_Set;
 
    ---------------
    --  Streams  --
