@@ -6,6 +6,7 @@ in the source directory for details.
 
 Version 1.1.1 (2003-09-)
 
+ * standard.gsl fixed
  * Fixed activation record of loop body (Bug #924)
  * Fixed get_first call (Bug #925)
  * Decreased intensity of gsl logging (Bug #926) 
