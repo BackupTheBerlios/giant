@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.73 $
-%  $Date: 2003/04/17 00:29:17 $
-%  $Author: schwiemn $
+%  $RCSfile: gui.tex,v $, $Revision: 1.74 $
+%  $Date: 2003/04/17 10:57:34 $
+%  $Author: birdy $
 %
 %  Description: 
 %
@@ -37,12 +37,12 @@ vermerkt.
 \end{figure}
 
 Jede Instanz von GIANT hat genau ein Hauptfenster.
-Im Hauptfenster (MAIN\_WINDOW) werden vorhandene Anzeigefenster und
+Im Hauptfenster (Main Window) werden vorhandene Anzeigefenster und
 IML-Teilgraphen angezeigt. Über Popup-Menüs können IML-Teilgraphen
 und Anzeigefenster manipuliert werden.
 
-Im Fenster befinden sich zwei Listen, WINDOW\_LIST (2 Spalten), und
-SUBGRAPH\_LIST (4 Spalten).
+Im Fenster befinden sich zwei Listen, Window List (2 Spalten), und
+Subgraph List (4 Spalten).
 
 
   \subsection {Kopfzeile}
@@ -81,21 +81,21 @@ SUBGRAPH\_LIST (4 Spalten).
 
    \subsection {Window List}
   
-   Im Fenster befindet sich zuoberst eine Liste WINDOW\_LIST, welche
+   Im Fenster befindet sich zuoberst eine Liste Window List, welche
    alle Fenster des Projektes (offen und geschlossen anzeigt).
    
    \subsubsection {Inhalt Window List}
    \label{WINDOW-LIST}
    
-   WINDOW\_LIST hat die Spalten WINDOW\_NAME \gq{Name} und WINDOW\_OPEN \gq{Open}. In
-   WINDOW\_NAME wird der Name aller Anzeigefenster dargestellt, in
-   WINDOW\_OPEN befindet sich entweder ein Strich-Symbol (Fenster
+   Window List hat die Spalten \gq{Name} und \gq{Open}. In
+   \gq{Name} wird der Name aller Anzeigefenster dargestellt, in
+   \gq{Open} befindet sich entweder ein Strich-Symbol (Fenster
    nicht geöffnet) oder ein Häkchensymbol (Fenster geöffnet).
     
     \subsubsection {Popup-Menü Window List}
     
     
-        Beim Rechtsklick auf WINDOW\_LIST öffnet sich ein 
+        Beim Rechtsklick auf Window List öffnet sich ein 
         Popup-Menü mit folgenden Menüpunkten:
         \label{WINDOW-LIST-POPUP}
 
@@ -111,27 +111,27 @@ SUBGRAPH\_LIST (4 Spalten).
   \subsection {Subgraph List}
   \label{GUI Subgraph List}
     
-    Unter der WINDOW\_LIST befindet sich eine Liste SUBGRAPH\_LIST.
+    Unter der Window List befindet sich eine Liste Subgraph List.
    
     \subsubsection {Inhalt Subgraph List} 
     
       SUBGRAPH\_LIST hat die Spalten 
       \begin{enumerate}
-        \item Name (SUBGRAPH\_NAME)
-        \item Nodes (SUBGRAPH\_NODES)
-        \item Edges (SUBGRAPH\_EDGES)
-        \item Highlighted (SUBGRAPH\_HIGHLIGHT\_COL).
+        \item Name
+        \item Nodes
+        \item Edges
+        \item Highlighted
       \end{enumerate}
     
       In Subgraph Name stehen die Namen der existierenden Subgraphen,
       in Nodes die Anzahl der Knoten des Subgraphen, in Edges die
-      Anzahl der Kanten und in Highlight Color ein Kästchen mit der
+      Anzahl der Kanten und in Highlighted ein Kästchen mit der
       Farbe, die verwendet wird, wenn dieser Subgraph markiert wird.
 
     
     \subsubsection {Popup-Menü Subgraph List}
     \label {Popup-Menü Subgraph List}
-      Beim Rechtsklick auf SUBGRAPH\_LIST öffnet 
+      Beim Rechtsklick auf Subgraph öffnet 
       sich ein Popup-Menü mit folgenden Menüpunkten:
         \label{SUBGRAPH-LIST-POPUP}
         \begin{enumerate}
@@ -162,13 +162,12 @@ SUBGRAPH\_LIST (4 Spalten).
   aus folgenden Elementen:
   
   \label{GUI Stilauswahl-Combobox} 
-  In Anzeigefenstern (VISUALIZATION\_WINDOW) werden Graphen
+  In Anzeigefenstern (Visualization Windows) werden Graphen
   visualisiert.  Sie erscheinen im großen quadratischen rechten Teil
-  (VIS\_PANE) des Fensters. Die VIS\_PANE enthält den Anzeigeinhalt
+  (\gq{Vis Pane}) des Fensters. Die Vis Pane enthält den Anzeigeinhalt
   des Fensters.  Im linken Viertel des Fensters, der Toolbar
-  (VISUALIZATION\_WINDOW\_TOOLBAR) befinden sich untereinander die
-  MiniMap (MINIMAP), Pinliste (PIN\_LIST), Selektionsliste
-  (SELECTION\_LIST), die Stilauswahl-Combobox (STYLE\_COMBO) und die
+  (\gq{Vis Toolbar}) befinden sich untereinander die
+  MiniMap, Pinliste, Selektionsliste, die Stilauswahl-Combobox und die
   Zoom-Kontrolle.
 
  \subsection {MiniMap} \label{GUI Minimap}
@@ -178,12 +177,12 @@ SUBGRAPH\_LIST (4 Spalten).
  Anzeigeinhalt wird durch einen kleineren Rahmen repräsentiert, der
  innerhalb der MiniMap durch Mausklicks versetzt werden kann. Je nach
  Zoomstufe ist dieser Rahmen größer oder kleiner. Wird der Rahmen
- versetzt, der sichtbare Anzeigeinhalt im VIS\_PANE entsprechend
+ versetzt, der sichtbare Anzeigeinhalt in der Vis Pane entsprechend
  angepasst.
 
   \subsection{Visualisierung der Knoten}
 
-    In der VIS\_PANE werden die Fenster-Knoten und Fenster-Kanten angezeigt.
+    In der Vis Pane werden die Fenster-Knoten und Fenster-Kanten angezeigt.
     
     Wenn auf einem Knoten die rechte Maustaste geklickt wird, öffnet sich
     folgendes Popup-Menü:
@@ -203,7 +202,7 @@ SUBGRAPH\_LIST (4 Spalten).
       \item Show Node Annotation \label{Show Node Annotation}
     \end{enumerate}
     
-    Wenn in der VIS\_PANE mit der rechten Maustaste auf eine Stelle
+    Wenn in der Vis Pane mit der rechten Maustaste auf eine Stelle
     geklickt wird an der kein Knoten liegt, öffnet sich das folgende
     Popup-Menü. Die Einträge dieses Menüs sind auch im Node-Popup-Menü
     (siehe \ref{Node-Popup-Menü}) sichtbar.
@@ -217,13 +216,13 @@ SUBGRAPH\_LIST (4 Spalten).
 
   \subsection{Pins} \label{VIS-PANE-Pins}
 
-    In der Pinliste (PIN\_LIST) können Pins festgelegt werden.
+    In der Pinliste (\gq{Pin List}) können Pins festgelegt werden.
 
     Im Popup-Menü der Pinliste befinden sich folgende Menüpunkte:
     
     \begin{enumerate}
-      \item Focus Pin (PIN\_JUMP) % OK
-      \item Delete Pin (PIN\_DELETE) % OK
+      \item Focus Pin % OK
+      \item Delete Pin % OK
     \end{enumerate}
 
   \subsection{Selektionsauswahlliste} \label{Selektionsauswahlliste}
@@ -231,8 +230,8 @@ SUBGRAPH\_LIST (4 Spalten).
     Selektion, \gq{Color} mit der Farbe der Selektion und \gq{State}
     mit dem Status der Selektion (hervorgehoben oder nicht hervorgehoben).
 
-    Im Popup-Menü der Selektionsauswahlliste (SELECTION\_LIST)
-    befinden sich folgende Einträge:
+    Im Popup-Menü der Selektionsauswahlliste (\gq{Selection List} befinden
+    sich folgende Einträge:
 
     \begin{enumerate}
       \item New Selection
@@ -271,7 +270,7 @@ SUBGRAPH\_LIST (4 Spalten).
      
   \subsection{Stilauswahl-Combobox}
 
-    In der Stilauswahl-Combobox (STYLE\_CHOOSER) kann ein Anzeigestil
+    In der Stilauswahl-Combobox (\gq{Style Chooser}) kann ein Anzeigestil
     festgelegt werden.
 
   \subsection{Zoom-Kontrolle} \label{GUI Zoom-Kontrolle}  
@@ -279,10 +278,10 @@ SUBGRAPH\_LIST (4 Spalten).
     Die Zoom-Kontrolle besteht aus folgenden Elementen:
     
   \begin{enumerate}
-      \item Button \gq{-} (ZOOM\_MINUS) % OK
-      \item Combobox ZOOM\_CONTROL mit vorgefertigten Werten und Eingabemöglichkeit % OK
-      \item Button \gq{+} (ZOOM\_PLUS) % OK
-      \item Button \gq{Pick Edge} (ZOOM\_EDGE) % OK
+      \item Button \gq{-} % OK
+      \item Combobox mit vorgefertigten Zoom-Werten und Eingabemöglichkeit % OK
+      \item Button \gq{+} % OK
+      \item Button \gq{Pick Edge} % OK
   \end{enumerate}    
 
   In der ComboBox ist neben den vorgegebenen Zoom Stufen noch der
@@ -302,46 +301,46 @@ SUBGRAPH\_LIST (4 Spalten).
        \caption{Node-Info-Window}
     \end{figure}
 
-    In Knoten-Informationsfenstern (NODE\_INFO) können nähere Informationen
+    In Knoten-Informationsfenstern (\gq{Node Info}) können nähere Informationen
     zu Knoten angezeigt werden.
     
     Im Fenster wird die ID und der Typ des Knotens dargestellt,
     darunter befinden sich unteinander drei getrennt
-    scrollbare Listen, ATTRIBUTES, SUCCESSOR\_NODES und
-    PREDECESSOR\_NODES.
+    scrollbare Listen, Attributes, Successor Nodes und
+    Predecessor Nodes.
     
     Unter den drei Listen befinden sich nebeneinander mittig zwei Buttons
-    PICK und CLOSE. PICK dient zum Auswählen eines anderen Knotens zur
+    Pick und Close. Pick dient zum Auswählen eines anderen Knotens zur
     Anzeige im dem Knoten-Informationsfenster.
     
-    \subsection{Liste ATTRIBUTES}
+    \subsection{Liste Attributes}
     
     Die Liste ATTRIBUTES enthält die Attribute des Knotens und hat
     zwei Spalten:
     
       \begin{enumerate}
-        \item Name (ATTRIBUTE)
-        \item Value (VALUE)
+        \item Name
+        \item Value
       \end{enumerate}
     
-    \subsection{Liste SUCCESSOR\_NODES}
+    \subsection{Liste Successor Edges}
     
-      Die Liste SUCCESSOR\_EDGES hat eine Zeile für jede vom Knoten abgehende
+      Die Liste Successor Edges hat eine Zeile für jede vom Knoten abgehende
       Kante mit zwei Spalten:
     
     \begin{enumerate}
-      \item ID (NODE\_ID, Typ der abgehenden Kante)
-      \item Type (EDGE\_TYPE, ID des Knotens, zu dem sie führt)
+      \item ID (Typ der abgehenden Kante)
+      \item Type (ID des Knotens, zu dem sie führt)
     \end{enumerate}    
 
-    \subsection{Liste PREDECESSOR\_NODES}
+    \subsection{Liste Predecessor Edges}
       
-      Die Liste PREDECESSOR\_EDGES hat eine Zeile für jede vom Knoten abgehende
+      Die Liste Predecessor Edges hat eine Zeile für jede vom Knoten abgehende
       Kante mit zwei Spalten:
 
       \begin{enumerate}
-        \item ID (NODE\_ID, ID des Knotens, von dem sie kommt)
-        \item Type (EDGE\_TYPE, Typ der ankommenden Kante)
+        \item ID (ID des Knotens, von dem sie kommt)
+        \item Type (Typ der ankommenden Kante)
       \end{enumerate}
 
 \section{Skriptdialog} \label{GUI Anfragedialog}
@@ -352,16 +351,16 @@ SUBGRAPH\_LIST (4 Spalten).
        \caption{Query-Dialog}
     \end{figure}
 
-Der Skriptdialog QUERY\_DIALOG hat zuoberst ein Textfeld QUERY\_TEXT,
+Der Skriptdialog \gq{Query Dialog} hat zuoberst ein Textfeld Query Text,
 in dem der Text des Skripts eingegeben werden kann.
 
 Unter QUERY\_TEXT befinden sich folgende Buttons:
 
       \begin{enumerate}
-        \item Open... (QUERY\_LOAD)
-        \item Save As... (QUERY\_SAVE)
-        \item OK (QUERY\_START)
-        \item Cancel (QUERY\_CANCEL)
+        \item Open...
+        \item Save As...
+        \item OK
+        \item Cancel
       \end{enumerate}
 
 \section{Allgemeiner Texteingabedialog}
@@ -373,10 +372,10 @@ Unter QUERY\_TEXT befinden sich folgende Buttons:
        \caption{Dialog-Window}
     \end{figure}
 
-Ein allgemeiner Texteingabedialog ist ein Fenster DIALOG\_WINDOW mit dem
-Titel \gq{Input}. Im Fenster ist ein einzeiliges Textfeld TEXT\_FIELD
-mit einem Prompt-Text TEXT\_LABEL, zwei Buttons OK\_BUTTON und CANCEL\_BUTTON
-mit den Beschriftungen \gq{OK} und \gq{Cancel}.
+Ein allgemeiner Texteingabedialog ist ein Fenster Dialog Window mit dem
+Titel \gq{Input}. Im Fenster ist ein einzeiliges Textfeld
+mit einem Prompt-Text, zwei Buttons mit den Beschriftungen \gq{OK}
+und \gq{Cancel}.
 
 \section{Set-Operation-Dialog}
 \label{Common-Set-Operation-Dialog}
@@ -462,7 +461,7 @@ Textfeld übernommen oder verworfen werden.
        \caption{Make-Room-Dialog}
     \end{figure}
 
-Im Dialogfenster MAKE\_ROOM wird in einem Textfeld als Zahl angegeben, um wieviel
+Im Dialogfenster Make Room wird in einem Textfeld als Zahl angegeben, um wieviel
 Pixel die Knoten an der vorher markierten Stelle auseinandergeschoben werden sollen.
 Mit dem Button OK kann bestätigt werden, mit Button Cancel abgebrochen werden.
 
@@ -475,11 +474,9 @@ Mit dem Button OK kann bestätigt werden, mit Button Cancel abgebrochen werden.
        \caption{Error-Window}
     \end{figure}
 
-Ein allgemeiner Fehlerdialog ist ein Fenster ERROR\_WINDOW mit dem
-Titel \gq{Error}. Im Fenster ist
-ein Fehlertext Text ERROR\_LABEL und ein Button OK\_BUTTON mit der
-Beschriftung OK\_LABEL.
-Standardmäßig ist der Button mit \gq{OK} beschriftet.
+Ein allgemeiner Fehlerdialog ist ein Fenster Error Window mit dem
+Titel \gq{Error}. Im Fenster ist ein Fehlertext und ein Button
+mit der standardmäßigen Beschriftung \gq{OK}.
 
 \section{Sicherheitsabfrage}\label{Sicherheitsabfrage}
 \index{Sicherheitsabfrage}
@@ -490,15 +487,14 @@ Standardmäßig ist der Button mit \gq{OK} beschriftet.
        \caption{Confirmation-Window}
     \end{figure}
     
-Eine allgemeine Sicherheitsabfrage ist ein Fenster CONFIRMATION\_WINDOW mit dem
+Eine allgemeine Sicherheitsabfrage ist ein Fenster Confirmation Window mit dem
 Titel \gq{Confirmation}. Im Fenster ist
-ein Fragetext Text CONFIRMATION\_LABEL und ein Button YES\_BUTTON mit der
-Beschriftung YES\_LABEL, sowie ein NO\_BUTTON mit der Beschriftung
-NO\_LABEL. In dem Fragetext steht jeweils kontextabhängig 
-die Information, die der 
-Benutzer zur Beantwortung der Sicherheitsabfrage benötigt.
-Standardmäßig ist der YES\_BUTTON mit \gq{Yes} beschriftet, NO\_BUTTON
-mit \gq{No}.
+ein Fragetext und ein Button mit der standardmäßigen Beschriftung
+Beschriftung \gq{Yes}, sowie ein Button mit der standardmäßigen Beschriftung
+\gq{No}. In dem Fragetext steht jeweils kontextabhängig 
+die Information, die der  Benutzer zur Beantwortung der Sicherheitsabfrage
+benötigt.
+
 
 \section{Auswahl von Dateien}
 
