@@ -1,5 +1,7 @@
+Makefile.pics
 *.aux
 *.dvi
+*.eps
 *.ilg
 *.ind
 *.log
