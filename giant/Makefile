@@ -40,9 +40,10 @@ INCLUDES        = $(GIANT_INCLUDES) $(IMLLIB_INCLUDES) $(AUNIT_INCLUDES) $(XMLAD
 
 LIBS            = -largs $(IMLLIB_LIBS) $(shell $(GTKADA_CONFIG) --libs) 
 
-CFLAGS          = -g 
-#-O2 -funroll-loops
-GNAT_FLAGS      = -gnatX -gnata -gnatf -gnatwl -gnato 
+CFLAGS          =  -s -O3 -funroll-loops
+#-g
+GNAT_FLAGS      = -gnatn -gnatp -gnatX
+#-gnatX -gnata -gnatf -gnatwl -gnato 
 #-fstack-check
 #-fprofile-arcs -ftest-coverage
 #-gnaty3abcefhiklmprt #-gnatys 
