@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.11 $
---  $Author: squig $
---  $Date: 2003/07/15 15:27:31 $
+--  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.12 $
+--  $Author: koppor $
+--  $Date: 2003/07/15 15:44:53 $
 
 with Giant.Logger;
 
@@ -42,30 +42,29 @@ package body Giant.Graph_Lib.Subgraphs is
 
    ---------------------------------------------------------------------------
    procedure Add_Edge
-     (Subgraph_To_Modify : in out Subgraph;
-      Edge               : in     Edge_Id)
+     (The_Subgraph : in Subgraph;
+      Edge         : in Edge_Id)
    is
    begin
-      if Selections.Is_Member (Selections.Selection (Subgraph_To_Modify),
+      if Selections.Is_Member (Selections.Selection (The_Subgraph),
                                Edge.Source_Node)
-        and Selections.Is_Member (Selections.Selection (Subgraph_To_Modify),
+        and Selections.Is_Member (Selections.Selection (The_Subgraph),
                                   Edge.Target_Node)
       then
          Selections.Add_Edge
-           (Selections.Selection (Subgraph_To_Modify),
-            Edge);
+           (Selections.Selection (The_Subgraph), Edge);
       end if;
    end Add_Edge;
 
    ---------------------------------------------------------------------------
    procedure Add_Edge_Set
-     (Subgraph_To_Modify : in out Subgraph;
-      Edge_Set           : in     Edge_Id_Set)
+     (The_Subgraph : in Subgraph;
+      Edge_Set     : in Edge_Id_Set)
    is
 
       procedure Execute (Edge : in Edge_Id) is
       begin
-         Add_Edge (Subgraph_To_Modify,
+         Add_Edge (The_Subgraph,
                    Edge);
       end Execute;
 
@@ -77,41 +76,41 @@ package body Giant.Graph_Lib.Subgraphs is
 
    ---------------------------------------------------------------------------
    procedure Add_Node
-     (Subgraph_To_Modify : in out Subgraph;
-      Node               : in     Node_Id)
+     (The_Subgraph : in Subgraph;
+      Node         : in Node_Id)
    is
    begin
       Selections.Add_Node
-        (Selections.Selection (Subgraph_To_Modify),
+        (Selections.Selection (The_Subgraph),
          Node);
    end Add_Node;
 
    ---------------------------------------------------------------------------
    procedure Add_Node_Set
-     (Subgraph_To_Modify : in out Subgraph;
-      Node_Set           : in     Node_Id_Set)
+     (The_Subgraph : in Subgraph;
+      Node_Set     : in Node_Id_Set)
    is
    begin
       Selections.Add_Node_Set
-        (Selections.Selection (Subgraph_To_Modify),
+        (Selections.Selection (The_Subgraph),
          Node_Set);
    end Add_Node_Set;
 
    ---------------------------------------------------------------------------
    function Clone
-     (SubGraph_To_Clone : in Subgraph;
-      Name_Of_Result    : in String)
+     (The_Subgraph   : in Subgraph;
+      Name_Of_Result : in String)
       return Subgraph
    is
    begin
       return Subgraph (Selections.Clone
-                       (Selections.Selection (SubGraph_To_Clone),
+                       (Selections.Selection (The_Subgraph),
                         Name_Of_Result));
    end Clone;
 
    ---------------------------------------------------------------------------
    function Create
-     (Name : in    String)
+     (Name : in String)
       return Subgraph
    is
    begin
@@ -229,30 +228,30 @@ package body Giant.Graph_Lib.Subgraphs is
 
    ---------------------------------------------------------------------------
    procedure Remove_Edge
-     (Subgraph_To_Modify : in out Subgraph;
-      Edge               : in     Edge_Id)
+     (The_Subgraph : in Subgraph;
+      Edge         : in Edge_Id)
    is
    begin
       Selections.Remove_Edge
-        (Selections.Selection (Subgraph_To_Modify),
+        (Selections.Selection (The_Subgraph),
          Edge);
    end Remove_Edge;
 
    ---------------------------------------------------------------------------
    procedure Remove_Edge_Set
-     (Subgraph_To_Modify : in out Subgraph;
-      Edge_Set           : in     Edge_Id_Set)
+     (The_Subgraph : in Subgraph;
+      Edge_Set     : in Edge_Id_Set)
    is
    begin
       Selections.Remove_Edge_Set
-        (Selections.Selection (Subgraph_To_Modify),
+        (Selections.Selection (The_Subgraph),
          Edge_Set);
    end Remove_Edge_Set;
 
    ---------------------------------------------------------------------------
    procedure Remove_Node
-     (Subgraph_To_Modify : in out Subgraph;
-      Node               : in     Node_Id)
+     (The_Subgraph : in Subgraph;
+      Node         : in Node_Id)
    is
 
       ----------------------------------------------------------------------
@@ -273,7 +272,7 @@ package body Giant.Graph_Lib.Subgraphs is
          begin
             begin
                Selections.Remove_Edge
-                 (Selections.Selection (Subgraph_To_Modify), Edge);
+                 (Selections.Selection (The_Subgraph), Edge);
             exception
                when Edge_Does_Not_Exist =>
                   --  simulates a "Remove_If_Exists"
@@ -293,7 +292,7 @@ package body Giant.Graph_Lib.Subgraphs is
 
    begin
       Selections.Remove_Node
-        (Selections.Selection (Subgraph_To_Modify),
+        (Selections.Selection (The_Subgraph),
          Node);
 
       --  Check_Edges also destroys the given set
@@ -309,14 +308,13 @@ package body Giant.Graph_Lib.Subgraphs is
 
    ---------------------------------------------------------------------------
    procedure Remove_Node_Set
-     (Subgraph_To_Modify : in out Subgraph;
-      Node_Set           : in     Node_Id_Set)
+     (The_Subgraph : in Subgraph;
+      Node_Set     : in Node_Id_Set)
    is
 
       procedure Execute (Node : in Node_Id) is
       begin
-         Remove_Node (Subgraph_To_Modify,
-                      Node);
+         Remove_Node (The_Subgraph, Node);
       end Execute;
 
       procedure Apply is new Node_Id_Sets.Apply (Execute => Execute);
@@ -324,7 +322,7 @@ package body Giant.Graph_Lib.Subgraphs is
    begin
       if Node_Id_Sets.Size (Node_Set) <=
         (Selections.Get_Node_Count
-         (Selections.Selection (Subgraph_To_Modify)) / 2) then
+         (Selections.Selection (The_Subgraph)) / 2) then
          --  if less than half of the nodes are to be removed,
          --    it's faster to check all incoming and outgoing edges
          --    of the nodes to be removed
@@ -336,21 +334,19 @@ package body Giant.Graph_Lib.Subgraphs is
          --
          --  TBD: CHECK: maybe .25 is even more faster
          Selections.Remove_Node_Set
-           (Selections.Selection (Subgraph_To_Modify),
-            Node_Set);
-         Ensure_Graph_Edge_Properties (Subgraph_To_Modify);
+           (Selections.Selection (The_Subgraph), Node_Set);
+         Ensure_Graph_Edge_Properties (The_Subgraph);
       end if;
    end Remove_Node_Set;
 
    ---------------------------------------------------------------------------
    procedure Rename
-     (SubGraph_To_Rename : in out Subgraph;
-      New_Name           : in     String)
+     (The_Subgraph : in out Subgraph;
+      New_Name     : in     String)
    is
    begin
       Selections.Rename
-        (Selections.Selection (Subgraph_To_Rename),
-         New_Name);
+        (Selections.Selection (The_Subgraph), New_Name);
    end Rename;
 
    ---------------------------------------------------------------------------
@@ -410,7 +406,7 @@ package body Giant.Graph_Lib.Subgraphs is
    end Union;
 
    ---------------------------------------------------------------------------
-   procedure Ensure_Graph_Edge_Properties (Graph : in out Subgraph)
+   procedure Ensure_Graph_Edge_Properties (The_Subgraph : in Subgraph)
    is
 
       Edges_To_Remove : Edge_Id_Set := Edge_Id_Sets.Empty_Set;
@@ -420,9 +416,9 @@ package body Giant.Graph_Lib.Subgraphs is
          Source_And_Target_In_Subgraph : Boolean;
       begin
          Source_And_Target_In_Subgraph :=
-           Selections.Is_Member (Selections.Selection (Graph),
+           Selections.Is_Member (Selections.Selection (The_Subgraph),
                                  Edge.Source_Node)
-           and Selections.Is_Member (Selections.Selection (Graph),
+           and Selections.Is_Member (Selections.Selection (The_Subgraph),
                                      Edge.Target_Node);
 
          if not Source_And_Target_In_Subgraph then
@@ -442,13 +438,10 @@ package body Giant.Graph_Lib.Subgraphs is
       --  Notes:
       --    Refactoring: Get_All_Edges is not needed anymore, since
       --    Graph.Edges will work
-      Edges : Edge_Id_Set := Get_All_Edges (Graph);
+      Edges : Edge_Id_Set := Get_All_Edges (The_Subgraph);
 
    begin
-      Apply (Get_All_Edges (Graph));
-      Logger.Debug ("Removing "
-                    & Integer'Image (Edge_Id_Sets.Size (Edges_To_Remove))
-                    & " edges from " & Get_Name (Graph));
+      Apply (Get_All_Edges (The_Subgraph));
       Edge_Id_Sets.Diff (Edges, Edges_To_Remove);
    end Ensure_Graph_Edge_Properties;
 

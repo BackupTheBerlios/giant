@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.14 $
---  $Author: squig $
---  $Date: 2003/07/15 15:27:31 $
+--  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.15 $
+--  $Author: koppor $
+--  $Date: 2003/07/15 15:44:39 $
 --
 ------------------------------------------------------------------------------
 --
@@ -74,14 +74,14 @@ package Giant.Graph_Lib.Subgraphs is
    ---------------------------------------------------------------------------
    --  Creates a deep-copy of the selection
    function Clone
-     (SubGraph_To_Clone : in Subgraph;
-      Name_Of_Result    : in String)
+     (The_Subgraph   : in Subgraph;
+      Name_Of_Result : in String)
      return Subgraph;
 
    ---------------------------------------------------------------------------
    procedure Rename
-      (SubGraph_To_Rename : in out Subgraph;
-       New_Name           : in     String);
+      (The_Subgraph : in out Subgraph;
+       New_Name     : in     String);
 
    ---------------------------------------------------------------------------
    function Get_Name
@@ -151,26 +151,26 @@ package Giant.Graph_Lib.Subgraphs is
    ---------------------------------------------------------------------------
    --  Adds given Node to the given Subgraph
    procedure Add_Node
-      (Subgraph_To_Modify : in out Subgraph;
-       Node                : in     Node_Id);
+      (The_Subgraph : in Subgraph;
+       Node         : in Node_Id);
 
    ---------------------------------------------------------------------------
    --  Adds all nodes in given set to the Subgraph
    procedure Add_Node_Set
-      (Subgraph_To_Modify : in out Subgraph;
-       Node_Set            : in     Node_Id_Set);
+      (The_Subgraph : in Subgraph;
+       Node_Set     : in Node_Id_Set);
 
    ---------------------------------------------------------------------------
    --  Adds given Edge to the given Subgraph
    procedure Add_Edge
-      (Subgraph_To_Modify : in out Subgraph;
-       Edge                : in     Edge_Id);
+      (The_Subgraph : in Subgraph;
+       Edge         : in Edge_Id);
 
    ---------------------------------------------------------------------------
    --  Adds all nodes in given set to the Subgraph
    procedure Add_Edge_Set
-      (Subgraph_To_Modify : in out Subgraph;
-       Edge_Set            : in     Edge_Id_Set);
+      (The_Subgraph : in Subgraph;
+       Edge_Set     : in Edge_Id_Set);
 
    --------------------------
    --  Routines to remove  --
@@ -179,26 +179,26 @@ package Giant.Graph_Lib.Subgraphs is
    ---------------------------------------------------------------------------
    --  Adds given Node to the given Subgraph
    procedure Remove_Node
-      (Subgraph_To_Modify : in out Subgraph;
-       Node                : in     Node_Id);
+      (The_Subgraph : in Subgraph;
+       Node         : in Node_Id);
 
    ---------------------------------------------------------------------------
    --  Adds all nodes in given set to the Subgraph
    procedure Remove_Node_Set
-      (Subgraph_To_Modify : in out Subgraph;
-       Node_Set            : in     Node_Id_Set);
+      (The_Subgraph : in Subgraph;
+       Node_Set     : in Node_Id_Set);
 
    ---------------------------------------------------------------------------
    --  Adds given Edge to the given Subgraph
    procedure Remove_Edge
-      (Subgraph_To_Modify : in out Subgraph;
-       Edge                : in     Edge_Id);
+      (The_Subgraph : in Subgraph;
+       Edge         : in Edge_Id);
 
    ---------------------------------------------------------------------------
    --  Adds all edges in given set to the Subgraph
    procedure Remove_Edge_Set
-      (Subgraph_To_Modify : in out Subgraph;
-       Edge_Set            : in     Edge_Id_Set);
+      (The_Subgraph : in Subgraph;
+       Edge_Set     : in Edge_Id_Set);
 
    ----------------------
    --  Set-operations  --
@@ -258,6 +258,6 @@ private
    --
    --  See Pre-Condition inside .adb concerning Get_All_Edges
    procedure Ensure_Graph_Edge_Properties
-     (Graph : in out Subgraph);
+     (The_Subgraph : in Subgraph);
 
 end Giant.Graph_Lib.Subgraphs;
