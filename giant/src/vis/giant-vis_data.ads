@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.29 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.30 $
 --  $Author: keulsn $
---  $Date: 2003/09/12 20:30:14 $
+--  $Date: 2003/10/05 20:40:39 $
 --
 ------------------------------------------------------------------------------
 --
@@ -1122,8 +1122,8 @@ private
       end record;
 
 
-   Default_Region_Width  : constant := 200;
-   Default_Region_Height : constant := 300;
+   Default_Region_Width  : constant := 350;
+   Default_Region_Height : constant := 600;
 
    type Region_Manager is new Ada.Finalization.Controlled with
       record
