@@ -14,6 +14,7 @@ Version ?
  * gsl:
      - speed up
      - added instance_of for (edges X class_sets)
+     - new script "generate_subgraph__only_parent_edges"
  * documentation:
      - added layoutparameters @ GSL-Documentation @ handbook
      - added instance_of for edges and class_sets @ gsl-spec
