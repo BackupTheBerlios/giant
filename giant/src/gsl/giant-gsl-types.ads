@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-types.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/02 11:30:06 $
+-- $Date: 2003/06/10 11:57:25 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -102,6 +102,13 @@ package Giant.Gsl.Types is
      (Ref_Type : Reference_Type;
       Ref_Name : String) 
       return Gsl_Var_Reference;
+
+   ---------------------------------------------------------------------------
+   --
+   function Create_Gsl_Script_Reference
+     (Parameter_List : Syntax_Node;
+      Script_Node    : Syntax_Node) 
+      return Gsl_Script_Reference;
 
    ---------------------------------------------------------------------------
    -- get and set values for Gsl_Node_Id
@@ -272,7 +279,9 @@ private
    -- Gsl_Script_Reference
    type Gsl_Script_Reference_Record is new Gsl_Type_Record with
       record
-         Script_Node : Syntax_Node;
+         Parameter_List           : Syntax_Node;
+         Script_Node              : Syntax_Node;
+         Parent_Activation_Record : Activation_Record;
       end record;
 
 end Giant.Gsl.Types;

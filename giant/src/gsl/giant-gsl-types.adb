@@ -20,9 +20,9 @@
 --
 -- First Author: Gerrit Schulz
 --
--- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.1 $
+-- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.2 $
 -- $Author: schulzgt $
--- $Date: 2003/06/02 11:30:06 $
+-- $Date: 2003/06/10 11:57:25 $
 --
 with Unchecked_Deallocation;
 
@@ -83,7 +83,24 @@ package body Giant.Gsl.Types is
       Var.Ref_Name := Ref_Name;
       return Var;
    end;
-   
+
+   ---------------------------------------------------------------------------
+   -- creates a new Gsl_Script_Decl
+   function Create_Gsl_Script_Reference
+     (Parameter_List : Syntax_Node;
+      Script_Node    : Syntax_Node)
+      return Gsl_Script_Reference is
+
+      Var : Gsl_Script_Reference;
+   begin
+      Var := new Gsl_Script_Reference_Record;
+      Var.Parameter_List := Parameter_List;
+      Var.Script_Node := Script_Node;
+      Var.Parent_Activation_Record := null;
+      return Var;
+   end;
+
+ 
    ---------------------------------------------------------------------------
    -- get and set values for Gsl_Node_Id
    function Get_Value
