@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.38 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.39 $
 --  $Author: keulsn $
---  $Date: 2003/07/22 18:21:33 $
+--  $Date: 2003/07/22 19:31:38 $
 --
 ------------------------------------------------------------------------------
 
@@ -1720,7 +1720,8 @@ package body Giant.Graph_Widgets is
             Found   => Is_Unsized);
 
          pragma Assert
-           ((not Is_Unsized and not Is_Locked) or
+           ((not Is_Unsized and not Vis_Node_Sets.Is_Member
+              (Widget.Locked_Nodes, Node)) or
             (Is_Unsized xor Vis_Node_Sets.Is_Member
               (Widget.Locked_Nodes, Node)));
          if not Is_Unsized then

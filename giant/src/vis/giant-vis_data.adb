@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.32 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.33 $
 --  $Author: keulsn $
---  $Date: 2003/07/22 18:21:33 $
+--  $Date: 2003/07/22 19:31:38 $
 --
 ------------------------------------------------------------------------------
 
@@ -1454,12 +1454,20 @@ package body Giant.Vis_Data is
       Iterator : Region_Lists.ListIter;
       Region   : Region_Id;
    begin
+      Iterator := Region_Lists.MakeListIter (Edge.Regions);
       while Region_Lists.More (Iterator) loop
          Region_Lists.Next (Iterator, Region);
          Remove_Edge_From_Region (Region, Edge);
-         Set_Layer (Edge, New_Layer);
+      end loop;
+
+      Set_Layer (Edge, New_Layer);
+
+      Iterator := Region_Lists.MakeListIter (Edge.Regions);
+      while Region_Lists.More (Iterator) loop
+         Region_Lists.Next (Iterator, Region);
          Add_Edge_To_Region (Region, Edge);
       end loop;
+
       Pollute_Edge (Manager, Edge);
    end Change_Layer;
 
@@ -1543,9 +1551,16 @@ package body Giant.Vis_Data is
       while Region_Lists.More (Iterator) loop
          Region_Lists.Next (Iterator, Region);
          Remove_Node_From_Region (Region, Node);
-         Set_Layer (Node, New_Layer);
+      end loop;
+
+      Set_Layer (Node, New_Layer);
+
+      Iterator := Region_Lists.MakeListIter (Node.Regions);
+      while Region_Lists.More (Iterator) loop
+         Region_Lists.Next (Iterator, Region);
          Add_Node_To_Region (Region, Node);
       end loop;
+
       Pollute_Node (Manager, Node);
    end Change_Layer;
 
