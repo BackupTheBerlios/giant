@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.6 $
 --  $Author: koppor $
---  $Date: 2003/06/17 13:06:32 $
+--  $Date: 2003/06/19 21:05:04 $
 
 package body Giant.Graph_Lib.Selections is
 
@@ -122,6 +122,15 @@ package body Giant.Graph_Lib.Selections is
       Selection_To_Destroy := null;
    end Destroy;
 
+   ---------------------------------------------------------------------------
+   function Get_Edge_Count
+     (Sel : in Selection)
+     return Natural
+   is
+   begin
+      return Edge_Id_Sets.Size (Sel.Edges);
+   end Get_Edge_Count;
+
    ----------------------------------------------------------------------------
    function Get_Name
      (Selection_To_Read : in Selection)
@@ -130,6 +139,15 @@ package body Giant.Graph_Lib.Selections is
    begin
       return Selection_To_Read.Name;
    end Get_Name;
+
+   ---------------------------------------------------------------------------
+   function Get_Node_Count
+     (Sel : in Selection)
+     return Natural
+   is
+   begin
+      return Node_Id_Sets.Size (Sel.Nodes);
+   end Get_Node_Count;
 
    ----------------------------------------------------------------------------
    function Intersection

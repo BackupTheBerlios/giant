@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.6 $
+--  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.7 $
 --  $Author: koppor $
---  $Date: 2003/06/17 13:08:36 $
+--  $Date: 2003/06/19 21:05:33 $
 --
 ------------------------------------------------------------------------------
 --
@@ -93,6 +93,20 @@ package Giant.Graph_Lib.Subgraphs is
        Right : in Subgraph)
       return Boolean;
 
+   ---------------------------------------------------------------------------
+   --  Returns:
+   --    Number of edges contained in given subgraph
+   function Get_Edge_Count
+     (Graph : in Subgraph)
+     return Natural;
+
+   ---------------------------------------------------------------------------
+   --  Returns:
+   --    Number of nodes contained in given subgraph
+   function Get_Node_Count
+     (Graph : in Subgraph)
+     return Natural;
+
    ---------------
    --  Streams  --
    ---------------
@@ -138,9 +152,9 @@ package Giant.Graph_Lib.Subgraphs is
       (Subgraph_To_Modify : in out Subgraph;
        Edge_Set            : in     Edge_Id_Set);
 
-   --  ***********************************************************************
-   --  Routines to remove
-   --  ***********************************************************************
+   --------------------------
+   --  Routines to remove  --
+   --------------------------
 
    ---------------------------------------------------------------------------
    --  Adds given Node to the given Subgraph

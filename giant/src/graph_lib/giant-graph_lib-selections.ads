@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.8 $
+--  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.9 $
 --  $Author: koppor $
---  $Date: 2003/06/17 13:06:20 $
+--  $Date: 2003/06/19 21:04:47 $
 --
 ------------------------------------------------------------------------------
 --
@@ -74,6 +74,20 @@ package Giant.Graph_Lib.Selections is
       (Left  : in Selection;
        Right : in Selection)
       return Boolean;
+
+   ---------------------------------------------------------------------------
+   --  Returns:
+   --    Number of edges contained in given selection
+   function Get_Edge_Count
+     (Sel : in Selection)
+     return Natural;
+
+   ---------------------------------------------------------------------------
+   --  Returns:
+   --    Number of nodes contained in given selection
+   function Get_Node_Count
+     (Sel : in Selection)
+     return Natural;
 
    ---------------
    --  Streams  --

@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.4 $
 --  $Author: koppor $
---  $Date: 2003/06/17 13:08:26 $
+--  $Date: 2003/06/19 21:05:18 $
 
 package body Giant.Graph_Lib.Subgraphs is
 
@@ -130,6 +130,15 @@ package body Giant.Graph_Lib.Subgraphs is
    end Destroy;
 
    ---------------------------------------------------------------------------
+   function Get_Edge_Count
+     (Graph : in Subgraph)
+     return Natural
+   is
+   begin
+      return Selections.Get_Edge_Count (Graph.Sel);
+   end Get_Edge_Count;
+
+   ---------------------------------------------------------------------------
    function Get_Name
      (Subgraph_To_Read : in Subgraph)
       return String
@@ -137,6 +146,15 @@ package body Giant.Graph_Lib.Subgraphs is
    begin
       return Selections.Get_Name (Subgraph_To_Read.Sel);
    end Get_Name;
+
+   ---------------------------------------------------------------------------
+   function Get_Node_Count
+     (Graph : in Subgraph)
+     return Natural
+   is
+   begin
+      return Selections.Get_Node_Count (Graph.Sel);
+   end Get_Node_Count;
 
    ---------------------------------------------------------------------------
    --  Returns a clone, since the caller may not change our internal data
