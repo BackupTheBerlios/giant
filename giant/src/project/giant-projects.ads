@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.6 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.7 $
 -- $Author: schwiemn $
--- $Date: 2003/06/11 16:46:18 $
+-- $Date: 2003/06/12 18:01:41 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -109,7 +109,7 @@ package Giant.Projects is
    --   Invalid_Project_Directory_Excpetion - Raised if the passed directory
    --     "Project_Directory" is not found or could not be accessed.
    function Does_Project_Exist
-     (Project_Name : in Valid_Names.Standard_Name;
+     (Project_Name      : in Valid_Names.Standard_Name;
       Project_Directory : in String)
       return Boolean;
 
@@ -127,14 +127,16 @@ package Giant.Projects is
    --   Invalid_Project_Directory_Excpetion - Raised if the passed directory
    --     "Project_Directory" is not found or could not be accessed.
    function Is_Already_A_Project_File_In_Directory
-      Project_Directory : in String)
-      return boolean;
+     (Project_Directory : in String)
+     return Boolean;
 
    --------------------------------------------------------------------------
    -- Returns the data necessary to identify the Bauhaus IML Graph underlying
    -- this project.
    --
-   --  Note
+   -- Does not load a project into the main memory.
+   --
+   -- Note
    --   The out Parameters are not checked in any way.
    --
    -- Parameters:
@@ -147,14 +149,15 @@ package Giant.Projects is
    --     correct IML Graph.
    -- Raises:
    --   Project_Does_Not_Exist_Exception - Raised if the project
-   --     "Project_Name" is not found in the given directory.
+   --     "Project_Name" is not found in the given directory or if the
+   --     project file could not be accessed.
    --   Invalid_Project_Directory_Excpetion - Raised if the passed directory
    --     "Project_Directory" is not found or could not be accessed.
-   Get_Bauhaus_IML_Graph_Data
+   procedure Get_Bauhaus_IML_Graph_Data
      (Project_Name           : in     Valid_Names.Standard_Name;
       Project_Directory      : in     String
       Bauhaus_IML_Graph_File :    out Ada.Strings.Unbounded.Unbounded_String;
-      Bauhaus_IML_Graph_File_Checksum : out Integer)
+      Bauhaus_IML_Graph_File_Checksum : out Integer);
 
    ---------------------------------------------------------------------------
    -- Before executing this subprgram
@@ -202,8 +205,10 @@ package Giant.Projects is
    --   Project_Name - The name of a project.
    --   Project_Directory - The project directory.
    --   Bauhaus_IML_Graph_File - The File holding the IML-Graph.
+   --     This parameter will not be checked for correctness.
    --   Bauhaus_IML_Graph_File_Checksum - A checksum for the
-   --     Bauhaus_IML_Graph_File.
+   --     Bauhaus_IML_Graph_File. This parameter will not be checked
+   --     for correctness.
    -- Returns:
    --   A pointer to a new instance of the ADT describing a project.
    -- Raises:
@@ -802,13 +807,23 @@ private
    -- Management of visualisation window data models
    ---------------------------------------------------------------------------
 
+   -- needed to describe the status of a visualistion window
+   Vis_Window_Data_Element is record 
+      Is_File_Linked           : Boolean;
+      Is_Memory_Loaded         : Boolean;
+      -- the management file for the visualisation window
+      -- null string ("") if such a file does not exist yet
+      Existing_Vis_Window_File : Ada.Strings.Unbounded.Unbounded_String;
+      Vis_Window_Name          : Ada.Strings.Unbounded.Unbounded_String;      
+   end record;
+
    package Known_Vis_Windows_Hashs is new Hashed_Mappings
      (Key_Type   => Ada.Strings.Unbounded.Unbounded_String,
       Equal      => Ada.Strings.Unbounded."=",
       Hash       => Unbounded_String_Hash,
-      Value_Type => Ada.Strings.Unbounded.Unbounded_String); 
+      Value_Type => Vis_Window_Data_Element); 
 
-   package Memory_Loaded_Vis_Window_Hash is new Hashed_Mappings
+   package Memory_Loaded_Vis_Window_Hashs is new Hashed_Mappings
      (Key_Type   => Ada.Strings.Unbounded.Unbounded_String,
       Equal      => Ada.Strings.Unbounded."=",
       Hash       => Unbounded_String_Hash,
@@ -821,6 +836,11 @@ private
    type Subgraph_Data_Elemet is record
      Subgraph         : Graph_Lib.Subgraphs.Subgraph;
      Highlight_Status : Subgraph_Highlight_Status;
+     -- True if an management file for the iml subgraph already exists, False     
+     -- otherwise.
+     Is_File_Linked   : Boolean:
+     -- null string ("") if such a file does not exist yet
+     Existing_Subgraph_File    : Ada.Strings.Unbounded.Unbounded_String;
    end record;
 
    package Subgraph_Data_Hashs is new Hashed_Mappings
@@ -852,9 +872,12 @@ private
 
     -- The file holding the Bauhaus IML-Graph
     Bauhaus_IML_Graph_File : Ada.Strings.Unbounded.Unbounded_String;
-
+    
     -- Checksum of the Bauhaus IML Graph
     Bauhaus_IML_Graph_File_Checksum : Integer;
+    
+    -- The file holding the node annotations
+    Node_Annotations_File : Ada.Strings.Unbounded.Unbounded_String;
 
     -- All Vis Windows that are part of the project.
     All_Project_Vis_Windows : Known_Vis_Windows_Hashs.Mapping;
@@ -863,12 +886,12 @@ private
     -- memory -> Heap is allocated for an Instance of
     -- Visual_Window_Access.
     -- A Management File in the project dirctory may exist or not
-    All_Memory_Loaded_Vis_Windows : Memory_Loaded_Vis_Window_Hash.Mapping;
+    All_Memory_Loaded_Vis_Windows : Memory_Loaded_Vis_Window_Hashs.Mapping;
 
     All_Subgraphs : Subgraph_Data_Hashs.Mapping;
 
     -- The node annotations
-    Node_Annotations : Node_Annotations.Node_Annotation_Access;
+    The_Node_Annotations : Node_Annotations.Node_Annotation_Access;
 
   end record;
 
