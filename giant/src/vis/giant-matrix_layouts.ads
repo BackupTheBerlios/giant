@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-matrix_layouts.ads,v $, $Revision: 1.11 $
+--  $RCSfile: giant-matrix_layouts.ads,v $, $Revision: 1.12 $
 --  $Author: koppor $
---  $Date: 2003/07/13 00:41:03 $
+--  $Date: 2003/07/14 08:20:05 $
 --
 ------------------------------------------------------------------------------
 --
@@ -37,7 +37,9 @@ with Giant.Vis;
 
 package Giant.Matrix_Layouts is
 
-   --  could also be Concurrent, but for debugging purpose
+   --  Theoreticcaly, it could also be Concurrent, but since
+   --    Set_Top_Middle is not multitasking-capable, the code has to be
+   --    rewritten
    type Matrix_Layout_Record is
      new Evolutions.Iterative_Evolution with private;
 
