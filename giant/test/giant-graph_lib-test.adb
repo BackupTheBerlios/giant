@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.10 $
 --  $Author: koppor $
---  $Date: 2003/07/05 16:17:41 $
+--  $Date: 2003/07/06 01:55:28 $
 --
 
 with Ada.Text_IO;
@@ -40,22 +40,22 @@ package body Giant.Graph_Lib.Test is
 
 --       IML_Filename   : constant String :=
 --         "/home/stsopra/giant/graphs/httpd.iml";
---       IML_Edge_Count : constant Integer := 2316410;
---       IML_Node_Count : constant Integer := 797777;
+--       IML_Edge_Count : constant Integer := 0;  --  with all: 2316410
+--       IML_Node_Count : constant Integer := 0;  --  with all: 797777
 
 --     IML_Filename   : constant String :=
 --       "/home/stsopra/giant/graphs/wget.iml";
---     IML_Edge_Count : constant Integer := 1274794;
---     IML_Node_Count : constant Integer := 472583;
+--     IML_Edge_Count : constant Integer := 0; --  with all: 1274794
+--     IML_Node_Count : constant Integer := 0; --  with all: 472583
 
 --     IML_Filename   : constant String :=
 --       "/home/stsopra/giant/graphs/concept_analysis.iml";
---     IML_Edge_Count : constant Integer := 156072;
---     IML_Node_Count : constant Integer := 646;
+--     IML_Edge_Count : constant Integer := 0; -- with all: 156072
+--     IML_Node_Count : constant Integer := 0; -- with all:  646
 
      IML_Filename   : constant String  := "resources/rfg_examp.iml";
-     IML_Edge_Count : constant Integer := 646;
-     IML_Node_Count : constant Integer := 216;
+     IML_Edge_Count : constant Integer := 631; --  with all: 646
+     IML_Node_Count : constant Integer := 202; --  with all: 216
 
    -------------------------------------
    --  Global variables and routines  --
@@ -128,15 +128,15 @@ package body Giant.Graph_Lib.Test is
       while Node_Id_Sets.More (Node_Iter) loop
          Node_Id_Sets.Next (Node_Iter, Cur_Node);
 
-         Logger.Debug (Node_Id_Image (Cur_Node));
+         --  Logger.Debug (Node_Id_Image (Cur_Node));
 
          --  TBD: find out how to inspect ada's interal class
          --    Logger.Debug (Cur_Node.IML_Node'External_Tag);
 
-         --  crashes here - constrainterror at graphlib
-         --    don't know, why
-         Logger.Debug ("  Class: " &
-                       Get_Node_Class_Tag (Get_Node_Class_Id (Cur_Node)));
+         --  crashed here - constrainterror at graphlib
+         --    because edge_targets with non-IML_Roots were imported
+         --  Logger.Debug ("  Class: " &
+         --              Get_Node_Class_Tag (Get_Node_Class_Id (Cur_Node)));
 
          Attr_Iter := Make_Attribute_Iterator (Cur_Node);
 
