@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/07 12:05:06 $
+-- $Date: 2003/07/07 16:18:14 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -34,7 +34,9 @@ use  Ada.Tags;
 with Ada.Strings.Unbounded;
 with Ada.Exceptions;
 
+with Giant.Controller;
 with Giant.Default_Logger;
+with Giant.Graph_Lib.Subgraphs;
 with Giant.Gsl.Types;
 use  Giant.Gsl.Types;
 with Giant.Gsl.Syntax_Tree;
@@ -152,15 +154,20 @@ package body Giant.Gsl.Interpreters is
       Next_Action : out    Giant.Evolutions.Evolution_Action) is
 
       use Giant.Gsl.Syntax_Tree;
+      use Giant.Controller;
 
       Cmd      : Syntax_Node;
       Res1     : Gsl_Type;
       Res2     : Gsl_Type;
       Lit      : Gsl_Type;
       Res_List : Gsl_List;
+      Sub      : Giant.Graph_Lib.Subgraphs.Subgraph;
    begin
       if Execution_Stacks.Is_Empty (Current_Interpreter.Execution_Stack) then
          Next_Action := Giant.Evolutions.Finish;
+      elsif Interpreter (Individual) /= Current_Interpreter then
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
+           "Gsl Interpreter: Invalid interpreter.");
       else
          Execution_Stacks.Pop (Current_Interpreter.Execution_Stack, Cmd);
 
@@ -178,6 +185,7 @@ package body Giant.Gsl.Interpreters is
 
             when Visible_Var =>
                Lit := Get_Literal (Cmd);
+               -- get value from activation record
                Lit := Get_Var (Get_Ref_Name (Gsl_Var_Reference (Lit)));
                if Lit /= Gsl_Null then
                   Lit := Copy (Lit);
@@ -185,6 +193,30 @@ package body Giant.Gsl.Interpreters is
                else
                   Result_Stacks.Push (Current_Interpreter.Result_Stack,
                                       Gsl_Null);
+               end if;
+
+            when Global_Var =>
+               -- controller
+               Lit := Get_Literal (Cmd);
+               if Get_Ref_Type (Gsl_Var_Reference (Lit)) = Subgraph then
+                  if Exists_Subgraph (Get_Ref_Name
+                       (Gsl_Var_Reference (Lit))) then
+                     Sub := Get_Subgraph (Get_Ref_Name (Gsl_Var_Reference (Lit)));
+                     Res_List := Create_Gsl_List (2);
+                     Set_Value_At (Res_List, 1, Gsl_Type (Create_Gsl_Node_Set
+                       (Giant.Graph_Lib.Subgraphs.Get_All_Nodes (Sub))));
+                     Set_Value_At (Res_List, 2, Gsl_Type (Create_Gsl_Edge_Set
+                       (Giant.Graph_Lib.Subgraphs.Get_All_Edges (Sub))));
+                     Result_Stacks.Push (Current_Interpreter.Result_Stack, 
+                       Gsl_Type (Res_List));
+                  else
+                     Ada.Exceptions.Raise_Exception
+                       (Gsl_Runtime_Error'Identity, 
+                        "Gsl Interpreter: Subgraph does not exist.");
+                  end if;
+               elsif Get_Ref_Type (Gsl_Var_Reference (Lit)) = Selection then
+                  null;
+                  --Giant.Controller.Get_Selection ();
                end if;
 
             when Visible_Ref =>
@@ -255,6 +287,20 @@ package body Giant.Gsl.Interpreters is
                elsif Res1'Tag = Gsl_Boolean_Record'Tag then
                   Default_Logger.Debug
                     ("Interpreter: Loop correct.", "Giant.Gsl");
+                  if Get_Value (Gsl_Boolean (Res1)) then
+                  -- loop again
+                     Execution_Stacks.Push
+                       (Current_Interpreter.Execution_Stack,
+                        Copy_Node (Cmd));
+                  -- push the code of the script
+                     Execution_Stacks.Push
+                       (Current_Interpreter.Execution_Stack,
+                        Giant.Gsl.Compilers.Get_Execution_Stack
+                          (Current_Interpreter.Gsl_Compiler,
+                           Get_Child1 (Cmd)));
+                  else
+                     null;
+                  end if;
                else
                   Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
                     "Runtime Error - Gsl_Boolean expected!");
