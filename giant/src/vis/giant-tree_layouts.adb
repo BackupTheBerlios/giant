@@ -20,10 +20,15 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.3 $
 --  $Author: koppor $
---  $Date: 2003/07/01 23:15:31 $
+--  $Date: 2003/07/03 15:59:35 $
 --
+------------------------------------------------------------------------------
+--  Variables are named according to the paper
+--    http://citeseer.nj.nec.com/buchheim02improving.html
+--    Revised version at http://www.zaik.uni-koeln.de/~paper/preprints.html
+--      ?show=zaik2002-431&preprint_session=877c83a63d7134d8123dd3e6dd0ab004
 
 package body Giant.Tree_Layouts is
 
@@ -41,11 +46,15 @@ package body Giant.Tree_Layouts is
       Res                 := new Tree_Layout_Record;
       Res.Widget          := Widget;
       Res.Widget_Lock     := Widget_Lock;
-      Res.The_Selection   := Selection_To_Layout;
+      Res.Nodes_To_Layout := Graph_Lib.Node_Id_Sets.Copy
+        (Graph_Lib.Selections.Get_All_Nodes
+         (Selection_To_Layout));
       Res.Target_Position := Target_Position;
       Res.Root_Node       := Root_Node;
+      Res.State           := Init;
 
       --  Evolutions.Initialize
+      --  TBD: complexity, can be estimated, but I don't know how by now
       Initialize (Res);
 
       return Res;
@@ -65,9 +74,59 @@ package body Giant.Tree_Layouts is
      (Layout      : access Tree_Layout_Record;
       Next_Action :    out Evolutions.Evolution_Action)
    is
+
+      procedure Init_Calculation
+      is
+      begin
+         null;
+      end Init_Calculation;
+
    begin
-      Next_Action := Evolutions.Finish;
+      case Layout.State is
+         when Init =>
+            case Graph_Lib.Node_Id_Sets.Size (Layout.Nodes_To_Layout) is
+               when 0 =>
+                  Next_Action := Evolutions.Finish;
+               when 1 =>
+                  declare
+                     Node : Graph_Lib.Node_Id;
+                  begin
+                     Graph_Lib.Node_Id_Sets.Remove_First
+                       (Layout.Nodes_To_Layout, Node);
+                     Graph_Widgets.Set_Top_Middle
+                       (Layout.Widget,
+                        Node,
+                        Layout.Target_Position,
+                        Layout.Widget_Lock);
+                  end;
+                  Next_Action := Evolutions.Finish;
+               when others =>
+                  Init_Calculation;
+                  Layout.State := FirstWalk;
+                  Next_Action  := Evolutions.Run;
+            end case;
+         when FirstWalk =>
+            Layout.State := SecondWalk;
+            Next_Action  := Evolutions.Run;
+         when SecondWalk =>
+            Next_Action := Evolutions.Finish;
+      end case;
    end Step;
+
+   ---------------------------------------------------------------------------
+   function Are_Silblings
+     (First  : in Node_Layout_Data_Access;
+      Second : in Node_Layout_Data_Access)
+     return Boolean
+   is
+      Temp_Node : Node_Layout_Data_Access;
+   begin
+      Temp_Node:=First.Leftmost_Silbling;
+      while (Temp_Node /= null) and (Temp_Node /= Second) loop
+         Temp_Node := Temp_Node.Right_Silbling;
+      end loop;
+      return Temp_Node/=null;
+   end Are_Silblings;
 
 end Giant.Tree_Layouts;
 
