@@ -21,9 +21,9 @@
 --  Based on framework of: Steffen Pingel
 --  First Author:          Oliver Kopp
 --
---  $RCSfile: layout_factory_test.adb,v $, $Revision: 1.1 $
+--  $RCSfile: layout_factory_test.adb,v $, $Revision: 1.2 $
 --  $Author: koppor $
---  $Date: 2003/07/01 21:53:35 $
+--  $Date: 2003/07/13 00:27:38 $
 --
 
 with Ada.Text_Io;
@@ -32,6 +32,8 @@ with AUnit.Test_Suites; use AUnit.Test_Suites;
 with AUnit.Test_Runner;
 
 with Giant.Layout_Factory.Test;
+with Giant.Matrix_Layouts.Test;
+with Giant.Tree_Layouts.Test;
 with Giant.Default_Logger;
 
 procedure Layout_Factory_Test is
@@ -40,6 +42,8 @@ procedure Layout_Factory_Test is
       Result : Access_Test_Suite := new Test_Suite;
    begin
       Add_Test (Result, new Giant.Layout_Factory.Test.Test_Case);
+      Add_Test (Result, new Giant.Matrix_Layouts.Test.Test_Case);
+      Add_Test (Result, new Giant.Tree_Layouts.Test.Test_Case);
       return Result;
    end Suite;
 
