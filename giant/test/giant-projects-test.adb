@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-projects-test.adb,v $, $Revision: 1.13 $
+--  $RCSfile: giant-projects-test.adb,v $, $Revision: 1.14 $
 --  $Author: schwiemn $
---  $Date: 2003/07/16 20:09:57 $
+--  $Date: 2003/07/18 19:18:02 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -800,9 +800,234 @@ package body Giant.Projects.Test is
       Projects.Deallocate_Project_Deep (Test_Project_1);            
    end Changing_Test_Only_Memory;   
 
-
    ---------------------------------------------------------------------------
-   procedure Test_Highlight_Status
+   procedure Vis_Window_Persistence_Status_Test
+      (R : in out AUnit.Test_Cases.Test_Case'Class) is
+
+      Test_Project_1 : Giant.Projects.Project_Access;
+      Test_List      : String_Lists.List; 
+      
+      A_Vis_Window   : Giant.Vis_Windows.Visual_Window_Access;
+   begin
+   
+      Kill_Files_In_Dir ("resources/test_project_directory/dir_1");
+      Test_Project_1 := Create_Test_Project_1;            
+      Check_Test_Project_1 (Test_Project_1);
+      
+       -- check dir
+      Test_List := File_Management.Get_Filtered_Files_From_Directory
+        ("resources/test_project_directory/dir_1",
+         False,
+         "");
+      Assert 
+        (String_Lists.Length (Test_List) = 4,
+         "Test correct ammount of files in dir_1 - before changing");
+      String_Lists.Destroy (Test_List); 
+                  
+      Assert 
+        (Projects.Is_Vis_Window_Memory_Loaded
+          (Test_Project_1, "Vis_Window_1"),
+         "Check Memory Status of Vis_Window_1 at initialisation");
+                      
+      Projects.Store_Single_Visualisation_Window
+        (Test_Project_1, "Vis_Window_1");
+      Projects.Store_Single_Visualisation_Window
+        (Test_Project_1, "Vis_Window_2");      
+           
+      Projects.Free_Memory_For_Vis_Window
+        (Test_Project_1, "Vis_Window_1");     
+      Projects.Free_Memory_For_Vis_Window
+        (Test_Project_1, "Vis_Window_2");        
+      Projects.Free_Memory_For_Vis_Window
+        (Test_Project_1, "Vis_Window_3");  
+      
+      Assert
+        (Projects.Does_Vis_Window_Exist 
+          (Test_Project_1, "Vis_Window_1"),
+         "Check Vis_Window_1 still exist status file linked - 1");
+      Assert
+        (not Projects.Is_Vis_Window_Memory_Loaded 
+          (Test_Project_1, "Vis_Window_1"),
+         "Check Vis_Window_1 still exist status file linked - 2");        
+        
+      Assert
+        (Projects.Does_Vis_Window_Exist 
+          (Test_Project_1, "Vis_Window_2"),
+         "Check Vis_Window_2 still exist status file linked - 1");
+      Assert
+        (not Projects.Is_Vis_Window_Memory_Loaded 
+          (Test_Project_1, "Vis_Window_2"),
+         "Check Vis_Window_2 still exist status file linked - 2");     
+
+      Assert
+        (not Projects.Does_Vis_Window_Exist 
+          (Test_Project_1, "Vis_Window_3"),
+         "Check Vis_Window_3 removed completely");
+ 
+      Assert
+        (Projects.Does_Vis_Window_Exist 
+          (Test_Project_1, "Vis_Window_4"),
+         "Check Vis_Window_4 still exist status memory loaded - 1");
+      Assert
+        (Projects.Is_Vis_Window_Memory_Loaded 
+          (Test_Project_1, "Vis_Window_4"),
+         "Check Vis_Window_4 still exist status memory loaded - 2");     
+            
+      -- check windows
+      Test_List := 
+        Projects.Get_All_Visualisation_Window_Names (Test_Project_1);
+      Assert (String_Lists.Length (Test_List) = 3,
+              "Test Lenght of Vis Window Names list after first changes");
+      String_Lists.Destroy (Test_List); 
+            
+      -- check dir
+      Test_List := File_Management.Get_Filtered_Files_From_Directory
+        ("resources/test_project_directory/dir_1",
+         False,
+         "");
+      Assert 
+        (String_Lists.Length (Test_List) = 9,
+         "Test correct ammount of files in dir_1 - after first changes");
+      String_Lists.Destroy (Test_List); 
+
+      Assert
+        (Gnat.OS_Lib.Is_Regular_File
+          ("resources/test_project_directory/dir_1/"
+           & "Vis_Window_1.viswin"),
+         "Check Management file for Vis_Window_1");            
+      Assert
+        (Gnat.OS_Lib.Is_Regular_File
+          ("resources/test_project_directory/dir_1/"
+           & "Vis_Window_1.viswin~"),
+         "Check Emergency file for Vis_Window_1"); 
+         
+      Assert
+        (Gnat.OS_Lib.Is_Regular_File
+          ("resources/test_project_directory/dir_1/"
+           & "Vis_Window_2.viswin"),
+         "Check Management file for Vis_Window_2");            
+      Assert
+        (Gnat.OS_Lib.Is_Regular_File
+          ("resources/test_project_directory/dir_1/"
+           & "Vis_Window_2.viswin~"),
+         "Check Emergency file for Vis_Window_2");          
+         
+      Assert
+        (not Gnat.OS_Lib.Is_Regular_File
+          ("resources/test_project_directory/dir_1/"
+           & "Vis_Window_3.viswin"),
+         "Check Management file for Vis_Window_3 should not exist");            
+      Assert
+        (Gnat.OS_Lib.Is_Regular_File
+          ("resources/test_project_directory/dir_1/"
+           & "Vis_Window_3.viswin~"),
+         "Check Emergency file for Vis_Window_3"); 
+                   
+      A_Vis_Window := Projects.Get_Visualisation_Window
+        (Test_Project_1,
+         "Vis_Window_1");
+                         
+      -- check renaming of file linked vis windows
+      Projects.Change_Vis_Window_Name 
+        (Test_Project_1,
+         "Vis_Window_1",
+         "Vis_Window_1_New"); 
+         
+      Projects.Free_Memory_For_Vis_Window
+        (Test_Project_1, "Vis_Window_1_New"); 
+         
+      -- check correct renaming of file linked window Vis_Window_1
+      Assert
+        (not Projects.Does_Vis_Window_Exist 
+          (Test_Project_1, "Vis_Window_1"),
+         "Check Vis_Window_1 file linked renaming - 1");
+      Assert
+        (not Projects.Is_Vis_Window_Memory_Loaded 
+          (Test_Project_1, "Vis_Window_1"),
+         "Check Vis_Window_1 file linked renaming - 2");     
+      Assert
+        (Projects.Does_Vis_Window_Exist 
+          (Test_Project_1, "Vis_Window_1_New"),
+         "Check Vis_Window_1 file linked renaming - 3");
+      Assert
+        (not Projects.Is_Vis_Window_Memory_Loaded 
+          (Test_Project_1, "Vis_Window_1_New"),
+         "Check Vis_Window_1 file linked renaming - 4"); 
+                  
+      Assert
+        (Gnat.OS_Lib.Is_Regular_File
+          ("resources/test_project_directory/dir_1/"
+           & "Vis_Window_1.viswin~"),
+         "Check Vis_Window_1 file linked renaming - 5");           
+      Assert
+        (not Gnat.OS_Lib.Is_Regular_File
+          ("resources/test_project_directory/dir_1/"
+           & "Vis_Window_1.viswin"),
+         "Check Vis_Window_1 file linked renaming - 6");         
+      Assert
+        (Gnat.OS_Lib.Is_Regular_File
+          ("resources/test_project_directory/dir_1/"
+           & "Vis_Window_1_New.viswin"),
+         "Check Vis_Window_1 file linked renaming - 7");           
+      Assert
+        (Gnat.OS_Lib.Is_Regular_File
+          ("resources/test_project_directory/dir_1/"
+           & "Vis_Window_1_New.viswin~"),
+         "Check Vis_Window_1 file linked renaming - 8");    
+                  
+      Projects.Remove_Visualisation_Window
+        (Test_Project_1, "Vis_Window_1_New"); 
+        
+      Assert
+        (not Gnat.OS_Lib.Is_Regular_File
+          ("resources/test_project_directory/dir_1/"
+           & "Vis_Window_1_New.viswin"),
+         "Check Vis_Window_1_New file linked - removed - 1"); 
+         
+      Test_List := 
+        Projects.Get_All_Visualisation_Window_Names (Test_Project_1);
+      Assert (String_Lists.Length (Test_List) = 2,
+              "Check Vis_Window_1_New file linked - removed - 2");                                                       
+      String_Lists.Destroy (Test_List);                      
+      
+      Test_List := File_Management.Get_Filtered_Files_From_Directory
+        ("resources/test_project_directory/dir_1",
+         False,
+         "");
+      Assert 
+        (String_Lists.Length (Test_List) = 9,
+         "Test correct ammount of files in dir_1 - after changes");
+      String_Lists.Destroy (Test_List);
+               
+      ---
+      Projects.Store_Whole_Project (Test_Project_1);
+      Test_List := File_Management.Get_Filtered_Files_From_Directory
+        ("resources/test_project_directory/dir_1",
+         False,
+         "");
+      Assert 
+        (String_Lists.Length (Test_List) = 10,
+         "Test correct ammount of files in dir_1 - after changes and save");
+      String_Lists.Destroy (Test_List);
+      
+      ---
+      Kill_Files_In_Dir ("resources/test_project_directory/dir_3");  
+      Projects.Store_Whole_Project_As_For_File        
+        (Test_Project_1,
+         "resources/test_project_directory/dir_3/Test_Project_1.xml");    
+      Test_List := File_Management.Get_Filtered_Files_From_Directory
+        ("resources/test_project_directory/dir_3",
+         False,
+         "");
+      Assert 
+        (String_Lists.Length (Test_List) = 10,
+         "Test correct ammount of files in dir_3 - after save new");
+      String_Lists.Destroy (Test_List); 
+                                                      
+   end Vis_Window_Persistence_Status_Test;  
+         
+   ---------------------------------------------------------------------------
+   procedure Subgraph_Persistence_Status_Test
       (R : in out AUnit.Test_Cases.Test_Case'Class) is
 
       Test_Project_1 : Giant.Projects.Project_Access;
@@ -816,17 +1041,203 @@ package body Giant.Projects.Test is
       Test_Project_1 := Create_Test_Project_1;            
       Check_Test_Project_1 (Test_Project_1);
       
+       -- check dir
+      Test_List := File_Management.Get_Filtered_Files_From_Directory
+        ("resources/test_project_directory/dir_1",
+         False,
+         "");
+      Assert 
+        (String_Lists.Length (Test_List) = 4,
+         "Test correct ammount of files in dir_1 - before changing");
+      String_Lists.Destroy (Test_List);
       
+      Projects.Remove_Subgraph 
+        (Test_Project_1, "Sub_Graph_3");     
+        
+      Projects.Change_Subgraph_Name
+        (Test_Project_1, "Sub_Graph_4", "Sub_Graph_4_New"); 
+        
+      Assert
+        (not Gnat.OS_Lib.Is_Regular_File
+          ("resources/test_project_directory/dir_1/"
+           & "Sub_Graph_4_New.subgraph"),
+         "Check Sub_Graph_4_New not yet written"); 
       
+      Test_List := File_Management.Get_Filtered_Files_From_Directory
+        ("resources/test_project_directory/dir_1",
+         False,
+         "");
+      Assert 
+        (String_Lists.Length (Test_List) = 5,
+         "Test correct ammount of files in dir_1 - after first changes");
+      String_Lists.Destroy (Test_List);      
       
+      -- save
+      Projects.Store_Whole_Project (Test_Project_1);
       
+      Test_List := File_Management.Get_Filtered_Files_From_Directory
+        ("resources/test_project_directory/dir_1",
+         False,
+         "");
+      Assert 
+        (String_Lists.Length (Test_List) = 11,
+         "Test correct ammount of files in dir_1 - after first save");
+      String_Lists.Destroy (Test_List); 
+                                                      
+      -- do changes
+      Projects.Change_Subgraph_Name 
+        (Test_Project_1, "Sub_Graph_1", "Sub_Graph_1_New");
       
-      --
-  --    Projects.Deallocate_Project_Deep (Test_Project_1);   
-      -- Test_Project_1
+      Projects.Remove_Subgraph 
+        (Test_Project_1, "Sub_Graph_1_New");      
+      
+      Projects.Change_Subgraph_Name 
+        (Test_Project_1, "Sub_Graph_2", "Sub_Graph_2_New");  
+        
+      Test_List := File_Management.Get_Filtered_Files_From_Directory
+        ("resources/test_project_directory/dir_1",
+         False,
+         "");
+      Assert 
+        (String_Lists.Length (Test_List) = 11,
+         "Test correct ammount of files in dir_1 - after first changes");
+      String_Lists.Destroy (Test_List);      
+            
+      Assert
+        (Gnat.OS_Lib.Is_Regular_File
+          ("resources/test_project_directory/dir_1/"
+           & "Sub_Graph_1_New.subgraph~"),
+         "Check status after doing changes on saved data - 1");       
+      Assert
+        (not Gnat.OS_Lib.Is_Regular_File
+          ("resources/test_project_directory/dir_1/"
+           & "Sub_Graph_1_New.subgraph"),
+         "Check status after doing changes on saved data - 2");       
+      Assert
+        (Gnat.OS_Lib.Is_Regular_File
+          ("resources/test_project_directory/dir_1/"
+           & "Sub_Graph_2_New.subgraph"),
+         "Check status after doing changes on saved data - 3");       
+      Assert
+        (not Gnat.OS_Lib.Is_Regular_File
+          ("resources/test_project_directory/dir_1/"
+           & "Sub_Graph_3.subgraph"),
+         "Check status after doing changes on saved data - 4"); 
+      Assert
+        (not Gnat.OS_Lib.Is_Regular_File
+          ("resources/test_project_directory/dir_1/"
+           & "Sub_Graph_3.subgraph~"),
+         "Check status after doing changes on saved data - 5");        
+      Assert
+        (Gnat.OS_Lib.Is_Regular_File
+          ("resources/test_project_directory/dir_1/"
+           & "Sub_Graph_4_New.subgraph"),
+         "Check status after doing changes on saved data - 6");          
+              
+      -- second save
+      Projects.Store_Whole_Project (Test_Project_1);        
+        
+      Test_List := File_Management.Get_Filtered_Files_From_Directory
+        ("resources/test_project_directory/dir_1",
+         False,
+         "");
+      Assert 
+        (String_Lists.Length (Test_List) = 10,
+         "Test correct ammount of files in dir_3 - after second save");
+      String_Lists.Destroy (Test_List);   
+      
+      Assert
+        (not Gnat.OS_Lib.Is_Regular_File
+          ("resources/test_project_directory/dir_1/"
+           & "Sub_Graph_1_New.subgraph~"),
+         "Check status after second change - 1");     
 
+      Assert
+        (not Gnat.OS_Lib.Is_Regular_File
+          ("resources/test_project_directory/dir_1/"
+           & "Sub_Graph_3.subgraph~"),
+         "Check status after second change - 1");                
+          
+   end Subgraph_Persistence_Status_Test;     
+   
+   ---------------------------------------------------------------------------
+   procedure Test_Highlight_Status
+      (R : in out AUnit.Test_Cases.Test_Case'Class) is
 
+      Test_Project_1 : Giant.Projects.Project_Access;
+      Test_List      : String_Lists.List; 
+      Test_HS        : Projects.Subgraph_Highlight_Status;
+   begin
+   
+      Kill_Files_In_Dir ("resources/test_project_directory/dir_1");
+      Test_Project_1 := Create_Test_Project_1;            
       Check_Test_Project_1 (Test_Project_1);
+       
+      Projects.Change_Highlight_Status
+        (Test_Project_1, "Sub_Graph_1", Color_1);         
+      Projects.Change_Highlight_Status
+        (Test_Project_1, "Sub_Graph_2", Color_1);  
+
+      Assert (Get_Highlight_Status 
+         (Test_Project_1, "Sub_Graph_1") = Color_1,
+         "Check Highlight Status changed Sub_Graph_1 - 1");
+      Assert (Get_Highlight_Status 
+         (Test_Project_1, "Sub_Graph_2") = Color_1,
+         "Check Highlight Status changed Sub_Graph_2 - 1");  
+  
+      Projects.Change_Highlight_Status
+        (Test_Project_1, "Sub_Graph_1", None);         
+         
+      Assert (Get_Highlight_Status 
+         (Test_Project_1, "Sub_Graph_1") = None,
+         "Check Highlight Status changed Sub_Graph_1 - 2");
+         
+      -- save and store
+      Projects.Store_Whole_Project (Test_Project_1);
+      
+      
+      Projects.Store_Whole_Project (Test_Project_1); 
+      Projects.Deallocate_Project_Deep (Test_Project_1);  
+      Test_Project_1 := Projects.Load_Project_File
+        ("resources/test_project_directory/dir_1/Test_Project_1.xml");
+    
+      Check_Test_Project_1 (Test_Project_1);
+
+      Assert (Get_Highlight_Status 
+         (Test_Project_1, "Sub_Graph_1") = None,
+         "Check Highlight Status changed Sub_Graph_1 - after reloading");
+
+      Assert (Get_Highlight_Status 
+         (Test_Project_1, "Sub_Graph_2") = Color_1,
+         "Check Highlight Status changed Sub_Graph_2 - after reloading"); 
+      
+      
+      Projects.Remove_Subgraph (Test_Project_1, "Sub_Graph_1");
+      
+      -- Subgraph_Is_Not_Part_Of_Project_Exception
+      begin
+        Projects.Change_Highlight_Status
+          (Test_Project_1, "Sub_Graph_1", Color_1);  
+        Assert (False,
+          "Change_Highlight_Status - " 
+          & "Subgraph_Is_Not_Part_Of_Project_Exception");
+      exception
+         when Subgraph_Is_Not_Part_Of_Project_Exception =>
+            null;
+      end;
+      
+      -- Subgraph_Is_Not_Part_Of_Project_Exception
+      begin
+        Test_HS := Projects.Get_Highlight_Status
+          (Test_Project_1, "Sub_Graph_1");  
+        Assert (False,
+          "Change_Highlight_Status - " 
+          & "Subgraph_Is_Not_Part_Of_Project_Exception");
+      exception
+         when Subgraph_Is_Not_Part_Of_Project_Exception =>
+            null;
+      end;
+      
       Projects.Deallocate_Project_Deep (Test_Project_1);            
    end Test_Highlight_Status;  
 
@@ -838,13 +1249,24 @@ package body Giant.Projects.Test is
 
    procedure Register_Tests (T : in out Test_Case) is
    begin
-      Register_Routine (T, Test_Initialize'Access, "Inititialisation");
       Register_Routine 
-        (T, Basic_File_Mangement_Test'Access, "Basic_File_Mangement_Test");      
+       (T, Test_Initialize'Access, 
+        "Inititialisation");
       Register_Routine 
-        (T, Changing_Test_Only_Memory'Access, "Changing_Test_Only_Memory");   
+        (T, Basic_File_Mangement_Test'Access, 
+         "Basic_File_Mangement_Test");      
       Register_Routine 
-        (T, Test_Highlight_Status'Access, "Test_Highlight_Status");                       
+        (T, Changing_Test_Only_Memory'Access, 
+         "Changing_Test_Only_Memory"); 
+      Register_Routine 
+        (T, Vis_Window_Persistence_Status_Test'Access, 
+         "Vis_Window_Persistence_Status_Test");         
+      Register_Routine 
+        (T, Subgraph_Persistence_Status_Test'Access, 
+         "Subgraph_Persistence_Status_Test");                     
+      Register_Routine 
+        (T, Test_Highlight_Status'Access, 
+         "Test_Highlight_Status");                       
    end Register_Tests;
 
    procedure Set_Up (T : in out Test_Case) is

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.62 $
---  $Author: squig $
---  $Date: 2003/07/18 16:40:08 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.63 $
+--  $Author: schwiemn $
+--  $Date: 2003/07/18 19:18:02 $
 --
 
 with Ada.Strings.Unbounded;
@@ -708,7 +708,7 @@ package body Giant.Controller is
       end if;
 
       if (Gui_Manager.Remove_Selection (Window_Name, Name)) then
-         Unhighlight_Selection (Window_Name, Name);
+      -- FIX Martin   Unhighlight_Selection (Window_Name, Name);
          if (Remove_Content) then
             --  remove the selection from display before it is destroyed
             Graph_Widgets.Remove_Selection

@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.28 $
--- $Author: squig $
--- $Date: 2003/07/14 22:28:11 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.29 $
+-- $Author: schwiemn $
+-- $Date: 2003/07/18 19:18:02 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -1061,7 +1061,7 @@ package Giant.Projects is
 
 
    ---------------------------------------------------------------------------
-   -- Returns true is Name exists in Project.
+   -- Returns true if Name (Subgraph or Vis_Window) exists in Project.
    --
    -- Parameters:
    --   Project - The project
