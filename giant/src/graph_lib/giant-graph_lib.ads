@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.42 $
---  $Author: squig $
---  $Date: 2003/09/11 18:44:23 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.43 $
+--  $Author: koppor $
+--  $Date: 2003/09/18 15:37:14 $
 --
 --  TBD:
 --    * Write into comment, when the routine may be used
@@ -932,6 +932,11 @@ private
    All_Edges_First_Index : constant := 1;
 
    ---------------------------------------------------------------------------
+   --  Constant for better readability of the code
+   --    has to be 1, all others value will surely lead to a constraint-error
+   Node_Edges_First_Index : constant := 1;
+
+   ---------------------------------------------------------------------------
    --  Represents a single node of the IML_Graph
    type Node_Record
      (Number_Of_Incoming_Edges : Natural;
@@ -942,8 +947,10 @@ private
         --    IML_Roots only
         IML_Node       : IML_Roots.IML_Root;
 
-        Incoming_Edges : Edge_Id_Array (1 .. Number_Of_Incoming_Edges);
-        Outgoing_Edges : Edge_Id_Array (1 .. Number_Of_Outgoing_Edges);
+        Incoming_Edges : Edge_Id_Array
+          (Node_Edges_First_Index .. Number_Of_Incoming_Edges);
+        Outgoing_Edges : Edge_Id_Array
+          (Node_Edges_First_Index .. Number_Of_Outgoing_Edges);
    end record;
 
    ---------------------------------------------------------------------------

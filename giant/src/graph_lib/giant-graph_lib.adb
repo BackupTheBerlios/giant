@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.70 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.71 $
 --  $Author: koppor $
---  $Date: 2003/09/17 17:33:54 $
+--  $Date: 2003/09/18 15:37:14 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -386,10 +386,6 @@ package body Giant.Graph_Lib is
             --  like in "outer" Edge_Record
             Attribute                : Node_Attribute_Id;
             Attribute_Element_Number : Natural;
-
-            --  Used at conversion from temporary structure to
-            --  graph_lib-internal structure
-            Internal_Edge : Edge_Id;
          end record;
 
          type Edge_Access is access Edge_Record;
@@ -404,7 +400,13 @@ package body Giant.Graph_Lib is
 
             --  Used at conversion from temporary structure to
             --  graph_lib-internal structure
+
+            --  reference to the "real" (i.e. in the running used) node
             Internal_Node : Node_Id;
+
+            --  Last used index of Node_Record.Incoming_Edges
+            --    Node_Record: "real" Node_Record
+            Last_Incoming_Edge : Natural := Node_Edges_First_Index - 1;
          end record;
 
          --  Creates an edge in the package-internal structure
@@ -799,7 +801,7 @@ package body Giant.Graph_Lib is
          --
          --  Parameters:
          --    All_Edges_Set': Contains all created edges
-         procedure Convert_Outgoing_Edges
+         procedure Convert_Edges
            (All_Edges_Set : out Edge_Id_Sets.Set)
          is
 
@@ -810,11 +812,19 @@ package body Giant.Graph_Lib is
             Last_Internal_Id : Integer := All_Edges_First_Index - 1;
 
             -------------------------------------------------------------------
-            --  Modifies "All_Edges_Set"
-            --    adds created edges to "All_Edges_Set"
+            --  * Creates all outgoing edges of a node
+            --  * Adds this edges to the corresponding target-node as
+            --      incoming edges
+            --  * Modifies "All_Edges_Set"
+            --      adds created edges to "All_Edges_Set"
+            --
             --  Precondition:
             --    Size of TargtArray == Length(Source_List)
-            procedure Convert_Outgoing_Edges_Of_A_Node
+            --
+            --  Parameters:
+            --    Source_List  : List of all outgoing edges
+            --    Target_Array : Array to store outgoing edges
+            procedure Convert_Edges_Of_A_Node
               (Source_List  : in     Load_Nodes.Edge_Lists.List;
                Target_Array :    out Edge_Id_Array) is
 
@@ -846,28 +856,31 @@ package body Giant.Graph_Lib is
                   Target_Array (I).Attribute_Element_Number :=
                     Cur_Edge.Attribute_Element_Number;
 
-                  --  store in temporary edge, the belonging package-internal
-                  --    one ("backreference")
-                  Cur_Edge.Internal_Edge := Target_Array (I);
+                  --  Add edge as incoming edge to target
+                  Cur_Edge.Target.Last_Incoming_Edge :=
+                    Cur_Edge.Target.Last_Incoming_Edge + 1;
+                  Cur_Edge.Target.Internal_Node.Incoming_Edges
+                    (Cur_Edge.Target.Last_Incoming_Edge) :=
+                    Target_Array (I);
 
                   --  add it to procedure-internal set holding all edges
                   --  of the graph
                   Edge_Id_Sets.Insert (All_Edges_Set, Target_Array (I));
                end loop;
-            end Convert_Outgoing_Edges_Of_A_Node;
+            end Convert_Edges_Of_A_Node;
 
             Node_Iter : Load_Nodes.Node_Queues.ListIter;
             Cur_Node  : Load_Nodes.Node_Access; --  of the temporary structure
             New_Node  : Node_Id; --  of the graph_lib-internal structure
 
          begin
-            Logger.Debug ("Begin: Convert_Outgoing_Edges");
+            Logger.Debug ("Begin: Convert_Edges");
 
             All_Edges_Set := Edge_Id_Sets.Empty_Set;
 
             Basic_Evolutions.Set_Total_Complexity (Individual, Node_Count);
             Basic_Evolutions.Set_Text
-              (Individual, -"Converting Outgoing Edge %v of %u");
+              (Individual, -"Converting Edge %v of %u");
 
             Node_Iter := Load_Nodes.Node_Queues.MakeListIter (Queue);
             while Load_Nodes.Node_Queues.More (Node_Iter) loop
@@ -875,67 +888,12 @@ package body Giant.Graph_Lib is
 
                New_Node := Cur_Node.Internal_Node;
 
-               Convert_Outgoing_Edges_Of_A_Node
+               Convert_Edges_Of_A_Node
                  (Cur_Node.Edges_Out,
                   New_Node.Outgoing_Edges);
                Cancel := Basic_Evolutions.Step (Individual);
             end loop;
-         end Convert_Outgoing_Edges;
-
-         ---------------------------------------------------------------------
-         --  The structure of this routine is similar to the one of
-         --    Convert_Outgoing_Edges
-         procedure Convert_Incoming_Edges
-         is
-
-            procedure Convert_Incoming_Edges_Of_A_Node
-              (Source_List  : in     Load_Nodes.Edge_Lists.List;
-               Target_Array :    out Edge_Id_Array) is
-
-               Edge_Iter : Load_Nodes.Edge_Lists.ListIter;
-               Cur_Edge  : Load_Nodes.Edge_Access;
-
-            begin
-               pragma Assert (Target_Array'Length =
-                                Load_Nodes.Edge_Lists.Length (Source_List));
-
-               Edge_Iter := Load_Nodes.Edge_Lists.MakeListIter (Source_List);
-
-               for I in Target_Array'Range loop
-                  Load_Nodes.Edge_Lists.Next (Edge_Iter, Cur_Edge);
-
-                  --  In Convert_Outoing_Edges_Of_A_Node
-                  --    Internal_Edge was set to the belonging
-                  --    package-internal edge, so only a copy of this
-                  --    reference is necessary
-                  --  This assumption is valid, since each incoming edge
-                  --    is also an outgoing edge of another node and vice versa
-                  Target_Array (I) := Cur_Edge.Internal_Edge;
-               end loop;
-            end Convert_Incoming_Edges_Of_A_Node;
-
-            Node_Iter : Load_Nodes.Node_Queues.ListIter;
-            Cur_Node  : Load_Nodes.Node_Access; --  of the temporary structure
-            New_Node  : Node_Id; --  of the internal structure
-         begin
-            Logger.Debug ("Begin: Convert_Outgoing_Edges");
-
-            Basic_Evolutions.Set_Total_Complexity (Individual, Node_Count);
-            Basic_Evolutions.Set_Text
-              (Individual, -"Converting Incoming Edge %v of %u");
-
-            Node_Iter := Load_Nodes.Node_Queues.MakeListIter (Queue);
-            while Load_Nodes.Node_Queues.More (Node_Iter) loop
-               Load_Nodes.Node_Queues.Next (Node_Iter, Cur_Node);
-
-               New_Node := Cur_Node.Internal_Node;
-
-               Convert_Incoming_Edges_Of_A_Node
-                 (Cur_Node.Edges_In,
-                  New_Node.Incoming_Edges);
-               Cancel := Basic_Evolutions.Step (Individual);
-            end loop;
-         end Convert_Incoming_Edges;
+         end Convert_Edges;
 
          ----------------------------------------------------------------------
          --  Convert set containing all edges to "public" array of all edges
@@ -986,7 +944,7 @@ package body Giant.Graph_Lib is
          declare
             All_Edges_Set : Edge_Id_Sets.Set;
          begin
-            Convert_Outgoing_Edges (All_Edges_Set);
+            Convert_Edges (All_Edges_Set);
 
             --  Convert set containing all edges to "public" array of all edges
             Logger.Debug ("Begin: Convert_Edge_Set_To_Edge_Array");
@@ -996,8 +954,6 @@ package body Giant.Graph_Lib is
             Logger.Debug ("Begin: Destroy");
             Edge_Id_Sets.Destroy (All_Edges_Set);
          end;
-
-         Convert_Incoming_Edges;
       end Convert_Temp_Structure_To_Used_Structure;
 
       -------------------------------------------------------------------------
@@ -1050,7 +1006,7 @@ package body Giant.Graph_Lib is
 
          Cancel := Basic_Evolutions.Set_Percentage
            (Individual, 0.9, "Cleaning up");
-         Destroy_TEmp_Structure (Queue);
+         Destroy_Temp_Structure (Queue);
       end;
 
       IML_Node_Mapper.Destroy;
