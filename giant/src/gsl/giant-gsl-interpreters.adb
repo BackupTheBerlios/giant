@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/22 22:57:18 $
+-- $Date: 2003/06/23 14:29:24 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -36,6 +36,7 @@ with Giant.Default_Logger;
 with Giant.Gsl.Types;
 use  Giant.Gsl.Types;
 with Giant.Gsl.Syntax_Tree;
+with Giant.Gsl.Runtime;
 
 package body Giant.Gsl.Interpreters is
 
@@ -480,6 +481,7 @@ package body Giant.Gsl.Interpreters is
       Cond         : Gsl_Type;
       True_Branch  : Gsl_Type;
       False_Branch : Gsl_Type;
+      Param        : Gsl_List;
    begin
       Default_Logger.Debug ("Interpreter: Runtime_If called.", "Giant.Gsl");
       if Get_List_Size (Parameter) /= 3 then
@@ -496,13 +498,35 @@ package body Giant.Gsl.Interpreters is
       elsif Cond'Tag = Gsl_Boolean_Record'Tag then
          if Get_Value (Gsl_Boolean (Cond)) = true then
             if True_Branch'Tag = Gsl_Script_Reference_Record'Tag then
-               return Gsl_Null;
+
+               -- Script_Activation to Execution Stack
+               Execution_Stacks.Push (Current_Interpreter.Execution_Stack,
+                 Giant.Gsl.Compilers.Get_Execution_Stack
+                   (Current_Interpreter.Gsl_Compiler,
+                    Giant.Gsl.Syntax_Tree.Create_Node (Script_Activation, 
+                    Null_Node, Null_Node))); 
+
+               Result_Stacks.Push
+                 (Current_Interpreter.Result_Stack, True_Branch);
+               Param := Create_Gsl_List (0);
+               return Gsl_Type (Param);
             else
                return True_Branch;
             end if;
          else
             if False_Branch'Tag = Gsl_Script_Reference_Record'Tag then
-               return Gsl_Null;
+
+               -- Script_Activation to Execution Stack
+               Execution_Stacks.Push (Current_Interpreter.Execution_Stack,
+                 Giant.Gsl.Compilers.Get_Execution_Stack
+                   (Current_Interpreter.Gsl_Compiler,
+                    Giant.Gsl.Syntax_Tree.Create_Node (Script_Activation, 
+                    Null_Node, Null_Node))); 
+
+               Result_Stacks.Push
+                 (Current_Interpreter.Result_Stack, True_Branch);
+               Param := Create_Gsl_List (0);
+               return Gsl_Type (Param);
             else
                return False_Branch;
             end if;
