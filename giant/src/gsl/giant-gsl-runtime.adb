@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/09/02 10:21:34 $
+-- $Date: 2003/09/16 16:54:57 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -711,6 +711,7 @@ package body Giant.Gsl.Runtime is
    function Runtime_Get_First
      (Parameter : Gsl_List)
       return Gsl_Type is
+      use Gsl.Interpreters;
 
       Obj  : Gsl_Type;
    begin
@@ -719,6 +720,9 @@ package body Giant.Gsl.Runtime is
            "Script 'size_of': Expecting 1 parameter.");
       end if;
       Obj := Get_Value_At (Parameter, 1);
+      if Is_Gsl_Var_Reference (Obj) then
+         Obj := Get_Var (Get_Ref_Name (Gsl_Var_Reference (Obj)));
+      end if;
       if Is_Gsl_Node_Set (Obj) then
          return Gsl_Type (Create_Gsl_Node_Id
            (Graph_Lib.Node_Id_Sets.First (Get_Value (Gsl_Node_Set (Obj)))));
@@ -1573,7 +1577,7 @@ package body Giant.Gsl.Runtime is
          then
             Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
               "Script 'insert_into_window': Window " &
-              Get_Value (Gsl_String (Window_Name)) &  "does not exist.");
+              Get_Value (Gsl_String (Window_Name)) &  " does not exist.");
          end if;
 
          -- build the selection with graph_lib functions
