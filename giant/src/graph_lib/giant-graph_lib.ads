@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.22 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.23 $
 --  $Author: koppor $
---  $Date: 2003/06/26 14:38:13 $
+--  $Date: 2003/06/27 16:50:13 $
 --
 
 with Giant.Constant_Ptr_Hashs;
@@ -125,6 +125,9 @@ package Giant.Graph_Lib is
    ---------------------------------------------------------------------------
    --  Needed for Node_Record, used to store incoming and outgoing edges
    type Edge_Id_Array is array (Positive range <>) of Edge_Id;
+
+   ---------------------------------------------------------------------------
+   type Edge_Id_Array_Access is access Edge_Id_Array;
 
    ---------------------------------------------------------------------------
    --  to be considered private
@@ -742,40 +745,8 @@ package Giant.Graph_Lib is
 
 private
 
-   --------------------------------------------
-   --  Edge_Id_Locator                       --
-   --    Hashed mapping to speed up reading  --
-   --------------------------------------------
-
-   package Edge_Id_Locator is
-
-      ------------------------------------------------------------------------
-      --  Has to be called after Giant.Graph_Lib.Load
-      --    and before any use of Selection_Read
-      procedure Initialize;
-
-      ------------------------------------------------------------------------
-      --  Raises:
-      --    No_Edge_Found - if belonging edge can't be located
-      function Locate
-        (Source_Node              : in Node_Id;
-         Target_Node              : in Node_Id;
-         Attribute                : in Node_Attribute_Id;
-         Attribute_Element_Number : in Natural)
-        return Edge_Id;
-
-      ------------------------------------------------------------------------
-      --  Has to be called before Giant.Graph_Lib.Destroy
-      --    and after any use of Selection_Read
-      procedure Destroy;
-
-      ------------------------------------------------------------------------
-      --  Risen, if duplicate edges have to be inserted
-      Duplicate_Edge : exception;
-
-      No_Edge_Found  : exception;
-
-   end Edge_Id_Locator;
+   ---------------------------------------------------------------------------
+   All_Edges : Edge_Id_Array_Access;
 
    ---------------------------------------------------------------------------
    --  Represents a single node of the IML_Graph
@@ -792,6 +763,10 @@ private
    --  Represents an edge of the IML_Graph
    type Edge_Record is
      record
+        --  Internal Id of an edge, used at loading and storing subgraphs and
+        --    selections
+        Internal_Id                   : Positive;
+
         Source_Node                   : Node_Id;
         Target_Node                   : Node_Id;
 
@@ -811,6 +786,7 @@ private
         Source_Node_Attribute : Node_Attribute_Id;
      end record;
 
+   ---------------------------------------------------------------------------
    Invalid_Node_Id                : constant Node_Id := null;
    Invalid_Attribute_Value_String : constant String  := "*INVALID*";
 
