@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.5 $
 --  $Author: keulsn $
---  $Date: 2003/06/02 16:29:18 $
+--  $Date: 2003/06/03 13:26:32 $
 --
 ------------------------------------------------------------------------------
 
@@ -32,13 +32,8 @@ with Ada.Tags;
 
 with Gdk.Main;
 with Gdk.Threads;
-with Glib;
 with Gtk.Main;
 
-with Hashed_Mappings;
-pragma Elaborate_All (Hashed_Mappings);
-with Ptr_Hashs;
-pragma Elaborate_All (Ptr_Hashs);
 with Ptr_Ops;
 
 with Giant.Fixed_Priority_Queues;
@@ -47,7 +42,7 @@ with Giant.Logger;
 package body Giant.Evolutions is
 
 
-   package Evolution_Logger is new Giant.Logger
+   package Evolution_Logger is new Logger
      (Name => "Giant.Evolutions");
 
 
@@ -56,20 +51,15 @@ package body Giant.Evolutions is
    -- for concurrent evolutions --
    -------------------------------
 
-   --  Mapping Button --> Driver
-   package Button_Hashs is new Ptr_Hashs
-     (T     => Gtk.Button.Gtk_Button_Record,
-      T_Ptr => Gtk.Button.Gtk_Button);
-   package Button_Mappings is new Hashed_Mappings
-     (Key_Type   => Gtk.Button.Gtk_Button,
-      Hash       => Button_Hashs.Integer_Hash,
-      Value_Type => Driver_Id_Type);
-
-   --  Cancel_Button handling
-   package Button_Cb is new Gtk.Handlers.Callback
-     (Widget_Type => Gtk.Button.Gtk_Button_Record);
+   --  Cancel handling
+   package Driver_Dialog_Cb is new Gtk.Handlers.User_Callback
+     (Widget_Type => Progress_Dialog.Progress_Dialog_Record,
+      User_Type   => Driver_Id_Type);
+   package Dialog_Cb is new Gtk.Handlers.Callback
+     (Widget_Type => Progress_Dialog.Progress_Dialog_Record);
    procedure Cancel_Callback
-     (Button : access Gtk.Button.Gtk_Button_Record'Class);
+     (Dialog    : access Progress_Dialog.Progress_Dialog_Record'Class;
+      Driver_Id : in     Driver_Id_Type);
 
 
    --  Reflect priority ordering on driver states to ids of driver states
@@ -87,7 +77,7 @@ package body Giant.Evolutions is
      return Natural;
 
    --  Priority queues to handle updates of drivers
-   package Driver_State_Queues is new Giant.Fixed_Priority_Queues
+   package Driver_State_Queues is new Fixed_Priority_Queues
      (Max_Size            => Number_Of_Slots,
       Item_Type           => Driver_Id_Type,
       Has_Higher_Priority => Has_Higher_Priority_Id,
@@ -103,50 +93,40 @@ package body Giant.Evolutions is
 
       -- must be called between Gdk.Threads.Enter and Gdk.Threads.Leave
       procedure Start_Driver
-        (Individual      : access Concurrent_Evolution'Class;
-         Started         :    out Boolean;
-         Progress_Dialog : in     Gtk.Dialog.Gtk_Dialog;
-         Progress_Bar    : in     Gtk.Progress_Bar.Gtk_Progress_Bar;
-         Progress_Text   : in     Gtk.Label.Gtk_Label;
-         Progress_Cancel : in     Gtk.Button.Gtk_Button);
+        (Individual       : access Concurrent_Evolution'Class;
+         Started          :    out Boolean;
+         Dialog           : in     Progress_Dialog.Progress_Dialog_Access);
 
       -- must be called between Gdk.Threads.Enter and Gdk.Threads.Leave
       procedure Perform_Update
         (Must_Synchronize :    out Concurrent_Driver_Access);
 
       entry Set_Individual
-        (Driver_Id       : in     Driver_Id_Type;
-         Individual      : access Concurrent_Evolution'Class);
+        (Driver_Id        : in     Driver_Id_Type;
+         Individual       : access Concurrent_Evolution'Class);
 
       entry Schedule_Synchronization
-        (Driver_Id       : in     Driver_Id_Type);
+        (Driver_Id        : in     Driver_Id_Type);
 
       entry Driver_Died
-        (Driver_Id       : in     Driver_Id_Type);
+        (Driver_Id        : in     Driver_Id_Type);
 
-      --  Schedules the cancel request for the driver associated with
-      --  the given button. This operation cannot be split in an
-      --  "Get_Driver_Id" and "Schedule_Cancel (Driver_Id)" because
-      --  Driver_Id might become invalid before the call to Schedule_Cancel.
       procedure Schedule_Cancel
-        (Progress_Cancel : in     Gtk.Button.Gtk_Button);
+        (Driver_Id        : in     Driver_Id_Type);
 
       function Is_Canceled
-        (Driver_Id       : in     Driver_Id_Type)
+        (Driver_Id        : in     Driver_Id_Type)
         return Boolean;
 
    private
 
-      --  All managed drivers is implemented as a global variable to simplify
-      --  usage of Update_Queue.
+      --  "All managed drivers" is implemented as a global variable to
+      --  simplify usage of Update_Queue.
       --  Drivers : Driver_Array
 
       --  Updates are done in order of 'Update_Queue'. All managed Drivers are
       --  in that queue at any point of time.
       Update_Queue : Driver_State_Queues.Queue_Type;
-
-      --  Mapping Cancel_Button --> Driver_Id
-      Cancel_Mapping : Button_Mappings.Mapping := Button_Mappings.Create;
 
    end Driver_Controller;
 
@@ -157,12 +137,9 @@ package body Giant.Evolutions is
    ------------------------------
 
    procedure Start_Iterative_Driver
-     (Individual      : access Iterative_Evolution'Class;
-      Started         :    out Boolean;
-      Progress_Dialog : in     Gtk.Dialog.Gtk_Dialog;
-      Progress_Bar    : in     Gtk.Progress_Bar.Gtk_Progress_Bar;
-      Progress_Text   : in     Gtk.Label.Gtk_Label;
-      Progress_Cancel : in     Gtk.Button.Gtk_Button);
+     (Individual : access Iterative_Evolution'Class;
+      Started    :    out Boolean;
+      Dialog     : in     Progress_Dialog.Progress_Dialog_Access);
 
    procedure Stop_Iterative_Driver;
 
@@ -245,47 +222,39 @@ package body Giant.Evolutions is
    end Validate;
 
    procedure Update_Visuals
-     (Individual    : access Evolution'Class;
-      Progress_Bar  : in     Gtk.Progress_Bar.Gtk_Progress_Bar := null;
-      Progress_Text : in     Gtk.Label.Gtk_Label               := null) is
+     (Individual : access Evolution'Class;
+      Dialog     : in     Progress_Dialog.Progress_Dialog_Access := null) is
 
       Current          : Evolution_Class_Access :=
         Evolution_Class_Access (Individual);
       Complexity_Known : Boolean := True;
       Complexity       : Natural := 0;
       Step_Count       : Natural := 0;
-      Progress         : Glib.Gfloat;
+      Progress         : Float;
    begin
-      while Current /= null loop
-         if Current.Complexity = 0 then
-            Complexity_Known := False;
-         end if;
-         Complexity := Complexity + Current.Complexity
-           + Current.Child_Progress;
-         Step_Count := Step_Count + Current.Progress_Count
-           + Current.Child_Progress;
-         Current := Get_Parent (Current);
-      end loop;
+      if Progress_Dialog."/=" (Dialog, null) then
+         loop
+            if Current.Complexity = 0 then
+               Complexity_Known := False;
+            end if;
+            Complexity := Complexity + Current.Complexity
+              + Current.Child_Progress;
+            Step_Count := Step_Count + Current.Progress_Count
+              + Current.Child_Progress;
+            Current := Get_Parent (Current);
+            exit when Current = null;
+         end loop;
 
-      if Complexity_Known then
-         if Gtk.Progress_Bar."/=" (Progress_Bar, null) then
-            Progress := Glib."/"
-              (Glib.Gfloat (Step_Count), Glib.Gfloat (Complexity));
-            Gtk.Progress_Bar.Update
-              (Progress_Bar => Progress_Bar,
-               Percentage   => Progress);
-         end if;
-         if Gtk.Label."/=" (Progress_Text, null) then
-            Gtk.Label.Set_Text
-              (Label => Progress_Text,
-               Str   => Natural'Image (Step_Count) & (-" of")
-                        & Natural'Image (Complexity));
-         end if;
-      else
-         if Gtk.Label."/=" (Progress_Text, null) then
-            Gtk.Label.Set_Text
-              (Label => Progress_Text,
-               Str   => Natural'Image (Step_Count));
+         if Complexity_Known then
+            Progress := Float (Step_Count) / Float (Complexity));
+            Progress_Dialog.Set_Percentage (Dialog, Progress);
+            Progress_Dialog.Set_Progress_Text
+              (Dialog,
+               Natural'Image (Step_Count) -" of" Natural'Image (Complexity));
+         else
+            Progress_Dialog.Set_Progress_Text
+              (Dialog,
+               );
          end if;
       end if;
    end Update_Visuals;
@@ -296,6 +265,21 @@ package body Giant.Evolutions is
    begin
       Individual.Child_Progress := Individual.Child_Progress + Progress;
    end Add_Child_Progress;
+
+   function Get_Progress_Text_Showing_Complexity
+     (Individual : access Evolution)
+     return String is
+   begin
+      return -"Items processed:%p of%c";
+   end Get_Progress_Text_Showing_Complexity;
+
+   function Get_Progress_Text_Unknown_Complexity
+     (Individual : access Evolution)
+     return String is
+   begin
+      return "Items processed:%p";
+   end Get_Progress_Text_Unknown_Complexity;
+
 
    procedure Done
      (Individual    : access Evolution'Class;
@@ -387,21 +371,15 @@ package body Giant.Evolutions is
    --------------------------
 
    procedure Start_Calculation
-     (Individual      : access Concurrent_Evolution;
-      Progress_Dialog : in     Gtk.Dialog.Gtk_Dialog             := null;
-      Progress_Bar    : in     Gtk.Progress_Bar.Gtk_Progress_Bar := null;
-      Progress_Text   : in     Gtk.Label.Gtk_Label               := null;
-      Progress_Cancel : in     Gtk.Button.Gtk_Button             := null;
-      Started         :    out Boolean) is
+     (Individual : access Concurrent_Evolution;
+      Dialog     : in     Progress_Dialog.Progress_Dialog_Access := null;
+      Started    :    out Boolean) is
    begin
       if Validate (Individual) then
          Driver_Controller.Start_Driver
            (Individual,
             Started,
-            Progress_Dialog,
-            Progress_Bar,
-            Progress_Text,
-            Progress_Cancel);
+            Dialog);
       end if;
    end Start_Calculation;
 
@@ -476,21 +454,15 @@ package body Giant.Evolutions is
    -------------------------
 
    procedure Start_Calculation
-     (Individual      : access Iterative_Evolution;
-      Progress_Dialog : in     Gtk.Dialog.Gtk_Dialog             := null;
-      Progress_Bar    : in     Gtk.Progress_Bar.Gtk_Progress_Bar := null;
-      Progress_Text   : in     Gtk.Label.Gtk_Label               := null;
-      Progress_Cancel : in     Gtk.Button.Gtk_Button             := null;
-      Started         :    out Boolean) is
+     (Individual : access Iterative_Evolution;
+      Dialog     : in     Progress_Dialog.Progress_Dialog_Access := null;
+      Started    :    out Boolean) is
    begin
       if Validate (Individual) then
          Start_Iterative_Driver
            (Individual,
             Started,
-            Progress_Dialog,
-            Progress_Bar,
-            Progress_Text,
-            Progress_Cancel);
+            Dialog);
       end if;
    end Start_Calculation;
 
@@ -681,51 +653,35 @@ package body Giant.Evolutions is
 
       --  must be run between Gdk.Threads.Enter and Gdk.Thread.Leave.
       procedure Initialize_Driver
-        (Driver_Id       : in     Driver_Id_Type;
-         Individual      : access Concurrent_Evolution'Class;
-         Progress_Dialog : in     Gtk.Dialog.Gtk_Dialog;
-         Progress_Bar    : in     Gtk.Progress_Bar.Gtk_Progress_Bar;
-         Progress_Text   : in     Gtk.Label.Gtk_Label;
-         Progress_Cancel : in     Gtk.Button.Gtk_Button) is
+        (Driver_Id  : in     Driver_Id_Type;
+         Individual : access Concurrent_Evolution'Class;
+         Dialog     : in     Progress_Dialog.Progress_Dialog_Access) is
       begin
          Drivers (Driver_Id) :=
-           (Driver          => new Concurrent_Driver
-                                     (Driver_Id, Individual),
+           (Driver          => new Concurrent_Driver (Driver_Id, Individual),
             Individual      => Concurrent_Evolution_Class_Access (Individual),
             Current_State   => Running,
             State_Change    => Ada.Real_Time.Clock,
             Cancel_Request  => False,
             Position        => 0,
             Cancel_Handler  => 0,
-            Progress_Dialog => Progress_Dialog,
-            Progress_Bar    => Progress_Bar,
-            Progress_Text   => Progress_Text,
-            Progress_Cancel => Progress_Cancel);
+            Dialog          => Dialog);
 
          if Driver_State_Queues.Is_Empty (Update_Queue) then
             Begin_Concurrent_Updates;
          end if;
          Driver_State_Queues.Insert (Update_Queue, Driver_Id);
 
-         if Gtk.Progress_Bar."/=" (Progress_Bar, null) then
-            Gtk.Progress_Bar.Ref (Progress_Bar);
-         end if;
-         if Gtk.Label."/=" (Progress_Text, null) then
-            Gtk.Label.Ref (Progress_Text);
-         end if;
-         if Gtk.Button."/=" (Progress_Cancel, null) then
-            Gtk.Button.Ref (Progress_Cancel);
-            Button_Mappings.Bind
-              (Cancel_Mapping, Progress_Cancel, Driver_Id);
-            Drivers (Driver_Id).Cancel_Handler := Button_Cb.Connect
-              (Widget => Progress_Cancel,
-               Name   => "clicked",
-               Marsh  => Button_Cb.To_Marshaller
-               (Cancel_Callback'Access));
-         end if;
-         if Gtk.Dialog."/=" (Progress_Dialog, null) then
-            Gtk.Dialog.Ref (Progress_Dialog);
-            Gtk.Dialog.Show_All (Progress_Dialog);
+         if Progress_Dialog."/=" (Dialog, null) then
+            Progress_Dialog.Ref (Dialog);
+            Drivers (Driver_Id).Cancel_Handler :=
+              Driver_Dialog_Cb.Connect
+              (Widget    => Dialog,
+               Name      => "canceled",
+               Marsh     => Driver_Dialog_Cb.To_Marshaller
+                              (Cancel_Callback'Access),
+               User_Data => Driver_Id);
+            Progress_Dialog.Show_All (Dialog);
          end if;
       end Initialize_Driver;
 
@@ -748,23 +704,13 @@ package body Giant.Evolutions is
 
          --  Drivers (Driver_Id).Individual must not be touched
 
-         if Gtk.Progress_Bar."/=" (Drivers (Driver_Id).Progress_Bar, null) then
-            Gtk.Progress_Bar.Unref (Drivers (Driver_Id).Progress_Bar);
-         end if;
-         if Gtk.Label."/=" (Drivers (Driver_Id).Progress_Text, null) then
-            Gtk.Label.Unref (Drivers (Driver_Id).Progress_Text);
-         end if;
-         if Gtk.Button."/=" (Drivers (Driver_Id).Progress_Cancel, null) then
+         if Progress_Dialog."/=" (Drivers (Driver_Id).Dialog, null)
+         then
             Gtk.Handlers.Disconnect
-              (Object => Drivers (Driver_Id).Progress_Cancel,
-               Id     => Drivers (Driver_Id).Cancel_Handler);
-            Button_Mappings.Unbind
-              (Cancel_Mapping, Drivers (Driver_Id).Progress_Cancel);
-            Gtk.Button.Unref (Drivers (Driver_Id).Progress_Cancel);
-         end if;
-         if Gtk.Dialog."/=" (Drivers (Driver_Id).Progress_Dialog, null) then
-            Gtk.Dialog.Destroy (Drivers (Driver_Id).Progress_Dialog);
-            Gtk.Dialog.Unref (Drivers (Driver_Id).Progress_Dialog);
+              (Drivers (Driver_Id).Dialog,
+               Drivers (Driver_Id).Cancel_Handler);
+            Progress_Dialog.Destroy (Drivers (Driver_Id).Dialog);
+            Progress_Dialog.Unref (Drivers (Driver_Id).Dialog);
          end if;
 
          Drivers (Driver_Id) := No_Driver_State;
@@ -776,21 +722,17 @@ package body Giant.Evolutions is
         (Driver_Id : in     Driver_Id_Type) is
       begin
          Update_Visuals
-           (Individual    => Drivers (Driver_Id).Individual,
-            Progress_Bar  => Drivers (Driver_Id).Progress_Bar,
-            Progress_Text => Drivers (Driver_Id).Progress_Text);
+           (Individual => Drivers (Driver_Id).Individual,
+            Dialog     => Drivers (Driver_Id).Dialog);
       end Update_Visuals;
 
 
       --  must be called between Gdk.Thread.Enter and Gdk.Threads.Leave
       procedure Start_Driver
-        (Individual      : access Concurrent_Evolution'Class;
-         Started         :    out Boolean;
-         Progress_Dialog : in     Gtk.Dialog.Gtk_Dialog;
-         Progress_Bar    : in     Gtk.Progress_Bar.Gtk_Progress_Bar;
-         Progress_Text   : in     Gtk.Label.Gtk_Label;
-         Progress_Cancel : in     Gtk.Button.Gtk_Button) is
-
+        (Individual : access Concurrent_Evolution'Class;
+         Started    :    out Boolean;
+         Dialog     : in     Progress_Dialog.Progress_Dialog_Access)
+      is
          Current : Driver_Id_Type := Drivers'First;
       begin
          Started := False;
@@ -802,8 +744,7 @@ package body Giant.Evolutions is
             end loop;
             if Started then
                Initialize_Driver
-                 (Current, Individual, Progress_Dialog,
-                  Progress_Bar, Progress_Text, Progress_Cancel);
+                 (Current, Individual, Dialog);
             end if;
          end if;
       end Start_Driver;
@@ -866,13 +807,10 @@ package body Giant.Evolutions is
       end Driver_Died;
 
       procedure Schedule_Cancel
-        (Progress_Cancel : in     Gtk.Button.Gtk_Button) is
-
-         Driver_Id : Driver_Id_Type;
+        (Driver_Id       : in     Driver_Id_Type) is
       begin
-         Driver_Id := Button_Mappings.Fetch (Cancel_Mapping, Progress_Cancel);
          Drivers (Driver_Id).Cancel_Request := True;
-         --  does not affect priority!
+         --  does not affect priority.
       end Schedule_Cancel;
 
       function Is_Canceled
@@ -890,9 +828,10 @@ package body Giant.Evolutions is
    ---------------------------------
 
    procedure Cancel_Callback
-     (Button : access Gtk.Button.Gtk_Button_Record'Class) is
+     (Dialog    : access Progress_Dialog.Progress_Dialog_Record'Class;
+      Driver_Id : in     Driver_Id_Type) is
    begin
-      Driver_Controller.Schedule_Cancel (Gtk.Button.Gtk_Button (Button));
+      Driver_Controller.Schedule_Cancel (Driver_Id);
    end Cancel_Callback;
 
 
@@ -914,7 +853,6 @@ package body Giant.Evolutions is
    end Concurrent_Update_Callback;
 
 
-
    --------------------------------
    -- Iterative Driver Callbacks --
    --------------------------------
@@ -923,7 +861,7 @@ package body Giant.Evolutions is
 
 
    procedure Iterative_Cancel_Callback
-     (Button : access Gtk.Button.Gtk_Button_Record'Class) is
+     (Dialog : access Progress_Dialog.Progress_Dialog_Record'Class) is
    begin
       Driver_State.Cancel_Request := True;
    end Iterative_Cancel_Callback;
@@ -954,8 +892,7 @@ package body Giant.Evolutions is
       then
          Update_Visuals
            (Driver_State.Individual,
-            Driver_State.Progress_Bar,
-            Driver_State.Progress_Text);
+            Driver_State.Dialog);
          Driver_State.Update_Time := Ada.Real_Time.Clock;
       end if;
 
@@ -1033,12 +970,9 @@ package body Giant.Evolutions is
 
 
    procedure Start_Iterative_Driver
-     (Individual      : access Iterative_Evolution'Class;
-      Started         :    out Boolean;
-      Progress_Dialog : in     Gtk.Dialog.Gtk_Dialog;
-      Progress_Bar    : in     Gtk.Progress_Bar.Gtk_Progress_Bar;
-      Progress_Text   : in     Gtk.Label.Gtk_Label;
-      Progress_Cancel : in     Gtk.Button.Gtk_Button) is
+     (Individual : access Iterative_Evolution'Class;
+      Started    :    out Boolean;
+      Dialog     : in     Progress_Dialog.Progress_Dialog_Access) is
 
       Idle_Handler : Gtk.Main.Idle_Handler_Id;
    begin
@@ -1049,29 +983,18 @@ package body Giant.Evolutions is
             Update_Time     => Ada.Real_Time.Clock,
             Cancel_Request  => False,
             Cancel_Handler  => 0,
-            Progress_Dialog => Progress_Dialog,
-            Progress_Bar    => Progress_Bar,
-            Progress_Text   => Progress_Text,
-            Progress_Cancel => Progress_Cancel);
+            Dialog          => Dialog);
 
-         if Gtk.Progress_Bar."/=" (Driver_State.Progress_Bar, null) then
-            Gtk.Progress_Bar.Ref (Driver_State.Progress_Bar);
-         end if;
-         if Gtk.Label."/=" (Driver_State.Progress_Text, null) then
-            Gtk.Label.Ref (Driver_State.Progress_Text);
-         end if;
-         if Gtk.Button."/=" (Driver_State.Progress_Cancel, null) then
-            Gtk.Button.Ref (Driver_State.Progress_Cancel);
-            Driver_State.Cancel_Handler := Button_Cb.Connect
-              (Widget  => Driver_State.Progress_Cancel,
-               Name    => "clicked",
-               Marsh   => Button_Cb.To_Marshaller
-                            (Iterative_Cancel_Callback'Access));
-         end if;
-         if Gtk.Dialog."/=" (Driver_State.Progress_Dialog, null) then
-            Gtk.Dialog.Ref (Driver_State.Progress_Dialog);
-            Gtk.Dialog.Set_Modal (Driver_State.Progress_Dialog);
-            Gtk.Dialog.Show_All (Driver_State.Progress_Dialog);
+         if Progress_Dialog."/=" (Driver_State.Dialog, null) then
+            Progress_Dialog.Ref (Driver_State.Dialog);
+            Dialog_Cb.Connect
+              (Widget    => Driver_State.Dialog,
+               Name      => "canceled",
+               Marsh     => Dialog_Cb.To_Marshaller
+                              (Iterative_Cancel_Callback'Access));
+
+            Progress_Dialog.Set_Modal (Driver_State.Dialog);
+            Progress_Dialog.Show_All (Driver_State.Dialog);
          end if;
          Idle_Handler := Gtk.Main.Idle_Add
            (Iterative_Driver_Callback'Access);
@@ -1080,21 +1003,11 @@ package body Giant.Evolutions is
 
    procedure Stop_Iterative_Driver is
    begin
-      if Gtk.Progress_Bar."/=" (Driver_State.Progress_Bar, null) then
-         Gtk.Progress_Bar.Unref (Driver_State.Progress_Bar);
-      end if;
-      if Gtk.Label."/=" (Driver_State.Progress_Text, null) then
-         Gtk.Label.Unref (Driver_State.Progress_Text);
-      end if;
-      if Gtk.Button."/=" (Driver_State.Progress_Cancel, null) then
+      if Progress_Dialog."/=" (Driver_State.Dialog, null) then
          Gtk.Handlers.Disconnect
-           (Object => Driver_State.Progress_Cancel,
-            Id     => Driver_State.Cancel_Handler);
-         Gtk.Button.Unref (Driver_State.Progress_Cancel);
-      end if;
-      if Gtk.Dialog."/=" (Driver_State.Progress_Dialog, null) then
-         Gtk.Dialog.Destroy (Driver_State.Progress_Dialog);
-         Gtk.Dialog.Unref (Driver_State.Progress_Dialog);
+           (Driver_State.Dialog, Driver_State.Cancel_Handler);
+         Progress_Dialog.Destroy (Driver_State.Dialog);
+         Progress_Dialog.Unref (Driver_State.Dialog);
       end if;
       Driver_State := No_Iterative_Driver_State;
    end Stop_Iterative_Driver;
