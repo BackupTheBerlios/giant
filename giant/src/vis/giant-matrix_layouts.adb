@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-matrix_layouts.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-matrix_layouts.adb,v $, $Revision: 1.6 $
 --  $Author: koppor $
---  $Date: 2003/07/03 01:19:41 $
+--  $Date: 2003/07/03 15:07:28 $
 --
 
 with Ada.Numerics.Generic_Elementary_Functions;
@@ -136,6 +136,7 @@ package body Giant.Matrix_Layouts is
          end Max;
 
          Number_Nodes_To_Layout : Natural;
+         Node                   : Graph_Lib.Node_Id;
 
       begin
          Number_Nodes_To_Layout := Min
@@ -148,13 +149,24 @@ package body Giant.Matrix_Layouts is
          for I in Layout.Current_Column..Number_Nodes_To_Layout loop
             --  TBD: find next node by a breadth-first-search
             --       (according to spec)
-            Set_Position_Of_Top_Node (Layout.Current_Position);
 
-            --  TBD: Graph_Widgets.Get_Node_Height is not available!!
+            --  Same statements as in Set_Position_Of_Top_Node
+            --    but "Node" is needed for Get_Current_Node_Height
+            Graph_Lib.Node_Id_Sets.Remove_First
+              (Layout.Nodes_To_Layout, Node);
+            Graph_Widgets.Set_Top_Middle
+              (Layout.Widget,
+               Node,
+               Layout.Current_Position,
+               Layout.Widget_Lock);
+
+            --  determine height of current row
             Layout.Current_Row_Height := Max
               (Layout.Current_Row_Height,
-               20.0);
+               Graph_Widgets.Get_Current_Node_Height
+               (Layout.Widget, Node));
 
+            --  Adjust coordinates for next node
             Layout.Current_Column := Layout.Current_Column + 1;
             Vis.Logic.Set_X
               (Layout.Current_Position,
