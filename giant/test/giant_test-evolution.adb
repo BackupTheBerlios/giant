@@ -20,12 +20,14 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant_test-evolution.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant_test-evolution.adb,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/06/02 00:09:07 $
+--  $Date: 2003/06/04 10:47:04 $
 --
 ------------------------------------------------------------------------------
 
+
+with Ada.Text_IO; use Ada.Text_IO;
 
 with Gdk.Event;
 with Gdk.Threads;
@@ -40,10 +42,10 @@ with Gtk.Window;
 
 with Giant.Default_Logger;
 with Giant.Evolutions;
+with Giant.Progress_Dialog;
 
 with Giant_Test.Concurrent_Calculations;
 with Giant_Test.Iterative_Calculations;
-with Giant_Test.Progress_Dialogs;
 
 procedure Giant_Test.Evolution is
 
@@ -62,23 +64,20 @@ procedure Giant_Test.Evolution is
 
       Calculation     : Concurrent_Calculations.Counter_Access;
       Started         : Boolean;
-      Progress_Dialog : Gtk.Dialog.Gtk_Dialog := null;
-      Progress_Bar    : Gtk.Progress_Bar.Gtk_Progress_Bar := null;
-      Progress_Text   : Gtk.Label.Gtk_Label := null;
-      Progress_Cancel : Gtk.Button.Gtk_Button := null;
+      Dialog          : Giant.Progress_Dialog.Progress_Dialog_Access;
    begin
       Calculation := Concurrent_Calculations.Create (Start_Count, 100);
+      Giant.Progress_Dialog.Create
+        (Dialog  => Dialog,
+         Title   => "Concurrent_Calculation",
+         Message => "This is a message.");
 
-      Progress_Dialogs.Make_New_Progress_Dialog
-        (Progress_Dialog, Progress_Bar, Progress_Cancel);
-
+      Put ("Create Dialog ");
       Concurrent_Calculations.Start_Calculation
-        (Individual      => Calculation,
-         Started         => Started,
-         Progress_Dialog => Progress_Dialog,
-         Progress_Text   => Progress_Text,
-         Progress_Bar    => Progress_Bar,
-         Progress_Cancel => Progress_Cancel);
+        (Individual => Calculation,
+         Started    => Started,
+         Dialog     => Dialog);
+      Put_Line ("done.");
 
       if Started then
          Start_Count := Start_Count + 1;
@@ -92,23 +91,19 @@ procedure Giant_Test.Evolution is
 
       Calculation     : Iterative_Calculations.Counter_Access;
       Started         : Boolean;
-      Progress_Dialog : Gtk.Dialog.Gtk_Dialog := null;
-      Progress_Bar    : Gtk.Progress_Bar.Gtk_Progress_Bar := null;
-      Progress_Text   : Gtk.Label.Gtk_Label := null;
-      Progress_Cancel : Gtk.Button.Gtk_Button := null;
+      Dialog          : Giant.Progress_Dialog.Progress_Dialog_Access;
    begin
       Calculation := Iterative_Calculations.Create (Start_Count, 100);
 
-      Progress_Dialogs.Make_New_Progress_Dialog
-        (Progress_Dialog, Progress_Bar, Progress_Cancel);
+      Giant.Progress_Dialog.Create
+        (Dialog  => Dialog,
+         Title   => "Iterative_Calculation",
+         Message => "This is a message.");
 
       Iterative_Calculations.Start_Calculation
-        (Individual      => Calculation,
-         Started         => Started,
-         Progress_Dialog => Progress_Dialog,
-         Progress_Text   => Progress_Text,
-         Progress_Bar    => Progress_Bar,
-         Progress_Cancel => Progress_Cancel);
+        (Individual => Calculation,
+         Started    => Started,
+         Dialog     => Dialog);
 
       if Started then
          Start_Count := Start_Count + 1;
