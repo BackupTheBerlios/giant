@@ -20,12 +20,14 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/06/13 14:50:29 $
+--  $Date: 2003/06/16 15:34:09 $
 --
 ------------------------------------------------------------------------------
 
+
+with Ada.Unchecked_Deallocation;
 
 package body Giant.Vis_Data is
 
@@ -113,14 +115,16 @@ package body Giant.Vis_Data is
    function Create_Region
      (Extent : Vis.Absolute.Rectangle_2d)
      return Region_Id is
+
+      Region : Region_Id := new Region_Record;
    begin
-      return new Region_Record'
-        (Extent              => Extent,
-         Polluted_Edge       => null,
-         Polluted_Node       => null,
-         Background_Polluted => False,
-         Edges               => Vis_Edge_Sets.Empty_Set,
-         Nodes               => Vis_Node_Sets.Empty_Set);
+      Region.Extent := Extent;
+      Region.Polluted_Edge := null;
+      Region.Polluted_Node := null;
+      Region.Background_Polluted := False;
+      Region.Edges := Vis_Edge_Sets.Empty_Set;
+      Region.Nodes := Vis_Node_Sets.Empty_Set;
+      return Region;
    end Create_Region;
 
    procedure Destroy_Region
@@ -134,7 +138,7 @@ package body Giant.Vis_Data is
       if Region /= null then
          Vis_Edge_Sets.Destroy (Region.Edges);
          Vis_Node_Sets.Destroy (Region.Nodes);
-         Free (Region_Id);
+         Free (Region);
       end if;
    end Destroy_Region;
 
@@ -170,7 +174,7 @@ package body Giant.Vis_Data is
       if not Region.Background_Polluted
         and then Region.Polluted_Edge = null
         and then (Region.Polluted_Node = null or else
-                  Is_Below (Node, Region.Polluted_Node))
+                  Is_Node_Below (Node, Region.Polluted_Node))
       then
          Region.Polluted_Node := Node;
       end if;
@@ -203,6 +207,8 @@ package body Giant.Vis_Data is
    procedure Remove_Edge_From_Region
      (Region : access Region_Record;
       Edge   : in     Vis_Edge_Id) is
+
+      Iterator : Vis_Edge_Sets.Iterator;
    begin
       pragma Assert (Edge /= null);
       if Edge = Region.Polluted_Edge then
@@ -211,22 +217,24 @@ package body Giant.Vis_Data is
             Element => Edge);
          Vis_Edge_Sets.Next (Iterator);
          if Vis_Edge_Sets.More (Iterator) then
-            Regions.Polluted_Edge := Vis_Edge_Sets.Current (Iterator);
+            Region.Polluted_Edge := Vis_Edge_Sets.Current (Iterator);
          else
-            Regions.Polluted_Edge := null;
-            if not Vis_Node_Sets.Is_Empty (Regions.Nodes) then
-               Region.Polluted_Node := Vis_Node_Sets.First (Regions.Nodes);
+            Region.Polluted_Edge := null;
+            if not Vis_Node_Sets.Is_Empty (Region.Nodes) then
+               Region.Polluted_Node := Vis_Node_Sets.First (Region.Nodes);
             end if;
          end if;
       end if;
       Vis_Edge_Sets.Remove_If_Exists
         (A_Set   => Region.Edges,
          Element => Edge);
-   end Remove_Node_From_Region;
+   end Remove_Edge_From_Region;
 
    procedure Remove_Node_From_Region
      (Region : access Region_Record;
       Node   : in     Vis_Node_Id) is
+
+      Iterator : Vis_Node_Sets.Iterator;
    begin
       pragma Assert (Node /= null);
       if Node = Region.Polluted_Node then
@@ -235,9 +243,9 @@ package body Giant.Vis_Data is
             Element => Node);
          Vis_Node_Sets.Next (Iterator);
          if Vis_Node_Sets.More (Iterator) then
-            Regions.Polluted_Node := Vis_Node_Sets.Current (Iterator);
+            Region.Polluted_Node := Vis_Node_Sets.Current (Iterator);
          else
-            Regions.Polluted_Node := null;
+            Region.Polluted_Node := null;
          end if;
       end if;
       Vis_Node_Sets.Remove_If_Exists
@@ -251,7 +259,7 @@ package body Giant.Vis_Data is
      return Boolean is
    begin
       return Vis.Absolute.Intersects (Region.Extent, Rectangle);
-   end Intersects_Rect_Region;
+   end Intersects_Area_Region;
 
    function Intersects_Edge_Region
      (Region : access Region_Record;
@@ -261,6 +269,7 @@ package body Giant.Vis_Data is
       ----------------------------------------
       -- Here's some serious coding missing --
       ----------------------------------------
+      return True;
    end Intersects_Edge_Region;
 
    function Intersects_Node_Region
@@ -279,7 +288,10 @@ package body Giant.Vis_Data is
    procedure Init_Region_Manager
      (Manager         :    out Region_Manager;
       Size            : in     Vis.Absolute.Vector_2d;
-      Number_Of_Nodes : in     Natural);
+      Number_Of_Nodes : in     Natural) is
+   begin
+      null;--------------------------------------------------------------------
+   end Init_Region_Manager;
 
    function Get_Region_Position
      (Manager : in     Region_Manager;
@@ -288,7 +300,7 @@ package body Giant.Vis_Data is
 
       Position   : Region_Position;
       Point_X    : Vis.Absolute_Int := Vis.Absolute.Get_X (Point);
-      Point_Y    : Vis.Absolute_Int := Vis.Absoltue.Get_Y (Point);
+      Point_Y    : Vis.Absolute_Int := Vis.Absolute.Get_Y (Point);
       Position_X : Vis.Absolute_Int;
       Position_Y : Vis.Absolute_Int;
    begin
@@ -300,7 +312,8 @@ package body Giant.Vis_Data is
       if Point_Y < 0 and then Point_Y mod Manager.Region_Height /= 0 then
          Position_Y := Position_Y - 1;
       end if;
-      return Vis.Absolute.Combine_Vector (Position_X, Position_Y);
+      return Region_Position
+        (Vis.Absolute.Combine_Vector (Position_X, Position_Y));
    end Get_Region_Position;
 
    function Get_Region_Extent
@@ -308,8 +321,10 @@ package body Giant.Vis_Data is
       Position : in     Region_Position)
      return Vis.Absolute.Rectangle_2d is
 
-      X : Absolute_Int := Vis.Absolute.Get_X (Position);
-      Y : Absolute_Int := Vis.Absolute.Get_Y (Position);
+      X : Vis.Absolute_Int := Vis.Absolute.Get_X
+        (Vis.Absolute.Vector_2d (Position));
+      Y : Vis.Absolute_Int := Vis.Absolute.Get_Y
+        (Vis.Absolute.Vector_2d (Position));
    begin
       return Vis.Absolute.Combine_Rectangle
         (X * Manager.Region_Width,
@@ -327,11 +342,11 @@ package body Giant.Vis_Data is
 
       New_Region : Region_Id;
    begin
-      if Region_Mappings.Is_Bound (Position) then
-         return Region_Mappings.Fetch (Position);
+      if Region_Mappings.Is_Bound (Manager.Regions, Position) then
+         return Region_Mappings.Fetch (Manager.Regions, Position);
       else
          New_Region := Create_Region (Get_Region_Extent (Position));
-         Region_Mappings.Bind (Position, New_Region);
+         Region_Mappings.Bind (Manager.Regions, Position, New_Region);
          return New_Region;
       end if;
    end Get_Region;
@@ -340,12 +355,14 @@ package body Giant.Vis_Data is
      (Manager : in     Region_Manager;
       Area    : in out Vis.Absolute.Rectangle_2d) is
    begin
+      null;--------------------------------------------------------------------
    end Optimize_Drawing_Area;
 
    procedure Insert_Edge
      (Manager : in out Region_Manager;
       Edge    : in     Vis_Edge_Id) is
    begin
+      null;--------------------------------------------------------------------
    end Insert_Edge;
 
    procedure Drop_Edge
@@ -355,7 +372,7 @@ package body Giant.Vis_Data is
       while not Region_Lists.IsEmpty (Edge.Regions) loop
          Remove_Edge_From_Region
            (Region_Lists.FirstValue (Edge.Regions), Edge);
-         Region_Lists.RemoveHead
+         Region_Lists.DeleteHead
            (Edge.Regions);
       end loop;
    end Drop_Edge;
@@ -364,6 +381,7 @@ package body Giant.Vis_Data is
      (Manager : in out Region_Manager;
       Node    : in     Vis_Node_Id) is
    begin
+      null;--------------------------------------------------------------------
    end Insert_Node;
 
    procedure Drop_Node
@@ -414,6 +432,7 @@ package body Giant.Vis_Data is
      (Manager : in out Region_Manager;
       Area    : in     Vis.Absolute.Rectangle_2d) is
    begin
+      null;--------------------------------------------------------------------
    end Pollute_Area;
 
    procedure Start_Refresh_Background
@@ -422,6 +441,7 @@ package body Giant.Vis_Data is
       Refresh_Area    :    out Rectangle_2d_Lists.List;
       Refresh_Pending : in     Boolean                   := True) is
    begin
+      null;--------------------------------------------------------------------
    end Start_Refresh_Background;
 
    procedure End_Refresh_Background

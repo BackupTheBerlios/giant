@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.5 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.6 $
 --  $Author: keulsn $
---  $Date: 2003/06/13 14:50:29 $
+--  $Date: 2003/06/16 15:34:09 $
 --
 ------------------------------------------------------------------------------
 --
@@ -422,6 +422,10 @@ private
    ----------------------------------------------------------------------------
    --  Top layer in the pool.
    type Layer_Pool is new Layer_Type;
+
+   Bottom_Layer : constant Layer_Pool := Layer_Pool'First;
+   Top_Layer : constant Layer_Pool := Layer_Pool'Last;
+
 
    ----------------------------------------------------------------------------
    --  Container that covers a certain region. Contains an estimate of all
