@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.22 $
---  $Author: koppor $
---  $Date: 2003/07/15 09:50:52 $
+--  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.23 $
+--  $Author: squig $
+--  $Date: 2003/07/15 15:27:31 $
 --
 ------------------------------------------------------------------------------
 --
@@ -257,7 +257,7 @@ package Giant.Graph_Lib.Selections is
 
    ---------------------------------------------------------------------------
    --  Creates a new selection
-   function Symetric_Difference
+   function Difference
       (Left           : in Selection;
        Right          : in Selection;
        Name_Of_Result : in String)

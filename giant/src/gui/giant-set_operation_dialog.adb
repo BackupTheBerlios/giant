@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-set_operation_dialog.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-set_operation_dialog.adb,v $, $Revision: 1.9 $
 --  $Author: squig $
---  $Date: 2003/06/30 10:44:53 $
+--  $Date: 2003/07/15 15:27:31 $
 --
 
 with Ada.Strings.Unbounded;
@@ -61,7 +61,7 @@ package body Giant.Set_Operation_Dialog is
      return String
    is
    begin
-      return Gtk.Gentry.Get_Chars (Gtk.Combo.Get_Entry (Dialog.Left_Source));
+      return Gtk.Gentry.Get_Chars (Gtk.Combo.Get_Entry (Dialog.Right_Source));
    end;
 
    function Get_Target
@@ -195,12 +195,12 @@ package body Giant.Set_Operation_Dialog is
        Gtk.Combo.Set_Value_In_List (Dialog.Operation, 0, Ok_If_Empty => False);
       Add_Row (Table, Row, New_Label (-"Operation"), Dialog.Operation);
 
-      --  left source
-      Gtk.Combo.Gtk_New (Dialog.Left_Source);
+      --  right source
+      Gtk.Combo.Gtk_New (Dialog.Right_Source);
       if (String_List.Length (Subgraphs) > 0) then
-         Gtk.Combo.Set_Popdown_Strings (Dialog.Left_Source, Subgraphs);
+         Gtk.Combo.Set_Popdown_Strings (Dialog.Right_Source, Subgraphs);
       end if;
-      Add_Row (Table, Row, New_Label (-"Left Source"), Dialog.Left_Source);
+      Add_Row (Table, Row, New_Label (-"Right Source"), Dialog.Right_Source);
 
       --  separator
       Gtk.Table.Attach (Table, New_Hseperator,

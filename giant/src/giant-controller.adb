@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.54 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.55 $
 --  $Author: squig $
---  $Date: 2003/07/15 11:50:26 $
+--  $Date: 2003/07/15 15:27:31 $
 --
 
 with Ada.Strings.Unbounded;
@@ -854,7 +854,7 @@ package body Giant.Controller is
    is
    begin
       Subgraph_Operation (Left_Name, Right_Name, Target_Name,
-                          Graph_Lib.Subgraphs.Symetric_Difference'Access);
+                          Graph_Lib.Subgraphs.Difference'Access);
    end;
 
    procedure Subgraph_Intersection

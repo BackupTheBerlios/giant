@@ -18,14 +18,18 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.17 $
---  $Author: koppor $
---  $Date: 2003/07/15 09:50:38 $
+--  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.18 $
+--  $Author: squig $
+--  $Date: 2003/07/15 15:27:31 $
 
 with Untagged_Ptr_Ops;
 
+with Giant.Logger;
+
 package body Giant.Graph_Lib.Selections is
 
+   ---------------------------------------------------------------------------
+   package Logger is new Giant.Logger("giant.graph_lib.subgraphs");
 
    ---------------------------------------------------------------------------
    function "<"
@@ -423,7 +427,7 @@ package body Giant.Graph_Lib.Selections is
    end Selection_Write;
 
    ----------------------------------------------------------------------------
-   function Symetric_Difference
+   function Difference
      (Left           : in Selection;
       Right          : in Selection;
       Name_Of_Result : in String)
@@ -433,10 +437,10 @@ package body Giant.Graph_Lib.Selections is
    begin
       Res       := new Selection_Record (Name_Length => Name_Of_Result'Length);
       Res.Name  := Name_Of_Result;
-      Res.Edges := Edge_Id_Sets.Symmetric_Difference (Left.Edges, Right.Edges);
-      Res.Nodes := Node_Id_Sets.Symmetric_Difference (Left.Nodes, Right.Nodes);
+      Res.Edges := Edge_Id_Sets."-" (Left.Edges, Right.Edges);
+      Res.Nodes := Node_Id_Sets."-" (Left.Nodes, Right.Nodes);
       return Res;
-   end Symetric_Difference;
+   end Difference;
 
    ----------------------------------------------------------------------------
    function Union

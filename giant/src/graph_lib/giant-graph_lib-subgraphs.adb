@@ -18,11 +18,16 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.10 $
---  $Author: koppor $
---  $Date: 2003/07/07 13:16:44 $
+--  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.11 $
+--  $Author: squig $
+--  $Date: 2003/07/15 15:27:31 $
+
+with Giant.Logger;
 
 package body Giant.Graph_Lib.Subgraphs is
+
+   ---------------------------------------------------------------------------
+   package Logger is new Giant.Logger("giant.graph_lib.subgraphs");
 
    ---------------------------------------------------------------------------
    function "<"
@@ -41,13 +46,10 @@ package body Giant.Graph_Lib.Subgraphs is
       Edge               : in     Edge_Id)
    is
    begin
-      if Selections.Is_Member
-        (Selections.Selection (Subgraph_To_Modify),
-         Edge.Source_Node)
-        and
-        Selections.Is_Member
-        (Selections.Selection (Subgraph_To_Modify),
-         Edge.Target_Node)
+      if Selections.Is_Member (Selections.Selection (Subgraph_To_Modify),
+                               Edge.Source_Node)
+        and Selections.Is_Member (Selections.Selection (Subgraph_To_Modify),
+                                  Edge.Target_Node)
       then
          Selections.Add_Edge
            (Selections.Selection (Subgraph_To_Modify),
@@ -374,7 +376,7 @@ package body Giant.Graph_Lib.Subgraphs is
    end Subgraph_Write;
 
    ---------------------------------------------------------------------------
-   function Symetric_Difference
+   function Difference
      (Left           : in Subgraph;
       Right          : in Subgraph;
       Name_Of_Result : in String)
@@ -382,13 +384,13 @@ package body Giant.Graph_Lib.Subgraphs is
    is
       Res : Subgraph;
    begin
-      Res := Subgraph (Selections.Symetric_Difference
+      Res := Subgraph (Selections.Difference
                        (Selections.Selection (Left),
                         Selections.Selection (Right),
                         Name_Of_Result));
       Ensure_Graph_Edge_Properties (Res);
       return Res;
-   end Symetric_Difference;
+   end Difference;
 
    ---------------------------------------------------------------------------
    function Union
@@ -408,50 +410,46 @@ package body Giant.Graph_Lib.Subgraphs is
    end Union;
 
    ---------------------------------------------------------------------------
-   procedure Ensure_Graph_Edge_Properties
-     (Graph : in out Subgraph;
-      Edge  : in     Edge_Id)
-   is
-      Source_And_Target_In_Subgraph : Boolean;
-   begin
-      Source_And_Target_In_Subgraph :=
-        Selections.Is_Member
-        (Selections.Selection (Graph),
-         Edge.Source_Node) and
-        Selections.Is_Member
-        (Selections.Selection (Graph),
-         Edge.Target_Node);
-
-      if not Source_And_Target_In_Subgraph then
-         --  "Edge_Does_Not_Exist" could be risen here.
-         --     It is not catched nor converted, since the preconditions
-         --     assures, that this cannot happen
-         Selections.Remove_Edge (Selections.Selection (Graph), Edge);
-      end if;
-   end Ensure_Graph_Edge_Properties;
-
-   ---------------------------------------------------------------------------
    procedure Ensure_Graph_Edge_Properties (Graph : in out Subgraph)
    is
 
+      Edges_To_Remove : Edge_Id_Set := Edge_Id_Sets.Empty_Set;
+
       procedure Execute (Edge : in Edge_Id)
       is
+         Source_And_Target_In_Subgraph : Boolean;
       begin
-         Ensure_Graph_Edge_Properties (Graph, Edge);
+         Source_And_Target_In_Subgraph :=
+           Selections.Is_Member (Selections.Selection (Graph),
+                                 Edge.Source_Node)
+           and Selections.Is_Member (Selections.Selection (Graph),
+                                     Edge.Target_Node);
+
+         if not Source_And_Target_In_Subgraph then
+            --  "Edge_Does_Not_Exist" could be risen here.
+            --     It is not catched nor converted, since the preconditions
+            --     assures, that this cannot happen
+            Edge_Id_Sets.Insert (Edges_To_Remove, Edge);
+         end if;
       end Execute;
 
       procedure Apply is new Edge_Id_Sets.Apply
         (Execute => Execute);
 
-      --  since edges are removed during the traversal through the edge_set
-      --    and the iterator cannot deal with sets being modified during the
-      --    traversal, a clone has to be used
-      Clone : Edge_Id_Sets.Set;
+      --  Pre:
+      --    Assumes, that Get_All_Nodes returns a reference and not a
+      --    copy
+      --  Notes:
+      --    Refactoring: Get_All_Edges is not needed anymore, since
+      --    Graph.Edges will work
+      Edges : Edge_Id_Set := Get_All_Edges (Graph);
 
    begin
-      Clone := Edge_Id_Sets.Copy (Get_All_Edges);
-      Apply (Clone);
-      Edge_Id_Sets.Destroy (Clone);
+      Apply (Get_All_Edges (Graph));
+      Logger.Debug ("Removing "
+                    & Integer'Image (Edge_Id_Sets.Size (Edges_To_Remove))
+                    & " edges from " & Get_Name (Graph));
+      Edge_Id_Sets.Diff (Edges, Edges_To_Remove);
    end Ensure_Graph_Edge_Properties;
 
 end Giant.Graph_Lib.Subgraphs;

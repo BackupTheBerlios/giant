@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-clists.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-clists.adb,v $, $Revision: 1.7 $
 --  $Author: squig $
---  $Date: 2003/07/10 21:01:40 $
+--  $Date: 2003/07/15 15:27:31 $
 --
 
 with Ada.Strings.Unbounded;
@@ -105,6 +105,26 @@ package body Giant.Clists is
    is
       use type Glib.Guint;
       use type Gdk.Types.Gdk_Event_Type;
+
+      function Activate
+        (Children : in Gtk.Widget.Widget_List.Glist;
+         Index    : in Glib.Guint)
+        return Boolean
+      is
+         use type Glib.Guint;
+         Widget : Gtk.Widget.Gtk_Widget;
+      begin
+         if (Gtk.Widget.Widget_List.Length (Children) > Index) then
+            Widget := Gtk.Widget.Widget_List.Nth_Data (Children, Index);
+            if (Widget.all in Gtk.Menu_Item.Gtk_Menu_Item_Record) then
+               Gtk.Menu_Item.Activate
+                 (Gtk.Menu_Item.Gtk_Menu_Item (Widget));
+               return True;
+            end if;
+         end if;
+         return False;
+      end;
+
    begin
       if Gdk.Event.Get_Button (Event) = 3
         and then Gdk.Event.Get_Event_Type (Event) = Gdk.Types.Button_Press
@@ -124,17 +144,13 @@ package body Giant.Clists is
          --  left double click
          if (Select_Clicked_Row (Source, Event)) then
             declare
-              Children : Gtk.Widget.Widget_List.Glist;
-              Widget : Gtk.Widget.Gtk_Widget;
-           begin
-              --  activate second popup menu item (first is tear off)
+               Children : Gtk.Widget.Widget_List.Glist;
+               Activated : Boolean;
+            begin
               Children := Gtk.Menu.Children (Menu);
-              if (Gtk.Widget.Widget_List.Length (Children) > 1) then
-                 Widget := Gtk.Widget.Widget_List.Nth_Data (Children, 1);
-                 if (Widget.all in Gtk.Menu_Item.Gtk_Menu_Item_Record) then
-                    Gtk.Menu_Item.Activate
-                      (Gtk.Menu_Item.Gtk_Menu_Item (Widget));
-                 end if;
+              if (not Activate (Children, 0)) then
+                 --  activate second popup menu item (first is tear off)
+                 Activated := Activate (Children, 1);
               end if;
               Gtk.Widget.Widget_List.Free (Children);
               return True;

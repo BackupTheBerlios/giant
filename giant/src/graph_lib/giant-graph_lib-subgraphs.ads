@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.13 $
---  $Author: koppor $
---  $Date: 2003/07/07 13:16:08 $
+--  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.14 $
+--  $Author: squig $
+--  $Date: 2003/07/15 15:27:31 $
 --
 ------------------------------------------------------------------------------
 --
@@ -214,7 +214,7 @@ package Giant.Graph_Lib.Subgraphs is
 
    ---------------------------------------------------------------------------
    --  Creates a new selection
-   function Symetric_Difference
+   function Difference
       (Left           : in Subgraph;
        Right          : in Subgraph;
        Name_Of_Result : in String)
@@ -254,19 +254,9 @@ private
    type Subgraph is new Selections.Selection;
 
    ---------------------------------------------------------------------------
-   --  removes given edge if it has no source or no target in the given
-   --  graph
-   --
-   --  Pre:
-   --    given edge has to exist in given graph
-   --  Raises:
-   --    Edge_Does_Not_Exist if pre-condition is not satisfied
-   procedure Ensure_Graph_Edge_Properties
-     (Graph : in out Subgraph;
-      Edge  : in     Edge_Id);
-
-   ---------------------------------------------------------------------------
    --  removes all edges which have no source or no target
+   --
+   --  See Pre-Condition inside .adb concerning Get_All_Edges
    procedure Ensure_Graph_Edge_Properties
      (Graph : in out Subgraph);
 
