@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.ads,v $, $Revision: 1.6 $
---  $Author: squig $
---  $Date: 2003/07/07 13:40:07 $
+--  $RCSfile: giant-tree_layouts.ads,v $, $Revision: 1.7 $
+--  $Author: koppor $
+--  $Date: 2003/07/07 19:55:13 $
 --
 ------------------------------------------------------------------------------
 --
@@ -31,6 +31,12 @@
 
 with Lists;
 pragma Elaborate_All (Lists);
+
+--  Speed optimization:
+--    Include Last_Element-"hack" into Stacks_Unbounded
+--    Otherwise Push has O(n)
+with Stacks_Unbounded;
+pragma Elaborate_All (Stacks_Unbounded);
 
 with Giant.Config;
 with Giant.Config.Class_Sets;
@@ -46,8 +52,13 @@ package Giant.Tree_Layouts is
    Root_Node_Not_In_Selection : exception;
 
    ---------------------------------------------------------------------------
+   --  Concurrent can't be used, because of the stacks
+   --    But the bounded-stackpackage could be used, since
+   --    after Init_Run, the maximum height of the tree is known
+   --    this is /not/ the max. size of the stack
+   --    max size is tree-height * (degree-1) or size (Nodes_To_Layout)
    type Tree_Layout_Record is
-     new Giant.Evolutions.Concurrent_Evolution with private;
+     new Giant.Evolutions.Iterative_Evolution with private;
    type Tree_Layout is access Tree_Layout_Record;
 
    ---------------------------------------------------------------------------
@@ -127,7 +138,12 @@ package Giant.Tree_Layouts is
 private
    ---------------------------------------------------------------------------
    type Layout_State is (Init_Start, Init_Run,
-                         FirstWalk, SecondWalk,
+                         FirstWalk_Start,
+                         FirstWalk_Run_Part_One,
+                         FirstWalk_Run_Part_Two,
+                         FirstWalk_Run_Part_Three,
+                         SecondWalk_Start,
+                         SecondWalk_Run,
                          Matrix);
 
    ---------------------------------------------------------------------------
@@ -154,10 +170,10 @@ private
 
       Silbling_Number   : Positive;
 
-      Modf              : Integer;
-      Prelim            : Integer;
-      Change            : Integer;
-      Shift             : Integer;
+      Modf              : Vis.Logic_Float;
+      Prelim            : Vis.Logic_Float;
+      Change            : Vis.Logic_Float;
+      Shift             : Vis.Logic_Float;
 
       --  Level in the tree
       Level             : Integer;
@@ -171,8 +187,37 @@ private
      Lists (ItemType => Node_Layout_Data);
 
    ---------------------------------------------------------------------------
+   type FirstWalk_Part_Two_Data_Record is record
+      V               : Node_Layout_Data;
+      W               : Node_Layout_Data;
+      DefaultAncestor : Node_Layout_Data;
+   end record;
+
+   ---------------------------------------------------------------------------
+   package FirstWalk_Part_One_Stacks is new
+     Stacks_Unbounded (Elem_Type => Node_Layout_Data);
+
+   ---------------------------------------------------------------------------
+   package FirstWalk_Part_Two_Stacks is new
+     Stacks_Unbounded (Elem_Type => FirstWalk_Part_Two_Data_Record);
+
+   ---------------------------------------------------------------------------
+   package FirstWalk_Part_Three_Stacks is new
+     Stacks_Unbounded (Elem_Type => Node_Layout_Data);
+
+   ---------------------------------------------------------------------------
+   type SecondWalk_Data_Record is record
+      V               : Node_Layout_Data;
+      M               : Vis.Logic_Float;
+   end record;
+
+   ---------------------------------------------------------------------------
+   package SecondWalk_Stacks is new
+     Stacks_Unbounded (Elem_Type => SecondWalk_Data_Record);
+
+   ---------------------------------------------------------------------------
    type Tree_Layout_Record is
-     new Evolutions.Concurrent_Evolution with record
+     new Evolutions.Iterative_Evolution with record
         --  Init by Initialize
         Widget           : Graph_Widgets.Graph_Widget;
         Widget_Lock      : Graph_Widgets.Lock_Type;
@@ -186,16 +231,24 @@ private
         --  Init by Step / Synchronized_Step  --
         ----------------------------------------
 
-        Layout_Tree_Root : Node_Layout_Data;
+        --  Rootnode of the tree to layout
+        Tree_Root        : Node_Layout_Data;
+
+        --  Distance between two nodes used at FirstWalk
+        Distance         : Vis.Logic_Float;
 
         --  Used at conversion of Nodes_To_Layout to Layout_Tree
-        --  Layout_Queue_Last is for speed optimization
+        --  Queue_Last is for speed optimization
         --    since Node_Id_Lists.Last has O(n) and gets O(1) with this "hack"
         --
-        --  Layout_Queue may never be empty during the usage
-        Layout_Queue_Last : Node_Layout_Data_Lists.List;
-        Layout_Queue      : Node_Layout_Data_Lists.List;
+        --  Queue may never be empty during the usage
+        Queue_Last       : Node_Layout_Data_Lists.List;
+        Queue            : Node_Layout_Data_Lists.List;
 
+        FirstWalk_Part_One_Stack   : FirstWalk_Part_One_Stacks.Stack;
+        FirstWalk_Part_Two_Stack   : FirstWalk_Part_Two_Stacks.Stack;
+        FirstWalk_Part_Three_Stack : FirstWalk_Part_Three_Stacks.Stack;
+        SecondWalk_Stack           : SecondWalk_Stacks.Stack;
      end record;
 
    ---------------------------------------------------------------------------
