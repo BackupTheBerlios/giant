@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.62 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.63 $
 --  $Author: koppor $
---  $Date: 2003/08/25 09:57:32 $
+--  $Date: 2003/08/26 13:45:48 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -175,6 +175,8 @@ package body Giant.Graph_Lib is
            return "Boolean";
          when Class_Natural =>
             return "Natural";
+         when Class_Identifier =>
+            return "Identifier";
          when Class_Invalid =>
             return "INVALID";
       end case;
@@ -1610,13 +1612,53 @@ package body Giant.Graph_Lib is
    end Get_Node_Attribute_Boolean_Value;
 
    ----------------------------------------------------------------------------
+   function Get_Node_Attribute_Identifier_Value
+     (Node      : in     Node_Id;
+      Attribute : in     Node_Attribute_Id)
+     return String
+   is
+      Target : Storables.Storable;
+   begin
+      pragma Assert
+        (Get_Node_Attribute_Class_Id(Attribute) = Class_Identifier);
+
+      declare
+          IML_Edge : IML_Reflection.Edge_Field
+            := IML_Reflection.Edge_Field (Attribute.all);
+      begin
+         --  Identifieres are realised as edges
+         Target := IML_Edge.Get_Target (Node.IML_Node);
+
+         if Storables."=" (Target, null) then
+            --  if they do not point to somewhere, they are not available
+            return "n/a";
+         else
+            begin
+               return IML_Reflection.Identifier_Field (Attribute.all).Get_Name
+              (Node.IML_Node);
+            exception
+               --  should never be reached
+               --  N/A in uppercase to show difference to above used "n/a"
+               when others =>
+                  return "N/A";
+            end;
+         end if;
+      end;
+   end Get_Node_Attribute_Identifier_Value;
+
+   ----------------------------------------------------------------------------
    function Get_Node_Attribute_Class_Id
      (Node_Attribute : in Node_Attribute_Id)
       return Node_Attribute_Class_Id
    is
    begin
-      --  Edges to other nodes
-      if Node_Attribute.all in IML_Reflection.Edge_Field'Class then
+      --  special case Identifiers, subclass of edges, has to be
+      --    tested before edges
+      if Node_Attribute.all in IML_Reflection.Identifier_Field then
+         return Class_Identifier;
+
+         --  Edges to other nodes
+      elsif Node_Attribute.all in IML_Reflection.Edge_Field'Class then
          return Class_Node_Id;
       elsif Node_Attribute.all in IML_Reflection.List_Field'Class then
          return Class_Node_Id_List;
@@ -1722,14 +1764,12 @@ package body Giant.Graph_Lib is
                   (IML_Node_ID_Mapping,
                    Storables.Get_Node_Id (Target) );
              else
-                --  FIX: sk 20030721
+                --  this is reached at identifiers, which should never happen
                 --  Logger.Debug ("Edge_Field with non-IML_Root-target");
                 return Invalid_Node_Id;
              end if;
           else
-             --  TBD: why is this reached only at a certain visstyle?
-             --  see Martins Mail of 20030717
-             --  FIX: sk 20030721
+             --  this is reached at identifiers, which should never happen
              --  Logger.Debug ("Edge_Field with null target");
              return Invalid_Node_Id;
           end if;
@@ -1940,21 +1980,12 @@ package body Giant.Graph_Lib is
             return Natural'Image (Get_Node_Attribute_Natural_Value
                                   (Node, Attribute));
 
+         when Class_Identifier =>
+            return Get_Node_Attribute_Identifier_Value (Node, Attribute);
+
          when Class_Node_Id =>
-            --  special case for identifiers
-            --    they are edges, but the target is out of IML, i.e.
-            --    the target is "null"
-            --    i.e. (Get_Node_Attribute_Node_Id_Value returns null)
-            --    Therefore this case has to be catched before
-            --      the call to Get_Node_Attribute_Node_Id_Value
---  FIXME
---            if Attribute.all in IML_Reflection.Identifier_Field then
---               return IML_Reflection.Identifier_Field
---                 (Attribute.all).Get_Name (Node.IML_Node);
---            else
-               return Node_Id_Image (Get_Node_Attribute_Node_Id_Value
-                                     (Node, Attribute));
---            end if;
+            return Node_Id_Image (Get_Node_Attribute_Node_Id_Value
+                                  (Node, Attribute));
 
          when Class_Node_Id_List =>
             return Convert_Node_Id_List_To_String
