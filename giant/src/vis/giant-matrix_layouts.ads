@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-matrix_layouts.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-matrix_layouts.ads,v $, $Revision: 1.4 $
 --  $Author: koppor $
---  $Date: 2003/07/02 11:59:43 $
+--  $Date: 2003/07/03 01:14:31 $
 --
 ------------------------------------------------------------------------------
 --
@@ -40,6 +40,12 @@ package Giant.Matrix_Layouts is
      new Evolutions.Concurrent_Evolution with private;
 
    type Matrix_Layout is access all Matrix_Layout_Record'Class;
+
+   ---------------------------------------------------------------------------
+   --  Maximum number of nost to be layouted in one run
+   Max_Nodes_In_One_Run : constant := 100;
+
+   X_Distance           : constant := 1.0;
 
    ---------------------
    --  Initilization  --
@@ -93,12 +99,27 @@ private
 
    type Matrix_Layout_Record is
      new Evolutions.Concurrent_Evolution with record
-        Widget          : Giant.Graph_Widgets.Graph_Widget;
-        Widget_Lock     : Giant.Graph_Widgets.Lock_Type;
-        Nodes_To_Layout : Giant.Graph_Lib.Node_Id_Set;
-        Target_Position : Giant.Vis.Logic.Vector_2d;
+        --  Init by Initialize
+        Widget          : Graph_Widgets.Graph_Widget;
+        Widget_Lock     : Graph_Widgets.Lock_Type;
+        Nodes_To_Layout : Graph_Lib.Node_Id_Set;
+        Target_Position : Vis.Logic.Vector_2d;
         State           : Layout_State;
-        Width           : Natural;
+
+        --  Init by Step.Init_Calculation
+
+        --  Amount of nodes in a row
+        Matrix_Width       : Positive;
+
+        --  Column, where the next node will reside
+        Current_Column     : Positive;
+
+        --  Position of next node
+        Current_Position   : Vis.Logic.Vector_2d;
+
+        Current_Row_Height : Vis.Logic_Float;
+
+        Max_Node_Width     : Vis.Logic_Float;
      end record;
 
 end Giant.Matrix_Layouts;
