@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.16 $
---  $Author: keulsn $
---  $Date: 2003/08/16 13:23:20 $
+--  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.17 $
+--  $Author: squig $
+--  $Date: 2003/08/18 10:09:15 $
 --
 
 with Ada.Unchecked_Conversion;
@@ -325,5 +325,22 @@ package body Giant.Graph_Window.Callbacks is
       Selection_Operation_Dialog.Create (Dialog, Get_Window_Name (Window));
       Selection_Operation_Dialog.Show_All (Dialog);
    end On_Selection_List_Set_Operation;
+
+   procedure On_Selection_Script
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event  : in     Menu_Factory.Script_Event)
+   is
+      Window : Graph_Window_Access := Graph_Window_Access (Event.Widget);
+      Params : Gsl.Interpreters.Gsl_Params
+        := Gsl.Interpreters.Create_Parameter_List;
+   begin
+      --  FIX
+      --Gsl.Interpreters.Add_Parameter (Params, Get_Selected_Selection (Window));
+
+      Controller.Execute_GSL
+        (Script_Name => Event.Label,
+         Context     => Get_Window_Name (Window),
+         Parameter   => Params);
+   end On_Selection_Script;
 
 end Giant.Graph_Window.Callbacks;

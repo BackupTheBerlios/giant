@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.55 $
---  $Author: schulzgt $
---  $Date: 2003/08/16 13:59:22 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.56 $
+--  $Author: squig $
+--  $Date: 2003/08/18 10:09:15 $
 --
 
 with Ada.Exceptions;
@@ -558,9 +558,16 @@ package body Giant.Main_Window is
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
       Event  : in     Menu_Factory.Script_Event)
    is
+      Params : Gsl.Interpreters.Gsl_Params
+        := Gsl.Interpreters.Create_Parameter_List;
    begin
       -- FIX
-      Logger.Warn ("Run: " & Event.Label);
+      --Gsl.Interpreters.Add_Parameter (Params, Get_Selected_Subgraph);
+
+      Controller.Execute_GSL
+        (Script_Name => Event.Label,
+         Context     => "",
+         Parameter   => Params);
    end On_Subgraph_List_Execute_Script;
 
    ---------------------------------------------------------------------------
@@ -805,7 +812,8 @@ package body Giant.Main_Window is
                                       On_Subgraph_List_Delete'Access));
       Submenu := New_Sub_Menu (Subgraph_List_Menu, -"Scripts");
       Giant.Menu_Factory.Generate
-        (Labels    => Config_Settings.Get_Setting_As_String ("Scripts.Subgraph"),
+        (Labels
+         => Config_Settings.Get_Setting_As_String ("GSL.Subgraph_Param"),
          Separator => File_Management.Path_Separator,
          Menu      => Submenu,
          Callback  => On_Subgraph_List_Execute_Script'Access,

@@ -8,9 +8,7 @@ RELEASE
 
  * Catch exceptions when project is loaded via command line
 
- * Add script hooks to context menus
-
- * Fix Vis_Style signal
+ * Fix Vis_Style signal?
 
 LATER
 

@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.17 $
+-- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.18 $
 -- $Author: squig $
--- $Date: 2003/08/15 16:37:18 $
+-- $Date: 2003/08/18 10:09:15 $
 --
 -- -----
 -- This package holds the functionality needed to access and handle
@@ -147,19 +147,27 @@ package Giant.Config_Settings is
         To_UStr ("/usr/bin/emacs +%l:%c %f"),
         null),
 
-      (To_UStr ("Scripts.Edge"),
+      (To_UStr ("GSL.No_Param"),
        To_UStr (""),
        null),
 
-      (To_UStr ("Scripts.Main"),
-       To_UStr ("Entire Graph:-:Message Box"),
+      (To_UStr ("GSL.No_Param_Context"),
+       To_UStr (""),
        null),
 
-      (To_UStr ("Scripts.Node"),
-       To_UStr ("Follow Edges"),
+      (To_UStr ("GSL.Node_Id_Param"),
+       To_UStr (""),
        null),
 
-      (To_UStr ("Scripts.Subgraph"),
+      (To_UStr ("GSL.Edge_Id_Param"),
+       To_UStr (""),
+       null),
+
+      (To_UStr ("GSL.Subgraph_Param"),
+       To_UStr (""),
+       null),
+
+      (To_UStr ("GSL.Selection_Param"),
        To_UStr (""),
        null)
       );

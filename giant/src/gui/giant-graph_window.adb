@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.50 $
---  $Author: schulzgt $
---  $Date: 2003/08/16 20:14:30 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.51 $
+--  $Author: squig $
+--  $Date: 2003/08/18 10:09:15 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -665,6 +665,16 @@ package body Giant.Graph_Window is
                        New_Menu_Item (-"Delete With Content",
                                       On_Selection_List_Delete_With_Content'Access,
                                       Window));
+      Gtk.Menu.Append (Window.Selection_List_Menu, New_Menu_Separator);
+      Submenu := New_Sub_Menu (Window.Selection_List_Menu, -"Scripts");
+      Giant.Menu_Factory.Generate
+        (Labels    => Config_Settings.Get_Setting_As_String
+          ("GSL.Selection_Param"),
+         Separator => File_Management.Path_Separator,
+         Menu      => Submenu,
+         Callback  => On_Selection_Script'Access,
+         Widget    => Window);
+
    end Initialize_Selection_List_Menu;
 
    procedure Initialize_Background_Menu
