@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.66 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.67 $
 --  $Author: squig $
---  $Date: 2003/09/20 20:27:36 $
+--  $Date: 2003/09/21 22:48:32 $
 --
 
 with Ada.Exceptions;
@@ -692,15 +692,16 @@ package body Giant.Main_Window is
       Gtk.Menu.Add (Menu, New_Menu_Item (-"New", On_Window_New'Access));
 
       --  subgraph menu
-      Menu := New_Sub_Menu (Menu_Bar, -"Subgraph");
-      Gtk.Menu.Add (Menu, New_TearOff_Menu_Item);
-      Gtk.Menu.Add (Menu, New_Menu_Item (-"New", On_Subgraph_New'Access));
-      Gtk.Menu.Add (Menu, New_Menu_Separator);
-      Gtk.Menu.Add (Menu, New_Menu_Item (-"Set Operation...",
-                                         On_Subgraph_Set_Operation'Access));
+--        Menu := New_Sub_Menu (Menu_Bar, -"Subgraph");
+--        Gtk.Menu.Add (Menu, New_TearOff_Menu_Item);
+--        Gtk.Menu.Add (Menu, New_Menu_Item (-"New", On_Subgraph_New'Access));
+--        Gtk.Menu.Add (Menu, New_Menu_Separator);
+--        Gtk.Menu.Add (Menu, New_Menu_Item (-"Set Operation...",
+--                                           On_Subgraph_Set_Operation'Access));
 
       --  scripts menu
       Menu := New_Sub_Menu (Menu_Bar, -"Scripts");
+      Gtk.Menu.Add (Menu, New_TearOff_Menu_Item);
       Giant.Menu_Factory.Generate
         (Labels    => Config_Settings.Get_Setting_As_String ("GSL.No_Param"),
          Separator => File_Management.Path_Separator,

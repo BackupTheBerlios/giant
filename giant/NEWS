@@ -4,10 +4,11 @@ This file contains short descriptions of what has changed between
 GIANT releases. Only major changes are included here, see ChangeLog
 in the source directory for details.
 
-Version 1.1.1 (2003-09-22)
+Version 1.1.1 (2003-09-23)
 
  * Enhanced GSL editor
  * Fixed standard.gsl 
+ * Updated GSL specification
  * Adjust node size when zooming (Bug #880)
  * Fixed activation record of loop body (Bug #924)
  * Fixed get_first call (Bug #925)

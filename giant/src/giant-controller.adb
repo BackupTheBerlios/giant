@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.96 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.97 $
 --  $Author: squig $
---  $Date: 2003/09/15 13:03:45 $
+--  $Date: 2003/09/21 22:48:32 $
 --
 
 with Ada.Strings.Unbounded;
@@ -1181,8 +1181,8 @@ package body Giant.Controller is
       Subgraph : Graph_Lib.Subgraphs.Subgraph;
    begin
       Subgraph := Graph_Lib.Subgraphs.Create (Name);
-      Graph_Lib.Subgraphs.Add_Node_Set (Subgraph, Graph_Lib.Get_All_Nodes);
-      Graph_Lib.Subgraphs.Add_Edge_Set (Subgraph, Graph_Lib.Get_All_Edges);
+--        Graph_Lib.Subgraphs.Add_Node_Set (Subgraph, Graph_Lib.Get_All_Nodes);
+--        Graph_Lib.Subgraphs.Add_Edge_Set (Subgraph, Graph_Lib.Get_All_Edges);
 
       Add_Subgraph (Subgraph);
    end Create_Subgraph;
@@ -1628,8 +1628,8 @@ package body Giant.Controller is
                     & Vis.Zoom_Level'Image (Zoom_Level));
       if (Zoom_Level > Graph_Widgets.Get_Maximum_Zoom_Level (Widget)) then
          Zoom_Level := Graph_Widgets.Get_Maximum_Zoom_Level (Widget);
-      elsif (Zoom_Level < 0.0) then
-         Zoom_Level := 0.0;
+      elsif (Zoom_Level < 0.01) then
+         Zoom_Level := 0.01;
       end if;
       Graph_Widgets.Set_Zoom_Level (Widget, Zoom_Level);
       Gui_Manager.Update_Zoom_Level (Window_Name);
