@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.78 $
-%  $Date: 2003/04/18 13:34:22 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.79 $
+%  $Date: 2003/04/18 16:33:29 $
 %  $Author: birdy $
 %
 %  Description: 
@@ -33,10 +33,11 @@ vermerkt.
    \centering
    \includegraphics{gui/main_window}
    \caption{Main-Window}
+   \label{Main-Window-Pic}
 \end{figure}
 
 Jede Instanz von GIANT hat genau ein Hauptfenster.
-Im Hauptfenster (Main Window) werden vorhandene Anzeigefenster und
+Im Hauptfenster (Main Window, \ref{Main-Window-Pic}) werden vorhandene Anzeigefenster und
 IML-Teilgraphen angezeigt. Über Popup-Menüs können IML-Teilgraphen
 und Anzeigefenster manipuliert werden.
 
@@ -155,9 +156,10 @@ Subgraph List (4 Spalten).
      \centering
      \includegraphics[width=16cm]{gui/visualization_window}
      \caption{Graph-Window}
+     \label{Graph-Window-Pic}
   \end{figure}
 
-  Im Programm kann es mehrere Anzeigefenster geben. Ein Anzeigefenster besteht
+  Im Programm kann es mehrere Anzeigefenster geben. Ein Anzeigefenster (\ref{Graph-Window-Pic}) besteht
   aus folgenden Elementen:
   
   \label{GUI Stilauswahl-Combobox} 
@@ -371,9 +373,10 @@ Unter Query Text befinden sich folgende Buttons:
        \centering
        \includegraphics{gui/input_dialog}
        \caption{Dialog-Window}
+       \label{Dialog-Window-Pic}
     \end{figure}
 
-Ein allgemeiner Texteingabedialog ist ein Fenster Dialog Window mit dem
+Ein allgemeiner Texteingabedialog ist ein Fenster Dialog Window (\ref{Dialog-Window-Pic}) mit dem
 Titel \gq{Input}. Im Fenster ist ein einzeiliges Textfeld
 mit einem Prompt-Text, zwei Buttons mit den Beschriftungen \gq{OK}
 und \gq{Cancel}.
@@ -385,10 +388,11 @@ und \gq{Cancel}.
        \centering
        \includegraphics[width=16cm]{gui/set_operation_dialog}
        \caption{Set-Operation-Dialog}
+       \label{Set-Operation-Dialog-Pic}
     \end{figure}
 
 
-Dieser Dialog dient dazu, Mengenoperationen über Selektionen und
+Der Set-Operation-Dialog (\ref{Set-Operation-Dialog-Pic}) dient dazu, Mengenoperationen über Selektionen und
 IML-Teilgraphen durchzuführen.\\
 Die Mengenoperation lässt sich dann wie folgt beschreiben:
 LEFT\_SOURCE <op> RIGHT\_SOURCE =: TARGET \\ \\
@@ -429,9 +433,10 @@ Bestandteile des Dialoges sind:
        \centering
        \includegraphics{gui/apply_layout_dialog}
        \caption{Layout-Algorithm-Dialog}
+       \label{Layout-Algorithm-Dialog-Pic}
     \end{figure}
 
-Der Dialog Layoutalgorithmen bietet folgende Möglichkeiten:
+Der Dialog Layoutalgorithmen (\ref{Layout-Algorithm-Dialog-Pic}) bietet folgende Möglichkeiten:
 
 \begin {enumerate}
  \item Auswahl des Layoutalgorithmuses
@@ -456,9 +461,10 @@ Beschreibung von verschiedenen GUI Elementen zur Eingabe von Daten.
        \centering
        \includegraphics{gui/annotate_node}
        \caption{Node-Annotation-Dialog}
+       \label{Node-Annotation-Dialog-Pic}
     \end{figure}
     
-Der Knoten-Annotations-Dialog besteht aus einem Fenster mit einem
+Der Knoten-Annotations-Dialog (\ref{Node-Annotation-Dialog-Pic}) besteht aus einem Fenster mit einem
 Label mit der Knoten-ID und einem Textfeld für den Annotationstext.
 Mittels der beiden Buttons OK und Cancel können die Änderungen im
 Textfeld übernommen oder verworfen werden.  
@@ -470,9 +476,10 @@ Textfeld übernommen oder verworfen werden.
        \centering
        \includegraphics{gui/make_room}
        \caption{Make-Room-Dialog}
+       \label{Make-Room-Dialog-Pic}
     \end{figure}
 
-Im Dialogfenster Make Room wird in einem Textfeld als Zahl angegeben, um wieviel
+Im Dialogfenster Make Room (\ref{Make-Room-Dialog-Pic}) wird in einem Textfeld als Zahl angegeben, um wieviel
 Pixel die Knoten an der vorher markierten Stelle auseinandergeschoben werden sollen.
 Mit dem Button OK kann bestätigt werden, mit Button Cancel abgebrochen werden.
 
@@ -483,9 +490,10 @@ Mit dem Button OK kann bestätigt werden, mit Button Cancel abgebrochen werden.
        \centering
        \includegraphics{gui/error_dialog}
        \caption{Error-Window}
+       \label{Error-Window-Pic}
     \end{figure}
 
-Ein allgemeiner Fehlerdialog ist ein Fenster Error Window mit dem
+Ein allgemeiner Fehlerdialog (\ref{Error-Window-Pic}) ist ein Fenster Error Window mit dem
 Titel \gq{Error}. Im Fenster ist ein Fehlertext und ein Button
 mit der standardmäßigen Beschriftung \gq{OK}.
 
@@ -496,9 +504,10 @@ mit der standardmäßigen Beschriftung \gq{OK}.
        \centering
        \includegraphics{gui/confirmation_dialog}
        \caption{Confirmation-Window}
+       \label{Confirmation-Window-Pic}
     \end{figure}
     
-Eine allgemeine Sicherheitsabfrage ist ein Fenster Confirmation Window mit dem
+Eine allgemeine Sicherheitsabfrage (\ref{Confirmation-Window-Pic}) ist ein Fenster Confirmation Window mit dem
 Titel \gq{Confirmation}. Im Fenster ist
 ein Fragetext und ein Button mit der standardmäßigen Beschriftung
 Beschriftung \gq{Yes}, sowie ein Button mit der standardmäßigen Beschriftung
@@ -542,18 +551,28 @@ laufender Berechnungen.  Jede Progressbar ist mit \gq{The system is
 
 \subsection{Progressbar-Runs}
 \label{Progressbar-Runs}
-     Fenster mit Anzeige eines Dialoges mit einem sich bewegenden
-     Inhalts (z.B. ein Progress-Balken), so dass erkennbar ist, dass
-     das System noch arbeitet.
+
      \begin{figure}[!htbp]
       \centering
       \includegraphics{gui/progressbar_busy}
       \caption{Progressbar-Runs}
+      \label{Progressbar-Runs-Pic}
      \end{figure}
 
+     Fenster mit Anzeige eines Dialoges mit einem sich bewegenden
+     Inhalts (z.B. ein Progress-Balken), so dass erkennbar ist, dass
+     das System noch arbeitet. (\ref{Progressbar-Runs-Pic})
+  
+
 \subsection{Progressbar-Modal}
-\label{Progressbar-Modale} 
-     Fenster mit Anzeige eines Progressbars, der über den aktuellen Fortschritt
+\label{Progressbar-Modale}      
+     \begin{figure}[!htbp]
+      \centering
+      \includegraphics{gui/progressbar_cancel}
+      \caption{Progressbar-Modal}
+      \label{Progressbar-Modal-Pic}
+     \end{figure}
+     Fenster (\ref{Progressbar-Modal-Pic}) mit Anzeige eines Progressbars, der über den aktuellen Fortschritt
      einer Berechnung informiert, ohne dabei den Gesamtaufwand zu 
      kennen. Dabei wird kontinuierlich die Anzahl der schon bearbeiteten
      Datensätze ausgegeben, und, sofern bekannt, die Prozentzahl der schon
@@ -562,11 +581,6 @@ laufender Berechnungen.  Jede Progressbar ist mit \gq{The system is
      gesperrt.
      Im Fenster existiert ein Button \gq{Cancel} \label{Progressbar-Modale-Cancel}, der die momentane
      Berechnung abbricht.
-     \begin{figure}[!htbp]
-      \centering
-      \includegraphics{gui/progressbar_cancel}
-      \caption{Progressbar-Modal}
-     \end{figure}
 
 %%% Local Variables: 
 %%% TeX-master: "spec"
