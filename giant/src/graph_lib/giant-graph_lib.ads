@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.9 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.10 $
 --  $Author: koppor $
---  $Date: 2003/06/12 14:42:38 $
+--  $Date: 2003/06/13 17:57:10 $
 --
 
 --  Bauhaus / IML
@@ -60,7 +60,6 @@ package Giant.Graph_Lib is
    --
    --  Node_Id_Image is invariant over multiple runs of GIANT
    type Node_Id is access Node_Record;
-
 
    ---------------------------------------------------------------------------
    --  unique Id of one class to which a node is belonging to
@@ -369,7 +368,7 @@ package Giant.Graph_Lib is
    ---------------------------------------------------------------------------
    --  Returns:
    --    "Type of Node"
-   function Get_Class_Of_Node
+   function Get_Node_Class_Id
       (Node : in Node_Id)
       return Node_Class_Id;
 
@@ -395,7 +394,7 @@ package Giant.Graph_Lib is
    ---------------------------------------------------------------------------
    --  Returns:
    --    "Type of Edge"
-   function Get_Class_Of_Edge
+   function Get_Edge_Class_Id
       (Edge : in Edge_Id)
       return Edge_Class_Id;
 
