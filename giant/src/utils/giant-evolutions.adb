@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.12 $
---  $Author: keulsn $
---  $Date: 2003/06/10 23:52:47 $
+--  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.13 $
+--  $Author: schulzgt $
+--  $Date: 2003/06/12 11:20:59 $
 --
 ------------------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ with Ada.Tags;
 with Gdk.Main;
 with Gdk.Threads;
 
-with Ptr_Ops;
+with Tagged_Ptr_Ops;
 
 with Giant.Fixed_Priority_Queues;
 with Giant.Logger;
@@ -198,14 +198,12 @@ package body Giant.Evolutions is
      (Individual : access Evolution'Class)
      return String is
 
-      type Evolution_Class_Constant_Access is access constant Evolution'Class;
-
-      package Ops is new Ptr_Ops
-        (T => Evolution, T_Ptr => Evolution_Class_Constant_Access);
+      package Ops is new Tagged_Ptr_Ops
+        (T => Evolution, T_Ptr => Evolution_Class_Access);
 
    begin
       return "Individual"
-        & Ops.Image (Evolution_Class_Constant_Access (Individual))
+        & Ops.Image (Evolution_Class_Access (Individual))
         & " of type " & Ada.Tags.External_Tag (Individual'Tag);
    end Logging_Name;
 
