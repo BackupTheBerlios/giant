@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-string_split.adb,v $, $Revision: 1.2 $
---  $Author: koppor $
---  $Date: 2003/07/02 00:23:03 $
+--  $RCSfile: giant-string_split.adb,v $, $Revision: 1.3 $
+--  $Author: schwiemn $
+--  $Date: 2003/07/02 10:56:29 $
 --
 
 with Ada.Strings.Unbounded;
@@ -54,6 +54,8 @@ package body Giant.String_Split is
                String_Lists.Attach
                  (List,
                   Ada.Strings.Unbounded.Null_Unbounded_String);
+                  
+            
             else
                --  attach the full found string
                String_Lists.Attach
@@ -77,6 +79,14 @@ package body Giant.String_Split is
                   List);
             end if;
          end if;
+                                   
+         -- Case for strings that do not hold a separator pattern;
+         If I = 0 then 
+            String_Lists.Attach
+               (List,
+                Ada.Strings.Unbounded.To_Unbounded_String (Source));                                      
+         end if;
+         
       end Split_String;
 
       Res : String_Lists.List;
