@@ -20,15 +20,16 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.5 $
 --  $Author: koppor $
---  $Date: 2003/07/04 15:14:30 $
+--  $Date: 2003/07/07 11:25:34 $
 --
 
 with Ada.Exceptions;
 with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded;
 
+with Giant.Config.Class_Sets;
 with Giant.Matrix_Layouts;
 with Giant.Tree_Layouts;
 with Giant.String_Split;
@@ -47,61 +48,6 @@ package body Giant.Layout_Factory is
       Additional_Parameters : in     String;
       Layout_Evolution      :    out Evolutions.Evolution_Class_Access)
    is
-
-      -------------------------------------------------------------------------
-      --  Format:
-      --    (x, y)
-      --
-      --  To be optimized, if x or y contain ","
-      --    Parse into String-list and separte in two halfs and combine
-      --    results again
-      --    convert these two parts and voila, there it is
-      function Get_Vector_2d
-        (The_Data : in String)
-        return Giant.Vis.Logic.Vector_2d
-      is
-
-         function Get_Logic_Float
-           (S : in String)
-           return Giant.Vis.Logic_Float
-         is
-            N : Natural;
-         begin
-            begin
-               N := Natural'Value (S);
-            exception
-               when others =>
-                  raise Invalid_Format;
-            end;
-
-            return Giant.Vis.To_Logic_Float (N);
-         end Get_Logic_Float;
-
-         Data : String := Ada.Strings.Fixed.Trim
-           (The_Data, Ada.Strings.Both);
-
-         Pos_Comma : Natural;
-
-         Vector_X  : Giant.Vis.Logic_Float;
-         Vector_Y  : Giant.Vis.Logic_Float;
-      begin
-         if (Data (Data'First) /= '(') or
-           (Data (Data'Last) /= ')') then
-            raise Invalid_Format;
-         end if;
-
-         Pos_Comma := Ada.Strings.Fixed.Index (Data, ",");
-         if Pos_Comma = 0 then
-            raise Invalid_Format;
-         end if;
-
-         Vector_X := Get_Logic_Float
-           (Data (Data'First .. Pos_Comma-1));
-         Vector_Y := Get_Logic_Float
-           (Data (Pos_Comma + 1 .. Data'Length));
-
-         return Giant.Vis.Logic.Combine_Vector (Vector_X, Vector_Y);
-      end Get_Vector_2d;
 
       -------------------------------------------------------------------------
       --  Parameters:
@@ -123,16 +69,42 @@ package body Giant.Layout_Factory is
 
       -------------------------------------------------------------------------
       --  Attention! - ";" may not be used within parameters!
-      --    ("Hello; you", "you 2") is invalid, but ("Hello you", "you 2")
-      --                                            is valid
+      --    "Hello; you, you 2" is invalid, but "Hello you, you 2"
+      --                                        is valid
       procedure Parse_Tree_Parameters
         (Data : in String)
       is
-         Root_Node       : Giant.Graph_Lib.Node_Id;
-         --  Class_Set_
+
+         ----------------------------------------------------------------------
+         --  Parameters:
+         --    Data - a string in the format "([<class set>[,<class set>]*]"
+         --
+         --  Returns:
+         --    A meta class set containing all class sets
+         function Convert_String_To_Meta_Class_Set
+           (Data : in String)
+           return Config.Class_Sets.Meta_Class_Set_Access
+         is
+            Class_Sets_List : String_Lists.List;
+         begin
+            Class_Sets_List := String_Split.Split_String
+              (Source  => Data,
+               Pattern => ",",
+               Trim    => true);
+
+            --  convert each item into a list
+            --  if list.length = 0 return null
+            --  else return converted list (into array)
+
+            String_Lists.Destroy (Class_Sets_List);
+            return Config.Class_Sets.Get_Class_Set_Access ("TBD: Stub");
+         end Convert_String_To_Meta_Class_Set;
+
+         Root_Node         : Giant.Graph_Lib.Node_Id;
+         Meta_Class_Set    : Config.Class_Sets.Class_Set_Access;
 
          Parameters        : String_Lists.List;
-         Iter              : String_Lists.ListIter;
+         Parameters_Iter   : String_Lists.ListIter;
          Current_Parameter : Ada.Strings.Unbounded.Unbounded_String;
 
       begin
@@ -141,28 +113,31 @@ package body Giant.Layout_Factory is
 
          --  Check amount of parameters
          if String_Lists.Length (Parameters) /= 2 then
-            --  /= 3 is possible, since the list of classes
+            --  /= 2 is possible, since the list of classes
             --       is comma-separated and the parameter-list ";"-separated
             Layout_Evolution := null;
             Ada.Exceptions.Raise_Exception (Invalid_Format'Identity,
                                             "Not enough parameters");
          end if;
 
-         Iter := String_Lists.MakeListIter (Parameters);
+         Parameters_Iter := String_Lists.MakeListIter (Parameters);
 
          --  Get Root-Id
-         String_Lists.Next (Iter, Current_Parameter);
+         String_Lists.Next (Parameters_Iter, Current_Parameter);
          begin
             Root_Node := Giant.Graph_Lib.Node_Id_Value
               (Ada.Strings.Unbounded.To_String (Current_Parameter));
          exception
-            when others =>
+            when Graph_Lib.Node_Does_Not_Exist =>
                Layout_Evolution := null;
                Ada.Exceptions.Raise_Exception (Invalid_Format'Identity,
                                                "Invalid root node");
          end;
 
          --  Class_sets
+         String_Lists.Next (Parameters_Iter, Current_Parameter);
+         Meta_Class_Set := Convert_String_To_Meta_Class_Set
+           (Ada.Strings.Unbounded.To_String (Current_Parameter));
 
          Layout_Evolution := Giant.Evolutions.Evolution_Class_Access
            (Tree_Layouts.Initialize
@@ -170,7 +145,8 @@ package body Giant.Layout_Factory is
              Widget_Lock,
              Selection_To_Layout,
              Target_Position,
-             Root_Node));
+             Root_Node,
+             Meta_Class_Set));
       end Parse_Tree_Parameters;
 
       Trimmed_Parameters : String :=
