@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.10 $
-%  $Date: 2003/02/18 13:10:38 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.11 $
+%  $Date: 2003/02/18 13:46:23 $
 %  $Author: birdy $
 %
 %  Description: Bis zu Revision 1.6 sind UseCase-artige Beschreibungen enthalten,
@@ -10,11 +10,15 @@
 
 \section{Über die Benutzeroberfläche}
 
-GIANT besitzt eine graphische Benutzeroberfläche, die per Maus zu
-bedienen ist. Ausgewählte Funktionen können auch per Tastatur ausgelöst
-werden.
+\begin{enumerate}
+  \item GIANT besitzt eine graphische Benutzeroberfläche, die per Maus zu
+  bedienen ist. Ausgewählte Funktionen können auch per Tastatur ausgelöst
+  werden.
+  \item Die Interaktionssprache mit dem Benutzer ist Englisch
+\end{enumerate}
 
-\section{Beschreibung der GUI}    
+
+\section{Über dieses Kapitel}    
 
 Diese Beschreibung beschreibt alle Elemente der GUI. Sofern nicht anders
 angegeben, sind hintereinander angegebene Elemente (z.B. Listeneinträge)
@@ -43,15 +47,15 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     Im Untermenü Datei des Hauptfensters befinden sich folgende Einträge.  
 
       \begin{enumerate}
-         \item Projekt laden
-         \item Projekt speichern
-         \item neues Projekt
-         \item GIANT verlassen
+         \item Load Project
+         \item Save Project
+         \item New Project
+         \item Quit
       \end{enumerate}
 
     \subsubsection {Untermenü Info (Main Window)}      
        \begin{enumerate}
-          \item Über GIANT
+          \item About GIANT
         \end{enumerate}
      
 
@@ -76,13 +80,13 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
         Beim Rechtsklick auf WINDOW\_LIST öffnet sich ein Popup-Menü mit folgenden Menüpunkten:
 
         \begin{enumerate}
-          \item Fenster öffnen
-          \item Fenster schließen
-          \item Fenster löschen
-          \item Neues Fenster
-          \item IML-Teilgraph einfügen
-          \item Fenster exportieren
-          \item Fenster importieren
+          \item Open Window
+          \item Close Window
+          \item Delete Window
+          \item New Window
+          \item Insert IML Subgraph
+          \item Export Window
+          \item Import Window
           \end{enumerate}
     
   \subsection {Subgraph List}
@@ -91,9 +95,13 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
    
     \subsubsection {Inhalt Subgraph List} 
     
-      SUBGRAPH\_LIST hat die Spalten Subgraph Name (SUBGRAPH\_NAME),
-      Nodes (SUBGRAPH\_NODES), Edges (SUBGRAPH\_EDGES) und Highlight Color
-      (SUBGRAPH\_HIGHLIGHT\_COL).
+      SUBGRAPH\_LIST hat die Spalten 
+      \begin{enumerate}
+        \item Subgraph Name (SUBGRAPH\_NAME)
+        \item Nodes (SUBGRAPH\_NODES)
+        \item Edges (SUBGRAPH\_EDGES)
+        \item Highlight Color (SUBGRAPH\_HIGHLIGHT\_COL).
+      \end{enumerate}
     
       In Subgraph Name stehen die (benutzerdefinierten) Namen der existierenden
       Subgraphen, in Nodes die Anzahl der Knoten des Subgraphen,
@@ -106,15 +114,15 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
       Beim Rechtsklick auf SUBGRAPH\_LIST öffnet sich ein Popup-Menü mit folgenden Menüpunkten:
 
         \begin{enumerate}
-          \item hervorheben (zum Hervorheben eines Teilgraphen in allen Fenstern mit Farbe SUBGRAPH\_COL)
-          \item Hervorhebungsfarbe ändern
-          \item hervorheben aufheben
-          \item Teilgraph kopieren
-          \item Teilgraph umbenennen
-          \item Teilgraph löschen
-          \item Teilgraphen Mengenoperation (Vereinigung/Differenz/Schnitt)
-          \item Teilgraphen exportieren
-          \item Teilgraphen importieren
+          \item highlight (zum Hervorheben eines Teilgraphen in allen Fenstern mit Farbe SUBGRAPH\_COL)
+          \item Change highlighting color
+          \item unhighlight
+          \item Copy IML Subgraph
+          \item Rename IML Subgraph
+          \item Delete IML Subgraph
+          \item IML Subgraph Set Operation (Union/Difference/Intersection)
+          \item Export IML Subgraph
+          \item Import IML Subgraph
         \end{enumerate}   
         
     
@@ -164,9 +172,9 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     Auf der Pinliste sind folgende Menüpunkte eines Popup-Menüs aktivierbar:
     
     \begin{enumerate}
-      \item Neuer Pin (PIN\_NEW)
-      \item Zu Pin springen (PIN\_JUMP),
-      \item Pin löschen (PIN\_DELETE).
+      \item New Pin (PIN\_NEW)
+      \item Jump To Pin (PIN\_JUMP),
+      \item Delete Pin (PIN\_DELETE).
     \end{enumerate}
 
   \subsection{Selektionen}
@@ -174,17 +182,17 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     In der Selektionsauswahlliste (SELECTION\_LIST) sind folgende Menüpunkte
     eines Popup-Menüs aktivierbar:
     \begin{enumerate}
-      \item Neue Selektion
-      \item Zur Selektion hinzufügen
-      \item hervorheben (zum Hervorheben einer Selektion in der Farbe SELECTION\_COL)
-      \item Hervorhebungsfarbe ändern
-      \item hervorheben aufheben
-      \item Selektion kopieren
-      \item Selektion umbenennen
-      \item Selektion löschen
-      \item Selektion Mengenoperation (Vereinigung/Differenz/Schnitt)
-      \item Selektion exportieren
-      \item Selektion importieren
+      \item New Selection
+      \item Add Nodes to Selection
+      \item Highlight Selection    [zum Hervorheben einer Selektion in der Farbe SELECTION\_COL]
+      \item Unhighlight Selection
+      \item Change highlighting color 
+      \item Copy Selection
+      \item Rename Selection
+      \item Delete Selection
+      \item Selection Set Operation (Union/Difference/Intersection)
+      \item Export Selection
+      \item Import Selection
     \end{enumerate}    
 
 
@@ -197,7 +205,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
       \item Button \gq{Display} (ZOOM\_DISPLAY)
       \item Button \gq{Zoom+} (ZOOM\_PLUS)
       \item Button \gq{Zoom-} (ZOOM\_MINUS)
-    \end{enumerate}    
+  \end{enumerate}    
      
   \subsection{Stilauswahl-Combobox}
 
@@ -217,7 +225,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     eines pro Knoten.
 
     Zuoberst im Fenster wird die Knotentyp und Knoten-ID dargestellt
-    (TYPE und ID), Format: "Knoten: TYPE, ID: ID) darunter befinden sich
+    (TYPE und ID), Format: "Node: TYPE, ID: ID) darunter befinden sich
     (jeweils untereinander) drei getrennt scrollbare Listen,
     ATTRIBUTES, SUCCESSOR\_NODES, PREDECESSOR\_NODES.
     
@@ -229,32 +237,30 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
       Die Liste ATTRIBUTES enthält alle Attribute des Knotens, hat zwei Spalten:
     
       \begin{enumerate}
-        \item ATTRIBUTE (Attributname)
-        \item VALUE (Wert des Attributs)
+        \item ATTRIBUTE (Attribute Name)
+        \item VALUE (Attribute Value)
       \end{enumerate}
     
     \subsection{Liste SUCCESSOR\_NODES}
     
       Die Liste SUCCESSOR\_EDGES hat eine Zeile für jede vom Knoten abgehende
-      Kante mit drei Spalten (Typ der abgehenden Kante, Typ des Knotens,
-      zu dem sie führt, ID des Knotens, zu dem sie führt) :
+      Kante mit drei Spalten:
     
     \begin{enumerate}
-      \item EDGE\_TYPE
-      \item NODE\_TYPE
-      \item NODE\_ID
+      \item EDGE\_TYPE (Typ der abgehenden Kante: Edge Type)
+      \item NODE\_TYPE (Typ des Knotens: Node Type)
+      \item NODE\_ID (ID des Knotens, zu dem sie führt: Node ID)
     \end{enumerate}    
 
     \subsection{Liste PREDECESSOR\_NODES}
       
       Die Liste PREDECESSOR\_EDGES hat eine Zeile für jede vom Knoten abgehende
-      Kante mit drei Spalten (Typ der ankommenden Kante, Typ des Knotens,
-      von dem sie kommt, ID des Knotens, von dem sie kommt) :
+      Kante mit drei Spalten:
 
       \begin{enumerate}
-        \item EDGE\_TYPE
-        \item NODE\_TYPE
-        \item NODE\_ID
+        \item EDGE\_TYPE (Typ der ankommenden Kante: Edge Type)
+        \item NODE\_TYPE (Typ des Knotens: Node Type)
+        \item NODE\_ID (ID des Knotens, von dem sie kommt: Node ID)
       \end{enumerate}
 
 \section{Anfrage Dialog}
@@ -265,10 +271,10 @@ in dem der Text der Anfrage eingegeben werden kann.
 Unter QUERY\_TEXT befinden sich folgende Elemente:
 
       \begin{enumerate}
-        \item Button QUERY\_START  %\label{QUERY\_DIALOG-QUERY\_START}
-        \item Button QUERY\_CANCEL
-        \item Button QUERY\_LOAD
-        \item Button QUERY\_SAVE
+        \item Button QUERY\_START (Start Query)
+        \item Button QUERY\_CANCEL (Cancel)
+        \item Button QUERY\_LOAD (Load Query)
+        \item Button QUERY\_SAVE (Save Query)
       \end{enumerate}
 
 >>>>>>>>>>>>> WIRD DER FOLGENDE TEXT BENOETIGT?
