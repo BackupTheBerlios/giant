@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.51 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.52 $
 --  $Author: koppor $
---  $Date: 2003/07/11 01:40:40 $
+--  $Date: 2003/07/11 10:50:20 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -1139,6 +1139,26 @@ package body Giant.Graph_Lib is
             return False;
       end;
    end Does_Node_Class_Exist;
+
+   ---------------------------------------------------------------------------
+   function Get_Inherited_Classes
+     (Node_Class     : in Node_Class_Id;
+      Include_Parent : in Boolean := True)
+     return Node_Class_Id_Set
+   is
+      Res : Node_Class_Id_Set;
+   begin
+      Res := Node_Class_Id_Sets.Empty_Set;
+
+      --  TBD: get children
+
+      if Include_Parent then
+         Node_Class_Id_Sets.Insert (Res, Node_Class);
+      end if;
+
+      return Res;
+   end Get_Inherited_Classes;
+
 
    ---------------------------------------------------------------------------
    --  Loops over the hashtables storing the Edgeclasses and returns all
