@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.15 $
+--  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.16 $
 --  $Author: koppor $
---  $Date: 2003/07/14 08:22:43 $
+--  $Date: 2003/07/15 16:19:13 $
 --
 ------------------------------------------------------------------------------
 --  Variables are named according to the paper
@@ -355,7 +355,8 @@ package body Giant.Tree_Layouts is
             Logger.Debug ("Level: " & Natural'Image (SecondWalk_Data.V.Level));
             Logger.Debug ("Y:     " & Float'Image (Y));
 
-            if False then
+            --  FIX
+            --  if False then
 
             New_Relative_Position := Vis.Logic.Combine_Vector
               (X => X,
@@ -377,7 +378,7 @@ package body Giant.Tree_Layouts is
                Vis.Logic."+" (New_Relative_Position,
                               Layout.Target_Position),
                Layout.Widget_Lock);
-            end if;
+            --  end if;
             W := SecondWalk_Data.V.Leftmost_Child;
             while W /= null loop
                New_SecondWalk_Data.V := W;
