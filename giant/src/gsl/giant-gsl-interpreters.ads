@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/07 14:06:22 $
+-- $Date: 2003/07/19 15:06:20 $
 --
 -- This package implements the Gsl interpreter.
 --
@@ -64,6 +64,14 @@ package Giant.Gsl.Interpreters is
    --
    function Get_Current_Compiler return Giant.Gsl.Compilers.Compiler;
 
+   ---------------------------------------------------------------------------
+   --
+   function Get_Current_Context return String;
+
+   ---------------------------------------------------------------------------
+   --
+   procedure Set_Current_Context
+     (Context : String);
 
    --------------------------------------------------------------------------
    -- destroys a Gsl Interpreter
