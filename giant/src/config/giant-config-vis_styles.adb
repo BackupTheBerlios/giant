@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.19 $
+-- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.20 $
 -- $Author: schwiemn $
--- $Date: 2003/07/11 15:05:28 $
+-- $Date: 2003/07/11 17:18:21 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -1105,7 +1105,7 @@ package body Giant.Config.Vis_Styles is
             String_Lists.Destroy (File_List);
             raise Illegal_Default_Vis_Style_Exception;
       end;
-
+      
       -- check for correct type of xml file
       if (XML_File_Access.Does_XML_Document_Belong_To_Type
           ("giant_vis_style_file",
@@ -1251,7 +1251,7 @@ package body Giant.Config.Vis_Styles is
              (Default_Vis_Style_File),
             Global_Default_Vis_Style_Name);
 
-      exception
+      exception 
          when others =>
 
             raise Illegal_Default_Vis_Style_Exception;

@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-config-class_sets-test.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-config-class_sets-test.adb,v $, $Revision: 1.4 $
 --  $Author: schwiemn $
---  $Date: 2003/07/11 15:05:28 $
+--  $Date: 2003/07/11 17:18:21 $
 --
 with Ada.Strings.Unbounded;
 
@@ -61,7 +61,7 @@ package body Giant.Config.Class_Sets.Test is
          All_Class_Sets_List :=
            Config.Class_Sets.Get_All_Existing_Class_Sets;                      
          Assert 
-           (String_Lists.Length (All_Class_Sets_List) = 4,
+           (String_Lists.Length (All_Class_Sets_List) = 5,
             "Test correct number of class sets loaded");
          String_Lists.Destroy (All_Class_Sets_List);
          
@@ -398,7 +398,196 @@ package body Giant.Config.Class_Sets.Test is
       Config.Class_Sets.Clear_Class_Sets; 
       Class_Sets_Lists.Destroy (Empty_Class_Set_List);  
    end Test_Meta_Class_Set_Build;
+   
+   
+   ---------------------------------------------------------------------------
+   procedure Test_Inheritance
+     (R : in out AUnit.Test_Cases.Test_Case'Class) is
+           
+      Set_Inherit  :  Config.Class_Sets.Class_Set_Access;            
+       
+      A_Node_Class : Giant.Graph_Lib.Node_Class_id; 
+      A_Edge_Class : Giant.Graph_Lib.Edge_Class_Id;              
+   begin
 
+      for i in 1 .. 1 loop
+
+         Config.Class_Sets.Initialize_Class_Sets 
+           ("resources/class_sets/test_class_sets_1/");
+                                 
+         Set_Inherit := 
+           Config.Class_Sets.Get_Class_Set_Access 
+             ("class_set_5_inheritance");
+
+         -- test node classes - inheritance
+         ----------------------------------
+         A_Node_Class := 
+           Graph_Lib.Convert_Node_Class_Name_To_Id ("T_Node");           
+         Assert 
+           (Config.Class_Sets.Is_Node_Class_Element_Of_Class_Set 
+             (Set_Inherit, A_Node_Class),
+           "Test Set_Inherit holds node class ""T_Node""");
+
+         A_Node_Class := 
+           Graph_Lib.Convert_Node_Class_Name_To_Id ("Prog_Unit");           
+         Assert 
+           (Config.Class_Sets.Is_Node_Class_Element_Of_Class_Set 
+             (Set_Inherit, A_Node_Class),
+           "Test Set_Inherit holds node class ""Prog_Unit""");
+                  
+         A_Node_Class := 
+           Graph_Lib.Convert_Node_Class_Name_To_Id ("O_Node");           
+         Assert 
+           (not Config.Class_Sets.Is_Node_Class_Element_Of_Class_Set 
+             (Set_Inherit, A_Node_Class),
+           "Test Set_Inherit not holds node class ""O_Node""");
+
+         -- inherited from "Prog_Unit"
+         A_Node_Class := 
+           Graph_Lib.Convert_Node_Class_Name_To_Id ("Unit");           
+         Assert 
+           (Config.Class_Sets.Is_Node_Class_Element_Of_Class_Set 
+             (Set_Inherit, A_Node_Class),
+           "Test Set_Inherit holds node class ""Unit""");
+
+         A_Node_Class := 
+           Graph_Lib.Convert_Node_Class_Name_To_Id ("Routine");           
+         Assert 
+           (Config.Class_Sets.Is_Node_Class_Element_Of_Class_Set 
+             (Set_Inherit, A_Node_Class),
+           "Test Set_Inherit holds node class ""Routine""");
+     
+         -- inherited from "T_Node"
+         A_Node_Class := 
+           Graph_Lib.Convert_Node_Class_Name_To_Id ("TC_Completed_Array");           
+         Assert 
+           (Config.Class_Sets.Is_Node_Class_Element_Of_Class_Set 
+             (Set_Inherit, A_Node_Class),
+           "Test Set_Inherit holds node class ""TC_Completed_Array""");     
+     
+         A_Node_Class := 
+           Graph_Lib.Convert_Node_Class_Name_To_Id ("TC_Record");           
+         Assert 
+           (Config.Class_Sets.Is_Node_Class_Element_Of_Class_Set 
+             (Set_Inherit, A_Node_Class),
+           "Test Set_Inherit holds node class ""TC_Record""");       
+     
+         -- test edge classes - inheritance
+         ----------------------------------    
+           
+         A_Edge_Class := 
+           GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+             (Graph_Lib.Convert_Node_Class_Name_To_Id ("IML_Root"),
+              Graph_Lib.Convert_Node_Attribute_Name_To_Id              
+               ("IML_Root", "Parent"));
+         Assert 
+           (not Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set 
+             (Set_Inherit, A_Edge_Class),
+           "Test holds edge class ""IML_Root.Parent"""); 
+
+         A_Edge_Class := 
+           GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+             (Graph_Lib.Convert_Node_Class_Name_To_Id ("Prog_Unit"),
+              Graph_Lib.Convert_Node_Attribute_Name_To_Id              
+               ("Prog_Unit", "Subunits"));
+         Assert 
+           (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set 
+             (Set_Inherit, A_Edge_Class),
+           "Test holds edge class ""Prog_Unit.Subunits"""); 
+
+         -- inherited from "Prog_Unit.Subunits"
+         A_Edge_Class := 
+           GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+             (Graph_Lib.Convert_Node_Class_Name_To_Id ("Routine"),
+              Graph_Lib.Convert_Node_Attribute_Name_To_Id              
+               ("Routine", "Subunits"));
+         Assert 
+           (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set 
+             (Set_Inherit, A_Edge_Class),
+           "Test holds edge class ""Routine.Subunits""");   
+           
+         A_Edge_Class := 
+           GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+             (Graph_Lib.Convert_Node_Class_Name_To_Id ("Routine"),
+              Graph_Lib.Convert_Node_Attribute_Name_To_Id              
+               ("Routine", "Symbol_Table"));
+         Assert 
+           (not Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set 
+             (Set_Inherit, A_Edge_Class),
+           "Test not holds edge class ""Routine.Symbol_Table""");             
+                  
+         -- inherited from "Op."*""
+         A_Edge_Class := 
+           GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+             (Graph_Lib.Convert_Node_Class_Name_To_Id ("Op"),
+              Graph_Lib.Convert_Node_Attribute_Name_To_Id              
+               ("Op", "Parent"));
+         Assert 
+           (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set 
+             (Set_Inherit, A_Edge_Class),
+           "Test holds edge class ""Op.Parent""");   
+         
+         A_Edge_Class := 
+           GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+             (Graph_Lib.Convert_Node_Class_Name_To_Id ("Op"),
+              Graph_Lib.Convert_Node_Attribute_Name_To_Id              
+               ("Op", "CF_Basic_Block"));
+         Assert 
+           (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set 
+             (Set_Inherit, A_Edge_Class),
+           "Test holds edge class ""Op.CF_Basic_Block"""); 
+         
+         A_Edge_Class := 
+           GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+             (Graph_Lib.Convert_Node_Class_Name_To_Id ("Explicit_Conversion"),
+              Graph_Lib.Convert_Node_Attribute_Name_To_Id              
+               ("Explicit_Conversion", "Source_Type"));
+         Assert 
+           (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set 
+             (Set_Inherit, A_Edge_Class),
+           "Test holds edge class "
+           & """Explicit_Conversion.Source_Type""");          
+                                    
+         -- inherited from "Return_Statement."*""
+         A_Edge_Class := 
+           GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+             (Graph_Lib.Convert_Node_Class_Name_To_Id ("Return_Statement"),
+              Graph_Lib.Convert_Node_Attribute_Name_To_Id              
+               ("Return_Statement", "EType"));
+         Assert 
+           (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set 
+             (Set_Inherit, A_Edge_Class),
+           "Test holds edge class "
+           & """Return_Statement.EType""");    
+           
+         A_Edge_Class := 
+           GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+             (Graph_Lib.Convert_Node_Class_Name_To_Id ("Return_With_Value"),
+              Graph_Lib.Convert_Node_Attribute_Name_To_Id              
+               ("Return_With_Value", "EType"));
+         Assert 
+           (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set 
+             (Set_Inherit, A_Edge_Class),
+           "Test holds edge class "
+           & """Return_With_Value.EType""");  
+         
+         A_Edge_Class := 
+           GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+             (Graph_Lib.Convert_Node_Class_Name_To_Id ("Return_With_Value"),
+              Graph_Lib.Convert_Node_Attribute_Name_To_Id              
+               ("Return_With_Value", "Return_Value"));
+         Assert 
+           (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set 
+             (Set_Inherit, A_Edge_Class),
+           "Test holds edge class "
+           & """Return_With_Value.Return_Value""");  
+                                                               
+         -- deallocate                    
+         Config.Class_Sets.Clear_Class_Sets;         
+      end loop;
+        
+   end Test_Inheritance;
+   
    ---------------------------------------------------------------------------
    function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is
    begin
@@ -410,7 +599,9 @@ package body Giant.Config.Class_Sets.Test is
       Register_Routine 
         (T, Test_Init_Class_Sets'Access, "Test_Init_Class_Sets");
       Register_Routine 
-        (T, Test_Meta_Class_Set_Build'Access, "Test_Meta_Class_Set_Build");              
+        (T, Test_Meta_Class_Set_Build'Access, "Test_Meta_Class_Set_Build");
+      Register_Routine 
+        (T, Test_Inheritance'Access, "Test_Inheritance");           
    end Register_Tests;
 
    procedure Set_Up (T : in out Test_Case) is
