@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.2 $
+-- $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.3 $
 -- $Author: schwiemn $
--- $Date: 2003/06/02 17:00:52 $
+-- $Date: 2003/06/03 17:18:38 $
 --
 -- ----------------
 -- This package realizes a container that administrates the components
@@ -474,6 +474,7 @@ package Giant.Vis_Window_Management is
      (Vis_Window           : in Visual_Window_Accsess;
       Selection            : in Graph_Lib.Selections.Selection_Access;
       New_Highlight_Status : in Highlight_Status);
+
 
    --------------------------------------------------------------------------
    -- C
