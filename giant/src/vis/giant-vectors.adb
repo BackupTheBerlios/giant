@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.adb,v $, $Revision: 1.6 $
---  $Author: squig $
---  $Date: 2003/06/16 15:27:58 $
+--  $RCSfile: giant-vectors.adb,v $, $Revision: 1.7 $
+--  $Author: keulsn $
+--  $Date: 2003/06/23 23:37:17 $
 --
 ------------------------------------------------------------------------------
 
@@ -233,6 +233,19 @@ package body Giant.Vectors is
    begin
       return Combine_Vector (Get_Right (Rectangle), Get_Top (Rectangle));
    end Get_Top_Right;
+
+   function Get_Top_Center
+     (Rectangle : in     Rectangle_2d)
+     return Vector_2d is
+   begin
+      return Combine_Vector
+        (X => Coord_Add
+               (Get_Left (Rectangle),
+                Scalar_Div_Coord
+                  (Coord_Sub (Get_Right (Rectangle), Get_Left (Rectangle)),
+                   To_Field_Type (2))),
+         Y => Get_Top (Rectangle));
+   end Get_Top_Center;
 
    function Get_Bottom_Left
      (Rectangle : in     Rectangle_2d)

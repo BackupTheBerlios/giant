@@ -20,17 +20,52 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-graph_widgets-callbacks.ads,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/05/23 16:39:04 $
+--  $Date: 2003/06/23 23:37:17 $
 --
 ------------------------------------------------------------------------------
---
 
+
+with Gdk.Event;
 
 package Giant.Graph_Widgets.Callbacks is
 
+   ----------------------------------------------------------------------------
+   --  Connects all Callbacks 'Widgets' needs
    procedure Connect_All_Callbacks
      (Widget : access Graph_Widget_Record'Class);
+
+private
+
+   procedure On_Realize
+     (Widget : access Graph_Widget_Record'Class);
+
+   procedure After_Realize
+     (Widget : access Graph_Widget_Record'Class);
+
+   procedure On_Unrealize
+     (Widget : access Graph_Widget_Record'Class);
+
+   procedure On_Destroy
+     (Widget : access Graph_Widget_Record'Class);
+
+   procedure On_Size_Request
+     (Widget      : access Graph_Widget_Record'Class;
+      Requisition : in     Gtk.Widget.Gtk_Requisition_Access);
+
+   procedure On_Size_Allocate
+     (Widget     : access Graph_Widget_Record'Class;
+      Allocation : in     Gtk.Widget.Gtk_Allocation_Access);
+
+   function On_Expose_Event
+     (Widget : access Graph_Widget_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event_Expose)
+     return Boolean;
+
+   function On_Button_Press_Event
+     (Widget : access Graph_Widget_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event_Button)
+     return Boolean;
 
 end Giant.Graph_Widgets.Callbacks;

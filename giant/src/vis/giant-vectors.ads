@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.ads,v $, $Revision: 1.6 $
+--  $RCSfile: giant-vectors.ads,v $, $Revision: 1.7 $
 --  $Author: keulsn $
---  $Date: 2003/06/13 14:50:29 $
+--  $Date: 2003/06/23 23:37:17 $
 --
 ------------------------------------------------------------------------------
 
@@ -229,6 +229,10 @@ package Giant.Vectors is
      return Vector_2d;
 
    function Get_Top_Right
+     (Rectangle : in     Rectangle_2d)
+     return Vector_2d;
+
+   function Get_Top_Center
      (Rectangle : in     Rectangle_2d)
      return Vector_2d;
 

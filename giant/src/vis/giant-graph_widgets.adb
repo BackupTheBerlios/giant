@@ -20,12 +20,16 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.2 $
---  $Author: squig $
---  $Date: 2003/06/23 19:19:34 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.3 $
+--  $Author: keulsn $
+--  $Date: 2003/06/23 23:37:17 $
 --
 ------------------------------------------------------------------------------
 
+
+with System;
+
+with Gtk.Object;
 
 with Giant.Graph_Widgets.Callbacks;
 with Giant.Graph_Widgets.Drawing;
@@ -38,12 +42,29 @@ package body Giant.Graph_Widgets is
    -- Construction, Destruction --
    -------------------------------
 
+   Class_Record : System.Address := System.Null_Address;
+
+   ---------------------------------------------------------------------------
+   --  Initializes the data structure. More initialization is done after the
+   --  "realize" signal has been emitted on 'Widget'
+   procedure Initialize
+     (Widget : access Graph_Widget_Record'Class;
+      Style  : in     Config.Vis_Styles.Visualisation_Style_Access) is
+   begin
+      Gtk.Widget.Initialize_Widget (Widget);
+      Gtk.Object.Initialize_Class_Record
+        (Object       => Widget,
+         Signals      => Notifications.Get_Signal_Array,
+         Class_Record => Class_Record);
+   end Initialize;
+
    procedure Create
      (Widget :    out Graph_Widget;
       Style  : in     Config.Vis_Styles.Visualisation_Style_Access
                        := Config.Vis_Styles.Get_Default_Vis_Style) is
    begin
-      raise Unimplemented;
+      Widget := new Graph_Widget_Record;
+      Initialize (Widget, Style);
    end Create;
 
    procedure Read_Graph_Widget

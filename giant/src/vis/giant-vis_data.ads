@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.9 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.10 $
 --  $Author: keulsn $
---  $Date: 2003/06/23 16:18:36 $
+--  $Date: 2003/06/23 23:37:17 $
 --
 ------------------------------------------------------------------------------
 --
@@ -136,13 +136,23 @@ package Giant.Vis_Data is
      (Pool : in out Layer_Pool);
 
 
-   ------------------
-   -- Highlighting --
-   ------------------
+   -----------
+   -- Flags --
+   -----------
 
-   type Highlight_Type is
-     (Current_Local, First_Local, Second_Local, Third_Local,
+   type Flags_Enumeration_Type is
+     (Hidden,
+      Current_Local, First_Local, Second_Local, Third_Local,
       First_Global, Second_Global, Third_Global);
+
+   type Flags_Type is array (Flags_Enumeration_Type) of Boolean;
+   pragma Pack (Flags_Type);
+
+   subtype Highlight_Type is
+     Flags_Enumeration_Type range Current_Local .. Third_Global;
+
+   type Highlight_Array is array (Highlight_Type) of Boolean;
+   pragma Pack (Highlight_Array);
 
    subtype Local_Highlight_Type is
      Highlight_Type range Current_Local .. Third_Local;
@@ -151,9 +161,9 @@ package Giant.Vis_Data is
      Highlight_Type range First_Global .. Third_Global;
 
 
-   -----------
-   -- Edges --
-   -----------
+   --------------------
+   -- Edges & Nodes  --
+   --------------------
 
    ----------------------------------------------------------------------------
    --  Number of inflexion/begin/end points in one edge
@@ -166,6 +176,17 @@ package Giant.Vis_Data is
 
    type Vis_Edge_Id is access all Vis_Edge_Record;
 
+   ----------------------------------------------------------------------------
+   --  Type for handling the visual representation of a node
+   type Vis_Node_Record is limited private;
+
+   type Vis_Node_Id is access all Vis_Node_Record;
+
+
+
+   -----------
+   -- Edges --
+   -----------
 
    ----------------------------------------------------------------------------
    --  Gets the edge for the visual representation
@@ -173,12 +194,49 @@ package Giant.Vis_Data is
      (Edge : in     Vis_Edge_Id)
      return Graph_Lib.Edge_Id;
 
+   function Get_Source
+     (Edge : in     Vis_Edge_Id)
+     return Vis_Node_Id;
+
+   function Get_Target
+     (Edge : in     Vis_Edge_Id)
+     return Vis_Node_Id;
+
    ----------------------------------------------------------------------------
    --  Gets the layer 'Edge' is inside. No other edge must be in the same
    --  layer. The user must ensure this.
    function Get_Layer
      (Edge  : in     Vis_Edge_Id)
      return Layer_Type;
+
+   function Get_Thickness
+     (Edge : in     Vis_Edge_Id)
+     return Vis.Absolute_Natural;
+
+   function Get_Number_Of_Points
+     (Edge : in     Vis_Edge_Id)
+     return Edge_Point_Number;
+
+   function Get_Point
+     (Edge : in     Vis_Edge_Id;
+      Num  : in     Positive)
+     return Vis.Absolute.Vector_2d;
+
+   function Has_Text_Area
+     (Edge : in     Vis_Edge_Id)
+     return Boolean;
+
+   function Get_Text_Area
+     (Edge : in     Vis_Edge_Id)
+     return Vis.Absolute.Rectangle_2d;
+
+   function Is_Hidden
+     (Edge : in     Vis_Edge_Id)
+     return Boolean;
+
+   function Get_Highlighting
+     (Edge : in     Vis_Edge_Id)
+     return Flags_Type;
 
    ----------------------------------------------------------------------------
    --  Total ordering on Vis_Edge_Id
@@ -210,12 +268,6 @@ package Giant.Vis_Data is
    -- Nodes --
    -----------
 
-   ----------------------------------------------------------------------------
-   --  Type for handling the visual representation of a node
-   type Vis_Node_Record is limited private;
-
-   type Vis_Node_Id is access all Vis_Node_Record;
-
 
    ----------------------------------------------------------------------------
    --  Gets the node for the visual representation
@@ -223,12 +275,43 @@ package Giant.Vis_Data is
      (Node : in     Vis_Node_Id)
      return Graph_Lib.Node_Id;
 
+   function Get_Top_Center
+     (Node : in     Vis_Node_Id)
+     return Vis.Absolute.Vector_2d;
+
+   function Get_Extent
+     (Node : in     Vis_Node_Id)
+     return Vis.Absolute.Rectangle_2d;
+
    ----------------------------------------------------------------------------
    --  Gets the layer 'Node' is inside. No other node must be in the same
    --  layer. The user must ensure this.
    function Get_Layer
      (Node : in     Vis_Node_Id)
      return Layer_Type;
+
+   --  Parameters:
+   --    Node
+   --    Incoming_Edges - The iterator, must be destroyed using
+   --                     'Vis_Edge_Sets.Destroy'
+   procedure Make_Incoming_Iterator
+     (Node           : in     Vis_Node_Id;
+      Incoming_Edges :    out Vis_Edge_Sets.Iterator);
+
+   --  Parameters:
+   --    Outgoing_Edges - The iterator, must be destroyed using
+   --                     'Vis_Edge_Sets.Destroy'
+   procedure Make_Outgoing_Iterator
+     (Node           : in     Vis_Node_Id;
+      Outgoing_Edges :    out Vis_Edge_Sets.Iterator);
+
+   function Is_Hidden
+     (Node : in     Vis_Node_Id)
+     return Boolean;
+
+   function Get_Highlighting
+     (Node : in     Vis_Node_Id)
+     return Flags_Type;
 
    ----------------------------------------------------------------------------
    --  Total ordering on Vis_Node_Id
@@ -515,6 +598,21 @@ private
      return Integer;
 
    ----------------------------------------------------------------------------
+   --  Strict order on 'Region_Position's
+   --
+   --  Parameters:
+   --    Left  - position of a region
+   --    Right - position of a region
+   function Order_Position
+     (Left  : in    Region_Position;
+      Right : in    Region_Position)
+     return Boolean;
+
+   package Position_Sets is new Ordered_Sets
+     (Item_Type => Region_Position,
+      "<"       => Order_Position);
+
+   ----------------------------------------------------------------------------
    --  A 'Position_Pool' represents a rectangle of 'Region_Position's
    type Position_Pool is new Vis.Absolute.Rectangle_2d;
 
@@ -586,7 +684,9 @@ private
          --  Target node of this edge
          Target            : Vis_Node_Id;
          --  Width of this edge
-         Width             : Vis.Absolute_Int;
+         Thickness         : Vis.Absolute_Natural;
+         --  Area where text can be drawn or else Get_Height = 'Last
+         Text_Area         : Vis.Absolute.Rectangle_2d;
          --  Layer of this edge
          Layer             : Layer_Type;
          --  Start point, inflection points, end point
@@ -597,24 +697,26 @@ private
          Right_Arrow_Point : Vis.Absolute.Vector_2d;
          --  (Over-)Estimate of regions this edge is contained in
          Regions           : Region_Lists.List;
+         --  Visual attributes of this edge
+         Flags             : Flags_Type;
       end record;
 
    type Vis_Node_Record is
       record
          --  Represented node
          Node           : Graph_Lib.Node_Id;
-         --  Top middle point
-         Position       : Vis.Logic.Vector_2d;
-         --  Hight level of this node
-         Layer          : Layer_Type;
          --  Rectangle of this node
          Extent         : Vis.Absolute.Rectangle_2d;
+         --  Hight level of this node
+         Layer          : Layer_Type;
          --  Edges with this node as target
          Incoming_Edges : Vis_Edge_Sets.Set;
          --  Edges with this node as source
          Outgoing_Edges : Vis_Edge_Sets.Set;
          --  (Over-)Estimate of regions this node is contained in
          Regions        : Region_Lists.List;
+         --  Visual attributes of this node
+         Flags          : Flags_Type;
       end record;
 
    type Region_Record is limited

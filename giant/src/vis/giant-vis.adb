@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-vis.adb,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/06/10 23:52:47 $
+--  $Date: 2003/06/23 23:37:17 $
 --
 ------------------------------------------------------------------------------
 
@@ -130,6 +130,16 @@ package body Giant.Vis is
         (Logic_Float (Absolute.Get_X (Vector)),
          Logic_Float (Absolute.Get_Y (Vector)));
    end To_Logic;
+
+   function Intersects_Line_Horizontal_Line_X
+     (Origin         : in     Logic.Vector_2d;
+      Direction      : in     Logic.Vector_2d;
+      Horizontal     : in     Logic_Float)
+     return Logic_Float is
+   begin
+      return ((Horizontal - Get_Y (Origin)) / Get_Y (Direction)) *
+             Get_X (Direction) + Get_X (Origin);
+   end Intersect_Line_Horizontal_Line_X;
 
    function Transform
      (Point          : in     Logic.Vector_2d;

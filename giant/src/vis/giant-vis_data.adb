@@ -20,13 +20,14 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.7 $
 --  $Author: keulsn $
---  $Date: 2003/06/23 16:18:36 $
+--  $Date: 2003/06/23 23:37:17 $
 --
 ------------------------------------------------------------------------------
 
 
+with Ada.Numerics.Generic_Elementary_Functions;
 with Ada.Unchecked_Deallocation;
 
 with Giant.Logger;
@@ -35,6 +36,22 @@ package body Giant.Vis_Data is
 
    package Vis_Data_Logger is new Logger
      (Name => "Giant.Vis_Data");
+
+   procedure Set_Min_Max
+     (Value_1 : in     Vis.Absolute_Int;
+      Value_2 : in     Vis.Absolute_Int;
+      Min     :    out Vis.Absolute_Int;
+      Max     :    out Vis.Absolute_Int) is
+   begin
+      if Value_1 <= Value_2 then
+         Min := Value_1;
+         Max := Value_2;
+      else
+         Max := Value_1;
+         Min := Value_2;
+      end if;
+   end Set_Min_Max;
+
 
    ------------
    -- Layers --
@@ -98,12 +115,79 @@ package body Giant.Vis_Data is
       return Edge.Edge;
    end Get_Graph_Edge;
 
+   function Get_Source
+     (Edge : in     Vis_Edge_Id)
+     return Vis_Node_Id is
+   begin
+      return Edge.Source;
+   end Get_Source;
+
+   function Get_Target
+     (Edge : in     Vis_Edge_Id)
+     return Vis_Node_Id is
+   begin
+      return Edge.Target;
+   end Get_Target;
+
    function Get_Layer
      (Edge  : in     Vis_Edge_Id)
      return Layer_Type is
    begin
       return Edge.Layer;
    end Get_Layer;
+
+   function Get_Thickness
+     (Edge : in     Vis_Edge_Id)
+     return Vis.Absolute_Natural is
+   begin
+      return Edge.Thickness;
+   end Get_Thickness;
+
+   function Get_Number_Of_Points
+     (Edge : in     Vis_Edge_Id)
+     return Edge_Point_Number is
+   begin
+      return Edge.Points'Length;
+   end Get_Number_Of_Points;
+
+   function Get_Point
+     (Edge : in     Vis_Edge_Id;
+      Num  : in     Positive)
+     return Vis.Absolute.Vector_2d is
+   begin
+      return Edge.Points (Num);
+   end Get_Point;
+
+   function Has_Text_Area
+     (Edge : in     Vis_Edge_Id)
+     return Boolean is
+   begin
+      return Vis.Absolute.Get_Height (Edge.Text_Area) < Vis.Absolute_Int'Last;
+   end Has_Text_Area;
+
+   function Get_Text_Area
+     (Edge : in     Vis_Edge_Id)
+     return Vis.Absolute.Rectangle_2d is
+   begin
+      return Edge.Text_Area;
+   end Get_Text_Area;
+
+   function Is_Hidden
+     (Edge : in     Vis_Edge_Id)
+     return Boolean is
+   begin
+      return Edge.Flags (Hidden);
+   end Is_Hidden;
+
+   function Get_Highlighting
+     (Edge : in     Vis_Edge_Id)
+     return Flags_Type is
+
+      Only_Highlighting : Flags_Type := (Highlight_Type'Range => True,
+                                         others => False);
+   begin
+      return Edge.Flags and Only_Highlighting;
+   end Get_Highlighting;
 
    function Is_Edge_Below
      (Left  : in     Vis_Edge_Id;
@@ -125,12 +209,57 @@ package body Giant.Vis_Data is
       return Node.Node;
    end Get_Graph_Node;
 
+   function Get_Top_Center
+     (Node : in     Vis_Node_Id)
+     return Vis.Absolute.Vector_2d is
+   begin
+      return Vis.Absolute.Get_Top_Center (Node.Extent);
+   end Get_Top_Center;
+
+   function Get_Extent
+     (Node : in     Vis_Node_Id)
+     return Vis.Absolute.Rectangle_2d is
+   begin
+      return Node.Extent;
+   end Get_Extent;
+
    function Get_Layer
      (Node  : in     Vis_Node_Id)
      return Layer_Type is
    begin
       return Node.Layer;
    end Get_Layer;
+
+   procedure Make_Incoming_Iterator
+     (Node           : in     Vis_Node_Id;
+      Incoming_Edges :    out Vis_Edge_Sets.Iterator) is
+   begin
+      Incoming_Edges := Vis_Edge_Sets.Make_Iterator (Node.Incoming_Edges);
+   end Make_Incoming_Iterator;
+
+   procedure Make_Outgoing_Iterator
+     (Node           : in     Vis_Node_Id;
+      Outgoing_Edges :    out Vis_Edge_Sets.Iterator) is
+   begin
+      Outgoing_Edges := Vis_Edge_Sets.Make_Iterator (Node.Outgoing_Edges);
+   end Make_Outgoing_Iterator;
+
+   function Is_Hidden
+     (Node : in     Vis_Node_Id)
+     return Boolean is
+   begin
+      return Node.Flags (Hidden);
+   end Is_Hidden;
+
+   function Get_Highlighting
+     (Node : in     Vis_Node_Id)
+     return Flags_Type is
+
+      Only_Highlighting : Flags_Type := (Highlight_Type'Range => True,
+                                         others => False);
+   begin
+      return Node.Flags and Only_Highlighting;
+   end Get_Highlighting;
 
    function Is_Node_Below
      (Left  : in     Vis_Node_Id;
@@ -139,13 +268,6 @@ package body Giant.Vis_Data is
    begin
       return Is_Below (Left.Layer, Right.Layer);
    end Is_Node_Below;
-
-   function Get_Extent
-     (Node  : in     Vis_Node_Id)
-     return Vis.Absolute.Rectangle_2d is
-   begin
-      return Node.Extent;
-   end Get_Extent;
 
 
    -------------
@@ -169,6 +291,22 @@ package body Giant.Vis_Data is
         + 16#100_0000# * (Y mod 16#100#);
       return Value;
    end Hash_Region_Position;
+
+   function Order_Position
+     (Left  : in    Region_Position;
+      Right : in    Region_Position)
+     return Boolean is
+   begin
+      if Vis.Absolute.Get_X (Vis.Absolute.Vector_2d (Left)) =
+        Vis.Absolute.Get_X (Vis.Absolute.Vector_2d (Right)) then
+
+         return Vis.Absolute.Get_Y (Vis.Absolute.Vector_2d (Left)) <
+           Vis.Absolute.Get_Y (Vis.Absolute.Vector_2d (Right));
+      else
+         return Vis.Absolute.Get_X (Vis.Absolute.Vector_2d (Left)) <
+           Vis.Absolute.Get_X (Vis.Absolute.Vector_2d (Right));
+      end if;
+   end Order_Position;
 
    function Create_Region
      (Extent : Vis.Absolute.Rectangle_2d)
@@ -451,6 +589,36 @@ package body Giant.Vis_Data is
       end if;
    end Init_Region_Manager;
 
+   function Get_Position_X_At_X
+     (Manager : in     Region_Manager;
+      Point_X : in     Vis.Absolute_Int)
+     return Vis.Absolute_Int is
+
+      Position_X : Vis.Absolute_Int;
+   begin
+      Position_X := Point_X / Manager.Region_Width;
+      if Point_X < 0 and then Point_X mod Manager.Region_Width /= 0 then
+         Position_X := Position_X - 1;
+      end if;
+      return Position_X;
+   end Get_Position_X_At_X;
+   pragma Inline (Get_Position_X_At_X);
+
+   function Get_Position_Y_At_Y
+     (Manager : in     Region_Manager;
+      Point_Y : in     Vis.Absolute_Int)
+     return Vis.Absolute_Int is
+
+      Position_Y : Vis.Absolute_Int := Point_Y / Manager.Region_Height;
+   begin
+      if Point_Y < 0 and then Point_Y mod Manager.Region_Height /= 0 then
+         Position_Y := Position_Y - 1;
+      end if;
+      return Position_Y;
+   end Get_Position_Y_At_Y;
+   pragma Inline (Get_Position_Y_At_Y);
+
+
    function Get_Region_Position
      (Manager : in     Region_Manager;
       Point   : in     Vis.Absolute.Vector_2d)
@@ -459,17 +627,9 @@ package body Giant.Vis_Data is
       Position   : Region_Position;
       Point_X    : Vis.Absolute_Int := Vis.Absolute.Get_X (Point);
       Point_Y    : Vis.Absolute_Int := Vis.Absolute.Get_Y (Point);
-      Position_X : Vis.Absolute_Int;
-      Position_Y : Vis.Absolute_Int;
+      Position_X : Vis.Absolute_Int := Get_Position_X_At_X (Manager, Point_X);
+      Position_Y : Vis.Absolute_Int := Get_Position_Y_At_Y (Manager, Point_Y);
    begin
-      Position_X := Point_X / Manager.Region_Width;
-      Position_Y := Point_Y / Manager.Region_Height;
-      if Point_X < 0 and then Point_X mod Manager.Region_Width /= 0 then
-         Position_X := Position_X - 1;
-      end if;
-      if Point_Y < 0 and then Point_Y mod Manager.Region_Height /= 0 then
-         Position_Y := Position_Y - 1;
-      end if;
       return Region_Position
         (Vis.Absolute.Combine_Vector (Position_X, Position_Y));
    end Get_Region_Position;
@@ -542,11 +702,252 @@ package body Giant.Vis_Data is
                             (Manager, Bottom_Right_Position)));
    end Optimize_Drawing_Area;
 
+   generic
+      with procedure Hit
+        (Position : in     Region_Position);
+   procedure Add_Lines_Positions
+     (Manager     : in     Region_Manager;
+      Thickness   : in     Vis.Absolute_Natural;
+      Start_Point : in     Vis.Absolute.Vector_2d;
+      End_Point   : in     Vis.Absolute.Vector_2d);
+
+   procedure Add_Lines_Positions
+     (Manager     : in     Region_Manager;
+      Thickness   : in     Vis.Absolute_Natural;
+      Start_Point : in     Vis.Absolute.Vector_2d;
+      End_Point   : in     Vis.Absolute.Vector_2d) is
+
+      use Vis.Absolute;
+      use Vis.Logic;
+
+      procedure Add_Line_Bottom_To_Top
+        (Starting_Point : in     Vis.Absolute.Vector_2d;
+         Ending_Point   : in     Vis.Absolute.Vector_2d) is
+
+         Left_To_Right : constant Boolean :=
+           Get_X (Starting_Point) <= Get_X (End_Point);
+
+         function Get_Outer_Position_X
+           (Point_X            : in     Vis.Logic_Float;
+            Horizontal_Profile : in     Vis.Logic_Float)
+           return Vis.Absolute_Int is
+
+            X : Vis.Absolute_Int;
+         begin
+            if Left_To_Right then
+               X := Vis.Absolute_Int (Point_X - Horizontal_Profile);
+            else
+               X := Vis.Absolute_Int (Point_X + Horizontal_Profile + 0.5);
+            end if;
+            return Get_Position_X_At_X (Manager, X);
+         end Get_Outer_Position_X;
+
+         function Get_Inner_Position_X
+           (Point_X            : in     Vis.Logic_Float;
+            Horizontal_Profile : in     Vis.Logic_Float)
+           return Vis.Absolute_Int is
+
+            X : Vis.Absolute_Int;
+         begin
+            if Left_To_Right then
+               X := Vis.Absolute_Int (Point_X + Horizontal_Profile + 0.5);
+            else
+               X := Vis.Absolute_Int (Point_X - Horizontal_Profile);
+            end if;
+            return Get_Position_X_At_X (Manager, X);
+         end Get_Inner_Position_X;
+
+         package Numerics is new Ada.Numerics.Generic_Elementary_Functions
+           (Float_Type => Vis.Logic_Float);
+
+         Line_Start            : Vis.Logic.Vector_2d;
+         Difference            : Vis.Logic.Vector_2d;
+         Alpha                 : Vis.Logic_Float;
+         Horizontal_Profile    : Vis.Logic_Float;
+         Min_Y                 : Vis.Absolute_Int;
+         Max_Y                 : Vis.Absolute_Int;
+         Done                  : Boolean;
+         Current_Y             : Vis.Absolute_Int;
+         X                     : Vis.Logic_Float;
+         Inner_Position_X      : Vis.Absolute_Int;
+         Outer_Position_X      : Vis.Absolute_Int;
+         Position              : Region_Position;
+         Min_Position_X        : Vis.Absolute_Int;
+         Max_Position_X        : Vis.Absolute_Int;
+      begin
+         pragma Assert (Get_Y (Starting_Point) >= Get_Y (Ending_Point));
+         Line_Start := Vis.To_Logic (Starting_Point);
+         Difference := Vis.To_Logic (Ending_Point - Starting_Point);
+
+         Alpha := Numerics.Arctan (Get_Y (Difference), Get_X (Difference));
+
+         Horizontal_Profile := Vis.To_Logic_Float ((Thickness + 3) / 2)
+           / abs Numerics.Sin (Alpha);
+
+         Min_Y := Get_Y (Ending_Point) - (Thickness + 3) / 2;
+         Max_Y := Get_Y (Starting_Point) + (Thickness + 3) / 2;
+
+         --  Process regions line by line, starting at bottom then ascending
+         --  to top
+
+         --  use 'Position' to keep track of the current region's position
+         Set_Y (Position, Get_Position_Y_At_Y (Manager, Max_Y));
+         --  'Current_Y' reflects the horizontal lines directly below the
+         --  starting point, then above the region at Position and at last
+         --  directly above the end point
+         Current_Y := Max_Y;
+         --  'X' is the horizontal intersection coordinate of the line
+         --  with the horizontal line at 'Current_Y'
+         X := Vis.Intersects_Line_Horizontal_Line_X
+           (Origin     => Line_Start,
+            Direction  => Difference,
+            Horizontal => Vis.Logic_Float (Current_Y) - 0.5);
+         --  the drawn line intersects the horizontal line at 'Current_Y'
+         --  between the position-columns 'Outer_Position_X'
+         --  and 'Inner_Position_X'
+         Outer_Position_X := Get_Outer_Position_X (X, Horizontal_Profile);
+         Done := False;
+         loop
+            --  next horizontal line
+            Current_Y := Get_Top (Get_Region_Extent (Manager, Position));
+            --  above ending point?
+            if Current_Y <= Min_Y then
+               --  if yes, set directly above point and finish
+               Current_Y := Min_Y;
+               Done := True;
+            end if;
+            --  intersection with the new 'Current_Y'
+            X := Vis.Intersects_Line_Horizontal_Line_X
+              (Origin     => Line_Start,
+               Direction  => Difference,
+               Horizontal => Vis.Logic_Float (Current_Y) - 0.5);
+            --  update 'Inner_Position_X' only. 'Outer_Position_X' is taken
+            --  from the previous iteration (at the previous 'Current_Y')
+            Inner_Position_X := Get_Inner_Position_X (X, Horizontal_Profile);
+
+            --  add all positions between 'Outer_Position_X' and
+            --  'Inner_Position_X'
+            Set_Min_Max
+              (Value_1 => Inner_Position_X,
+               Value_2 => Outer_Position_X,
+               Min     => Min_Position_X,
+               Max     => Max_Position_X);
+            for Pos_X in Min_Position_X .. Max_Position_X loop
+               Set_X (Position, Pos_X);
+               Hit (Position);
+            end loop;
+
+            --  Exit if top reached
+            exit when Done;
+
+            --  Update 'Outer_Position_X' to the current 'Current_Y'
+            Outer_Position_X := Get_Outer_Position_X (X, Horizontal_Profile);
+            --  Step one line of regions higher
+            Set_Y (Position, Get_Y (Position) - 1);
+         end loop;
+      end Add_Line_Bottom_To_Top;
+
+      Pool     : Position_Pool;
+      Iterator : Position_Iterator;
+      Area     : Vis.Absolute.Rectangle_2d;
+      Min_Y    : Vis.Absolute_Int;
+      Max_Y    : Vis.Absolute_Int;
+   begin
+      if Vis.Absolute.Get_X (Start_Point) = Vis.Absolute.Get_X (End_Point) then
+         --  Vertical line can be treated as rectangle
+         Vis.Absolute.Set_Left
+           (Area, Vis.Absolute.Get_X (Start_Point) - (Thickness + 1) / 2);
+         Vis.Absolute.Set_Right
+           (Area, Vis.Absolute.Get_X (Start_Point) + (Thickness + 1) / 2);
+         Set_Min_Max
+           (Value_1 => Vis.Absolute.Get_Y (Start_Point),
+            Value_2 => Vis.Absolute.Get_Y (End_Point),
+            Min     => Min_Y,
+            Max     => Max_Y);
+         Vis.Absolute.Set_Top (Area, Min_Y - (Thickness + 1) / 2);
+         Vis.Absolute.Set_Bottom (Area, Max_Y + (Thickness + 1) / 2);
+
+         Pool := Create_Position_Pool_From_Area
+           (Manager, Combine_Rectangle (Start_Point, End_Point));
+         Make_Position_Iterator (Pool, Iterator);
+         while Has_More (Iterator) loop
+            Hit (Get_Current (Iterator));
+            Next (Iterator);
+         end loop;
+
+      else
+         if Vis.Absolute.Get_Y (Start_Point) <=
+           Vis.Absolute.Get_Y (End_Point) then
+
+            Add_Line_Bottom_To_Top (Start_Point, End_Point);
+         else
+            Add_Line_Bottom_To_Top (End_Point, Start_Point);
+         end if;
+      end if;
+   end Add_Lines_Positions;
+
    procedure Insert_Edge
      (Manager : in out Region_Manager;
       Edge    : in     Vis_Edge_Id) is
+
+      Positions : Position_Sets.Set := Position_Sets.Empty_Set;
+
+      procedure Hit_Position
+        (Position : in     Region_Position) is
+
+         Inserted  : Boolean;
+         Region    : Region_Id;
+      begin
+         Position_Sets.Insert
+           (A_Set   => Positions,
+            Element => Position,
+            Is_New  => Inserted);
+
+         if Inserted then
+            Get_Region
+              (Manager  => Manager,
+               Position => Position,
+               Region   => Region);
+
+            Region_Lists.Attach (Region, Edge.Regions);
+            Add_Edge_To_Region (Region, Edge);
+            Add_Edge_Pollution (Region, Edge);
+         end if;
+      end Hit_Position;
+
+      procedure Add_Edge_Line_Positions is new Add_Lines_Positions
+        (Hit => Hit_Position);
+
+      Pool     : Position_Pool;
+      Iterator : Position_Iterator;
    begin
-      raise Unimplemented;
+      for I in Edge.Points'First .. Edge.Points'Last - 1 loop
+         Add_Edge_Line_Positions
+           (Manager     => Manager,
+            Thickness   => Edge.Thickness,
+            Start_Point => Edge.Points (I),
+            End_Point   => Edge.Points (I + 1));
+      end loop;
+      Add_Edge_Line_Positions
+        (Manager     => Manager,
+         Thickness   => Edge.Thickness,
+         Start_Point => Edge.Left_Arrow_Point,
+         End_Point   => Edge.Points (Edge.Points'Last));
+      Add_Edge_Line_Positions
+        (Manager     => Manager,
+         Thickness   => Edge.Thickness,
+         Start_Point => Edge.Right_Arrow_Point,
+         End_Point   => Edge.Points (Edge.Points'Last));
+
+      if Has_Text_Area (Edge) then
+         Pool := Create_Position_Pool_From_Area (Manager, Edge.Text_Area);
+         Make_Position_Iterator (Pool, Iterator);
+         while Has_More (Iterator) loop
+            Hit_Position (Get_Current (Iterator));
+         end loop;
+      end if;
+
+      Position_Sets.Destroy (Positions);
    end Insert_Edge;
 
    procedure Drop_Edge
