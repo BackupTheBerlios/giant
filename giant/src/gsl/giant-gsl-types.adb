@@ -20,9 +20,9 @@
 --
 -- First Author: Gerrit Schulz
 --
--- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.18 $
--- $Author: schulzgt $
--- $Date: 2003/09/23 17:20:36 $
+-- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.19 $
+-- $Author: keulsn $
+-- $Date: 2003/10/05 20:49:11 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Tags;
@@ -36,8 +36,8 @@ package body Giant.Gsl.Types is
      (Var : in out Gsl_Type) is
    begin
       if Var = Gsl_Null then
-         null;
-      
+        null;
+
       elsif Var'Tag = Gsl_Node_Id_Record'Tag then
          Destroy (Gsl_Node_Id (Var));
 
@@ -249,7 +249,7 @@ package body Giant.Gsl.Types is
         (Gsl_Edge_Id_Record, Gsl_Edge_Id);
 
    begin
-      Free (Object);      
+      Free (Object);
    end Destroy;
 
 ------------------------------------------------------------------------------
@@ -311,7 +311,7 @@ package body Giant.Gsl.Types is
    begin
       Var := new Gsl_Node_Set_Record;
       Var.all := Object.all;
-      Var.Value :=  Giant.Graph_Lib.Node_Id_Sets.Copy (Object.Value); 
+      Var.Value :=  Giant.Graph_Lib.Node_Id_Sets.Copy (Object.Value);
       return Gsl_Type (Var);
    end Copy;
 
@@ -327,14 +327,14 @@ package body Giant.Gsl.Types is
       Giant.Graph_Lib.Node_Id_Sets.Destroy (Object.Value);
       Free (Object);
    end Destroy;
- 
+
 ------------------------------------------------------------------------------
 -- Gsl_Edge_Set
 
    ---------------------------------------------------------------------------
    --
    function Create_Gsl_Edge_Set
-     (Value : Giant.Graph_Lib.Edge_Id_Set) 
+     (Value : Giant.Graph_Lib.Edge_Id_Set)
       return Gsl_Edge_Set is
 
       Var : Gsl_Edge_Set;
@@ -387,7 +387,7 @@ package body Giant.Gsl.Types is
    begin
       Var := new Gsl_Edge_Set_Record;
       Var.all := Object.all;
-      Var.Value :=  Giant.Graph_Lib.Edge_Id_Sets.Copy (Object.Value); 
+      Var.Value :=  Giant.Graph_Lib.Edge_Id_Sets.Copy (Object.Value);
       return Gsl_Type (Var);
    end Copy;
 
@@ -450,7 +450,7 @@ package body Giant.Gsl.Types is
      (Var   : Gsl_String;
       Value : String) is
    begin
-      Var.Value := Value; 
+      Var.Value := Value;
    end Set_Value;
 
    ---------------------------------------------------------------------------
@@ -537,7 +537,7 @@ package body Giant.Gsl.Types is
       Var.all := Object.all;
       return Gsl_Type (Var);
    end;
-      
+
    ---------------------------------------------------------------------------
    --
    procedure Destroy
@@ -559,7 +559,7 @@ package body Giant.Gsl.Types is
    begin
       return Create_Gsl_Natural (0);
    end Create_Gsl_Natural;
- 
+
    ---------------------------------------------------------------------------
    --
    function Create_Gsl_Natural
@@ -572,7 +572,7 @@ package body Giant.Gsl.Types is
       Var.Value := Value;
       return Var;
    end Create_Gsl_Natural;
- 
+
    ---------------------------------------------------------------------------
    --
    function Is_Gsl_Natural
@@ -623,7 +623,7 @@ package body Giant.Gsl.Types is
    --
    procedure Destroy
      (Object : in out Gsl_Natural) is
-   
+
       procedure Free is new Ada.Unchecked_Deallocation
         (Gsl_Natural_Record, Gsl_Natural);
 
@@ -670,7 +670,7 @@ package body Giant.Gsl.Types is
    begin
       return Var.List_Size;
    end Get_List_Size;
-	   
+
    ---------------------------------------------------------------------------
    --
    function Get_Value_At
@@ -689,7 +689,7 @@ package body Giant.Gsl.Types is
       Value    : Gsl_Type) is
    begin
       Var.Value (Position) := Value;
-   end Set_Value_At; 
+   end Set_Value_At;
 
    ---------------------------------------------------------------------------
    --
@@ -726,13 +726,13 @@ package body Giant.Gsl.Types is
    --
    function Create_Gsl_Var_Reference
      (Ref_Type : in Reference_Type;
-      Ref_Name : in String;
+      Ref_Name : in Gsl_Identifiers.Identifier_Type;
       Context  : in String := "")
       return Gsl_Var_Reference is
 
       Var : Gsl_Var_Reference;
    begin
-      Var := new Gsl_Var_Reference_Record (Ref_Name'Length, Context'Length);
+      Var := new Gsl_Var_Reference_Record (Context'Length);
       Var.Ref_Type := Ref_Type;
       Var.Ref_Name := Ref_Name;
       Var.Context  := Context;
@@ -782,7 +782,7 @@ package body Giant.Gsl.Types is
    --
    function Get_Ref_Name
      (Var : Gsl_Var_Reference)
-      return String is
+      return Gsl_Identifiers.Identifier_Type is
    begin
       return Var.Ref_Name;
    end;
@@ -804,8 +804,7 @@ package body Giant.Gsl.Types is
 
       Var : Gsl_Var_Reference;
    begin
-      Var := new Gsl_Var_Reference_Record
-        (Object.Ref_Name'Length, Object.Context'Length);
+      Var := new Gsl_Var_Reference_Record (Object.Context'Length);
       Var.all := Object.all;
       return Gsl_Type (Var);
    end Copy;
@@ -937,7 +936,7 @@ package body Giant.Gsl.Types is
       Var.all := Object.all;
       return Gsl_Type (Var);
    end Copy;
-   
+
    ---------------------------------------------------------------------------
    --
    procedure Destroy
@@ -976,5 +975,5 @@ package body Giant.Gsl.Types is
          return False;
       end if;
    end Is_Gsl_Object_Set;
-	   
+
 end Giant.Gsl.Types;

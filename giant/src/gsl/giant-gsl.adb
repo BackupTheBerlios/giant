@@ -21,8 +21,8 @@
 -- First Author: Gerrit Schulz
 --
 -- $RCSfile: giant-gsl.adb,v $
--- $Author: schulzgt $
--- $Date: 2003/09/02 09:22:46 $
+-- $Author: keulsn $
+-- $Date: 2003/10/05 20:49:11 $
 --
 
 -- from Ada
@@ -122,13 +122,5 @@ package body Giant.Gsl is
       return "Null_Node";
    end Syntax_Node_Image;
 
-   ---------------------------------------------------------------------------
-   -- hash function for Gsl_Var_Hashed_Mappings
-   function Gsl_Var_Hash
-     (K : Unbounded_String)
-      return Integer is
-   begin
-      return String_Hash (To_String (K));
-   end Gsl_Var_Hash;
 
 end Giant.Gsl;

@@ -1,5 +1,6 @@
 with Giant.Gsl, Giant.Gsl.Syntax_Tree, Giant.Gsl.Types;
 use  Giant.Gsl, Giant.Gsl.Syntax_Tree, Giant.Gsl.Types;
+with Giant.Gsl_Identifiers;
 
 with Ada.Strings.Unbounded;
 use  Ada.Strings.Unbounded;

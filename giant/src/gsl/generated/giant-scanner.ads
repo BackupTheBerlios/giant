@@ -4,9 +4,9 @@ with Text_IO; use Text_IO;
 -- GSL Scanner rules
 -- Compile using aflex, use scanner.aflex as parser
 --
--- $Revision: 1.1 $
--- $Date: 2003/06/30 15:51:07 $
--- $Author: schulzgt $
+-- $Revision: 1.2 $
+-- $Date: 2003/10/05 20:49:11 $
+-- $Author: keulsn $
 --
 -- First Author: keulsn
 --

@@ -21,8 +21,8 @@
 -- First Author: Gerrit Schulz
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
--- $Author: schulzgt $
--- $Date: 2003/09/23 17:20:36 $
+-- $Author: keulsn $
+-- $Date: 2003/10/05 20:49:10 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -75,7 +75,7 @@ package body Giant.Gsl.Runtime is
       then
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
            "Script 'set': Gsl_Var_Reference expected.");
-      
+
       elsif Get_Ref_Type (Gsl_Var_Reference (Var)) = Gsl.Types.Var then
          if Is_Gsl_Var_Reference (Value) then
             if Get_Activation_Record_Level
@@ -84,29 +84,30 @@ package body Giant.Gsl.Runtime is
               (Get_Ref_Name (Gsl_Var_Reference (Value)))
             then
                Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
-                 "Script 'set': Operation not allowed. " & 
+                 "Script 'set': Operation not allowed. " &
                  "Gsl_Var_Reference migth lead to data corruption.");
-            end if; 
+            end if;
          end if;
          if Is_Gsl_Script_Reference (Value) then
             if Get_Script_Type (Gsl_Script_Reference (Value)) = Gsl_Script
-            then            
+            then
                if Get_Activation_Record_Level
                  (Get_Ref_Name (Gsl_Var_Reference (Var))) >
                   Get_Activation_Record_Level
                  (Get_Activation_Record (Gsl_Script_Reference (Value)))
                then
                   Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
-                    "Script 'set': Operation not allowed. " & 
+                    "Script 'set': Operation not allowed. " &
                     "Gsl_Script_Reference migth lead to data corruption.");
-               end if; 
+               end if;
             end if;
          end if;
          Set_Var (Get_Ref_Name (Gsl_Var_Reference (Var)), Value);
-      
+
       elsif Get_Ref_Type (Gsl_Var_Reference (Var)) = Gsl.Types.Subgraph then
          if Is_Gsl_Object_Set (Value) then
-            Sub := Create (Get_Ref_Name (Gsl_Var_Reference (Var)));
+            Sub := Create (Gsl_Identifiers.Get_Name
+                           (Get_Ref_Name (Gsl_Var_Reference (Var))));
             Add_Node_Set (Sub, Get_Value (Gsl_Node_Set
               (Get_Value_At (Gsl_List (Value), 1))));
             Add_Edge_Set (Sub, Get_Value (Gsl_Edge_Set
@@ -119,7 +120,8 @@ package body Giant.Gsl.Runtime is
 
       elsif Get_Ref_Type (Gsl_Var_Reference (Var)) = Gsl.Types.Selection then
          if Is_Gsl_Object_Set (Value) then
-            Sel := Create (Get_Ref_Name (Gsl_Var_Reference (Var)));
+            Sel := Create (Gsl_Identifiers.Get_Name
+                           (Get_Ref_Name (Gsl_Var_Reference (Var))));
             Add_Node_Set (Sel, Get_Value (Gsl_Node_Set
               (Get_Value_At (Gsl_List (Value), 1))));
             Add_Edge_Set (Sel, Get_Value (Gsl_Edge_Set
@@ -158,11 +160,11 @@ package body Giant.Gsl.Runtime is
 
       elsif Get_Ref_Type (Gsl_Var_Reference (Ref)) = Gsl.Types.Subgraph then
          return Gsl.Processors.Get_Subgraph
-           (Get_Ref_Name (Gsl_Var_Reference (Ref)));
+           (Gsl_Identifiers.Get_Name (Get_Ref_Name (Gsl_Var_Reference (Ref))));
 
       elsif Get_Ref_Type (Gsl_Var_Reference (Ref)) = Gsl.Types.Selection then
          return Gsl.Processors.Get_Selection
-           (Get_Ref_Name (Gsl_Var_Reference (Ref)),
+           (Gsl_Identifiers.Get_Name (Get_Ref_Name (Gsl_Var_Reference (Ref))),
             Get_Ref_Context (Gsl_Var_Reference (Ref)));
       end if;
       return Gsl_Null;
@@ -656,7 +658,7 @@ package body Giant.Gsl.Runtime is
       exception
          when GNAT.Regpat.Expression_Error =>
            Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
-             "Script 'in_regexp': Invalid regular expression."); 
+             "Script 'in_regexp': Invalid regular expression.");
    end Runtime_In_Regexp;
 
    ---------------------------------------------------------------------------
@@ -1686,7 +1688,7 @@ package body Giant.Gsl.Runtime is
          Destroy (Selection);
       else
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
-           "Script 'remove_from_window': Gsl_String and " & 
+           "Script 'remove_from_window': Gsl_String and " &
            "Gsl_Object_Set expected.");
       end if;
       return Gsl_Null;

@@ -20,8 +20,8 @@
 -- First Author: Gerrit Schulz
 --
 -- $RCSfile: giant-gsl-types.ads,v $
--- $Author: schulzgt $
--- $Date: 2003/09/23 17:20:36 $
+-- $Author: keulsn $
+-- $Date: 2003/10/05 20:49:11 $
 --
 -- This package implements the datatypes used in GSL.
 -- A detailed description can be found in the GSL specification.
@@ -43,7 +43,7 @@ package Giant.Gsl.Types is
    --
    -- Parameters:
    --   Var - the type to destroy
-   procedure Destroy_Gsl_Type 
+   procedure Destroy_Gsl_Type
      (Var : in out Gsl_Type);
 
    function Copy_Gsl_Type
@@ -67,7 +67,7 @@ package Giant.Gsl.Types is
    function Create_Gsl_Node_Id
      (Value : Giant.Graph_Lib.Node_Id)
       return Gsl_Node_Id;
-   
+
    ---------------------------------------------------------------------------
    --
    function Is_Gsl_Node_Id
@@ -85,7 +85,7 @@ package Giant.Gsl.Types is
    procedure Set_Value
      (Var   : Gsl_Node_Id;
       Value : Giant.Graph_Lib.Node_Id);
- 
+
    ---------------------------------------------------------------------------
    --
    function Copy
@@ -231,14 +231,14 @@ package Giant.Gsl.Types is
    -- Gsl_String
    ---------------------------------------------------------------------------
 
-   type Gsl_String_Record (Size : Natural) is new 
+   type Gsl_String_Record (Size : Natural) is new
      Gsl_Type_Record with private;
    type Gsl_String is access all Gsl_String_Record;
 
    ---------------------------------------------------------------------------
    --
    function Create_Gsl_String
-     (Value : String) 
+     (Value : String)
       return Gsl_String;
 
    ---------------------------------------------------------------------------
@@ -414,17 +414,16 @@ package Giant.Gsl.Types is
 
    type Reference_Type is (Var, Subgraph, Selection);
    type Gsl_Var_Reference_Record
-     (Size         : Natural;
-      Context_Size : Natural) is new Gsl_Type_Record with private;
+     (Context_Size : Natural) is new Gsl_Type_Record with private;
    type Gsl_Var_Reference is access all Gsl_Var_Reference_Record;
 
    ---------------------------------------------------------------------------
    --
    function Create_Gsl_Var_Reference
      (Ref_Type : in Reference_Type;
-      Ref_Name : in String;
+      Ref_Name : in Gsl_Identifiers.Identifier_Type;
       Context  : in String := "")
-      return Gsl_Var_Reference;   
+      return Gsl_Var_Reference;
 
    ---------------------------------------------------------------------------
    --
@@ -448,7 +447,7 @@ package Giant.Gsl.Types is
    --
    function Get_Ref_Name
      (Var : in Gsl_Var_Reference)
-      return String;
+      return Gsl_Identifiers.Identifier_Type;
 
    ---------------------------------------------------------------------------
    --
@@ -487,7 +486,7 @@ package Giant.Gsl.Types is
    --
    function Create_Gsl_Script_Reference
      (Parameter_List : Syntax_Node;
-      Script_Node    : Syntax_Node) 
+      Script_Node    : Syntax_Node)
       return Gsl_Script_Reference;
 
    ---------------------------------------------------------------------------
@@ -506,7 +505,7 @@ package Giant.Gsl.Types is
    --
    function Get_Script_Type
      (Object : Gsl_Script_Reference)
-      return Gsl_Script_Type; 
+      return Gsl_Script_Type;
 
    ---------------------------------------------------------------------------
    --
@@ -531,21 +530,21 @@ package Giant.Gsl.Types is
    procedure Set_Activation_Record
      (Object : Gsl_Script_Reference;
       AR     : Activation_Record);
-   
+
    ---------------------------------------------------------------------------
    --
    function Get_Gsl_Runtime
      (Object : Gsl_Script_Reference)
       return Runtime_Function;
 
-   
+
    ---------------------------------------------------------------------------
    --
    function Copy
      (Object : access Gsl_Script_Reference_Record)
       return Gsl_Type;
 
-   
+
    ---------------------------------------------------------------------------
    --
    procedure Destroy
@@ -554,9 +553,9 @@ package Giant.Gsl.Types is
    ---------------------------------------------------------------------------
    -- others
    ---------------------------------------------------------------------------
-   
+
    ---------------------------------------------------------------------------
-   --   
+   --
    function Is_Gsl_Object_Set
      (Var : Gsl_Type)
       return Boolean;
@@ -573,14 +572,14 @@ private
       record
          Value : Giant.Graph_Lib.Node_Id;
       end record;
-   
+
    ---------------------------------------------------------------------------
    -- Gsl_Edge_Id
    type Gsl_Edge_Id_Record is new Gsl_Type_Record with
       record
          Value : Giant.Graph_Lib.Edge_Id;
       end record;
-   
+
    ---------------------------------------------------------------------------
    -- Gsl_Node_Set
    type Gsl_Node_Set_Record is new Gsl_Type_Record with
@@ -608,14 +607,14 @@ private
       record
          Value : Boolean;
       end record;
-   
+
    ---------------------------------------------------------------------------
    -- Gsl_Natural
    type Gsl_Natural_Record is new Gsl_Type_Record with
       record
          Value : Natural;
       end record;
-   
+
    ---------------------------------------------------------------------------
    -- Gsl_List
    type Gsl_List_Record (Size : Natural) is new Gsl_Type_Record with
@@ -627,11 +626,10 @@ private
    ---------------------------------------------------------------------------
    -- Gsl_Var_Reference
    type Gsl_Var_Reference_Record
-     (Size         : Natural;
-      Context_Size : Natural) is new Gsl_Type_Record with
+     (Context_Size : Natural) is new Gsl_Type_Record with
       record
          Ref_Type : Reference_Type;
-         Ref_Name : String (1 .. Size);
+         Ref_Name : Gsl_Identifiers.Identifier_Type;
          Context  : String (1 .. Context_Size);
       end record;
 

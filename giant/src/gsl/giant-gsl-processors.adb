@@ -21,8 +21,8 @@
 -- First Author: Gerrit Schulz
 --
 -- $RCSfile: giant-gsl-processors.adb,v $
--- $Author: schulzgt $
--- $Date: 2003/09/23 17:20:36 $
+-- $Author: keulsn $
+-- $Date: 2003/10/05 20:49:10 $
 --
 
 with Ada.Exceptions;
@@ -41,15 +41,15 @@ package body Giant.Gsl.Processors is
 
    ---------------------------------------------------------------------------
    --
-   procedure Execute 
+   procedure Execute
      (Cmd : Syntax_Node) is
 
       use Giant.Controller;
       use Giant.Gsl.Syntax_Tree;
-      Gsl_Compiler    : Gsl.Compilers.Compiler := 
+      Gsl_Compiler    : Gsl.Compilers.Compiler :=
                         Gsl.Interpreters.Get_Compiler;
-      Execution_Stack : Execution_Stacks.Stack := 
-                        Gsl.Interpreters.Get_Execution_Stack; 
+      Execution_Stack : Execution_Stacks.Stack :=
+                        Gsl.Interpreters.Get_Execution_Stack;
       Result_Stack    : Result_Stacks.Stack :=
                         Gsl.Interpreters.Get_Result_Stack;
       AR              : Gsl.Activation_Record;
@@ -93,12 +93,16 @@ package body Giant.Gsl.Processors is
             -- Default_Logger.Debug ("=== GSL COMMAND: Global_Var");
             Lit := Get_Literal (Cmd);
             if Get_Ref_Type (Gsl_Var_Reference (Lit)) = Subgraph then
-               Result_Stacks.Push (Result_Stack, Get_Subgraph (Get_Ref_Name
-                 (Gsl_Var_Reference (Lit))));
+               Result_Stacks.Push
+                 (Result_Stack,
+                  Get_Subgraph (Gsl_Identifiers.Get_Name
+                                (Get_Ref_Name (Gsl_Var_Reference (Lit)))));
             elsif Get_Ref_Type (Gsl_Var_Reference (Lit)) = Selection then
-               Result_Stacks.Push (Result_Stack, Get_Selection
-                 (Get_Ref_Name (Gsl_Var_Reference (Lit)),
-                  Gsl.Interpreters.Get_Current_Context));
+               Result_Stacks.Push
+                 (Result_Stack,
+                  Get_Selection (Gsl_Identifiers.Get_Name
+                                 (Get_Ref_Name (Gsl_Var_Reference (Lit))),
+                                 Gsl.Interpreters.Get_Current_Context));
             end if;
 
          ---------------------------------------------------------------------
@@ -122,10 +126,10 @@ package body Giant.Gsl.Processors is
             -- Default_Logger.Debug ("=== GSL COMMAND: Global_Ref");
             Lit := Copy (Get_Literal (Cmd));
             if Get_Ref_Type (Gsl_Var_Reference (Lit)) = Subgraph then
-               Result_Stacks.Push (Result_Stack, 
+               Result_Stacks.Push (Result_Stack,
                Get_Subgraph_Reference (Gsl_Var_Reference (Lit)));
             elsif Get_Ref_Type (Gsl_Var_Reference (Lit)) = Selection then
-               Result_Stacks.Push (Result_Stack, 
+               Result_Stacks.Push (Result_Stack,
                Get_Selection_Reference
                  (Gsl_Var_Reference (Lit),
                   Gsl.Interpreters.Get_Current_Context));
@@ -214,7 +218,7 @@ package body Giant.Gsl.Processors is
                Destroy_Gsl_Type (Res1);
             else
                Destroy_Gsl_Type (Res1);
-               Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
+               Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
                  "Script 'loop': Gsl_Boolean expected.");
             end if;
 
@@ -280,12 +284,12 @@ package body Giant.Gsl.Processors is
                Result_Stacks.Push (Result_Stack,
                  Get_Gsl_Runtime (Gsl_Script_Reference (Script))
                  (Gsl_List (Params)));
-               -- free the memory 
+               -- free the memory
                Destroy_Gsl_Type (Params);
                Destroy_Gsl_Type (Script);
          end case;
       else
-         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
            "Runtime error: Gsl_Script_Reference and Gsl_List expected.");
       end if;
    end Script_Activation_Cmd;
@@ -321,14 +325,14 @@ package body Giant.Gsl.Processors is
             Ref := Get_Value_At (Gsl_List (Formal), i);
             if Is_Gsl_Var_Reference (Ref) then
                Gsl.Interpreters.Set_Var
-                 (Get_Ref_Name (Gsl_Var_Reference (Ref)), 
+                 (Get_Ref_Name (Gsl_Var_Reference (Ref)),
                   Copy (Get_Value_At (Gsl_List (Params), i)));
              else
                 Ada.Exceptions.Raise_Exception
                   (Gsl_Runtime_Error'Identity, "Gsl_Var_Reference expected.");
              end if;
          end loop;
-         -- push code to destroy restore the activation record 
+         -- push code to destroy restore the activation record
          -- when script execution is finished
          Execution_Stacks.Push (Execution_Stack,
            Get_Execution_Stack (Gsl_Compiler,
@@ -369,7 +373,7 @@ package body Giant.Gsl.Processors is
          return Gsl_Type (Res_List);
       else
          return Gsl_Null;
-      end if; 
+      end if;
    end Get_Subgraph;
 
    --------------------------------------------------------------------------
@@ -377,9 +381,12 @@ package body Giant.Gsl.Processors is
    function Get_Subgraph_Reference
      (Ref : Gsl_Var_Reference)
       return Gsl_Type is
+
+      Name : String := Gsl_Identifiers.Get_Name (Get_Ref_Name (Ref));
    begin
-      if not Controller.Exists_Subgraph (Get_Ref_Name (Ref)) then
-         Controller.Create_Subgraph (Get_Ref_Name (Ref));
+      if not Controller.Exists_Subgraph (Name) then
+
+         Controller.Create_Subgraph (Name);
       end if;
       return Gsl_Type (Copy (Ref));
    end Get_Subgraph_Reference;
@@ -406,7 +413,7 @@ package body Giant.Gsl.Processors is
            (Create_Gsl_Node_Set (Graph_Lib.Node_Id_Sets.Copy
              (Get_All_Nodes (Sel)))));
          Set_Value_At (Res_List, 2, Gsl_Type
-           (Create_Gsl_Edge_Set (Graph_Lib.Edge_Id_Sets.Copy 
+           (Create_Gsl_Edge_Set (Graph_Lib.Edge_Id_Sets.Copy
              (Get_All_Edges (Sel)))));
          return Gsl_Type (Res_List);
       else
@@ -420,13 +427,14 @@ package body Giant.Gsl.Processors is
      (Ref     : Gsl_Var_Reference;
       Context : String)
       return Gsl_Type is
+
+      Name : String := Gsl_Identifiers.Get_Name (Get_Ref_Name (Ref));
    begin
       if Context = "" then
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
            "Runtime error: No context set.");
-      elsif not Controller.Exists_Selection (Context, Get_Ref_Name (Ref))
-      then
-         Controller.Create_Selection (Context, Get_Ref_Name (Ref));
+      elsif not Controller.Exists_Selection (Context, Name) then
+         Controller.Create_Selection (Context, Name);
       end if;
       return Gsl_Type (Create_Gsl_Var_Reference
         (Selection, Get_Ref_Name (Ref), Context));

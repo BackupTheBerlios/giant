@@ -10,6 +10,7 @@ package Giant.Parser.Tokens is
   Literal_Natural : Gsl_Natural;
   Literal_String  : Gsl_String;
   Var_Reference   : Gsl_Var_Reference;
+  Identifier      : Gsl_Identifiers.Identifier_Type;
   Script_Ref      : Gsl_Script_Reference;
 
     YYLVal, YYVal : YYSType; 

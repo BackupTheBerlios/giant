@@ -301,60 +301,60 @@ begin
                 case yy.rule_id is
 
 when  1 =>
---#line  55
+--#line  56
  Root_Node := 
 yy.value_stack(yy.tos); 
 
 when  2 =>
---#line  58
+--#line  59
  
 yyval := 
 yy.value_stack(yy.tos); 
 
 when  3 =>
---#line  60
+--#line  61
  
 yyval := 
 yy.value_stack(yy.tos); 
 
 when  4 =>
---#line  62
+--#line  63
  
 yyval := 
 yy.value_stack(yy.tos); 
 
 when  5 =>
---#line  64
+--#line  65
  
 yyval := 
 yy.value_stack(yy.tos); 
 
 when  6 =>
---#line  66
+--#line  67
  
 yyval := 
 yy.value_stack(yy.tos); 
 
 when  7 =>
---#line  68
+--#line  69
  
 yyval := 
 yy.value_stack(yy.tos); 
 
 when  8 =>
---#line  70
+--#line  71
  
 yyval := 
 yy.value_stack(yy.tos); 
 
 when  9 =>
---#line  72
+--#line  73
  
 yyval := 
 yy.value_stack(yy.tos); 
 
 when  10 =>
---#line  74
+--#line  75
  
                         
 yyval := Create_Node (Script_Decl, 
@@ -368,62 +368,62 @@ yyval, Gsl_Type (Script_Ref));
                      
 
 when  11 =>
---#line  80
+--#line  81
  
 yyval := Create_Node (Script_Activation, 
 yy.value_stack(yy.tos-1), 
 yy.value_stack(yy.tos)); 
 
 when  12 =>
---#line  83
+--#line  84
  
 yyval := Create_Node (List, 
 yy.value_stack(yy.tos), Null_Node); 
 
 when  13 =>
---#line  85
+--#line  86
  
 yyval := Create_Node (List, 
 yy.value_stack(yy.tos-2), 
 yy.value_stack(yy.tos)); 
 
 when  14 =>
---#line  88
+--#line  89
  
 yyval := Create_Node (List, Null_Node, Null_Node); 
 
 when  15 =>
---#line  90
+--#line  91
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
 when  16 =>
---#line  93
+--#line  94
  
 yyval := Create_Node (Sequence, 
 yy.value_stack(yy.tos-1), Null_Node); 
 
 when  17 =>
---#line  95
+--#line  96
  
 yyval := Create_Node (Sequence, 
 yy.value_stack(yy.tos-2), 
 yy.value_stack(yy.tos)); 
 
 when  18 =>
---#line  98
+--#line  99
  
 yyval := Create_Node (Sequence, Null_Node, Null_Node); 
 
 when  19 =>
---#line  100
+--#line  101
  
 yyval := 
 yy.value_stack(yy.tos-1); 
 
 when  20 =>
---#line  104
+--#line  105
  
                         
 yyval := Create_Node (Literal, Null_Node, Null_Node);
@@ -433,7 +433,7 @@ yyval, Gsl_Type (Literal_Boolean));
                      
 
 when  21 =>
---#line  110
+--#line  111
  
                         
 yyval := Create_Node (Literal, Null_Node, Null_Node);
@@ -443,7 +443,7 @@ yyval, Gsl_Type (Literal_Boolean));
                      
 
 when  22 =>
---#line  116
+--#line  117
  
                         
 yyval := Create_Node (Literal, Null_Node, Null_Node);
@@ -455,7 +455,7 @@ yyval, Gsl_Type (Literal_Natural));
                      
 
 when  23 =>
---#line  124
+--#line  125
  
                         
 yyval := Create_Node (Literal, Null_Node, Null_Node);
@@ -466,7 +466,7 @@ yyval, Gsl_Type (Literal_String));
                      
 
 when  24 =>
---#line  131
+--#line  132
  
                         
 yyval := Create_Node (Literal, Null_Node, Null_Node);
@@ -475,78 +475,92 @@ yyval, Gsl_Null);
                      
 
 when  25 =>
---#line  138
+--#line  139
 
                         
 yyval := Create_Node (Global_Var, Null_Node, Null_Node);
-                        Var_Reference := Create_Gsl_Var_Reference (Subgraph,
-                          (scanner_dfa.yytext));
+                        Identifier := Gsl_Identifiers.Get_Identifier
+                          (scanner_dfa.yytext);
+                        Var_Reference := Create_Gsl_Var_Reference
+                          (Subgraph, Identifier);
                         Set_Literal (
 yyval, Gsl_Type (Var_Reference));
                      
 
 when  26 =>
---#line  145
+--#line  148
  
                         
 yyval := Create_Node (Global_Var, Null_Node, Null_Node);
-                        Var_Reference := Create_Gsl_Var_Reference (Selection,
-                          (scanner_dfa.yytext));
+                        Identifier := Gsl_Identifiers.Get_Identifier
+                          (scanner_dfa.yytext);
+                        Var_Reference := Create_Gsl_Var_Reference
+                          (Selection, Identifier);
                         Set_Literal (
 yyval, Gsl_Type (Var_Reference));
                      
 
 when  27 =>
---#line  152
+--#line  157
  
                         
 yyval := Create_Node (Global_Ref, Null_Node, Null_Node);
-                        Var_Reference := Create_Gsl_Var_Reference (Subgraph,
-                          (scanner_dfa.yytext));
+                        Identifier := Gsl_Identifiers.Get_Identifier
+                          (scanner_dfa.yytext);
+                        Var_Reference := Create_Gsl_Var_Reference
+                          (Subgraph, Identifier);
                         Set_Literal (
 yyval, Gsl_Type (Var_Reference));
                      
 
 when  28 =>
---#line  159
+--#line  166
  
                         
 yyval := Create_Node (Global_Ref, Null_Node, Null_Node);
-                        Var_Reference := Create_Gsl_Var_Reference (Selection,
-                          (scanner_dfa.yytext));
+                        Identifier := Gsl_Identifiers.Get_Identifier
+                          (scanner_dfa.yytext);
+                        Var_Reference := Create_Gsl_Var_Reference
+                          (Selection, Identifier);
                         Set_Literal (
 yyval, Gsl_Type (Var_Reference));
                      
 
 when  29 =>
---#line  167
+--#line  176
  
                         
 yyval := Create_Node (Visible_Var, Null_Node, Null_Node);
-                        Var_Reference := Create_Gsl_Var_Reference (Var,
-                          (scanner_dfa.yytext));
+                        Identifier := Gsl_Identifiers.Get_Identifier
+                          (scanner_dfa.yytext);
+                        Var_Reference := Create_Gsl_Var_Reference
+                          (Var, Identifier);
                         Set_Literal (
 yyval, Gsl_Type (Var_Reference));
                      
 
 when  30 =>
---#line  174
+--#line  185
  
                         
 yyval := Create_Node (Visible_Ref, Null_Node, Null_Node);
-                        Var_Reference := Create_Gsl_Var_Reference (Var,
-                          (scanner_dfa.yytext));
+                        Identifier := Gsl_Identifiers.Get_Identifier
+                          (scanner_dfa.yytext);
+                        Var_Reference := Create_Gsl_Var_Reference
+                          (Var, Identifier);
                         Set_Literal (
 yyval, Gsl_Type (Var_Reference));
                      
 
 when  31 =>
---#line  181
+--#line  194
  
                         
 yyval := Create_Node (Var_Creation, Null_Node, Null_Node);
-                        Var_Reference := Create_Gsl_Var_Reference (Var,
-                          (scanner_dfa.yytext));
+                        Identifier := Gsl_Identifiers.Get_Identifier
+                          (scanner_dfa.yytext);
+                        Var_Reference := Create_Gsl_Var_Reference
+                          (Var, Identifier);
                         Set_Literal (
 yyval, Gsl_Type (Var_Reference));
                      

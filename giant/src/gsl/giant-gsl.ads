@@ -21,8 +21,8 @@
 -- First Author: Gerrit Schulz
 --
 -- $RCSfile: giant-gsl.ads,v $
--- $Author: schulzgt $
--- $Date: 2003/09/02 09:22:46 $
+-- $Author: keulsn $
+-- $Date: 2003/10/05 20:49:11 $
 --
 ------------------------------------------------------------------------------
 -- This package includes some global parts of the GSL implementation
@@ -34,9 +34,6 @@
 --   - instantiations of some packages for Bauhaus.Reuse
 --
 
--- from Ada
-with Ada.Strings.Unbounded;
-use  Ada.Strings.Unbounded;
 
 -- from Bauhaus.Reuse
 with Stacks_Unbounded;
@@ -46,6 +43,7 @@ pragma Elaborate_All (Hashed_Mappings);
 
 -- from Giant
 with Giant.Default_Logger;
+with Giant.Gsl_Identifiers;
 
 package Giant.Gsl is
 
@@ -101,7 +99,7 @@ package Giant.Gsl is
    --   String-representation of the object
    function Gsl_Type_Image
      (Object : Gsl_Type)
-      return String;   
+      return String;
 
    ---------------------------------------------------------------------------
    -- possible types of Syntax_Node
@@ -152,22 +150,10 @@ package Giant.Gsl is
    package Activation_Record_Stacks is new Stacks_Unbounded
      (Elem_Type => Activation_Record);
 
-   ---------------------------------------------------------------------------
-   -- instantiation of Hashed_Mappings for gsl variables
-   -- the hash function Gsl_Var_Hash uses String_Hash
-   --
-   -- Parameters:
-   --   K - key
-   -- Returns:
-   --   the hash value of K
-   function Gsl_Var_Hash
-     (K : Unbounded_String)
-      return Integer;
-
    package Gsl_Var_Hashed_Mappings is new Hashed_Mappings
-     (Key_Type => Unbounded_String,
+     (Key_Type   => Gsl_Identifiers.Identifier_Type,
       Value_Type => Gsl_Type,
-      Hash => Gsl_Var_Hash);
+      Hash       => Gsl_Identifiers.Hash);
 
 private
 

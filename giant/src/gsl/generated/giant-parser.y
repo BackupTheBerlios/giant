@@ -21,8 +21,8 @@
 -- First Author: Steffen Keul
 --
 -- $RCSfile: giant-parser.y,v $
--- $Author: schulzgt $
--- $Date: 2003/06/30 15:47:58 $
+-- $Author: keulsn $
+-- $Date: 2003/10/05 20:49:11 $
 --
 -- GSL Parser rules
 -- Use ayacc to generate code, needs scanner scanner.aflex
@@ -43,6 +43,7 @@
   Literal_Natural : Gsl_Natural;
   Literal_String  : Gsl_String;
   Var_Reference   : Gsl_Var_Reference;
+  Identifier      : Gsl_Identifiers.Identifier_Type;
   Script_Ref      : Gsl_Script_Reference;
 }
 
@@ -137,51 +138,65 @@ literal            : FALSE_T
 global_var         : SUBGRAPH_T '.' IDENTIFIER_T
                      {
                         $$ := Create_Node (Global_Var, Null_Node, Null_Node);
-                        Var_Reference := Create_Gsl_Var_Reference (Subgraph,
-                          (scanner_dfa.yytext));
+                        Identifier := Gsl_Identifiers.Get_Identifier
+                          (scanner_dfa.yytext);
+                        Var_Reference := Create_Gsl_Var_Reference
+                          (Subgraph, Identifier);
                         Set_Literal ($$, Gsl_Type (Var_Reference));
                      }
                    | SELECTION_T '.' IDENTIFIER_T
                      { 
                         $$ := Create_Node (Global_Var, Null_Node, Null_Node);
-                        Var_Reference := Create_Gsl_Var_Reference (Selection,
-                          (scanner_dfa.yytext));
+                        Identifier := Gsl_Identifiers.Get_Identifier
+                          (scanner_dfa.yytext);
+                        Var_Reference := Create_Gsl_Var_Reference
+                          (Selection, Identifier);
                         Set_Literal ($$, Gsl_Type (Var_Reference));
                      };
 global_ref         : VISIBLE_REF_T SUBGRAPH_T '.' IDENTIFIER_T
                      { 
                         $$ := Create_Node (Global_Ref, Null_Node, Null_Node);
-                        Var_Reference := Create_Gsl_Var_Reference (Subgraph,
-                          (scanner_dfa.yytext));
+                        Identifier := Gsl_Identifiers.Get_Identifier
+                          (scanner_dfa.yytext);
+                        Var_Reference := Create_Gsl_Var_Reference
+                          (Subgraph, Identifier);
                         Set_Literal ($$, Gsl_Type (Var_Reference));
                      }
                    | VISIBLE_REF_T SELECTION_T '.' IDENTIFIER_T
                      { 
                         $$ := Create_Node (Global_Ref, Null_Node, Null_Node);
-                        Var_Reference := Create_Gsl_Var_Reference (Selection,
-                          (scanner_dfa.yytext));
+                        Identifier := Gsl_Identifiers.Get_Identifier
+                          (scanner_dfa.yytext);
+                        Var_Reference := Create_Gsl_Var_Reference
+                          (Selection, Identifier);
                         Set_Literal ($$, Gsl_Type (Var_Reference));
                      };
 
 visible_var        : IDENTIFIER_T
                      { 
                         $$ := Create_Node (Visible_Var, Null_Node, Null_Node);
-                        Var_Reference := Create_Gsl_Var_Reference (Var,
-                          (scanner_dfa.yytext));
+                        Identifier := Gsl_Identifiers.Get_Identifier
+                          (scanner_dfa.yytext);
+                        Var_Reference := Create_Gsl_Var_Reference
+                          (Var, Identifier);
                         Set_Literal ($$, Gsl_Type (Var_Reference));
                      };
 visible_ref        : VISIBLE_REF_T IDENTIFIER_T
                      { 
                         $$ := Create_Node (Visible_Ref, Null_Node, Null_Node);
-                        Var_Reference := Create_Gsl_Var_Reference (Var,
-                          (scanner_dfa.yytext));
+                        Identifier := Gsl_Identifiers.Get_Identifier
+                          (scanner_dfa.yytext);
+                        Var_Reference := Create_Gsl_Var_Reference
+                          (Var, Identifier);
                         Set_Literal ($$, Gsl_Type (Var_Reference));
                      };
 var_creation       : '+' IDENTIFIER_T
                      { 
                         $$ := Create_Node (Var_Creation, Null_Node, Null_Node);
-                        Var_Reference := Create_Gsl_Var_Reference (Var,
-                          (scanner_dfa.yytext));
+                        Identifier := Gsl_Identifiers.Get_Identifier
+                          (scanner_dfa.yytext);
+                        Var_Reference := Create_Gsl_Var_Reference
+                          (Var, Identifier);
                         Set_Literal ($$, Gsl_Type (Var_Reference));
                      };
 
@@ -189,6 +204,7 @@ var_creation       : '+' IDENTIFIER_T
 %% -- next section will go before package statement in SPEC file
 with Giant.Gsl, Giant.Gsl.Syntax_Tree, Giant.Gsl.Types;
 use  Giant.Gsl, Giant.Gsl.Syntax_Tree, Giant.Gsl.Types;
+with Giant.Gsl_Identifiers;
 
 with Ada.Strings.Unbounded;
 use  Ada.Strings.Unbounded;
