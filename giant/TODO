@@ -1,21 +1,24 @@
 RELEASE
 
- * Set cursor in action mode
-
- * Select All
-
- * Select Nothing
- 
- * Catch exceptions when project is loaded via command line
-
- * Enhance GSL Dialog
-
- * Add Show Target / Source in edge menu
-
- * Add script hooks to context menus
+ * Pick button actions
 
  * Create directory on New Project
 
+ * Enhance GSL Dialog
+
+ * !Select All
+
+ * !Select Nothing
+ 
+ * Catch exceptions when project is loaded via command line
+
+ * !Show Target / Source in edge menu
+
+ * Add script hooks to context menus
+
  * Fix Vis_Style signal
 
- * Pick button actions
+LATER
+
+ * Set cursor in action mode
+

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window-actions.adb,v $, $Revision: 1.4 $
---  $Author: keulsn $
---  $Date: 2003/07/07 03:35:59 $
+--  $RCSfile: giant-main_window-actions.adb,v $, $Revision: 1.5 $
+--  $Author: squig $
+--  $Date: 2003/08/12 13:14:05 $
 --
 
 
@@ -52,17 +52,19 @@ package body Giant.Main_Window.Actions is
       Destroy (Action);
    end Cancel;
 
-   procedure Execute
+   function Execute
      (Action   : access Create_Selection_Action_Type;
       Window   : access Graph_Window.Graph_Window_Record'Class;
       Event    : in     Gdk.Event.Gdk_Event_Button;
       Location : in     Vis.Logic.Vector_2d)
+     return Boolean
    is
    begin
       Controller.Create_Selection_From_Subgraph
         (Action.Subgraph_Name,
          Vis_Windows.Get_Name (Graph_Window.Get_Vis_Window (Window)),
          Action.Subgraph_Name);
+      return True;
    end Execute;
 
 end Giant.Main_Window.Actions;

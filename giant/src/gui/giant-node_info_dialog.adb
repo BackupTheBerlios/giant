@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-node_info_dialog.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-node_info_dialog.adb,v $, $Revision: 1.8 $
 --  $Author: squig $
---  $Date: 2003/07/10 20:17:45 $
+--  $Date: 2003/08/12 13:14:05 $
 --
 
 with Interfaces.C.Strings;
@@ -35,8 +35,11 @@ with Gtk.Widget;
 with Gtk.Enums;
 with Gtkada.Types;
 
+with Giant.Gui_Manager;
+with Giant.Gui_Manager.Actions;
 with Giant.Gui_Utils;
 with Giant.Node_Annotation_Dialog;
+with Giant.Node_Info_Dialog.Actions;
 
 package body Giant.Node_Info_Dialog is
 
@@ -45,32 +48,26 @@ package body Giant.Node_Info_Dialog is
    ---------------------------------------------------------------------------
 
    procedure On_Annotate_Button_Clicked
-     (Source : access Gtk.Button.Gtk_Button_Record'Class)
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
-      Dialog : Node_Info_Dialog_Access
-        := Node_Info_Dialog_Access (Gtk.Widget.Get_Toplevel
-                                    (Gtk.Widget.Gtk_Widget (Source)));
+      Dialog : Node_Info_Dialog_Access := Node_Info_Dialog_Access (Source);
    begin
       Node_Annotation_Dialog.Show (Dialog.Node);
    end On_Annotate_Button_Clicked;
 
    procedure On_Pick_Button_Clicked
-     (Source : access Gtk.Button.Gtk_Button_Record'Class)
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
-      Dialog : Node_Info_Dialog_Access
-        := Node_Info_Dialog_Access (Gtk.Widget.Get_Toplevel
-                                    (Gtk.Widget.Gtk_Widget (Source)));
+      Dialog : Node_Info_Dialog_Access := Node_Info_Dialog_Access (Source);
+      Action : Actions.Pick_Node_Action_Access := Actions.Create (Dialog);
    begin
-      -- FIX: pick node
-      null;
+      Gui_Manager.Actions.Set_Global_Action (Action);
    end On_Pick_Button_Clicked;
 
    procedure On_Update_Button_Clicked
-     (Source : access Gtk.Button.Gtk_Button_Record'Class)
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
-      Dialog : Node_Info_Dialog_Access
-        := Node_Info_Dialog_Access (Gtk.Widget.Get_Toplevel
-                                    (Gtk.Widget.Gtk_Widget (Source)));
+      Dialog : Node_Info_Dialog_Access := Node_Info_Dialog_Access (Source);
    begin
       Set_Node (Dialog, Dialog.Node);
    end On_Update_Button_Clicked;
@@ -129,11 +126,14 @@ package body Giant.Node_Info_Dialog is
 
       --  buttons
       Add_Button (Dialog,
-                  New_Button (-"Annotate", On_Annotate_Button_Clicked'Access));
+                  New_Button (-"Annotate",
+                              On_Annotate_Button_Clicked'Access, Dialog));
       Add_Button (Dialog,
-                  New_Button (-"Update", On_Update_Button_Clicked'Access));
+                  New_Button (-"Update",
+                              On_Update_Button_Clicked'Access, Dialog));
       Add_Button (Dialog,
-                  New_Button (-"Pick", On_Pick_Button_Clicked'Access));
+                  New_Button (-"Pick",
+                              On_Pick_Button_Clicked'Access, Dialog));
    end;
 
    ---------------------------------------------------------------------------
@@ -150,7 +150,7 @@ package body Giant.Node_Info_Dialog is
    end Can_Hide;
 
    procedure Set_Node
-     (Dialog : access Node_Info_Dialog_Record'Class;
+     (Dialog : access Node_Info_Dialog_Record;
       Node   : in     Graph_Lib.Node_Id)
    is
       Row : Glib.Gint;

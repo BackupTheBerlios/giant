@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-node_info_dialog.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-node_info_dialog.ads,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/07/10 20:17:45 $
+--  $Date: 2003/08/12 13:14:05 $
 --
 ------------------------------------------------------------------------------
 --
@@ -56,7 +56,7 @@ package Giant.Node_Info_Dialog is
      (Dialog : access Node_Info_Dialog_Record'Class);
 
    procedure Set_Node
-     (Dialog : access Node_Info_Dialog_Record'Class;
+     (Dialog : access Node_Info_Dialog_Record;
       Node   : in     Graph_Lib.Node_Id);
 
    procedure Show

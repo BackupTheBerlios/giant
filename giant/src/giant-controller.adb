@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.79 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.80 $
 --  $Author: squig $
---  $Date: 2003/08/05 21:12:43 $
+--  $Date: 2003/08/12 13:14:05 $
 --
 
 with Ada.Strings.Unbounded;
@@ -1415,6 +1415,17 @@ package body Giant.Controller is
       Graph_Widgets.Zoom_To_All (Vis_Windows.Get_Graph_Widget (Window));
       Gui_Manager.Update_Zoom_Level (Window_Name);
    end Zoom_To_All;
+
+   procedure Zoom_To_Edge
+     (Window_Name : in String;
+      Edge        : in Graph_Lib.Edge_Id)
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+   begin
+      Graph_Widgets.Zoom_To_Edge (Vis_Windows.Get_Graph_Widget (Window), Edge);
+      Gui_Manager.Update_Zoom_Level (Window_Name);
+   end Zoom_To_Edge;
 
 end Giant.Controller;
 

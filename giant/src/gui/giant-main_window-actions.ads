@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window-actions.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-main_window-actions.ads,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/30 12:08:09 $
+--  $Date: 2003/08/12 13:14:05 $
 --
 --  Provides the main window. The main window is only instanciated once.
 --
@@ -41,18 +41,19 @@ package Giant.Main_Window.Actions is
 
    type Create_Selection_Action_Access is
      access all Create_Selection_Action_Type'Class;
-   
-   function Create 
-	 (Subgraph_Name : in String)
-	 return Create_Selection_Action_Access;
+
+   function Create
+     (Subgraph_Name : in String)
+     return Create_Selection_Action_Access;
 
    procedure Cancel
      (Action : access Create_Selection_Action_Type);
 
-   procedure Execute
+   function Execute
      (Action   : access Create_Selection_Action_Type;
       Window   : access Graph_Window.Graph_Window_Record'Class;
       Event    : in     Gdk.Event.Gdk_Event_Button;
-      Location : in     Vis.Logic.Vector_2d);
-      
+      Location : in     Vis.Logic.Vector_2d)
+     return Boolean;
+
 end Giant.Main_Window.Actions;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.44 $
---  $Author: schulzgt $
---  $Date: 2003/08/04 15:04:02 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.45 $
+--  $Author: squig $
+--  $Date: 2003/08/12 13:14:05 $
 --
 ------------------------------------------------------------------------------
 --
@@ -552,6 +552,10 @@ package Giant.Controller is
 
    procedure Zoom_To_All
      (Window_Name : in String);
+
+   procedure Zoom_To_Edge
+     (Window_Name : in String;
+      Edge        : in Graph_Lib.Edge_Id);
 
 private
 

@@ -20,13 +20,16 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.12 $
+--  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.13 $
 --  $Author: squig $
---  $Date: 2003/08/05 20:56:19 $
+--  $Date: 2003/08/12 13:14:05 $
 --
 
 with Ada.Unchecked_Conversion;
 with System;
+
+with Gdk.Types;
+with Glib;
 
 with Giant.Controller;
 with Giant.Dialogs;
@@ -71,6 +74,25 @@ package body Giant.Graph_Window.Callbacks is
       end if;
    end;
 
+   procedure On_Background_Select_All
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+   begin
+      -- FIX: implement
+      null;
+   end;
+
+   procedure On_Background_Select_Nothing
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
+      Selection : Graph_Lib.Selections.Selection
+        := Controller.Get_Current_Selection (Get_Window_Name (Window));
+   begin
+      Graph_Lib.Selections.Clear (Selection);
+      Update_Selection (Window, Graph_Lib.Selections.Get_Name (Selection));
+   end;
+
    ---------------------------------------------------------------------------
    --  Edge Menu Callbacks
    ---------------------------------------------------------------------------
@@ -78,7 +100,25 @@ package body Giant.Graph_Window.Callbacks is
    procedure On_Edge_Zoom
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
    begin
+      pragma Assert (Graph_Lib."/=" (Window.Current_Edge, null));
+      Controller.Zoom_To_Edge (Get_Window_Name (Window), Window.Current_Edge);
+   end;
+
+   procedure On_Edge_Show_Source
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+   begin
+      -- FIX: implement
+      null;
+   end;
+
+   procedure On_Edge_Show_Target
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+   begin
+      -- FIX: implement
       null;
    end;
 
@@ -90,15 +130,24 @@ package body Giant.Graph_Window.Callbacks is
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
       Event  : in     Graph_Widgets.Handlers.Button_Press_Action)
    is
+      use type Glib.Guint;
+      use type Gdk.Types.Gdk_Event_Type;
       use type Actions.Graph_Window_Action_Access;
 
       Window : Graph_Window_Access := Graph_Window_Access (Source);
    begin
-      if (Gui_Manager.Actions.Is_Action_Pending) then
-         Gui_Manager.Actions.Trigger (Window, null, Vis.Logic.Zero_2d);
-      elsif (Window.Local_Action /= null) then
-         Actions.Execute
-           (Window.Local_Action, Window, null, Vis.Logic.Zero_2d);
+      if Gdk.Event.Get_Button (Event.Event) = 1 then
+         if (Gui_Manager.Actions.Is_Action_Pending) then
+            Gui_Manager.Actions.Trigger (Window, Event.Event, Event.Location);
+         elsif (Graph_Window.Is_Local_Action_Pending (Window)) then
+            Trigger_Local_Action (Window, Event.Event, Event.Location);
+         end if;
+      elsif Gdk.Event.Get_Button (Event.Event) = 3 then
+         if (Gui_Manager.Actions.Is_Action_Pending) then
+            Gui_Manager.Actions.Cancel;
+         elsif (Graph_Window.Is_Local_Action_Pending (Window)) then
+            Cancel_Local_Action (Window);
+         end if;
       end if;
    end On_Action_Mode_Button_Pressed;
 
@@ -120,6 +169,7 @@ package body Giant.Graph_Window.Callbacks is
    is
       Window : Graph_Window_Access := Graph_Window_Access (Source);
    begin
+      Window.Current_Edge := Event.Edge;
       Gtk.Menu.Show_All (Window.Edge_Menu);
       Gtk.Menu.Popup (Window.Edge_Menu,
                       Button => Gdk.Event.Get_Button (Event.Event),
@@ -181,6 +231,7 @@ package body Giant.Graph_Window.Callbacks is
    is
       Window : Graph_Window_Access := Graph_Window_Access (Source);
    begin
+      pragma Assert (Graph_Lib."/=" (Window.Current_Node, null));
       Node_Info_Dialog.Show (Window.Current_Node);
    end;
 

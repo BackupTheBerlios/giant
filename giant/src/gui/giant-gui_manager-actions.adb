@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager-actions.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-gui_manager-actions.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/27 14:34:55 $
+--  $Date: 2003/08/12 13:14:05 $
 
 with Giant.Graph_Window;
 
@@ -37,7 +37,8 @@ package body Giant.Gui_Manager.Actions is
       Cancel;
 
       Gui_Manager.Set_Status (-"Please select the target window");
-      Pending_Action := Graph_Window.Actions.Graph_Window_Action_Access (Action);
+      Pending_Action
+        := Graph_Window.Actions.Graph_Window_Action_Access (Action);
       Set_Action_Mode (True);
    end Set_Global_Action;
 
@@ -53,7 +54,9 @@ package body Giant.Gui_Manager.Actions is
    begin
       if (Pending_Action /= null) then
          Graph_Window.Actions.Cancel (Pending_Action);
+         Graph_Window.Actions.Destroy (Pending_Action);
          Pending_Action := null;
+         Set_Action_Mode (False);
       end if;
    end Cancel;
 
@@ -65,10 +68,13 @@ package body Giant.Gui_Manager.Actions is
    begin
       if (Pending_Action /= null) then
          Gui_Manager.Set_Status ("");
-         Graph_Window.Actions.Execute (Pending_Action, Window, Event, Location);
-         Pending_Action := null;
+         if (Graph_Window.Actions.Execute (Pending_Action, Window,
+                                           Event, Location)) then
+            Graph_Window.Actions.Destroy (Pending_Action);
+            Pending_Action := null;
+            Set_Action_Mode (False);
+         end if;
       end if;
-      Set_Action_Mode (False);
    end Trigger;
 
 end Giant.Gui_Manager.Actions;

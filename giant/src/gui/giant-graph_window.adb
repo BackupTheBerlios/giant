@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.46 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.47 $
 --  $Author: squig $
---  $Date: 2003/08/05 21:12:44 $
+--  $Date: 2003/08/12 13:14:05 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -671,12 +671,19 @@ package body Giant.Graph_Window is
    begin
       Gtk.Menu.Gtk_New (Window.Background_Menu);
       Gtk.Menu.Append (Window.Background_Menu,
+                       New_Menu_Item (-"New Pin",
+                                      On_Background_Create_Pin'Access, Window));
+      Gtk.Menu.Append (Window.Background_Menu, New_Menu_Separator);
+      Gtk.Menu.Append (Window.Background_Menu,
                        New_Menu_Item (-"Make Room...",
                                       On_Background_Make_Room'Access, Window));
       Gtk.Menu.Append (Window.Background_Menu, New_Menu_Separator);
       Gtk.Menu.Append (Window.Background_Menu,
-                       New_Menu_Item (-"New Pin",
-                                      On_Background_Create_Pin'Access, Window));
+                       New_Menu_Item (-"Select All",
+                                      On_Background_Select_All'Access, Window));
+      Gtk.Menu.Append (Window.Background_Menu,
+                       New_Menu_Item (-"Select Nothing",
+                                      On_Background_Select_Nothing'Access, Window));
    end Initialize_Background_Menu;
 
    procedure Initialize_Edge_Menu
@@ -688,6 +695,13 @@ package body Giant.Graph_Window is
       Gtk.Menu.Append (Window.Edge_Menu,
                        New_Menu_Item (-"Zoom To Edge",
                                       On_Edge_Zoom'Access, Window));
+      Gtk.Menu.Append (Window.Edge_Menu, New_Menu_Separator);
+      Gtk.Menu.Append (Window.Edge_Menu,
+                       New_Menu_Item (-"Show Source Node",
+                                      On_Edge_Show_Source'Access, Window));
+      Gtk.Menu.Append (Window.Edge_Menu,
+                       New_Menu_Item (-"Zoom Target Edge",
+                                      On_Edge_Show_Target'Access, Window));
    end Initialize_Edge_Menu;
 
    procedure Initialize_Node_Menu
@@ -699,6 +713,7 @@ package body Giant.Graph_Window is
       Gtk.Menu.Append (Window.Node_Menu,
                        New_Menu_Item (-"Show Info...",
                                       On_Node_Show_Info'Access, Window));
+      Gtk.Menu.Append (Window.Background_Menu, New_Menu_Separator);
       Gtk.Menu.Append (Window.Node_Menu,
                        New_Menu_Item (-"Show Source",
                                       On_Node_Show_Source'Access, Window));
@@ -827,10 +842,14 @@ package body Giant.Graph_Window is
 --                            Add_Frame (Window.Vis_Style_Combo, -"Style"),
 --                            Expand => False, Fill => False, Padding => 0);
 
+--        Widget_Callback.Object_Connect
+--          (Gtk.Combo.Get_List (Window.Vis_Style_Combo), "select_child",
+--           Widget_Callback.To_Marshaller (On_Vis_Style_Selected'Access),
+--           Window);
       Widget_Callback.Object_Connect
-        (Gtk.Combo.Get_List (Window.Vis_Style_Combo), "select_child",
-         Widget_Callback.To_Marshaller (On_Vis_Style_Selected'Access),
-         Window);
+           (Gtk.Combo.Get_Entry (Window.Vis_Style_Combo), "activate",
+            Widget_Callback.To_Marshaller (On_Vis_Style_Selected'Access),
+            Window);
 
       --  zoom
       Gtk.Box.Gtk_New_Vbox (Vbox, Homogeneous => False, Spacing => 0);
@@ -926,6 +945,22 @@ package body Giant.Graph_Window is
       return True;
    end;
 
+   function Get_Current_Edge
+     (Window : access Graph_Window_Record)
+     return Graph_Lib.Edge_Id
+   is
+   begin
+      return Window.Current_Edge;
+   end Get_Current_Edge;
+
+   function Get_Current_Node
+     (Window : access Graph_Window_Record)
+     return Graph_Lib.Node_Id
+   is
+   begin
+      return Window.Current_Node;
+   end Get_Current_Node;
+
    function Get_Vis_Window
      (Window : access Graph_Window_Record)
      return Vis_Windows.Visual_Window_Access
@@ -978,7 +1013,9 @@ package body Giant.Graph_Window is
    begin
       if (Window.Local_Action /= null) then
          Actions.Cancel (Window.Local_Action);
+         Actions.Destroy (Window.Local_Action);
          Window.Local_Action := null;
+         Graph_Widgets.Cancel_Action_Mode (Window.Graph);
       end if;
    end Cancel_Local_Action;
 
@@ -990,8 +1027,12 @@ package body Giant.Graph_Window is
       use type Actions.Graph_Window_Action_Access;
    begin
       if (Window.Local_Action /= null) then
-         Actions.Execute (Window.Local_Action, Window, Event, Location);
-         Window.Local_Action := null;
+         if (Actions.Execute (Window.Local_Action, Window, Event,
+                              Location)) then
+            Actions.Destroy (Window.Local_Action);
+            Window.Local_Action := null;
+            Graph_Widgets.Cancel_Action_Mode (Window.Graph);
+         end if;
       end if;
    end Trigger_Local_Action;
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.ads,v $, $Revision: 1.9 $
---  $Author: keulsn $
---  $Date: 2003/07/20 23:20:04 $
+--  $RCSfile: giant-graph_window-callbacks.ads,v $, $Revision: 1.10 $
+--  $Author: squig $
+--  $Date: 2003/08/12 13:14:05 $
 --
 ------------------------------------------------------------------------------
 --
@@ -44,10 +44,16 @@ package Giant.Graph_Window.Callbacks is
    --  Background Menu Callbacks
    ---------------------------------------------------------------------------
 
+   procedure On_Background_Create_Pin
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
+
    procedure On_Background_Make_Room
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
 
-   procedure On_Background_Create_Pin
+   procedure On_Background_Select_All
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
+
+   procedure On_Background_Select_Nothing
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
 
    ---------------------------------------------------------------------------
@@ -56,6 +62,13 @@ package Giant.Graph_Window.Callbacks is
 
    procedure On_Edge_Zoom
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
+
+   procedure On_Edge_Show_Source
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
+
+   procedure On_Edge_Show_Target
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
+
    ---------------------------------------------------------------------------
    --  Graph Widget Callbacks
    ---------------------------------------------------------------------------

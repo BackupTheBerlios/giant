@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.24 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.25 $
 --  $Author: squig $
---  $Date: 2003/08/05 21:12:44 $
+--  $Date: 2003/08/12 13:14:05 $
 --
 ------------------------------------------------------------------------------
 --
@@ -67,18 +67,38 @@ package Giant.Graph_Window is
       type Graph_Window_Action_Access is
         access all Graph_Window_Action_Type'Class;
 
+      ----------------------------------------------------------------------
+      --  Invoked another action has been set or when the Graph_Widget
+      --  emits the Action_Mode_Button_Press_Event signal and the
+      --  right mouse button was pressed.
+      --
+      --  After this method was invoked, Destroy will be invoked.
       procedure Cancel
         (Action : access Graph_Window_Action_Type)
          is abstract;
 
+      ------------------------------------------------------------------------
+      --  Destroys Action.
       procedure Destroy
         (Action : access Graph_Window_Action_Type);
 
-      procedure Execute
+      ------------------------------------------------------------------------
+      --  Invoked when the Graph_Widget emits the
+      --  Action_Mode_Button_Press_Event signal and the left mouse
+      --  button was pressed.
+      --
+      --  After this method was invoked and True returned, Destroy
+      --  will be invoked.
+      --
+      --  Returns:
+      --    If True, the action mode will be cancelled and Destory
+      --    invoked.
+      function Execute
         (Action   : access Graph_Window_Action_Type;
          Window   : access Graph_Window.Graph_Window_Record'Class;
          Event    : in     Gdk.Event.Gdk_Event_Button;
          Location : in     Vis.Logic.Vector_2d)
+        return Boolean
          is abstract;
 
    private
@@ -101,6 +121,30 @@ package Giant.Graph_Window is
 
    procedure Post_Initialize
      (Window : access Graph_Window_Record);
+
+   ---------------------------------------------------------------------------
+   --  Returns the edge that was selected by the last action mode
+   --  event or edge popup.
+   --
+   --  Returns:
+   --    Null, if no edge was selected.
+   --  See:
+   --    Get_Current_Node
+   function Get_Current_Edge
+     (Window : access Graph_Window_Record)
+     return Graph_Lib.Edge_Id;
+
+   ---------------------------------------------------------------------------
+   --  Returns the node that was selected by the last action mode
+   --  event or node popup.
+   --
+   --  Returns:
+   --    Null, if no node was selected.
+   --  See:
+   --    Get_Current_Edge
+   function Get_Current_Node
+     (Window : access Graph_Window_Record)
+     return Graph_Lib.Node_Id;
 
    function Get_Vis_Window
      (Window : access Graph_Window_Record)
