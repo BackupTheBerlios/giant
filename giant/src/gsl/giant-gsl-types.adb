@@ -20,9 +20,9 @@
 --
 -- First Author: Gerrit Schulz
 --
--- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.8 $
+-- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.9 $
 -- $Author: schulzgt $
--- $Date: 2003/07/07 12:05:50 $
+-- $Date: 2003/07/07 16:16:54 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Tags;
@@ -139,11 +139,14 @@ package body Giant.Gsl.Types is
 
    ---------------------------------------------------------------------------
    -- Gsl_Node_Set
-   function Create_Gsl_Node_Set return Gsl_Node_Set is
+   function Create_Gsl_Node_Set
+     (Value : Giant.Graph_Lib.Node_Id_Set)
+      return Gsl_Node_Set is
 
       Var : Gsl_Node_Set;
    begin
       Var := new Gsl_Node_Set_Record;
+      Var.Value := Value;
       return Var;
    end Create_Gsl_Node_Set;
 
@@ -180,11 +183,14 @@ package body Giant.Gsl.Types is
  
    ---------------------------------------------------------------------------
    -- Gsl_Edge_Set
-   function Create_Gsl_Edge_Set return Gsl_Edge_Set is
+   function Create_Gsl_Edge_Set
+     (Value : Giant.Graph_Lib.Edge_Id_Set) 
+      return Gsl_Edge_Set is
 
       Var : Gsl_Edge_Set;
    begin
       Var := new Gsl_Edge_Set_Record;
+      Var.Value := Value;
       return Var;
    end Create_Gsl_Edge_Set;
 

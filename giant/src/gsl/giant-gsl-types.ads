@@ -21,7 +21,7 @@
 --
 -- $RCSfile: giant-gsl-types.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/30 16:01:49 $
+-- $Date: 2003/07/07 16:16:54 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -87,7 +87,9 @@ package Giant.Gsl.Types is
    type Gsl_Node_Set_Record is new Gsl_Type_Record with private;
    type Gsl_Node_Set is access all Gsl_Node_Set_Record;
 
-   function Create_Gsl_Node_Set return Gsl_Node_Set;
+   function Create_Gsl_Node_Set
+    (Value : Giant.Graph_Lib.Node_Id_Set)
+     return Gsl_Node_Set;
 
    function Get_Value
      (Var : Gsl_Node_Set)
@@ -109,7 +111,9 @@ package Giant.Gsl.Types is
    type Gsl_Edge_Set_Record is new Gsl_Type_Record with private;
    type Gsl_Edge_Set is access all Gsl_Edge_Set_Record;
 
-   function Create_Gsl_Edge_Set return Gsl_Edge_Set;
+   function Create_Gsl_Edge_Set
+     (Value : Giant.Graph_Lib.Edge_Id_Set)
+      return Gsl_Edge_Set;
 
    function Get_Value
      (Var : Gsl_Edge_Set)
