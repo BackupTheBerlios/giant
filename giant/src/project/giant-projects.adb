@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.7 $
 --  $Author: schwiemn $
---  $Date: 2003/06/16 15:39:47 $
+--  $Date: 2003/06/16 17:50:38 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -48,24 +48,23 @@ package body Giant.Projects is
 
    ---------------------------------------------------------------------------
    --  Name used for the file holding the node annotations
+   --  - only used when a new project is created.
    Const_Node_Annotations_File_Name : constant String := 
      "node_annotations.xml";
           
    ---------------------------------------------------------------------------
    --  Ending of Management file for a visual window
-   Window_File_Ending : constant String := ".viswin";     
+   Const_Vis_Window_File_Ending : constant String := ".viswin";     
           
-   ---------------------------------------------------------------------------
    --  Emergency files ending
-   Window_Emergency_File_Ending : constant String := ".viswin~";
+   Const_Vis_Window_Emergency_File_Ending : constant String := ".viswin~";
       
    ---------------------------------------------------------------------------
    --  Ending of Management file for a subgraph
-   Subgraph_File_Ending : constant String := ".subgraph";     
+   Const_Subgraph_File_Ending : constant String := ".subgraph";     
           
-   ---------------------------------------------------------------------------
    --  Emergency files ending
-   Subgraph_Emergency_File_Ending : constant String := ".subgraph~";
+   Const_Subgraph_Emergency_File_Ending : constant String := ".subgraph~";
    
    
    ---------------------------------------------------------------------------
@@ -111,10 +110,8 @@ package body Giant.Projects is
    ---------------------------------------------------------------------------
    --  0.2
    --  Internal Subprograms
-   ---------------------------------------------------------------------------  
-   
-   --- TODO Subprgram zur Erzeugung von Emergency Files Name basteln
-         
+   ---------------------------------------------------------------------------
+     
    ---------------------------------------------------------------------------         
    function Append_Dir_Separator_If_Necessary 
      (Directory : in String)     
@@ -130,35 +127,77 @@ package body Giant.Projects is
          return (Directory & Dir_Separator);
       end if;                
    end Append_Dir_Separator_If_necessary;
-         
-         
+   
    ---------------------------------------------------------------------------
-   function Calculate_Project_File_Name 
-     (Project_Name      : in Valid_Names.Standard_Name;
-      Project_Directory : in String) 
-     return Ada.Strings.Unbounded.Unbounded_String is 
-     
+   --  Used to create absolute file names (with absolute path) for 
+   --  files regarding the name and the ending.
+   function Create_Name_For_File 
+     (Directory : in String;
+      Name      : in Valid_Names.Standard_Name;
+      Ending    : in String)
+     return Ada.Strings.Unbounded.Unbounded_String is
+      
       use Ada.Strings.Unbounded;  
       
-      Absolute_Project_Path : Ada.Strings.Unbounded.Unbounded_String;          
+      Absolute_Dir_Path : Ada.Strings.Unbounded.Unbounded_String;       
    begin         
                   
       -- calculate absolute path for dir based on the current execution
       -- environment directory.
-      -- Does no changes if "Project_Directory" already is an absolute path.
-      Absolute_Project_Path := Ada.Strings.Unbounded.To_Unbounded_String
+      -- Does no changes if "Directory" already is an absolute path.
+      Absolute_Dir_Path := Ada.Strings.Unbounded.To_Unbounded_String
         (File_Management.Get_Absolute_Path_To_Directory_From_Relative
           (GNAT.Directory_Operations.Get_Current_Dir,
-           Project_Directory));
+           Directory));
        
-      -- build file name for project file
+      -- build file name for thefile
       return Ada.Strings.Unbounded.To_Unbounded_String 
         (Append_Dir_Separator_If_Necessary 
-          (Ada.Strings.Unbounded.To_String (Absolute_Project_Path))
-         & Valid_Names.To_String (Project_Name)
-         & ".xml");
-   end Calculate_Project_File_Name;
+          (Ada.Strings.Unbounded.To_String (Absolute_Dir_Path))
+         & Valid_Names.To_String (Name)
+         & Ending);
+   end Create_Name_For_File;
+   
+   ---------------------------------------------------------------------------
+   --  Deletes all files in the directory
+   --  with the corresponding endings regardeless of the content.
+   procedure Kill_All_Emergency_Files (Directory : in String) is
+              
+      File_List      : String_Lists.List;
+      File_List_Iter : String_Lists.ListIter;   
+      A_File_Name    : Ada.Strings.Unbounded.Unbounded_String;       
+   begin
+   
+      File_List := String_Lists.Create;
+         
+      -- Emergency Files for subgraphs
+      String_Lists.Attach
+        (File_List,
+         File_Management.Get_Filtered_Files_From_Directory
+           (Directory, 
+            True, 
+            Const_Subgraph_Emergency_File_Ending));
+      
+      -- Emergency Files for visualisation windows
+      String_Lists.Attach
+        (File_List,
+         File_Management.Get_Filtered_Files_From_Directory
+           (Directory, 
+            True, 
+            Const_Vis_Window_Emergency_File_Ending));     
 
+      File_List_Iter := String_Lists.MakeListIter (File_List);   
+                                      
+      while String_Lists.More (File_List_Iter) loop
+
+         String_Lists.Next (File_List_Iter, A_File_Name);          
+         File_Management.Delete_File (Ada.Strings.Unbounded.To_String
+           (A_File_Name));           
+      end loop;
+      
+      String_Lists.Destroy (File_List);   
+   end Kill_All_Emergency_Files;
+ 
    ---------------------------------------------------------------------------
    function Load_Vis_Window_Into_Main_Memory (File_Path : String)
      return Vis_Windows.Visual_Window_Access is
@@ -287,23 +326,16 @@ package body Giant.Projects is
      (Project_Directory : in String) is
      
       use Ada.Strings.Unbounded;  
-     
-      Abs_DTD_File_Path : Ada.Strings.Unbounded.Unbounded_String;               
+              
       Abs_DTD_File_Name : Ada.Strings.Unbounded.Unbounded_String;
-      DTD_File          : Ada.Text_IO.File_Type;
-      
+      DTD_File          : Ada.Text_IO.File_Type;      
    begin
    
-      --  calculate path name (make sure that a file name string could be
-      --  appended)
-      Abs_DTD_File_Path := Ada.Strings.Unbounded.To_Unbounded_String
-        (File_Management.Get_Absolute_Path_To_Directory_From_Relative
-          (GNAT.Directory_Operations.Get_Current_Dir,
-            Project_Directory));
-      Abs_DTD_File_Name := Append_Dir_Separator_If_Necessary 
-        (Ada.Strings.Unbounded.To_String(Abs_DTD_File_Path))
-         & Ada.Strings.Unbounded.To_Unbounded_String 
-           ("giant_project_file.dtd"); 
+      --  calculate absolute dtd file name 
+      Abs_DTD_File_Name := Create_Name_For_File 
+        (Project_Directory,
+         Valid_Names.To_Standard_Name ("giant_project_file"),
+         ".dtd");
                  
       Ada.Text_IO.Create 
         (DTD_File, 
@@ -381,14 +413,13 @@ package body Giant.Projects is
       A_Subgraph_Data_Elemet : Subgraph_Data_Elemet;
       
    begin
-   
-      Abs_Project_File_Name :=
-        Calculate_Project_File_Name 
-          (Valid_Names.To_Standard_Name
-            (Ada.Strings.Unbounded.To_String (The_Project.Project_Name)),
-           Ada.Strings.Unbounded.To_String 
-             (The_Project.Abs_Project_Dirctory)); 
-   
+             
+      Abs_Project_File_Name := Create_Name_For_File 
+        (Ada.Strings.Unbounded.To_String (The_Project.Abs_Project_Dirctory),
+         Valid_Names.To_Standard_Name
+          (Ada.Strings.Unbounded.To_String (The_Project.Project_Name)),
+         ".xml");
+                                  
       --  create the file
       -------------------
       Ada.Text_IO.Create 
@@ -424,6 +455,7 @@ package body Giant.Projects is
         ("    iml_graph_checksum = """
          & Integer'Image (The_Project.Bauhaus_IML_Graph_File_Checksum) 
          & """") ; 
+      -- node annotations file
       Ada.Text_IO.Put_Line
         ("    node_annotations_file_name = """
          & Ada.Strings.Unbounded.To_String 
@@ -506,8 +538,7 @@ package body Giant.Projects is
       Project_Directory : in String)
      return Boolean is
       
-      Absolute_Project_File_Name : Ada.Strings.Unbounded.Unbounded_String; 
-      Absolute_Project_Path : Ada.Strings.Unbounded.Unbounded_String;        
+      Absolute_Project_File_Name : Ada.Strings.Unbounded.Unbounded_String;    
       A_File : Ada.Text_IO.File_Type;           
       Project_Exists : Boolean := False;
       
@@ -519,21 +550,13 @@ package body Giant.Projects is
       if (GNAT.OS_Lib.Is_Directory (Project_Directory) = False) then
          raise Invalid_Project_Directory_Excpetion;
       end if;
-
-      -- calculate absolute path for dir based on the current execution
-      -- environment directory.
-      -- Does no changes if "Project_Directory" already is an absolute path.
-      Absolute_Project_Path := 
-        Ada.Strings.Unbounded.To_Unbounded_String
-          (File_Management.Get_Absolute_Path_To_File_From_Relative
-            (GNAT.Directory_Operations.Get_Current_Dir,
-             Project_Directory));
-       
+      
       -- build file name 
-      Absolute_Project_File_Name := Calculate_Project_File_Name 
-        (Project_Name, 
-         Ada.Strings.Unbounded.To_String (Absolute_Project_Path));
-            
+      Absolute_Project_File_Name := Create_Name_For_File 
+        (Project_Directory,
+         Project_Name,
+         ".xml");         
+                     
       -- check whether the xml file is a file that describes project
       begin 
          XML_File_Access.Load_XML_File_Validated
@@ -555,7 +578,7 @@ package body Giant.Projects is
             Project_Exists := False;
       end;
                   
-      return  Project_Exists;      
+      return Project_Exists;      
    end Does_Project_Exist;
  
    ---------------------------------------------------------------------------
@@ -643,9 +666,11 @@ package body Giant.Projects is
          raise Project_Does_Not_Exist_Exception;
       end if;
       
-      Absolute_Project_File_Name := Calculate_Project_File_Name 
-        (Project_Name, Project_Directory);
-      
+      Absolute_Project_File_Name := Create_Name_For_File 
+        (Project_Directory,
+         Project_Name,
+         ".xml");         
+                                 
       --  it is already certain that the file describes a project  
       XML_File_Access.Load_XML_File_Validated
         (Ada.Strings.Unbounded.To_String (Absolute_Project_File_Name),
@@ -731,7 +756,7 @@ package body Giant.Projects is
         (Ada.Strings.Unbounded.To_String (Abs_Project_Directory))
         & Ada.Strings.Unbounded.To_Unbounded_String       
           (Const_Node_Annotations_File_Name); 
-          
+                    
       Abs_IML_Graph_File := Ada.Strings.Unbounded.To_Unbounded_String
         (File_Management.Get_Absolute_Path_To_File_From_Relative                      
          (GNAT.Directory_Operations.Get_Current_Dir, Bauhaus_IML_Graph_File));
@@ -753,8 +778,9 @@ package body Giant.Projects is
       New_Project_Access.Bauhaus_IML_Graph_File_Checksum := 
         Bauhaus_IML_Graph_File_Checksum; 
   
-      --  stored as an relative path (towards Project_Directory)
-      --  - only while creating a new project (also written to xml file);         
+      --  Stored as an relative path (towards Project_Directory)
+      --  - only while creating a new project (also written to xml file);    
+      --  Per default this file is loacted in the project directory.
       New_Project_Access.Node_Annotations_File :=
          Ada.Strings.Unbounded.To_Unbounded_String 
            (Const_Node_Annotations_File_Name);  
@@ -1372,9 +1398,111 @@ package body Giant.Projects is
        Subgraph_Name : in Valid_Names.Standard_Name) is
        
    begin
-      null;
+   
+
+     null;
    end Remove_Subgraph;
    
+   ---------------------------------------------------------------------------    
+   function Get_Highlight_Status
+     (Project       : in Project_Access;
+      Subgraph_Name : in Valid_Names.Standard_Name) 
+     return Subgraph_Highlight_Status is
+     
+   begin
+   
+      if (Project = null) then 
+         raise Project_Access_Not_Initialized_Exception;
+      end if;  
+     
+      if (Does_Subgraph_Exist (Project, Subgraph_Name) = False) then
+         raise Subgraph_Is_Not_Part_Of_Project_Exception;
+      end if;
+        
+      return Subgraph_Data_Hashs.Fetch 
+        (Project.All_Subgraphs, 
+         Ada.Strings.Unbounded.To_Unbounded_String 
+           (Valid_Names.To_String (Subgraph_Name))).Highlight_Status;
+   end Get_Highlight_Status;
+     
+   ---------------------------------------------------------------------------
+   procedure Change_Highlight_Status
+     (Project              : in Project_Access;
+      Subgraph_Name        : in Valid_Names.Standard_Name;
+      New_Highlight_Status : in Subgraph_Highlight_Status) is
+      
+      A_Subgraph_Data_Element   : Subgraph_Data_Elemet;
+      New_Subgraph_Data_Element : Subgraph_Data_Elemet; 
+      
+      Subgraphs_Iter : Subgraph_Data_Hashs.Values_Iter;     
+   begin
+   
+      if (Project = null) then 
+         raise Project_Access_Not_Initialized_Exception;
+      end if;  
+     
+      if (Does_Subgraph_Exist (Project, Subgraph_Name) = False) then
+         raise Subgraph_Is_Not_Part_Of_Project_Exception;
+      end if;
+      
+      -- Iterate over all Subgraphs (check whether there is already another
+      -- subgraph with the passed highlight status).
+      Subgraphs_Iter := Subgraph_Data_Hashs.Make_Values_Iter
+        (Project.All_Subgraphs);
+      
+      while Subgraph_Data_Hashs.More (Subgraphs_Iter) loop
+         Subgraph_Data_Hashs.Next 
+           (Subgraphs_Iter, A_Subgraph_Data_Element);
+           
+         if (A_Subgraph_Data_Element.Highlight_Status = New_Highlight_Status)
+           and (Graph_Lib.Subgraphs.Get_Name 
+             (A_Subgraph_Data_Element.Subgraph) /= 
+             Valid_Names.To_String (Subgraph_Name)) then
+             
+            -- set status to "None"
+            New_Subgraph_Data_Element := A_Subgraph_Data_Element;
+            New_Subgraph_Data_Element.Highlight_Status := None;
+             
+            Subgraph_Data_Hashs.Unbind
+              (Project.All_Subgraphs,
+               Ada.Strings.Unbounded.To_Unbounded_String
+                 (Graph_Lib.Subgraphs.Get_Name 
+                   (A_Subgraph_Data_Element.Subgraph)));
+
+            Subgraph_Data_Hashs.Bind
+              (Project.All_Subgraphs,
+               Ada.Strings.Unbounded.To_Unbounded_String
+                 (Graph_Lib.Subgraphs.Get_Name 
+                   (A_Subgraph_Data_Element.Subgraph)),
+               New_Subgraph_Data_Element);            
+                          
+         elsif (Graph_Lib.Subgraphs.Get_Name 
+           (A_Subgraph_Data_Element.Subgraph) =       
+            Valid_Names.To_String (Subgraph_Name))  then
+             
+            -- change highlight status
+            New_Subgraph_Data_Element := A_Subgraph_Data_Element;
+            New_Subgraph_Data_Element.Highlight_Status := 
+              New_Highlight_Status;
+             
+            Subgraph_Data_Hashs.Unbind
+              (Project.All_Subgraphs,
+               Ada.Strings.Unbounded.To_Unbounded_String
+                 (Graph_Lib.Subgraphs.Get_Name 
+                   (A_Subgraph_Data_Element.Subgraph)));
+
+            Subgraph_Data_Hashs.Bind
+              (Project.All_Subgraphs,
+               Ada.Strings.Unbounded.To_Unbounded_String
+                 (Graph_Lib.Subgraphs.Get_Name 
+                   (A_Subgraph_Data_Element.Subgraph)),
+               New_Subgraph_Data_Element);              
+         else
+            null;                             
+         end if;                    
+      end loop;      
+   end Change_Highlight_Status;
+                 
    ---------------------------------------------------------------------------
    -- D Node Annotations
    ---------------------------------------------------------------------------
@@ -1384,7 +1512,12 @@ package body Giant.Projects is
      (Project : in Project_Access)
      return Node_Annotations.Node_Annotation_Access is
    begin
-      return Node_Annotations.Create_Empty;
+   
+      if (Project = null) then 
+         raise Project_Access_Not_Initialized_Exception;
+      end if;  
+   
+      return Project.The_Node_Annotations;
    end Get_Node_Annotations;
    
 end Giant.Projects;

@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.10 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.11 $
 -- $Author: schwiemn $
--- $Date: 2003/06/16 15:39:47 $
+-- $Date: 2003/06/16 17:50:39 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -784,11 +784,56 @@ package Giant.Projects is
    --     parameter.
    --   Subgraph_Is_Not_Part_Of_Project_Exception - Raised if the
    --     project "Project" does not hold a subgraph with the name
-   --     "IML_Subgraph_Name".
+   --     "Subgraph_Name".
    procedure Remove_Subgraph
-      (Project           : in Project_Access;
+      (Project       : in Project_Access;
        Subgraph_Name : in Valid_Names.Standard_Name);
-
+              
+   ---------------------------------------------------------------------------  
+   -- Determines the highlight status of a subgraph.    
+   --
+   -- Parameters:
+   --   Project - The instance of the ADT holding a project.
+   --   Subgraph_Name - The name of the subgraph.
+   -- Returns:
+   --   The highlight status of the subgraph.
+   -- Raises:
+   --   Project_Access_Not_Initialized_Exception - Raised if a not
+   --     initialized instance of "Project_Access" is passed as
+   --     parameter.
+   --   Subgraph_Is_Not_Part_Of_Project_Exception - Raised if the
+   --     project "Project" does not hold a subgraph with the name
+   --     "Subgraph_Name".   
+   function Get_Highlight_Status
+     (Project       : in Project_Access;
+      Subgraph_Name : in Valid_Names.Standard_Name) 
+     return Subgraph_Highlight_Status;
+     
+   ---------------------------------------------------------------------------
+   -- Changes the highlightstatus of a subgraph.
+   --
+   -- Note
+   --   If there is already a subgraph with the new highlight status
+   --   (does not count for "None"), its
+   --   highlight status is set to "None" as only one subgraph may be 
+   --   highlighted with the same color.
+   --
+   -- Parameters:
+   --   Project - The instance of the ADT holding a project.
+   --   Subgraph_Name - The name of the subgraph.
+   --   New_Highlight_Status - The 
+   -- Raises:
+   --   Project_Access_Not_Initialized_Exception - Raised if a not
+   --     initialized instance of "Project_Access" is passed as
+   --     parameter.
+   --   Subgraph_Is_Not_Part_Of_Project_Exception - Raised if the
+   --     project "Project" does not hold a subgraph with the name
+   --     "Subgraph_Name".  
+   procedure Change_Highlight_Status
+     (Project              : in Project_Access;
+      Subgraph_Name        : in Valid_Names.Standard_Name;
+      New_Highlight_Status : in Subgraph_Highlight_Status);
+     
    ---------------------------------------------------------------------------
    -- D Node Annotations
    -- This part specifies the functionality needed to get access to the
@@ -823,6 +868,10 @@ package Giant.Projects is
    -- Returns:
    --   An instance of the ADT holding all node annotations of this
    --   project.
+   -- Raises:
+   --   Project_Access_Not_Initialized_Exception - Raised if a not
+   --     initialized instance of "Project_Access" is passed as
+   --     parameter.
    function Get_Node_Annotations
      (Project : in Project_Access)
      return Node_Annotations.Node_Annotation_Access;

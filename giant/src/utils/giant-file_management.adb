@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.3 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.4 $
 -- $Author: schwiemn $
--- $Date: 2003/06/13 17:12:55 $
+-- $Date: 2003/06/16 17:50:39 $
 --
 package body Giant.File_Management is
    ---------------------------------------------------------------------------
@@ -136,7 +136,23 @@ package body Giant.File_Management is
       GNAT.Directory_Operations.Close (GNAT_Directory);
       return File_Names_List;
    end Get_Filtered_Files_From_Directory;
+   
+   ---------------------------------------------------------------------------
+   procedure Delete_File (File_Name : in String) is
+   
+      The_File : Ada.Text_IO.File_Type;
+   begin
 
+     if not (GNAT.OS_Lib.Is_Writable_File (File_Name))
+        or not (GNAT.OS_Lib.Is_Regular_File (File_Name)) then
+        
+        raise File_Cannot_Be_Deleted_Exception;
+     end if;
+   
+     Ada.Text_IO.Open (The_File, Ada.Text_IO.Out_File, File_Name);     
+     Ada.Text_IO.Delete (The_File);         
+   end Delete_File;
+         
    ---------------------------------------------------------------------------
    function Return_Dir_Path_For_File_Path (File_Path : String)
                                           return String is

@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.ads,v $, $Revision: 1.2 $
+-- $RCSfile: giant-file_management.ads,v $, $Revision: 1.3 $
 -- $Author: schwiemn $
--- $Date: 2003/06/13 17:12:55 $
+-- $Date: 2003/06/16 17:50:39 $
 --
 -- -----------------------------------------------
 --
@@ -102,6 +102,11 @@ package Giant.File_Management is
    File_Does_Not_Exist_Exception : exception;
    
    ---------------------------------------------------------------------------
+   -- Raised if a file could not be deleted (not existing, not sufficient 
+   -- rights, no regular file ...)
+   File_Cannot_Be_Deleted_Exception : exception;
+   
+   ---------------------------------------------------------------------------
    -- Raised if a directory does not exist
    Directory_Does_Not_Exist_Exception : exception;
 
@@ -109,6 +114,16 @@ package Giant.File_Management is
    -- Raised if an existing directory path could not be calculated out
    -- of a path to a file name.
    Directory_Could_Not_Be_Calculated_Exception : exception;
+      
+   ---------------------------------------------------------------------------
+   -- Deletes a File.
+   --
+   -- Parameters:
+   --   File_Name - The file (incl. Path) that should be deleted.
+   -- Raises 
+   --   File_Cannot_Be_Deleted_Exception - Raised if the file could not be
+   --   found, accessed or deleted.
+   procedure Delete_File (File_Name : in String);
 
    ---------------------------------------------------------------------------
    -- Returns the "path" out of a string holding a file name including
