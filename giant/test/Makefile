@@ -7,7 +7,7 @@ file_management :
 evolution :
 	make -C ../ MAIN=test/giant_test-evolution EXEC=test/evolution all
 
-graph_lib :
+graph_lib : giant_test-graph_lib.adb
 	make -C ../ MAIN=test/giant_test-graph_lib EXEC=test/graph_lib all
 
 all:
