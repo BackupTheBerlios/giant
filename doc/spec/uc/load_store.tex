@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: load_store.tex,v $, $Revision: 1.9 $
-%  $Date: 2003/03/28 16:09:17 $
+%  $RCSfile: load_store.tex,v $, $Revision: 1.10 $
+%  $Date: 2003/03/28 18:37:17 $
 %  $Author: schwiemn $
 %
 %  Description: Use-Cases für Lade- und Speicherfunktionalität
@@ -8,12 +8,15 @@
 % ==============================================================================
 
 \begin{uc}[Neues Projekt]{UC: Neues Projekt}
+\index{Projekte!neus Projekt erstellen}
   Erstellt ein neues GIANT Projekt. Ein eventuell bereits geöffnetes
   Projekt wird dabei geschlossen, wobei Änderungen auf Nachfrage 
   vorher gespeichert werden.
   Weitere wichtige Informationen, die in engem Zusammenhang mit 
   diesem UseCase stehen, sind unter dem Abschnitt 
-  \ref{Project Persistenz der Projekte} zu finden.
+  \ref{Project Persistenz der Projekte} zu finden.\\
+  Zulässige Namen für Projekte sind unter Abschnitt \ref{afa zulaessige Namen}
+  spezifiziert.
   
   
   \begin{precond}
@@ -89,6 +92,7 @@
 % ==============================================================================
 
 \begin{uc}[Projekt öffnen]{UC: Projekt öffnen}
+\index{Projekte!öffnen}
   Öffnet ein GIANT Projekt. Ein eventuell bereits vorhandenes 
   Projekt wird dabei geschlossen, wobei Änderungen auf Nachfrage 
   vorher gespeichert werden. \\ 
@@ -118,7 +122,8 @@
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase über das Hauptmenü.
-    !!!!!ENTSPRECHENDEN MENÜEINTAG NENNEN GUI BESCHREIBUNG!!!!!!!!!!!!!!.
+    !!!!!ENTSPRECHENDEN MENÜEINTAG NENNEN >>>>GUI BESCHREIBUNG<<<<
+    !!!!!!!!!!!!!!
     
     \step[2] 
     Der Benutzer wählt aus dem Standard-Filechooser-Dialog (siehe 
@@ -146,18 +151,19 @@
 % ==============================================================================
 
 \begin{uc}[Projekt speichern]{UC: Projekt speichern}  
-
+\index{Projekte!speichern}
   Speichert alle Änderungen an einem Projekt. Der Zustand der
   entsprechenden Verwaltungsdateien im Projektverzeichnis entspricht
   nach erfolgreicher Ausführung dieses UseCases exakt dem aktuellen
-  Zusatand des geöffneten Projektes. Alle Konventionen zur
+  Zustand des geöffneten Projektes. Alle Konventionen zur
   Persistenz von Projekten sind im Abschnitt 
   \ref{Project Persistenz der Projekte} exakt spezifiziert.
 
   \begin{precond}
     \cond Das Programm ist gestartet.
-    \cond Ein Projekt ist geöffnet (entweder ein neu erzeugtes oder ein
-    geladenes).
+
+    \cond Ein Projekt ist geöffnet. 
+
   \end{precond}
 
   \begin{postsuccess}
@@ -197,6 +203,7 @@
 % ==============================================================================
 
 \begin{uc}[Projekt speichern unter]{UC: Projekt speichern unter}
+\index{Projekte!unter neuem Namen speichern}
 Speichert alle Informationen zu einem Projekt in eine neue Projektdatei
 (entsprechende Verwaltungsdateien werden ebenfalls dupliziert).
 
@@ -213,9 +220,13 @@ Speichert alle Informationen zu einem Projekt in eine neue Projektdatei
           worden.
     \cond Die Informationen des Projekts sind persistent in die 
           neuen Verwaltungsdateien im Projektverzeichnis 
-	  der neuen Projektdatei geschrieben.
+	  der neuen Projektdatei geschrieben (weitere Informationen
+          hierzu siehe \ref{Project Persistenz der Projekte}).
+        
     \cond Das Projekt bleibt in GIANT geöffnet, zukünftiges Speichern
-          betrifft nur die Dateien im neu erzeugten Projektverzeichnis.
+          (siehe \ref{Projekt speichern} betrifft nur die Dateien 
+          im neu erzeugten Projekt.
+
     \cond Die alte Projektdatei (samt allen Verwaltungsdateien) bleibt
           unverändert.
     
@@ -229,18 +240,28 @@ Speichert alle Informationen zu einem Projekt in eine neue Projektdatei
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase über das Hauptmenü.
-    !!!!!ENTSPRECHENDEN MENÜEINTAG NENNEN.
+    >>>>>>>VERWEIS GUI>>>>>>>
+    !!!!!ENTSPRECHENDEN MENÜEINTAG NENNEN!!!!!!!!!!!!!!!!!!.
      
-    \step[2] Der Benutzer gibt im Standard-Filechooser-Dialog den Pfad, das
-    neue Projektverzeichnis und den Namen für die neue Projektdatei vor. 
-    Der Name der Projektdatei ist automatisch auch der Name für das Projekt.\\
-    Dann bestätigt er seine Eingabe mit OK.\\
-    Existiert die eingegbene Datei schon, erscheint eine Fehlermeldung.\\
-    Existiert in dem Projektverzeichnis bereits eine andere Projektdatei, so 
-    erscheint eine entsprechende Fehlermeldung.\\
+    \step[2] Der Benutzer gibt im Standard-Filechooser-Dialog 
+             (siehe \ref {Standard-Filechooser-Dialog}) den Pfad, 
+             das neue Projektverzeichnis 
+             (siehe \ref{Project Das Projektverzeichnis})
+             und den Namen für die neue Projektdatei
+             (siehe \ref{Project Die Projektdatei}) vor. \\
+    Der Name der Projektdatei ist automatisch auch der Name für das Projekt.
+    Zulässige Namen sind unter Abschnitt \ref{afa Zulaessige Namen}
+    spezifiziert. \\
     Das Verzeichnis in dem die Projektdatei liegt, wird automatisch zum 
     Projektverzeichnis (dort landen auch alle Verwaltungsdateien für das 
     Projekt). 
+  
+    \step[3]  
+    Der Benutzer bestätigt seine Eingabe mit OK.\\
+    Existiert die eingebene Datei schon, erscheint eine Fehlermeldung.\\
+    Existiert in dem Projektverzeichnis bereits eine andere Projektdatei, so 
+    erscheint eine entsprechende Fehlermeldung.\\
+  
   \end{proc}
 
 

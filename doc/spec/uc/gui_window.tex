@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.21 $
-%  $Date: 2003/03/28 16:09:17 $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.22 $
+%  $Date: 2003/03/28 18:37:17 $
 %  $Author: schwiemn $
 %
 %  Description: Use-Cases für die Fensterfunktionalität der GUI
@@ -8,6 +8,8 @@
 % ==============================================================================
 
 \begin{uc}[Leeres Anzeigefenster erzeugen]{UC: Leeres Anzeigefenster erzeugen}
+\index{Anzeigefenster!erzeugen}
+
 Über diesen UseCase kann der Benutzer neue Anzeigefenster innerhalb eines
 Projektes anlegen.
 
@@ -33,19 +35,21 @@ Projektes anlegen.
   
   \begin{proc}    
     \step[1]
-    Der Benutzer startet den UseCase über das PopUp Menü \ref{WINDOW-LIST-POPUP}
+    Der Benutzer startet den UseCase über das PopUp 
+     Menü \ref{WINDOW-LIST-POPUP}
     durch Auswahl von \gq{New Window}
     
     \step[2] 
-    GIANT öffnet den allgemeinen Texteingabedialog \gq{Enter Name for new Window}.
-    \ref{DIALOG-WINDOW}.
+    GIANT öffnet den allgemeinen Texteingabedialog 
+    \gq{Enter Name for new Window} (siehe \ref{DIALOG-WINDOW}).
       
     \step[3] 
     Der Benutzer gibt dort einen zulässigen Namen für das neue Anzeigefenster
     ein und bestätigt seine Eingabe mit OK.
     
     \step[4]
-    GIANT erzeugt ein neues Anzeigefenster und öffnet dies.
+    GIANT erzeugt ein neues Anzeigefenster (siehe  \ref{GUI Anzeigefenster})
+    und öffnet dies.
   
   \end{proc}
 
@@ -61,6 +65,7 @@ Projektes anlegen.
 
 % ==============================================================================
 \begin{uc}[Anzeigefenster löschen]{UC: Anzeigefenster löschen}
+\index {Anzeigefenster!löschen}
 Mit diesem UseCase werden bestehende Anzeigefenster aus dem Projekt 
 entfernt und gelöscht. Alle Informationen zu dem Anzeigefenster
 gehen hierbei unwiederbringlich verloren.
@@ -75,7 +80,9 @@ gehen hierbei unwiederbringlich verloren.
     Das gelöschte Anzeigefenster ist nicht mehr Bestandteil des Projektes.
     
     \cond
-    Die Verwaltungsdatei für das Anzeigefenster wurde ebenfalls gelöscht.
+    Die Verwaltungsdatei für das Anzeigefenster (siehe   
+    \ref {Project Verwaltungsdateien für Anzeigefenster}) 
+    wurde ebenfalls gelöscht.
  
   \end{postsuccess}
 
@@ -88,7 +95,9 @@ gehen hierbei unwiederbringlich verloren.
     Der Benutzer startet den UseCase über das PopUp Menü \ref{WINDOW-LIST-POPUP}
     
     \step[2] 
-    Giant zeigt die allgemeine Sicherheitsabfrage und fragt nach, ob das
+    Giant zeigt die allgemeine Sicherheitsabfrage (siehe 
+    \ref{Sicherheitsabfrage})
+    und fragt nach, ob das
     Anzeigefenster wirklich gelöscht werden soll.
     \gq{Do you really want to delete Window xy ?}
       
@@ -110,6 +119,7 @@ gehen hierbei unwiederbringlich verloren.
 
 % ==============================================================================
 \begin{uc}[Anzeigefenster öffnen]{UC: Anzeigefenster öffnen}
+\index {Anzeigefenster!öffnen}
 Dient zum Öffnen eines Anzeigefensters des Projektes.
 
 
@@ -153,8 +163,11 @@ Dient zum Öffnen eines Anzeigefensters des Projektes.
 \end{uc}
 
 % ==============================================================================
-\begin{uc}[Anzeigefenster schliesen]{UC: Anzeigefenster schliessen}
+\begin{uc}[Anzeigefenster schliessen ]{UC: Anzeigefenster schlie\ss en}
+\index{Anzeigefenster!schlie\ss en}
 Mit diesem UseCase wird ein geöffnetes Anzeigefenster geschlossen.
+Näheres zur Persistenz von Anzeigefenstern ist unter
+Abschnitt \ref{Project Persistenz der Projekte} spezifiziert.
 
   \begin{precond}
     \cond Ein Projekt mit mindestens einem Anzeigefenster ist geladen.
@@ -167,6 +180,7 @@ Mit diesem UseCase wird ein geöffnetes Anzeigefenster geschlossen.
     
     \cond Nach dem letzten Speichern am Anzeigefenster vorgenommene
     Modifikationen (neue Knoten eingefügt etc.) sind in der Verwaltungsdatei
+    (siehe \ref {Project Verwaltungsdateien für Anzeigefenster})
     gespeichert oder nicht.
  
   \end{postsuccess}  
@@ -216,12 +230,13 @@ Mit diesem UseCase wird ein geöffnetes Anzeigefenster geschlossen.
 % ==============================================================================
 \begin{uc}[IML-Teilgraph in Anzeigefenster einfügen]
           {UC: IML-Teilgraph in Anzeigefenster einfügen}
+\index{IML-Teilgraphen!in Anzeigefenster einfügen}
 
 Mit diesem UseCase können die Graph-Kanten und Graph-Knoten 
 von IML-Teilgraphen in Anzeigefenster eingefügt werden.
 Siehe hierzu auch   
 \ref{Verhalten beim Einfügen von IML-Teilgraphen und Selektionen 
-in Anzeigefenster},
+in Anzeigefenster} und
 insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
 	  
 
@@ -241,8 +256,8 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
     eingefügt.
     
     \cond
-    In dem Anzeigefenster gibt es eine Selektion, die die neu eingefügten
-    Knoten und Kanten umfasst.
+    In dem Anzeigefenster gibt es eine neue aktuelle Selektion, 
+    die die neu eingefügten Knoten und Kanten umfasst.
    
   \end{postsuccess}
 
@@ -254,37 +269,37 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
   
   \begin{proc}    
     \step[1]
-    Der Benutzer startet den UseCase über das PopUp Menü \ref{SUBGRAPH-LIST-POPUP}
+    Der Benutzer startet den UseCase über das PopUp Menü 
+    \ref{SUBGRAPH-LIST-POPUP}
     im Hauptfenster \gq{Insert IML Subgraph}.
     Hierdurch wird der einzufügende IML-Teilgraph bestimmt (immer
     der IML-Teilgraph, auf dem der Rechtsklick ausgeführt wurde).
     
     \step[2] 
-    GIANT zeigt in der Statuszeile im Hauptfenster \gq{Select Position in Display Window
+    GIANT zeigt in der Statuszeile im Hauptfenster 
+    \gq{Select Position in Display Window
     for Insertion of IML Subgraph}
     Der Benutzer wählt das entsprechende Anzeigefenster aus und
-    gibt über das Fadenkreuz \ref{Fadenkreuzcursor} die Position vor, an der die neuen
+    gibt über das Fadenkreuz (siehe \ref{Fadenkreuzcursor}) die Position vor, 
+    an der die neuen
     Fenster-Knoten und Fenster-Kanten eingefügt werden sollen.
     Die Statuszeile im Hauptfenster schaltet auf Normalmodus zurück.
     
     \step[3]
-    GIANT zeigt den Dialog zur Auswahl des entsprechenden Layoutalgorithmus
-    \ref{Layoutalgorithmen-Dialog}.
+    GIANT zeigt den Dialog zur Auswahl von Layoutalgorithmen
+    (siehe \ref{Layoutalgorithmen-Dialog}).
     
     \step[4]
     Der Benutzer wählt einen der vorgegebenen Layoutalgorithmen aus. Bei 
-    semantischen Layouts gibt er auch die Kantenklassen vor,
-    die berücksichtigt werden sollen.
-    
+    semantischen Layouts gibt er in über den Layoutalgorithmen Dialog
+    (siehe \ref{Layoutalgorithmen-Dialog}) auch die Kantenklassen vor,
+    die für das Layout berücksichtigt werden sollen (Details
+    zu Layoutalgorithmen siehe Kapitel \ref{Layoutalgorithmen}.
+           
     \step[5]
-    Der Benutzer gibt den Namen für die Selektion ein, die im Zielfenster
-    für die neu eingefügten Fenster-Knoten und Fenster-Kanten erzeugt wird.\\
-    Gibt der Benutzer keinen Namen an, vergibt Giant automatisch einen Namen.
-        
-    \step[6]
     Der Benutzer bestätigt mit OK.
           
-    \step[7] 
+    \step[6] 
     GIANT berechnet das entsprechende Layout und zeigt derweil einen
     DIALOG an, über den der Benutzer über den Fortschritt der Berechnung
     informiert wird \ref{Progressbar}\\
@@ -292,7 +307,7 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
     werden (die gesamte GUI ist gesperrt). Zugänglich ist nur der
     Button zum Abbruch des Algorithmus.
     
-    \step[8]
+    \step[7]
     Nach Abschluss der Berechnung fügt GIANT die Fenster-Knoten und 
     Fenster-Kanten in das entsprechende Anzeigefenster ein.
    
@@ -301,8 +316,8 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
   \end{proc}
 
   \begin{aproc}
-    \astep{6} Der Benutzer bricht die Eingabe mit Cancel ab.
-    \astep{7} Der Benutzer bricht die Berechnung des Layouts ab.  
+    \astep{4} Der Benutzer bricht den UseCase Eingabe mit Cancel ab.
+    \astep{6} Der Benutzer bricht die Berechnung des Layouts ab.  
   \end{aproc}
 
 
@@ -312,13 +327,14 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
 % ==============================================================================
 \begin{uc}[Selektion in Anzeigefenster einfügen]
           {UC: Selektion in Anzeigefenster einfügen}
+\index{Selektionen!in Anzeigefenster einfügen}
 	  
 Mit diesem UseCase kann eine Selektion aus einem Anzeigefenster
 in ein anderes Anzeigefenster unter Beibehaltung des Layouts
-der Quell-Selektion kopiert werden. 
-Siehe hierzu  
-\ref{Verhalten beim Einfügen von IML-Teilgraphen und Selektionen in Anzeigefenster},
-insbesondere \ref{Einfügen von Selektionen in Anzeigefenster}.  
+der Quell-Selektion kopiert werden (
+siehe hierzu  \ref{Verhalten beim Einfügen von IML-Teilgraphen 
+und Selektionen in Anzeigefenster} und
+\ref{Einfügen von Selektionen in Anzeigefenster}).  
 
   \begin{precond}
     \cond Ein Projekt mit mindestens zwei geöffneten 
@@ -332,7 +348,7 @@ insbesondere \ref{Einfügen von Selektionen in Anzeigefenster}.
     
     \cond 
     Alle Fenster-Knoten und Fenster-Kanten der \gq{Quell-Selektion} 
-    sind auch in der \gq{Ziel-Anzeigefenster} unter Beibehaltung des
+    sind auch im \gq{Ziel-Anzeigefenster} unter Beibehaltung des
     Layouts der Quell-Selektion vorhanden.
     
     \cond
@@ -352,53 +368,58 @@ insbesondere \ref{Einfügen von Selektionen in Anzeigefenster}.
     \step[1]
     Der Benutzer startet den UseCase über das PopUp Menü
     \ref{PopUp Menü Subgraph List} in der Subgraph Liste im Hauptfenster.
-    Durch Auswahl einer der Menüeinträge 
-    Copy Selection with new layout oder Copy Selection with existing layout.
-
+    Durch Auswahl eines der beiden Menüeinträge 
+    \gq{Copy Selection keep existing layout} oder 
+    \gq{Copy Selection change existing layout}.
     Hierdurch wird automatisch die Quell-Selektion bestimmt (immer
     die Selektion, auf der der Rechtsklick ausgeführt wurde).
     
     \step[2] 
     Der Benutzer wählt das entsprechende Ziel-Anzeigefenster aus.
-    GIANT zeigt in der Statuszeile im Hauptfenster \gq{Select Position in Display Window
+    Das Ziel-Anzeigefenster darf nicht das Quell-Anzeigefenster sein.
+    GIANT zeigt in der Statuszeile im Hauptfenster 
+    \gq{Select Position in Display Window
     for Insertion of copied IML Subgraph}
-    Der Nutzer gibt gibt über das Fadenkreuz die Position vor, an der die neuen
-    Fenster-Knoten und Fenster-Kanten eingefügt werden sollen.
-    \ref{Fadenkreuzcursor}
-    Die Statuszeile im Hauptfenster schaltet auf Normalmodus zurück.
+    Der Benutzer gibt gibt über das Fadenkreuz die Position vor, 
+    an der die neuen Fenster-Knoten und Fenster-Kanten eingefügt werden 
+    sollen (siehe \ref{Fadenkreuzcursor}).
+    Die Statuszeile im Hauptfenster schaltet dannach auf Normalmodus zurück.
     
     \step[3]
     GIANT kopiert die Knoten und Kanten der 
     Quell-Selektion in das Ziel-Anzeigefenster.
     Je nachdem, welchen Eintrag der Benutzer im PopUp Menü ausgewählt hat,
-    geschieht mit den bereits im Ziel-Anzeigefenster vorhandenen Knoten
-    der Quell-Selektion folgendes:
+    geschieht mit den bereits im Ziel-Anzeigefenster vorhandenen 
+    Fenster-Knoten der Quell-Selektion folgendes:
     \begin {enumerate}
        \item
-       Ihre Position wird im Ziel-Anzeigefenster nicht verändert.
+       Falls \gq{Copy Selection keep existing layout} gewählt wurde, wird
+       ihre Position im Ziel-Anzeigefenster nicht verändert.
        
-       \item
-       Ihre Position wird im Zielanzeigefenster gemäß den dem Layout der
+       \item 
+       Falls \gq{Copy Selection change existing layout} gewählt wurde,
+       ihre Position im Zielanzeigefenster gemäß dem Layout der
        Quell-Selektion verändert.
         
     \end {enumerate}
-   
-     
+      
   \end{proc}
-
 
 
 \end{uc}
 
 % ==============================================================================
-\begin{uc}[Knoten und Kanten einer Selektion aus Anzeigefenster löschen]
-      {UC: Knoten und Kanten einer Selektion aus Anzeigefenster löschen}
-	  
-	  
-Die Selektion wird gelöscht, alle Fenster-Knoten und Fenster-Kanten
-der Selektion werden ebenfalls gelöscht. 
-Siehe auch 
-\ref{Verhalten beim Entfernen von Fenster-Knoten und Fenster-Kanten}.
+\begin{uc}[Fenster-Knoten und Fenster-Kanten einer Selektion aus 
+           Anzeigefenster löschen]
+      {UC: Fenster-Knoten und Fenster-Kanten einer Selektion aus 
+           Anzeigefenster löschen}
+\index{Fenster-Knoten!löschen}
+\index{Fenster-Kanten!löschen}
+	  	  
+Mittels dieses UseCases können alle Fenster-Knoten und Fenser-Kanten
+einer Selektion aus einem Anzeigefenster gelöscht werden
+(siehe hierzu auch \ref{Verhalten beim Entfernen von Fenster-Knoten und 
+Fenster-Kanten}).
 
  
   \begin{precond}
@@ -419,7 +440,9 @@ Siehe auch
     der unter 
     \ref{Verhalten beim Entfernen von Fenster-Knoten und Fenster-Kanten}
     beschriebenen Konvention aus dem Anzeigefenster entfernt.
-    
+
+    \cond
+    Alle anderen Selektionen des Anzeigefensters wurden aktualisiert.
  
    
   \end{postsuccess}
@@ -433,16 +456,17 @@ Siehe auch
   \begin{proc}    
   
     \step[1]
-    Der User führt einen Rechtsklick auf die entsprechende Selektion durch
-    \ref{Selektionsauswahlliste} und wählt im 
-    entsprechenden PopUp Menü den Eintrag (Delete Selection) aus.
+    Der User führt einen Rechtsklick auf die entsprechende Selektion in der
+    Selektionsauswahlliste durch (siehe \ref{Selektionsauswahlliste})
+    und wählt im entsprechenden PopUp Menü den Eintrag \gq{Delete Selection}
+    aus.
       
     
     \step[2]
     GIANT zeigt die Sicherheitsabfrage (siehe \ref{Sicherheitsabfrage}) 
     und fragt nach, ob es die Selektion samt ihrer Knoten und Kanten
-    wirklich löschen soll.
-    (\gq{Really delete Selection xy from its window including Nodes and Edges?})
+    wirklich löschen soll (\gq{Really delete Selection xy from its window 
+    including Nodes and Edges?}).
     
     \step[3]
     Der Benutzer bestätigt mit YES.
@@ -459,15 +483,12 @@ Siehe auch
   \end{aproc}
 
 
-
-
-
-
 \end{uc}
 
 % ==============================================================================
 \begin{uc}[Den Visualisierungsstil eines Anzeigefensters ändern]
 {UC: Den Visualisierungsstil eines Anzeigefensters ändern}
+\index{Visualisierungsstil!ändern}
 
 Mittels dieses UseCase kann der Benutzer die Visualisierung
 von Fenster-Knoten und Fenster-Kanten innerhalb eines Anzeigefensters
@@ -516,6 +537,9 @@ Visualisierungsstile (siehe auch \ref{Config Visualisierungsstile}) ändern.
 
 % ==============================================================================
 \begin{uc}[Anzeigefenster scrollen]{UC: Anzeigefenster scrollen}
+\index{Anzeigefenster!scrollen}
+\index{scrollen}
+
 Verändert die Position des sichtbaren Anzeigeinhaltes.
 
   \begin{precond}
@@ -537,9 +561,9 @@ Verändert die Position des sichtbaren Anzeigeinhaltes.
     \begin {enumerate}
       \item
       Der Benutzer scrollt den sichtbaren Anzeigefokus mittels der horizontalen
-      und vertikalen Scrollleisten des Anzeigefensterts. Dies geschieht mittels
+      und vertikalen Scrollleisten des Anzeigefensterts (siehe    
+      \ref{Scrolleisten}). Dies geschieht mittels
       der Maus gemäß der gängigen Konventionen aus GTK/Ada für Scrollleisten.
-      \ref{Scrolleisten}
       
       \item
       Gemäß der gängigen intuitiven Konventionen kann auch 
@@ -556,8 +580,10 @@ Verändert die Position des sichtbaren Anzeigeinhaltes.
 
 
 % ==============================================================================
-\begin{uc}[Label]{UC: Anzeigefenster zoomen}
-Verändert den Maßstab der Darstellung von Knoten und Kanten (relativ)
+\begin{uc}[Anzeigefenster zoomen]{UC: Anzeigefenster zoomen}
+\index{Anzeigefenster!zoomen}
+\index{zoomen}
+Verändert den Maßstab der Darstellung von Knoten und Kanten (relativ).
 
   \begin{precond}
     \cond 
@@ -570,7 +596,8 @@ Verändert den Maßstab der Darstellung von Knoten und Kanten (relativ)
     \cond
     Der angezeigte Bereich des sichtbaren Anzeigeinhalts wurde entsprechend
     vergrößert oder verkleinert.
-    Der Detaillierungslevel wurde ggf. automatisch angepaßt.
+    Der Detaillierungslevel (siehe \ref{Visualization Detailstufen})
+    wurde ggf. automatisch angepaßt.
     
   \end{postsuccess}
 
@@ -579,23 +606,33 @@ Verändert den Maßstab der Darstellung von Knoten und Kanten (relativ)
     \step[1]
     \begin {enumerate}
       \item
-      Der Benutzer gibt in der Zoomkontroll-Combobox des Anzeigefensters einen
+      Der Benutzer gibt in der Zoomkontroll-Combobox 
+      (siehe \ref{GUI Zoom-Kontrolle})
+      des Anzeigefensters einen
       neuen Zoomwert ein, wählt darin einen der vorgefertigten Werte aus oder 
-      ändert
-      den Zoomwert in festgelegten Schritten mit den Zoom+ oder Zoom- Buttons.
+      ändert den Zoomwert in festgelegten Schritten mit den Zoom+ oder 
+      Zoom- Buttons. 
       
       \item
-      Der Benutzer klickt auf den \gq{Display} - Button der Zoomkontrolle
+      Der Benutzer klickt auf den Button \gq{Display} der Zoomkontrolle
+      (siehe \ref{GUI Zoom-Kontrolle}).
       
     \end {enumerate}
+    
+    \step[2]
+    GIANT berechnet den neuen sichtaberen Anzeigeinhalt anhand der neuen
+    Zoomstufe.
+
         
   \end{proc}
 \end{uc}
 
 % ==============================================================================
 \begin{uc}[Label]{UC: Zoomen auf eine gesamte Selektion}
-Wählt die Zoomstufe und Scrollt so, daß eine gesamte Selektion im Fenster 
-sichtbar ist
+\index{zoomen auf Selektion}
+
+Wählt die Zoomstufe und scrollt so, daß eine gesamte Selektion im Fenster 
+sichtbar ist.
 
   \begin{precond}
     \cond 
@@ -609,30 +646,30 @@ sichtbar ist
     Der angezeigte Bereich des sichtbaren Anzeigeinhalts wurde so
     vergrößert oder verkleinert, daß die gesamte ausgewählte Selektion sichtbar
     ist, ggf. wurde auch entsprechend gescrollt.
-    Der Detaillierungslevel wurde ggf. automatisch angepaßt.
-    
+    Der Detaillierungslevel (siehe \ref{Visualization Detailstufen})
+    wurde ggf. automatisch angepaßt.
+        
   \end{postsuccess}
 
   \begin{proc}    
   
     \step[1]
-    \begin {enumerate}
-      \item
-      Der Benutzer klickt auf \gq{Zoom to make selection fill window} 
-      im Popup-Menü
-      der Selektionsauswahlliste \ref{Selektionsauswahlliste} auf der 
-      Selektion, welche er sichtbar machen will.
+    Der Benutzer klickt auf \gq{Zoom to make selection fill window} 
+    im Popup-Menü
+    der Selektionsauswahlliste (siehe \ref{Selektionsauswahlliste}).
       
-    \end {enumerate}
+    \step[2]
+    GIANT scrollt und zoomt automatisch so, dass die gesamte Selektion
+    im Anzeigefenster sichtbar wird.
         
   \end{proc}
 \end{uc}
 
 % ==============================================================================
 \begin{uc}[Label]{UC: Zoomen auf gesamten Inhalt eines Anzeigefensters}
-
-Wählt die Zoomstufe und Scrollt so, daß der gesamte Fensterinhalt im Fenster 
-sichtbar ist
+\index{zoomen auf gesamten Anzeigeinhalt}
+Wählt die Zoomstufe und scrollt so, daß der gesamte Fensterinhalt im Fenster 
+sichtbar ist.
 
   \begin{precond}
     \cond 
@@ -644,21 +681,21 @@ sichtbar ist
     
     \cond
     Der angezeigte Bereich des sichtbaren Anzeigeinhalts wurde so
-    vergrößert oder verkleinert, daß der gesamte Fensterinhalt sichtbar
-    ist, ggf. wurde auch entsprechend gescrollt.
-    Der Detaillierungslevel wurde ggf. automatisch angepaßt.
+    vergrößert oder verkleinert, daß der gesamte Anzeigeinhalt im sichtbaren
+    Anzeigeinhalt dargestellt ist, ggf. wurde auch entsprechend gescrollt.
+    Der Detaillierungslevel (siehe \ref{Visualization Detailstufen}) 
+    wurde ggf. automatisch angepaßt.
     
   \end{postsuccess}
 
   \begin{proc}    
   
     \step[1]
-    \begin {enumerate}
-      \item
-      Der Benutzer klickt auf \gq{Fill window} in der Zoomkontrolle des
-      Fensters.
+    Der Benutzer klickt auf \gq{Fill window} in der Zoomkontrolle des
+    Fensters (siehe \ref{GUI Zoom-Kontrolle}).
       
-    \end {enumerate}
+    \step[2]
+    GIANT berechnet die neue Zoomstufe für das Anzeigefenster.
         
   \end{proc}
 
@@ -666,10 +703,10 @@ sichtbar ist
 
 % ==============================================================================
 \begin{uc}[Zoomen auf eine Kante]{UC: Zoomen auf eine Kante}
-
+\index{zoomen auf eine Kante}
 
 Wählt die Zoomstufe und Scrollt so, daß eine bestimmte Kante komplett im 
-Fenster sichtbar ist
+sichtbaren Anzeigeinhalt dargestellt ist.
 
   \begin{precond}
     \cond 
@@ -677,6 +714,7 @@ Fenster sichtbar ist
     einer Kante ist geladen.
        
   \end{precond}
+
 
   \begin{postsuccess}
     
@@ -688,73 +726,210 @@ Fenster sichtbar ist
     
   \end{postsuccess}
 
+
+  \begin{postfail}
+    \cond Hat der Benutzer den UseCase abgebrochen,
+          so werden keine Änderungen an der Zoomstufe vorgenommen.
+  \end{postfail}
+
+
   \begin{proc}    
   
     \step[1]
-    \begin {enumerate}
-      \item
-       Der Benutzer Klickt den Button \gq{Zoom Edge} in der Zoomkontrolle.
-       Daraufhin erscheint in der Statuszeile von GIANT im Hauptfenster
-       \gq{Select Edge in Window (Fenstername) to be zoomed onto} und
-       der Fadenkreuzcursor erscheint.
+    Der Benutzer Klickt den Button \gq{Zoom Edge} in der Zoomkontrolle
+    (siehe \ref{GUI Zoom-Kontrolle}).
+   
+    \step[2] 
+    Daraufhin erscheint in der Statuszeile von GIANT im Hauptfenster
+    der Text 
+    \gq{Select Edge in Window (Fenstername) to be zoomed onto} und
+    der Fadenkreuzcursor (siehe \ref{Fadenkreuzcursor}) wird
+    angezeigt, wenn der Mauscursor über den sichtbaren Anzeigeinhalt
+    eines Anzeigefensters bewegt wird.
        
-       \item
-       Der Benutzer klickt mit der Rechten Maustaste die gewünschte Kante
-       im Graphenfenster an
+    \step[3]
+    Der Benutzer klickt mit der linken Maustaste auf die gewünschte Kante
+    im gewünschten Anzeigefenster.
+
+    \step[4]
+    GIANT berechnet für das gewünschte Anzeigefenster die Zoomstufe so,
+    dass  die gesamte Fenster-Kante im Anzeigeinhalt sichtbar dargestellt
+    wird.
       
-    \end {enumerate}
         
   \end{proc}
+
+  \begin{aproc}
+
+    \astep{3} Der Benutzer kann den UseCase abbrechen, indem er
+    auf eine beliebige Stelle -- halt nicht auf eine Kante --
+    klickt oder einen Rechtsklick mit der Maus ausführt.
+  
+  \end{aproc}
 
 \end{uc}
 
 
 % ==============================================================================
-\begin{uc}[Label]{UC: Verschieben von Knoten, Selektionen}
-Knoten, Selektionen (jeweils die aktuelle Selektion),
-Drag and Drop, Cut and Paste
+\begin{uc}[Label]{UC: Verschieben von Fenster-Knoten und Selektionen mittels
+                  Cut and Paste}
+\index{verschieben!einzelne Knoten}
+\index{verschieben!ganze Selektionen}
 
+Mit diesem UseCase können Fenster-Knoten und Selektionen auf dem
+Anzeigeinhalt verschoben werden. Dieses Verschieben geschieht mittels
+\gq{Cut and Paste}.
 
 
   \begin{precond}
     \cond 
-    Ein Projekt mit mindestens einem geöffneten Anzeigefenster mit mindestens 
-    einer Kante ist geladen.
+    Ein Projekt mit mindestens einem geöffneten Anzeigefenster und mit
+    mindestens einem Fenster-Knoten oder mindestens einer Selektion
+    ist geladen.
        
   \end{precond}
 
   \begin{postsuccess}
     
     \cond
-    Der angezeigte Bereich des sichtbaren Anzeigeinhalts wurde so
-    vergrößert oder verkleinert, daß die betreffende Kante komplett
-    sichtbar ist, ggf. wurde auch entsprechend gescrollt.
-    Der Detaillierungslevel wurde ggf. automatisch angepaßt.
+    Der einzelne Fensterknoten oder alle Fenster-Knoten der Selektion
+    wurden im Anzeigeinhalt verschoben.  
+  \end{postsuccess}
+
+  \begin{postfail}
+    \cond Hat der Benutzer den UseCase abgebrochen,
+          so werden keine Fenster-Knoten verschoben.
+  \end{postfail}  
+
+
+ 
+
+  \begin{proc}    
+  
+    \step[1]
+    Der Benutzer wählt die zu verschiebende Selektion oder den
+    zu verschiebenden Fenster-Knoten aus (\gq{Cut}), indem er:
+   
+    \begin{enumerate}
+      \item
+      Einen Rechtsklick auf eine Selektion in der Selektionsauswahliste
+      durchführt (siehe \ref{Selektionsauswahlliste}) und im
+      Popup-Menü den Eintrag \gq{Move Selection} auswählt,
+
+      \item
+      oder einen Rechtsklick auf einen Fenster-Knoten durchführt
+      und im PopupMenü (siehe \ref{Node-Popup-Menü}) den Eintrag
+      \gq{Move Node} auswählt.
+
+    \end{enumerate}
+
+    \step[2]
+    GIANT geht in den den \gq{Paste Modus} über und zeigt dies in 
+    der Statusleiste (siehe \ref{Statuszeile}) des Hauptfensters an.
+    Der Cursor wird, falls er über den Anzeigeinhalt eines Anzeigefensters
+    bewegt wird, zum Fadenkreuz (siehe \ref{Fadenkreuzcursor}).
+    Die Funktionalität zum Zoomen und Scrollen des Anzeigefensters mittels
+    der beiden UseCases \ref{Anzeigefenster scrollen} und
+    \ref{Anzeigefenster zoomen} bleibt weiterhin verfügbar, alle
+    andere Funktionalität von GIANT wird gesperrt. 
+    Der Benutzer kann insbesondere das aktuelle Anzeigefenster 
+    (in welchem er den UseCase gestartet -- also \gq{Cut} ausgeführt hat --
+    nicht verlassen).
+
+    \step[3]
+    Der Benutzer klickt mit dem Fadenkreuzkursor (linke Maustaste)
+    an eine bliebige Stelle innerhalb des sichtbaren Anzeigeinhaltes
+    des Anzeigefensters.
+
+    \step[4]
+    GIANT verschiebt die betroffenen Fenster-Knoten an die gewünschte
+    stelle.
+      
+  \end{proc}
+
+  \begin{aproc}
+
+    \astep{3} Der Benutzer kann den UseCase abbrechen, indem er
+              einen Rechtsklick mit der Maus auf eine beliebige Stelle 
+              durchführt.
+  \end{aproc}
+
+
+\end{uc}
+
+
+
+% ==============================================================================
+\begin{uc}[Label]{UC: Verschieben einzelner Fenster-Knoten mittels 
+                      Drag and Drop}
+\index{verschieben!einzelne Knoten}
+\index{verschieben!ganze Selektionen}
+
+Mit diesem UseCase können einzelne Fenster-Knoten mittels Drag and
+Drop auf dem sichtbaren Anzeigeinhalt verschoben werden.
+
+
+  \begin{precond}
+    \cond 
+    Ein Projekt mit mindestens einem geöffneten Anzeigefenster und mit
+    mindestens einem Fenster-Knoten ist geladen.
+       
+  \end{precond}
+
+  \begin{postsuccess}
     
+    \cond
+    Der einzelne Fensterknoten wurden im Anzeigeinhalt verschoben.  
   \end{postsuccess}
 
   \begin{proc}    
   
     \step[1]
-    \begin {enumerate}
+    Der Benutzer wählt die zu verschiebende Selektion oder den
+    zu verschiebenden Fenster-Knoten aus (\gq{Cut}), indem er:
+   
+    \begin{enumerate}
       \item
-       Der Benutzer Klickt den Button \gq{Zoom Edge} in der Zoomkontrolle.
-       Daraufhin erscheint in der Statuszeile von GIANT im Hauptfenster
-       \gq{Select Edge in Window (Fenstername) to be zoomed onto} und
-       der Fadenkreuzcursor erscheint.
-       
-       \item
-       Der Benutzer klickt mit der Rechten Maustaste die gewünschte Kante
-       im Graphenfenster an
+      Einen Rechtsklick auf eine Selektion in der Selektionsauswahliste
+      durchführt (siehe \ref{Selektionsauswahlliste}) und im
+      Popup-Menü den Eintrag \gq{Move Selection} auswählt,
+
+      \item
+      oder einen Rechtsklick auf einen Fenster-Knoten durchführt
+      und im PopupMenü (siehe \ref{Node-Popup-Menü}) den Eintrag
+      \gq{Move Node} auswählt.
+
+    \end{enumerate}
+
+    \step[2]
+    GIANT geht in den den \gq{Paste Modus} über und zeigt dies in 
+    der Statusleiste (siehe \ref{Statuszeile}) des Hauptfensters an.
+    Der Cursor wird, falls er über den Anzeigeinhalt eines Anzeigefensters
+    bewegt wird, zum Fadenkreuz (siehe \ref{Fadenkreuzcursor}).
+    Die Funktionalität zum Zoomen und Scrollen des Anzeigefensters mittels
+    der beiden UseCases \ref{Anzeigefenster scrollen} und
+    \ref{Anzeigefenster zoomen} bleibt weiterhin verfügbar, alle
+    andere Funktionalität von GIANT wird gesperrt. 
+    Der Benutzer kann insbesondere das aktuelle Anzeigefenster 
+    (in welchem er den UseCase gestartet -- also \gq{Cut} ausgeführt hat --
+    nicht verlassen).
+
+    \step[3]
+    Der Benutzer klickt mit dem Fadenkreuzkursor (linke Maustaste)
+    an eine bliebige Stelle innerhalb des sichtbaren Anzeigeinhaltes
+    des Anzeigefensters.
+
+    \step[4]
+    GIANT verschiebt die betroffenen Fenster-Knoten an die gewünschte
+    stelle.
       
-    \end {enumerate}
-        
   \end{proc}
 
-
-
-
 \end{uc}
+
+
+
+
 
 
 % ==============================================================================

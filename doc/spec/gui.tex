@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.45 $
-%  $Date: 2003/03/28 16:09:17 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.46 $
+%  $Date: 2003/03/28 18:37:17 $
 %  $Author: schwiemn $
 %
 %  Description: Bis zu Revision 1.6 sind UseCase-artige Beschreibungen enthalten,
@@ -77,7 +77,9 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
   \subsection {Statuszeile}
    \label{Statuszeile}
     In der Statuszeile befindet sich die Information:
-    GIANT - Project name: x , Windows: x , IML Nodes: x, IML Edges: x
+    GIANT - Project name: x , Windows: x , IML Nodes: x, IML Edges: x \\
+    Gegebenenfalls werden dort auch andere Informationen zum aktuellen Zustand
+    von GIANT dargestellt.
 
   \subsection {Window List}
   
@@ -200,6 +202,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     \subsubsection{Node-Popup-Menü}\label{Node-Popup-Menü}
     \begin{enumerate}
       \item Show Node Info Window
+      \item Move Node
       \item Show Corresponding Source Code
       \item Annotate Node \label{Annotate Node}
       \item Change Node Annotation \label{Change Node Annotation}
@@ -226,13 +229,15 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
       \item Delete Pin (PIN\_DELETE) % OK
     \end{enumerate}
 
-  \subsection{Selektionen} \label{Selektionsauswahlliste}
+  \subsection{Selektionsauswahlliste} \label{Selektionsauswahlliste}
 
     In der Selektionsauswahlliste (SELECTION\_LIST) sind folgende Menüpunkte
     eines Popup-Menüs aktivierbar:
     \begin{enumerate}
       \item New Selection
       \item Add Nodes to this Selection
+
+      \item Move Selection
      
       \item Fade out Selection
       \item Fade in Selection
@@ -248,14 +253,14 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
       \item Zoom to make selection fill window % OK
       
       \item Unhighlight Selection % OK
-      \item Copy Selection with new layout % OK
-      \item Copy Selection with existing layout % OK
+      \item Copy Selection keep existing layout % OK
+      \item Copy Selection change existing layout % OK
       \item Delete Selection % OK
       \item Selection Set Operation (Union/Difference/Intersection) % OK
     \end{enumerate}    
 
 
-  \subsection{Zoom-Kontrolle}
+  \subsection{Zoom-Kontrolle} \label{GUI Zoom-Kontrolle}  
 
     Die Zoom-Kontrolle besteht aus folgenden Elementen:
     
@@ -393,7 +398,8 @@ Der Dialog Layoutalgorithmen bietet folgende Möglichkeiten:
  \item Eingabe der zu berücksichtigenden Kanten bei semantischen Layouts
  \item OK Button
  \item Cancel Button
- \item Textfeld zur Eingabe des Namens für die Selektion (in dem Anzeigefenster wo sie eingefügt wurde)
+ \item Textfeld zur Eingabe des Namens für die Selektion (in dem Anzeigefenster wo sie 
+       eingefügt wurde)
 \end {enumerate}
 
 
