@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-config-vis_styles-test.adb,v $, $Revision: 1.11 $
+--  $RCSfile: giant-config-vis_styles-test.adb,v $, $Revision: 1.12 $
 --  $Author: schwiemn $
---  $Date: 2003/07/10 19:54:10 $
+--  $Date: 2003/07/11 16:24:44 $
 --
 with Ada.Strings.Unbounded;
 
@@ -481,7 +481,341 @@ package body Giant.Config.Vis_Styles.Test is
            
       end loop;
    end Test_Replacement_of_Vis_Styles;
+   
+   ---------------------------------------------------------------------------
+   -- Tests Inheritance Behaviour
+   procedure Test_Inheritance
+     (R : in out AUnit.Test_Cases.Test_Case'Class) is
+     
+     Test_Vis_Style : Giant.Config.Vis_Styles.Visualisation_Style_Access;
+     
+     All_Colors : Giant.Config.Vis_Styles.Color_Access_Array_Access;                                   
+     Color_Id : Positive;     
+   begin
 
+      for i in 1 .. 1 loop
+
+        Giant.Config.Vis_Styles.Initialize_Config_Vis_Styles
+          ("",
+           "",
+           "",
+           "resources/vis_styles/vis_styles_test_set_inheritance_1/"
+           & "test_vis_style_5_inheritance.xml");
+      
+         Assert (Giant.Config.Vis_Styles.Get_Number_Of_Known_Vis_Styles = 1,
+           "Test whether ammount of loaded vis styles is correct");
+            
+         Test_Vis_Style := 
+           Giant.Config.Vis_Styles.Initialize_Vis_Style_By_Name
+             ("test_vis_style_5_inheritance");
+                               
+         -- Check "test_vis_style_5_inheritance"
+         ---------------------------------------
+         
+         -- check global data 
+         --------------------
+         All_Colors := Giant.Config.Vis_Styles.Get_All_Colors; 
+         
+         Color_Id := 
+           Config.Vis_Styles.Get_Vis_Window_Background_Color 
+             (Test_Vis_Style);
+         
+         Assert 
+           (Giant.Config.Get_Color_Value (All_Colors.all (Color_Id)) = 
+            "RGB:20/20/20", "Test Correct Vis_Window_Background_Color");
+            
+         -- Check Node Class Data - no inheritance
+         -----------------------------------------
+                  
+         -- check "IML_Root"
+         Assert 
+           (Check_Node_Class_Config_Status
+             (Vis_Style          => Test_Vis_Style,
+              Node_Class         => "IML_Root", 
+              Req_Icon_File_Path => 
+                File_Management.Get_Absolute_Path_To_File_From_Relative
+                  ("./", 
+                   "resources/vis_styles/vis_styles_test_set_inheritance_1/"
+                   & "test_node_icon_red_1.xpm"), 
+              Req_Text_Color     => "red",
+              Req_Border_Color   => "red",
+              Req_Fill_Color     => "white",      
+              Attr_in_Filter     => 1),
+            "Test config data for node class ""IML_Root"""); 
+                                                                        
+         -- check "HPGNode"
+         Assert 
+           (Check_Node_Class_Config_Status
+             (Vis_Style          => Test_Vis_Style,
+              Node_Class         => "HPGNode", 
+              Req_Icon_File_Path => 
+                File_Management.Get_Absolute_Path_To_File_From_Relative
+                  ("./", 
+                   "resources/vis_styles/vis_styles_test_set_inheritance_1/"
+                   & "test_node_icon_red_1.xpm"), 
+              Req_Text_Color     => "red",
+              Req_Border_Color   => "red",
+              Req_Fill_Color     => "white",      
+              Attr_in_Filter     => 1),
+            "Test config data for node class ""HPGNode""");                         
+                        
+         -- Check Node Class Data - regarding inheritance from "T_Node"
+         --------------------------------------------------------------
+         
+         -- check "T_Node"
+         Assert 
+           (Check_Node_Class_Config_Status
+             (Vis_Style          => Test_Vis_Style,
+              Node_Class         => "T_Node", 
+              Req_Icon_File_Path => 
+                File_Management.Get_Absolute_Path_To_File_From_Relative
+                  ("./", 
+                   "resources/vis_styles/vis_styles_test_set_inheritance_1/"
+                   & "test_node_icon_red_1.xpm"), 
+              Req_Text_Color     => "red",
+              Req_Border_Color   => "red",
+              Req_Fill_Color     => "white",      
+              Attr_in_Filter     => 2),
+            "Test config data for node class ""T_Node""");             
+         
+         -- check "TC_Base_Type"
+         Assert 
+           (Check_Node_Class_Config_Status
+             (Vis_Style          => Test_Vis_Style,
+              Node_Class         => "TC_Base_Type", 
+              Req_Icon_File_Path => 
+                File_Management.Get_Absolute_Path_To_File_From_Relative
+                  ("./", 
+                   "resources/vis_styles/vis_styles_test_set_inheritance_1/"
+                   & "test_node_icon_red_1.xpm"), 
+              Req_Text_Color     => "red",
+              Req_Border_Color   => "red",
+              Req_Fill_Color     => "white",      
+              Attr_in_Filter     => 2),
+            "Test config data for node class ""TC_Base_Type""");          
+         
+         -- check "TC_Record_Name"
+         Assert 
+           (Check_Node_Class_Config_Status
+             (Vis_Style          => Test_Vis_Style,
+              Node_Class         => "TC_Record_Name", 
+              Req_Icon_File_Path => 
+                File_Management.Get_Absolute_Path_To_File_From_Relative
+                  ("./", 
+                   "resources/vis_styles/vis_styles_test_set_inheritance_1/"
+                   & "test_node_icon_red_1.xpm"), 
+              Req_Text_Color     => "red",
+              Req_Border_Color   => "red",
+              Req_Fill_Color     => "white",      
+              Attr_in_Filter     => 2),
+            "Test config data for node class ""TC_Record_Name""");            
+         
+         -- Check Node Class Data - regarding inheritance from "Prog_Unit"
+         -----------------------------------------------------------------
+
+         -- check "Prog_Unit"
+         Assert 
+           (Check_Node_Class_Config_Status
+             (Vis_Style          => Test_Vis_Style,
+              Node_Class         => "Prog_Unit", 
+              Req_Icon_File_Path => 
+                File_Management.Get_Absolute_Path_To_File_From_Relative
+                  ("./", 
+                   "resources/vis_styles/vis_styles_test_set_inheritance_1/"
+                   & "test_node_icon_red_1.xpm"), 
+              Req_Text_Color     => "red",
+              Req_Border_Color   => "red",
+              Req_Fill_Color     => "white",      
+              Attr_in_Filter     => 1),
+            "Test config data for node class ""Prog_Unit""");  
+
+         -- check "Routine"
+         Assert 
+           (Check_Node_Class_Config_Status
+             (Vis_Style          => Test_Vis_Style,
+              Node_Class         => "Routine", 
+              Req_Icon_File_Path => 
+                File_Management.Get_Absolute_Path_To_File_From_Relative
+                  ("./", 
+                   "resources/vis_styles/vis_styles_test_set_inheritance_1/"
+                   & "test_node_icon_red_1.xpm"), 
+              Req_Text_Color     => "red",
+              Req_Border_Color   => "red",
+              Req_Fill_Color     => "white",      
+              Attr_in_Filter     => 1),
+            "Test config data for node class ""Routine""");  
+            
+         -- check "Unit"
+         Assert 
+           (Check_Node_Class_Config_Status
+             (Vis_Style          => Test_Vis_Style,
+              Node_Class         => "Unit", 
+              Req_Icon_File_Path => 
+                File_Management.Get_Absolute_Path_To_File_From_Relative
+                  ("./", 
+                   "resources/vis_styles/vis_styles_test_set_inheritance_1/"
+                   & "test_node_icon_red_1.xpm"), 
+              Req_Text_Color     => "red",
+              Req_Border_Color   => "red",
+              Req_Fill_Color     => "white",      
+              Attr_in_Filter     => 1),
+            "Test config data for node class ""Unit""");                                   
+                                 
+               
+         -- Check Edge Class Data - inheritance from "Prog_Unit.Subunits"
+         ----------------------------------------------------------------
+                                 
+         -- edge class "Prog_Unit.Subunits"       
+         Assert 
+           (Check_Edge_Class_Config_Status
+             (Vis_Style      => Test_Vis_Style,
+              Node_Class     => "Prog_Unit", 
+              Attribute      => "Subunits",
+              Req_Line_Color => "green",
+              Req_Text_Color => "green",
+              Req_Line_Style => Giant.Config.Vis_Styles.Dashed_Line,
+              Show_Label     => TRUE),
+            "Test status of config data for edge class "
+            & """Prog_Unit.Subunits""");  
+            
+         -- edge class "Unit.Subunits" 
+         Assert 
+           (Check_Edge_Class_Config_Status
+             (Vis_Style      => Test_Vis_Style,
+              Node_Class     => "Unit", 
+              Attribute      => "Subunits",
+              Req_Line_Color => "green",
+              Req_Text_Color => "green",
+              Req_Line_Style => Giant.Config.Vis_Styles.Dashed_Line,
+              Show_Label     => TRUE),
+            "Test status of config data for edge class "
+            & """Unit.Subunits""");  
+            
+         -- edge class "Routine.Subunits" 
+         Assert 
+           (Check_Edge_Class_Config_Status
+             (Vis_Style      => Test_Vis_Style,
+              Node_Class     => "Routine", 
+              Attribute      => "Subunits",
+              Req_Line_Color => "green",
+              Req_Text_Color => "green",
+              Req_Line_Style => Giant.Config.Vis_Styles.Dashed_Line,
+              Show_Label     => TRUE),
+            "Test status of config data for edge class "
+            & """Routine.Subunits"""); 
+            
+         -- Check Edge Class Data - inheritance from "Op."*""
+         ----------------------------------------------------------------
+         
+         -- edge class "Op.Parent" 
+         Assert 
+           (Check_Edge_Class_Config_Status
+             (Vis_Style      => Test_Vis_Style,
+              Node_Class     => "Op", 
+              Attribute      => "Parent",
+              Req_Line_Color => "green",
+              Req_Text_Color => "green",
+              Req_Line_Style => Giant.Config.Vis_Styles.Dashed_Line,
+              Show_Label     => TRUE),
+            "Test status of config data for edge class "
+            & """Op.Parent""");          
+         
+         -- edge class "Op.EType" 
+         Assert 
+           (Check_Edge_Class_Config_Status
+             (Vis_Style      => Test_Vis_Style,
+              Node_Class     => "Op", 
+              Attribute      => "EType",
+              Req_Line_Color => "green",
+              Req_Text_Color => "green",
+              Req_Line_Style => Giant.Config.Vis_Styles.Dashed_Line,
+              Show_Label     => TRUE),
+            "Test status of config data for edge class "
+            & """Op.EType""");           
+         
+         -- edge class "Add_Operator.Parent"
+         Assert 
+           (Check_Edge_Class_Config_Status
+             (Vis_Style      => Test_Vis_Style,
+              Node_Class     => "Add_Operator", 
+              Attribute      => "Parent",
+              Req_Line_Color => "green",
+              Req_Text_Color => "green",
+              Req_Line_Style => Giant.Config.Vis_Styles.Dashed_Line,
+              Show_Label     => TRUE),
+            "Test status of config data for edge class "
+            & """Add_Operator.Parent""");          
+                           
+         -- edge class "Add_Operator.LOp"
+         Assert 
+           (Check_Edge_Class_Config_Status
+             (Vis_Style      => Test_Vis_Style,
+              Node_Class     => "Add_Operator", 
+              Attribute      => "LOp",
+              Req_Line_Color => "green",
+              Req_Text_Color => "green",
+              Req_Line_Style => Giant.Config.Vis_Styles.Dashed_Line,
+              Show_Label     => TRUE),
+            "Test status of config data for edge class "
+            & """Add_Operator.LOp"""); 
+                     
+         -- edge class "Add_Operator.CF_Previous"
+         Assert 
+           (Check_Edge_Class_Config_Status
+             (Vis_Style      => Test_Vis_Style,
+              Node_Class     => "Add_Operator", 
+              Attribute      => "CF_Previous",
+              Req_Line_Color => "green",
+              Req_Text_Color => "green",
+              Req_Line_Style => Giant.Config.Vis_Styles.Dashed_Line,
+              Show_Label     => TRUE),
+            "Test status of config data for edge class "
+            & """Add_Operator.CF_Previous""");          
+                  
+         -- edge class "Value_Conversion.EType"
+         Assert 
+           (Check_Edge_Class_Config_Status
+             (Vis_Style      => Test_Vis_Style,
+              Node_Class     => "Value_Conversion", 
+              Attribute      => "EType",
+              Req_Line_Color => "green",
+              Req_Text_Color => "green",
+              Req_Line_Style => Giant.Config.Vis_Styles.Dashed_Line,
+              Show_Label     => TRUE),
+            "Test status of config data for edge class "
+            & """Value_Conversion.EType""");          
+         
+         -- edges not known by node class "Op"
+                     
+         -- edge class"Value_Conversion.Operand"
+         Assert 
+           (Check_Edge_Class_Config_Status
+             (Vis_Style      => Test_Vis_Style,
+              Node_Class     => "Value_Conversion", 
+              Attribute      => "Operand",
+              Req_Line_Color => "green",
+              Req_Text_Color => "green",
+              Req_Line_Style => Giant.Config.Vis_Styles.Dashed_Line,
+              Show_Label     => TRUE),
+            "Test status of config data for edge class "
+            & """Value_Conversion.Operand""");          
+         
+         -- edge class"Value_Conversion.Source_Type"
+         Assert 
+           (Check_Edge_Class_Config_Status
+             (Vis_Style      => Test_Vis_Style,
+              Node_Class     => "Value_Conversion", 
+              Attribute      => "Source_Type",
+              Req_Line_Color => "green",
+              Req_Text_Color => "green",
+              Req_Line_Style => Giant.Config.Vis_Styles.Dashed_Line,
+              Show_Label     => TRUE),
+            "Test status of config data for edge class "
+            & """Value_Conversion.Source_Type""");          
+                                 
+      end loop;
+   end Test_Inheritance;
+      
    ---------------------------------------------------------------------------
    function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is
    begin
@@ -500,6 +834,9 @@ package body Giant.Config.Vis_Styles.Test is
       Register_Routine 
         (T, Test_Replacement_of_Vis_Styles'Access, 
          "Test_Replacement_of_Vis_Styles");       
+      Register_Routine 
+        (T, Test_Inheritance'Access, 
+         "Test_Inheritance");  
    end Register_Tests;
 
    procedure Set_Up (T : in out Test_Case) is
