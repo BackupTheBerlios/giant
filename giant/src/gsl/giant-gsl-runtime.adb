@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/04 10:29:27 $
+-- $Date: 2003/08/04 10:58:49 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -1048,6 +1048,19 @@ package body Giant.Gsl.Runtime is
       return Gsl_Type (Create_Gsl_Node_Set (Graph_Lib.Get_All_Nodes));
    end Runtime_All_Nodes;
 
+   ---------------------------------------------------------------------------
+   --
+   function Runtime_All_Edges
+     (Parameter : Gsl_List)
+      return Gsl_Type is
+   begin
+      if Get_List_Size (Parameter) /= 0 then
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'all_edges': Expecting no parameters.");
+      end if;
+      return Gsl_Type (Create_Gsl_Edge_Set (Graph_Lib.Get_All_Edges));
+   end Runtime_All_Edges;
+   
    ---------------------------------------------------------------------------
    --
    function Runtime_Has_Attribute
