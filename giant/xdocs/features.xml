@@ -36,19 +36,9 @@
         <p>
           The binary distribution of GIANT should work on most
           machines. The Linux version was compiled on a Debian
-          GNU/Linux system. 
+          GNU/Linux system. Please make sure you have GtkAda 2.2.0
+          installed if using the dynamically linked version.
         </p>
-  
-        <p>
-          Depending 
-          <ul>
-            <li>Bauhaus Tools</li>
-            <li>GNAT 3.15</li>
-            <li>GtkAda 2.2.0</li>
-            <li>XMLAda 0.7.1</li>
-            <li>AUnit 1.0.1</li>
-          </ul>
-       </p>
 
      </section>
 

@@ -31,22 +31,25 @@
         </p>
 
         <p>
-          GIANT was developed to display graphs that are created for
+          GIANT was developed to display graphs that are used for
           reengineering purposes. These graphs are basically abstract
           syntax trees with lots of additional semantic
           information. The <a
           href="http://www.iste.uni-stuttgart.de/ps/bauhaus/index-english.html">Project
           Bauhaus</a> provides tools that can parse various
           programming languages and create a language independent
-          representation called IML. The IML graphs are made availble
-          through a reflection interface that is supported by
-          GIANT. Even for small programms these graphs can have quite
-          a large number of nodes and edges. In example a simple stack
-          implementation written in C with 39 SLOC results in a graph
-          of 223 nodes and 683 edges. The IML graph for the popular
-          download tool wget contains more that 340,000 nodes and over
-          770,000 edges and occupies about 200 megabytes of
-          memory!
+          representation called IML.
+        </p>
+
+        <p>
+          The IML graphs are made availble through a reflection
+          interface that is supported by GIANT. Even for small
+          programms these graphs can have quite a large number of
+          nodes and edges. In example a simple stack implementation
+          written in C with 39 SLOC results in a graph of 223 nodes
+          and 683 edges. The IML graph for the popular download tool
+          wget contains more that 340,000 nodes and over 770,000 edges
+          and occupies about 200 megabytes of memory!
         </p>
 
         <p>

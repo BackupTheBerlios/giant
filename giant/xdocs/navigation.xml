@@ -30,7 +30,7 @@
     
     <menu name="Development">
       <item name="Compile" href="/compile.html"/>
-      <item name="Seminar" href="http://www.iste.uni-stuttgart.de/ps/Lehre/S_Graphen/"/>
+      <item name="Seminar (german)" href="http://www.iste.uni-stuttgart.de/ps/Lehre/S_Graphen/"/>
       <item name="Issue Tracker" href="http://developer.berlios.de/bugs/?group_id=991"/>
       <item name="Project Reports" href="/maven-reports.html"/>
       <item name="CVS repository" href="/cvs-usage.html"/>
