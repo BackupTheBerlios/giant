@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.43 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.44 $
 --  $Author: koppor $
---  $Date: 2003/09/18 15:37:14 $
+--  $Date: 2003/09/18 16:56:34 $
 --
 --  TBD:
 --    * Write into comment, when the routine may be used
@@ -192,6 +192,7 @@ package Giant.Graph_Lib is
    Edge_Does_Not_Exist           : exception;
    Edge_Class_Does_Not_Exist     : exception;
 
+   --  fixme: remove me
    Wrong_Attribute_Type          : exception;
 
    -------------------
@@ -699,20 +700,16 @@ package Giant.Graph_Lib is
    ---------------------------
 
    ---------------------------------------------------------------------------
-   --  FIXME:
-   --    Replace exceptions to assertions
-   --  Raises:
-   --    Wrong_Attribute_Type
-   --      if Get_Node_Attribute_Class_Id(Attribute) /= Class_Boolean
+   --  Precondition:
+   --    Get_Node_Attribute_Class_Id(Attribute) = Class_Boolean
    function Get_Node_Attribute_Boolean_Value
       (Node      : in     Node_Id;
        Attribute : in     Node_Attribute_Id)
       return Boolean;
 
    ---------------------------------------------------------------------------
-   --  Raises:
-   --    Wrong_Attribute_Type
-   --      if Get_Node_Attribute_Class_Id(Attribute) /= Class_Natural
+   --  Precondition:
+   --    Get_Node_Attribute_Class_Id(Attribute) = Class_Natural
    function Get_Node_Attribute_Natural_Value
       (Node      : in     Node_Id;
        Attribute : in     Node_Attribute_Id)
@@ -722,9 +719,8 @@ package Giant.Graph_Lib is
    --  Returns:
    --    Invalid_Node_Id if Attribute doesn't contain a valid node-id
    --
-   --  Raises:
-   --    Wrong_Attribute_Type
-   --      if Get_Node_Attribute_Class_Id(Attribute) /= Class_Node_Id
+   --  Precondition:
+   --    Get_Node_Attribute_Class_Id(Attribute) = Class_Node_Id
    function Get_Node_Attribute_Node_Id_Value
       (Node      : in     Node_Id;
        Attribute : in     Node_Attribute_Id)
@@ -737,9 +733,8 @@ package Giant.Graph_Lib is
    --    Non-IML-Roots (i.e. empty or upper classes) are ignored
    --      (i.e. not included)
    --
-   --  Raises:
-   --    Wrong_Attribute_Type
-   --      if Get_Node_Attribute_Class_Id(Attribute) /= Class_Node_Id_List
+   --  Precondition:
+   --    Get_Node_Attribute_Class_Id(Attribute) = Class_Node_Id_List
    function Get_Node_Attribute_Node_Id_List_Value
       (Node      : in     Node_Id;
        Attribute : in     Node_Attribute_Id)
@@ -752,18 +747,16 @@ package Giant.Graph_Lib is
    --    Non-IML-Roots (i.e. empty or upper classes) are ignored
    --      (i.e. not included)
    --
-   --  Raises:
-   --    Wrong_Attribute_Type
-   --      if Get_Node_Attribute_Class_Id(Attribute) /= Class_Node_Id_Set
+   --  Precondition:
+   --    Get_Node_Attribute_Class_Id(Attribute) = Class_Node_Id_Set
    function Get_Node_Attribute_Node_Id_Set_Value
       (Node      : in     Node_Id;
        Attribute : in     Node_Attribute_Id)
       return Node_Id_Set;
 
    ---------------------------------------------------------------------------
-   --  Raises:
-   --    Wrong_Attribute_Type
-   --      if Get_Node_Attribute_Class_Id(Attribute) /= Class_String
+   --  Precondition:
+   --    Get_Node_Attribute_Class_Id(Attribute) = Class_String
    function Get_Node_Attribute_String_Value
      (Node      : in     Node_Id;
       Attribute : in     Node_Attribute_Id)
@@ -784,9 +777,9 @@ package Giant.Graph_Lib is
 
    ---------------------------------------------------------------------------
    --  Slocs.Get_Line()-Wrapper
-   --  Raises:
-   --    Wrong_Attribute_Type
-   --      if Get_Node_Attribute_Class_Id(Attribute) /= Class_SLoc
+   --
+   --  Precondition:
+   --    Get_Node_Attribute_Class_Id(Attribute) = Class_SLoc
    function Get_Node_Attribute_SLoc_Line_Value
       (Node      : in     Node_Id;
        Attribute : in     Node_Attribute_Id)
@@ -794,9 +787,9 @@ package Giant.Graph_Lib is
 
    ---------------------------------------------------------------------------
    --  Slocs.Get_Column()-Wrapper
-   --  Raises:
-   --    Wrong_Attribute_Type
-   --      if Get_Node_Attribute_Class_Id(Attribute) /= Class_SLoc
+   --
+   --  Precondition:
+   --    Get_Node_Attribute_Class_Id(Attribute) = Class_SLoc
    function Get_Node_Attribute_SLoc_Column_Value
       (Node      : in     Node_Id;
        Attribute : in     Node_Attribute_Id)
@@ -804,9 +797,9 @@ package Giant.Graph_Lib is
 
    ---------------------------------------------------------------------------
    --  Slocs.Get_Path()-Wrapper
-   --  Raises:
-   --    Wrong_Attribute_Type
-   --      if Get_Node_Attribute_Class_Id(Attribute) /= Class_SLoc
+   --
+   --  Precondition:
+   --    Get_Node_Attribute_Class_Id(Attribute) = Class_SLoc
    function Get_Node_Attribute_SLoc_Path_Value
       (Node      : in     Node_Id;
        Attribute : in     Node_Attribute_Id)
@@ -814,9 +807,9 @@ package Giant.Graph_Lib is
 
    ---------------------------------------------------------------------------
    --  Slocs.Get_Filename()-Wrapper
-   --  Raises:
-   --    Wrong_Attribute_Type
-   --      if Get_Node_Attribute_Class_Id(Attribute) /= Class_SLoc
+   --
+   --  Precondition:
+   --    Get_Node_Attribute_Class_Id(Attribute) = Class_SLoc
    function Get_Node_Attribute_SLoc_Filename_Value
       (Node      : in     Node_Id;
        Attribute : in     Node_Attribute_Id)
@@ -1002,9 +995,8 @@ private
    --  This function is private, since SLoc is split up in atomar elements
    --     for the public
    --
-   --  Raises:
-   --    Wrong_Attribute_Type
-   --      if Get_Node_Attribute_Class_Id(Attribute) /= Class_SLoc
+   --  Precondition:
+   --     Get_Node_Attribute_Class_Id(Attribute) = Class_SLoc
    function Get_Node_Attribute_SLoc_Value
      (Node      : in     Node_Id;
       Attribute : in     Node_Attribute_Id)
