@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.7 $
 --  $Author: squig $
---  $Date: 2003/06/18 16:55:09 $
+--  $Date: 2003/06/18 17:32:02 $
 --
 
 with Ada.IO_Exceptions;
@@ -75,9 +75,9 @@ package body Giant.Default_Logger is
       if (Listener /= null) then
          Listener (Level, Name, Message);
       end if;
-   exception
-      when others =>
-         null; -- just ignore it to not clutter stderr
+--     exception
+--        when others =>
+--           null; -- just ignore it to not clutter stderr
    end Put_Line;
 
    procedure Debug (Message : in String;
@@ -121,7 +121,7 @@ package body Giant.Default_Logger is
    is
       use Ada.Strings.Fixed;
    begin
-      return Head (Tail (Level_Type'Image (Level), 6), 5);
+      return Head (Delete (Level_Type'Image (Level), 1, 6), 5);
    end;
 
    procedure Set_Listener

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.10 $
 --  $Author: squig $
---  $Date: 2003/06/18 16:55:08 $
+--  $Date: 2003/06/18 17:32:02 $
 --
 --
 ------------------------------------------------------------------------------
@@ -46,9 +46,6 @@ begin
    -- read config
 --     Config.Vis_Styles.Initialize_Config_Vis_Styles
 --       ("", "", "test/resources/giant_vis_style.xml");
-
-   Controller.Create_Project
-     ("test/resources/GiantTest", "test/resources/rfg_examp.iml");
 
    Logger.Debug ("initializing gtk");
 

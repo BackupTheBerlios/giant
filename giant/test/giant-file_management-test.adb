@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-file_management-test.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-file_management-test.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/06/18 17:24:07 $
+--  $Date: 2003/06/18 17:32:02 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -81,7 +81,7 @@ package body Giant.File_Management.Test is
       Logger.Debug ("/tmp/GiantTest.xml: "
                     & Return_Dir_Path_For_File_Path ("/tmp/GiantTest.xml"));
 
-      Assert (Return_Dir_Path_For_File_Path ("resources/test") = "resources",
+      Assert (Return_Dir_Path_For_File_Path ("resources/test") = "resources/",
               "Return_Dir_Path_For_File_Path: resources/test");
       Assert (Return_Dir_Path_For_File_Path ("/tmp") = "/tmp",
               "Return_Dir_Path_For_File_Path: /tmp");

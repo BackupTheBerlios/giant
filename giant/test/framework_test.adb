@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: framework_test.adb,v $, $Revision: 1.6 $
+--  $RCSfile: framework_test.adb,v $, $Revision: 1.7 $
 --  $Author: squig $
---  $Date: 2003/06/18 17:24:07 $
+--  $Date: 2003/06/18 17:32:02 $
 --
 
 with AUnit.Test_Suites; use AUnit.Test_Suites;
@@ -56,6 +56,7 @@ procedure Framework_Test is
 
 begin
    Giant.Default_Logger.Init;
+   Giant.Default_Logger.Debug ("Starting Test...");
 
    Run;
 
