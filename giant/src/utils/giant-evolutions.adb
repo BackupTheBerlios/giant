@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.13 $
---  $Author: schulzgt $
---  $Date: 2003/06/12 11:20:59 $
+--  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.14 $
+--  $Author: keulsn $
+--  $Date: 2003/06/12 13:25:59 $
 --
 ------------------------------------------------------------------------------
 
@@ -77,8 +77,7 @@ package body Giant.Evolutions is
 
    --  Priority queues to handle updates of drivers
    package Driver_State_Queues is new Fixed_Priority_Queues
-     (Max_Size            => Number_Of_Slots,
-      Item_Type           => Driver_Id_Type,
+     (Item_Type           => Driver_Id_Type,
       Has_Higher_Priority => Has_Higher_Priority_Id,
       Set_Position        => Set_Position,
       Get_Position        => Get_Position);
@@ -125,7 +124,7 @@ package body Giant.Evolutions is
 
       --  Updates are done in order of 'Update_Queue'. All managed Drivers are
       --  in that queue at any point of time.
-      Update_Queue : Driver_State_Queues.Queue_Type;
+      Update_Queue : Driver_State_Queues.Queue_Type (Number_Of_Slots);
 
    end Driver_Controller;
 

@@ -20,7 +20,7 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-fixed_priority_queues.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-simple_priority_queues.ads,v $, $Revision: 1.1 $
 --  $Author: keulsn $
 --  $Date: 2003/06/12 13:26:00 $
 --
@@ -31,14 +31,10 @@
 --  The type of items is a generic parameter. A strict total order must
 --  be provided on that type ("priority order").
 --
---  Two subprograms must be provided as generic parameters that allow to
---  associate a Natural value with an item. Each item can be contained
---  in one queue at most. These subprograms are used to perform membership
---  and update operations in O (1)
---
---  If memebership tests and update of priorities for item other than
---  the head item are not needed then the package
---  Giant.Simple_Priority_Queues should be used.
+--  It is not possible to determine if a given Item is contained in a
+--  queue or not. The priority of any item contained in any queue except
+--  the head item must not change. If this is needed, then the package
+--  Giant.Fixed_Priority_Queues should be used.
 --
 
 
@@ -60,28 +56,7 @@ generic
       Right : in Item_Type)
      return Boolean;
 
-   ----------------------------------------------------------------------------
-   --  Associates the value of 'Position' with the item 'Item'. Should not
-   --  be called from outside of this package.
-   --
-   --  Postcondition:
-   --    Get_Position (Item) = Position
-   with procedure Set_Position
-     (Item     : in     Item_Type;
-      Position : in     Natural);
-
-   ----------------------------------------------------------------------------
-   --  Returns the value previously associates with 'Item' by a call
-   --  to 'Set_Position'.
-   --
-   --  Returns:
-   --    P if preceeded by a call 'Set_Position (Item, P)',
-   --    0 if 'Set_Position' has never been called on 'Item'
-   with function Get_Position
-     (Item : in     Item_Type)
-     return Natural;
-
-package Giant.Fixed_Priority_Queues is
+package Giant.Simple_Priority_Queues is
 
    pragma Elaborate_Body;
 
@@ -90,7 +65,7 @@ package Giant.Fixed_Priority_Queues is
    type Queue_Type (Max_Size : Natural) is private;
 
    ----------------------------------------------------------------------------
-   --  Raised whenever the size of a  Q : 'Queue_Type' exceeds
+   --  Raised whenever the size of a Q : 'Queue_Type' exceeds
    --  'Get_Max_Size (Q)' items
    Too_Many_Items   : exception;
 
@@ -99,34 +74,15 @@ package Giant.Fixed_Priority_Queues is
    Not_Enough_Items : exception;
 
    ----------------------------------------------------------------------------
-   --  Raised whenever a method expects one special item in a 'Queue_Type',
-   --  but that item is not contained in that 'Queue_Type'
-   Unknown_Item     : exception;
-
-   ----------------------------------------------------------------------------
-   --  Raised whenever an item is inserted into a queue but is already
-   --  contained in one
-   Invalid_Item     : exception;
-
-   ----------------------------------------------------------------------------
    --  Inserts an item into a queue. Note that each item must be
    --  contained at most in one queue at any point of time.
    --
    --  Precondition:
    --    Get_Size (Queue) < Get_Max_Size (Queue) and
-   --    Get_Position (Item) = 0
-   --    for all Q : Queue_Type: not Contains (Q, Item)
    --  Postcondition:
-   --    Contains (Queue, Item)
-   --    and not Is_Empty (Queue)
-   --    and Get_Position (Item) /= 0
+   --    not Is_Empty (Queue)
    --  Raises:
    --    * Too_Many_Items if Get_Size (Queue) >= Get_Max_Size (Queue)
-   --    * Invalid_Item if Item already contained in some queue
-   --                   precisely: Get_Position (Item) /= 0
-   --  Warning:
-   --    Set_Position (Item) must never be called from outside this package
-   --    until 'Item' is removed from 'Queue'
    procedure Insert
      (Queue : in out Queue_Type;
       Item  : in     Item_Type);
@@ -142,47 +98,18 @@ package Giant.Fixed_Priority_Queues is
      (Queue : in out Queue_Type);
 
    ----------------------------------------------------------------------------
-   --  Must be called whenever the priority of 'Item' has changed.
-   --
-   --  Precondition:
-   --    Contains (Queue, Item)
-   --  Raises:
-   --    Unknown_Item if Precondition not satisfied
-   procedure Update_Item
-     (Queue : in out Queue_Type;
-      Item  : in     Item_Type);
-
-   ----------------------------------------------------------------------------
    --  Removes the head item from 'Queue'
    --
    --  Precondition:
-   --    not Is_Empty (Queue) and I := Get_Head (Queue)
-   --  Postcondition:
-   --    not Contains (Queue, I) and
-   --    Get_Position (I) = 0
+   --    not Is_Empty (Queue)
    --  Raises:
    --    Not_Enough_Items if Precondition not satisfied
    procedure Remove_Head
      (Queue : in out Queue_Type);
 
    ----------------------------------------------------------------------------
-   --  Precondition:
-   --    Contains (Queue, Item)
-   --  Postcondition
-   --    not Contains (Queue, Item) and
-   --    Get_Position (Item) = 0
-   --  Raises:
-   --    Unknown_Item if Precondition not satisfied
-   procedure Remove_Item
-     (Queue : in out Queue_Type;
-      Item  : in     Item_Type);
-
-   ----------------------------------------------------------------------------
-   --  Precondition:
-   --    True and Former_Content := {I | Contains (Queue, I)}
    --  Postcondition:
    --    Is_Empty (Queue)
-   --    for all I in Former_Content: Get_Position (I) = 0
    procedure Clear
      (Queue : in out Queue_Type);
 
@@ -195,8 +122,8 @@ package Giant.Fixed_Priority_Queues is
    --
    --  Returns:
    --    Head item in 'Queue':
-   --    for all I : Item_Type:
-   --      Contains (Queue, I) ==> not Has_Higher_Priority (I, Head)
+   --    for all I : Item_Type and I is contained 'Queue':
+   --      not Has_Higher_Priority (I, Head)
    --  Precondition:
    --    not Is_Empty (Queue)
    --  Raises:
@@ -206,27 +133,15 @@ package Giant.Fixed_Priority_Queues is
      return Item_Type;
 
    ----------------------------------------------------------------------------
-   --  Checks if 'Item' is contained in 'Queue'
-   --
    --  Returns:
-   --    True if the statement
-   --    'while Get_Head (Queue) /= Item loop Remove_Head (Queue) end loop;'
-   --    does not raise an exception, False otherwise
-   function Contains
-     (Queue : in     Queue_Type;
-      Item  : in     Item_Type)
-     return Boolean;
-
-   ----------------------------------------------------------------------------
-   --  Returns:
-   --    for all I : Item_Type: not Contains (Queue, I)
+   --    True if there is no Item in 'Queue', False else
    function Is_Empty
      (Queue : in     Queue_Type)
      return Boolean;
 
    ----------------------------------------------------------------------------
    --  Returns:
-   --    Cardinality of the set {I | Contains (Queue, I)}
+   --    Number of Items inserted in, but not removed from 'Queue'
    function Get_Size
      (Queue : in     Queue_Type)
      return Natural;
@@ -250,4 +165,4 @@ private
          Field : Heap_Array (1 .. Max_Size);
       end record;
 
-end Giant.Fixed_Priority_Queues;
+end Giant.Simple_Priority_Queues;

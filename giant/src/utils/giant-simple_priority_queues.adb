@@ -20,14 +20,14 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-fixed_priority_queues.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-simple_priority_queues.adb,v $, $Revision: 1.1 $
 --  $Author: keulsn $
 --  $Date: 2003/06/12 13:26:00 $
 --
 ------------------------------------------------------------------------------
 
 
-package body Giant.Fixed_Priority_Queues is
+package body Giant.Simple_Priority_Queues is
 
 
    ------------------------
@@ -125,30 +125,12 @@ package body Giant.Fixed_Priority_Queues is
    end Get_Item;
    pragma Inline (Get_Item);
 
-   function Get_Item_Index
-     (Queue : in     Queue_Type;
-      Item  : in     Item_Type)
-     return Array_Bounds is
-
-      Position : Natural := Get_Position (Item);
-   begin
-      if Queue.Size > 0 and then
-        Position in Get_First_Index (Queue) .. Get_Last_Index (Queue) and then
-        Queue.Field (Position) = Item
-      then
-         return Position;
-      else
-         raise Unknown_Item;
-      end if;
-   end Get_Item_Index;
-
    procedure Set_Item
      (Queue    : in out Queue_Type;
       Position : in     Array_Bounds;
       Item     : in     Item_Type) is
    begin
       Queue.Field (Position) := Item;
-      Set_Position (Item, Position);
    end Set_Item;
    pragma Inline (Set_Item);
 
@@ -165,9 +147,6 @@ package body Giant.Fixed_Priority_Queues is
       Greater_Child_Index  : Array_Bounds;
       Largest_Parent_Index : Array_Bounds;
    begin
-      --  mark the item as removed
-      Set_Position (Get_Item (Queue, Index), 0);
-
       if Get_Size (Queue) > 1 then
          --  if is necessary because otherwise Get_Parent_Index
          --  would be illegal
@@ -250,27 +229,8 @@ package body Giant.Fixed_Priority_Queues is
    procedure Clear
      (Queue : in out Queue_Type) is
    begin
-      --  'Get_Last_Index' is illegal if size < 1
-      if not Is_Empty (Queue) then
-         for I in Get_First_Index (Queue) .. Get_Last_Index (Queue) loop
-            Set_Position (Get_Item (Queue, I), 0);
-         end loop;
-         Queue.Size := 0;
-      end if;
+      Queue.Size := 0;
    end Clear;
-
-
-   function Contains
-     (Queue : in     Queue_Type;
-      Item  : in     Item_Type)
-     return Boolean is
-
-      Position : Natural := Get_Position (Item);
-   begin
-      return not Is_Empty (Queue) and then
-        Position in Get_First_Index (Queue) .. Get_Last_Index (Queue) and then
-        Get_Item (Queue, Position) = Item;
-   end Contains;
 
 
    function Get_Size
@@ -309,9 +269,7 @@ package body Giant.Fixed_Priority_Queues is
       Parent_Index  : Array_Bounds;
       Parent_Item   : Item_Type;
    begin
-      if Get_Position (Item) /= 0 then
-         raise Invalid_Item;
-      elsif Queue.Size >= Queue.Field'Length then
+      if Queue.Size >= Queue.Field'Length then
          raise Too_Many_Items;
       else
          Queue.Size := Queue.Size + 1;
@@ -348,14 +306,6 @@ package body Giant.Fixed_Priority_Queues is
    end Remove_Head;
 
 
-   procedure Remove_Item
-     (Queue : in out Queue_Type;
-      Item  : in     Item_Type) is
-   begin
-      Remove_At_Index (Queue, Get_Item_Index (Queue, Item));
-   end Remove_Item;
-
-
    procedure Update_Head_Item
      (Queue : in out Queue_Type) is
    begin
@@ -365,20 +315,4 @@ package body Giant.Fixed_Priority_Queues is
       Update_Downward (Queue, Get_First_Index (Queue));
    end Update_Head_Item;
 
-
-   procedure Update_Item
-     (Queue : in out Queue_Type;
-      Item  : in     Item_Type) is
-
-      Index : Array_Bounds := Get_Item_Index (Queue, Item);
-   begin
-      if Index > Get_First_Index (Queue) and then
-        Has_Higher_Priority (Item, Get_Item (Queue, Get_Parent_Index (Index)))
-      then
-         Update_Upward (Queue, Index);
-      else
-         Update_Downward (Queue, Index);
-      end if;
-   end Update_Item;
-
-end Giant.Fixed_Priority_Queues;
+end Giant.Simple_Priority_Queues;
