@@ -20,16 +20,21 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config.ads,v $, $Revision: 1.5 $
--- $Author: squig $
--- $Date: 2003/06/19 16:38:06 $
+-- $RCSfile: giant-config.ads,v $, $Revision: 1.6 $
+-- $Author: schwiemn $
+-- $Date: 2003/06/20 19:33:23 $
 --
 -- -----
 -- This package holds the functionality needed to access the
 -- data stored in the global configuration file
 -- (see GIANT Specification "13.2 Die globale Konfigurationsdatei").
--- Therefore the global config file is represented as an abstract data
--- object (ADO).
+--
+-- This package simply uses the information from the package
+-- Giant.Config_Settings and does some further processing in order
+-- to simplify the access on the information.
+--
+-- The purpose of this packe is to other necessary config settings in
+-- a performant and simple way.
 --
 with Ada.Strings.Unbounded;
 with Ada.Unchecked_Deallocation;
@@ -38,32 +43,6 @@ with Gtkada.Types; -- from GTK
 
 package Giant.Config is
 
-
-   ---------------------------------------------------------------------------
-   -- Required settings.
-   -- A List of setting identifiers. These settings must be known to
-   -- the config ADO after parsing both config files
-   -- (GIANT_Config_File, User_Config_File);
-   type Required_Settings_Type is array (integer range <>)
-     of Ada.Strings.Unbounded.Unbounded_String;
-
-   Required_Settings : constant Required_Settings_Type :=
-     (Ada.Strings.Unbounded.To_Unbounded_String
-        ("Icon_For_Node_Annotations"),
-      Ada.Strings.Unbounded.To_Unbounded_String
-        ("Actual_Selection_Highlight_Color"),
-      Ada.Strings.Unbounded.To_Unbounded_String
-        ("Selection_Highlight_Color_1"),
-      Ada.Strings.Unbounded.To_Unbounded_String
-        ("Selection_Highlight_Color_2"),
-      Ada.Strings.Unbounded.To_Unbounded_String
-        ("Selection_Highlight_Color_3"),
-      Ada.Strings.Unbounded.To_Unbounded_String
-        ("IML_Subgraph_Highlight_Color_1"),
-      Ada.Strings.Unbounded.To_Unbounded_String
-        ("IML_Subgraph_Highlight_Color_2"),
-      Ada.Strings.Unbounded.To_Unbounded_String
-        ("IML_Subgraph_Highlight_Color_3"));
 
    ---------------------------------------------------------------------------
    -- A String Pointer used to describe a Color.
@@ -105,31 +84,6 @@ package Giant.Config is
      access Gtkada.Types.Chars_Ptr_Array;
 
    ---------------------------------------------------------------------------
-   -- Raised if a passed config file could not be parsed as a
-   -- valid xml file.
-   Config_File_Not_Correct_Exception : exception;
-
-   ---------------------------------------------------------------------------
-   -- Raised when a required config setting is not found after reading
-   -- both config files.
-   Required_Config_Setting_Not_Found_Exception : exception;
-
-   ---------------------------------------------------------------------------
-   -- Raised if a passed config file could not be opened for any reasons
-   -- (e.g. it is not being found).
-   Config_File_Could_Not_Be_Accessed_Exception : exception;
-
-   ---------------------------------------------------------------------------
-   -- Raised if a config setting identified by its unique name does not
-   -- exist.
-   Config_Setting_Does_Not_Exist_Exception : exception;
-
-   ---------------------------------------------------------------------------
-   -- Raised when a config setting recalled as a integer value can not
-   -- be converted to an integer value.
-   Config_Setting_Is_No_Integer_Value_Exception : exception;
-
-   ---------------------------------------------------------------------------
    -- Raised if an uninitialized instance of the ADT Color_Access
    -- is passed.
    Color_Access_Not_Initialized_Exception : exception;
@@ -146,49 +100,12 @@ package Giant.Config is
    ---------------------------------------------------------------------------
 
    ---------------------------------------------------------------------------
-   -- Initializes the ADO and reads the configuration data from the given
-   -- config files.
+   -- Initializes the ADO and processes the information hold in
+   -- the ADO Giant.Config_Settings
    --
-   -- First, the settings from "GIANT_Config_File" are loaded
-   -- Second, the settings from  "User_Config_File" are loaded
-   --
-   -- Each setting has a unique identifier - a name string.
-   --
-   -- Relative Paths inside a config file will be regarded as relative
-   -- towards the directory of the config file.
-   --
-   -- The settings are read in sequential order following the
-   -- xml node hierarchy. First the file "GIANT_Config_File" is
-   -- read, second the file "User_Config_File".
-   -- If a setting with the same indentifier is found
-   -- twice (in GIANT_Config_File and in User_Config_File)
-   -- the setting read from GIANT_Config_File is replaced
-   -- by the setting read from User_Config_File;
-   --
-   -- Parameters:
-   --   GIANT_Config_File - The file (filename and path) where
-   --     the GIANT config file is stored. Such a config file must
-   --     exist.
-   --     ONLY ABSOLUTE PATHS WILL WORK.
-   --
-   --   User_Config_File - A userdefined config file.
-   --     "User_Config_File may be an empty string (""), then this parameter
-   --      will be ignored and no user defined config file will be loaded.
-   --      ONLY ABSOLUTE PATHS WILL WORK.
-   --
-   -- Raises:
-   --   Required_Config_Setting_Not_Found_Exception - Raise when none
-   --     of the two passed coonfig files holds an required config setting
-   --     (as defined in the array "Required_Settings").
-   --   Config_File_Not_Correct_Exception - Raised when the file passed
-   --     (parameter "GIANT_Config_File" and "User_Config_File") is
-   --     not a correct (valid) config file.
-   --   Config_File_Could_Not_Be_Accessed_Exception - Raised if
-   --     if the passed config file could not be accessed by a file
-   --     reader.
-   procedure Initialize_Config_Data
-     (GIANT_Config_File : in String;
-      User_Config_File  : in String);
+   -- ADO Giant.Config_Settings must have been initialized before this
+   -- subprogramm is called.
+   procedure Initialize_Config_Data;
 
    ---------------------------------------------------------------------------
    -- Finalizes the ADO;
@@ -213,59 +130,15 @@ package Giant.Config is
 
    ---------------------------------------------------------------------------
    -- B
-   -- General Access to configuration data
+   -- Access to processed config data.
    ---------------------------------------------------------------------------
+   
+   
+   function Get_Resources_Directory return String;
 
-   ---------------------------------------------------------------------------
-   -- This function is used to determine whether a config setting
-   -- exists or not.
-   --
-   -- Parameters:
-   --   Name_Of_Setting - The name (each setting has an unique name) of
-   --     the setting.
-   -- Returns:
-   --   True, if the config setting exists; False, otherwise.
-   -- Raises:
-   --   Config_ADO_Not_Initialized_Exception - raised if this subprogram
-   --     is called before "Initialize_Config_Data"
-   function Does_Setting_Exist (Name_Of_Setting : in String)
-     return Boolean;
 
-   ---------------------------------------------------------------------------
-   -- This method returns a config setting as a string.
-   -- As described above each config setting is identified by a unique
-   -- name (a sting).
-   --
-   -- Parameters:
-   --   Name_Of_Setting - The unique identifier of a config setting.
-   -- Returns:
-   --   The the config setting corresponding to "Name_of_Setting"
-   -- Raises:
-   --   Config_ADO_Not_Initialized_Exception - raised if this subprogram
-   --     is called before "Initialize_Config_Data".
-   --   Config_Setting_Does_Not_Exist_Exception - raised if there is
-   --     no config setting with the name "Name_of_Setting";
-   function Return_Setting_As_String (Name_Of_Setting : in String)
-     return Ada.Strings.Unbounded.Unbounded_String;
 
-   ---------------------------------------------------------------------------
-   -- This method returns a config setting as a integer value.
-   -- As described above, each config setting is identified by a unique
-   -- name (a sting).
-   --
-   -- Parameters:
-   --   Name_Of_Setting - The unique identifier of a config setting.
-   -- Returns:
-   --   The config setting corresponding to "Name_of_Setting"
-   -- Raises:
-   --   Config_ADO_Not_Initialized_Exception - raised if this subprogram
-   --     is called before "Initialize_Config_Data".
-   --   Config_Setting_Is_No_Integer_Value_Exception - raised if the
-   --     config setting could not be converted to Integer;
-   --   Config_Setting_Does_Not_Exist_Exception - raised if there is
-   --     no config setting with the name "Name_of_Setting";
-   function Return_Setting_As_Integer (Name_Of_Setting : in String)
-     return Integer;
+
 
 
    ---------------------------------------------------------------------------
@@ -360,8 +233,11 @@ package Giant.Config is
    --
    --   You MAY NOT use the returned pointer for DEALLOCATION!
    --
-   -- Return:
+   -- Returns:
    --   A pointer to an array of character pointers.
+   --   Will return a NULL POINTER,
+   --   if now Icon was found (e.g. as the file read from the config settings
+   --   could not be accessed).
    -- Raises:
    --   Config_ADO_Not_Initialized_Exception - raised if this subprogram
    --     is called before "Initialize_Config_Data".
