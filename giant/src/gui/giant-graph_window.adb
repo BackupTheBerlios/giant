@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.17 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.18 $
 --  $Author: squig $
---  $Date: 2003/06/29 11:51:56 $
+--  $Date: 2003/06/29 15:48:19 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -37,6 +37,7 @@ with Gtk.Menu_Item;
 with Gtk.Widget;
 
 with Giant.Clists;
+with Giant.Config;
 with Giant.Config.Global_Data;
 with Giant.Controller;
 with Giant.Default_Dialog;
