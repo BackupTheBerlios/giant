@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.10 $
-%  $Date: 2003/08/05 17:25:11 $
+%  $RCSfile: config.tex,v $, $Revision: 1.11 $
+%  $Date: 2003/08/05 17:55:13 $
 %  $Author: birdy $
 %
 %  Description:
@@ -305,6 +305,53 @@ Für die Visualisierungsstile gelten die folgenden Konventionen:
   \end{enumerate}
 
 
+\subsection{GIANT Project File}
+
+Jedes Projekt in GIANT besitzt eine Projektdatei, der
+Dateiname ist der Projektname erweitert durch die
+Endung .XML.\\
+Die Datei ist wie folgt aufgebaut:\\ 
+
+\verbatiminput{giant_project_file.dtd}
+
+Hier ein Beispiel beispiel.xml einer Projektdatei eines Projektes mit
+Namen Beispiel:\\
+
+°<?xml version="1.0" encoding="ISO-8859-1"?>°\\
+°<!DOCTYPE giant_project_file°\\
+°  SYSTEM "giant_project_file.dtd">°\\
+
+°<giant_project_file>°\\
+
+Hier der Name (mit vollständigem, absolutem Pfad) der IML-Datei und
+eine Checksumme, anhand derer GIANT mit recht großer Wahrscheinlichkeit
+erkennt, falls die IML-Datei beschädigt oder in einem angelegten
+Projekt unzulässig verändert wurde.\\
+Es folgt der Dateiname der Knotenannotationsdatei.
+Nach Anlage eines Projektes sind Änderungen der IML-Datei nicht zulässig
+und könnten GIANT zum Abstürzen bringen.\\
+
+°  <global_data°\\
+°    iml_graph_file_path = "/home/giant/test/resources/rfg_examp.iml"°\\
+°    iml_graph_checksum = " 503"°\\
+°    node_annotations_file_name = "node_annotations.xml" />°\\
+
+Für jedes Anzeigefenster in GIANT gibt es eine interne Datei, in der
+GIANT die nötigen Daten wie Positionen der Knoten etc. ablegt.\\
+
+°  <visualisation_windows>°\\
+°    <a_vis_window_file file_path = "./My_Window.viswin" />°\\
+°    <a_vis_window_file file_path = "./Unknown 1.viswin" />°\\
+°  </visualisation_windows>°\\
+
+Auch jeder Subgraph hat eine interne Datei, in der die Daten
+des jeweiligen Subgraphen abgelegt sind.
+
+°  <subgraphs>°\\
+°    <a_subgraph_file file_path = "./Test_1.subgraph" />°\\
+°    <a_subgraph_file file_path = "./Super_Test_2.subgraph" />°\\
+°  </subgraphs>°\\
+°</giant_project_file>°\\
 
 \subsection{Config-Dateien f"ur Visualisierungsstile}
 
@@ -580,21 +627,19 @@ Einträge von nicht existierenden Knoten werden ignoriert.\\
 
 Hier eine Beispieldatei:\\
 
-°<?xml version="1.0" encoding="ISO-8859-1"?>°
-°<!DOCTYPE giant_node_annotations_file °
-°  SYSTEM "giant_node_annotations_file.dtd">°
+°<?xml version="1.0" encoding="ISO-8859-1"?>°\\
+°<!DOCTYPE giant_node_annotations_file °\\
+°  SYSTEM "giant_node_annotations_file.dtd">°\\
 
-°<giant_node_annotations_file>°
+°<giant_node_annotations_file>°\\
 
-°<node_annotation node_id    = "1"°
-°                 annotation = "This is a very important node" />°
+°<node_annotation node_id    = "1"°\\
+°                 annotation = "This is a very important node" />°\\
                  
-°<node_annotation node_id    = "3"°
-°                 annotation = "This is a node that does not exist" />°
+°<node_annotation node_id    = "3"°\\
+°                 annotation = "This is a node that does not exist" />°\\
   
-°</giant_node_annotations_file>°
-
-
+°</giant_node_annotations_file>°\\
 
 \section {Skript-Dateien} 
 \label {Config Anfrage-Dateien}
