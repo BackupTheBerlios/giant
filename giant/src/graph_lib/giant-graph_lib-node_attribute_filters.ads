@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-node_attribute_filters.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-graph_lib-node_attribute_filters.ads,v $, $Revision: 1.2 $
 --  $Author: koppor $
---  $Date: 2003/05/28 12:17:02 $
+--  $Date: 2003/06/13 01:25:54 $
 --
 ------------------------------------------------------------------------------
 --
@@ -36,9 +36,9 @@ package Giant.Graph_Lib.Node_Attribute_Filters is
    type Filter is private;
    type Filtered_Iterator is private;
 
-   --  ***********************************************************************
-   --  Create & Destroy
-   --  ***********************************************************************
+   ------------------------------------
+   --  Create & Destroy of a filter  --
+   ------------------------------------
 
    --  -----------------------------------------------------------------------
    --  If a given attribute does not exist in Node_Class of the given filter,
@@ -55,7 +55,7 @@ package Giant.Graph_Lib.Node_Attribute_Filters is
    --    Node_Attribute_Does_Not_Exist:
    --      If a Node_Attribute given by given names does not exist
    function Create
-     (Node_Class          : in     Node_Class_Id;
+     (Node_Class                : in     Node_Class_Id;
       Node_Attribute_Names_List : in     String_Lists.List)
      return Filter;
 
@@ -63,47 +63,30 @@ package Giant.Graph_Lib.Node_Attribute_Filters is
    procedure Destroy
       (Node_Attribute_Filter  : in out Filter);
 
-
-   --  ***********************************************************************
-   --  Iterator
-   --  -----------------------------------------------------------------------
-   --  Iterator over the filtered attributes
-   --
-   --  Usage:
-   --    Iterator_Reset()
-   --    while Iterator_HasMore()
-   --      DoSomething(Iterator_Current_Element);
-   --
-   --    Iterator_Reset()
-   --      sets the iterator to the first element
-   --  ***********************************************************************
+   ----------------------------------------
+   --  Iterator - analogue to lists.ads  --
+   ----------------------------------------
 
    --  -----------------------------------------------------------------------
-   --  If last call Iterator_HasMore() was false:
-   --    does nothing
-   --  Else:
-   --    advances the iterator
-   --
-   --  Iterators cannot be used in parallel for the same Node_Id and same Filter
-   --
-   --  Returns:
-   --    True - if there is an new element under the iterator
-   function Iterator_HasMore
-     (Node_Attribute_Filter   : in     Filter;
-      Node                    : in     Node_Id)
+   function MakeFilteredIter
+     (Node_Attribute_Filter : in Filter;
+      Node                  : in Node_Id)
+     return Filtered_Iterator;
+
+   --  -----------------------------------------------------------------------
+   function More
+     (Iter   : in     Filtered_Iterator)
      return Boolean;
 
    --  -----------------------------------------------------------------------
-   --  Returns:
-   --    Current Attribute and the value under the iterator
-   procedure Iterator_Current_Element
-     (Node_Attribute_Filter   : in     Filter;
-      Node                    : in     Node_Id;
-      Attribute               :    out Node_Attribute_Id);
+   procedure Next
+     (Iter   : in out Filtered_Iterator;
+      Attrib :    out Node_Attribute_Id);
 
-   procedure Iterator_Reset
-     (Node_Attribute_Filter   : in     Filter;
-      Node                    : in     Node_Id);
+   --  -----------------------------------------------------------------------
+   --  Sets the iterator to the first element
+   procedure Reset
+     (Iter : in out Filtered_Iterator);
 
 private
 
