@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: product.tex,v $, $Revision: 1.17 $
-%  $Date: 2003/02/20 18:27:56 $
+%  $RCSfile: product.tex,v $, $Revision: 1.18 $
+%  $Date: 2003/02/21 11:25:21 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung des Produktes. Übersicht über die Funktionen
@@ -266,8 +266,7 @@ Unzulässige Namen werden generell abgelehnt und führen zu einer Fehlermeldung.
 	  eindeutig sein.
     
     \item Name einer Selektion: STANDARD FILENAME
-          Dieser Name muss für jede Selektion innerhalb eines Anzeigefensters
-	  eindeutig sein.
+          Dieser Name muss nicht eindeutig sein.
     
     \item Name eines Pins: STANDARD FILENAME
           Dieser Name muss innerhalb eines Anzeigefensters eindeutig sein.
@@ -347,6 +346,8 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
   
 \section {Verhalten beim Einfügen von IML-Teilgraphen und Selektionen
 in Anzeigefenster}
+  \label{Verhalten beim Einfügen von IML-Teilgraphen und Selektionen
+         in Anzeigefenster}
 
 
    \subsection {Vorgabe der Zielposition}
@@ -377,10 +378,20 @@ in Anzeigefenster}
      Zielposition vorgegeben.
      
    \end{enumerate}
+   
+   
+   \subsection {Automatisches erzeugen neuer Selektionen im Zielfenster}
+   Sämtliche Fenster-Knoten und Fenster-Kanten, die in einem Schritt in
+   ein Anzeigefenster eingefügt werden, werden dort automatisch
+   zu einer neuen Selektion auf die über die Selektionsauswahlliste
+   (siehe \ref{Selektionsauswahlliste}) zugegriffen werden kann.\\
+   Hierzu muss der Benutzer natürlich bei jedem \gq{Einfügevorgang}
+   einen Namen für die neue Selektion vergeben.
+   
 
 
-   \subsection{Einfügen von IML-Teilgraphen in Anzeigefenster}
-      \label{Einfügen von IML-Teilgraphen in Anzeigefenster}
+   \subsection{Einfügen von Selektionen in Anzeigefenster}
+      \label{Einfügen von Selektionen in Anzeigefenster}
    Hier wird das grundlegende Verhalten beim Einfügen von Selektionen
    in Anzeigefenster (Kopieren einer Selektion aus einem Anzeigefenster
    in ein anderes) beschrieben.

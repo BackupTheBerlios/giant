@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.4 $
-%  $Date: 2003/02/20 18:27:57 $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.5 $
+%  $Date: 2003/02/21 11:25:21 $
 %  $Author: schwiemn $
 %
 %  Description: Use-Cases für die Fensterfunktionalität der GUI
@@ -192,6 +192,10 @@ Mit diesem UseCase wird ein geöffnetes Anzeigefenster geschlossen.
 
 Mit diesem UseCase können die Graph-Kanten und Graph-Knoten 
 von IML-Teilgraphen in Anzeigefenster eingefügt werden.
+Siehe hierzu auch   
+\ref{Verhalten beim Einfügen von IML-Teilgraphen und Selektionen 
+in Anzeigefenster} und 
+insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
 	  
 
   \begin{precond}
@@ -205,13 +209,20 @@ von IML-Teilgraphen in Anzeigefenster eingefügt werden.
     
     \cond 
     Alle Knoten und Kanten des IML-Teilgraphen sind in das Anzeigefenster
-    entsprechend dem gewählten Layout eingefügt.
+    entsprechend dem gewählten Layout an der vorgegebenen Position
+    eingefügt.
+    
+    \cond
+    In dem Anzeigefenster gibt es eine Selektion, die die neu eingefügten
+    Knoten und Kanten umfasst.
    
 
   \end{postsuccess}
 
   \begin{postfail}
-    \cond Das System bleibt im bisherigen Zustand.
+    \cond Hat der Benutzer den UseCase an irgendeinem Punkt abgebrochen,
+    kehrt das System zu dem Zustand zurück, in dem es vor Start des
+    UseCase war.
   \end{postfail}
   
   \begin{proc}    
@@ -220,20 +231,52 @@ von IML-Teilgraphen in Anzeigefenster eingefügt werden.
     >>>>>>>>>>>>>>>VERWEIS PopUp Menüs für IML-Teilgraphen
     
     \step[2] 
-    Giant zeigt die allgemeine Sicherheitsabfrage und fragt nach, ob das
-    Anzeigefenster wirklich gelöscht werden soll.
-      
-    \step[3] 
-    Der Benutzer bestätigt mit YES.
+    Der Benutzer wählt das entsprechende Anzeigefenster aus und
+    gibt über das Fadenkreuz die Position vor, an der die neuen
+    Fenster-Knoten und Fenster-Kanten eingefügt werden sollen.
+    >>>>>>>>>>>>>>>>> VERWEIS AUF BESCHREIBUNG des FADENKREUZES in GUI
+    
+    \step[3]
+    GIANT zeigt den Dialog zur Auswahl des entsprechenden Layoutalgorithmus.
+    >>>> VERWEIS ENTSPRECHENDER DIALOG IN GUI
     
     \step[4]
-    GIANT entfernt das Anziegefenster aus dem Projekt und löscht die 
-    zugehörige Verwaltungsdatei.
+    Der Benutzer wählt einen der vorgegebenen Layoutalgorithmen aus. Bei 
+    semantischen Layouts gibt er auch die Kantenklassen vor,
+    die berücksichtigt werden sollen.
+    
+    \step[5]
+    Der Benutzer gibt den Namen für die Selektion ein, die im Zielfenster
+    für die neu eingefügten Fenster-Knoten und Fenster-Kanten erzeugt wird.\\
+    Gibt der Benutzer keinen Namen an, vergibt Giant automatisch einen Namen.
+    
+    
+    \step[5]
+    Der Benutzer bestätigt mit OK.
+    
+      
+    \step[6] 
+    GIANT berechnet das entsprechende Layout und zeigt derweil einen
+    DIALOG an, über den der Benutzer über den Fortschritt der Berechnung
+    informiert wird >>>>>>>>>>>>>>>> VERWEIS AUF ENTSPRECHENDEN PROGRESSBAR
+    IN GUI <<<<<<<<<<<<<<<<<<<<<<<<<<<\\
+    Während der Berechnung des Layouts kann das System GIANT nicht bedient
+    werden (die gesamte GUI ist gesperrt). Zugänglich ist nur der
+    Button zum Abbruch des Algorithmus.
+    
+    \step[7]
+    Nach Abschluss der Berechnung fügt GIANT die Fenster-Knoten und 
+    Fenster-Kanten in das entsprechende Anzeigefenster ein.
+  
+  
+   
   
   \end{proc}
 
   \begin{aproc}
-    \astep{3} Der Benutzer bricht die Verarbeitung mit NEIN ab.
+    \astep{4} Der Benutzer bricht die Verarbeitung mit Cancel ab.
+    \astep{6} Der Benutzer bricht die Verarbeitung mit Cancel ab.
+    
   \end{aproc}
 
 
