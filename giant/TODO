@@ -8,4 +8,7 @@ NACHBESSERUNGSPHASE
 
  * Port to Gtk 2.0
 
+ * Use ; as Path_Separator
+
+ * Remove Abreissbare Menüs
 

@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.16 $
+-- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.17 $
 -- $Author: squig $
--- $Date: 2003/09/02 20:15:11 $
+-- $Date: 2003/09/02 20:29:15 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Strings.Fixed;
@@ -578,11 +578,9 @@ package body Giant.Config_Settings is
 
       Result_List := String_Lists.Create;
 
---        Splitted_List := String_Split.Split_String
---          (Get_Setting_As_String_From_Data_Element (Source_Data, Name),
---           File_Management.Path_Separator);
       Splitted_List := String_Split.Split_String
-        (Get_Setting_As_String_From_Data_Element (Source_Data, Name), ":");
+        (Get_Setting_As_String_From_Data_Element (Source_Data, Name),
+         File_Management.Path_Separator);
 
       Splitted_List_Iter := String_Lists.MakeListIter (Splitted_List);
 
