@@ -1,6 +1,6 @@
 % =============================================================================
-%  $RCSfile: gsl.tex,v $ $Revision: 1.17 $
-%  $Date: 2003/09/21 18:43:04 $
+%  $RCSfile: gsl.tex,v $ $Revision: 1.18 $
+%  $Date: 2003/10/06 16:25:10 $
 %  $Author: keulsn $
 %
 %  Description: Spezifikation der GIANT Scripting Language
@@ -1639,17 +1639,6 @@ Auf jeden Fall sollte deshalb das Ergebnis dieses Scripts beachtet werden.}
 \begin{scriptdef}{all\_edges}
 \sresult{\tedgeset}{Menge aller IML-Kanten des IML-Graph}
 \saction{Hat als Ergebnis die Menge aller IML-Kanten des IML-Graph.}
-\end{scriptdef}
-
-%%% instance_of
-\begin{scriptdef}{instance\_of}
-\sparam{n}{\tnodeid}{Ein IML-Knoten}
-\sparam{class}{\tstring}{Name einer Klasse von IML-Knoten}
-\sresult{\tboolean}{\toktrue, falls der IML-Knoten n ein IML-Knoten
-des Typs class ist oder als Typ eine IML-Knoteklasse hat, die class
-beerbt. \tokfalse sonst.}
-\saction{Testet, ob ein bestimmter IML-Knoten einer bestimmten
-IML-Knotenklasse angehört.}
 \end{scriptdef}
 
 %%% has_attribute
