@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.2 $
---  $Author: squig $
---  $Date: 2003/07/02 17:06:58 $
+--  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.3 $
+--  $Author: koppor $
+--  $Date: 2003/07/03 01:13:08 $
 --
 
 with Ada.Exceptions;
@@ -47,8 +47,6 @@ package body Giant.Layout_Factory is
       Additional_Parameters : in     String;
       Layout_Evolution      :    out Evolutions.Evolution_Class_Access)
    is
-
-      Invalid_Format : exception;
 
       -------------------------------------------------------------------------
       --  Format:
@@ -193,10 +191,10 @@ package body Giant.Layout_Factory is
    begin
       --  case for algorithms
       --  the called functions also set the out-parameters
-      if Algorithm = "Matrix" then
+      if Algorithm = "matrix" then
          Parse_Matrix_Parameters
            (Ada.Strings.Fixed.Trim (Additional_Parameters, Ada.Strings.Both));
-      elsif Algorithm = "Tree" then
+      elsif Algorithm = "tree" then
          Parse_Tree_Parameters
            (Ada.Strings.Fixed.Trim (Additional_Parameters, Ada.Strings.Both));
       else
