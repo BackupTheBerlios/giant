@@ -21,7 +21,7 @@
 --
 -- $RCSfile: giant-gsl-types.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/16 15:02:43 $
+-- $Date: 2003/06/22 22:51:27 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -285,6 +285,22 @@ package Giant.Gsl.Types is
      (Object : Gsl_Script_Reference)
       return Gsl_Script_Type; 
 
+   function Get_Parameter_List
+     (Object : Gsl_Script_Reference)
+      return Syntax_Node;
+
+   function Get_Script_Node
+     (Object : Gsl_Script_Reference)
+      return Syntax_Node;
+
+   function Get_Activation_Record
+     (Object : Gsl_Script_Reference)
+      return Activation_Record;
+
+   procedure Set_Activation_Record
+     (Object : Gsl_Script_Reference;
+      AR     : Activation_Record);
+
    function Get_Gsl_Runtime
      (Object : Gsl_Script_Reference)
       return Runtime_Function;
@@ -372,7 +388,7 @@ private
          Script_Type              : Gsl_Script_Type;
          Parameter_List           : Syntax_Node;
          Script_Node              : Syntax_Node;
-         Parent_Activation_Record : Activation_Record;
+         Script_Activation_Record : Activation_Record;
          Runtime                  : Runtime_Function;
       end record;
 

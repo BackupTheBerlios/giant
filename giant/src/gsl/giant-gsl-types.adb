@@ -20,9 +20,9 @@
 --
 -- First Author: Gerrit Schulz
 --
--- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.4 $
+-- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.5 $
 -- $Author: schulzgt $
--- $Date: 2003/06/16 15:02:43 $
+-- $Date: 2003/06/22 22:51:27 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -368,7 +368,7 @@ package body Giant.Gsl.Types is
       Position : Natural;
       Value    : Gsl_Type) is
    begin
-      null;
+      Var.Value (Position) := Value;
    end Set_Value_At; 
 
    function Copy
@@ -439,7 +439,7 @@ package body Giant.Gsl.Types is
    end Destroy;
 
    ---------------------------------------------------------------------------
-   -- Gsl_Script_Decl
+   -- Gsl_Script_Reference
    function Create_Gsl_Script_Reference
      (Parameter_List : Syntax_Node;
       Script_Node    : Syntax_Node)
@@ -451,7 +451,7 @@ package body Giant.Gsl.Types is
       Var.Script_Type := Gsl_Script;
       Var.Parameter_List := Parameter_List;
       Var.Script_Node := Script_Node;
-      Var.Parent_Activation_Record := null;
+      Var.Script_Activation_Record := null;
       return Var;
    end;
 
@@ -473,6 +473,34 @@ package body Giant.Gsl.Types is
    begin
       return Object.Script_Type;
    end Get_Script_Type;
+
+   function Get_Parameter_List
+     (Object : Gsl_Script_Reference)
+      return Syntax_Node is
+   begin
+      return Object.Parameter_List;
+   end Get_Parameter_List;
+
+   function Get_Script_Node
+     (Object : Gsl_Script_Reference)
+      return Syntax_Node is
+   begin
+      return Object.Script_Node;
+   end Get_Script_Node;
+
+   function Get_Activation_Record
+     (Object : Gsl_Script_Reference)
+      return Activation_Record is
+   begin
+      return Object.Script_Activation_Record;
+   end Get_Activation_Record;
+
+   procedure Set_Activation_Record
+     (Object : Gsl_Script_Reference;
+      AR     : Activation_Record) is
+   begin
+      Object.Script_Activation_Record := AR;
+   end Set_Activation_Record;
 
    function Get_Gsl_Runtime
      (Object : Gsl_Script_Reference)
