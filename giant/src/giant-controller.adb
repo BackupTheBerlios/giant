@@ -21,9 +21,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.15 $
 --  $Author: squig $
---  $Date: 2003/06/22 21:54:21 $
+--  $Date: 2003/06/22 23:03:18 $
 --
 
 with Ada.Strings.Unbounded;
@@ -202,8 +202,13 @@ package body Giant.Controller is
      (Window_Name : in String;
       Name        : in String := "Name")
    is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+      Selection : Graph_Lib.Selections.Selection
+        := Graph_Lib.Selections.Create (Name);
    begin
-      null;
+      Vis_Windows.Add_Selection (Window, Selection);
+      Gui_Manager.Add_Selection (Window_Name, Name);
    end Create_Selection;
 
    procedure Create_Selection_From_Subgraph
@@ -213,14 +218,32 @@ package body Giant.Controller is
    is
       Window : Vis_Windows.Visual_Window_Access
         := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
-      Subgraph : Giant.Graph_Lib.Subgraphs.Subgraph
+      Subgraph : Graph_Lib.Subgraphs.Subgraph
         := Projects.Get_Subgraph (Current_Project, Subgraph_Name);
-      Selection : Giant.Graph_Lib.Selections.Selection
-        := Giant.Graph_Lib.Subgraphs.Get_Selection (Subgraph);
+      Selection : Graph_Lib.Selections.Selection
+        := Graph_Lib.Subgraphs.Create_Selection (Subgraph);
    begin
       Vis_Windows.Add_Selection (Window, Selection);
       Gui_Manager.Add_Selection (Window_Name, Name);
    end Create_Selection_From_Subgraph;
+
+   procedure Duplicate_Selection
+     (Window_Name : in String;
+      Source_Name : in String;
+      Target_Name : in String)
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+      Source : Graph_Lib.Selections.Selection
+        := Vis_Windows.Get_Selection (Window, Source_Name);
+      Target : Graph_Lib.Selections.Selection
+        := Vis_Windows.Get_Selection (Window, Target_Name);
+   begin
+      Graph_Lib.Selections.Rename (Target, Target_Name);
+
+      Vis_Windows.Add_Selection (Window, Target);
+      Gui_Manager.Add_Selection (Window_Name, Target_Name);
+   end Duplicate_Selection;
 
    function Remove_Selection
      (Window_Name          : in String;
@@ -228,9 +251,29 @@ package body Giant.Controller is
       Ask_For_Confirmation : in Boolean := True)
      return Boolean
    is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
    begin
-      return True;
+      if (Gui_Manager.Remove_Selection (Window_Name, Name)) then
+         Vis_Windows.Remove_Selection (Window, Name);
+         return True;
+      else
+         return False;
+      end if;
    end Remove_Selection;
+
+   procedure Rename_Selection
+     (Window_Name : in String;
+      Old_Name    : in String;
+      New_Name    : in String)
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+   begin
+      Vis_Windows.Change_Selection_Name
+        (Window, Old_Name, New_Name);
+      Gui_Manager.Rename_Selection (Window_Name, Old_Name, New_Name);
+   end Rename_Selection;
 
    ---------------------------------------------------------------------------
    --  Subgraphs
@@ -249,6 +292,37 @@ package body Giant.Controller is
       Gui_Manager.Add_Subgraph (Unique_Name);
    end Create_Subgraph;
 
+   procedure Create_Subgraph_From_Selection
+     (Window_Name    : in String;
+      Selection_Name : in String;
+      Name           : in String)
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+      Selection : Graph_Lib.Selections.Selection
+        := Vis_Windows.Get_Selection (Window, Selection_Name);
+      Subgraph : Graph_Lib.Subgraphs.Subgraph
+        := Graph_Lib.Subgraphs.Create (Name, Selection);
+   begin
+      Projects.Add_Subgraph (Current_Project, Subgraph);
+      Gui_Manager.Add_Subgraph (Name);
+   end Create_Subgraph_From_Selection;
+
+   procedure Duplicate_Subgraph
+     (Source_Name : in String;
+      Target_Name : in String)
+   is
+      Source : Graph_Lib.Subgraphs.Subgraph
+        := Projects.Get_Subgraph (Current_Project, Source_Name);
+      Target : Graph_Lib.Subgraphs.Subgraph
+        := Graph_Lib.Subgraphs.Clone (Source);
+   begin
+      Graph_Lib.Subgraphs.Rename (Target, Target_Name);
+
+      Projects.Add_Subgraph (Current_Project, Target);
+      Gui_Manager.Add_Subgraph (Target_Name);
+   end Duplicate_Subgraph;
+
    function Remove_Subgraph
      (Name                 : in String;
       Ask_For_Confirmation : in Boolean := True)
@@ -258,8 +332,9 @@ package body Giant.Controller is
       if (Gui_Manager.Remove_Subgraph (Name)) then
          Projects.Remove_Subgraph (Current_Project, Name);
          return True;
+      else
+         return False;
       end if;
-      return False;
    end Remove_Subgraph;
 
    procedure Rename_Subgraph
@@ -378,7 +453,11 @@ package body Giant.Controller is
      (Old_Name : in String;
       New_Name : in String)
    is
+      Window : Vis_Windows.Visual_Window_Access;
    begin
+      --  make sure the window is loaded
+      Window := Projects.Get_Visualisation_Window (Current_Project, Old_Name);
+
       Projects.Change_Vis_Window_Name
         (Current_Project, Old_Name, New_Name);
 

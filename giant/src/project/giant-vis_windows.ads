@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.18 $
---  $Author: schwiemn $
---  $Date: 2003/06/20 13:45:48 $
+--  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.19 $
+--  $Author: squig $
+--  $Date: 2003/06/22 23:03:19 $
 --
 --  ----------------
 --  This package realizes a container that administrates the components
@@ -180,7 +180,7 @@ package Giant.Vis_Windows is
    function Get_Name
      (Vis_Window : in Visual_Window_Access)
       return String;
-      
+
    ---------------------------------------------------------------------------
    --  Changes the name of a visualisation window.
    --
@@ -191,11 +191,11 @@ package Giant.Vis_Windows is
    --  Raises:
    --    Visual_Window_Access_Not_Initialized_Exception - Raised if a not
    --      initialized instance of "Vis_Window_Data_Access" is passed
-   --      as parameter.         
+   --      as parameter.
    procedure Change_Name
      (Vis_Window : in Visual_Window_Access;
       New_Name   : in String);
-      
+
    ---------------------------------------------------------------------------
    --  Equal function - to instances of the ADT having the
    --  same name are regarded as equal. This is necessary because of the
@@ -269,12 +269,12 @@ package Giant.Vis_Windows is
    --  Raised on attempt to make a selection to current selection that
    --  is faded out.
    Illegal_Current_Selection_Exception : exception;
-   
-   --------------------------------------------------------------------------- 
+
+   ---------------------------------------------------------------------------
    --  Raised on attempt to change a selection's name to a name that already
    --  exists.
    New_Selection_Name_Does_Already_Exist_Exception : exception;
-    
+
    ---------------------------------------------------------------------------
    --  Raised on attempt of changing the name of the standard selection.
    Standard_Selection_Name_May_Not_Be_Changed_Exception : exception;
@@ -343,11 +343,11 @@ package Giant.Vis_Windows is
    function Get_All_Selections
      (Vis_Window : in Visual_Window_Access)
      return String_Lists.List;
-     
+
    ---------------------------------------------------------------------------
    --  Changes the name of a selection.
    --
-   --  While a selection is part of a visualisation window you may only 
+   --  While a selection is part of a visualisation window you may only
    --  change its name using this subprogram.
    --
    --  You may not change the name of the standard selection.
@@ -365,7 +365,7 @@ package Giant.Vis_Windows is
    --      selection with the name "Selection_Name" is not part of
    --      "Visual_Window_Access"
    --    New_Selection_Name_Does_Already_Exist_Exception - Raised
-   --      if there is already a selection with the name 
+   --      if there is already a selection with the name
    --      "New_Selection_Name".
    --    Standard_Selection_Name_May_Not_Be_Changed_Exception - Raised
    --      on attempt of changing the name of the standard selection.
@@ -427,7 +427,7 @@ package Giant.Vis_Windows is
    --    Selection_With_Passed_Name_Not_Found_Exception - Raised if a
    --      selection with the name "Selection_Name" is not part of
    --      "Visual_Window_Access".
-   procedure Remove_Selection_From_Vis_Window
+   procedure Remove_Selection
       (Vis_Window     : in Visual_Window_Access;
        Selection_Name : in String);
 
@@ -465,7 +465,7 @@ package Giant.Vis_Windows is
    --      selection with the name "Selection_Name" is not part of
    --      "Visual_Window_Access".
    --    Illegal_Current_Selection_Exception - Raised if a selection
-   --      that is faded out should be made to the current selection 
+   --      that is faded out should be made to the current selection
    --      or if the selection that should become the current selection
    --      has a highlight status diffrent from "None".
    procedure Set_Current_Selection

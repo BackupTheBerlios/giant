@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.21 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.22 $
 --  $Author: squig $
---  $Date: 2003/06/22 21:54:21 $
+--  $Date: 2003/06/22 23:03:19 $
 --
 
 with Ada.Strings.Unbounded;
@@ -339,6 +339,19 @@ package body Giant.Main_Window is
    --  Subgraph Context Menu Callbacks
    ---------------------------------------------------------------------------
 
+   function Validate_Subgraph_Name
+     (Name : in String)
+      return Boolean
+   is
+   begin
+      if (Projects.Does_Subgraph_Exist (Controller.Get_Project, Name)) then
+         Dialogs.Show_Error_Dialog
+           (-"A subgraph with this name already exists.");
+         return False;
+      end if;
+      return True;
+   end Validate_Subgraph_Name;
+
    procedure On_Subgraph_List_Highlight
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
@@ -365,8 +378,18 @@ package body Giant.Main_Window is
    procedure On_Subgraph_List_Duplicate
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
+     Source_Name : String := Get_Selected_Subgraph;
    begin
-      null;
+      declare
+         Target_Name : constant String
+           := Dialogs.Show_Input_Dialog
+           (-"Target name", -"Duplicate Subgraph",
+            Source_Name, Validate_Subgraph_Name'Access);
+      begin
+         if (Target_Name /= "" and then Target_Name /= Source_Name) then
+            Controller.Duplicate_Subgraph (Source_Name, Target_Name);
+         end if;
+      end;
    end On_Subgraph_List_Duplicate;
 
    procedure On_Subgraph_List_Delete
@@ -376,19 +399,6 @@ package body Giant.Main_Window is
    begin
       Removed := Controller.Remove_Subgraph (Get_Selected_Subgraph);
    end On_Subgraph_List_Delete;
-
-   function Validate_Subgraph_Name
-     (Name : in String)
-      return Boolean
-   is
-   begin
-      if (Projects.Does_Subgraph_Exist (Controller.Get_Project, Name)) then
-         Dialogs.Show_Error_Dialog
-           (-"A subgraph with this name already exists.");
-         return False;
-      end if;
-      return True;
-   end Validate_Subgraph_Name;
 
    procedure On_Subgraph_List_Rename
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)

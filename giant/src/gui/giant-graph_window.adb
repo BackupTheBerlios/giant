@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.9 $
 --  $Author: squig $
---  $Date: 2003/06/22 21:54:21 $
+--  $Date: 2003/06/22 23:03:19 $
 --
 
 with Glib;
@@ -90,12 +90,54 @@ package body Giant.Graph_Window is
    --  Selection Menu Callbacks
    ---------------------------------------------------------------------------
 
+--     package body Validators is
+
+--        function Validate_Selection_Name
+--          (Name : in String)
+--           return Boolean
+--        is
+--        begin
+--           if (Vis_Windows.Does_Selection_Exist (Window.Vis_Windows, Name)) then
+--              Dialogs.Show_Error_Dialog
+--                (-"A selection with this name already exists.");
+--              return False;
+--           end if;
+--           return True;
+--        end Validate_Selection_Name;
+
+--     end
+
    procedure On_Selection_List_Show
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
    begin
       null;
    end On_Selection_List_Show;
+
+   procedure On_Selection_List_Rename
+     (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
+   is
+   begin
+--        declare
+--           New_Name : constant String
+--             := Dialogs.Show_Input_Dialog
+--             (-"New name", -"Rename Selection",
+--              Old_Name, Validate_Subgraph_Name'Access);
+--        begin
+
+--           if (New_Name /= "" and then New_Name /= Old_Name) then
+--              Controller.Rename_Subgraph (Old_Name, New_Name);
+--           end if;
+--        end;
+      null;
+   end On_Selection_List_Rename;
+
+   procedure On_Selection_List_Delete
+     (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
+   is
+   begin
+      null;
+   end On_Selection_List_Delete;
 
    ---------------------------------------------------------------------------
    --  Zoom Callbacks
@@ -186,6 +228,14 @@ package body Giant.Graph_Window is
       Gtk.Menu.Gtk_New (Window.Selection_List_Menu);
       Gtk.Menu.Append (Window.Selection_List_Menu,
                        New_Menu_Item (-"Show", On_Selection_List_Show'Access));
+      Gtk.Menu.Gtk_New (Window.Selection_List_Menu);
+      Gtk.Menu.Append (Window.Selection_List_Menu,
+                       New_Menu_Item (-"Rename",
+                                      On_Selection_List_Rename'Access));
+      Gtk.Menu.Gtk_New (Window.Selection_List_Menu);
+      Gtk.Menu.Append (Window.Selection_List_Menu,
+                       New_Menu_Item (-"Delete",
+                                      On_Selection_List_Delete'Access));
 
       --  selections
       String_Clists.Create (Window.Selection_List, 2, Update_Selection'Access);

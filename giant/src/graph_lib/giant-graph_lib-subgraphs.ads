@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.7 $
---  $Author: koppor $
---  $Date: 2003/06/19 21:05:33 $
+--  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.8 $
+--  $Author: squig $
+--  $Date: 2003/06/22 23:03:18 $
 --
 ------------------------------------------------------------------------------
 --
@@ -212,8 +212,8 @@ package Giant.Graph_Lib.Subgraphs is
    ---------------------------------------------------------------------------
    --  Converts current subgraph to a selection
    --    having the same name
-   function Get_Selection
-     (Subgraph_To_Read : in Subgraph)
+   function Create_Selection
+     (Source : in Subgraph)
      return Graph_Lib.Selections.Selection;
 
 private

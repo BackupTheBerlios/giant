@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.18 $
---  $Author: schwiemn $
---  $Date: 2003/06/20 13:45:48 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.19 $
+--  $Author: squig $
+--  $Date: 2003/06/22 23:03:19 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -34,7 +34,7 @@ with Giant.Graph_Lib;         -- from GIANT
 package body Giant.Vis_Windows is
 
    ---------------------------------------------------------------------------
-   --  The default name used for standard selections 
+   --  The default name used for standard selections
    --  (when creating a new project). The
    --  Name should correspond to Giant.Valid_Names.Standard_Name
    --  (only if used in GIANT). If you use this package separately
@@ -332,26 +332,26 @@ package body Giant.Vis_Windows is
      (Vis_Window : in Visual_Window_Access)
      return String is
    begin
-   
+
       if Vis_Window = null then
          raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
-      
+
       return Ada.Strings.Unbounded.To_String (Vis_Window.Vis_Window_Name);
    end Get_Name;
-   
+
    ---------------------------------------------------------------------------
-              
+
    procedure Change_Name
      (Vis_Window : in Visual_Window_Access;
       New_Name   : in String) is
-   begin  
-       
+   begin
+
       if Vis_Window = null then
          raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
-      
-      Vis_Window.Vis_Window_Name := 
+
+      Vis_Window.Vis_Window_Name :=
         Ada.Strings.Unbounded.To_Unbounded_String (New_Name);
    end Change_Name;
 
@@ -494,58 +494,58 @@ package body Giant.Vis_Windows is
 
        return The_List;
    end Get_All_Selections;
-   
+
    ---------------------------------------------------------------------------
    procedure Change_Selection_Name
      (Vis_Window         : in Visual_Window_Access;
       Selection_Name     : in String;
       New_Selection_Name : in String) is
-       
+
       Dummy_Selection     : Graph_Lib.Selections.Selection;
-      Dummy_Data_Element  : Selection_Data_Elemet;  
+      Dummy_Data_Element  : Selection_Data_Elemet;
       Change_Data_Element : Selection_Data_Elemet;
    begin
       if Vis_Window = null then
          raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
-      
-      if Does_Selection_Exist (Vis_Window, New_Selection_Name) then 
+
+      if Does_Selection_Exist (Vis_Window, New_Selection_Name) then
          raise New_Selection_Name_Does_Already_Exist_Exception;
       end if;
-      
+
       if Ada.Strings.Unbounded."="
         (Vis_Window.Standard_Selection, Selection_Name) then
 
          raise Standard_Selection_Name_May_Not_Be_Changed_Exception;
       end if;
-                         
+
       -- update set
       Dummy_Selection := Graph_Lib.Selections.Create (Selection_Name);
       Dummy_Data_Element.The_Selection := Dummy_Selection;
 
       Change_Data_Element := Selection_Data_Sets.Get
         (Vis_Window.All_Managed_Selections, Dummy_Data_Element);
-        
+
       Selection_Data_Sets.Remove
-        (Vis_Window.All_Managed_Selections, Dummy_Data_Element);  
+        (Vis_Window.All_Managed_Selections, Dummy_Data_Element);
 
       Graph_Lib.Selections.Destroy (Dummy_Selection);
-     
-      Graph_Lib.Selections.Rename 
+
+      Graph_Lib.Selections.Rename
         (Change_Data_Element.The_Selection, New_Selection_Name);
-        
+
       Selection_Data_Sets.Insert
-        (Vis_Window.All_Managed_Selections, Change_Data_Element);      
-      
+        (Vis_Window.All_Managed_Selections, Change_Data_Element);
+
       -- change current selection entry if necessary
       if Ada.Strings.Unbounded."="
         (Vis_Window.Current_Selection, Selection_Name) then
-   
-         Vis_Window.Current_Selection := 
+
+         Vis_Window.Current_Selection :=
            Ada.Strings.Unbounded.To_Unbounded_String (New_Selection_Name);
       end if;
    end Change_Selection_Name;
-         
+
    ---------------------------------------------------------------------------
    procedure Add_Selection
      (Vis_Window : in Visual_Window_Access;
@@ -560,7 +560,7 @@ package body Giant.Vis_Windows is
       end if;
 
       if (Does_Selection_Exist
-        (Vis_Window, 
+        (Vis_Window,
          Graph_Lib.Selections.Get_Name (Selection)) = True) then
          raise Selection_Is_Already_Part_Of_Window_Exception;
       end if;
@@ -575,7 +575,7 @@ package body Giant.Vis_Windows is
    end Add_Selection;
 
    ---------------------------------------------------------------------------
-   procedure Remove_Selection_From_Vis_Window
+   procedure Remove_Selection
      (Vis_Window     : in Visual_Window_Access;
       Selection_Name : in String) is
 
@@ -611,7 +611,7 @@ package body Giant.Vis_Windows is
         (Selection_Name, Vis_Window.Current_Selection) then
          Vis_Window.Current_Selection := Vis_Window.Standard_Selection;
       end if;
-   end Remove_Selection_From_Vis_Window;
+   end Remove_Selection;
 
    ---------------------------------------------------------------------------
    function Get_Current_Selection
@@ -751,13 +751,13 @@ package body Giant.Vis_Windows is
         (Vis_Window.All_Managed_Selections, Dummy_Data_Element);
 
       Change_Data_Element.Highlight_Status := New_Highlight_Status;
-      
+
       Selection_Data_Sets.Remove
         (Vis_Window.All_Managed_Selections, Dummy_Data_Element);
 
       Selection_Data_Sets.Insert
         (Vis_Window.All_Managed_Selections, Change_Data_Element);
-       
+
       Graph_Lib.Selections.Destroy (Dummy_Selection);
    end Set_Highlight_Status;
 
@@ -855,12 +855,12 @@ package body Giant.Vis_Windows is
       Change_Data_Element := Selection_Data_Sets.Get
         (Vis_Window.All_Managed_Selections, Dummy_Data_Element);
       Change_Data_Element.Is_Faded_Out := True;
-      
+
       Selection_Data_Sets.Remove
         (Vis_Window.All_Managed_Selections, Dummy_Data_Element);
       Selection_Data_Sets.Insert
         (Vis_Window.All_Managed_Selections, Change_Data_Element);
-                  
+
       Graph_Lib.Selections.Destroy (Dummy_Selection);
    end Fade_Out_Selection;
 
@@ -892,12 +892,12 @@ package body Giant.Vis_Windows is
       Change_Data_Element := Selection_Data_Sets.Get
         (Vis_Window.All_Managed_Selections, Dummy_Data_Element);
       Change_Data_Element.Is_Faded_Out := False;
-      
+
       Selection_Data_Sets.Remove
         (Vis_Window.All_Managed_Selections, Dummy_Data_Element);
       Selection_Data_Sets.Insert
-        (Vis_Window.All_Managed_Selections, Change_Data_Element);    
-            
+        (Vis_Window.All_Managed_Selections, Change_Data_Element);
+
       Graph_Lib.Selections.Destroy (Dummy_Selection);
    end Fade_In_Selection;
 

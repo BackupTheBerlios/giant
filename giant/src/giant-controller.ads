@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.12 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.13 $
 --  $Author: squig $
---  $Date: 2003/06/20 16:47:35 $
+--  $Date: 2003/06/22 23:03:18 $
 --
 ------------------------------------------------------------------------------
 --
@@ -100,11 +100,21 @@ package Giant.Controller is
       Window_Name   : in String;
       Name          : in String);
 
+   procedure Duplicate_Selection
+     (Window_Name : in String;
+      Source_Name : in String;
+      Target_Name : in String);
+
    function Remove_Selection
      (Window_Name          : in String;
       Name                 : in String;
       Ask_For_Confirmation : in Boolean := True)
      return Boolean;
+
+   procedure Rename_Selection
+     (Window_Name : in String;
+      Old_Name    : in String;
+      New_Name    : in String);
 
    ---------------------------------------------------------------------------
    --  Subgraphs
@@ -112,6 +122,10 @@ package Giant.Controller is
 
    procedure Create_Subgraph
      (Name : in String := "Unknown");
+
+   procedure Duplicate_Subgraph
+     (Source_Name : in String;
+      Target_Name : in String);
 
    function Remove_Subgraph
      (Name : in String;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.11 $
 --  $Author: squig $
---  $Date: 2003/06/22 21:54:21 $
+--  $Date: 2003/06/22 23:03:19 $
 --
 
 with Ada.Text_Io; use Ada.Text_Io;
@@ -271,7 +271,6 @@ package body Giant.Default_Dialog is
       Gtk.Box.Pack_Start (Dialog.Center_Box, Widget,
                           Expand => True, Fill => True,
                           Padding => DEFAULT_SPACING);
-      --Gtk.Box.Reorder_Child (Dialog.Center_Box, Widget, 0);
    end Set_Center_Widget;
 
    procedure Show_Modal

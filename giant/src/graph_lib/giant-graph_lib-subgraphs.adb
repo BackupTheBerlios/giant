@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.4 $
---  $Author: koppor $
---  $Date: 2003/06/19 21:05:18 $
+--  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.5 $
+--  $Author: squig $
+--  $Date: 2003/06/22 23:03:18 $
 
 package body Giant.Graph_Lib.Subgraphs is
 
@@ -121,6 +121,16 @@ package body Giant.Graph_Lib.Subgraphs is
    end Create;
 
    ---------------------------------------------------------------------------
+   --  Returns a clone, since the caller may not change our internal data
+   function Create_Selection
+     (Source : in Subgraph)
+      return Graph_Lib.Selections.Selection
+   is
+   begin
+      return Selections.Clone (Source.Sel);
+   end Create_Selection;
+
+   ---------------------------------------------------------------------------
    procedure Destroy
      (SubGraph_To_Destroy : in out Subgraph)
    is
@@ -155,16 +165,6 @@ package body Giant.Graph_Lib.Subgraphs is
    begin
       return Selections.Get_Node_Count (Graph.Sel);
    end Get_Node_Count;
-
-   ---------------------------------------------------------------------------
-   --  Returns a clone, since the caller may not change our internal data
-   function Get_Selection
-     (Subgraph_To_Read : in Subgraph)
-      return Graph_Lib.Selections.Selection
-   is
-   begin
-      return Selections.Clone (Subgraph_To_Read.Sel);
-   end Get_Selection;
 
    ---------------------------------------------------------------------------
    function Intersection
