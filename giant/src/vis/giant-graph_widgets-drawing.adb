@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.18 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.19 $
 --  $Author: keulsn $
---  $Date: 2003/07/12 16:19:26 $
+--  $Date: 2003/07/18 13:19:45 $
 --
 ------------------------------------------------------------------------------
 
@@ -414,7 +414,7 @@ package body Giant.Graph_Widgets.Drawing is
       type Light_Array is array
         (1 .. Vis_Data.Highlight_Type'Pos (Vis_Data.Highlight_Type'Last) -
               Vis_Data.Highlight_Type'Pos (Vis_Data.Highlight_Type'First) + 1)
-        of Vis_Data.Local_Highlight_Type;
+        of Vis_Data.Highlight_Type;
       Lights                : Light_Array;
       Light_Count           : Integer;
       Current_Thickness     : Vis.Absolute_Natural;

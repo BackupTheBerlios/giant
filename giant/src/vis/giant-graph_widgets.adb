@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.35 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.36 $
 --  $Author: keulsn $
---  $Date: 2003/07/18 12:38:48 $
+--  $Date: 2003/07/18 13:19:45 $
 --
 ------------------------------------------------------------------------------
 
@@ -1181,14 +1181,11 @@ package body Giant.Graph_Widgets is
    procedure Set_Zoom_Level
      (Widget     : access Graph_Widget_Record'Class;
       Zoom       : in     Vis.Zoom_Level) is
-
-      Lock : Lock_Type;
    begin
-      Lock_All_Content (Widget, Lock);
-      Move_All_Nodes_To_Unsized (Widget);
-      Move_All_Edges_To_Unsized (Widget);
-      Positioning.Set_Zoom (Widget, Zoom);
-      Release_Lock (Widget, Lock);
+      Set_Location_And_Zoom_Level
+        (Widget   => Widget,
+         Location => Get_Location (Widget),
+         Zoom     => Zoom);
    end Set_Zoom_Level;
 
    procedure Zoom_To_Edge
@@ -1258,7 +1255,9 @@ package body Giant.Graph_Widgets is
       Lock : Lock_Type;
    begin
       Lock_All_Content (Widget, Lock);
-      Set_Zoom_Level (Widget, Zoom);
+      Move_All_Nodes_To_Unsized (Widget);
+      Move_All_Edges_To_Unsized (Widget);
+      Positioning.Set_Zoom (Widget, Zoom);
       Set_Location (Widget, Location);
       Release_Lock (Widget, Lock);
    end Set_Location_And_Zoom_Level;
