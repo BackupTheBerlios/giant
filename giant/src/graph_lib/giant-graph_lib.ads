@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.28 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.29 $
 --  $Author: koppor $
---  $Date: 2003/07/04 15:11:26 $
+--  $Date: 2003/07/05 16:31:56 $
 --
 --  TBD:
 --    * Write into comment, when the routine may be used
@@ -411,14 +411,17 @@ package Giant.Graph_Lib is
       return Node_Attribute_Class_Id;
 
 
-   --------------------------------
-   -- Inspectors                 --
-   --  On the nodes of the graph --
-   --------------------------------
+   -----------------------------------
+   --  Inspectors                   --
+   --    On the nodes of the graph  --
+   -----------------------------------
 
    ---------------------------------------------------------------------------
    --  Returns:
    --    "Type of Node"
+   --
+   --  Refactoring: Should be named "Get_Node_Class" to be consistent with
+   --               other routines
    function Get_Node_Class_Id
       (Node : in Node_Id)
       return Node_Class_Id;
@@ -590,6 +593,9 @@ package Giant.Graph_Lib is
    ---------------------------------------------------------------------------
    --  Returns a tag identifying the current node id
    --    is unique for each Node_Class_Id
+   --
+   --  Could also be named Convert_Node_Class_Id_To_Name
+   --    since it returns the name of given Node_Class
    function Get_Node_Class_Tag
      (Node_Class : in Node_Class_Id)
      return String;
