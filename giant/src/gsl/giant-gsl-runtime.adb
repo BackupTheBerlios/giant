@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/26 15:21:12 $
+-- $Date: 2003/08/27 10:37:09 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -1165,7 +1165,7 @@ package body Giant.Gsl.Runtime is
       Node_Id_List  : Graph_Lib.Node_Id_List;
       Node_Iter     : Graph_Lib.Node_Id_Lists.ListIter;
       Node_List     : Gsl_List;
-      Pos           : Natural := 1;
+      Position      : Natural := 1;
       Sloc          : Gsl_List;
    begin
       if Get_List_Size (Parameter) /= 2 then
@@ -1193,11 +1193,14 @@ package body Giant.Gsl.Runtime is
                     (Get_Value (Gsl_Node_Id (N)), Attrib_Id);
                   Node_List := Create_Gsl_List
                     (Node_Id_Lists.Length (Node_Id_List));
+
+                  Node_Iter := Node_Id_Lists.MakeListIter (Node_Id_List);
                   while Node_Id_Lists.More (Node_Iter) loop
                      Node_Id_Lists.Next (Node_Iter, N_Id);
-                     Set_Value_At (Node_List, Pos, Gsl_Type
-                       (Create_Gsl_Node_Id (N_Id)));
-                     Pos := Pos + 1;
+                     Set_Value_At
+                       (Node_List, Position,
+                        Gsl_Type (Create_Gsl_Node_Id (N_Id)));
+                     Position := Position + 1;
                   end loop;
                   return Gsl_Type (Node_List);
 
