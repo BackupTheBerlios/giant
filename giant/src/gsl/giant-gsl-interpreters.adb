@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/24 14:24:01 $
+-- $Date: 2003/07/29 13:48:29 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -161,17 +161,18 @@ package body Giant.Gsl.Interpreters is
       Register_Runtime (Runtime_Size_Of'Access,        "size_of");
       Register_Runtime (Runtime_Get_Entry'Access,      "get_entry");
       -- types (ref. GIANT Scripting Language Specification 1.5.1.6)
-      Register_Runtime (Runtime_Is_Nodeid'Access,    "is_nodeid");
-      Register_Runtime (Runtime_Is_Edgeid'Access,    "is_edgeid");
-      Register_Runtime (Runtime_Is_Node_Set'Access,  "is_node_set");
-      Register_Runtime (Runtime_Is_Edge_Set'Access,  "is_edge_set");
-      Register_Runtime (Runtime_Is_String'Access,    "is_string");
-      Register_Runtime (Runtime_Is_Boolean'Access,   "is_boolean");
-      Register_Runtime (Runtime_Is_Natural'Access,   "is_natural");
-      Register_Runtime (Runtime_Is_List'Access,      "is_list");
-      Register_Runtime (Runtime_Is_Reference'Access, "is_reference");
-      Register_Runtime (Runtime_Is_Script'Access,    "is_script");
-      Register_Runtime (Runtime_Is_Null'Access,      "is_null");
+      Register_Runtime (Runtime_Is_Nodeid'Access,     "is_nodeid");
+      Register_Runtime (Runtime_Is_Edgeid'Access,     "is_edgeid");
+      Register_Runtime (Runtime_Is_Node_Set'Access,   "is_node_set");
+      Register_Runtime (Runtime_Is_Edge_Set'Access,   "is_edge_set");
+      Register_Runtime (Runtime_Is_String'Access,     "is_string");
+      Register_Runtime (Runtime_Is_Boolean'Access,    "is_boolean");
+      Register_Runtime (Runtime_Is_Natural'Access,    "is_natural");
+      Register_Runtime (Runtime_Is_List'Access,       "is_list");
+      Register_Runtime (Runtime_Is_Reference'Access,  "is_reference");
+      Register_Runtime (Runtime_Is_Script'Access,     "is_script");
+      Register_Runtime (Runtime_Is_Object_Set'Access, "is_object_set");
+      Register_Runtime (Runtime_Is_Null'Access,       "is_null");
       -- gsl interpreter (ref. GIANT Scripting Language Specification 1.5.2.1)
       Register_Runtime (Runtime_Get_Current_Window'Access,
                         "get_current_window");
@@ -183,8 +184,10 @@ package body Giant.Gsl.Interpreters is
       Register_Runtime (Runtime_Has_Attribute'Access, "has_attribute");
       Register_Runtime (Runtime_Get_Attribute'Access, "get_attribute");
       Register_Runtime (Runtime_Get_Type'Access,      "get_type");
+      Register_Runtime (Runtime_Get_Incoming'Access,  "get_incoming");
+      Register_Runtime (Runtime_Get_Outgoing'Access,  "get_outgoing");
       Register_Runtime (Runtime_Get_Source'Access,    "get_source");
-      Register_Runtime (Runtime_Get_Source'Access,    "get_target");
+      Register_Runtime (Runtime_Get_Target'Access,    "get_target");
       -- gui (ref. GIANT Scripting Language Specification 1.5.2.3, 1.5.2.4)
       Register_Runtime (Runtime_Exists_Window'Access, "exists_window");
       Register_Runtime (Runtime_Get_Window_Content'Access,
