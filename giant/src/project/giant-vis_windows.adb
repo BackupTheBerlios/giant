@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.25 $
---  $Author: schwiemn $
---  $Date: 2003/06/30 12:25:52 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.26 $
+--  $Author: squig $
+--  $Date: 2003/06/30 12:35:55 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -386,20 +386,20 @@ package body Giant.Vis_Windows is
    end Get_Hash_Value;
 
    ---------------------------------------------------------------------------
-   function Get_Graph_Widget      
+   function Get_Graph_Widget
      (Vis_Window : in Visual_Window_Access)
      return Graph_Widgets.Graph_Widget is
-     
+
    begin
-   
+
       if Vis_Window = null then
          raise Visual_Window_Access_Not_Initialized_Exception;
-      end if;   
-      
-      return Vis_Window.The_Graph_Widget;     
+      end if;
+
+      return Vis_Window.The_Graph_Widget;
    end Get_Graph_Widget;
-   
-   
+
+
    ---------------------------------------------------------------------------
    -- C
    -- Management of the Selections that belong to a visualisation window
@@ -1043,37 +1043,37 @@ package body Giant.Vis_Windows is
 
       Pin_Sets.Insert (Vis_Window.Set_Of_All_Pins, New_Pin);
    end Add_Pin;
-   
-   
+
+
    ---------------------------------------------------------------------------
-   procedure Change_Pin_Name 
+   procedure Change_Pin_Name
       (Vis_Window   : in Visual_Window_Access;
        Pin_Name     : in String;
        New_Pin_Name : in String) is
-       
-      Change_Pin : Pin;       
+
+      Change_Pin : Pin;
    begin
-              
+
       if Vis_Window = null then
          raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
 
-      if Does_Pin_Exist (Vis_Window, Pin_Name) then
+      if Does_Pin_Exist (Vis_Window, New_Pin_Name) then
          raise Pin_Does_Already_Exist_Exception;
       end if;
-      
+
       Change_Pin.Pin_Name := Ada.Strings.Unbounded.To_Unbounded_String
         (Pin_Name);
-      
+
       -- Get all data stored in Pin
       Change_Pin := Pin_Sets.Get (Vis_Window.Set_Of_All_Pins, Change_Pin);
-      
-      Pin_Sets.Remove (Vis_Window.Set_Of_All_Pins, Change_Pin);     
-      
+
+      Pin_Sets.Remove (Vis_Window.Set_Of_All_Pins, Change_Pin);
+
       Change_Pin.Pin_Name := Ada.Strings.Unbounded.To_Unbounded_String
         (New_Pin_Name);
-      
-      Pin_Sets.Insert (Vis_Window.Set_Of_All_Pins, Change_Pin);   
+
+      Pin_Sets.Insert (Vis_Window.Set_Of_All_Pins, Change_Pin);
    end Change_Pin_Name;
 
    ---------------------------------------------------------------------------
