@@ -1,5 +1,9 @@
 2003-10-06  Oliver Kopp  <koppor@studi.informatik.uni-stuttgart.de>
 
+	* spec/gsl/gsl.tex (subsubsection{Anfragen an den IML-Graph}):
+	doppeltes instance_of (Node X class) entfernt
+	instance_of für (edge X class_set) hinzugefügt
+
 	* handbuch/gsl.tex: added parameters for treelayout
 	(subsection{Wie erzeuge ich einen neuen Subgraphen?}): added
 
