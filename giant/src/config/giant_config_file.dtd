@@ -2,7 +2,7 @@
 
   <!ELEMENT setting EMPTY>
   <!ATTLIST setting
-      name   ID    #REQUIRED
+      name   CDATA #REQUIRED
       value  CDATA #REQUIRED
     >
     
