@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/19 11:02:30 $
+-- $Date: 2003/09/23 17:20:36 $
 --
 -- This package implements the Gsl interpreter.
 --
@@ -180,6 +180,19 @@ package Giant.Gsl.Interpreters is
    --
    procedure Create_Var
      (Name : in String);
+
+   ---------------------------------------------------------------------------
+   --
+   function Get_Activation_Record_Level
+     (Name : in String)
+      return Natural;
+
+   ---------------------------------------------------------------------------
+   --
+   function Get_Activation_Record_Level
+     (Ar : in Activation_Record)
+      return Natural;
+
    ---------------------------------------------------------------------------
    --
    procedure Exists_Var
@@ -211,17 +224,23 @@ package Giant.Gsl.Interpreters is
    function Create_Activation_Record
      (Parent : in Activation_Record)
       return Activation_Record;
-   
+
+   ---------------------------------------------------------------------------
+   --
+   function Get_Activation_Record_Parent
+     (AR : in Activation_Record)
+      return Activation_Record;
+  
+   ---------------------------------------------------------------------------
+   --
+   procedure Destroy_Activation_Record
+     (AR : in Activation_Record);
+ 
 private
 
    ---------------------------------------------------------------------------
    --
    Current_Interpreter : Interpreter;
-
-   ---------------------------------------------------------------------------
-   --
-   procedure Destroy_Activation_Record
-     (AR : in Activation_Record);
 
    ---------------------------------------------------------------------------
    -- the GSL interpreter, inherits Iterative_Evolution 

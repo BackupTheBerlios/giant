@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-compilers.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/09/02 10:20:51 $
+-- $Date: 2003/09/23 17:20:36 $
 --
 ------------------------------------------------------------------------------
 -- This package implements a "compiler", more precise a code generator, 
@@ -127,6 +127,7 @@ private
       record
          Name        : String (1 .. Name_Length);
          Time_Stamp  : GNAT.OS_Lib.OS_Time;
+         Error       : Boolean;
          Syntax_Tree : Syntax_Node;
       end record;
 

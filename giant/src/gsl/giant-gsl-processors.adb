@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-processors.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/09/16 16:47:06 $
+-- $Date: 2003/09/23 17:20:36 $
 --
 
 with Ada.Exceptions;
@@ -46,9 +46,13 @@ package body Giant.Gsl.Processors is
 
       use Giant.Controller;
       use Giant.Gsl.Syntax_Tree;
-      Gsl_Compiler    : Gsl.Compilers.Compiler;
-      Execution_Stack : Execution_Stacks.Stack;
-      Result_Stack    : Result_Stacks.Stack;
+      Gsl_Compiler    : Gsl.Compilers.Compiler := 
+                        Gsl.Interpreters.Get_Compiler;
+      Execution_Stack : Execution_Stacks.Stack := 
+                        Gsl.Interpreters.Get_Execution_Stack; 
+      Result_Stack    : Result_Stacks.Stack :=
+                        Gsl.Interpreters.Get_Result_Stack;
+      AR              : Gsl.Activation_Record;
       Res1            : Gsl_Type;
       Res2            : Gsl_Type;
       Lit             : Gsl_Type;
@@ -56,10 +60,6 @@ package body Giant.Gsl.Processors is
       Sub             : Graph_Lib.Subgraphs.Subgraph;
       Sel             : Graph_Lib.Selections.Selection;
    begin
-      Gsl_Compiler    := Gsl.Interpreters.Get_Compiler;
-      Execution_Stack := Gsl.Interpreters.Get_Execution_Stack;
-      Result_Stack    := Gsl.Interpreters.Get_Result_Stack;
-
       -- execute a Gsl command
       case Get_Node_Type (Cmd) is
 
@@ -194,6 +194,14 @@ package body Giant.Gsl.Processors is
                if Get_Value (Gsl_Boolean (Res1)) then
                   -- loop again
                   Execution_Stacks.Push (Execution_Stack, Copy_Node (Cmd));
+
+                  -- set the new activation record
+                  AR := Gsl.Interpreters.Create_Activation_Record
+                    (Gsl.Interpreters.Get_Activation_Record_Parent
+                      (Gsl.Interpreters.Get_Current_Activation_Record));
+                  Gsl.Interpreters.Restore_Activation_Record;
+                  Gsl.Interpreters.Set_Activation_Record (AR);
+
                   -- push the code of the script
                   Execution_Stacks.Push
                     (Execution_Stack, Gsl.Compilers.Get_Execution_Stack
@@ -273,7 +281,7 @@ package body Giant.Gsl.Processors is
                  Get_Gsl_Runtime (Gsl_Script_Reference (Script))
                  (Gsl_List (Params)));
                -- free the memory 
-               --Destroy_Gsl_Type (Params);
+               Destroy_Gsl_Type (Params);
                Destroy_Gsl_Type (Script);
          end case;
       else

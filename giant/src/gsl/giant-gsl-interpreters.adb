@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/09/16 16:47:06 $
+-- $Date: 2003/09/23 17:20:36 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -368,7 +368,7 @@ package body Giant.Gsl.Interpreters is
       Execution_Stacks.Push (Individual.Execution_Stack, Get_Execution_Stack
         (Individual.Gsl_Compiler, Create_Node
           (Script_Activation, Null_Node, Null_Node)));
-      Log_Execution_Stack;
+      -- Log_Execution_Stack;
 
       -- result stack for the activation of "run"
       Script := Copy (Get_Var ("run"));
@@ -376,7 +376,7 @@ package body Giant.Gsl.Interpreters is
       Set_Value_At (Param_Run, 1, Gsl_Type (Create_Gsl_String (Name)));
       Result_Stacks.Push (Individual.Result_Stack, Script);
       Result_Stacks.Push (Individual.Result_Stack, Gsl_Type (Param_Run));
-      Log_Result_Stack;
+      -- Log_Result_Stack;
 
       -- set gsl time (used for performance measurement)
       Individual.Gsl_Time := Ada.Real_Time.Clock;
@@ -553,6 +553,15 @@ package body Giant.Gsl.Interpreters is
 
    ---------------------------------------------------------------------------
    --
+   function Get_Activation_Record_Parent
+     (AR : in Activation_Record)
+      return Activation_Record is
+   begin
+      return AR.Parent;
+   end Get_Activation_Record_Parent;
+
+   ---------------------------------------------------------------------------
+   --
    procedure Destroy_Activation_Record
      (AR : Activation_Record) is
 
@@ -587,16 +596,62 @@ package body Giant.Gsl.Interpreters is
       end if;
    end Create_Var;
 
+   --------------------------------------------------------------------------
+   --
+   function Get_Activation_Record_Level
+     (Name : in String)
+      return Natural is
+
+      Count : Natural := 0;
+      AR    : Activation_Record := 
+              Current_Interpreter.Current_Activation_Record;
+   begin
+      while AR /= null loop
+         if Gsl_Var_Hashed_Mappings.Is_Bound
+           (AR.Vars, To_Unbounded_String (Name)) then
+            return Count;
+         end if;
+         -- next iteration look in the parent Activation_Record
+         AR := AR.Parent;
+         Count := Count + 1;
+      end loop;
+      -- variable was not found, raise Exception
+      Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+        "Runtime error: Variable '" & Name & "' was not found.");
+   end Get_Activation_Record_Level;
+
+   --------------------------------------------------------------------------
+   --
+   function Get_Activation_Record_Level
+     (AR : in Activation_Record)
+      return Natural is
+
+      Count : Natural := 0;
+      AR1   : Activation_Record :=
+              Current_Interpreter.Current_Activation_Record;
+   begin
+      while AR1 /= null loop
+         if AR1 = AR then
+            return Count;
+         end if;
+         -- next iteration look in the parent Activation_Record
+         AR1 := AR1.Parent;
+         Count := Count + 1;
+      end loop;
+      -- variable was not found, raise Exception
+      Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+        "Runtime error: Invalid Activation_Record");
+   end Get_Activation_Record_Level;
+
    ---------------------------------------------------------------------------
    --
    procedure Exists_Var
      (Name : in String) is
 
       use Ada.Strings.Unbounded;
-      AR : Activation_Record;
+      AR    : Activation_Record := 
+              Current_Interpreter.Current_Activation_Record;
    begin
-      -- start in the current Activation_Record
-      AR := Current_Interpreter.Current_Activation_Record;
       while AR /= null loop
          if Gsl_Var_Hashed_Mappings.Is_Bound
            (AR.Vars, To_Unbounded_String (Name)) then
@@ -617,10 +672,9 @@ package body Giant.Gsl.Interpreters is
       return Gsl_Type is
 
       use Ada.Strings.Unbounded;
-      AR : Activation_Record;
+      AR    : Activation_Record := 
+              Current_Interpreter.Current_Activation_Record;
    begin
-      -- start in the current Activation_Record
-      AR := Current_Interpreter.Current_Activation_Record;
       while AR /= null loop
          if Gsl_Var_Hashed_Mappings.Is_Bound
            (AR.Vars, To_Unbounded_String (Name)) then
@@ -642,10 +696,9 @@ package body Giant.Gsl.Interpreters is
       Value : in Gsl_Type) is
 
       use Ada.Strings.Unbounded;
-      AR : Activation_Record;
+      AR    : Activation_Record := 
+              Current_Interpreter.Current_Activation_Record;
    begin
-      -- start in the current Activation_Record
-      AR := Current_Interpreter.Current_Activation_Record;
       while AR /= null loop
          if Gsl_Var_Hashed_Mappings.Is_Bound
            (AR.Vars, To_Unbounded_String (Name)) then

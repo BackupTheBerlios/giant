@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/09/16 16:54:57 $
+-- $Date: 2003/09/23 17:20:36 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -70,13 +70,38 @@ package body Giant.Gsl.Runtime is
            "Script 'set': Expecting 2 parameters.");
       end if;
       Var := Get_Value_At (Parameter, 1);
-      Value := Get_Value_At (Parameter, 2);
+      Value := Copy_Gsl_Type (Get_Value_At (Parameter, 2));
       if not (Is_Gsl_Var_Reference (Var) or Is_Gsl_Global_Reference (Var))
       then
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
            "Script 'set': Gsl_Var_Reference expected.");
       
       elsif Get_Ref_Type (Gsl_Var_Reference (Var)) = Gsl.Types.Var then
+         if Is_Gsl_Var_Reference (Value) then
+            if Get_Activation_Record_Level
+              (Get_Ref_Name (Gsl_Var_Reference (Var))) >
+               Get_Activation_Record_Level
+              (Get_Ref_Name (Gsl_Var_Reference (Value)))
+            then
+               Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+                 "Script 'set': Operation not allowed. " & 
+                 "Gsl_Var_Reference migth lead to data corruption.");
+            end if; 
+         end if;
+         if Is_Gsl_Script_Reference (Value) then
+            if Get_Script_Type (Gsl_Script_Reference (Value)) = Gsl_Script
+            then            
+               if Get_Activation_Record_Level
+                 (Get_Ref_Name (Gsl_Var_Reference (Var))) >
+                  Get_Activation_Record_Level
+                 (Get_Activation_Record (Gsl_Script_Reference (Value)))
+               then
+                  Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+                    "Script 'set': Operation not allowed. " & 
+                    "Gsl_Script_Reference migth lead to data corruption.");
+               end if; 
+            end if;
+         end if;
          Set_Var (Get_Ref_Name (Gsl_Var_Reference (Var)), Value);
       
       elsif Get_Ref_Type (Gsl_Var_Reference (Var)) = Gsl.Types.Subgraph then
@@ -169,8 +194,8 @@ package body Giant.Gsl.Runtime is
            "Script 'if': Expecting 3 parameters.");
       end if;
       Cond := Get_Value_At (Parameter, 1);
-      True_Branch := Get_Value_At (Parameter, 2);
-      False_Branch := Get_Value_At (Parameter, 3);
+      True_Branch := Copy_Gsl_Type (Get_Value_At (Parameter, 2));
+      False_Branch := Copy_Gsl_Type (Get_Value_At (Parameter, 3));
       if Is_Gsl_Boolean (Cond) then
          if Get_Value (Gsl_Boolean (Cond)) = true then
             if Is_Gsl_Script_Reference (True_Branch) then
@@ -225,7 +250,7 @@ package body Giant.Gsl.Runtime is
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
            "Script 'loop': Expecting 1 parameter.");
       end if;
-      Script := Get_Value_At (Parameter, 1);
+      Script := Copy_Gsl_Type (Get_Value_At (Parameter, 1));
       if Is_Gsl_Script_Reference (Script) then
          Loop_Cmd := Create_Node (Script_Loop,
            Get_Script_Node (Gsl_Script_Reference (Script)), Null_Node);
@@ -627,10 +652,15 @@ package body Giant.Gsl.Runtime is
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
            "Script 'in_regexp': Gsl_String expected.");
       end if;
+
+      exception
+         when GNAT.Regpat.Expression_Error =>
+           Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+             "Script 'in_regexp': Invalid regular expression."); 
    end Runtime_In_Regexp;
 
    ---------------------------------------------------------------------------
-   --
+   -- !!!!!!!!!!!!!!!! IMPLEMENTIEREN !!!!!!!!!!!!!!!!
    function Runtime_Type_In
      (Parameter : Gsl_List)
       return Gsl_Type is
@@ -724,12 +754,24 @@ package body Giant.Gsl.Runtime is
          Obj := Get_Var (Get_Ref_Name (Gsl_Var_Reference (Obj)));
       end if;
       if Is_Gsl_Node_Set (Obj) then
-         return Gsl_Type (Create_Gsl_Node_Id
-           (Graph_Lib.Node_Id_Sets.First (Get_Value (Gsl_Node_Set (Obj)))));
+         if Graph_Lib.Node_Id_Sets.Is_Empty (Get_Value (Gsl_Node_Set (Obj)))
+         then
+            return Gsl_Null;
+         else
+            return Gsl_Type (Create_Gsl_Node_Id
+              (Graph_Lib.Node_Id_Sets.First
+                (Get_Value (Gsl_Node_Set (Obj)))));
+         end if;
 
       elsif Is_Gsl_Edge_Set (Obj) then
-         return Gsl_Type (Create_Gsl_Edge_Id
-           (Graph_Lib.Edge_Id_Sets.First (Get_Value (Gsl_Edge_Set (Obj)))));
+         if Graph_Lib.Edge_Id_Sets.Is_Empty (Get_Value (Gsl_Edge_Set (Obj)))
+         then
+            return Gsl_Null;
+         else
+            return Gsl_Type (Create_Gsl_Edge_Id
+              (Graph_Lib.Edge_Id_Sets.First
+                (Get_Value (Gsl_Edge_Set (Obj)))));
+         end if;
 
       else
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
@@ -790,8 +832,8 @@ package body Giant.Gsl.Runtime is
       if Is_Gsl_List (List) and Is_Gsl_Natural (Index) then
          if Get_List_Size (Gsl_List (List)) >= Get_Value (Gsl_Natural (Index))
          then
-            return Gsl_Type (Get_Value_At
-              (Gsl_List (List), Get_Value (Gsl_Natural (Index))));
+            return Copy_Gsl_Type (Gsl_Type (Get_Value_At
+              (Gsl_List (List), Get_Value (Gsl_Natural (Index)))));
          else
             return Gsl_Null;
          end if;
@@ -1565,7 +1607,7 @@ package body Giant.Gsl.Runtime is
       end if;
       Window_Name    := Get_Value_At (Parameter, 1);
       Selection_Name := Get_Value_At (Parameter, 2);
-      Selection      := Get_Value_At (Parameter, 3);
+      Selection      := Copy_Gsl_Type (Get_Value_At (Parameter, 3));
       Layout_Algo    := Get_Value_At (Parameter, 4);
       Layout_Param   := Get_Value_At (Parameter, 5);
       if Is_Gsl_String (Window_Name) and Is_Gsl_String (Selection_Name) and

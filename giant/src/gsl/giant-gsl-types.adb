@@ -20,9 +20,9 @@
 --
 -- First Author: Gerrit Schulz
 --
--- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.17 $
+-- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.18 $
 -- $Author: schulzgt $
--- $Date: 2003/08/26 14:00:00 $
+-- $Date: 2003/09/23 17:20:36 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Tags;
@@ -70,6 +70,19 @@ package body Giant.Gsl.Types is
 
       end if;
    end Destroy_Gsl_Type;
+
+   ---------------------------------------------------------------------------
+   --
+   function Copy_Gsl_Type
+     (Object : Gsl_Type)
+      return Gsl_Type is
+   begin
+      if Object /= Gsl_Null then
+         return Copy (Object);
+      else
+         return Gsl_Null;
+      end if;
+   end Copy_Gsl_Type;
 
 ------------------------------------------------------------------------------
 -- Gsl_Node_Id
@@ -789,7 +802,7 @@ package body Giant.Gsl.Types is
      (Object : access Gsl_Var_Reference_Record)
       return Gsl_Type is
 
-      Var        : Gsl_Var_Reference;
+      Var : Gsl_Var_Reference;
    begin
       Var := new Gsl_Var_Reference_Record
         (Object.Ref_Name'Length, Object.Context'Length);

@@ -21,26 +21,39 @@
 --
 -- $RCSfile: giant-gsl-types.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/26 14:00:00 $
+-- $Date: 2003/09/23 17:20:36 $
 --
 -- This package implements the datatypes used in GSL.
+-- A detailed description can be found in the GSL specification.
+-- All GSL types are inherited from the abstract class Gsl_Type.
+-- The baseclass Gsl_Type can be found in giant-gsl.ads.
 --
 
 with Giant.Graph_Lib;
 
 package Giant.Gsl.Types is
 
-   ---------------------------------------------------------------------------
-   -- gsl types (ref. GIANT Scripting Language Specification: 1.3.1)
+   --------------------------------------------------------------------
+   -- gsl types (ref. GIANT Scripting Language Specification: 1.3.1) --
+   --------------------------------------------------------------------
 
    ---------------------------------------------------------------------------
    -- destroys any Gsl_Type and frees all memory used by this type
+   -- determines the correct type of and calls its Destroy function
+   --
+   -- Parameters:
+   --   Var - the type to destroy
    procedure Destroy_Gsl_Type 
      (Var : in out Gsl_Type);
 
-   ---------------------------------------------------------------------------
-   -- Gsl_Node_Id
-   ---------------------------------------------------------------------------
+   function Copy_Gsl_Type
+     (Object : Gsl_Type)
+      return Gsl_Type;
+
+
+   -----------------
+   -- Gsl_Node_Id --
+   -----------------
 
    type Gsl_Node_Id_Record is new Gsl_Type_Record with private;
    type Gsl_Node_Id is access all Gsl_Node_Id_Record;
