@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.39 $
-%  $Date: 2003/03/19 19:53:47 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.40 $
+%  $Date: 2003/03/19 21:14:41 $
 %  $Author: stupro $
 %
 %  Description: Bis zu Revision 1.6 sind UseCase-artige Beschreibungen enthalten,
@@ -100,10 +100,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
           \item Close Window % OK
           \item Delete Window % OK
           \item New Window % OK
-          \item Insert IML Subgraph % OK
-          \item Export Window
-          \item Import Window
-          \end{enumerate}
+        \end{enumerate}
     
   \subsection {Subgraph List}
     
@@ -130,9 +127,9 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
       Beim Rechtsklick auf SUBGRAPH\_LIST öffnet sich ein Popup-Menü mit folgenden Menüpunkten:
         \label{SUBGRAPH-LIST-POPUP}
         \begin{enumerate}
-          \item highlight (zum Hervorheben eines Teilgraphen in allen Fenstern mit Farbe SUBGRAPH\_COL)
-          \item Change highlighting color
-          \item unhighlight
+          \item highlight in all windows (zum Hervorheben eines Teilgraphen in allen Fenstern mit Farbe SUBGRAPH\_COL)
+          \item unhighlight in all windows
+	  \item Change highlighting color
           \item Copy IML Subgraph
 	  \item Create Window Selection from IML Subgraph % OK
           \item Rename IML Subgraph
@@ -144,13 +141,14 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
   \subsection {Zugehörige Dialoge}
   
         \begin{enumerate}
-                \label{SUBGRAPH-LIST-NEW-WINDOW}
-                \item SUBGRAPH\_LIST/NEW\_WINDOW
-                        Dieser Dialog ermöglicht, ein neues Fenster anzulegen
-                        
+                \label{WINDOW-LIST-NEW-WINDOW}
+                \item WINDOW\_LIST/NEW\_WINDOW
+                        Dieser Dialog ermöglicht, ein neues Fenster anzulegen,
+			und ist ein allgemeiner Texteingabedialog.
+			Er hat ein Textfeld mit der Beschriftung \gq{Name for New Window},
+			und Buttons OK und Cancel.
+                \item SUBGRAPH\_LIST/        
         \end{enumerate}
-  >>>>>>>>>>>>KURZE Beschreibung aller DIALOGE die NUR!!!! vom HAUPTFENSTER AUS erreichbar sind.
-
 
 \section {Anzeigefenster}
 
@@ -187,17 +185,12 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     Mauszeiger über der VIS\_PANE befindet, verwandelt er sich in ein
     Fadenkreuz.
     
-    
-    
     Wenn auf einem Knoten die rechte Maustaste geklickt wird, öffnet sich
     folgendes Popup Menü:
-    
-    >>>>>>>> hier fehlen noch Punkte
-    
+ 
     \subsubsection{Node-Popup-Menü}\label{Node-Popup-Menü}
     \begin{enumerate}
       \item Show Node Info Window
-
       \item Annotate Node \label{Annotate Node}
       \item Change Node Annotation \label{Change Node Annotation}
       \item Delete Node Annotation \label{Delete Node Annotation}
@@ -229,8 +222,8 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     eines Popup-Menüs aktivierbar:
     \begin{enumerate}
       \item New Selection
-      \item Add Nodes to Selection
-      \item New IML Subgraph from Selection % ?
+      \item Add Nodes to this Selection
+      \item Create New IML Subgraph from this Selection % ?
       
       \item Highlight Selection  Color1 [gemäß Einstellung in Config Datei] % OK
       \item Highlight Selection  Color2 [gemäß Einstellung in Config Datei] % OK
@@ -239,7 +232,6 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
       \item Zoom to make selection fill window % OK
       
       \item Unhighlight Selection % OK
-      \item Change highlighting color 
       \item Copy Selection with new layout % OK
       \item Copy Selection with existing layout % OK
       \item Delete Selection % OK
@@ -335,17 +327,6 @@ Unter QUERY\_TEXT befinden sich folgende Elemente:
         \item Button QUERY\_SAVE (Save Query)
       \end{enumerate}
 
->>>>>>>>>>>>> WIRD DER FOLGENDE TEXT BENOETIGT?
-Nach Beendigung der Berechnung erscheint ein Fenster QUERY\_RESULT,
-in dem \gq{Anfrage beendet. Gefundene Knoten: QUERY\_FOUND\_NODES ,
-Gefundene Kanten: QUERY\_FOUND\_EDGES} steht. Darunter befindet sich
-der Text übernehmen als IML-Teilgraph und eine Combo-Box IML\_SUBGRAPHS,
-in der die bisher geladenen IML-Teilgraphen und eine Eingabemöglichkeit
-für einen neuen Namen sind.
-Darunter befinden sich zwei Buttons: Anfrage verwerfen und Anfrage
-übernehmen (QUERY\_USE , QUERY\_DISCARD) zum Verwerfen oder
-übernehmen als IML-Teilgraph. 
-
 \section{Allgemeiner Texteingabedialog}
 \label{DIALOG-WINDOW}
 
@@ -405,18 +386,16 @@ Der Dialog Layoutalgorithmen bietet folgende Möglichkeiten:
 \section{Dateneingabe}
 Beschreibung von verschiedenen Textfeldtypen etc. zur Eingabe von Daten.
 
-  \subsection{Knoten Annotations-Dialog}
-  \label{Knoten Annotations-Dialog}
-  
-  
-\subsection{Platz Schaffen-Dialog}
-\label{Platz Schaffen-Dialog}
-
-
-
 \subsection{Knoten Annotations-Dialog}
 \label{Knoten Annotations-Dialog}
 
+Der Knoten-Annotations-Dialog besteht aus einem Fenster mit einem
+Label mit der Knoten-ID und einem Textfeld für den Annotationstext.
+Mittels der beiden Buttons OK und Cancel können die Änderungen im
+Textfeld übernommen oder verworfen werden.  
+  
+\subsection{Platz Schaffen-Dialog}
+\label{Platz Schaffen-Dialog}
 
 Im Dialogfenster MAKE\_ROOM wird in einem Textfeld als Zahl angegeben, um wieviel
 Pixel die Knoten an der vorher markierten Stelle auseinandergeschoben werden sollen.
