@@ -3,5 +3,7 @@ graphlib_test
 evolution
 framework_test
 graphlib_test
+layout_factory
 martin_test
+matrix_layout
 mini_map
