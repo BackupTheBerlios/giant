@@ -1,6 +1,6 @@
 % =============================================================================
-%  $RCSfile: gsl.tex,v $ $Revision: 1.14 $
-%  $Date: 2003/07/29 21:35:35 $
+%  $RCSfile: gsl.tex,v $ $Revision: 1.15 $
+%  $Date: 2003/08/26 10:54:07 $
 %  $Author: keulsn $
 %
 %  Description: Spezifikation der GIANT Scripting Language
@@ -42,7 +42,7 @@
 % subsubsections nummerieren
 \setcounter{secnumdepth}{3}
 
-\newcommand\version{Version 1.2\xspace}
+\newcommand\version{Version 1.3\xspace}
 %\newcommand\version{\today\xspace}
 
 % header
@@ -1165,6 +1165,16 @@ der ein Objekt referenziert, das an keine Variable gebunden ist. Dieser Fall
 könnte sonst eintreten nachdem eine Aktivierungsumgebung zerstört wurde.}
 \end{scriptdef}
 
+%%% deref
+\begin{scriptdef}{deref}
+\sparam{ref}{\tvarreference}{Zugriffspfad auf ein Objekt eines
+  beliebigen Typs}
+\sresult{Typ des Werts des referenzierten Objekts}{Wert des Objekts,
+  das durch ref referenziert wird}
+\saction{Liefert den Wert des Objekts, das durch eine Referenz gegeben
+  wird. \gq{Dereferenziert} eine Referenz}
+\end{scriptdef}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Kontrollfluss}
 
@@ -1524,6 +1534,16 @@ hat die Nummer size\_of (list)}
 \saction{Überprüft, ob der Wert obj vom Typ \tnatural ist.}
 \end{scriptdef}
 
+%%% to_natural
+\begin{scriptdef}{to\_natural}
+\sparam{str}{\tstring}{Ein String}
+\sresult{\tnatural}{Interpretation des Werts von str als Zahl im 10-er
+Stellenwertsystem}
+\saction{Wandelt einen Text, der eine Zahl im 10-er Stellenwertsystem
+  darstellt nach \tnatural um. Falls der Text keine korrekt kodierte
+  Zahl darstellt, so ist dies ein Laufzeitfehler.}
+\end{scriptdef}
+
 %%% is_list
 \begin{scriptdef}{is\_list}
 \sparam{obj}{jeder Typ}{Der Wert irgendeines Ausdrucks}
@@ -1613,6 +1633,12 @@ Auf jeden Fall sollte deshalb das Ergebnis dieses Scripts beachtet werden.}
 \saction{Hat als Ergebnis die Menge aller IML-Knoten des IML-Graph.}
 \end{scriptdef}
 
+%%% all_edges
+\begin{scriptdef}{all\_edges}
+\sresult{\tedgeset}{Menge aller IML-Kanten des IML-Graph}
+\saction{Hat als Ergebnis die Menge aller IML-Kanten des IML-Graph.}
+\end{scriptdef}
+
 %%% instance_of
 \begin{scriptdef}{instance\_of}
 \sparam{n}{\tnodeid}{Ein IML-Knoten}
@@ -1654,6 +1680,20 @@ Text zusammen aus Name des Typs des Startknoten . Name des Attributs dieser
 IML-Kante.}
 \end{scriptdef}
 
+%%% instance_of
+\begin{scriptdef}{instance\_of}
+\sparam{node}{\tnodeid}{Ein IML-Knoten}
+\sparam{class}{\tstring}{Name einer Klasse von IML-Knoten}
+\sresult{\tboolean}{\toktrue falls node eine Instanz der Klasse von
+  IML-Knoten class ist. \tokfalse sonst.}
+\saction{Prüft, ob ein IML-Knoten eine Instanz einer Klasse von
+  IML-Knoten ist. Dies ist der Fall, falls node der Klasse class
+  angehört, oder falls node die Klasse von IML-Knoten mit Name class
+  (auch transitiv) beerbt. Falls class durch die Reflektion nicht als
+  Name einer Klasse von IML-Knoten spezifiziert ist, so ist dies ein
+  Laufzeitfehler.}
+\end{scriptdef}
+
 %%% get_incoming
 \begin{scriptdef}{get\_incoming}
 \sparam{n}{\tnodeid}{Ein IML-Knoten}
@@ -1684,6 +1724,16 @@ IML-Kante.}
 
 %%%%%%%%%%%%%%%%%%%%
 \subsubsection{Anfragen an die GUI}
+
+%%% input
+\begin{scriptdef}{input}
+\sparam{info}{\tstring}{Information, die dem Benutzer angezeigt wird.}
+\sresult{\tstring}{Text, den der Benutzer eingegeben hat, oder der
+  leere String, falls der Benutzer die Eingabe abgebrochen hat.}
+\saction{Zeigt in GIANT ein Dialogfenster an. In diesem Dialogfenster
+  wird info angezeigt. Der Benutzer kann in ein Eingabefeld einen Text
+  eingeben.}
+\end{scriptdef}
 
 %%% exists_window
 \begin{scriptdef}{exists\_window}
