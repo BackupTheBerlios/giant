@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.5 $
-%  $Date: 2003/08/01 19:37:41 $
+%  $RCSfile: config.tex,v $, $Revision: 1.6 $
+%  $Date: 2003/08/02 12:42:47 $
 %  $Author: birdy $
 %
 %  Description:
@@ -317,10 +317,10 @@ giant\_vis\_style\_file.dtd spezifiziert:
 
 Hier ein konkretes Beispiel einer solchen Datei (Beispiel 1):
 
-\verbatiminput{test_vis_style_4_edges.xml}
+%***\verbatiminput{test_vis_style_4_edges.xml}
 
 In jeder Datei wird die Hintergrundfarbe durch \\
-\hspace{10mm}<global\_settings vis\_window\_background\_color="RGB:20/20/20"/>\\
+°<global_settings vis_window_background_color="RGB:20/20/20"/>°\\
 festgelegt.\\
 
 Jede Knotendefinition, ob für einen oder mehrere Knoten, besteht
@@ -337,27 +337,27 @@ aus folgenden Elementen:
 \end{itemize}
 
 Alle Knoten, die nicht später behandelt werden, werden durch\\
-\hspace{10mm}<default\_node\_setting>\\
-\hspace{15mm}    icon         = "test\_node\_icon\_default\_1.xpm"\\
-\hspace{15mm}    text\_color   = "RGB:AA/AA/AA"\\
-\hspace{15mm}   border\_color = "RGB:AA/AA/AA"\\
-\hspace{15mm}    fill\_color   = "white">\\
-\hspace{10mm}</default\_node\_setting>\\
+°<default_node_setting>°\\
+°  icon         = "test_node_icon_default_1.xpm"°\\
+°  text_color   = "RGB:AA/AA/AA"°\\
+°  border_color = "RGB:AA/AA/AA"°\\
+°  fill_color   = "white">°\\
+°</default_node_setting>°\\
 genauer festgelegt.\\
 
 Im Folgenden können einzelne Knoten vom default\_node\_setting
 abweichend festgelegt werden. Dies geht durch folgendes Konstrukt.\\
-\hspace{10mm}  <node\_class\_specific\_setting \\
-\hspace{15mm}    icon         = "test\_node\_icon\_blue\_1.xpm"\\
-\hspace{15mm}    text\_color   = "blue"\\
-\hspace{15mm}    border\_color = "blue"\\
-\hspace{15mm}    fill\_color   = "white">\\ 
+°<node_class_specific_setting °\\
+°  icon         = "test_node_icon_blue_1.xpm"°\\
+°  text_color   = "blue"°\\
+°  border_color = "blue"°\\
+°  fill_color   = "white">°\\ 
 
 Dies sind soweit die schon bekannten Einstellungen zur Darstellung.
 Nun kommt noch optional dazu, welche Attribute darzustellen sind.
 Hier können auch mehrere Attribute angegeben werden.\\
 
-\hspace{15mm}    <node\_attribute attribute\_name  = "SLoc"/> \\
+°  <node_attribute attribute_name  = "SLoc"/> °\\
 
 Es wird hier also das Attribut SLoc im Knoten sichtbar dargestellt.\\
 
@@ -367,28 +367,84 @@ durch eine oder mehrere Beschreibungen getroffen werden
 (ODER-Verknüpfung). Hier zunächst einige Auswahlen anhand des
 Knotenklassennamens:\\
 
-°<node\_class     node\_class\_name = "IML\_Root"/>°\\
-°<node\_class     node\_class\_name = "HPGNode"/>°\\
-°<node\_class     node\_class\_name = "OC\_Parameter"/>°\\        
-°<node\_class     node\_class\_name = "TC\_Boolean"/>°\\
+°  <node_class     node_class_name = "IML_Root"/>°\\
+°  <node_class     node_class_name = "HPGNode"/>°\\
+°  <node_class     node_class_name = "OC_Parameter"/>°\\        
+°  <node_class     node_class_name = "TC_Boolean"/>°\\
 
 Nun ist der <node\_class\_specific\_setting> Block zuende und
 wird mittels\\
-\hspace{10mm}  </node\_class\_specific\_setting>\\
+°</node_class_specific_setting>°\\
 geschlossen.\\
 
 Es können weitere solche Blöcke folgen, z.B. wie folgt:\\
 
-\hspace{10mm}  <node\_class\_specific\_setting \\
-\hspace{15mm}    icon         = "test\_node\_icon\_red\_1.xpm"\\
-\hspace{15mm}   text\_color   = "red"\\
-\hspace{15mm}    border\_color = "red"\\
-\hspace{15mm}    fill\_color   = "white">\\ 
+°<node_class_specific_setting° \\
+°  icon         = "test_node_icon_red_1.xpm"°\\
+°  text_color   = "red"°\\
+°  border_color = "red"°\\
+°  fill_color   = "white">°\\ 
     
-\hspace{15mm}    <node\_attribute attribute\_name  = "SLoc"/>\\    
-\hspace{15mm}   <node\_attribute attribute\_name  = "Type\_Size"/>\\        
-\hspace{15mm}   <node\_class     node\_class\_name = "TC\_Boolean"/>\\      
-\hspace{10mm}  </node\_class\_specific\_setting>\\
+°  <node_attribute attribute_name  = "SLoc"/>°\\    
+°  <node_attribute attribute_name  = "Type_Size"/>°\\        
+°  <node_class     node_class_name = "TC_Boolean"/>°\\      
+°</node_class_specific_setting>°\\
+
+Nun kommen wir zu den Darstellungen der Kanten. Zunächst
+wird in einem Block festgelegt, wie alle Kanten, die nicht
+später festgelegt werden, dargestellt werden.\\
+
+°<default_edge_setting°\\
+°    line_color = "RGB:AA/AA/A1"°\\     
+°    text_color = "RGB:AA/AA/A2"°\\     
+°    line_style = "continuous_line"°\\      
+°    show_label = "no" />°\\
+
+Mit line\_color und text\_color werden die Farben der
+Linien der Kanten und der Beschriftung der Kanten nach dem
+bekannten RGB-Farbschema oder den GTK-Abkürzungen festgelegt.\\
+show\_label legt fest, ob die Beschriftung der Kante angezeigt
+werden soll.\\
+line\_style gibt die Art der Zeichnung der Kanten an.\\
+Zulässig sind hier
+\begin{itemize}
+   \item{continuous\_line für eine durchgezogene Linie}
+   \item{dotted\_line für eine gepunktete Linie}
+   \item{dashed\_line für eine strichlierte Linie}
+\end{itemize}
+
+Nun kommen wir zur Festlegung von individuellen Kantendesigns
+je nach Kantentyp, abweichend von default\_edge\_setting.
+
+°<edge_class_specific_setting°\\
+°  line_color = "blue"°\\
+°  text_color = "blue"°\\
+°  line_style = "dotted_line"°\\
+°  show_label = "yes">°  \\
+°  <edge_class°\\
+°     start_node_class = "Routine_Call"°\\
+°     attribute_name   = "*" />°     \\
+°  <edge_class°\\
+°     start_node_class = "*"°\\
+°     attribute_name   = "CF_Next" />°\\            
+°</edge_class_specific_setting>°\\
+
+Durch diesen Block werden mit den oben angegebenen Farben
+und Stil alle Kanten ausgehend von Routine\_Call Knoten
+angezeigt, ausserdem alle Kanten des Typs CF\_Next.\\
+
+Es gibt folgende Möglichkeiten, Kanten festzulegen:\\
+
+Das im o.G. Beispiel verwendete\\
+
+°<edge_class°\\
+°     start_node_class = °\\
+°     attribute_name   = />° 
+
+Inkludiert alle Kanten, die von den genannten Knoten ausgehen
+und genanntes Attribut haben. Dabei ist bei einem der beiden
+Parameter auch das Zeichen * erlaubt, dies wählt damit alle
+Knotenklassen bzw. Kantennamen aus.
 
 Beispiel 2:
 
