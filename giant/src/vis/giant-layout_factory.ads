@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.ads,v $, $Revision: 1.10 $
+--  $RCSfile: giant-layout_factory.ads,v $, $Revision: 1.11 $
 --  $Author: koppor $
---  $Date: 2003/10/06 14:33:43 $
+--  $Date: 2003/10/06 18:23:38 $
 --
 ------------------------------------------------------------------------------
 --
@@ -98,7 +98,7 @@ package Giant.Layout_Factory is
    --     Target_Position: Position of the upper left corner
    --
    --  "tree":
-   --     Format:  [<Root_Node_ID>]; <List_Of_Class_Set_Names>
+   --     Format:  [<Root_Node_ID>]; <List_Of_Class_Set_Names>[; Reverse_Edges]
    --     Example: "5; Aber, Hallo"
    --              "; Ja, genau"
    --              It is not possible to use " or ; or , in a classsetname.
@@ -111,6 +111,11 @@ package Giant.Layout_Factory is
    --                         the result is random.
    --       Class_Set_Names : Names of ClassSet containing node-classes
    --                           and edge-classes to layout
+   --       Reverse_Edges   : If given, edges are reversed
+   --         Normally, an outgoing edge indicates the target to be the child.
+   --         If this parameter is given, the source of an incoming edge is
+   --         regarded as child
+   --         Useful for parent-edges
    --
    --       Target_Position : Position on window, where the root-node has to
    --                            be placed
