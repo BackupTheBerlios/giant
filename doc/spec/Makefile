@@ -19,3 +19,6 @@ step1: *.tex
 	rm -f spec.dvi spec.ps spec.pdf
 
 base: step1 pics spec.ind
+
+clean:
+	rm -f *~ *.aux *.dvi *.eps *.ilg *.ind *.dix *.log *.toc spec.pdf
