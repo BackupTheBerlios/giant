@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: product.tex,v $, $Revision: 1.13 $
-%  $Date: 2003/02/18 18:37:23 $
+%  $RCSfile: product.tex,v $, $Revision: 1.14 $
+%  $Date: 2003/02/19 09:41:20 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung des Produktes. Übersicht über die Funktionen
@@ -8,14 +8,13 @@
 %
 % ==============================================================================
 
-\section{Allgemeine Bedienkonzepte}
 
 % ==============================================================================
 \section{GIANT Projekte}
 
 Innerhalb eines Projektes fasst GIANT Informationen, 
 wie erzeugte Anzeigefenster (mit Selektionen etc.) und
-erzeugte IML-Teilgraphen zu einem gegebenen IML-Graphen, zusammen
+erzeugte IML-Teilgraphen zu einem gegebenen IML-Graphen zusammen
 und speichert diese Persistent. \\
 Die Zusammenfassung zu Projekten soll hierbei primär der 
 Übersicht dienen und den Austausch von Teilergebnissen 
@@ -59,15 +58,13 @@ haben.
   gespeichert, so dass zu beliebigen Zeitpunkten der jeweilige sichtbare
   Anzeigeinahlt rekonstruiert werden kann.
 
-  \subsection{Visualisierungsstiele}
-  Mittels sogenannter Visualisierungsstiele kann der Benutzer die Darstellung
+  \subsection{Visualisierungsstile}
+  Mittels sogenannter Visualisierungsstile kann der Benutzer die Darstellung
   von Fenster-Kanten und Fenster-Knoten (welche Attribute sollen dargestellt
   werden etc.) auch während der Laufzeit von GIANT beeinflussen.
   Da über entsprechende XML-Dateien beliebig viele verschiedene 
-  Visualisierungsstiele definiert werden können, kann GIANT so
-  an spezifische Problemstellungen angepasst werden. Die Visualisierungsstiele
-  sind natürlich beliebig austauschbar.
-
+  Visualisierungsstile definiert werden können, kann GIANT so
+  an spezifische Problemstellungen angepasst werden.
 
 \section{Knoten-Annotationen}
 Jeder Knoten kann mit einer textuellen Annotation versehen werden. Diese
@@ -109,15 +106,16 @@ ausgeführt, dies ist aber nicht zwingend nötig.
 % =============================================================================
 % EVENTUELL EIGENES KAPITEL
 % DIREKT VOR USECASES UND NACH GUI
+
 \section{Fehlerverhalten}
 \begin {enumerate}
   \item
-  Fehlermeldungen werden grundsätzlich über den STANDARD-FEHLERDIOLOG
+  Fehlermeldungen werden grundsätzlich über einen allgemeinen Fehlerdialog
   ausgegeben. Ist dies nicht möglich, wird eine entsprechende Fehlermeldung
   über die Kommandozeile ausgegeben.
   \item
   GIANT soll sich bezüglich der Fehlerbehandlung konsistent verhalten.
-  Das im Folgenden beschriebene Fehlervarhalten gilt daher pauschal für
+  Das im Folgenden beschriebene Fehlerverhalten gilt daher pauschal für
   das gesamte System. 
   \item
   Abweichungen von diesem Verhalten werden gegebenenfalls an der 
@@ -134,11 +132,11 @@ ausgeführt, dies ist aber nicht zwingend nötig.
 
     \item
     Stellt das System dann eine unzulässige oder fehlende Eingabe fest, so
-    erscheint der STANDARD-FEHLERDIALOG mit einer entsprechenden Mitteilung
+    erscheint der allgemeine Fehlerdialog mit einer entsprechenden Mitteilung
     zur Fehlerursache.
   
     \item
-    Nach Schließen des STANDARD-FEHLERDIALOGES kehrt das System zu der Stelle
+    Nach Schließen des Fehlerdialoges kehrt das System zu der Stelle
     im Ablauf zurück, die dem Zustand vor der Fehlerprüfung entspricht, also
     typischerweise zu dem Dialog in dem die fehlerhafte Eingabe getätigt 
     wurde.\\
@@ -237,10 +235,11 @@ ausgeführt, dies ist aber nicht zwingend nötig.
   
   
   
-\section {Grundlegende Bedienkonzepte}
+\section {Allgemeine Bedienkonzepte}
 Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
 
-  \subsection {Selektieren von Fenster-Knoten und Fenster-Kanten in Anzeigefenstern}
+  \subsection {Selektieren von Fenster-Knoten und Fenster-Kanten in 
+               Anzeigefenstern}
   \begin{enumerate}
   
    \item Selektieren durch Anklicken mit linker Maustaste.\\
