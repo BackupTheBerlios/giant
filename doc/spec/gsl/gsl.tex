@@ -1,6 +1,6 @@
 % =============================================================================
-%  $RCSfile: gsl.tex,v $ $Revision: 1.5 $
-%  $Date: 2003/04/26 18:24:32 $
+%  $RCSfile: gsl.tex,v $ $Revision: 1.6 $
+%  $Date: 2003/04/27 13:57:32 $
 %  $Author: keulsn $
 %
 %  Description: Spezifikation der GIANT Scripting Language
@@ -1084,7 +1084,7 @@ Zugriffspfad auf das Skript $S$.
 
 \newenvironment{scriptdef}[1]
 {%begin
-  \begin{tabular}{|p{0.25\textwidth}p{0.25\textwidth}p{0.5\textwidth}|}
+  \begin{tabular}{|p{0.2\textwidth} p{0.2\textwidth} p{0.5\textwidth}|}
   \multicolumn{3}{l}{\textbf{{\large #1}}} \\
   \hline
 }
@@ -1095,7 +1095,7 @@ Zugriffspfad auf das Skript $S$.
 
 \newcommand{\sparam}[3]{#1 & #2 & #3 \\}
 \newcommand{\sresult}[2]{\hline \textbf{Ergebnis} & #1 & #2 \\}
-\newcommand{\saction}[1]{\hline \multicolumn{3}{|p{\textwidth}|}{#1} \\}
+\newcommand{\saction}[1]{\hline \multicolumn{3}{|p{0.9\textwidth}|}{#1} \\}
 
 
 In diesem Kapitel werden Scripts beschrieben, die in GSL standardmäßig zur
@@ -1157,6 +1157,45 @@ könnte sonst eintreten nachdem eine Aktivierungsumgebung zerstört wurde.}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Kontrollfluss}
 
+%%% if
+\begin{scriptdef}{if}
+\sparam{condition}{\tboolean oder \tscriptreference}{Ein Wert vom Typ
+\tboolean oder die Aktivierungsinformation für ein parameterloses Script,
+dessen Ergebnis
+ein Wert vom Typ \tboolean ist.}
+\sparam{true\_branch}{jeder Typ}{Falls der Typ \tscriptreference ist, so muss
+true\_branch die Aktivierunginformation für ein parameterloses Script sein,
+dessen Ergebnis beliebigen Typs sein darf.}
+\sparam{false\_branch}{jeder Typ}{Falls der Typ \tscriptreference ist, so muss
+false\_branch die Aktivierunginformation für ein parameterloses Script sein,
+dessen Ergebnis beliebigen Typs sein darf.}
+\sresult{von Argumenten abhängig}{Siehe Beschreibung}
+\saction{Falls condition eine Aktivierungsinformation ist, so wird das
+entsprechende Script ohne Argumente aktiviert. Ergebnis ist der Wert $b$ vom
+Typ \tboolean. Falls condition vom Typ \tboolean ist, so ist
+$b =$ condition.
+
+Falls $b$ erfüllt ist, so ist $c = $ true\_branch, andernfalls
+$c = $ false\_branch.
+
+Falls $c$ eine Aktivierungsinformation ist, so wird das referenzierte
+Script ohne Argumente aktiviert. Ergebnis des Scripts if ist das Ergebnis
+von $c$. Falls $c$ keine Aktivierungsinformation ist, so ist das Ergebnis
+des Scripts if der Wert von $c$. \textbf{Vorsicht:} falls der Ausdruck
+in true\_branch oder false\_branch Seiteneffekte hat, so ist ist die Übergabe
+einer Aktivierungsinformation geraten. Andernfalls würde der Ausdruck
+ausgewertet unabhängig davon, ob $b$ erfüllt ist, oder nicht.}
+\end{scriptdef}
+
+%%% loop
+\begin{scriptdef}{loop}
+\sparam{body}{\tscriptreference}{Aktivierungsinformation für parameterloses
+Script mit Ergebnistyp \tboolean}
+\sresult{}{\toknull}
+\saction{Aktiviert body. Falls body das Ergebnis \toktrue hat, aktiviert
+body so oft ein weiteres Mal, bis body das Ergebnis \tokfalse hat.}
+\end{scriptdef}
+
 %%% error
 \begin{scriptdef}{error}
 \sparam{message}{\tstring}{Fehlermeldung}
@@ -1180,44 +1219,6 @@ neue Variablen erzeugt werden, die die Aktivierungsinformation von den
 Scripts der Bibliothek enthalten.}
 \end{scriptdef}
 
-%%% if
-\begin{scriptdef}{if}
-\sparam{condition}{\tboolean oder \tscriptreference}{Ein Wert vom Typ
-\tboolean oder die Aktivierungsinformation für ein parameterloses Script,
-dessen Ergebnis
-ein Wert vom Typ \tboolean ist.}
-\sparam{true\_branch}{jeder Typ}{Falls der Typ \tscriptreference ist, so muss
-true\_branch die Aktivierunginformation für ein parameterloses Script sein,
-dessen Ergebnis beliebigen Typs sein darf.}
-\sparam{false\_branch}{jeder Typ}{Falls der Typ \tscriptreference ist, so muss
-false\_branch die Aktivierunginformation für ein parameterloses Script sein,
-dessen Ergebnis beliebigen Typs sein darf.}
-\sresult{von Argumenten abhängig}{Siehe Beschreibung}
-\saction{Falls condition eine Aktivierungsinformation ist, so wird das
-entsprechende Script ohne Argumente aktiviert. Es gibt einen Wert $b$ vom Typ
-\tboolean zurück. Falls condition vom Typ \tboolean ist, so ist
-$b = $condition.
-
-Falls $b$ erfüllt ist, so ist $c = $ true\_branch, andernfalls
-$c = $ false\_branch.
-
-Falls $c$ eine Aktivierungsinformation ist, so wird das referenzierte
-Script ohne Argumente aktiviert. Ergebnis des Scripts if ist das Ergebnis
-von $c$. Falls $c$ keine Aktivierungsinformation ist, so ist das Ergebnis
-des Scripts if der Wert von $c$. \textbf{Vorsicht:} falls der Ausdruck
-in true\_branch oder false\_branch Seiteneffekte hat, so ist ist die Übergabe
-einer Aktivierungsinformation geraten. Andernfalls würde der Ausdruck
-ausgewertet unabhängig davon, ob $b$ erfüllt ist, oder nicht.}
-\end{scriptdef}
-
-%%% loop
-\begin{scriptdef}{loop}
-\sparam{body}{\tscriptreference}{Aktivierungsinformation für parameterloses
-Script mit Ergebnistyp \tboolean}
-\sresult{}{\toknull}
-\saction{Aktiviert body. Falls body das Ergebnis \toktrue hat, aktiviert
-body so oft ein weiteres Mal, bis body das Ergebnis \tokfalse hat.}
-\end{scriptdef}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Rechenoperationen}
@@ -1231,7 +1232,7 @@ Zugriffspfad auf ein Objekt, das einen Wert aus \tnodeset oder \tedgeset hat}
 von a ebenfalls eine Zahl oder der entsprechende Elementtyp}
 \sresult{\tnatural bzw.\ der namenlose Typ}{Abhängig von den Argumenten
 entweder die Summe der beiden Zahlen oder der Wert \toknull}
-\saction{Es werden zwei verschiedene Verwendungen unterschieden:
+\saction{Es werden verschiedene Verwendungen unterschieden:
 \begin{enumerate}
 \item a ist vom Typ \tnatural und b ist vom Typ \tnatural. Dann hat
 dieses Script die Summe der beiden Zahlen als Ergebnis. Es ist ein
@@ -1259,7 +1260,7 @@ Zugriffspfad auf ein Objekt, das einen Wert aus \tnodeset oder \tedgeset hat}
 von a ebenfalls eine Zahl oder der entsprechende Elementtyp}
 \sresult{\tnatural bzw.\ der namenlose Typ}{Abhängig von den Argumenten
 entweder die Differenz der beiden Zahlen oder der Wert \toknull}
-\saction{Es werden zwei verschiedene Verwendungen unterschieden:
+\saction{Es werden verschiedene Verwendungen unterschieden:
 \begin{enumerate}
 \item a ist vom Typ \tnatural und b ist vom Typ \tnatural. Dann hat
 dieses Script die Differenz a $-$ b der beiden Zahlen als Ergebnis. Es ist ein
@@ -1337,7 +1338,7 @@ korrekt ist.}
 \sresult{\tboolean}{\toktrue falls type in class\_set enthalten ist, \tokfalse
 sonst}
 \saction{Testet ob der Typname type in der Klassenmenge class\_set enthalten
-ist. Der Name einer IML-Kanten hat das Format \gq{Knotentyp.Attributname}.
+ist. Der Typname einer IML-Kante hat das Format \gq{Knotentyp.Attributname}.
 Es ist ein Laufzeitfehler, falls class\_set kein Name einer Klassenmenge
 ist.}
 \end{scriptdef}
@@ -1378,7 +1379,7 @@ sonst}
 \sparam{set}{\tnodeset oder \tedgeset}{Grundmenge}
 \sparam{action}{\tscriptreference}{Aktivierungsinformation für ein Script,
 das genau einen Parameter vom Elementtyp der Grundmenge hat (Also \tnodeid
-für \tnodeset bzw.\ \tedgeid für \tedgeset))}
+für \tnodeset bzw.\ \tedgeid für \tedgeset)}
 \sresult{}{\toknull}
 \saction{Iteriert über alle Elemente der Grundmenge und aktiviert action
 je einmal für jedes Element. Übergibt das Element an action als einzigen
@@ -1535,10 +1536,8 @@ Auf jeden Fall sollte deshalb das Ergebnis dieses Scripts beachtet werden.}
 
 %%% root_node
 \begin{scriptdef}{root\_node}
-\sresult{\tnodeset}{Menge, die den Wurzelknoten des IML-Graphen enthält und
-nichts sonst.}
-\saction{Hat als Ergebnis eine Menge, die nur den Wurzelknoten des IML-Graphen
-enthält.}
+\sresult{\tnodeid}{Der Wurzelknoten des IML-Graphen}
+\saction{Hat als Ergebnis den Wurzelknoten des IML-Graphen.}
 \end{scriptdef}
 
 %%% all_nodes
@@ -1672,7 +1671,7 @@ definiert.
 
 \begin{scriptdef}{not}
 \sparam{a}{\tboolean oder \tscriptreference}{boolscher Wert oder
-Aktivierungsinformation für ein parameterloses Script, dass den boolschen
+Aktivierungsinformation für ein parameterloses Script, das den boolschen
 Wert zum Ergebnis hat}
 \sresult{\tboolean}{Negation von a}
 \saction{Logische Negation}
@@ -1683,7 +1682,7 @@ Wert zum Ergebnis hat}
 Aktivierungsinformation für ein parameterloses Script, dass den boolschen
 Wert zum Ergebnis hat}
 \sparam{b}{nur \tscriptreference}{Aktivierungsinformation für ein
-parameterloses Script, dass den boolschen Wert zum Ergebnis hat}
+parameterloses Script, das den boolschen Wert zum Ergebnis hat}
 \sresult{\tboolean}{Logische Konjunktion von a und b}
 \saction{Berechnet die logische Konjunktion. Falls a eine
 Aktivierungsinformation ist, so wird das zugehörige Script aktiviert und
@@ -1694,10 +1693,10 @@ aktiviert. Andernfalls wird es ausgewertet und die Konjunktion berechnet.}
 
 \begin{scriptdef}{and}
 \sparam{a}{\tboolean oder \tscriptreference}{boolscher Wert oder
-Aktivierungsinformation für ein parameterloses Script, dass den boolschen
+Aktivierungsinformation für ein parameterloses Script, das den boolschen
 Wert zum Ergebnis hat}
 \sparam{b}{\tboolean oder \tscriptreference}{boolscher Wert oder
-Aktivierungsinformation für ein parameterloses Script, dass den boolschen
+Aktivierungsinformation für ein parameterloses Script, das den boolschen
 Wert zum Ergebnis hat}
 \sresult{\tboolean}{Logische Konjunktion von a und b}
 \saction{Berechnet die logische Konjunktion. Falls Aktivierungsinformationen
@@ -1708,10 +1707,10 @@ b aktiviert.}
 
 \begin{scriptdef}{or\_else}
 \sparam{a}{\tboolean oder \tscriptreference}{boolscher Wert oder
-Aktivierungsinformation für ein parameterloses Script, dass den boolschen
+Aktivierungsinformation für ein parameterloses Script, das den boolschen
 Wert zum Ergebnis hat}
 \sparam{b}{nur \tscriptreference}{Aktivierungsinformation für ein
-parameterloses Script, dass den boolschen Wert zum Ergebnis hat}
+parameterloses Script, das den boolschen Wert zum Ergebnis hat}
 \sresult{\tboolean}{Logische Disjunktion von a und b}
 \saction{Berechnet die logische Diskunktion. Falls a eine
 Aktivierungsinformation ist, so wird das zugehörige Script aktiviert und
@@ -1722,10 +1721,10 @@ aktiviert. Andernfalls wird es ausgewertet und die Disjunktion berechnet.}
 
 \begin{scriptdef}{or}
 \sparam{a}{\tboolean oder \tscriptreference}{boolscher Wert oder
-Aktivierungsinformation für ein parameterloses Script, dass den boolschen
+Aktivierungsinformation für ein parameterloses Script, das den boolschen
 Wert zum Ergebnis hat.}
 \sparam{b}{\tboolean oder \tscriptreference}{boolscher Wert oder
-Aktivierungsinformation für ein parameterloses Script, dass den boolschen
+Aktivierungsinformation für ein parameterloses Script, das den boolschen
 Wert zum Ergebnis hat.}
 \sresult{\tboolean}{Logische Disjunktion von a und b}
 \saction{Berechnet die logische Disjunktion. Falls Aktivierungsinformationen
@@ -1740,8 +1739,8 @@ parameterloses Script das als Ergebnis einen Wert vom Typ \tboolean hat.}
 \sparam{c}{\tscriptreference}{Aktivierungsinformation für ein parameterloses
 Script.}
 \sresult{}{\toknull}
-\saction{Wertet abwechselnd zuerst b und dann c aus. Stoppt, sobald b das
-Ergebnis \tokfalse hat.}
+\saction{Wertet wiederholt abwechselnd zuerst b und dann c aus. Stoppt,
+sobald b das Ergebnis \tokfalse hat.}
 \end{scriptdef}
 
 \begin{scriptdef}{repeat}
@@ -1750,8 +1749,8 @@ Script.}
 \sparam{until}{\tscriptreference}{Aktivierungsinformation für ein
 parameterloses Script das als Ergebnis einen Wert vom Typ \tboolean hat.}
 \sresult{}{\toknull}
-\saction{Wertet c einmal aus. Wertet dann abwechselnd zuerst until und dann
-c aus. Stoppt, sobald until das Ergebnis \tokfalse hat.}
+\saction{Wertet c einmal aus. Wertet dann wiederholt abwechselnd zuerst
+until und dann c aus. Stoppt, sobald until das Ergebnis \tokfalse hat.}
 \end{scriptdef}
 
 \begin{scriptdef}{union}
