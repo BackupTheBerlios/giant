@@ -13,6 +13,9 @@ testxml_val :
 evolution :
 	make -C ../ MAIN=test/giant_test-evolution EXEC=test/evolution all
 
+graphlib :
+	make -C ../ MAIN=test/graphlib_test EXEC=test/graphlib_test all
+
 all:
 	make -C ../ all
 
