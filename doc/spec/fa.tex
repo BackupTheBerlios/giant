@@ -1,6 +1,6 @@
 % =============================================================================
-%  $RCSfile: fa.tex,v $, $Revision: 1.26 $
-%  $Date: 2003/04/06 15:28:35 $
+%  $RCSfile: fa.tex,v $, $Revision: 1.27 $
+%  $Date: 2003/04/06 21:14:53 $
 %  $Author: squig $
 %
 %  Description:
@@ -22,7 +22,7 @@ vorgesehen.\\
   die folgenden Kenntnisse verfügen:
 
   \begin{enumerate}
-    \item Erfahrung im Umgang mit grafischen Benutzeroberflächen und 
+    \item Erfahrung im Umgang mit graphischen Benutzeroberflächen und 
           dem entsprechenden Betriebssystem.
   
     \item Kenntnisse über Struktur und Aufbau des IML-Graphen. 
@@ -43,30 +43,37 @@ die folgenden Optionen.
 
   \subsection {Mögliche Parameter} \index{Kommandozeilenparameter}
 
-  GIANT kann folgendermaßen gestartet werden:\\
-  \verb+giant [(-n file -i file|-l file) [-e file]|-h]+
+  GIANT kann folgendermaßen gestartet werden:\\\\
+  \verb+giant [(-n file -i file|-l file) [-e file]|-h]+\\\\
+
+  Hier werden die Parameter im einzelnen erklärt:
 
   \begin {enumerate}
 
   \item
-    \verb+--newproject='Pfad'+; Abkürzung: \verb+-n 'Pfad'+\\
+    \verb+--newproject='Pfad'+ oder \verb+-n 'Pfad'+
+
     Angabe des Pfades für die neu zu erstellenden Projektdatei.  Die
     Datei darf nicht vorhanden sein. Das Verzeichnis der Projektdatei ist
-    automatisch Projektverzeichnis und muss bereits existieren.\\\\
+    automatisch Projektverzeichnis und muss bereits existieren.
 
-    \verb+--iml='Pfad'+; Abkürzung: \verb+-i 'Pfad'+ \\
+    \verb+--iml='Pfad'+ oder \verb+-i 'Pfad'+
+
     Angabe des Pfades zu einer existierenden IML-Graph Datei.
     
   \item 
-    \verb+--loadproject='Pfad'+; Abkürzung: \verb+-l 'Pfad'+ \\
+    \verb+--loadproject='Pfad'+ oder \verb+-l 'Pfad'+
+
     Angabe des Pfades zu einer existierenden Projektdatei.
           
   \item
-    \verb+--execute='Pfad'+; Abkürzung \verb+-e 'Pfad'+\\
+    \verb+--execute='Pfad'+ oder \verb+-e 'Pfad'+
+
     Pfad zu einer Datei in der ein GQSL Skript gespeichert ist.
   
   \item 
-    \verb+--help+; Abkürzung \verb+-h+\\
+    \verb+--help+ oder \verb+-h+
+
     Zeigt eine Hilfe zu den möglichen Kommandozeilenparametern an.
       
   \end {enumerate}
