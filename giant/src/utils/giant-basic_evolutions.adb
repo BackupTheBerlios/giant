@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-basic_evolutions.adb,v $, $Revision: 1.4 $
---  $Author: keulsn $
---  $Date: 2003/09/12 20:30:12 $
+--  $RCSfile: giant-basic_evolutions.adb,v $, $Revision: 1.5 $
+--  $Author: koppor $
+--  $Date: 2003/09/15 14:13:59 $
 --
 ------------------------------------------------------------------------------
 
@@ -37,6 +37,8 @@ with Giant.Progress_Dialog;
 use type Giant.Progress_Dialog.Progress_Dialog_Access;
 
 package body Giant.Basic_Evolutions is
+
+   Update_Interval : constant := 1_000;
 
    package Logger is new Giant.Logger
      (Name => "Giant.Basic_Evolutions");
@@ -92,40 +94,53 @@ package body Giant.Basic_Evolutions is
       Force_Update : in Boolean)
      return Boolean
    is
-     use type Ada.Real_Time.Time;
      Dead : Boolean;
    begin
-     if (Force_Update
-         or else (Ada.Real_Time.Clock
-                  >= Individual.Last_Main_Iteration
-                  + Ada.Real_Time.Milliseconds (1000))) then
+     if (Force_Update) then
         while Gtk.Main.Events_Pending loop
            Dead := Gtk.Main.Main_Iteration;
            exit when Dead;
         end loop;
-        Individual.Last_Main_Iteration := Ada.Real_Time.Clock;
      end if;
 
       return Individual.Cancelled;
    end Iterate_Main;
+
+   function Should_Update
+     (Individual   : in Basic_Evolution_Access)
+     return Boolean
+   is
+     use type Ada.Real_Time.Time;
+   begin
+      if (Ada.Real_Time.Clock >= Individual.Last_Main_Iteration
+          + Ada.Real_Time.Milliseconds (Update_Interval))
+      then
+         Individual.Last_Main_Iteration := Ada.Real_Time.Clock;
+         return True;
+      else
+         return False;
+      end if;
+   end Should_Update;
 
    function Step
      (Individual       : in Basic_Evolution_Access;
       Delta_Complexity : in Natural                := 1)
       return Boolean
    is
+      Update : Boolean;
    begin
       if (Individual = null) then
          return False;
       end if;
 
       Individual.Complexity := Individual.Complexity + Delta_Complexity;
-      if (Individual.Dialog /= null) then
+      Update := Should_Update (Individual);
+      if (Individual.Dialog /= null and then Update) then
          Progress_Dialog.Set_Value (Individual.Dialog,
                                     Glib.Gdouble (Individual.Complexity));
       end if;
 
-      return Iterate_Main (Individual, Force_Update => False);
+      return Iterate_Main (Individual, Update);
    end Step;
 
    procedure Set_Cancel_Enabled
