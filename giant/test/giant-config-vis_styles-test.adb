@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-config-vis_styles-test.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-config-vis_styles-test.adb,v $, $Revision: 1.7 $
 --  $Author: schwiemn $
---  $Date: 2003/07/10 12:27:21 $
+--  $Date: 2003/07/10 13:22:47 $
 --
 with Ada.Strings.Unbounded;
 
@@ -92,13 +92,52 @@ package body Giant.Config.Vis_Styles.Test is
              ("test_vis_style_1_default");
              
          All_Icons := Giant.Config.Vis_Styles.Get_All_Node_Icons;
-             
+         
+         -- Check "test_vis_style_1_default"
+         -----------------------------------
+         
+         -- Check Node Class Data
+         ------------------------   
+                
+         -- icon test
          Node_Icon_Id := Giant.Config.Vis_Styles.Get_Node_Icon_Encoding
              (Test_Vis_Style, 
-              Graph_Lib.Convert_Node_Class_Name_To_Id ("HPGNode"));
-              
-         Logger.Debug (Ada.Strings.Unbounded.To_String 
-           (All_Icons.all (Node_Icon_Id)));
+              Graph_Lib.Convert_Node_Class_Name_To_Id ("TC_Floating_Point"));              
+         Assert 
+           (Ada.Strings.Unbounded.To_String 
+             (All_Icons.all (Node_Icon_Id)) 
+            = File_Management.Get_Absolute_Path_To_File_From_Relative
+               ("./", 
+                "resources/vis_styles/vis_styles_test_set_1/"
+                & "test_node_icon_default_1.xpm"), 
+                "Teste_Icon ""TC_Floating_Point""" );
+                
+         -- icon test
+         Node_Icon_Id := Giant.Config.Vis_Styles.Get_Node_Icon_Encoding
+             (Test_Vis_Style, 
+              Graph_Lib.Convert_Node_Class_Name_To_Id ("HPGNode"));              
+         Assert 
+           (Ada.Strings.Unbounded.To_String 
+             (All_Icons.all (Node_Icon_Id)) 
+            = File_Management.Get_Absolute_Path_To_File_From_Relative
+               ("./", 
+                "resources/vis_styles/vis_styles_test_set_1/"
+                & "test_node_icon_blue_1.xpm"), 
+                "Teste_Icon ""HPGNode""" );     
+                
+         -- icon test
+         Node_Icon_Id := Giant.Config.Vis_Styles.Get_Node_Icon_Encoding
+             (Test_Vis_Style, 
+              Graph_Lib.Convert_Node_Class_Name_To_Id ("TC_Boolean"));              
+         Assert 
+           (Ada.Strings.Unbounded.To_String 
+             (All_Icons.all (Node_Icon_Id)) 
+            = File_Management.Get_Absolute_Path_To_File_From_Relative
+               ("./", 
+                "resources/vis_styles/vis_styles_test_set_1/"
+                & "test_node_icon_red_1.xpm"), 
+                "Teste_Icon ""TC_Boolean""" );   
+      
                          
          Giant.Config.Vis_Styles.Clear_Config_Vis_Styles;
       end loop;
@@ -120,8 +159,6 @@ package body Giant.Config.Vis_Styles.Test is
    procedure Set_Up (T : in out Test_Case) is
    begin
       Giant.Graph_Lib.Initialize;      
---      Giant.Graph_Lib.Load      
---        ("resources/rfg_examp.iml");
    end Set_Up;
 
    procedure Tear_Down (T : in out Test_Case) is

@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.30 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.31 $
 --  $Author: schwiemn $
---  $Date: 2003/07/08 13:41:31 $
+--  $Date: 2003/07/10 13:22:47 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -193,14 +193,14 @@ package body Giant.Vis_Windows is
       New_Window_Ac.All_Managed_Selections := Selection_Data_Sets.Empty_Set;
 
       --  Initialize new Graph_Widget
-      Graph_Widgets.Create 
-        (New_Graph_Widget, 
-         Config.Vis_Styles.Get_Default_Vis_Style,
-         Annotations);
+--      Graph_Widgets.Create 
+--        (New_Graph_Widget, 
+--         Config.Vis_Styles.Get_Default_Vis_Style,
+--         Annotations);
 
       --  Increases the GTK Reference Counter - needed to keep the graph
       --  widget persistent in this data structure
-      Graph_Widgets.Ref (New_Graph_Widget);
+--      Graph_Widgets.Ref (New_Graph_Widget);
 
       New_Window_Ac.The_Graph_Widget := New_Graph_Widget;
 
@@ -343,8 +343,9 @@ package body Giant.Vis_Windows is
       --  Decreases the GTK Reference Counter.
       --  The Graph widget will be deallocated automatically
       --  (only if there are no other references that have
-      --  increased the Reference Counter).
-      Graph_Widgets.Unref (Vis_Window.The_Graph_Widget);
+      --  increased the Reference Counter).    
+  --    Graph_Widgets.Unref (Vis_Window.The_Graph_Widget);
+--      Graph_Widgets.Destroy (Vis_Window.The_Graph_Widget);
 
       Pin_Sets.Destroy (Vis_Window.Set_Of_All_Pins);
 
