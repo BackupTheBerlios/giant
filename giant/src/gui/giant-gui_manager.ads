@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.23 $
+--  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.24 $
 --  $Author: squig $
---  $Date: 2003/06/30 15:46:28 $
+--  $Date: 2003/07/04 20:41:28 $
 --
 --  Stores the window records. Handles the controller updates. Provides
 --  a facade for the gui.
@@ -65,7 +65,9 @@ package Giant.Gui_Manager is
      (Ask_For_Confirmation : in Boolean := True)
      return Boolean;
 
-   function Create_Gsl_Progress_Dialog
+   function Create_Progress_Dialog
+     (Title   : in String;
+      Message : in String)
      return Progress_Dialog.Progress_Dialog_Access;
 
    procedure Initialize_Project;

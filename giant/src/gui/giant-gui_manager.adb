@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.26 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.27 $
 --  $Author: squig $
---  $Date: 2003/06/30 17:31:57 $
+--  $Date: 2003/07/04 20:41:28 $
 --
 
 with Ada.Strings.Unbounded;
@@ -188,7 +188,9 @@ package body Giant.Gui_Manager is
       return True;
    end Close_Project;
 
-   function Create_Gsl_Progress_Dialog
+   function Create_Progress_Dialog
+     (Title   : in String;
+      Message : in String)
      return Progress_Dialog.Progress_Dialog_Access
    is
       Dialog : Progress_Dialog.Progress_Dialog_Access;
@@ -197,10 +199,7 @@ package body Giant.Gui_Manager is
          return null;
       end if;
 
-      Giant.Progress_Dialog.Create
-        (Dialog,
-         Title   => "GSL Script Execution",
-         Message => "This is a message.");
+      Giant.Progress_Dialog.Create (Dialog, Title, Message);
 
       return Dialog;
    end Create_Gsl_Progress_Dialog;

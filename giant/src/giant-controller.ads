@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.27 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.28 $
 --  $Author: squig $
---  $Date: 2003/07/01 16:28:35 $
+--  $Date: 2003/07/04 20:41:28 $
 --
 ------------------------------------------------------------------------------
 --
@@ -95,6 +95,7 @@ package Giant.Controller is
      (Layout_Name           : in String;
       Window_Name           : in String;
       Selection_Name        : in String;
+      Position              : in Vis.Logic.Vector_2d;
       Additional_Parameters : in String);
 
    ---------------------------------------------------------------------------

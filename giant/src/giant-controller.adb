@@ -20,19 +20,22 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.38 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.39 $
 --  $Author: squig $
---  $Date: 2003/07/01 16:28:35 $
+--  $Date: 2003/07/04 20:41:28 $
 --
 
 with Ada.Strings.Unbounded;
 
 with String_Lists;
 
+with Giant.Evolutions;
 with Giant.Graph_Lib;
 with Giant.Graph_Lib.Selections;
 with Giant.Graph_Lib.Subgraphs;
+with Giant.Graph_Widgets;
 with Giant.Gui_Manager;
+with Giant.Layout_Factory;
 With Giant.Logger;
 With Giant.Node_Annotations;
 with Giant.Vis_Windows;
@@ -85,7 +88,8 @@ package body Giant.Controller is
       Gsl.Interpreters.Start_Calculation
         (Individual => Gsl_Interpreter,
          Started    => Started,
-         Dialog     => Gui_Manager.Create_Gsl_Progress_Dialog);
+         Dialog     => Gui_Manager.Create_Progress_Dialog
+         (-"Executing GSL Script", -"Script is running..."));
       Logger.Info ("Script finished:");
    end Execute_GSL;
 
@@ -97,10 +101,32 @@ package body Giant.Controller is
      (Layout_Name           : in String;
       Window_Name           : in String;
       Selection_Name        : in String;
+      Position              : in Vis.Logic.Vector_2d;
       Additional_Parameters : in String)
    is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+      Selection : Graph_Lib.Selections.Selection
+        := Vis_Windows.Get_Selection (Window, Selection_Name);
+      Lock : Graph_Widgets.Lock_Type;
+
+      Evolution : Evolutions.Evolution_Class_Access;
+      Started : Boolean;
    begin
-      null;
+      Graph_Widgets.Lock_Selection (Vis_Windows.Get_Graph_Widget (Window),
+                                    Selection, Lock);
+      Layout_Factory.Create (Algorithm => Layout_Name,
+                             Selection_To_Layout => Selection,
+                             Widget => Vis_Windows.Get_Graph_Widget (Window),
+                             Widget_Lock => Lock,
+                             Target_Position => Position,
+                             Additional_Parameters =>
+                               Additional_Parameters,
+                             Layout_Evolution =>Evolution);
+      Evolutions.Start_Calculation (Evolution, Started,
+                                    Gui_Manager.Create_Progress_Dialog
+                                    (-"Applying Layout",
+                                     -"Layout is calculated..."));
    end Apply_Layout;
 
    ---------------------------------------------------------------------------

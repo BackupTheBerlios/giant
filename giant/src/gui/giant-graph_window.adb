@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.25 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.26 $
 --  $Author: squig $
---  $Date: 2003/07/03 13:23:19 $
+--  $Date: 2003/07/04 20:41:28 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -553,7 +553,7 @@ package body Giant.Graph_Window is
       Add (Window, Window.Split_Pane);
 
       --  right box: graph widget (needs to be created prior to the minimap)
-      Graph_Widgets.Create (Window.Graph);
+      Window.Graph := Vis_Windows.Get_Graph_Widget (Window.Visual_Window);
       Widget_Callback.Object_Connect
         (Window.Graph, "action_mode_button_press_event",
          On_Graph_Action_Mode_Button_Pressed'Access, Window);
