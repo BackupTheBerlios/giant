@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-positioning.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-graph_widgets-positioning.adb,v $, $Revision: 1.11 $
 --  $Author: keulsn $
---  $Date: 2003/09/12 20:30:13 $
+--  $Date: 2003/09/16 23:17:56 $
 --
 ------------------------------------------------------------------------------
 
@@ -156,12 +156,18 @@ package body Giant.Graph_Widgets.Positioning is
      (Edge         : in     Vis_Data.Vis_Edge_Id;
       Dock_Spacing : in     Vis.Absolute_Natural) is
 
-      Source        : Vis_Data.Vis_Node_Id := Vis_Data.Get_Source (Edge);
-      Radius        : Float;
-      Edge_Iterator : Vis_Data.Vis_Edge_Lists.ListIter;
-      Current_Edge  : Vis_Data.Vis_Edge_Id;
+      Source         : Vis_Data.Vis_Node_Id := Vis_Data.Get_Source (Edge);
+      Extent         : Vis.Absolute.Rectangle_2d :=
+        Vis_Data.Get_Extent (Source);
+      Maximum_Radius : Vis.Absolute_Natural;
+      Radius         : Float;
+      Edge_Iterator  : Vis_Data.Vis_Edge_Lists.ListIter;
+      Current_Edge   : Vis_Data.Vis_Edge_Id;
    begin
-      Radius := Default_Loop_Radius;
+      Maximum_Radius := Vis.Absolute_Natural'Min
+        (Vis.Absolute.Get_Height (Extent),
+         Vis.Absolute.Get_Width (Extent));
+      Radius := Float'Min (Default_Loop_Radius, Float (Maximum_Radius));
       Vis_Data.Make_Incoming_Iterator
         (Node           => Source,
          Incoming_Edges => Edge_Iterator);
