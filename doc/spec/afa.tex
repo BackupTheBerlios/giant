@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: afa.tex,v $, $Revision: 1.5 $
-%  $Date: 2003/03/28 01:31:37 $
+%  $RCSfile: afa.tex,v $, $Revision: 1.6 $
+%  $Date: 2003/03/28 13:21:47 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung allgemeiner funktionaler Anforderungen - UseCase
@@ -10,16 +10,21 @@
 
 
 \section{Fehlerverhalten} \index{Fehlerverhalten}
+\label {afa Fehlerverhalten}
 
 \begin {enumerate}
   \item
-  Fehlermeldungen werden grundsätzlich über einen allgemeinen Fehlerdialog
-  ausgegeben. Ist dies nicht möglich, wird eine entsprechende Fehlermeldung
+  Fehlermeldungen \index{Fehlermeldungen} werden grundsätzlich über
+  einen allgemeinen Fehlerdialog
+  ausgegeben (siehe auch \ref {GUI Ausgabe von Fehlermeldungen}). 
+  Ist dies nicht möglich, wird die Fehlermeldung
   über die Kommandozeile ausgegeben.
+
   \item
   GIANT verhält sich bezüglich der Fehlerbehandlung konsistent.
   Das im Folgenden beschriebene Fehlerverhalten gilt daher pauschal für
   das gesamte System. 
+
   \item
   Abweichungen von diesem Verhalten werden gegebenenfalls an der 
   entsprechenden Stelle explizit spezifiziert.
@@ -27,7 +32,8 @@
   \item
   Sollten mehrere Fehler, wie z.B. Eingabefehler, gleichzeitig auftreten,
   so werden die entsprechenden Fehlermeldungen falls möglich 
-  in einem Dialog \gq{auf einen Schlag} an den Benutzer ausgegeben.
+  in dem allgemeinen Fehlerdialog \gq{auf einen Schlag}
+  an den Benutzer ausgegeben.
    
 
 \end{enumerate}

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.43 $
-%  $Date: 2003/03/28 01:31:37 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.44 $
+%  $Date: 2003/03/28 13:21:47 $
 %  $Author: schwiemn $
 %
 %  Description: Bis zu Revision 1.6 sind UseCase-artige Beschreibungen enthalten,
@@ -48,7 +48,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
   \subsection {Menüleiste (Main Window)}
   In der Menüleiste befinden sich folgende Einträge:
 
-    \subsubsection {Untermenü File (Main Window)} \label{Main-Window-File}
+    \subsubsection {Untermenü File } \label{Main-Window-File}
     Im Untermenü File des Hauptfensters befinden sich folgende Einträge.  
       \begin{enumerate}
          \item {New Project} % OK
@@ -57,14 +57,15 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
          \item{ Quit}
       \end{enumerate}    
       
-     \subsubsection {Untermenü  (Tools)}  \label{Main-Window-Tools}
+     \subsubsection {Untermenü  Tools}  \label{Main-Window-Tools}
        \begin{enumerate}
           \item {Delete annotations having no visible Node}
 	  \item {Select Layout algorithm}
+          \item {Execute GQSL Query}
         \end{enumerate}
         
 
-    \subsubsection {Untermenü Info (Main Window)}  \label{Main-Window-Info}     
+    \subsubsection {Untermenü Info }  \label{Main-Window-Info}     
        \begin{enumerate}
           \item {About GIANT}
         \end{enumerate}
@@ -93,7 +94,8 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     \subsubsection {PopUp Menü Window list}
     
     
-        Beim Rechtsklick auf WINDOW\_LIST öffnet sich ein Popup-Menü mit folgenden Menüpunkten:
+        Beim Rechtsklick auf WINDOW\_LIST öffnet sich ein 
+        Popup-Menü mit folgenden Menüpunkten:
         \label{WINDOW-LIST-POPUP}
 
         \begin{enumerate}
@@ -119,16 +121,19 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     
       In Subgraph Name stehen die (benutzerdefinierten) Namen der existierenden
       Subgraphen, in Nodes die Anzahl der Knoten des Subgraphen,
-      in Edges die Anzahl der Kanten und in Highlight Color ein Kästchen mit der Farbe,
+      in Edges die Anzahl der Kanten und in Highlight Color ein Kästchen 
+      mit der Farbe,
       die verwendet wird, wenn dieser Subgraph markiert wird.
 
     
     \subsubsection {PopUp Menü Subgraph List}
     \label {PopUp Menü Subgraph List}
-      Beim Rechtsklick auf SUBGRAPH\_LIST öffnet sich ein Popup-Menü mit folgenden Menüpunkten:
+      Beim Rechtsklick auf SUBGRAPH\_LIST öffnet 
+      sich ein Popup-Menü mit folgenden Menüpunkten:
         \label{SUBGRAPH-LIST-POPUP}
         \begin{enumerate}
-          \item highlight in all windows (zum Hervorheben eines Teilgraphen in allen Fenstern mit Farbe SUBGRAPH\_COL)
+          \item highlight in all windows (zum Hervorheben eines 
+                Teilgraphen in allen Fenstern mit Farbe SUBGRAPH\_COL)
           \item unhighlight in all windows
 	  \item Change highlighting color
           \item Copy IML Subgraph
@@ -146,7 +151,8 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
                 \item WINDOW\_LIST/NEW\_WINDOW
                         Dieser Dialog ermöglicht, ein neues Fenster anzulegen,
 			und ist ein allgemeiner Texteingabedialog.
-			Er hat ein Textfeld mit der Beschriftung \gq{Name for New Window},
+			Er hat ein Textfeld mit der Beschriftung 
+                        \gq{Name for New Window},
 			und Buttons OK und Cancel.
                 \item SUBGRAPH\_LIST/        
         \end{enumerate}
@@ -319,7 +325,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
         \item NODE\_ID (ID des Knotens, von dem sie kommt: Node ID)
       \end{enumerate}
 
-\section{Anfragedialog}
+\section{Anfragedialog} \label{GUI Anfragedialog}
 
 Der Anfragedialog QUERY\_DIALOG hat zuoberst ein Textfeld QUERY\_TEXT,
 in dem der Text der Anfrage eingegeben werden kann.
@@ -408,7 +414,7 @@ Pixel die Knoten an der vorher markierten Stelle auseinandergeschoben werden sol
 Mit dem Button OK kann bestätigt werden, mit Button Cancel abgebrochen werden.
 
 \section{Ausgabe von Fehlermeldungen}
-
+\label {GUI Ausgabe von Fehlermeldungen}
 Ein allgemeiner Fehlerdialog ist ein Fenster ERROR\_WINDOW mit dem
 Titel \gq{GIANT Error}. Im Fenster ist
 ein Fehlertext Text ERROR\_LABEL und ein Button OK\_BUTTON mit der
@@ -428,6 +434,7 @@ mit \gq{No}.
 \section{Auswahl von Dateien}
 
   \subsection {Der \gq{Standard-Filechooser-Dialog}}
+  \label {Standard-Filechooser-Dialog}
   Die Auswahl von Dateien (Laden/Speichern) passiert bei GIANT mittels
   des von GTK/ADA bereit gestellten Filechooser-Dialogs.
 
