@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/24 14:27:39 $
+-- $Date: 2003/07/29 13:47:47 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -146,14 +146,14 @@ package body Giant.Gsl is
          return "Gsl_Node_Id - " &
                 Graph_Lib.Node_Id_Image (Get_Value (Gsl_Node_Id (Var)));
 
-      elsif Var'Tag = Gsl_Node_Id_Record'Tag then
+      elsif Var'Tag = Gsl_Edge_Id_Record'Tag then
          return "Gsl_Edge_Id";
 
       elsif Var'Tag = Gsl_Node_Set_Record'Tag then
          return "Gsl_Node_Set - Size: " &
                 Size (Get_Value (Gsl_Node_Set (Var)))'Img;
 
-      elsif Var'Tag = Gsl_Node_Set_Record'Tag then
+      elsif Var'Tag = Gsl_Edge_Set_Record'Tag then
          return "Gsl_Edge_Set - Size: " &
                 Size (Get_Value (Gsl_Edge_Set (Var)))'Img;
 
