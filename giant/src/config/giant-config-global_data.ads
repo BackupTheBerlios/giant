@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-global_data.ads,v $, $Revision: 1.1 $
+-- $RCSfile: giant-config-global_data.ads,v $, $Revision: 1.2 $
 -- $Author: schwiemn $
--- $Date: 2003/06/24 13:08:05 $
+-- $Date: 2003/06/24 13:10:49 $
 --
 -- -----
 -- This package holds the functionality needed to access the
@@ -54,9 +54,14 @@ package Giant.Config.Global_Data is
 
 
    ---------------------------------------------------------------------------
+   -- Raised on attempt to access a not initialized instance of the ADO
+   Config_ADO_Not_Initialized_Exception : exception;
+   
+   
+   ---------------------------------------------------------------------------
    -- A
    -- Initialisation and finalisation
-   ---------------------------------------------------------------------------
+   ---------------------------------------------------------------------------         
 
    ---------------------------------------------------------------------------
    -- Initializes the ADO and processes the information hold in
