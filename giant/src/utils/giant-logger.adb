@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-logger.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-logger.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/05/23 15:31:19 $
+--  $Date: 2003/05/23 16:32:56 $
 --
 
 with Ada.IO_Exceptions;
@@ -63,5 +63,5 @@ package body Giant.Logger is
       Default_Logger.Warn (Message, Name);
    end Warn;
 
-end Logger;
+end Giant.Logger;
 

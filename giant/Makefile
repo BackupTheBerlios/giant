@@ -18,12 +18,13 @@ INCLUDES        = $(GIANT_INCLUDES) $(IMLLIB_INCLUDES) $(XMLADA_INCLUDES)
 
 LIBS            = $(shell gtkada-config)
 
-GNAT_FLAGS      = -g -j2 -gnatX -gnata -gnatf -gnatwl -gnatwe -gnato 
+CFLAGS          = -g -O2 -funroll-loops
+GNAT_FLAGS      = -j2 -gnatX -gnata -gnatf -gnatwl -gnatwe -gnato 
                   #-gnaty3abcefhiklmprt #-gnatys #-gnatwu 
 ALL_CFLAGS      = $(CFLAGS) $(TARGET_CFLAGS) $(GNAT_FLAGS) $(INCLUDES) 
 ALL_LFLAGS      = $(LFLAGS) $(TARGET_LFLAGS) $(LIBS)
 
-MAIN = ../src/giant-main.adb
+MAIN = ../src/giant-main
 EXEC = ../giant
 
 ifeq ($(shell test -r Makefile.local && echo "true"),true)

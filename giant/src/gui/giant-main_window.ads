@@ -20,44 +20,21 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-logger.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-main_window.ads,v $, $Revision: 1.1 $
 --  $Author: squig $
 --  $Date: 2003/05/23 16:32:56 $
 --
-------------------------------------------------------------------------------
+--  Provides the main window. The main window is only instanciated once.
 --
---  Contains the generic logging package.
+--  Pattern:
+--    ADT
 --
 
-generic
-   Name : String;
-
-package Giant.Logger is
+package Giant.Main_Window is
 
    ---------------------------------------------------------------------------
-   --  See:
-   --    Default_Logger.Debug
-   procedure Debug (Message : String);
+   --  Sets windows visible.
+   --
+   procedure Show;
 
-   ---------------------------------------------------------------------------
-   --  See:
-   --    Default_Logger.Error
-   procedure Error (Message : String);
-
-   ---------------------------------------------------------------------------
-   --  See:
-   --    Default_Logger.Fatal
-   procedure Fatal (Message : String);
-
-   ---------------------------------------------------------------------------
-   --  See:
-   --    Default_Logger.Info
-   procedure Info (Message : String);
-
-   ---------------------------------------------------------------------------
-   --  See:
-   --    Default_Logger.Warn
-   procedure Warn (Message : String);
-
-end Giant.Logger;
-
+end Giant.Main_Window;
