@@ -1,0 +1,347 @@
+% =============================================================================
+%  $RCSfile: gsl.tex,v $
+%  $Date: 2003/04/18 02:54:53 $
+%  $Author: keulsn $
+%
+%  Description: Spezifikation der GSL
+%
+%  Last-Ispelled-Revision: 1.1
+%
+% =============================================================================
+
+
+\documentclass[a4paper,titlepage,11pt,german,twoside]{scrbook}
+
+
+\makeatletter
+
+%koma uses \chapter*, but we want to use \chapter
+%  changed srcbook.cls-commands
+\renewcommand\idx@heading{%
+  \twocolumn
+  \chapter{\indexname}\@mkboth{\indexname}{\indexname}
+}
+
+%Nummerierung soll net so eng aneinanderhaengen
+\renewcommand*\l@section{\@dottedtocline{1}{1.5em}{3em}}
+
+\makeatother
+
+
+\usepackage{../../styles/common}
+
+\usepackage{../spec}
+
+\usepackage{ebnf}
+
+\usepackage{makeidx}
+\makeindex
+
+% subsubsections nummerieren
+\setcounter{secnumdepth}{3}
+
+\newcommand\version{Version 1.0\xspace}
+%\newcommand\version{\today\xspace}
+
+% header
+\fancyhead{}
+\fancyhead[LE,RO]{\slshape \company}
+\fancyhead[LO,RE]{\slshape \leftmark}
+\fancyfoot[LE,RO]{\thepage{}}
+\fancyfoot[LO,RE]{\version}
+
+\begin{document}
+
+% title page
+\thispagestyle{empty}
+\hfill
+\parbox{5.5cm}
+{Universität Stuttgart\\
+Studienprojekt A -- IML Browser\\
+\company}
+
+\vspace{3cm}
+
+\begin{center}
+  \Huge
+  \textsf{GIANT Scripting Language \\ Spezifikation}\\
+  \vspace{.5cm}
+  {\Large\version}\\
+%  \vspace{3cm}
+%  \includegraphics[scale=.78]{logo}
+\end{center}
+\newpage
+
+%\input{history}
+
+%===============================================================================
+%
+% Inhaltsverzeichnis
+%
+\setcounter{tocdepth}{1}
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Beginn des Texts
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{GIANT Scripting Language}
+
+%%%% Non-terminals
+
+%%%% Tokens
+\token{\tokbegincomment}{//}
+\token{\tokclosebracket}{)}
+\token{\tokcomma}{,}
+\token{\tokdot}{.}
+\token{\tokopenbracket}{(}
+\token{\tokscript}{script}
+
+In diesem Kapitel wird die GIANT Scripting Language (GSL) sowie
+Interpreter zur Ausführung von GSL Scripts spezifiziert.
+GSL ist eine Skriptsprache für das Software-System GIANT. Mit Hilfe von
+GSL können Anfragen an die IML-Bibliothek gestellt werden und auf den
+Resultaten Aktionen ausgeführt können.
+
+Hier wird zunächst die Struktur von IML-Graphen aus der Sicht
+von GIANT beschrieben und danach Syntax und Sematik von GSL definiert.
+
+\section{IML-Graphen}
+
+Der Kunde stellt die Reflektion zur Verfügung. GIANT verwendet diese
+Bibliothek, um auf IML-Graph Dateien zuzugreifen.
+
+\subsection{IML-Datenbasis}
+\index{IML-Graph Datei!Inhalt}
+
+In jeder IML-Graph Datei sind IML-Daten enthalten. Diese
+bestehen aus
+\begin{enumerate}
+\item IML-Knoten
+\item Attributen von IML-Knoten
+\item nichts sonst.
+\end{enumerate}
+
+Es gibt in jeder IML-Graph Datei genau einen besonderen IML-Knoten,
+der Wurzelknoten genannt wird.
+
+\subsubsection{Attribute von IML-Knoten}
+
+Jeder IML-Knoten hat einen Typ. Für jeden Typ von IML-Knoten existiert ein
+String, der den Typ eindeutig identifiziert.
+
+Jeder IML-Knoten verfügt über eine endliche Folge von Attributen.
+Diese Folge definiert eine endliche Anzahl einzelner Attribute,
+die der IML-Knoten besitzt sowie eine Reihenfolge dieser Attribute.
+Weder die Folge von Attributen noch die in der Folge enthaltenen
+Attribute eines IML-Knoten können sich während der Laufzeit von
+GIANT verändern.
+
+Jedes Attribut besitzt einen Attribut-Namen. Kein IML-Knoten besitzt
+zwei verschiedene Attribute, die einen gleichen Namen besitzen.
+
+Einige Attribute sind Verweise. Sie verweisen auf höchstens einen
+IML-Knoten. Es werden unterschieden:
+\begin{description}
+\item[genutzte Verweise] Verweise, die auf genau einen
+           IML-Knoten verweisen.
+\item[ungenutzte Verweise] Verweise, die auf einen besonderen Wert verweisen,
+           der kein IML-Knoten ist.
+\end{description}
+
+Jedes Attribut eines IML-Knoten gehört genau einer der folgenden Klassen an:
+\begin{description}
+\item[Einfache Attribute]: Haben einen bestimmten Wert.
+           Mögliche Typen dieses Werts sind:
+           \begin{enumerate}
+           \item Source Location
+                 \begin{enumerate}
+                 \item Zeilennummer (Natural)
+                 \item Spaltennummer (Natural)
+                 \item Filename (String)
+                 \item Pfadname (String)
+                 \end{enumerate}
+           \item Boolean
+           \item Natural
+           \item String
+           \item Folge von Strings
+           \end{enumerate}
+\item[Genutztes Verweis-Attribut] Ein genutzter Verweis
+\item[Ungenutztes Verweis-Attribut] Ein ungenutzter Verweis
+\item[Verweisfolgen-Attribut] Eine endliche Folge von
+           genutzten Verweisen
+\item[Verweismengen-Attribut] Eine endliche Menge
+           von genutzten Verweisen
+\end{description}
+
+
+
+\subsection{IML-Graphen}
+
+Die IML-Daten jeder IML-Graph Datei definieren einen zugehörigen IML-Graph.
+Sprechweise: Die IML-Daten liegen dem IML-Graph zugrunde.
+Ein IML-Graph ist ein gerichteter knoten- und kantenannotierter Graph mit
+Schlingen und Mehrfachkanten. Er ist definiert durch die folgende
+Vorschrift:
+
+\begin{enumerate}
+\item
+Ein IML-Graph besitzt als Knotenmenge die Menge aller IML-Knoten des
+zugrunde liegenden IML-Daten. Der IML-Graph besitzt keine
+weiteren Knoten.
+\item
+Annotationen eines IML-Knoten sind alle Attribute des IML-Knoten.
+\item
+\label{edge_spec}
+Eine Kante im IML-Graph heißt IML-Kante. Eine IML-Kante $e$ von einem
+IML-Knoten $v$ zu einem IML-Knoten $w$ des selben IML-Graph existiert
+genau dann, wenn eine der folgenden Bedingungen erfüllt ist:
+   \begin{enumerate}
+   \item $v$ besitzt ein Genutztes Verweis-Attribut, das auf $w$ verweist.
+         \begin{enumerate}
+         \item $e$ besitzt als Annotation den Attribut-Namen $s$ des
+         Genutzten Verweis-Attributs.
+         \item Das Paar $(v, s)$ heißt Typ der IML-Kante $e$
+         \end{enumerate}
+   \item $v$ besitzt ein Verweisfolgen-Attribut $f$. Ein genutzter Verweis
+         aus $f$ verweist auf $w$.
+         \begin{enumerate}
+         \item $e$ besitzt als Annotation den Attribut-Namen $s$ von $f$ sowie
+         die Nummer innerhalb der Folge $f$ des genutzten Verweises auf $w$.
+         \item Das Paar $(v, s)$ heißt Typ der IML-Kante $e$.
+         \end{enumerate}
+   \item $v$ besitzt ein Verweismengen-Attribut $m$. Ein genutzter Verweis
+         aus $m$ verweist auf $w$.
+         \begin{enumerate}
+         \item $e$ besitzt als Annotation den Attribut-Namen $s$ von $m$.
+         \item Das Paar $(v, s)$ heißt Typ der IML-Kante $e$.
+         \end{enumerate}
+   \end{enumerate}
+\item Falls eine IML-Kante $e$ existiert, so hat $e$ keine Annotationen,
+außer den in Punkt \ref{edge_spec} genannten.
+\end{enumerate}
+
+
+
+\section{GSL Interpreter}
+
+Ein GSL Interpreter ist ein System, das GSL Scripts ausführt, gemäß
+der Sprachdefinition in Kapitel \ref{gsl_spec}. Jeder GSL
+Interpreter muss die vordefinierte Sprachumgebung nach Kapitel
+\ref{predef_env} unterstützen.
+
+\subsection{Kontext des Interpreters}
+
+Der GSL Interpreter kann im Kontext eines Anzeigefensters ausgeführt
+werden. Ist dies der Fall, so können die ausgeführten GSL Scripts
+Aktionen in diesem Anzeigefenster durchführen.
+
+Wird der GSL Interpreter nicht im Kontext eines Anzeigefensters ausgeführt,
+so kann in einem ausgeführten Script keine Aktion in einem Anzeigefenster
+durchgeführt werden.
+
+Ein GSL Script kann den Interpreter dazu veranlassen in den Kontext eines
+bestimmten Anzeigefensters zu wechseln.
+
+
+\subsection{Verhalten im Fehlerfall}
+
+\subsubsection{Syntaxfehler}
+
+Der GSL Interpreter muss ein GSL Script zurückweisen, falls eine
+Forderung der Sprachdefinition von diesem GSL Script verletzt
+wird. In diesem Fall muss der Interpreter dem Benutzer eine Fehlermeldung
+anzeigen, die folgende Anforderungen erfüllt:
+\begin{enumerate}
+\item Der Benutzer wird informiert, dass der Text des Scripts fehlerhaft ist.
+\item Dem Benutzer wird die Art des Fehlers präzise erläutert.
+\item Dem Benutzer wird angezeigt an welcher Stelle in welchem Script der
+Fehler erkannt oder verursacht wurde.
+\end{enumerate}
+Andernfalls startet der GSL Interpreter die Ausführung des GSL Scripts.
+
+\subsubsection{Laufzeitfehler}
+
+Der GSL Interpreter muss die Ausführung sofort
+stoppen, sobald ein Laufzeitfehler auftritt. Dies kann nur dann
+geschehen und muss jedes Mal geschehen,
+wenn die Semantikdefinition es ausdrücklich vorschreibt.
+Der GSL Interpreter
+darf die Ausführung bereits nach einem früheren Ausführungsschritt abbrechen,
+wenn sichergestellt ist, dass nach einem späteren Ausführungsschritt
+ein Laufzeitfehler auftreten wird.
+
+Der GSL Interpreter muss dem Benutzer unverzüglich eine
+Meldung anzeigen, die folgende Anforderungen erfüllt:
+\begin{enumerate}
+\item Der Benutzer muss informiert werden, dass ein Fehler aufgetreten ist.
+\item Dem Benutzer muss präzise und für ihn leicht verständlich erläutert
+werden, welcher Fehler aufgetreten ist.
+\item Dem Benutzer kann eine Möglichkeit aufgezeigt werden, wie er den
+Fehler beseitigen kann um eine fehlerfreie Ausführung des selben GSL Scripts zu
+ermöglichen.
+\end{enumerate}
+
+Der GSL Interpreter muss nach einem Fehler entweder alle seit Beginn
+der Ausführung bereits ausgeführten Aktionen rückgängig machen, oder er
+muss dem Benutzer anzeigen, welche Aktionen bereits durchgeführt wurden,
+bevor der Fehler passierte. Anhand dieser Information soll es dem Benutzer
+möglich sein, die Aktionen manuell rückgängig zu machen.
+
+
+\section{Syntax}
+\section{Semantik}
+\label{gsl_spec}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{GSL vordefinierte Sprachumgebung}
+\label{predef_env}
+
+\begin{verbatim}
+Create_Window
+  (Window_Name : string;
+   Layout_Algo : string;
+   Content     : subgraph) is
+// ... implementation defined ...
+\end{verbatim}
+
+\begin{verbatim}
+Insert_Into_Window
+  (Window_Name : string;
+   Layout_Algo : string;
+   New_Content : subgraph) is
+// ... implementation defined ...
+\end{verbatim}
+
+\begin{verbatim}
+Set_Selection
+  (Window_Name    : string;
+   Selection_Name : string;
+   Value          : selection) is
+// ... implementation definded ...
+\end{verbatim}
+
+\begin{verbatim}
+Set_Subgraph
+  (Subgraph_Name : string;
+   Value         : subgraph) is
+// ... implementation defined ...
+\end{verbatim}
+
+
+
+%==============================================================================
+%
+%  Index
+%
+\printindex
+
+%==============================================================================
+% 
+% Anhang
+%
+\newpage
+\appendix
+
+\end{document}
