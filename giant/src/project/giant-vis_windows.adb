@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.16 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.17 $
 --  $Author: schwiemn $
---  $Date: 2003/06/18 16:40:05 $
+--  $Date: 2003/06/18 19:17:08 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -494,6 +494,21 @@ package body Giant.Vis_Windows is
 
        return The_List;
    end Get_All_Selections;
+   
+   ---------------------------------------------------------------------------
+   procedure Change_Selection_Name
+     (Vis_Window         : in Visual_Window_Access;
+      Selection_Name     : in String;
+      New_Selection_Name : in String) is
+      
+   begin
+   
+      -- ACHTUNG bei Ändern des Namens der Current selection
+      null;
+   end Change_Selection_Name;
+   
+   
+   
 
    ---------------------------------------------------------------------------
    procedure Add_Selection

@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.16 $
+--  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.17 $
 --  $Author: schwiemn $
---  $Date: 2003/06/18 16:40:05 $
+--  $Date: 2003/06/18 19:17:08 $
 --
 --  ----------------
 --  This package realizes a container that administrates the components
@@ -270,6 +270,15 @@ package Giant.Vis_Windows is
    --  Raised on attempt to make a selection to current selection that
    --  is faded out.
    Illegal_Current_Selection_Exception : exception;
+   
+   --------------------------------------------------------------------------- 
+   --  Raised on attempt to change a selection's name to a name that already
+   --  exists.
+   New_Selection_Name_Already_Exists_Exception : exception;
+    
+   ---------------------------------------------------------------------------
+   --  Raised on attempt of changing the name of the standard selection.
+   Standard_Selection_Name_May_Not_Be_Changed_Exception : exception;
 
    ---------------------------------------------------------------------------
    --  Checks whether the data model vor a visualisation window has a
@@ -335,6 +344,36 @@ package Giant.Vis_Windows is
    function Get_All_Selections
      (Vis_Window : in Visual_Window_Access)
      return String_Lists.List;
+     
+   ---------------------------------------------------------------------------
+   --  Changes the name of a selection.
+   --
+   --  While a selection is part of a visualisation window you may only 
+   --  change its name using this subprogram.
+   --
+   --  You may not change the name of the standard selection.
+   --
+   --  Parameters:
+   --    Vis_Window - The "model" for a visualisation window.
+   --    Selection_Name - The name of the selection whose name should be
+   --      changed to "New_Selection_Name".
+   --    New_Selection_Name - The new selection name.
+   --  Raises:
+   --    Visual_Window_Access_Not_Initialized_Exception - Raised if a not
+   --      initialized instance of "Vis_Window_Data_Access" is passed
+   --      as parameter.
+   --    Selection_With_Passed_Name_Not_Found_Exception - Raised if a
+   --      selection with the name "Selection_Name" is not part of
+   --      "Visual_Window_Access"
+   --    New_Selection_Name_Already_Exists_Exception - Raised
+   --      if there is already a selection with the name 
+   --      "New_Selection_Name".
+   --    Standard_Selection_Name_May_Not_Be_Changed_Exception - Raised
+   --      on attempt of changing the name of the standard selection.
+   procedure Change_Selection_Name
+     (Vis_Window         : in Visual_Window_Access;
+      Selection_Name     : in String;
+      New_Selection_Name : in String);
 
    ---------------------------------------------------------------------------
    --  Adds a Selection to the visualisation window.
