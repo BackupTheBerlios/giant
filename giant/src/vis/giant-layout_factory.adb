@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.13 $
+--  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.14 $
 --  $Author: koppor $
---  $Date: 2003/08/31 12:05:29 $
+--  $Date: 2003/09/02 00:53:02 $
 --
 
 with Ada.Exceptions;
@@ -223,9 +223,6 @@ package body Giant.Layout_Factory is
                   --  algorithm analogue to
                   --  Tree_Layouts.Init_Calculation_Part_One
 
-                  --  will be set to false if a predesessor is found
-                  Root_Found := True;
-
                   while Graph_Lib.Edge_Id_Sets.More (Edge_Iterator) loop
                      Graph_Lib.Edge_Id_Sets.Next (Edge_Iterator, Current_Edge);
 
@@ -244,12 +241,17 @@ package body Giant.Layout_Factory is
                               (Selection_To_Layout), Node) then
                               --  predecessor found
                               Current_Node := Node;
-                              Root_Found := False;
                               exit;
                            end if;
                         end if;
                      end if;
                   end loop;
+
+                  --  we got the Root, if there are no more candidates to be
+                  --    predecessors
+                  Root_Found :=
+                    not Graph_Lib.Edge_Id_Sets.More (Edge_Iterator);
+
                   Graph_Lib.Edge_Id_Sets.Destroy (Edge_Iterator);
 
                   Graph_Lib.Edge_Id_Sets.Destroy (Incoming_Edges);
