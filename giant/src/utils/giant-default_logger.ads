@@ -20,15 +20,16 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger.ads,v $, $Revision: 1.5 $
+--  $RCSfile: giant-default_logger.ads,v $, $Revision: 1.6 $
 --  $Author: squig $
---  $Date: 2003/06/18 16:55:09 $
+--  $Date: 2003/06/18 18:40:37 $
 --
 ------------------------------------------------------------------------------
 --
 --  Contains the logging package.
 --
 
+with Ada.Exceptions;
 with Ada.Text_IO;
 
 package Giant.Default_Logger is
@@ -77,6 +78,19 @@ package Giant.Default_Logger is
    procedure Error
      (Message : in String;
       Name    : in String := DEFAULT_NAME);
+
+   ---------------------------------------------------------------------------
+   --  Prints an exception to the log file. Use this method like this:
+   --
+   --    when Error : others =>
+   --      Default_Logger.Debug ("an exception occured", "giant.package");
+   --      Default_Logger.Error (Error);
+   --
+   --  Parameters:
+   --    Message - The message
+   --    Name - The name of the logger
+   procedure Error
+     (Error : in Ada.Exceptions.Exception_Occurrence);
 
    ---------------------------------------------------------------------------
    --  Prints a message with FATAL priority to the log file.

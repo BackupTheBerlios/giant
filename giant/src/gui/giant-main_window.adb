@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.12 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.13 $
 --  $Author: squig $
---  $Date: 2003/06/18 16:55:09 $
+--  $Date: 2003/06/18 18:40:37 $
 --
 
 with Ada.Strings.Unbounded;
@@ -134,15 +134,16 @@ package body Giant.Main_Window is
    is
    begin
       declare
+         --FIX: default directory
          Filename : String := Gtkada.File_Selection.File_Selection_Dialog
-           (-"New Project", "",
+           (-"New Project", "test/resources/",
             Dir_Only => False, Must_Exist => False);
       begin
          if (Filename /= "") then
             declare
                IML_Filename : String
                  := Gtkada.File_Selection.File_Selection_Dialog
-                 (-"Select IML File", "",
+                 (-"Select IML File", Filename & ".iml",
                   Dir_Only => False, Must_Exist => False);
             begin
                if (IML_Filename /= "") then
@@ -158,8 +159,9 @@ package body Giant.Main_Window is
    is
    begin
       declare
+         --FIX: default directory
          Filename : String := Gtkada.File_Selection.File_Selection_Dialog
-           (-"Open Project", "",
+           (-"Open Project", "test/resources/",
             Dir_Only => False, Must_Exist => True);
       begin
          if (Filename /= "") then

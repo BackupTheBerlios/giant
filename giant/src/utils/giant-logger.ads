@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-logger.ads,v $, $Revision: 1.5 $
---  $Author: keulsn $
---  $Date: 2003/06/01 22:06:52 $
+--  $RCSfile: giant-logger.ads,v $, $Revision: 1.6 $
+--  $Author: squig $
+--  $Date: 2003/06/18 18:40:37 $
 --
 ------------------------------------------------------------------------------
 --
@@ -38,6 +38,8 @@
 --
 --  See:
 --    Giant.Default_Logger
+
+with Ada.Exceptions;
 
 generic
 
@@ -59,6 +61,12 @@ package Giant.Logger is
    --  See:
    --    Default_Logger.Error
    procedure Error (Message : in String);
+
+   ---------------------------------------------------------------------------
+   --  See:
+   --    Default_Logger.Error
+   procedure Error
+     (Error : in Ada.Exceptions.Exception_Occurrence);
 
    ---------------------------------------------------------------------------
    --  See:

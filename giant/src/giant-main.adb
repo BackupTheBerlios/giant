@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.11 $
 --  $Author: squig $
---  $Date: 2003/06/18 17:32:02 $
+--  $Date: 2003/06/18 18:40:37 $
 --
 --
 ------------------------------------------------------------------------------
@@ -39,7 +39,6 @@ with Giant.Logger;
 procedure Giant.Main
 is
    package Logger is new Giant.Logger("giant.main");
-   --Current_Project : Projects.Project_Access;
 begin
    Giant.Default_Logger.Init;
 
@@ -47,7 +46,7 @@ begin
 --     Config.Vis_Styles.Initialize_Config_Vis_Styles
 --       ("", "", "test/resources/giant_vis_style.xml");
 
-   Logger.Debug ("initializing gtk");
+   Logger.Debug ("starting giant");
 
    Controller.Show_Gui;
 

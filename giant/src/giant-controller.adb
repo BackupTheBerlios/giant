@@ -21,9 +21,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.10 $
 --  $Author: squig $
---  $Date: 2003/06/18 16:55:08 $
+--  $Date: 2003/06/18 18:40:37 $
 --
 
 with Ada.Strings.Unbounded;
@@ -66,7 +66,7 @@ package body Giant.Controller is
       end loop;
       String_Lists.Destroy (List);
 
-      Gui_Manager.Set_Project_Loaded (False);
+      Gui_Manager.Set_Project_Loaded (True);
       Logger.Info (-"Project initialized");
    end;
 
@@ -87,6 +87,9 @@ package body Giant.Controller is
       --  create project
       Current_Project := Projects.Create_Empty_Project_For_File
         (Filename, IML_Graph_Filename, Checksum);
+
+      --  update application
+      Initialize_Project;
    end Create_Project;
 
    function Get_Project
@@ -100,11 +103,11 @@ package body Giant.Controller is
      (Filename : in String)
    is
    begin
-      Logger.Info (-"Closing current project " & Filename);
+      Logger.Info (-"Closing current project");
       Close_Project;
 
       Logger.Info (-"Opening project " & Filename);
-      Current_Project := Projects.Load_Project (Filename, "");
+      Current_Project := Projects.Load_Project_File (Filename);
    end;
 
    procedure Save_Project

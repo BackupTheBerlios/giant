@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.8 $
 --  $Author: squig $
---  $Date: 2003/06/18 17:32:02 $
+--  $Date: 2003/06/18 18:40:37 $
 --
 
 with Ada.IO_Exceptions;
@@ -61,24 +61,41 @@ package body Giant.Default_Logger is
    is
       use Ada.Strings.Fixed;
    begin
-      if (Ada.Text_IO.Is_Open (Out_File)) then
-         -- cut off Level_ and pad to 5 letters
-         Ada.Text_IO.Put (Out_File, Get_Level_String (Level));
-         Ada.Text_Io.Put (Out_File, " [");
-         Ada.Text_IO.Put (Out_File, Head (Name, 15));
-         Ada.Text_Io.Put (Out_File, "] ");
-         Ada.Text_IO.Put (Out_File, Message);
-         Ada.Text_IO.New_Line (Out_File);
-         Ada.Text_Io.Flush (Out_File);
-      end if;
-
       if (Listener /= null) then
          Listener (Level, Name, Message);
       end if;
+
+      if (Ada.Text_IO.Is_Open (Out_File)) then
+         -- cut off Level_ and pad to 5 letters
+         Ada.Text_IO.Put (Out_File, Get_Level_String (Level));
+         Ada.Text_IO.Put (Out_File, " [");
+         Ada.Text_IO.Put (Out_File, Head (Name, 15));
+         Ada.Text_IO.Put (Out_File, "] ");
+         Ada.Text_IO.Put (Out_File, Message);
+         Ada.Text_IO.New_Line (Out_File);
+         Ada.Text_IO.Flush (Out_File);
+      end if;
 --     exception
---        when others =>
---           null; -- just ignore it to not clutter stderr
+--       when others =>
+--          null; -- just ignore it to not clutter stderr
    end Put_Line;
+
+   ---------------------------------------------------------------------------
+   --  Prints an exception to the log file if open.
+   --
+   procedure Put_Exception
+     (Error : in Ada.Exceptions.Exception_Occurrence)
+   is
+      use Ada.Exceptions;
+   begin
+      if (Ada.Text_IO.Is_Open (Out_File)) then
+         Ada.Text_IO.Put_Line(Out_File, " " & Exception_Name (Error));
+         Ada.Text_IO.Put_Line(Out_File, " " & Exception_Message (Error));
+      end if;
+--     exception
+--       when others =>
+--          null; -- just ignore it to not clutter stderr
+   end Put_Exception;
 
    procedure Debug (Message : in String;
                     Name    : in String := DEFAULT_NAME)
@@ -87,11 +104,19 @@ package body Giant.Default_Logger is
       Put_Line (Level_Debug, Name, Message);
    end Debug;
 
-   procedure Error (Message : in String;
-                    Name    : in String := DEFAULT_NAME)
+   procedure Error
+     (Message : in String;
+      Name    : in String := DEFAULT_NAME)
    is
    begin
       Put_Line (Level_Error, Name, Message);
+   end Error;
+
+   procedure Error
+     (Error : in Ada.Exceptions.Exception_Occurrence)
+   is
+   begin
+      Put_Exception (Error);
    end Error;
 
    procedure Fatal (Message : in String;
