@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: product.tex,v $, $Revision: 1.18 $
-%  $Date: 2003/02/21 11:25:21 $
+%  $RCSfile: product.tex,v $, $Revision: 1.19 $
+%  $Date: 2003/02/21 12:26:16 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung des Produktes. Übersicht über die Funktionen
@@ -366,7 +366,8 @@ in Anzeigefenster}
      \item
      Der Benutzer wählt das entsprechende Anzeigefenster aus
      (dadurch dass er ihm je nach Betriebssystemkonvention den
-     Fokus gibt).          
+     Fokus gibt). Hierbei können nur bereits geöffnete Anzeigefenster
+     des Projektes ausgewählt werden.
      
      \item
      Befindet sich die Maus über den Bereich des Anzeigefensters, wo
@@ -440,8 +441,45 @@ in Anzeigefenster}
    \end{enumerate} 
   
   
+\section {Verhalten bei Umwandeln von Selektionen und IML-Teilgraphen}
+  \label{Verhalten bei Umwandeln von Selektionen und IML-Teilgraphen}
+  
+  \subsection {Selektion aus IML-Teilgraphen ableiten}
+  \begin {enumerate}
+  
+    \item
+    Der IML-Teilgraph bleibt unverändert.
+  
+    \item
+    Im zu bestimmenden Anzeigefenster wird eine neue Selektion erzeugt,
+    die alle Knoten und Kanten des IML-Teilgraphen umfasst, welche bereits
+    als Fenster-Knoten und Fenster-Kanten im Anzeigefenster vorhanden sind.
+    
+    \item
+    Knoten und Kanten des IML-Teilgraphen, die nicht als Fenster-Knoten und
+    Fenster-Kanten im entsprechenden Anzeigefenster vorhanden sind, werden
+    irgnoriert.
+ 
+  \end {enumerate}
   
   
+  
+  \subsection {IML-Teilgraph aus Selektion ableiten}
+  
+  \begin {enumerate}
+  
+    \item
+    Die Selektion bleibt unverändert.
+    
+    \item
+    Es wird ein neuer IML-Teilgraph erzeugt. Dieser umfasst alle Knoten und
+    Kanten der Selektion, welche einen wirklichen Teilgraphen bilden.
+    
+    \item
+    Kanten der Selektion, deren Start- und Zielknoten nicht ebenfalls
+    bestandteil der Selektion sind, werden ignoriert.
+ 
+  \end {enumerate}
   
 
 

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: selection.tex,v $, $Revision: 1.4 $
-%  $Date: 2003/02/20 18:27:57 $
+%  $RCSfile: selection.tex,v $, $Revision: 1.5 $
+%  $Date: 2003/02/21 12:26:16 $
 %  $Author: schwiemn $
 %
 %  Description: Use-Cases für die Selektionen
@@ -252,7 +252,8 @@ Anzeigefensters (nicht zum Kopieren in ein anderes Anzeigefenster).
 \begin{uc}[Selektion löschen]{UC: Selektion löschen}
 
 Dieser UseCase dient zum Löschen von Selektionen innerhalb eines 
-Anzeigefensters.
+Anzeigefensters. Hierdurch bleiben die Fenster-Knoten und Fenster-Kanten
+unverändert.
 
   \begin{precond}
      \cond Es gibt ein geöffnetes Anzeigefenster mit einer Selektion.
@@ -328,8 +329,70 @@ werden.
 
 
 \end{uc}
+
 %===============================================================================
-\begin{uc}[Mengenoperationen auf 2 Selektionen]{UC: Mengenoperationen auf 2 Selektionen}
+\begin{uc}[Selektion aus IML-Teilgraph erzeugen]
+         {UC: Selektion aus IML-Teilgraph erzeugen}
+	 
+Leitet eine Selektion aus einem IML-Teilgraphen ab.
+Siehe hierzu \ref{Selektion aus IML-Teilgraphen ableiten}.
+
+
+  \begin{precond}
+     \cond 
+     Es gibt ein geöffnetes Anzeigefenster.
+     
+     \cond
+     Es gibt mindestens einen IML-Teilgraphen.
+     
+   \end{precond}
+
+
+  \begin{postsuccess}
+    \cond 
+    Im Ziel-Anzeigefenster wurde eine neue Selektion
+    mit dem entsprechenden Namen erzeugt.
+    
+  \end{postsuccess}
+  
+  \begin{postfail}
+    \cond Das System bleibt im bisherigen Zustand.
+  \end{postfail}
+  
+  \begin{proc} 
+     
+    \step[1]
+    Der Benutzer führt einen Rechtsklick auf den Quell-IML-Teilgraphen aus
+    und wählt im PopUp Menü den Eintrag <<<<<<<<<<< VERWEIS GUI >>>>>>
+     
+    \step[2]
+    GIANT zeigt den allgemeinen Texteingabediolog <<<<<<<<<VERWEIS GUI>>>>>
+      	    
+    \step[3]
+    Der Benutzer gibt einen Namen für die neu zu erstellende Selektion ein
+    und bestätigt mit OK.\\
+    Gibt der Benutzer hier keinen Namen ein, so vergibt GIANT automatisch 
+    einen Namen.
+       
+    \step[4]
+    GIANT erzeugt gemäß der unter \ref{Selektion aus IML-Teilgraphen ableiten}
+    beschriebenen Konvention im Ziel-Anzeigefenster eine neue Selektion als 
+    Ableitung aus dem Quell-IML-Teilgraphen.
+
+  \end{proc}
+  
+  \begin{aproc}
+    \astep{3} Der Benutzer bricht den UseCase mit Cancel ab.
+  \end{aproc}
+
+
+\end{uc}
+
+
+
+%===============================================================================
+\begin{uc}[Mengenoperationen auf 2 Selektionen]
+{UC: Mengenoperationen auf 2 Selektionen}
 Zusätzlich zu den Möglichkeiten der Anfragesprache kann der Benutzer
 die gängigen Mengen Operationen, wie Mengenvereinigung, Schnitt und Differenz,
 auch direkt über einen entsprechenden Dialog ausführen.
@@ -342,21 +405,25 @@ Beschreibung des Dialoges siehe \ref{Common-Set-Operation-Dialog}.
 
   \begin{postsuccess}
     \cond 
-    Eine neue Selektion mit entsprechendem Namen (eingegeben unter TARGET) ist angelegt 
+    Eine neue Selektion mit entsprechendem Namen (eingegeben unter TARGET) 
+    ist angelegt 
     und erscheint in der Liste der Selektionen (SELECTION\_LIST).
        
     \cond
     Im Falle einer Mengenvereinigung umfasst, die neue Selektion TARGET alle
-    Knoten und Kanten aus der LEFT\_SOURCE Selektion und der RIGHT\_SOURCE Selektion.
+    Knoten und Kanten aus der LEFT\_SOURCE Selektion und der 
+    RIGHT\_SOURCE Selektion.
     
     \cond
     Im Falle einer Mengendifferenz umfasst, die neue Selektion TARGET alle
-    Knoten und Kanten aus der LEFT\_SOURCE Selektion, die nicht Bestandteil der 
+    Knoten und Kanten aus der LEFT\_SOURCE Selektion, die nicht 
+    Bestandteil der 
     RIGHT\_SOURCE Selektion sind.
 
     \cond
     Im Falle eines Mengenschnitts umfasst, die neue Selektion TARGET alle
-    Knoten und Kanten, die sowohl der LEFT\_SOURCE Selektion und der RIGHT\_SOURCE Selektion.
+    Knoten und Kanten, die sowohl der LEFT\_SOURCE Selektion und der 
+    RIGHT\_SOURCE Selektion.
 
   \end{postsuccess}
 
@@ -375,8 +442,10 @@ Beschreibung des Dialoges siehe \ref{Common-Set-Operation-Dialog}.
     
     
     \step[3] 
-    Der Benutzer wählt dort die beiden Quellselektionen (LEFT\_SOURCE und RIGHT\_SOURCE)
-    aus und gibt unter TARGET den Namen der neue zu erzeugenden Selektion ein.\\
+    Der Benutzer wählt dort die beiden Quellselektionen (LEFT\_SOURCE und 
+    RIGHT\_SOURCE)
+    aus und gibt unter TARGET den Namen der neue zu erzeugenden Selektion 
+    ein.\\
        
     \step[4]
     GIANT führt die Mengenoperation aus.
