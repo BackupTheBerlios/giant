@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: filter.tex,v $, $Revision: 1.11 $
-%  $Date: 2003/04/05 21:08:37 $
-%  $Author: squig $
+%  $RCSfile: filter.tex,v $, $Revision: 1.12 $
+%  $Date: 2003/04/17 15:02:54 $
+%  $Author: schwiemn $
 %
 %  Description: UseCases für Filter
 %
@@ -12,9 +12,14 @@
 \begin{uc}[Selektionen ausblenden]{UC: Selektionen ausblenden}
 Mit diesem UseCase können Selektionen innerhalb
 eines Anzeigefensters ausgeblendet werden.
+Die Standard-Selektion (siehe \ref{Standard-Selektion}) und die 
+aktuelle Selektion (siehe \ref{Aktuelle Selektion vs Selektionen})
+können nicht ausgeblendet werden.
 
   \begin{precond}
-    \cond Es gibt ein geöffnetes Anzeigefenster mit einer Selektion.
+    \cond Es gibt mindestens ein
+          geöffnetes Anzeigefenster mit mindestens zwei Selektionen.
+
   \end{precond}
 
   \begin{postsuccess}
@@ -23,7 +28,7 @@ eines Anzeigefensters ausgeblendet werden.
           Fenster-Kanten sind ausgeblendet, d.h. sie sind
           im Anzeigefenster nicht mehr sichtbar. Dies trifft
           auch für Fenster-Knoten und Fenster-Kanten, die
-          noch zu weiteren Selektionen, gehören zu.
+          noch zu weiteren Selektionen gehören, zu.
     
     \cond Die ausgeblendeten Selektionen können nicht 
           zur aktuellen Selektion gemacht werden (siehe 
@@ -51,8 +56,8 @@ eines Anzeigefensters ausgeblendet werden.
     (siehe \ref{Selektionsauswahlliste}) durch 
     und wählt im Popup-Menü den Eintrag \gq{Hide Selection}
     aus. Diese Funktionalität kann nicht auf die aktuelle
-    Selektion angewendet werden 
-    (siehe \ref{Aktuelle Selektion vs Selektionen}).
+    Selektion oder auf die Standard-Selektion angewendet werden 
+
 
     \step[2]
     GIANT blendet die Selektion aus.
@@ -68,8 +73,8 @@ Mit diesem UseCase können ausgeblendete Selektionen
 wieder eingeblendet werden.
 
   \begin{precond}
-    \cond Es gibt ein geöffnetes Anzeigefenster mit einer 
-          ausgeblendeten Selektion.
+    \cond Es gibt mindestens ein geöffnetes Anzeigefenster mit 
+          mindestens einer ausgeblendeten Selektion.
   \end{precond}
 
   \begin{postsuccess}
@@ -98,6 +103,45 @@ wieder eingeblendet werden.
 
 \end{uc}
 
+
+\begin{uc}[Alles einblenden]{UC: Alles einblenden}
+Mit diesem UseCase können alle ausgeblendeten Fenster-Knoten
+und Fenster-Kanten eines Anzeigefensters wieder eingeblendet werden.
+
+  \begin{precond}
+    \cond Es gibt mindestens ein geöffnetes Anzeigefenster mit 
+          mindestens einer ausgeblendeten Selektion.
+  \end{precond}
+
+  \begin{postsuccess}
+
+
+    \cond 
+    Alle Selektionen des Anzeigefensters sind wieder eingeblendet.
+
+    \cond 
+    Alle Fenster-Knoten und Fenster-Kanten sind wieder
+    im Anzeigeinhalt des Anzeigefensters sichtbar dargestellt.
+    
+  \end{postsuccess}
+
+   
+  \begin{proc}
+
+    \step[1] 
+    Der Benutzer führt einen Rechtsklick mit der Maus auf
+    die Selektionsauswahlliste 
+    (siehe \ref{Selektionsauswahlliste}) durch 
+    und wählt im Popup-Menü den Eintrag \gq{Show all}
+    aus. 
+
+    \step[2]
+    GIANT blendet alle ausgeblendeten Fenster-Knoten und Fenster-Kanten
+    wieder ein.
+ 
+  \end{proc}
+
+\end{uc}
 
 %\begin{uc}[Detailfilter für ein Anzeigefenster]{UC: Detailfilter für ein Anzeigefenster}
 %<<<<<<<Martin: BIN MIR NICHT GANZ SICHER

@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: selection.tex,v $, $Revision: 1.17 $
-%  $Date: 2003/04/08 13:28:24 $
-%  $Author: squig $
+%  $RCSfile: selection.tex,v $, $Revision: 1.18 $
+%  $Date: 2003/04/17 15:02:54 $
+%  $Author: schwiemn $
 %
 %  Description: UseCases für die Selektionen
 %
@@ -19,7 +19,9 @@ modifiziert werden kann (siehe auch \ref{Aktuelle Selektion vs Selektionen}).
           
          
   \begin{precond}
-    \cond Es gibt ein Anzeigefenster mit mindestens einer Selektion.
+    \cond Es gibt mindestens ein Anzeigefenster 
+          mit mindestens zwei Selektionen.
+
   \end{precond}
 
   \begin{postsuccess}
@@ -35,6 +37,8 @@ modifiziert werden kann (siehe auch \ref{Aktuelle Selektion vs Selektionen}).
     Der Benutzer führt mit der linken Maustaste einen Doppelklick 
     auf eine nicht aktuelle Selektion in der Selektionsauswahlliste
     (siehe \ref{Selektionsauswahlliste}) durch.
+    Ausgeblendete Selektionen (siehe UseCase \ref{Selektionen ausblenden})
+    können nicht zur aktuellen Selektion gemacht werden.
 
     \step[2]
     GIANT macht die entsprechende Selektion zur aktuellen Selektion.  
@@ -95,8 +99,11 @@ Anzeigefensters (siehe auch \ref {hervorheben von Knoten und Kanten}).
     Die Selektion ist im entsprechenden Anzeigefenster hervorgehoben.
     
     \cond
-    Die Selektion, welche vorher mit der gleichen Farbe hervorgehoben war,
-    ist nicht mehr hervorgehoben.
+    War bereits eine andere Selektion mit der vom Benutzer gewählten
+    Farbe hervorgehoben (die Farbe, welche im Popup-Menü der
+    Selektionsauswahlliste unter \gq{Highlight Selection} gewählt wurde 
+    -- siehe \ref{Selektionsauswahlliste}), so ist diese Selektion nicht
+    mehr hervorgehoben.
  
     
   \end{postsuccess}
@@ -163,7 +170,7 @@ Anzeigefensters aufzuheben.
 Mit diesem UseCase können neue, leere Selektionen angelegt werden.
 
   \begin{precond}
-    \cond Es gibt ein geöffnetes Anzeigefenster.
+    \cond Es gibt mindestens ein geöffnetes Anzeigefenster.
   \end{precond}
 
   \begin{postsuccess}
@@ -214,7 +221,8 @@ Dieser UseCase dient zum Kopieren von Selektionen innerhalb eines
 Anzeigefensters.
 
   \begin{precond}
-    \cond Es gibt ein geöffnetes Anzeigefenster mit einer Selektion.
+    \cond Es gibt mindestens ein geöffnetes Anzeigefenster mit 
+          mindestens einer Selektion.
   \end{precond}
 
   \begin{postsuccess}
@@ -266,23 +274,35 @@ Anzeigefensters.
 
 Dieser UseCase dient zum Löschen von Selektionen innerhalb eines 
 Anzeigefensters. Hierdurch bleiben die Fenster-Knoten und Fenster-Kanten
-unverändert.
+unverändert. Die Standard-Selektion (siehe \ref{Standard-Selektion}) kann
+nicht gelöscht werden.
 
   \begin{precond}
-     \cond Es gibt ein geöffnetes Anzeigefenster mit einer Selektion.
+     \cond Es gibt mindestens ein geöffnetes Anzeigefenster mit 
+           mindestens zwei Selektionen.
    \end{precond}
 
 
   \begin{postsuccess}
     \cond 
     Die entsprechende Selektion ist gelöscht.
+
+    \cond 
+    Wurde die aktuelle Selektion gelöscht (siehe 
+    \ref{Aktuelle Selektion vs Selektionen}), so wird die
+    Standard-Selektion zur aktuellen Selektion.
     
     \cond 
     Die Fenster-Knoten und Fenster-Kanten, 
-    die zu dieser Selektion gehörten, werden nicht gelöscht.
+    die zur gelöschten Selektion gehören, werden nicht gelöscht.
           
     \cond War die Selektion hervorgehoben, so wird die entsprechende
     Hervorhebung der Fenster-Knoten und Fenster-Kanten aufgehoben.
+
+    \cond
+    Waren Fenster-Knoten und Fenster-Kanten der gelöschten Selektion
+    ausgeblendet (siehe UseCase \ref{Selektionen ausblenden}), so
+    werden diese Fenster-Knoten und Fenster-Kanten wieder eingeblendet.
     
   \end{postsuccess}
 
@@ -293,10 +313,12 @@ unverändert.
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase durch Rechtsklick auf die zu löschende
-    Selektion in der Selektionsauswahlliste \ref{Selektionsauswahlliste}
+    Selektion in der Selektionsauswahlliste (siehe 
+    \ref{Selektionsauswahlliste})
     und wählt aus dem Popup-Menü den Eintrag \gq{Delete Selection}
-    aus. Falls der Benutzer die Standard-Selektion ausgewählt hat ist
-    der Eintrag deaktiviert (siehe \ref{Standard-Selektion}).
+    aus. Falls der Benutzer die Standard-Selektion 
+    (siehe \ref{Standard-Selektion}) ausgewählt hat, ist
+    der Eintrag \gq{Delete Selection} deaktiviert.
       
     \step[2]
     GIANT löscht die entsprechende Selektion.
@@ -315,7 +337,7 @@ werden (siehe auch  \ref{Aktuelle Selektion vs Selektionen}).
 
   \begin{precond}
      \cond 
-     Es gibt ein geöffnetes Anzeigefenster mit mindestens
+     Es gibt mindestens ein geöffnetes Anzeigefenster mit mindestens
      einer Selektion.
    \end{precond}
 
@@ -356,7 +378,7 @@ Leitet eine Selektion aus einem IML-Teilgraphen ab
 
   \begin{precond}
      \cond 
-     Es gibt ein geöffnetes Anzeigefenster.
+     Es gibt mindestens ein geöffnetes Anzeigefenster.
      
      \cond
      Es gibt mindestens einen IML-Teilgraphen.
@@ -383,25 +405,27 @@ Leitet eine Selektion aus einem IML-Teilgraphen ab
     (siehe \ref{GUI Subgraph List}) aus
     und wählt im dazugehörigen Popup-Menü 
     (siehe \ref{Popup-Menü Subgraph List})
-    den Eintrag \gq{Create Window Selection from IML Subgraph} aus.
-     
+    den Eintrag \gq{Create Window Selection} aus.
+        
     \step[2]
-    GIANT zeigt den allgemeinen Texteingabedialog (siehe \ref{DIALOG-WINDOW}).
-            
-    \step[3] Der Benutzer gibt einen Namen (siehe auch \ref{afa
-      Zulaessige Namen}) für die neu zu erstellende Selektion ein und
-    bestätigt mit OK.
-    
-    \step[4]
     Die Statuszeile im Hauptfenster zeigt an \gq{Please select window for
     Insertion of new window selection}, der Mauszeiger verwandelt sich in
     ein Fadenkreuz.
     
-    \step[5]
+    \step[3]
     Der Nutzer klickt auf den sichtbaren Anzeigeinhalt des
     Anzeigefensters, in dem er die neue
     Selektion erstellen will (Ziel-Anzeigefenster).
-       
+
+
+    \step[4]
+    GIANT zeigt den allgemeinen Texteingabedialog (siehe \ref{DIALOG-WINDOW}).
+            
+    \step[5] Der Benutzer gibt einen Namen (siehe auch 
+             \ref{afa Zulaessige Namen}) 
+             für die neu zu erstellende Selektion ein und
+             bestätigt mit OK.
+
     \step[6]
     Die Statuszeile im Hauptfenster wechselt wieder zur normalen Anzeige.
     GIANT erzeugt gemäß der unter Abschnitt 
@@ -411,9 +435,11 @@ Leitet eine Selektion aus einem IML-Teilgraphen ab
 
   \end{proc}
   
-  \begin{aproc}
-    \astep{3} Der Benutzer bricht den UseCase mit Cancel ab.
-    \astep{4} Der Benutzer bricht den UseCase durch einen Rechtsklick ab.
+  \begin{aproc}    
+
+    \astep{3} Der Benutzer bricht den UseCase durch einen Rechtsklick ab.
+    \astep{5} Der Benutzer bricht den UseCase mit Cancel ab.
+
   \end{aproc}
 
 
