@@ -6,13 +6,13 @@
 
   <!-- ................................................................. -->
   <global_settings
-    vis_window_background_color="RGB:20/20/20"/> 
+    vis_window_background_color="RGB:00/00/00"/> 
 
   <!-- ................................................................. -->
   <default_node_setting
     icon         = "test_node_icon_default_1.xpm"
-    text_color   = "RGB:AA/AA/AA"
-    border_color = "RGB:AA/AA/AA"
+    text_color   = "RGB:00/00/00"
+    border_color = "RGB:00/00/00"
     fill_color   = "white"> 
      
     <node_attribute attribute_name = "SLoc"/>      

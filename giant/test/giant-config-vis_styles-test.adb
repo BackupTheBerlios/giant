@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-config-vis_styles-test.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-config-vis_styles-test.adb,v $, $Revision: 1.11 $
 --  $Author: schwiemn $
---  $Date: 2003/07/10 18:33:15 $
+--  $Date: 2003/07/10 19:54:10 $
 --
 with Ada.Strings.Unbounded;
 
@@ -396,11 +396,91 @@ package body Giant.Config.Vis_Styles.Test is
               Req_Line_Style => Giant.Config.Vis_Styles.Dashed_Line,
               Show_Label     => FALSE),
             "Test status of config data for edge class "
-            & """Array_LR_Conversion.CF_Next""");   
+            & """Array_LR_Conversion.CF_Next""");                     
             
-
       end loop;
    end Test_Init_Edge_Class_Vis_Data;
+
+   ---------------------------------------------------------------------------
+   -- Only tests dafault vis style
+   -- check whether test_vis_style_3 read from 
+   -- "resources/vis_styles/vis_styles_test_set_1/" is correctly replaced
+   -- by test_vis_style_3 read from 
+   -- "resources/vis_styles/vis_styles_test_set_2/"
+   procedure Test_Replacement_of_Vis_Styles
+     (R : in out AUnit.Test_Cases.Test_Case'Class) is
+     
+     Test_Vis_Style : Giant.Config.Vis_Styles.Visualisation_Style_Access;
+     
+     All_Colors : Giant.Config.Vis_Styles.Color_Access_Array_Access;                                   
+     Color_Id : Positive;     
+   begin
+
+      for i in 1 .. 1 loop
+
+        Giant.Config.Vis_Styles.Initialize_Config_Vis_Styles
+          ("",
+           "resources/vis_styles/vis_styles_test_set_1/",
+           "resources/vis_styles/vis_styles_test_set_2/",
+           "resources/vis_styles/vis_styles_test_set_default_1/"
+           & "test_vis_style_1_default.xml");
+      
+         Assert (Giant.Config.Vis_Styles.Get_Number_Of_Known_Vis_Styles = 4,
+           "Test whether ammount of loaded vis styles is correct");
+            
+         Test_Vis_Style := 
+           Giant.Config.Vis_Styles.Initialize_Vis_Style_By_Name
+             ("test_vis_style_3");
+                               
+         -- Check "test_vis_style_1_default"
+         -----------------------------------
+         
+         -- check global data 
+         --------------------
+         All_Colors := Giant.Config.Vis_Styles.Get_All_Colors; 
+         
+         Color_Id := 
+           Config.Vis_Styles.Get_Vis_Window_Background_Color 
+             (Test_Vis_Style);
+         
+         Assert 
+           (Giant.Config.Get_Color_Value (All_Colors.all (Color_Id)) = 
+            "RGB:AA/AA/AA", "Test Correct Vis_Window_Background_Color");
+            
+         -- Check Node Class Data
+         ------------------------   
+                  
+         -- check "TC_Boolean"
+         Assert 
+           (Check_Node_Class_Config_Status
+             (Vis_Style          => Test_Vis_Style,
+              Node_Class         => "TC_Boolean", 
+              Req_Icon_File_Path => 
+                File_Management.Get_Absolute_Path_To_File_From_Relative
+                  ("./", 
+                   "resources/vis_styles/vis_styles_test_set_2/"
+                   & "test_node_icon_blue_1.xpm"), 
+              Req_Text_Color     => "black",
+              Req_Border_Color   => "black",
+              Req_Fill_Color     => "black",      
+              Attr_in_Filter     => 1),
+            "Test config data for node class ""TC_Boolean"""); 
+                        
+         -- edge class Array_LR_Conversion.CF_Next           
+         Assert 
+           (Check_Edge_Class_Config_Status
+             (Vis_Style      => Test_Vis_Style,
+              Node_Class     => "Array_LR_Conversion", 
+              Attribute      => "CF_Next",
+              Req_Line_Color => "black",
+              Req_Text_Color => "black",
+              Req_Line_Style => Giant.Config.Vis_Styles.Continuous_Line,
+              Show_Label     => FALSE),
+            "Test status of config data for edge class "
+            & """Array_LR_Conversion.CF_Next""");   
+           
+      end loop;
+   end Test_Replacement_of_Vis_Styles;
 
    ---------------------------------------------------------------------------
    function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is
@@ -417,6 +497,9 @@ package body Giant.Config.Vis_Styles.Test is
       Register_Routine 
         (T, Test_Init_Edge_Class_Vis_Data'Access, 
          "Test_Init_Edge_Class_Vis_Data");                           
+      Register_Routine 
+        (T, Test_Replacement_of_Vis_Styles'Access, 
+         "Test_Replacement_of_Vis_Styles");       
    end Register_Tests;
 
    procedure Set_Up (T : in out Test_Case) is
