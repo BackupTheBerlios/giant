@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-tree_layouts.ads,v $, $Revision: 1.3 $
 --  $Author: koppor $
---  $Date: 2003/07/01 23:16:08 $
+--  $Date: 2003/07/03 15:59:50 $
 --
 ------------------------------------------------------------------------------
 --
@@ -30,6 +30,7 @@
 --
 
 with Giant.Evolutions;
+with Giant.Graph_Lib;
 with Giant.Graph_Lib.Selections;
 with Giant.Graph_Widgets;
 with Giant.Vis;
@@ -48,6 +49,7 @@ package Giant.Tree_Layouts is
    --
    --    Selection_To_Layout:
    --      Selection containing the nodes and edges to layout
+   --      Edges are ignored
    --
    --    Widget:
    --      Graph_Widet where the nodes to layout reside
@@ -65,6 +67,8 @@ package Giant.Tree_Layouts is
    --  Returns:
    --    derived Evolutions-Object to do the layout
    --
+   --  Precondition:
+   --    Rode_Node is in Selection_To_Layout.Get_All_Nodes
    function Initialize
      (Widget              : in Giant.Graph_Widgets.Graph_Widget;
       Widget_Lock         : in Giant.Graph_Widgets.Lock_Type;
@@ -88,13 +92,57 @@ package Giant.Tree_Layouts is
       Next_Action :    out Evolutions.Evolution_Action);
 
 private
+   type Layout_State is (Init, FirstWalk, SecondWalk);
+
    type Tree_Layout_Record is
      new Evolutions.Concurrent_Evolution with record
+        --  Init by Initialize
         Widget          : Giant.Graph_Widgets.Graph_Widget;
         Widget_Lock     : Giant.Graph_Widgets.Lock_Type;
-        The_Selection   : Giant.Graph_Lib.Selections.Selection;
+        Nodes_To_Layout : Graph_Lib.Node_Id_Set;
         Target_Position : Giant.Vis.Logic.Vector_2d;
         Root_Node       : Giant.Graph_Lib.Node_Id;
+        State           : Layout_State;
+
+        --  Init by Step.Init_Calculation
      end record;
+
+   type Node_Layout_Data;
+   type Node_Layout_Data_Access is access Node_Layout_Data;
+   type Node_Layout_Data is record
+      Thread            : Node_Layout_Data_Access;
+
+      Ancestor          : Node_Layout_Data_Access;
+
+      --  = self, if self is leftmost silbling
+      Leftmost_Silbling : Node_Layout_Data_Access;
+
+      -- used in the algorithm, null if n/a
+      Left_Silbling     : Node_Layout_Data_Access;
+
+      --  for checking, if v is a silbling of w
+      Right_Silbling    : Node_Layout_Data_Access;
+
+      Leftmost_Child    : Node_Layout_Data_Access;
+
+      Rightmost_Child   : Node_Layout_Data_Access;
+
+      LMod              : Integer;
+      Prelim            : Integer;
+      Change            : Integer;
+      Shift             : Integer;
+
+      --  Level in the tree
+      Level             : Integer;
+
+      --  Node in graph_lib
+      Node              : Graph_Lib.Node_Id;
+   end record;
+
+   ---------------------------------------------------------------------------
+   function Are_Silblings
+     (First  : in Node_Layout_Data_Access;
+      Second : in Node_Layout_Data_Access)
+     return Boolean;
 
 end Giant.Tree_Layouts;
