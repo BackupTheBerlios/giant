@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.ads,v $, $Revision: 1.5 $
+--  $RCSfile: giant-vectors.ads,v $, $Revision: 1.6 $
 --  $Author: keulsn $
---  $Date: 2003/06/10 23:52:47 $
+--  $Date: 2003/06/13 14:50:29 $
 --
 ------------------------------------------------------------------------------
 
@@ -295,6 +295,16 @@ package Giant.Vectors is
    function Image
      (Rectangle : in     Rectangle_2d)
      return String;
+
+   function Is_Inside
+     (Rectangle : in     Rectangle_2d;
+      Point     : in     Vector_2d)
+     return Boolean;
+
+   function Intersects
+     (First     : in     Rectangle_2d;
+      Second    : in     Rectangle_2d)
+     return Boolean;
 
    --  Read from Stream
    procedure Read_Rectangle

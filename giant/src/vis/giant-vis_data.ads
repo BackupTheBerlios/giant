@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.4 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.5 $
 --  $Author: keulsn $
---  $Date: 2003/06/12 17:01:26 $
+--  $Date: 2003/06/13 14:50:29 $
 --
 ------------------------------------------------------------------------------
 --
@@ -432,7 +432,7 @@ private
    type Region_Id is access all Region_Record;
 
    ----------------------------------------------------------------------------
-   --  Top-Left point of a region, also used for 'Hash_Region_Position'
+   --  Region coordinate system
    type Region_Position is new Vis.Absolute.Vector_2d;
 
    ----------------------------------------------------------------------------
@@ -510,17 +510,20 @@ private
    type Region_Record is limited
       record
          --  Size of this region
-         Extent             : Vis.Absolute.Rectangle_2d;
-         --  All contents in this region above the level are polluted
-         --  The field 'Pollution_On_Edges' determines whether this
-         --  height applies to Edges and Nodes or only to Nodes.
-         Pollution_Height : Layer_Type;
-         --  Does Pollution_Height apply to Edges and Nodes or only to Nodes?
-         Pollution_On_Edges : Boolean;
+         Extent              : Vis.Absolute.Rectangle_2d;
+         --  All contents in this region above this 'Vis_Edge_Id' and this
+         --  'Vis_Edge_Id' are polluted, or null
+         Polluted_Edge       : Vis_Edge_Id;
+         --  All contents in this region above this 'Vis_Node_Id' and this
+         --  'Node_Id' are polluted, or null
+         Polluted_Node       : Vis_Node_Id;
+         --  The Background of this region and all contents are polluted
+         --  iff True.
+         Background_Polluted : Boolean;
          --  Edges possibly contained in or intersecting this region
-         Edges              : Vis_Edge_Sets.Set;
+         Edges               : Vis_Edge_Sets.Set;
          --  Nodes possibly contained in or intersecting this region
-         Nodes              : Vis_Node_Sets.Set;
+         Nodes               : Vis_Node_Sets.Set;
       end record;
 
    type Region_Manager is new Ada.Finalization.Controlled with

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-vectors.adb,v $, $Revision: 1.5 $
 --  $Author: keulsn $
---  $Date: 2003/06/10 23:52:47 $
+--  $Date: 2003/06/13 14:50:29 $
 --
 ------------------------------------------------------------------------------
 
@@ -374,6 +374,31 @@ package body Giant.Vectors is
       Rectangle := Combine_Rectangle
         (Top_Left + Offset, Bottom_Right + Offset);
    end Move;
+
+   function Is_Inside
+     (Rectangle : in     Rectangle_2d;
+      Point     : in     Vector_2d)
+     return Boolean is
+
+      X : Coord_Type := Get_X (Point);
+      Y : Coord_Type := Get_Y (Point);
+   begin
+      return Coord_Less_Equal (Get_Left (Rectangle), X)
+        and then Coord_Less_Equal (Get_Top (Rectangle), Y)
+        and then Coord_Less_Equal (X, Get_Right (Rectangle))
+        and then Coord_Less_Equal (Y, Get_Bottom (Rectangle));
+   end Is_Inside;
+
+   function Intersects
+     (First     : in     Rectangle_2d;
+      Second    : in     Rectangle_2d)
+     return Boolean is
+   begin
+      return Coord_Less_Equal (Get_Left (First), Get_Right (Second))
+        and then Coord_Less_Equal (Get_Left (Second), Get_Right (First))
+        and then Coord_Less_Equal (Get_Top (First), Get_Bottom (Second))
+        and then Coord_Less_Equal (Get_Top (Second), Get_Bottom (First));
+   end Intersects;
 
    function Image
      (Rectangle : in     Rectangle_2d)

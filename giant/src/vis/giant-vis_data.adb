@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/06/12 17:01:26 $
+--  $Date: 2003/06/13 14:50:29 $
 --
 ------------------------------------------------------------------------------
 
@@ -110,24 +110,56 @@ package body Giant.Vis_Data is
    -- Regions --
    -------------
 
+   function Create_Region
+     (Extent : Vis.Absolute.Rectangle_2d)
+     return Region_Id is
+   begin
+      return new Region_Record'
+        (Extent              => Extent,
+         Polluted_Edge       => null,
+         Polluted_Node       => null,
+         Background_Polluted => False,
+         Edges               => Vis_Edge_Sets.Empty_Set,
+         Nodes               => Vis_Node_Sets.Empty_Set);
+   end Create_Region;
+
+   procedure Destroy_Region
+     (Region : in out Region_Id) is
+
+      procedure Free is new Ada.Unchecked_Deallocation
+        (Object => Region_Record,
+         Name   => Region_Id);
+
+   begin
+      if Region /= null then
+         Vis_Edge_Sets.Destroy (Region.Edges);
+         Vis_Node_Sets.Destroy (Region.Nodes);
+         Free (Region_Id);
+      end if;
+   end Destroy_Region;
+
    procedure Add_Background_Pollution
      (Region : access Region_Record;
       Area   : in     Vis.Absolute.Rectangle_2d) is
    begin
-      Region.Pollution_On_Edges := True;
-      Region.Pollution_Height := Bottom_Layer;
+      Region.Polluted_Edge := null;
+      Region.Polluted_Node := null;
+      Region.Background_Polluted := True;
    end Add_Background_Pollution;
 
    procedure Add_Edge_Pollution
      (Region : access Region_Record;
       Edge   : in     Vis_Edge_Id) is
    begin
-      if Region.Pollution_On_Edges then
-         Region.Pollution_Height := Layer_Type'Min
-           (Region.Pollution_Height, Get_Layer (Edge));
-      else
-         Region.Pollution_On_Edges := True;
-         Region.Pollution_Height := Get_Layer (Edge);
+      if not Region.Background_Polluted then
+         if Region.Polluted_Edge /= null then
+            if Is_Edge_Below (Edge, Region.Polluted_Edge) then
+               Region.Polluted_Edge := Edge;
+            end if;
+         else
+            Region.Polluted_Edge := Edge;
+            Region.Polluted_Node := null;
+         end if;
       end if;
    end Add_Edge_Pollution;
 
@@ -135,18 +167,109 @@ package body Giant.Vis_Data is
      (Region : access Region_Record;
       Node   : in     Vis_Node_Id) is
    begin
-      if not Region.Pollution_On_Edges then
-         Region.Pollution_Height := Layer_Type'Min
-           (Region.Pollution_Height, Get_Layer (Node));
+      if not Region.Background_Polluted
+        and then Region.Polluted_Edge = null
+        and then (Region.Polluted_Node = null or else
+                  Is_Below (Node, Region.Polluted_Node))
+      then
+         Region.Polluted_Node := Node;
       end if;
    end Add_Node_Pollution;
 
    procedure Remove_Pollution
      (Region : access Region_Record) is
    begin
-      Region.Pollution_Height := Top_Layer;
-      Region.Pollution_On_Edges := False;
+      Region.Polluted_Node := null;
+      Region.Polluted_Edge := null;
+      Region.Background_Polluted := False;
    end Remove_Pollution;
+
+   procedure Add_Node_To_Region
+     (Region : access Region_Record;
+      Node   : in     Vis_Node_Id) is
+   begin
+      pragma Assert (Node /= null);
+      Vis_Node_Sets.Insert (Region.Nodes, Node);
+   end Add_Node_To_Region;
+
+   procedure Add_Edge_To_Region
+     (Region : access Region_Record;
+      Edge   : in     Vis_Edge_Id) is
+   begin
+      pragma Assert (Edge /= null);
+      Vis_Edge_Sets.Insert (Region.Edges, Edge);
+   end Add_Edge_To_Region;
+
+   procedure Remove_Edge_From_Region
+     (Region : access Region_Record;
+      Edge   : in     Vis_Edge_Id) is
+   begin
+      pragma Assert (Edge /= null);
+      if Edge = Region.Polluted_Edge then
+         Iterator := Vis_Edge_Sets.Make_Iterator_On_Element
+           (A_Set   => Region.Edges,
+            Element => Edge);
+         Vis_Edge_Sets.Next (Iterator);
+         if Vis_Edge_Sets.More (Iterator) then
+            Regions.Polluted_Edge := Vis_Edge_Sets.Current (Iterator);
+         else
+            Regions.Polluted_Edge := null;
+            if not Vis_Node_Sets.Is_Empty (Regions.Nodes) then
+               Region.Polluted_Node := Vis_Node_Sets.First (Regions.Nodes);
+            end if;
+         end if;
+      end if;
+      Vis_Edge_Sets.Remove_If_Exists
+        (A_Set   => Region.Edges,
+         Element => Edge);
+   end Remove_Node_From_Region;
+
+   procedure Remove_Node_From_Region
+     (Region : access Region_Record;
+      Node   : in     Vis_Node_Id) is
+   begin
+      pragma Assert (Node /= null);
+      if Node = Region.Polluted_Node then
+         Iterator := Vis_Node_Sets.Make_Iterator_On_Element
+           (A_Set   => Region.Nodes,
+            Element => Node);
+         Vis_Node_Sets.Next (Iterator);
+         if Vis_Node_Sets.More (Iterator) then
+            Regions.Polluted_Node := Vis_Node_Sets.Current (Iterator);
+         else
+            Regions.Polluted_Node := null;
+         end if;
+      end if;
+      Vis_Node_Sets.Remove_If_Exists
+        (A_Set   => Region.Nodes,
+         Element => Node);
+   end Remove_Node_From_Region;
+
+   function Intersects_Area_Region
+     (Region    : access Region_Record;
+      Rectangle : in     Vis.Absolute.Rectangle_2d)
+     return Boolean is
+   begin
+      return Vis.Absolute.Intersects (Region.Extent, Rectangle);
+   end Intersects_Rect_Region;
+
+   function Intersects_Edge_Region
+     (Region : access Region_Record;
+      Edge   : in     Vis_Edge_Id)
+     return Boolean is
+   begin
+      ----------------------------------------
+      -- Here's some serious coding missing --
+      ----------------------------------------
+   end Intersects_Edge_Region;
+
+   function Intersects_Node_Region
+     (Region : access Region_Record;
+      Node   : in     Vis_Node_Id)
+     return Boolean is
+   begin
+      return Vis.Absolute.Intersects (Region.Extent, Node.Extent);
+   end Intersects_Node_Region;
 
 
    ---------------------
@@ -157,6 +280,61 @@ package body Giant.Vis_Data is
      (Manager         :    out Region_Manager;
       Size            : in     Vis.Absolute.Vector_2d;
       Number_Of_Nodes : in     Natural);
+
+   function Get_Region_Position
+     (Manager : in     Region_Manager;
+      Point   : in     Vis.Absolute.Vector_2d)
+     return Region_Position is
+
+      Position   : Region_Position;
+      Point_X    : Vis.Absolute_Int := Vis.Absolute.Get_X (Point);
+      Point_Y    : Vis.Absolute_Int := Vis.Absoltue.Get_Y (Point);
+      Position_X : Vis.Absolute_Int;
+      Position_Y : Vis.Absolute_Int;
+   begin
+      Position_X := Point_X / Manager.Region_Width;
+      Position_Y := Point_Y / Manager.Region_Height;
+      if Point_X < 0 and then Point_X mod Manager.Region_Width /= 0 then
+         Position_X := Position_X - 1;
+      end if;
+      if Point_Y < 0 and then Point_Y mod Manager.Region_Height /= 0 then
+         Position_Y := Position_Y - 1;
+      end if;
+      return Vis.Absolute.Combine_Vector (Position_X, Position_Y);
+   end Get_Region_Position;
+
+   function Get_Region_Extent
+     (Manager  : in     Region_Manager;
+      Position : in     Region_Position)
+     return Vis.Absolute.Rectangle_2d is
+
+      X : Absolute_Int := Vis.Absolute.Get_X (Position);
+      Y : Absolute_Int := Vis.Absolute.Get_Y (Position);
+   begin
+      return Vis.Absolute.Combine_Rectangle
+        (X * Manager.Region_Width,
+         Y * Manager.Region_Height,
+         (X + 1) * Manager.Region_Width - 1,
+         (Y + 1) * Manager.Region_Height - 1);
+   end Get_Region_Extent;
+
+   --  Gets the region for a position. If that region does not exist yet then
+   --  it will be created.
+   function Get_Region
+     (Manager  : in     Region_Manager;
+      Position : in     Region_Position)
+     return Region_Id is
+
+      New_Region : Region_Id;
+   begin
+      if Region_Mappings.Is_Bound (Position) then
+         return Region_Mappings.Fetch (Position);
+      else
+         New_Region := Create_Region (Get_Region_Extent (Position));
+         Region_Mappings.Bind (Position, New_Region);
+         return New_Region;
+      end if;
+   end Get_Region;
 
    procedure Optimize_Drawing_Area
      (Manager : in     Region_Manager;
@@ -204,20 +382,32 @@ package body Giant.Vis_Data is
      (Manager : in out Region_Manager;
       Edge    : in     Vis_Edge_Id) is
 
-      Iterator : Region_Lists.ListIter := Region_Lists.MakeListIter
+      Iterator       : Region_Lists.ListIter := Region_Lists.MakeListIter
         (Edge.Regions);
+      Current_Region : Region_Id;
    begin
       while Region_Lists.More (Iterator) loop
          Current_Region := Region_Lists.Cell (Iterator);
          Add_Edge_Pollution (Current_Region, Get_Layer (Edge));
          Region_Lists.Forward (Iterator);
       end loop;
+      Region_Lists.Destroy (Iterator);
    end Pollute_Edge;
 
    procedure Pollute_Node
      (Manager : in out Region_Manager;
       Node    : in     Vis_Node_Id) is
+
+      Iterator       : Region_Lists.ListIter := Region_Lists.MakeListIter
+        (Node.Regions);
+      Current_Region : Region_Id;
    begin
+      while Region_Lists.More (Iterator) loop
+         Current_Region := Region_Lists.Cell (Iterator);
+         Add_Node_Pollution (Current_Region, Get_Layer (Node));
+         Region_Lists.Forward (Iterator);
+      end loop;
+      Region_Lists.Destroy (Iterator);
    end Pollute_Node;
 
    procedure Pollute_Area
