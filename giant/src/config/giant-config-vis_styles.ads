@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.ads,v $, $Revision: 1.8 $
+-- $RCSfile: giant-config-vis_styles.ads,v $, $Revision: 1.9 $
 -- $Author: schwiemn $
--- $Date: 2003/07/10 21:59:50 $
+-- $Date: 2003/08/01 13:59:39 $
 --
 -- ----------------
 -- This package provides the functionality needed to manage
@@ -169,7 +169,9 @@ package Giant.Config.Vis_Styles is
    --
    --   1. Expand using the directory there the xml file for the
    --      visualisation style is located. If no file is found:
-   --   2. Expand using "Root_Path" as root. If no file is found then:
+   --   2. Expand using "Resources_Root_Dir" as root. 
+   --
+   --   If no file is found then:
    --   3. Try to ignore that setting.
    --
    -- Note
