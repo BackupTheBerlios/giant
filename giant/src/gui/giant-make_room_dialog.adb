@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-make_room_dialog.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-make_room_dialog.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/06/23 10:41:10 $
+--  $Date: 2003/07/10 21:01:40 $
 --
 
 with Ada.IO_Exceptions;
@@ -102,5 +102,23 @@ package body Giant.Make_Room_Dialog is
 
       Set_Default (Dialog, Pixel_Button);
    end;
+
+   function Show
+     return Float
+   is
+      Dialog : Make_Room_Dialog_Access;
+      Value : Float;
+   begin
+      Create (Dialog);
+      Show_Modal (Dialog);
+      if (Is_Response_Okay (Dialog)) then
+         Value := Float (Gtk.Adjustment.Get_Value (Dialog.Pixel_Adjustment));
+      else
+         Value := -1.0;
+      end if;
+      Destroy (Dialog);
+      return Value;
+   end Show;
+
 
 end Giant.Make_Room_Dialog;

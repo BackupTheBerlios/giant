@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.32 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.33 $
 --  $Author: squig $
---  $Date: 2003/07/10 20:17:45 $
+--  $Date: 2003/07/10 21:01:40 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -203,9 +203,6 @@ package body Giant.Graph_Window is
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
    begin
-      -- FIX: remove this:
-      Gui_Manager.Actions.Trigger (Graph_Window_Access (Source), null,
-                                   Vis.Logic.Zero_2d);
       null;
    end On_Pick_Edge_Clicked;
 
@@ -458,8 +455,6 @@ package body Giant.Graph_Window is
       Zoom_Level : Vis.Zoom_Level
         := 1.0; --FIX:Graph_Widgets.Get_Zoom_Level (Window.Graph);
    begin
-      Controller.Create_Pin (Get_Window_Name (Window), "Test",
-                             Vis.Logic.Zero_2d, 1.0);
       Controller.Set_Zoom_Level (Get_Window_Name (Window), Zoom_Level + 0.2);
    end On_Zoom_In_Clicked;
 
@@ -644,6 +639,7 @@ package body Giant.Graph_Window is
       Gtk.Menu.Append (Window.Background_Menu,
                        New_Menu_Item (-"Make Room...",
                                       On_Background_Make_Room'Access, Window));
+      Gtk.Menu.Append (Window.Background_Menu, New_Menu_Separator);
       Gtk.Menu.Append (Window.Background_Menu,
                        New_Menu_Item (-"New Pin",
                                       On_Background_Create_Pin'Access, Window));
@@ -674,8 +670,8 @@ package body Giant.Graph_Window is
                                       On_Node_Show_Source'Access, Window));
       Gtk.Menu.Append (Window.Node_Menu, New_Menu_Separator);
       Gtk.Menu.Append (Window.Node_Menu,
-                       New_Menu_Item (-"Anotate...",
-                                      On_Node_Show_Source'Access, Window));
+                       New_Menu_Item (-"Annotate...",
+                                      On_Node_Annotate'Access, Window));
    end Initialize_Node_Menu;
 
    procedure Initialize

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.33 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.34 $
 --  $Author: squig $
---  $Date: 2003/07/10 20:17:45 $
+--  $Date: 2003/07/10 21:01:40 $
 --
 ------------------------------------------------------------------------------
 --
@@ -417,6 +417,12 @@ package Giant.Controller is
    function Exists_Window
      (Name : in String)
      return Boolean;
+
+   procedure Make_Room
+     (Window_Name : in String;
+      Center      : in Vis.Logic.Vector_2d;
+      Width       : in Vis.Logic_Float;
+      Height      : in Vis.Logic_Float);
 
    ---------------------------------------------------------------------------
    --  Opens a window, if gui is shown.

@@ -20,18 +20,21 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.6 $
 --  $Author: squig $
---  $Date: 2003/07/10 20:17:45 $
+--  $Date: 2003/07/10 21:01:40 $
 --
 
 with Ada.Unchecked_Conversion;
 with System;
 
 with Giant.Controller;
+with Giant.Dialogs;
 with Giant.Layout_Dialog;
 with Giant.Gui_Manager;
 with Giant.Gui_Manager.Actions;
+with Giant.Make_Room_Dialog;
+with Giant.Node_Annotation_Dialog;
 with Giant.Node_Info_Dialog;
 
 package body Giant.Graph_Window.Callbacks is
@@ -43,15 +46,31 @@ package body Giant.Graph_Window.Callbacks is
    procedure On_Background_Make_Room
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
+      Value : Float;
    begin
-      null;
+      Value := Make_Room_Dialog.Show;
+      if (Value > 0.0) then
+         Controller.Make_Room (Get_Window_Name (Window),
+                               Center => Window.Current_Position,
+                               Width  => Value,
+                               Height => Value);
+      end if;
    end;
 
    procedure On_Background_Create_Pin
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
+      Window : constant Graph_Window_Access := Graph_Window_Access (Source);
+      Name : constant String
+        := Dialogs.Show_Input_Dialog (-"Pin Name");
    begin
-      null;
+      if (Name /= "") then
+         Controller.Create_Pin (Get_Window_Name (Window),
+                                Name,
+                                Window.Current_Position,
+                                Graph_Widgets.Get_Zoom_Level (Window.Graph));
+      end if;
    end;
 
    ---------------------------------------------------------------------------
@@ -176,8 +195,9 @@ package body Giant.Graph_Window.Callbacks is
    procedure On_Node_Annotate
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
    begin
-      null;
+      Node_Annotation_Dialog.Show (Window.Current_Node);
    end;
 
    ---------------------------------------------------------------------------

@@ -20,11 +20,11 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-clists.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-clists.adb,v $, $Revision: 1.6 $
 --  $Author: squig $
---  $Date: 2003/07/10 14:04:50 $
+--  $Date: 2003/07/10 21:01:40 $
 --
-with Text_Io;
+
 with Ada.Strings.Unbounded;
 with Interfaces.C.Strings;
 
@@ -132,7 +132,6 @@ package body Giant.Clists is
               if (Gtk.Widget.Widget_List.Length (Children) > 1) then
                  Widget := Gtk.Widget.Widget_List.Nth_Data (Children, 1);
                  if (Widget.all in Gtk.Menu_Item.Gtk_Menu_Item_Record) then
-                    Text_Io.Put_Line ("!3");
                     Gtk.Menu_Item.Activate
                       (Gtk.Menu_Item.Gtk_Menu_Item (Widget));
                  end if;

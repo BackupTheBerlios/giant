@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-make_room_dialog.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-make_room_dialog.ads,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/05 11:08:50 $
+--  $Date: 2003/07/10 21:01:40 $
 --
 ------------------------------------------------------------------------------
 --
@@ -35,9 +35,9 @@ with Gtk.Adjustment;
 with Giant.Default_Dialog;
 
 package Giant.Make_Room_Dialog is
-   
+
    DEFAULT_VALUE : constant Glib.Gfloat := 30.0;
-   
+
    type Make_Room_Dialog_Record is
      new Default_Dialog.Default_Dialog_Record with private;
 
@@ -53,6 +53,9 @@ package Giant.Make_Room_Dialog is
 
    procedure Initialize
      (Dialog : access Make_Room_Dialog_Record'class);
+
+   function Show
+     return Float;
 
 private
    type Make_Room_Dialog_Record is

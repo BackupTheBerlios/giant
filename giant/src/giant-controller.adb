@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.47 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.48 $
 --  $Author: squig $
---  $Date: 2003/07/10 20:17:45 $
+--  $Date: 2003/07/10 21:01:40 $
 --
 
 with Ada.Strings.Unbounded;
@@ -884,6 +884,19 @@ package body Giant.Controller is
    begin
       return Projects.Does_Vis_Window_Exist (Current_Project, Name);
    end Exists_Window;
+
+   procedure Make_Room
+     (Window_Name : in String;
+      Center      : in Vis.Logic.Vector_2d;
+      Width       : in Vis.Logic_Float;
+      Height      : in Vis.Logic_Float)
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+   begin
+      Graph_Widgets.Make_Room (Vis_Windows.Get_Graph_Widget (Window),
+                               Center, Width, Height);
+   end Make_Room;
 
    procedure Open_Window
      (Name : in String)

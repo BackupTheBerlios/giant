@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.ads,v $, $Revision: 1.11 $
+--  $RCSfile: giant-default_dialog.ads,v $, $Revision: 1.12 $
 --  $Author: squig $
---  $Date: 2003/06/25 16:07:51 $
+--  $Date: 2003/07/10 21:01:40 $
 --
 ------------------------------------------------------------------------------
 --
@@ -123,6 +123,12 @@ package Giant.Default_Dialog is
    procedure Hide
      (Source   : access Gtk.Widget.Gtk_Widget_Record'Class;
       Response : in     Response_Type);
+
+   ---------------------------------------------------------------------------
+   --  Returns true, if the okay button was pressed.
+   function Is_Response_Okay
+     (Dialog : access Default_Dialog_Record)
+     return Boolean;
 
    procedure Set_Center_Widget
      (Dialog : access Default_Dialog_Record;

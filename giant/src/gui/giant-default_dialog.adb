@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.17 $
+--  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.18 $
 --  $Author: squig $
---  $Date: 2003/06/26 09:41:53 $
+--  $Date: 2003/07/10 21:01:40 $
 --
 
 with Ada.Text_Io; use Ada.Text_Io;
@@ -313,6 +313,14 @@ package body Giant.Default_Dialog is
          Hide (Dialog);
       end if;
    end;
+
+   function Is_Response_Okay
+     (Dialog : access Default_Dialog_Record)
+     return Boolean
+   is
+   begin
+      return (Dialog.Response = Response_Okay);
+   end Is_Response_Okay;
 
    procedure Set_Center_Widget
      (Dialog : access Default_Dialog_Record;

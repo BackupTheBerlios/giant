@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.19 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.20 $
 --  $Author: squig $
---  $Date: 2003/07/10 16:26:35 $
+--  $Date: 2003/07/10 21:01:40 $
 --
 ------------------------------------------------------------------------------
 
@@ -704,8 +704,8 @@ package body Giant.Graph_Widgets is
      (Widget     : access Graph_Widget_Record'Class)
      return Vis.Zoom_Level is
    begin
-      raise Unimplemented;
-      return 0.0;
+      -- FIX: raise Unimplemented;
+      return 1.0;
    end Get_Zoom_Level;
 
    procedure Set_Zoom_Level
