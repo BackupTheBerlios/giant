@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.67 $
---  $Author: squig $
---  $Date: 2003/07/22 09:10:23 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.68 $
+--  $Author: keulsn $
+--  $Date: 2003/08/01 13:33:47 $
 --
 
 with Ada.Strings.Unbounded;
@@ -1264,7 +1264,8 @@ package body Giant.Controller is
       Window : Vis_Windows.Visual_Window_Access;
       Unique_Name : String := Get_Unique_Name (Name);
    begin
-      Window := Vis_Windows.Create_New (Unique_Name);
+      Window := Vis_Windows.Create_New
+        (Unique_Name, Projects.Get_Node_Annotations (Current_Project));
       Projects.Add_Visualisation_Window (Current_Project, Window);
       Gui_Manager.Add_Window (Unique_Name);
       -- FIX: remove vvv
