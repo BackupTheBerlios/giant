@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_widgets-settings.ads,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/06/30 02:55:18 $
+--  $Date: 2003/07/04 14:37:50 $
 --
 ------------------------------------------------------------------------------
 
@@ -116,13 +116,6 @@ package Giant.Graph_Widgets.Settings is
    -----------
    -- Icons --
    -----------
-
-   ---------------------------------------------------------------------------
-   --  Returns True if the annotation icon should be shown, False otherwise.
-   function Is_Annotated
-     (Widget       : access Graph_Widget_Record'Class;
-      Node         : in     Vis_Data.Vis_Node_Id)
-     return Boolean;
 
    ---------------------------------------------------------------------------
    --  Gets the icon to be shown inside annotated nodes or 'Null_Pixmap'

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.18 $
---  $Author: koppor $
---  $Date: 2003/07/03 12:02:38 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.19 $
+--  $Author: keulsn $
+--  $Date: 2003/07/04 14:37:50 $
 --
 ------------------------------------------------------------------------------
 --
@@ -124,12 +124,12 @@ package Giant.Graph_Widgets is
    --  Creates an emty graph widget.
    --
    --  Parameters:
-   --    Widget - Access to a new graph widget
-   --    Style  - The visualization style to be used for 'Widget'
+   --    Widget       - Access to a new graph widget
+   --    Style        - The visualization style to be used for 'Widget'
    procedure Create
-     (Widget :    out Graph_Widget;
-      Style  : in     Config.Vis_Styles.Visualisation_Style_Access :=
-                        Config.Vis_Styles.Get_Default_Vis_Style);
+     (Widget       :    out Graph_Widget;
+      Style        : in     Config.Vis_Styles.Visualisation_Style_Access :=
+        Config.Vis_Styles.Get_Default_Vis_Style);
 
    ----------------------------------------------------------------------------
    --  Creates a new Graph_Widget and sets its state to the state stored in

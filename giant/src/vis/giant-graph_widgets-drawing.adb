@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.5 $
 --  $Author: keulsn $
---  $Date: 2003/06/30 16:22:49 $
+--  $Date: 2003/07/04 14:37:50 $
 --
 ------------------------------------------------------------------------------
 
@@ -663,7 +663,7 @@ package body Giant.Graph_Widgets.Drawing is
            (Widget, Node,
             Icon, Width, Height);
          Draw_Icon (Icon, Width, Height);
-         if Settings.Is_Annotated (Widget, Node) then
+         if False then  --  Settings.Is_Annotated (Widget, Node) then
             Settings.Get_Annotation_Icon
               (Widget,
                Icon, Width, Height);

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.9 $
---  $Author: squig $
---  $Date: 2003/07/03 12:42:04 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.10 $
+--  $Author: keulsn $
+--  $Date: 2003/07/04 14:37:50 $
 --
 ------------------------------------------------------------------------------
 
@@ -49,8 +49,8 @@ package body Giant.Graph_Widgets is
    --  Initializes the data structure. More initialization is done after the
    --  "realize" signal has been emitted on 'Widget'
    procedure Initialize
-     (Widget : access Graph_Widget_Record'Class;
-      Style  : in     Config.Vis_Styles.Visualisation_Style_Access) is
+     (Widget       : access Graph_Widget_Record'Class;
+      Style        : in     Config.Vis_Styles.Visualisation_Style_Access) is
    begin
       Gtk.Widget.Initialize_Widget (Widget);
       Gtk.Object.Initialize_Class_Record
@@ -67,9 +67,9 @@ package body Giant.Graph_Widgets is
    end Initialize;
 
    procedure Create
-     (Widget :    out Graph_Widget;
-      Style  : in     Config.Vis_Styles.Visualisation_Style_Access
-                        := Config.Vis_Styles.Get_Default_Vis_Style) is
+     (Widget       :    out Graph_Widget;
+      Style        : in     Config.Vis_Styles.Visualisation_Style_Access :=
+        Config.Vis_Styles.Get_Default_Vis_Style) is
    begin
       Widget := new Graph_Widget_Record;
       Initialize (Widget, Style);
