@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-config-class_sets-test.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-config-class_sets-test.adb,v $, $Revision: 1.5 $
 --  $Author: schwiemn $
---  $Date: 2003/07/11 17:18:21 $
+--  $Date: 2003/07/14 19:45:50 $
 --
 with Ada.Strings.Unbounded;
 
@@ -421,6 +421,7 @@ package body Giant.Config.Class_Sets.Test is
 
          -- test node classes - inheritance
          ----------------------------------
+         
          A_Node_Class := 
            Graph_Lib.Convert_Node_Class_Name_To_Id ("T_Node");           
          Assert 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-vis_windows-test.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-vis_windows-test.adb,v $, $Revision: 1.10 $
 --  $Author: schwiemn $
---  $Date: 2003/07/14 19:15:00 $
+--  $Date: 2003/07/14 19:45:50 $
 --
 with Ada.Streams.Stream_IO;
 
@@ -330,10 +330,7 @@ package body Giant.Vis_Windows.Test is
       -- should also reset current selection to default           
       Vis_Windows.Remove_Selection (Test_Window, "Selection_3");
                                    
-
-   
-                             
-                                    
+                                                                    
       -- check important exceptions
       -----------------------------
       
