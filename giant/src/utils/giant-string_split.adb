@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-string_split.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-string_split.adb,v $, $Revision: 1.5 $
 --  $Author: koppor $
---  $Date: 2003/07/02 11:18:50 $
+--  $Date: 2003/07/07 09:52:43 $
 --
 
 with Ada.Strings.Unbounded;
@@ -32,24 +32,42 @@ package body Giant.String_Split is
 
    function Split_String
      (Source  : in String;
-      Pattern : in String)
+      Pattern : in String;
+      Trim    : in Boolean := false)
      return String_Lists.List
    is
 
       procedure Split_String
         (Source  : in     String;
          Pattern : in     String;
+         Trim    : in     Boolean;
          List    : in out String_Lists.List)
       is
+
+         function Generate_String_To_Attach
+           (The_String : in String)
+           return Ada.Strings.Unbounded.Unbounded_String
+         is
+         begin
+            if Trim then
+               return Ada.Strings.Unbounded.To_Unbounded_String
+                 (Ada.Strings.Fixed.Trim (The_String, Ada.Strings.Both));
+            else
+               return Ada.Strings.Unbounded.To_Unbounded_String
+                 (The_String);
+            end if;
+         end Generate_String_To_Attach;
+
          I : Natural;
       begin
          I := Ada.Strings.Fixed.Index (Source, Pattern);
 
          if I < Source'First then
-            -- Case for strings that do not hold a separator pattern;
+            --  string doesn't hold any separator pattern;
+            --    (i.e. Source looks like "X")
             String_Lists.Attach
               (List,
-               Ada.Strings.Unbounded.To_Unbounded_String (Source));
+               Generate_String_To_Attach (Source));
          else
             --  I >= Source'First
             --  Index has found the pattern
@@ -64,7 +82,7 @@ package body Giant.String_Split is
                --  attach the full found string
                String_Lists.Attach
                  (List,
-                  Ada.Strings.Unbounded.To_Unbounded_String
+                  Generate_String_To_Attach
                   (Source (Source'First .. I-1)));
             end if;
 
@@ -82,6 +100,7 @@ package body Giant.String_Split is
                Split_String
                  (Source (I + Pattern'Length .. Source'Last),
                   Pattern,
+                  Trim,
                   List);
             end if;
          end if;
@@ -89,10 +108,34 @@ package body Giant.String_Split is
       end Split_String;
 
       Res : String_Lists.List;
+      I   : Integer;
 
    begin
       Res := String_Lists.Create;
-      Split_String (Source, Pattern, Res);
+
+      --  Check for empty string
+      --  a bit more complicated, since we support triming
+      I := Ada.Strings.Fixed.Index (Source, Pattern);
+      if I < Source'First then
+         if Trim then
+            declare
+               Trimmed : String := Ada.Strings.Fixed.Trim
+                 (Source, Ada.Strings.Both);
+            begin
+               if Trimmed'Length = 0 then
+                  -- exit returning empty list
+                  return Res;
+               end if;
+            end;
+         else
+            if Source'Length = 0 then
+               -- exit returning empty list
+               return Res;
+            end if;
+         end if;
+      end if;
+
+      Split_String (Source, Pattern, Trim, Res);
       return Res;
    end Split_String;
 
