@@ -77,3 +77,10 @@ marvin :
 	cd /tmp/$(USER)/GIANT/cvs;\
         cvs -d droste.informatik.uni-stuttgart.de:/home/squig/cvsroot co .
 	echo "Please change to /tmp/$(USER)/GIANT/cvs"
+
+po-skeleton:
+	find src/ -type f -name "*.ad[bs]" -print0 | xargs -0 cat \
+	  | perl -n -e 'if (/-\"((\\"|[^"])*)"/) { print "$$1\n"; } ' \
+	  | sort -u \
+	  | perl -n -e 'chop; print "msgid  \"$$_\"\nmsgstr \"$$_\"\n\n";' \
+	  > po/skeleton.po.new

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/05/23 19:03:24 $
+--  $Date: 2003/06/30 17:31:57 $
 --
 with Gtkada.Intl;
 
@@ -30,7 +30,7 @@ package body Giant is
 
    function "-" (S : String) return String is
    begin
-      return Gtkada.Intl.Dgettext ("GIANT", S);
+      return Gtkada.Intl.Dgettext ("giant", S);
    end;
 
 end Giant;

@@ -21,8 +21,8 @@
 -- First Author: Gerrit Schulz
 --
 -- $RCSfile: giant-gsl.ads,v $
--- $Author: schulzgt $
--- $Date: 2003/06/22 22:53:23 $
+-- $Author: squig $
+-- $Date: 2003/06/30 17:31:57 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -32,10 +32,10 @@ use  Ada.Strings.Unbounded;
 
 -- from Bauhaus Reuse
 with Stacks_Unbounded;
-pragma Elaborate (Stacks_Unbounded);
+pragma Elaborate_All (Stacks_Unbounded);
 
 with Hashed_Mappings;
-pragma Elaborate (Hashed_Mappings);
+pragma Elaborate_All (Hashed_Mappings);
 
 with Giant.Default_Logger;
 
@@ -59,7 +59,7 @@ package Giant.Gsl is
      (Object : out Gsl_Type) is abstract;
 
    ---------------------------------------------------------------------------
-   -- represents the type Gsl_Null and works as null-pointer for Gsl_Type 
+   -- represents the type Gsl_Null and works as null-pointer for Gsl_Type
    Gsl_Null : constant Gsl_Type;
 
    ---------------------------------------------------------------------------
@@ -103,11 +103,11 @@ package Giant.Gsl is
       Hash => Gsl_Var_Hash);
 
    ---------------------------------------------------------------------------
-   -- Activation Record used in the Gsl Interpreter 
+   -- Activation Record used in the Gsl Interpreter
    type Activation_Record_Record is private;
    type Activation_Record is access all Activation_Record_Record;
 
-private 
+private
 
    ---------------------------------------------------------------------------
    -- Gsl_Type - parent class for all types in GSL defined in Gsl.Types
@@ -133,10 +133,10 @@ private
    Null_Node : constant Syntax_Node := null;
 
    ---------------------------------------------------------------------------
-   -- Activation Record used in the Gsl Interpreter 
+   -- Activation Record used in the Gsl Interpreter
    type Activation_Record_Record is
       record
-         Parent : Activation_Record; 
+         Parent : Activation_Record;
          Vars   : Gsl_Var_Hashed_Mappings.Mapping;
       end record;
 
