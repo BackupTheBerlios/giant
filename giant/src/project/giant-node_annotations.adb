@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-node_annotations.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-node_annotations.adb,v $, $Revision: 1.5 $
 --  $Author: schwiemn $
---  $Date: 2003/05/30 13:12:01 $
+--  $Date: 2003/06/02 13:56:35 $
 --
 with Giant.File_Management;
 
@@ -35,16 +35,43 @@ package body Giant.Node_Annotations is
    ---------------------------------------------------------------------------
    
    ---------------------------------------------------------------------------
-   --  Copies the DTD into the directory where the xml file for node
+   --  Writes a DTD into the directory where the xml file for node
    --  annotations is located.
-   --
-
-   Copy_DTD_To_Directory        
-     (Node_Annotations_File     : in String;
-      Node_Annotations_DTD_File : in String) is
-            
+   procedure Write_DTD_To_Directory        
+     (Node_Annotations_File : in String) is
+               
+      DTD_File_Name : Ada.Strings.Unbounded.Unbounded_String;
+      DTD_File : Ada.Text_IO.File_Type;
    begin
    
+      -- Determine name and path for the DTD
+      DTD_File_Name := Ada.Strings.Unbounded.To_Unbounded_String
+        (File_Management.Return_Dir_Path_For_File_Path (Node_Annotations_File)
+        & "giant_node_annotations_file.dtd";
+             
+      Ada.Text_IO.Create 
+        (DTD_File, 
+         Ada.Text_IO.Out_File, 
+         Ada.Strings.Unbounded_String.To_String (DTD_File_Name));                
+
+      Ada.Text_IO.Set_Output(DTD_File);
+      
+      -- Write content of dtd file
+      Ada.Text_IO.Put_Line 
+        ("<!ELEMENT giant_node_annotations_file (node_annotation)*>");
+      Ada.Text_IO.Put_Line 
+        ("  <!ELEMENT node_annotation (#PCDATA)>");
+      Ada.Text_IO.Put_Line 
+        ("  <!ATTLIST node_annotation");       
+      Ada.Text_IO.Put_Line  
+        ("    node_id  ID  #REQUIRED");       
+      Ada.Text_IO.Put_Line       
+        ("  >");
+  
+      Ada.Text_IO.Set_Output (Ada.Text_IO.Standard_Output);
+      Ada.Text_IO.Close (DTD_File);
+   
+   end Copy_DTD_To_Directory;
 
 
    ---------------------------------------------------------------------------
@@ -160,6 +187,10 @@ package body Giant.Node_Annotations is
       Node_Annotations_File     : in String) is
 
       The_File : Ada_Text_IO.File_Type;
+      
+      Annotations_Iter  : Node_Annotation_Hashed_Mappings.Bindings_Iter;
+      Annotation_Text   : Ada.Strings.Unbounded_String;
+      Annotated_Node_ID : Graph_Lib.Node_Id;
 
    begin
 
@@ -170,21 +201,130 @@ package body Giant.Node_Annotations is
       -- try to create the file
       begin
 
-         Ada.Text_IO.Create.
+         Ada.Text_IO.Create 
+           (The_File, 
+            Ada.Text_IO.Out_File, 
+            Node_Annotations_File);                       
+      exception
+         when others =>
+            raise Node_Annotations_File_Could_Not_Be_Written_Exception;         
+      end;
+  
+      Ada.Text_IO.Set_Output(The_File);
 
-
-
-
-        Copy_DTD_To_Directory
+      -- File Header
+      Ada.Text_IO.Put_Line 
+        ("<?xml version=""1.0"" encoding=""ISO-8859-1""?>");    
+      Ada.Text_IO.Put_Line 
+        ("<!DOCTYPE giant_node_annotations_file");
+      Ada.Text_IO.Put_Line 
+        ("  SYSTEM ""giant_node_annotations_file.dtd""">
+      Ada.Text_IO.New_Line;
+      
+      Ada.Text_IO.Put_Line 
+        ("<giant_node_annotations_file>");
+        
+      -- Write all known node annotations
+      Annotations_Iter := Node_Annotation_Hashed_Mappings.Make_Bindings_Iter 
+        (Node_Annotations.Annotations);
+      
+      while Node_Annotation_Hashed_Mappings.More (Annotations_Iter) loop
+         Node_Annotation_Hashed_Mappings.Next
+           (Annotations_Iter, 
+            Annotated_Node_ID, 
+            Annotation_Text);
+            
+         -- Write entry for an annotaded node  
+         Ada.Text_IO.Put
+           ("<node_annotation node_id=""");
+         Ada.Text_IO.Put         
+           (Graph_Lib.Node_Id_Image (Annotated_Node_ID));
+         Ada.Text_IO.Put_Line (""">");
+                  
+         Ada.Text_IO.Put_Line
+           (Ada.Strings.Unbounded.To_String (Annotation_Text));
+         
+         Ada.Text_IO.Put_Line 
+           ("</node_annotation>");
+         Ada.Text_IO.New_Line;
+      end loop;
+  
+      Ada.Text_IO.Put_Line 
+        ("</giant_node_annotations_file>");  
+  
+      -- Put a DTD into the same directory as the xml file just written
+      Write_DTD_To_Directory (Node_Annotations_File);
+        
+      Ada.Text_IO.Set_Output (Ada.Text_IO.Standard_Output);
+      Ada.Text_IO.Close (The_File);      
    end Write_To_File;
 
+   ---------------------------------------------------------------------------
+   procedure Free_Node_Annotation_Access is new Ada.Unchecked_Deallocation
+     (Node_Annotation_Element, Node_Annotation_Access);
+      
+   procedure Deallocate
+     (Node_Annotations : in out Node_Annotation_Access) is
+   begin
+      
+      if Node_Annotations = null then
+         raise Node_Annotation_Access_Not_Initialized_Exception;
+      end if;
+
+      --  Free Hash Map
+      Node_Annotation_Hashed_Mappings.Destroy (Node_Annotations.Annotations);
+      
+      --  Free pointer
+      Free_Node_Annotation_Access (Node_Annotations);   
+   end Deallocate_Node_Annotation_Access;
 
 
+   ---------------------------------------------------------------------------
+   --  B
+   --  Node Annotations - Read Access
+   ---------------------------------------------------------------------------
+
+   ---------------------------------------------------------------------------
+   function Is_Annotated
+     (Node_Annotations : in Node_Annotation_Access;
+      Node             : in Graph_Lib.Node_Id)
+     return Boolean is
+     
+   begin
+   
+      if Node_Annotations = null then
+         raise Node_Annotation_Access_Not_Initialized_Exception;
+      end if;
+   
+      return Node_Annotation_Hashed_Mappings.Is_Bound
+        (Node_Annotations.Annotations, Node);
+   end Is_Annotated;
+
+   ---------------------------------------------------------------------------
+   function Get_Annotation_Text
+     (Node_Annotations : in Node_Annotation_Access;
+      Node             : in Graph_Lib.Node_Id)
+     return String is
+   begin
+   
+      if Node_Annotations = null then
+         raise Node_Annotation_Access_Not_Initialized_Exception;
+      end if; 
+      
+      if (Is_Annotated (Node_Annotations, Node) = False) then
+         raise Node_Is_Not_Annotated_Exception;
+      end if;
+      
+      return Ada.Strings.Unbounded.To_String 
+        (Node_Annotation_Hashed_Mappings.Fetch
+          (Node_Annotations.Annotations, Node));
+   end Get_Annotation_Text;
 
 
-
-
-
+   ---------------------------------------------------------------------------
+   --  C
+   --  Node Annotations - Write Access
+   ---------------------------------------------------------------------------
 
    ---------------------------------------------------------------------------
    procedure Add_Node_Annotation
@@ -192,7 +332,19 @@ package body Giant.Node_Annotations is
       Node             : in Graph_Lib.Node_Id;
       Annotation       : in String) is
    begin
-      null;
+
+      if Node_Annotations = null then
+         raise Node_Annotation_Access_Not_Initialized_Exception;
+      end if; 
+      
+      if (Is_Annotated (Node_Annotations, Node) = True) then
+         raise Node_Is_Already_Annoated_Exception;
+      end if;
+      
+      Node_Annotation_Hashed_Mappings.Bind
+        (Node_Annotations.Annotations,
+         Node,
+         Ada.Strings.Unbounded.To_Unbounded_String (Annotation));
    end Add_Node_Annotation;
 
    ---------------------------------------------------------------------------
@@ -201,50 +353,44 @@ package body Giant.Node_Annotations is
       Node             : in Graph_Lib.Node_Id;
       New_Annotation   : in String) is
    begin
-      null;
+   
+      if Node_Annotations = null then
+         raise Node_Annotation_Access_Not_Initialized_Exception;
+      end if; 
+      
+      if (Is_Annotated (Node_Annotations, Node) = False) then
+         raise Node_Is_Not_Annotated_Exception;
+      end if;     
+      
+      -- Remove existing entry
+      Node_Annotation_Hashed_Mappings.Unbind 
+        (Node_Annotations.Annotations, Node);
+      
+      -- Add new entry
+      Node_Annotation_Hashed_Mappings.Bind
+        (Node_Annotations.Annotations,
+         Node,
+         Ada.Strings.Unbounded.To_Unbounded_String (New_Annotation));     
    end Change_Node_Annotation;
-
-   ------------------
-   -- Create_Empty --
-   ------------------
-
-
-   ---------------------------------------------------------------------------
-   procedure Deallocate_Node_Annotation_Access
-     (Node_Annotations : in out Node_Annotation_Access) is
-   begin
-      null;
-   end Deallocate_Node_Annotation_Access;
-
-   ---------------------------------------------------------------------------
-   function Get_Annotation_Text
-     (Node_Annotations : in Node_Annotation_Access;
-      Node             : in Graph_Lib.Node_Id)
-     return String is
-   begin
-      return Get_Annotation_Text (Node_Annotations, Node);
-   end Get_Annotation_Text;
-
-   ---------------------------------------------------------------------------
-   function Is_Annotated
-     (Node_Annotations : in Node_Annotation_Access;
-      Node             : in Graph_Lib.Node_Id)
-     return Boolean is
-   begin
-      return Is_Annotated (Node_Annotations, Node);
-   end Is_Annotated;
-
 
    ---------------------------------------------------------------------------
    procedure Remove_Node_Annotation
      (Node_Annotations : in Node_Annotation_Access;
       Node             : in Graph_Lib.Node_Id) is
    begin
-      null;
+   
+      if Node_Annotations = null then
+         raise Node_Annotation_Access_Not_Initialized_Exception;
+      end if; 
+      
+      if (Is_Annotated (Node_Annotations, Node) = False) then
+         raise Node_Is_Not_Annotated_Exception;
+      end if;   
+      
+      -- Remove existing entry
+      Node_Annotation_Hashed_Mappings.Unbind 
+        (Node_Annotations.Annotations, Node);       
    end Remove_Node_Annotation;
-
-   ---------------------------------------------------------------------------
-
-
+   
 end Giant.Node_Annotations;
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-node_annotations.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-node_annotations.ads,v $, $Revision: 1.4 $
 --  $Author: schwiemn $
---  $Date: 2003/05/30 13:12:01 $
+--  $Date: 2003/06/02 13:56:35 $
 ------------------------------------------------------------------------------
 --  This package overs the functionality needed to handle node annotations.
 --
@@ -128,8 +128,8 @@ package Giant.Node_Annotations is
    --      if now write access is possible for the the passed
    --      file.
    procedure Write_To_File
-     (Node_Annotations          : in Node_Annotation_Access;
-      Node_Annotations_File     : in String);
+     (Node_Annotations      : in Node_Annotation_Access;
+      Node_Annotations_File : in String);
 
    ---------------------------------------------------------------------------
    --  Deallocates an Instance of the ADT
@@ -139,11 +139,12 @@ package Giant.Node_Annotations is
    --  Raises:
    --    Node_Annotation_Access_Not_Initialized_Exception - Raised
    --      if the parameter "Node_Annotations" was not initialized.
-   procedure Deallocate_Node_Annotation_Access
+   procedure Deallocate
      (Node_Annotations : in out Node_Annotation_Access);
 
 
    ---------------------------------------------------------------------------
+   --  B
    --  Node Annotations - Read Access
    --  The following subprogramms offer read access to node annotations.
    ---------------------------------------------------------------------------
@@ -189,6 +190,7 @@ package Giant.Node_Annotations is
 
 
    ---------------------------------------------------------------------------
+   --  C
    --  Node Annotations - Write Access
    --  The following subprograms offer the functionality to change
    --  node annotations.
