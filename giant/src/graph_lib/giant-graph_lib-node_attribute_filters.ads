@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-node_attribute_filters.ads,v $, $Revision: 1.7 $
+--  $RCSfile: giant-graph_lib-node_attribute_filters.ads,v $, $Revision: 1.8 $
 --  $Author: koppor $
---  $Date: 2003/06/25 15:22:54 $
+--  $Date: 2003/06/28 18:15:07 $
 --
 ------------------------------------------------------------------------------
 --
@@ -62,6 +62,13 @@ package Giant.Graph_Lib.Node_Attribute_Filters is
    ---------------------------------------------------------------------------
    procedure Destroy
       (Node_Attribute_Filter  : in out Filter);
+
+   ---------------------------------------------------------------------------
+   --  Returns:
+   --    Amount of stored attributes
+   function Size
+     (Node_Attribute_Filter  : in Filter)
+     return Natural;
 
    ---------------------------------------------------------------------------
    --  Sets the Iterator to the first element
