@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config.ads,v $, $Revision: 1.2 $
+-- $RCSfile: giant-config.ads,v $, $Revision: 1.3 $
 -- $Author: schwiemn $
--- $Date: 2003/06/11 12:00:17 $
+-- $Date: 2003/06/11 12:38:44 $
 --
 -- -----
 -- This package holds the functionality needed to access the
@@ -121,6 +121,9 @@ package Giant.Config is
    -- Second, the settings from  "User_Config_File" are loaded
    --
    -- Each setting has a unique identifier - a name string.
+   --
+   -- Relative Paths inside a config file will be regarded as relative
+   -- towards the directory of the config file.
    --
    -- The settings are read in sequential order following the
    -- xml node hierarchy. First the file "GIANT_Config_File" is

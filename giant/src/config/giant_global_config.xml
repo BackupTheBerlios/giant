@@ -61,7 +61,7 @@
     <!-- Here a relative path (starting with the directory where this
          config file is loacted) or a absolute path is required -->	    
     <a_path_setting setting_name="Icon_For_Node_Annotations" 
-	                  path_value="../a_dummy_icon.xpm" />
+	                  path_value="./test_bild.xpm" />
 					  
   
 
