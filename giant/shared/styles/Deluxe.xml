@@ -18,15 +18,58 @@
     <node_attribute attribute_name  = "SLoc"/>       
   </default_node_setting>
     
+    
+  <node_class_specific_setting 
+    icon         = "../icons/vis_deluxe/Prog_Unit.xpm"
+    text_color   = "#FFFFFF"
+    border_color = "#000000"
+    fill_color   = "#FF0000"> 
+    
+    <node_attribute attribute_name  = "SLoc"/>   
+    <node_attribute attribute_name  = "Parent"/>     
+    <node_attribute attribute_name  = "Artificial"/>        
+    
+    <super_node_class   super_node_class_name = "Prog_Unit"/> 
+  </node_class_specific_setting>
+
+
+  <node_class_specific_setting 
+    icon         = "../icons/vis_deluxe/Routine.xpm"
+    text_color   = "#FFFFFF"
+    border_color = "#000000"
+    fill_color   = "#920000"> 
+    
+    <node_attribute attribute_name  = "SLoc"/>   
+    <node_attribute attribute_name  = "Parent"/>     
+    <node_attribute attribute_name  = "Callees"/>        
+    <node_attribute attribute_name  = "Callers"/>   
+    <node_attribute attribute_name  = "Definition"/>   
+                
+    <super_node_class   super_node_class_name = "Routine"/> 
+  </node_class_specific_setting>
+
+
 
 
   <!-- ................................................................. -->
   <default_edge_setting
-    line_color = "#000000"     
+    line_color = "#"     
     text_color = "#000000"     
     line_style = "continuous_line"      
     show_label = "no" />  
     
+    
+  <edge_class_specific_setting
+    line_color = "#920000"
+    text_color = "#000000"
+    line_style = "continuous_line"
+    show_label = "yes"> 
+           
+    <super_edge_class
+      super_start_node_class = "Routine"
+      attribute_name         = "Callees" />                
+    
+  </edge_class_specific_setting> 
 
                  
 </giant_vis_style_file>
