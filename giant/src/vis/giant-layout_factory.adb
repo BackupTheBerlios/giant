@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.10 $
 --  $Author: koppor $
---  $Date: 2003/07/08 13:50:48 $
+--  $Date: 2003/07/13 00:39:07 $
 --
 
 with Ada.Exceptions;
@@ -67,10 +67,11 @@ package body Giant.Layout_Factory is
       begin
          Layout_Evolution := Giant.Evolutions.Evolution_Class_Access
            (Matrix_Layouts.Initialize
-            (Widget,
-             Widget_Lock,
-             Selection_To_Layout,
-             Target_Position));
+            (Widget              => Widget,
+             Widget_Lock         => Widget_Lock,
+             Release_Widget_Lock => True,
+             Selection_To_Layout => Selection_To_Layout,
+             Target_Position     => Target_Position));
       end Parse_Matrix_Parameters;
 
       -------------------------------------------------------------------------
