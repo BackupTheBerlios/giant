@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.56 $
---  $Author: keulsn $
---  $Date: 2003/07/21 19:01:06 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.57 $
+--  $Author: koppor $
+--  $Date: 2003/07/22 09:35:34 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -1366,14 +1366,14 @@ package body Giant.Graph_Lib is
    end Get_All_Node_Class_Ids;
 
    ----------------------------------------------------------------------------
-   --  Analogue to Destroy_All_Nodes
+   --  Iterates over the hashed-mappings containing the mapping of all
+   --  IML-Nodes to the internal ones
    function Get_All_Nodes
       return Node_Id_Set
    is
       Set      : Node_Id_Set;
       Iter     : IML_Node_ID_Hashed_Mappings.Values_Iter;
       Cur_Node : Node_Id;
-
    begin
       Set := Node_Id_Sets.Empty_Set;
 
@@ -1460,6 +1460,15 @@ package body Giant.Graph_Lib is
    is
    begin
       return Edge_Id_Array_Routines.To_Set (Node.Incoming_Edges);
+   end Get_Incoming_Edges;
+
+   ----------------------------------------------------------------------------
+   function Get_Incoming_Edges
+      (Node : in Node_Id)
+      return Edge_Id_Array
+   is
+   begin
+      return Node.Incoming_Edges;
    end Get_Incoming_Edges;
 
    ----------------------------------------------------------------------------
