@@ -1,0 +1,8 @@
+<!ELEMENT giant_config_file (setting)*>
+
+  <!ELEMENT setting EMPTY>
+  <!ATTLIST setting
+      name   ID    #REQUIRED
+      value  CDATA #REQUIRED
+    >
+    
