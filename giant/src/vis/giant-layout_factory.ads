@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-layout_factory.ads,v $, $Revision: 1.2 $
 --  $Author: koppor $
---  $Date: 2003/07/01 21:50:30 $
+--  $Date: 2003/07/01 23:17:05 $
 --
 ------------------------------------------------------------------------------
 --
@@ -68,6 +68,8 @@ package Giant.Layout_Factory is
    --      Lock for the widget - to be relased after the layout has finished
    --      it is not released, if an error at the production of an algorithm
    --      occurs
+   --      The selection is locked by the caller (i.e. the lock is set and
+   --        the factory has not to care about setting the lock)
    --
    --    Additonal_Parameters:
    --       String containing special parameters
