@@ -20,15 +20,16 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.12 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.13 $
 --  $Author: squig $
---  $Date: 2003/06/26 09:41:53 $
+--  $Date: 2003/06/27 14:34:55 $
 --
 ------------------------------------------------------------------------------
 --
 -- Provides the graph window.
 --
 
+with Gdk.Event;
 with Gtk.Clist;
 with Gtk.Combo;
 with Gtk.Gentry;
@@ -39,6 +40,7 @@ with Gtk.Paned;
 with Gtk.Window;
 
 with Giant.Gui_Utils;
+with Giant.Vis;
 with Giant.Vis_Windows;
 
 package Giant.Graph_Window is
@@ -49,6 +51,38 @@ package Giant.Graph_Window is
    type Graph_Window_Access is access all Graph_Window_Record'Class;
 
    Null_Graph_Window : Graph_Window_Access := null;
+
+   ---------------------------------------------------------------------------
+   --  Package: Actions
+   ---------------------------------------------------------------------------
+
+   package Actions is
+
+      type Graph_Window_Action_Type is abstract tagged private;
+
+      type Graph_Window_Action_Access is
+        access all Graph_Window_Action_Type'Class;
+
+      procedure Cancel
+        (Action : access Graph_Window_Action_Type)
+         is abstract;
+
+      procedure Destroy
+        (Action : access Graph_Window_Action_Type);
+
+      procedure Execute
+        (Action   : access Graph_Window_Action_Type;
+         Window   : access Graph_Window.Graph_Window_Record'Class;
+         Event    : in     Gdk.Event.Gdk_Event_Button;
+         Location : in     Vis.Logic.Vector_2d)
+         is abstract;
+
+   private
+
+      type Graph_Window_Action_Type is abstract tagged null record;
+
+   end Actions;
+
 
    function Close
      (Window               : access Graph_Window_Record'Class;
@@ -69,7 +103,7 @@ package Giant.Graph_Window is
    procedure Update_Title
      (Window : access Graph_Window_Record'Class);
 
-   procedure Set_Crosshair_Mode
+   procedure Set_Global_Action_Mode
      (Widget : access Graph_Window_Record'Class;
       Enable : in     Boolean);
 
@@ -117,7 +151,11 @@ private
         Zoom_Combo : Gtk.Combo.Gtk_Combo;
         Zoom_Entry : Gtk.Gentry.Gtk_Entry;
 
-        Is_Modified : Boolean := False;
+        Is_Modified : Boolean := True;
+
+        --  the action that is currently pending
+        Local_Action : Actions.Graph_Window_Action_Access
+          := null;
 
         --  the data record from projects
         Visual_Window : Vis_Windows.Visual_Window_Access;

@@ -20,25 +20,23 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.ads,v $, $Revision: 1.11 $
+--  $RCSfile: giant-main_window.ads,v $, $Revision: 1.12 $
 --  $Author: squig $
---  $Date: 2003/06/26 09:41:53 $
+--  $Date: 2003/06/27 14:34:55 $
 --
 --  Provides the main window. The main window is only instanciated once.
 --
---  Pattern:
---    ADO
---
 
+with Gdk.Event;
 with Gtk.Widget;
 with Gtk.Window;
 
 with Giant.Graph_Window;
+with Giant.Gui_Manager;
+with Giant.Gui_Utils;
+with Giant.Vis;
 with Giant.Vis_Windows;
 with Giant.Valid_Names;
-with Giant.Gui_Manager;
-with Giant.Gui_Manager.Crosshair;
-with Giant.Gui_Utils;
 
 package Giant.Main_Window is
 
@@ -119,12 +117,8 @@ private
    type Main_Window_Record is new Gtk.Window.Gtk_Window_Record
      with null record;
 
-   ---------------------------------------------------------------------------
-   --  Subgraph Crosshair
-   ---------------------------------------------------------------------------
-
-   type Create_Selection_Action_Type (Name_Length : Positive) is new
-     Gui_Manager.Crosshair.Crosshair_Action_Type with record
+   type Create_Selection_Action_Type (Name_Length : Positive) is
+     new Graph_Window.Actions.Graph_Window_Action_Type with record
         Subgraph_Name : String(1 .. Name_Length);
      end record;
 
@@ -135,7 +129,9 @@ private
      (Action : access Create_Selection_Action_Type);
 
    procedure Execute
-     (Action : access Create_Selection_Action_Type;
-      Window : access Graph_Window.Graph_Window_Record'Class);
+     (Action   : access Create_Selection_Action_Type;
+      Window   : access Graph_Window.Graph_Window_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event_Button;
+      Location : in     Vis.Logic.Vector_2d);
 
 end Giant.Main_Window;

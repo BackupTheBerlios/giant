@@ -20,12 +20,13 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.11 $
+-- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.12 $
 -- $Author: squig $
--- $Date: 2003/06/27 11:33:22 $
+-- $Date: 2003/06/27 14:34:55 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Strings.Fixed;
+with Ada.Strings.Maps.Constants;
 with Ada.Text_IO;
 
 with GNAT.Directory_Operations; -- from GNAT
@@ -602,10 +603,14 @@ package body Giant.Config_Settings is
       end if;
 
       declare
-         --Ada.Strings.Fixed.Trim (
-         Value : String := Get_Setting_As_String (Name);
+         --  trim and lower case
+         Value : String := Ada.Strings.Fixed.Translate
+           (Ada.Strings.Fixed.Trim
+            (Get_Setting_As_String (Name),
+             Side => Ada.Strings.Both),
+            Ada.Strings.Maps.Constants.Lower_Case_Map);
       begin
-         return (Value = "True" or else Value = "On");
+         return (Value = "true" or else Value = "on");
       exception
          when Constraint_Error =>
             raise Invalid_Type_Exception;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.36 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.37 $
 --  $Author: squig $
---  $Date: 2003/06/27 11:33:22 $
+--  $Date: 2003/06/27 14:34:55 $
 --
 
 with Ada.Exceptions;
@@ -66,6 +66,7 @@ with Giant.Graph_Lib;
 with Giant.Graph_Lib.Subgraphs;
 with Giant.Gsl_Dialog;
 with Giant.Gui_Manager;
+with Giant.Gui_Manager.Actions;
 with Giant.Gui_Utils;
 with Giant.Logger;
 with Giant.Node_Info_Dialog;
@@ -488,7 +489,7 @@ package body Giant.Main_Window is
       Action := new
         Create_Selection_Action_Type(Subgraph_Name'Length);
       Action.Subgraph_Name := Subgraph_Name;
-      Gui_Manager.Crosshair.Enqueue (Action);
+      Gui_Manager.Actions.Set_Global_Action (Action);
    end On_Subgraph_List_Create_Selection;
 
    procedure On_Subgraph_List_Duplicate
@@ -1002,8 +1003,10 @@ package body Giant.Main_Window is
    end;
 
    procedure Execute
-     (Action : access Create_Selection_Action_Type;
-      Window : access Graph_Window.Graph_Window_Record'Class)
+     (Action   : access Create_Selection_Action_Type;
+      Window   : access Graph_Window.Graph_Window_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event_Button;
+      Location : in     Vis.Logic.Vector_2d)
    is
    begin
       Controller.Create_Selection_From_Subgraph

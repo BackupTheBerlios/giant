@@ -20,10 +20,12 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.15 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.16 $
 --  $Author: squig $
---  $Date: 2003/06/26 09:41:53 $
+--  $Date: 2003/06/27 14:34:55 $
 --
+
+with Ada.Unchecked_Deallocation;
 
 with Glib;
 with Gtk.Box;
@@ -38,7 +40,7 @@ with Giant.Controller;
 with Giant.Default_Dialog;
 with Giant.Dialogs;
 with Giant.Gui_Manager;
-with Giant.Gui_Manager.Crosshair;
+with Giant.Gui_Manager.Actions;
 with Giant.Gui_Utils;
 with Giant.Input_Dialog;
 with Giant.Main_Window;
@@ -61,6 +63,25 @@ package body Giant.Graph_Window is
      (List : access Gui_Utils.String_Clists.Giant_Data_Clist_Record;
       Row  : in     Glib.Gint;
       Name : in     String);
+
+   ---------------------------------------------------------------------------
+   --  Package: Actions
+   ---------------------------------------------------------------------------
+
+   package body Actions is
+
+      procedure Free is new Ada.Unchecked_Deallocation
+        (Graph_Window_Action_Type'Class, Graph_Window_Action_Access);
+
+      procedure Destroy
+        (Action : access Graph_Window_Action_Type)
+      is
+         P : Graph_Window_Action_Access := Graph_Window_Action_Access (Action);
+      begin
+         Free (P);
+      end Destroy;
+
+   end Actions;
 
    ---------------------------------------------------------------------------
    --  Helpers
@@ -155,7 +176,8 @@ package body Giant.Graph_Window is
    is
    begin
       -- FIX: remove this:
-      Gui_Manager.Crosshair.Trigger (Graph_Window_Access (Source));
+      Gui_Manager.Actions.Trigger (Graph_Window_Access (Source), null,
+                                   Vis.Logic.Zero_2d);
       null;
    end On_Pick_Edge_Clicked;
 
@@ -510,13 +532,13 @@ package body Giant.Graph_Window is
       Set_Title (Window, Vis_Windows.Get_Name (Window.Visual_Window));
    end Update_Title;
 
-   procedure Set_Crosshair_Mode
+   procedure Set_Global_Action_Mode
      (Widget : access Graph_Window_Record'Class;
       Enable : in     Boolean)
    is
    begin
       null;
-   end Set_Crosshair_Mode;
+   end Set_Global_Action_Mode;
 
    ---------------------------------------------------------------------------
    --  Pin Methods

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.19 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.20 $
 --  $Author: squig $
---  $Date: 2003/06/27 11:33:22 $
+--  $Date: 2003/06/27 14:34:55 $
 --
 
 with Ada.Strings.Unbounded;
@@ -36,8 +36,10 @@ with String_Lists;
 with Giant.Controller;
 with Giant.Dialogs;
 with Giant.Main_Window;
-with Giant.Graph_Window; use type Giant.Graph_Window.Graph_Window_Access;
+with Giant.Graph_Window;
 with Giant.Projects;
+
+use type Giant.Graph_Window.Graph_Window_Access;
 
 package body Giant.Gui_Manager is
 
@@ -261,7 +263,10 @@ package body Giant.Gui_Manager is
          return True;
       end if;
 
-      -- FIX: Ask for confirmation
+      if (Ask_For_Confirmation
+          and then not Dialogs.Show_Delete_Confirmation_Dialog) then
+         return False;
+      end if;
 
       Main_Window.Remove_Subgraph (Name);
       return True;
@@ -333,6 +338,23 @@ package body Giant.Gui_Manager is
 
       return True;
    end Close;
+
+   procedure For_Each
+     (Call_Procedure : in For_Each_Graph_Window_Type)
+   is
+      Iterator : Graph_Window_Lists.ListIter;
+      Window : Graph_Window.Graph_Window_Access;
+   begin
+      if (not Gui_Initialized) then
+         return;
+      end if;
+
+      Iterator := Graph_Window_Lists.MakeListIter (Open_Windows);
+      while Graph_Window_Lists.More (Iterator) loop
+         Graph_Window_Lists.Next (Iterator, Window);
+         Call_Procedure (Window);
+      end loop;
+   end For_Each;
 
    function Get_Open_Window (Name : in String)
      return Graph_Window.Graph_Window_Access
@@ -407,7 +429,8 @@ package body Giant.Gui_Manager is
          return True;
       end if;
 
-      if (not Dialogs.Show_Delete_Confirmation_Dialog) then
+      if (Ask_For_Confirmation
+          and then not Dialogs.Show_Delete_Confirmation_Dialog) then
          return False;
       end if;
 
@@ -439,7 +462,7 @@ package body Giant.Gui_Manager is
       Graph_Window.Update_Title (Window);
    end Rename_Window;
 
-   procedure Set_Crosshair_Mode
+   procedure Set_Action_Mode
      (Activate : in Boolean)
    is
       Iterator : Graph_Window_Lists.ListIter;
@@ -448,9 +471,9 @@ package body Giant.Gui_Manager is
       Iterator := Graph_Window_Lists.MakeListIter (Open_Windows);
       while Graph_Window_Lists.More (Iterator) loop
          Graph_Window_Lists.Next (Iterator, Window);
-         Graph_Window.Set_Crosshair_Mode (Window, Activate);
+         Graph_Window.Set_Global_Action_Mode (Window, Activate);
       end loop;
-   end Set_Crosshair_Mode;
+   end Set_Action_Mode;
 
    procedure Update_Window
      (Name : in String)

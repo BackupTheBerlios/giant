@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.17 $
+--  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.18 $
 --  $Author: squig $
---  $Date: 2003/06/26 13:05:16 $
+--  $Date: 2003/06/27 14:34:55 $
 --
 --  Stores the window records. Handles the controller updates. Provides
 --  a facade for the gui.
@@ -35,6 +35,9 @@ with Giant.Graph_Window;
 with Giant.Vis_Windows;
 
 package Giant.Gui_Manager is
+
+   type For_Each_Graph_Window_Type is access procedure
+     (Window : in Graph_Window.Graph_Window_Access);
 
    ---------------------------------------------------------------------------
    --  Main Application
@@ -116,6 +119,11 @@ package Giant.Gui_Manager is
       Ask_For_Confirmation : in Boolean)
      return Boolean;
 
+   ---------------------------------------------------------------------------
+   --  Invokes Call_Procedure for each open graph window.
+   procedure For_Each
+     (Call_Procedure : in For_Each_Graph_Window_Type);
+
    function Get_Open_Window (Name : in String)
      return Graph_Window.Graph_Window_Access;
 
@@ -135,7 +143,9 @@ package Giant.Gui_Manager is
      (Old_Name : in String;
       New_Name : in String);
 
-   procedure Set_Crosshair_Mode
+   ---------------------------------------------------------------------------
+   --  Enables or disables the global action mode for all graph windows.
+   procedure Set_Action_Mode
      (Activate : in Boolean);
 
    procedure Update_Window

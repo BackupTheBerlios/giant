@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.27 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.28 $
 --  $Author: squig $
---  $Date: 2003/06/27 11:33:22 $
+--  $Date: 2003/06/27 14:34:55 $
 --
 
 with Ada.Strings.Unbounded;
@@ -512,10 +512,18 @@ package body Giant.Controller is
       Ask_For_Confirmation : in Boolean := True)
      return Boolean
    is
+      Removed : Boolean;
    begin
       if (Gui_Manager.Close (Name, Ask_For_Confirmation)) then
          Projects.Free_Memory_For_Vis_Window (Current_Project, Name);
-         Gui_Manager.Update_Window (Name);
+
+         if (Projects.Does_Vis_Window_Exist (Current_Project, Name)) then
+            Gui_Manager.Update_Window (Name);
+         else
+            --  the window was never saved
+            Removed :=
+              Gui_Manager.Remove_Window (Name, Ask_For_Confirmation => False);
+         end if;
          return True;
       end if;
       return False;

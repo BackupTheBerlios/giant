@@ -20,56 +20,56 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager-crosshair.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-gui_manager-actions.adb,v $, $Revision: 1.1 $
 --  $Author: squig $
---  $Date: 2003/06/23 21:57:04 $
+--  $Date: 2003/06/27 14:34:55 $
 
-with Ada.Unchecked_Deallocation;
+with Giant.Graph_Window;
 
-with Giant.Logger;
+use type Giant.Graph_Window.Actions.Graph_Window_Action_Access;
 
-package body Giant.Gui_Manager.Crosshair is
+package body Giant.Gui_Manager.Actions is
 
-   package Logger is new Giant.Logger("giant.main");
-
-   procedure Enqueue
-     (Action : access Crosshair_Action_Type'Class)
+   procedure Set_Global_Action
+     (Action : access Graph_Window.Actions.Graph_Window_Action_Type'Class)
    is
    begin
-      Gui_Manager.Set_Status (-"Please select the target window");
-      Pending_Action := Crosshair_Action_Access (Action);
-      Set_Crosshair_Mode (True);
-   end Enqueue;
+      Cancel;
 
-   function Is_Action_Enqueued
+      Gui_Manager.Set_Status (-"Please select the target window");
+      Pending_Action := Graph_Window.Actions.Graph_Window_Action_Access (Action);
+      Set_Action_Mode (True);
+   end Set_Global_Action;
+
+   function Is_Action_Pending
      return Boolean
    is
    begin
       return (Pending_Action /= null);
-   end Is_Action_Enqueued;
+   end Is_Action_Pending;
+
+   procedure Cancel
+   is
+   begin
+      if (Pending_Action /= null) then
+         Graph_Window.Actions.Cancel (Pending_Action);
+         Pending_Action := null;
+      end if;
+   end Cancel;
 
    procedure Trigger
-     (Window : access Graph_Window.Graph_Window_Record'Class)
+     (Window   : access Graph_Window.Graph_Window_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event;
+      Location : in     Vis.Logic.Vector_2d)
    is
    begin
       if (Pending_Action /= null) then
          Gui_Manager.Set_Status ("");
-         Execute (Pending_Action, Window);
+         Graph_Window.Actions.Execute (Pending_Action, Window, Event, Location);
          Pending_Action := null;
       end if;
-      Set_Crosshair_Mode (False);
+      Set_Action_Mode (False);
    end Trigger;
 
-   procedure Free is new Ada.Unchecked_Deallocation
-     (Crosshair_Action_Type'Class, Crosshair_Action_Access);
-
-   procedure Destroy
-     (Action : access Crosshair_Action_Type)
-   is
-      P : Crosshair_Action_Access := Crosshair_Action_Access (Action);
-   begin
-      Free (P);
-   end Destroy;
-
-end Giant.Gui_Manager.Crosshair;
+end Giant.Gui_Manager.Actions;
 
