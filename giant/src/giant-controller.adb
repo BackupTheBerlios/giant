@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.83 $
---  $Author: schulzgt $
---  $Date: 2003/08/16 13:58:20 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.84 $
+--  $Author: squig $
+--  $Date: 2003/08/19 13:09:14 $
 --
 
 with Ada.Strings.Unbounded;
@@ -1384,12 +1384,6 @@ package body Giant.Controller is
         (Unique_Name, Projects.Get_Node_Annotations (Current_Project));
       Projects.Add_Visualisation_Window (Current_Project, Window);
       Gui_Manager.Add_Window (Unique_Name);
-      -- FIX: remove vvv
-      --Create_Subgraph (Unique_Name & "_");
-      --Create_Selection_From_Subgraph (Subgraph_Name  => Unique_Name & "_",
-      --                                Window_Name    => Unique_Name,
-      --                                Selection_Name => Unique_Name);
-      -- FIX: remove ^^^
       Open_Window (Unique_Name);
    end Create_Window;
 
@@ -1425,10 +1419,34 @@ package body Giant.Controller is
    procedure Open_Window
      (Name : in String)
    is
+      use type Projects.Subgraph_Highlight_Status;
+
       Window : Vis_Windows.Visual_Window_Access
         := Projects.Get_Visualisation_Window (Current_Project, Name);
+      List : String_Lists.List;
+      Iterator : String_Lists.ListIter;
+      Subgraph_Name : Ada.Strings.Unbounded.Unbounded_String;
+      Subgraph : Graph_Lib.Subgraphs.Subgraph;
+      Highlight_Status : Projects.Subgraph_Highlight_Status;
    begin
       Gui_Manager.Open (Window);
+
+      --  set global highlighting
+      List := Projects.Get_All_Subgraphs (Current_Project);
+      Iterator := String_Lists.MakeListIter (List);
+      while String_Lists.More (Iterator) loop
+         String_Lists.Next (Iterator, Subgraph_Name);
+         Subgraph := Get_Subgraph
+           (Ada.Strings.Unbounded.To_String (Subgraph_Name));
+         Highlight_Status := Projects.Get_Highlight_Status
+           (Current_Project, Ada.Strings.Unbounded.To_String (Subgraph_Name));
+         if (Highlight_Status /= Projects.None) then
+            Graph_Widgets.Add_Global_Highlighting
+              (Vis_Windows.Get_Graph_Widget (Window), Subgraph,
+               To_Subgraph_Hightlight_ID (Highlight_Status));
+         end if;
+      end loop;
+      String_Lists.Destroy (List);
    end Open_Window;
 
    function Remove_Window

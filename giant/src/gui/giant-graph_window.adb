@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.52 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.53 $
 --  $Author: squig $
---  $Date: 2003/08/19 10:54:45 $
+--  $Date: 2003/08/19 13:09:14 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -84,16 +84,6 @@ package body Giant.Graph_Window is
      Gui_Utils.Widget_Callback.Marshallers.Generic_Marshaller
      (Base_Type   => Graph_Widgets.Handlers.Button_Press_Action,
       Conversion  => Graph_Widgets.Handlers.To_Button_Press_Action);
-
-   package Edge_Popup_Marshallers is new
-     Gui_Utils.Widget_Callback.Marshallers.Generic_Marshaller
-     (Base_Type   => Graph_Widgets.Handlers.Edge_Popup_Action,
-      Conversion  => Graph_Widgets.Handlers.To_Edge_Popup_Action);
-
-   package Node_Popup_Marshallers is new
-     Gui_Utils.Widget_Callback.Marshallers.Generic_Marshaller
-     (Base_Type   => Graph_Widgets.Handlers.Node_Popup_Action,
-      Conversion  => Graph_Widgets.Handlers.To_Node_Popup_Action);
 
    package Selection_Change_Marshallers is new
      Gui_Utils.Widget_Callback.Marshallers.Generic_Marshaller
@@ -795,11 +785,11 @@ package body Giant.Graph_Window is
          (On_Background_Popup'Access), Window);
       Widget_Callback.Object_Connect
         (Window.Graph, "edge_popup_event",
-         Edge_Popup_Marshallers.To_Marshaller
+         Action_Mode_Marshallers.To_Marshaller
          (On_Edge_Popup'Access), Window);
       Widget_Callback.Object_Connect
         (Window.Graph, "node_popup_event",
-         Node_Popup_Marshallers.To_Marshaller
+         Action_Mode_Marshallers.To_Marshaller
          (On_Node_Popup'Access), Window);
       Widget_Callback.Object_Connect
         (Window.Graph, "selection_change_signal",

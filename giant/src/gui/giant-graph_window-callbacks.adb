@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.17 $
+--  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.18 $
 --  $Author: squig $
---  $Date: 2003/08/18 10:09:15 $
+--  $Date: 2003/08/19 13:09:14 $
 --
 
 with Ada.Unchecked_Conversion;
@@ -36,6 +36,7 @@ with Giant.Config.Global_Data;
 with Giant.Controller;
 with Giant.Dialogs;
 with Giant.Layout_Dialog;
+with Giant.Graph_Lib.Subgraphs;
 with Giant.Gui_Manager;
 with Giant.Gui_Manager.Actions;
 with Giant.Gsl;
@@ -81,9 +82,22 @@ package body Giant.Graph_Window.Callbacks is
    procedure On_Background_Select_All
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
+      Selection : Graph_Lib.Selections.Selection
+        := Controller.Get_Current_Selection (Get_Window_Name (Window));
+      Subgraph : Graph_Lib.Subgraphs.Subgraph
+        := Graph_Widgets.Get_Content (Window.Graph);
    begin
-      -- FIX: implement
-      null;
+      Graph_Lib.Selections.Add_Node_Set
+        (Selection, Graph_Lib.Subgraphs.Get_All_Nodes (Subgraph));
+      Graph_Lib.Selections.Add_Edge_Set
+        (Selection, Graph_Lib.Subgraphs.Get_All_Edges (Subgraph));
+
+      Graph_Widgets.Add_Local_Highlighting
+        (Widget    => Window.Graph,
+         Selection => Selection,
+         Color     => Config.Global_Data.Current_Selection);
+      Update_Selection (Window, Graph_Lib.Selections.Get_Name (Selection));
    end;
 
    procedure On_Background_Select_Nothing
@@ -189,6 +203,9 @@ package body Giant.Graph_Window.Callbacks is
    is
       Window : Graph_Window_Access := Graph_Window_Access (Source);
    begin
+      pragma Assert
+        (Graph_Widgets.Handlers."=" (Event.Pressed_On,
+                                     Graph_Widgets.Handlers.On_Background));
       Gtk.Menu.Show_All (Window.Background_Menu);
       Gtk.Menu.Popup (Window.Background_Menu,
                       Button => Gdk.Event.Get_Button (Event.Event),
@@ -197,10 +214,13 @@ package body Giant.Graph_Window.Callbacks is
 
    procedure On_Edge_Popup
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
-      Event  : in     Graph_Widgets.Handlers.Edge_Popup_Action)
+      Event  : in     Graph_Widgets.Handlers.Button_Press_Action)
    is
       Window : Graph_Window_Access := Graph_Window_Access (Source);
    begin
+      pragma Assert
+        (Graph_Widgets.Handlers."=" (Event.Pressed_On,
+                                     Graph_Widgets.Handlers.On_Edge));
       Window.Current_Edge := Event.Edge;
       Gtk.Menu.Show_All (Window.Edge_Menu);
       Gtk.Menu.Popup (Window.Edge_Menu,
@@ -210,10 +230,13 @@ package body Giant.Graph_Window.Callbacks is
 
    procedure On_Node_Popup
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
-      Event  : in     Graph_Widgets.Handlers.Node_Popup_Action)
+      Event  : in     Graph_Widgets.Handlers.Button_Press_Action)
    is
       Window : Graph_Window_Access := Graph_Window_Access (Source);
    begin
+      pragma Assert
+        (Graph_Widgets.Handlers."=" (Event.Pressed_On,
+                                     Graph_Widgets.Handlers.On_Node));
       Window.Current_Node := Event.Node;
       Gtk.Menu.Show_All (Window.Node_Menu);
       Gtk.Menu.Popup (Window.Node_Menu,

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.56 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.57 $
 --  $Author: squig $
---  $Date: 2003/08/18 10:09:15 $
+--  $Date: 2003/08/19 13:09:14 $
 --
 
 with Ada.Exceptions;
@@ -561,8 +561,7 @@ package body Giant.Main_Window is
       Params : Gsl.Interpreters.Gsl_Params
         := Gsl.Interpreters.Create_Parameter_List;
    begin
-      -- FIX
-      --Gsl.Interpreters.Add_Parameter (Params, Get_Selected_Subgraph);
+      Gsl.Interpreters.Add_Parameter (Params, Get_Selected_Subgraph);
 
       Controller.Execute_GSL
         (Script_Name => Event.Label,
