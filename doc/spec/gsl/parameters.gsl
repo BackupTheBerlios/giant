@@ -4,8 +4,9 @@
    (+my_script,
     { (+a, +b, +c),
       assign (a, add (b, c))
-    });        // a muss Zugriffspfad auf ein Objekt sein!
-               // an das durch a referenzierte Objekt wird
+    });        // An den Parameter a muss ein Zugriffspfad
+               // auf ein Objekt übergeben werden!
+               // An das durch a referenzierte Objekt wird
                // das Ergebnis der Aktivierung von add (b, c)
                // zugewiesen. add berechnet auf Natural-Werten
                // die Summe.

@@ -1,6 +1,6 @@
 % =============================================================================
-%  $RCSfile: gsl.tex,v $ $Revision: 1.4 $
-%  $Date: 2003/04/24 02:08:31 $
+%  $RCSfile: gsl.tex,v $ $Revision: 1.5 $
+%  $Date: 2003/04/26 18:24:32 $
 %  $Author: keulsn $
 %
 %  Description: Spezifikation der GIANT Scripting Language
@@ -135,7 +135,7 @@ Studienprojekt A -- IML Browser\\
 \nonterminal{\nreference}{reference}
 \nonterminal{\nvisibleref}{visible\_ref}
 \nonterminal{\nvarcreation}{var\_creation}
-\nonterminal{\nglobalref}{gloabl\_ref}
+\nonterminal{\nglobalref}{global\_ref}
 \nonterminal{\nscriptdecl}{script\_decl}
 \nonterminal{\nlist}{list}
 \nonterminal{\nsequence}{sequence}
@@ -144,6 +144,7 @@ Studienprojekt A -- IML Browser\\
 \newcommand{\bottomenv}{\ensuremath{Standard}\xspace}
 \newcommand{\newenv}{\ensuremath{A_{neu}}\xspace}
 \newcommand{\oldenv}{\ensuremath{A_{alt}}\xspace}
+\newcommand{\startenv}{\ensuremath{A_{start}}\xspace}
 
 
 
@@ -151,10 +152,12 @@ In diesem Dokument wird die GIANT Scripting Language (GSL) sowie
 Interpreter zur Ausführung von GSL Scripts spezifiziert.
 GSL ist eine Skriptsprache für das Software-System GIANT. Mit Hilfe von
 GSL können Anfragen an die IML-Bibliothek gestellt werden und auf den
-Resultaten Aktionen ausgeführt können.
+Resultaten Aktionen ausgeführt werden.
 
 Hier wird zunächst die Struktur von IML-Graphen aus der Sicht
 von GIANT beschrieben und danach Syntax und Sematik von GSL definiert.
+Schließlich folgt die vollständige Beschreibung der angebotenen
+Sprachumgebung.
 
 \section{IML-Graphen}
 
@@ -296,7 +299,7 @@ zur Auswertung übergeben werden. In GIANT kann dies geschehen, indem der
 Ausdruck als Kommandozeilenparameter angegeben wird oder indem ein Ausdruck
 in das dafür vorgesehene Anzeigefenster eingegeben wird.
 
-Dieser Ausdruck kann dann gespeicherte GSL Scripts aufrufen und mit GIANT
+Dieser Ausdruck kann gespeicherte GSL Scripts aufrufen und mit GIANT
 kommunizieren.
 
 \subsection{Kontext des Interpreters}
@@ -309,7 +312,7 @@ Wird der GSL Interpreter nicht im Kontext eines Anzeigefensters ausgeführt,
 so können die GSL Ausdrücke keine Aktion in einem Anzeigefenster
 auslösen.
 
-Ein GSL Script kann den Interpreter dazu veranlassen in den Kontext eines
+Ein GSL Script kann den GSL Interpreter anweisen in den Kontext eines
 bestimmten Anzeigefensters zu wechseln.
 
 \subsection{Verhalten im Fehlerfall}
@@ -335,8 +338,7 @@ Andernfalls startet der GSL Interpreter die Auswertung des GSL Ausdrucks.
 Der GSL Interpreter muss die Ausführung sofort
 stoppen, sobald ein Laufzeitfehler auftritt. Dies kann nur dann
 geschehen und muss jedes Mal geschehen,
-wenn die Semantikdefinition es ausdrücklich vorschreibt.
-Der GSL Interpreter
+wenn die Semantikdefinition es vorschreibt. Der GSL Interpreter
 darf die Ausführung bereits nach einem früheren Ausführungsschritt abbrechen,
 wenn sichergestellt ist, dass nach einem späteren Ausführungsschritt
 ein Laufzeitfehler auftreten wird.
@@ -355,7 +357,7 @@ ermöglichen.
 
 Der GSL Interpreter muss nach einem Fehler entweder alle seit Beginn
 der Ausführung bereits ausgeführten Aktionen rückgängig machen, oder er
-muss dem Benutzer anzeigen, welche Aktionen bereits durchgeführt wurden,
+muss dem Benutzer anzeigen, welche Aktionen bereits ausgeführt wurden,
 bevor der Fehler passierte. Anhand dieser Information soll es dem Benutzer
 möglich sein, die Aktionen manuell rückgängig zu machen.
 
@@ -452,10 +454,11 @@ Zugriffspfad wird benötigt, um den Wert des Objekts zu verändern.
 Eine Variable kann entweder sichtbar oder unsichtbar sein. Siehe hierzu
 Kapitel \ref{visibility}.
 
-Objekte sind nicht an einen bestimmten Typ gebunden, sondern haben zu jedem
-Zeitpunkt genau einen Wert eines der möglichen Typen aus \ref{types}.
-Ein Objekt ist jedoch nicht festgelegt auf Werte eines bestimmten Typs.
-Jedes Objekt kann einen Wert jedes Typs speichern.
+Jedes Objekt kann einen Wert $w_1$ jedes beliebigen Typs $t_1$ aus
+\ref{types} annehmen. Durch eine weitere Zuweisung an das Objekt kann
+das Objekt einen anderen Wert $w_2$ des Typs $t_2$ annehmen. Dabei dürfen
+die beiden Werte aus verschiedenen Typen sein (dh.\ $t_1 \neq t_2$ ist
+zulässig).
 
 \subsection{Aktivierungsumgebungen}
 
@@ -497,10 +500,10 @@ werden. Die Implementierung des GSL Interpreters muss dazu nicht bekannt sein.
 \label{current_env}
 
 Wann immer der GSL Interpreter die Auswertung eines benutzerdefinierten
-GSL Ausdrucks startet (\ref{interpreter_start}), wird eine neue
-Aktivierungsumgebung \newenv wird erzeugt. \newenv \emph{beerbt} dabei
-\bottomenv. \newenv wird aktuell bevor die Auswertung des benutzerdefinierten
-Ausdrucks beginnt. Nachdem die Auswertung abgeschlossen ist, wird \newenv
+GSL Ausdrucks startet (siehe \ref{interpreter_start}), wird eine neue
+Aktivierungsumgebung \startenv erzeugt. \startenv \emph{beerbt} dabei
+\bottomenv. \startenv wird aktuell bevor die Auswertung des benutzerdefinierten
+Ausdrucks beginnt. Nachdem die Auswertung abgeschlossen ist, wird \startenv
 zerstört und \bottomenv wird wieder aktuell.
 
 Falls während der Auswertung eines Ausdrucks die Aktivierung eines Scripts
@@ -552,8 +555,8 @@ beerbt wird oder
 \item \newenv beerbt \oldenv. $v$ ist in \oldenv an ein Objekt $o_1$
 gebunden ist und $v$ ist in \newenv an ein Objekt $o_2$ mit $o_1 \neq o_2$
 gebunden oder
-\item \newenv beerbt \oldenv. $v$ ist in \oldenv nicht gebunden und in
-$v$ ist in \newenv gebunden an irgendein Objekt.
+\item \newenv beerbt \oldenv. $v$ ist in \oldenv nicht gebunden, und
+$v$ ist in \newenv gebunden an irgend ein Objekt.
 \end{enumerate}
 
 Jede Variable, die in \newenv an irgend ein Objekt gebunden ist, heißt
@@ -563,7 +566,7 @@ Jede Variable, die in \newenv sichtbar ist, aber nicht lokal in \newenv ist,
 heißt \emph{global} in \newenv.
 
 \textbf{Anmerkung} In einer Aktivierungsumgebung $A_1$ sind alle Variablen
-sichtbar, die in irgendeiner Aktivierungsumgebung $A_2$ mit $A_2 \le A_1$
+sichtbar, die in irgend einer Aktivierungsumgebung $A_2$ mit $A_2 \le A_1$
 sichtbar sind.
 
 \paragraph{Beispiel}
@@ -596,8 +599,9 @@ Auswertung des Rumpfs von $S$. Für die genaue Beschreibung siehe
 \subsubsection{Vorraussetzung}
 \label{activation_preconds}
 
-Ein Script $S$ wird aktiviert durch Auswertung eines Ausdrucks, der aus einem
-Wert des Typs \tscriptreference besteht. Dieser Wert wird als
+Ein Script $S$ wird aktiviert durch Auswertung eines Ausdrucks, der als
+Ergebnisaus einen
+Wert des Typs \tscriptreference hat. Dieser Wert wird als
 Aktivierungsinformation bezeichet.
 
 Die Aktivierungsinformation bestimmt
@@ -608,15 +612,18 @@ gleichwertige Darstellung).
 Aktivierung beerbt wird. \label{allowed_environments}
 \end{enumerate}
 
-Das zu aktivierende Skript $S$ kann sich auf eine in $S$ globale Variable
-$v$ beziehen (diese Variable inspizieren, oder ihre Referenz nehmen).
+Vor der Aktivierung des Scripts $S$ wird eine neue Aktivierungsumgebung
+\newenv erzeugt und danach aktuell.
+Das zu aktivierende Skript $S$ kann eine in \newenv globale Variable
+$v$ inspizieren, oder die Referenz von $v$ nehmen.
 Es soll sichergestellt werden, dass die neue Aktivierungsumgebung \newenv nur
 solche Aktivierungsumgebungen \oldenv beerben kann, so dass die Variable $v$
 in \oldenv genau die Bedeutung hat, die der Autor von $S$ erwartet.
 Dies stellt Punkt \ref{allowed_environments} der vorangehenden Aufzählung
-sicher. \oldenv ist \emph{nicht} die aktuelle Aktivierungsumgebung, sondern
-die Aktivierungsumgebung, die zum Zeitpunkt der Auswertung der
-Script-Deklaration \ref{script_decl} aktuell war.
+sicher. \oldenv ist \emph{nicht} zwangsläuftig die vor der Aktivierung von
+$S$ aktuelle Aktivierungsumgebung. \oldenv ist diejenige Aktivierungsumgebung,
+die zum Zeitpunkt der Auswertung der Script-Deklaration von $S$
+\ref{script_decl} aktuell war.
 
 \paragraph{Beispiel zur Scriptaktivierung}
 
@@ -625,8 +632,8 @@ Script-Deklaration \ref{script_decl} aktuell war.
 \subsubsection{Parameterübergabe}
 \label{parameter_passing}
 
-In dem Ausdruck dessen Auswertung die Aktivierung veranlasst wird eine
-Liste von Argumenten $L_e = (e_1, ..., e_n)$ angegeben mit
+In dem Ausdruck dessen Auswertung die Aktivierung eines Scripts veranlasst
+wird eine Liste von Argumenten $L_e = (e_1, ..., e_n)$ angegeben mit
 $n \in {0, 1, 2, ...}$ und $\forall 1 \le i \le n: (e_i$ ist ein Ausdruck$)$.
 Bevor die Aktivierung beginnt wird
 $L_e$ ausgewertet und hat als Ergebnis den Wert $L_a = (a_1, ..., a_n)$.
@@ -660,7 +667,7 @@ neue lokale Variable erzeugt werden, z.B. durch \gq{°+name°}.
 
 \subsection{Notation}
 
-Die Syntax von GSL wird als kontextfreie Grammatik geschrieben.
+Die Syntax von GSL wird als kontextfreie Grammatik beschrieben.
 \begin{enumerate}
 \item Nichtterminale werden in einer serifenlosen Schrift dargestellt
 (z.B. \nidentifier).
@@ -680,9 +687,9 @@ wenn er von einem * gefolgt wird.
 \item Ein Teil ist optional, falls er von einem $?$ gefolgt wird.
 \end{enumerate}
 
-Die Beschreibung der Bedeutung von GSL erfolgt in einer Aufzählung, die
-unter der Regel steht, die sie erläutert. In der Beschreibung werden
-die Nichtterminale aus der rechten Seite der erläuterten als Platzhalter
+Die Beschreibung der Bedeutung einer Regel erfolgt in einer Aufzählung, die
+unter der Regel steht. In der Beschreibung werden
+die Nichtterminale aus der rechten Seite der Regel als Platzhalter
 für ihre Ableitung (also den Terminalstring zu dem sie im Programmtext
 erweitert sind) verwendet.
 
@@ -691,7 +698,7 @@ erweitert sind) verwendet.
 
 \begin{tabular}{l l l l}
 \tokopenbracket & \tokclosebracket & \tokcurlyopen  & \tokcurlyclose \\
-%\tokbeginsequence & \tokendsequence & \tokcomma & \tokdot \\
+\tokbeginsequence & \tokendsequence & \tokcomma & \tokdot \\
 \toksemicolon & \toktick & \tokplus & \tokunderscore \\
 
 \tokselection & \toksubgraph & \tokbegincomment & \tokquote \\
@@ -738,8 +745,8 @@ unterschieden (Beispiel: \gq{Name} $\neq$ \gq{name}).
 \end{EBNF}
 
 \begin{enumerate}
-\item Ein \nliteral hat einen bestimmten Typ, und einen Wert dieses
-Typs.
+\item Ein \nliteral hat einen bestimmten Typ, und als Ergebnis einen Wert
+dieses Typs.
 \item Typ und Wert eines \nliteral stehen bereits zum Übersetzungszeitpunkt
 fest. (siehe entsprechendes Nichtterminal der rechten Seite).
 \end{enumerate}
@@ -853,7 +860,7 @@ an die sichtbare Variable mit Name
 die Auswertung ein Laufzeitfehler. Andernfalls ist die Inspektion
 erfolgreich.
 \item Falls die Inspektion erfolgreich ist, so ist das Ergebnis der Wert
-des Objekts an den die Variable gebunden ist.
+des Objekts an das die Variable gebunden ist.
 \end{enumerate}
 
 \label{global_inspection}
@@ -893,7 +900,9 @@ des Objekts an den die Variable gebunden ist.
   \item Formal erfolgt eine Inspektion der Variable mit Namen
   \tokselection.\nidentifier. Diese Variable ist, falls der GSL Interpreter
   im Kontext eines Anzeigefensters ausgeführt wird, in der
-  Aktivierungsumgebung \bottomenv gebunden und deshalb stets sichtbar.
+  Aktivierungsumgebung \bottomenv gebunden und deshalb sichtbar. Falls
+  der GSL Interpreter nicht im Kontext eines Anzeigefensters ausgeführt wird,
+  so existiert die Variable nicht.
   \end{enumerate}
 \end{enumerate}
 
@@ -919,9 +928,11 @@ gewählten rechten Seite.
 \end{EBNF}
 
 \begin{enumerate}
-\item Nimmt die Referenz der sichtbaren Variable mit Name
-\nidentifier (siehe \ref{visibility}).
-\item Falls keine sichtbare Variable dieses Namens existiert, so führt die
+\item Nimmt die Referenz der Variable mit Name
+\nidentifier, die in der aktuellen Aktivierungsumgebung sichtbar ist
+(siehe \ref{visibility}).
+\item Falls in der aktuellen Aktivierungsumgebung keine sichtbare Variable
+dieses Namens existiert, so führt die
 Auswertung zu einem Laufzeitfehler. Andernfalls ist die Auswertung
 erfolgreich.
 \item Falls die Auswertung erfolgreich ist, so ist das Ergebnis ein
@@ -966,7 +977,7 @@ Andernfalls ist die Auswertung erfolgreich.
   Selektion mit Name \nidentifier, so erzeugt GIANT im Anzeigefenster diese
   Selektion. Sie enthält keine Fenster-Knoten und keine Fenster-Kanten.
   \item Ist die Auswertung erfolgreich, so ist das Ergebnis ein Zugriffspfad
-  auf die Selektion mit Name \nidentifier in dem Anzeigefenter, in dessen
+  auf die Selektion mit Name \nidentifier in dem Anzeigefenster, in dessen
   Kontext der GSL Interpreter ausgeführt wird.
   \end{enumerate}
 \end{enumerate}
@@ -983,8 +994,8 @@ Andernfalls ist die Auswertung erfolgreich.
 \item Eine \nscriptdecl deklariert ein neues Script $S$.
 \item Ergebnis ist eine Aktivierungsinformation $I$ vom Typ
 \tscriptreference für $S$.
-\item Die zulässige Aktivierungsumgebung in $I$ ist die aktuelle
-Aktivierungsumgebung
+\item Die zulässige Aktivierungsumgebung in $I$ ist die (zum Zeitpunkt der
+Auswertung der \nscriptdecl) aktuelle Aktivierungsumgebung
 \item Die \nlist heißt Parameterliste von $S$ (vgl. \ref{script_activation}).
 \item Die \nexpression heißt Rumpf von $S$ (vgl. \ref{script_activation}).
 \end{enumerate}
@@ -1007,9 +1018,9 @@ alle \nexpression ausgewertet, falls überhaupt welche angegeben sind.
 \item Die Auswertung führt zu einem Laufzeitfehler, falls die Auswertung einer
 der \nexpression zu einem Laufzeitfehler führt. Andernfalls ist die Auswertung
 erfolgreich.
-\item Falls die Auswertung erfolgreich ist, so ist das Ergebnis eine
-\tlist, die die Ergebnisse aller \nexpression in
-ihrer korrekten Reihenfolge und sonst nichts enthält.
+\item Falls die Auswertung erfolgreich ist, so ist das Ergebnis ein Wert
+vom Typ \tlist, der die Ergebnisse aller \nexpression in
+ihrer korrekten Reihenfolge enthält und sonst nichts.
 \end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%
@@ -1042,7 +1053,8 @@ enthält, so ist das Ergebnis \toknull.
 \end{EBNF}
 
 \begin{enumerate}
-\item Der Wert $I$ der \nexpression muss vom Typ \tscriptreference sein.
+\item Die \nexpression wird ausgewertet und hat als Ergebnis den Wert $I$.
+\item $I$ muss vom Typ \tscriptreference sein.
 Andernfalls führt die Auswertung zu einem Laufzeitfehler. $I$ enthält einen
 Zugriffspfad auf das Skript $S$.
   \item Die \nlist wird ausgewertet.
@@ -1092,14 +1104,15 @@ Verfügung stehen. Dabei wird folgende Form verwendet:
 \begin{scriptdef}{Variablenname}
 \sparam{Param\_Name}{Typ}{Beschreibung des Parameters. In der Spalte \gq{Typ}
 werden alle möglichen Typen aufgelistet, die zulässig sind. Falls ein Wert
-eines anderen Typs übergeben wird, so soll ein Laufzeitfehler auftreten.}
+eines anderen Typs übergeben wird, so soll während der Auswertung des Scripts
+ein Laufzeitfehler auftreten.}
 \sparam{Second\_Name}{Typ}{Die Parameter werden in der Reihenfolge
 aufgelistet, in der die entsprechenden Argumente angegeben werden müssen.}
 \sresult{Typ}{Beschreibung des Ergebnis, in der Spalte \gq{Typ} wird eine
 Zusicherung angegeben. Das Ergebnis muss ein Wert dieses Typs sein.}
 \saction{Beschreibung der Funktion und des genauen Ablaufs des Scripts.
-Der Variablenname ist der Name einer Variable, die eine \tscriptreference auf
-das beschriebene Script enthält.}
+Der Variablenname ist der Name einer Variable, deren Inspektion eine
+\tscriptreference auf das beschriebene Script zum Ergebnis hat.}
 \end{scriptdef}
 
 
