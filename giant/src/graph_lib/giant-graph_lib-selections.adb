@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.5 $
 --  $Author: koppor $
---  $Date: 2003/06/14 11:03:57 $
+--  $Date: 2003/06/17 13:06:32 $
 
 package body Giant.Graph_Lib.Selections is
 
@@ -101,14 +101,13 @@ package body Giant.Graph_Lib.Selections is
 
    ---------------------------------------------------------------------------
    function Create
-     (Name : in    Valid_Names.Standard_Name)
+     (Name : in    String)
       return Selection
    is
       Res      : Selection;
-      New_Name : String := Valid_Names.To_String (Name);
    begin
-      Res := new Selection_Record (Name_Length => New_Name'Length);
-      Res.Name  := New_Name;
+      Res := new Selection_Record (Name_Length => Name'Length);
+      Res.Name  := Name;
       Res.Edges := Edge_Id_Sets.Empty_Set;
       Res.Nodes := Node_Id_Sets.Empty_Set;
       return Res;
@@ -217,13 +216,12 @@ package body Giant.Graph_Lib.Selections is
    ----------------------------------------------------------------------------
    procedure Rename
      (Selection_To_Rename : in out Selection;
-      New_Name            : in     Valid_Names.Standard_Name)
+      New_Name            : in     String)
    is
       Res  : Selection;
-      Name : String := Valid_Names.To_String (New_Name);
    begin
-      Res       := new Selection_Record (Name_Length => Name'Length);
-      Res.Name  := Name;
+      Res       := new Selection_Record (Name_Length => New_Name'Length);
+      Res.Name  := New_Name;
       Res.Edges := Selection_To_Rename.Edges;
       Res.Nodes := Selection_To_Rename.Nodes;
 

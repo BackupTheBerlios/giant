@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.7 $
+--  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.8 $
 --  $Author: koppor $
---  $Date: 2003/06/14 11:04:25 $
+--  $Date: 2003/06/17 13:06:20 $
 --
 ------------------------------------------------------------------------------
 --
@@ -31,9 +31,6 @@
 --  from Bauhaus
 with Lists;
 with Bauhaus_Io;
-
---  from GIANT
-with Giant.Valid_Names;
 
 package Giant.Graph_Lib.Selections is
 
@@ -46,7 +43,7 @@ package Giant.Graph_Lib.Selections is
    --   has to be destroyed with "destroy" after usage
    --  Name is converted to a String and not used during the run
    function Create
-      (Name : in    Valid_Names.Standard_Name)
+      (Name : in    String)
       return Selection;
 
    ---------------------------------------------------------------------------
@@ -63,7 +60,7 @@ package Giant.Graph_Lib.Selections is
    ---------------------------------------------------------------------------
    procedure Rename
       (Selection_To_Rename : in out Selection;
-       New_Name            : in     Valid_Names.Standard_Name);
+       New_Name            : in     String);
 
    ---------------------------------------------------------------------------
    function Get_Name
