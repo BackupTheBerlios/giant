@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.95 $
---  $Author: keulsn $
---  $Date: 2003/09/12 20:30:11 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.96 $
+--  $Author: squig $
+--  $Date: 2003/09/15 13:03:45 $
 --
 
 with Ada.Strings.Unbounded;
@@ -459,18 +459,25 @@ package body Giant.Controller is
         (Gui_Manager.Create_Progress_Dialog
          (-"Creating Project", "Loading Graph"));
 
-      --  create graph
-      Graph_Lib.Load (Graph_Filename, Individual);
-      Checksum := Graph_Lib.Get_Graph_Hash;
+      begin
+         --  create graph
+         Graph_Lib.Load (Graph_Filename, Individual);
+         Checksum := Graph_Lib.Get_Graph_Hash;
 
-      Logger.Info (-"Creating project " & Project_Filename);
+         Logger.Info (-"Creating project " & Project_Filename);
 
-      --  create project
-      Current_Project := Projects.Create_Empty_Project_For_File
-        (Project_Filename, Graph_Filename, Checksum);
+         --  create project
+         Current_Project := Projects.Create_Empty_Project_For_File
+           (Project_Filename, Graph_Filename, Checksum);
 
-      --  update application
-      Initialize_Project;
+         --  update application
+         Initialize_Project;
+      exception
+        when others =>
+           --  close progress dialog
+           Basic_Evolutions.Destroy (Individual);
+           raise;
+      end;
 
       --  close progress dialog
       Basic_Evolutions.Destroy (Individual);
@@ -547,15 +554,22 @@ package body Giant.Controller is
         (Gui_Manager.Create_Progress_Dialog
          (-"Loading Project", "Loading Graph"));
 
-      --  load graph
-      Logger.Info (-"Loading graph " & Graph_Filename);
-      Giant.Graph_Lib.Load (Graph_Filename, Individual);
+      begin
+         --  load graph
+         Logger.Info (-"Loading graph " & Graph_Filename);
+         Giant.Graph_Lib.Load (Graph_Filename, Individual);
 
-      Logger.Info (-"Opening project " & Filename);
-      Current_Project := Projects.Load_Project_File (Filename);
+         Logger.Info (-"Opening project " & Filename);
+         Current_Project := Projects.Load_Project_File (Filename);
 
-      --  update application
-      Initialize_Project;
+         --  update application
+         Initialize_Project;
+      exception
+         when others =>
+            --  close progress dialog
+            Basic_Evolutions.Destroy (Individual);
+            raise;
+      end;
 
       --  close progress dialog
       Basic_Evolutions.Destroy (Individual);

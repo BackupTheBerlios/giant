@@ -1,13 +1,18 @@
+2003-09-15  Steffen Pingel  <squig@users.sourceforge.net>
+
+	* src/giant-controller.adb: Close progress dialog on exceptions
+	when creating or opening project.
+
 2003-09-14  Steffen Keul  <keulsn@gspc24.informatik.uni-stuttgart.de>
 
-    * src/: Changed elaboration pragmas so correct elaboration order
-    can be found by 3.15p as well.
+	* src/: Changed elaboration pragmas so correct elaboration order
+	can be found by 3.15p as well.
 
 2003-09-12  Steffen Pingel  <squig@users.sourceforge.net>
 
 	* src/gui/giant-progress_dialog.ads: Added Set_Cancel_Enabled to
-	disable cancel button for non interruptable operations.
-	Changed Float to Glib.Gdouble.
+	disable cancel button for non interruptable operations.  Changed
+	Float to Glib.Gdouble.
 
 	* src/gui/giant-main_window.ads: Resize columns after project has
 	been loaded.
