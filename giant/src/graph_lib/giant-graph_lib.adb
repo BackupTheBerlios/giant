@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.27 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.28 $
 --  $Author: koppor $
---  $Date: 2003/06/26 15:54:26 $
+--  $Date: 2003/06/26 16:02:25 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -1018,7 +1018,7 @@ package body Giant.Graph_Lib is
 
       Iml_Node_Mapper.Destroy;
 
-      Edge_Id_Locator.Initialize;
+      --  TBD: FIXME: raises storage_error: Edge_Id_Locator.Initialize;
    end Load;
 
    ---------------------------------------------------------------------------
@@ -1059,7 +1059,7 @@ package body Giant.Graph_Lib is
       end DestroyAllNodes;
 
    begin
-      Edge_Id_Locator.Destroy;
+      --  TBD: FIXME: Init doesn't work Edge_Id_Locator.Destroy;
 
       DestroyAllNodes;
 
