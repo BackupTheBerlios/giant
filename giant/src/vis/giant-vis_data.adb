@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.25 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.26 $
 --  $Author: keulsn $
---  $Date: 2003/07/12 03:33:56 $
+--  $Date: 2003/07/15 20:09:52 $
 --
 ------------------------------------------------------------------------------
 
@@ -294,6 +294,29 @@ package body Giant.Vis_Data is
       return Edge.Flags and Only_Highlighting;
    end Get_Highlighting;
 
+   procedure Add_Highlight_Color
+     (Edge   : in     Vis_Edge_Id;
+      Color  : in     Highlight_Type) is
+   begin
+      Edge.Flags (Color) := True;
+   end Add_Highlight_Color;
+
+   procedure Remove_Highlight_Color
+     (Edge   : in     Vis_Edge_Id;
+      Color  : in     Highlight_Type) is
+   begin
+      Edge.Flags (Color) := False;
+   end Remove_Highlight_Color;
+
+   procedure Remove_All_Highlight_Colors
+     (Edge   : in     Vis_Edge_Id) is
+   begin
+      Edge.Flags := Edge.Flags and
+        (Highlight_Type'Range => False,
+         Hidden               => True,
+         Annotated            => True);
+   end Remove_All_Highlight_Colors;
+
    procedure Set_Thickness
      (Edge      : in     Vis_Edge_Id;
       Thickness : in     Vis.Absolute_Natural) is
@@ -552,6 +575,29 @@ package body Giant.Vis_Data is
       pragma Assert (Region_Lists.IsEmpty (Node.Regions));
       Vis.Absolute.Move (Node.Extent, Offset);
    end Move_Node;
+
+   procedure Add_Highlight_Color
+     (Node   : in     Vis_Node_Id;
+      Color  : in     Highlight_Type) is
+   begin
+      Node.Flags (Color) := True;
+   end Add_Highlight_Color;
+
+   procedure Remove_Highlight_Color
+     (Node   : in     Vis_Node_Id;
+      Color  : in     Highlight_Type) is
+   begin
+      Node.Flags (Color) := False;
+   end Remove_Highlight_Color;
+
+   procedure Remove_All_Highlight_Colors
+     (Node   : in     Vis_Node_Id) is
+   begin
+      Node.Flags := Node.Flags and
+        (Highlight_Type'Range => False,
+         Hidden               => True,
+         Annotated            => True);
+   end Remove_All_Highlight_Colors;
 
    procedure Set_Annotated
      (Node  : in     Vis_Node_Id;

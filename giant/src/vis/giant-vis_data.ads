@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.21 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.22 $
 --  $Author: keulsn $
---  $Date: 2003/07/12 03:33:56 $
+--  $Date: 2003/07/15 20:09:52 $
 --
 ------------------------------------------------------------------------------
 --
@@ -297,6 +297,17 @@ package Giant.Vis_Data is
      (Edge : in     Vis_Edge_Id)
      return Flags_Type;
 
+   procedure Add_Highlight_Color
+     (Edge   : in     Vis_Edge_Id;
+      Color  : in     Highlight_Type);
+
+   procedure Remove_Highlight_Color
+     (Edge   : in     Vis_Edge_Id;
+      Color  : in     Highlight_Type);
+
+   procedure Remove_All_Highlight_Colors
+     (Edge   : in     Vis_Edge_Id);
+
    --  Precondition:
    --    for all Rm : Region_Manager : not Contains (Rm, Edge)
    --  Postcontition:
@@ -480,6 +491,17 @@ package Giant.Vis_Data is
    procedure Set_Annotated
      (Node   : in     Vis_Node_Id;
       State  : in     Boolean);
+
+   procedure Add_Highlight_Color
+     (Node   : in     Vis_Node_Id;
+      Color  : in     Highlight_Type);
+
+   procedure Remove_Highlight_Color
+     (Node   : in     Vis_Node_Id;
+      Color  : in     Highlight_Type);
+
+   procedure Remove_All_Highlight_Colors
+     (Node   : in     Vis_Node_Id);
 
    ----------------------------------------------------------------------------
    --  Total ordering on Vis_Node_Id

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.32 $
---  $Author: squig $
---  $Date: 2003/07/15 17:18:42 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.33 $
+--  $Author: keulsn $
+--  $Date: 2003/07/15 20:09:52 $
 --
 ------------------------------------------------------------------------------
 --
@@ -133,7 +133,7 @@ package Giant.Graph_Widgets is
      (Widget      :    out Graph_Widget;
       Style       : in     Config.Vis_Styles.Visualisation_Style_Access :=
         Config.Vis_Styles.Get_Default_Vis_Style;
-      Annotations : in     Node_Annotations.Node_Annotation_Access     :=
+      Annotations : in     Node_Annotations.Node_Annotation_Access      :=
         Node_Annotations.Create_Empty);
 
    ----------------------------------------------------------------------------
@@ -999,6 +999,24 @@ private                    -- private part --
      (Widget : access Graph_Widget_Record'Class;
       Node   : in     Vis_Data.Vis_Node_Id);
 
+   --  Drops 'Edge' from the region manager, removes 'Edge' from the locked
+   --  queue and adds it to the unsized queue.
+   procedure Move_Edge_To_Unsized
+     (Widget : access Graph_Widget_Record'Class;
+      Edge   : in     Vis_Data.Vis_Edge_Id);
+
+   --  Drops all edges in  'Edges' from the region manager, removes them
+   --  from the locked queue and adds them to the unsized queue.
+   procedure Move_Edges_To_Unsized
+     (Widget : access Graph_Widget_Record'Class;
+      Edges  : in     Vis_Edge_Lists.ListIter);
+
+   --  Drops 'Node' from the region manager, removes 'Node' from the locked
+   --  queue and adds it to the unsized queue. Calls 'Move_Edge_To_Unsized'
+   --  on all incident edges.
+   procedure Move_Node_To_Unsized
+     (Widget : access Graph_Widget_Record'Class;
+      Node   : in     Vis_Data.Vis_Node_Id);
 
    --  looks up an existing edge or creates a new one if necessary.
    --  if the nodes incident cannot be looked up, then sets 'Edge' to null.
@@ -1038,6 +1056,7 @@ private                    -- private part --
    --  enqueus a redraw event, if necessary.
    procedure Redraw
      (Widget : access Graph_Widget_Record'Class);
+
 
    ----------------------------------------------------------------------------
    --  Default size of a graph widget

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.33 $
---  $Author: squig $
---  $Date: 2003/07/15 17:18:42 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.34 $
+--  $Author: keulsn $
+--  $Date: 2003/07/15 20:09:52 $
 --
 ------------------------------------------------------------------------------
 
@@ -55,6 +55,157 @@ package body Giant.Graph_Widgets is
 
    package Graph_Widget_Logger is new Logger
      (Name => "Giant.Graph_Widgets");
+
+
+   ----------------------------------------------------------------------------
+   --  Calls 'Action (Widget, I)' for each Item 'I' in 'Set'.
+   generic
+      type Object_Type is private;
+      with function "<"
+        (Left  : in Object_Type;
+         Right : in Object_Type)
+        return Boolean;
+      with function "="
+        (Left  : in Object_Type;
+         Right : in Object_Type)
+        return Boolean;
+      with package Object_Sets is new Ordered_Sets
+        (Item_Type => Object_Type,
+         "<"       => "<",
+         "="       => "=");
+      with procedure Action
+        (Widget : access Graph_Widget_Record'Class;
+         Object : in     Object_Type);
+   procedure For_All
+     (Widget : access Graph_Widget_Record'Class;
+      Set    : in     Object_Sets.Set);
+
+   --  implementation
+   procedure For_All
+     (Widget : access Graph_Widget_Record'Class;
+      Set    : in     Object_Sets.Set) is
+
+      procedure For_One
+        (Item : in     Object_Type) is
+      begin
+         Action (Widget, Item);
+      end For_One;
+
+      procedure Apply_For_All is new Object_Sets.Apply
+        (Execute => For_One);
+
+   begin
+      Apply_For_All (Set);
+   end For_All;
+
+
+   ----------------------------------------------------------------------------
+   --  Uses 'Convert' on each element in 'Set' and calls 'Action' for each
+   --  conversion result
+   generic
+      type Object_Type is private;
+      with function "<"
+        (Left  : in Object_Type;
+         Right : in Object_Type)
+        return Boolean;
+      with function "="
+        (Left  : in Object_Type;
+         Right : in Object_Type)
+        return Boolean;
+      with package Object_Sets is new Ordered_Sets
+        (Item_Type => Object_Type,
+         "<"       => "<",
+         "="       => "=");
+      type Converted_Type is private;
+      with function Convert
+        (Widget : access Graph_Widget_Record'Class;
+         Source : in     Object_Type)
+        return Converted_Type;
+      with procedure Action
+        (Widget : access Graph_Widget_Record'Class;
+         Edge   : in     Converted_Type);
+   procedure For_All_Conversion
+     (Widget : access Graph_Widget_Record'Class;
+      Set    : in     Object_Sets.Set);
+
+   --  implementation
+   procedure For_All_Conversion
+     (Widget : access Graph_Widget_Record'Class;
+      Set    : in     Object_Sets.Set) is
+
+      procedure Call_Action
+        (Widget : access Graph_Widget_Record'Class;
+         Object : in     Object_Type) is
+      begin
+         Action (Widget, Convert (Widget, Object));
+      end Call_Action;
+
+      procedure Process is new For_All
+        (Object_Type, "<", "=", Object_Sets, Call_Action);
+   begin
+      Process (Widget, Set);
+   end For_All_Conversion;
+
+
+   ----------------------------------------------------------------------------
+   --  Looks up the 'Vis_Edge_Id's for the 'Edge_Id's an calls 'Action'
+   --  on each.
+   generic
+      --  Edge may be null!
+      with procedure Action
+        (Widget : access Graph_Widget_Record'Class;
+         Edge   : in     Vis_Data.Vis_Edge_Id);
+   procedure For_All_Graph_Edges
+     (Widget : access Graph_Widget_Record'Class;
+      Edges  : in     Graph_Lib.Edge_Id_Sets.Set);
+
+   --  implementation
+   procedure For_All_Graph_Edges
+     (Widget : access Graph_Widget_Record'Class;
+      Edges  : in     Graph_Lib.Edge_Id_Sets.Set) is
+
+      procedure Process is new For_All_Conversion
+        (Object_Type    => Graph_Lib.Edge_Id,
+         "<"            => Graph_Lib."<",
+         "="            => Graph_Lib."=",
+         Object_Sets    => Graph_Lib.Edge_Id_Sets,
+         Converted_Type => Vis_Data.Vis_Edge_Id,
+         Convert        => Look_Up,
+         Action         => Action);
+
+   begin
+      Process (Widget, Edges);
+   end For_All_Graph_Edges;
+
+   ----------------------------------------------------------------------------
+   --  Looks up the 'Vis_Node_Id's for the 'Node_Id's an calls 'Action'
+   --  on each.
+   generic
+      --  Node may be null!
+      with procedure Action
+        (Widget : access Graph_Widget_Record'Class;
+         Node   : in     Vis_Data.Vis_Node_Id);
+   procedure For_All_Graph_Nodes
+     (Widget : access Graph_Widget_Record'Class;
+      Nodes  : in     Graph_Lib.Node_Id_Sets.Set);
+
+   --  implementation
+   procedure For_All_Graph_Nodes
+     (Widget : access Graph_Widget_Record'Class;
+      Nodes  : in     Graph_Lib.Node_Id_Sets.Set) is
+
+      procedure Process is new For_All_Conversion
+        (Object_Type    => Graph_Lib.Node_Id,
+         "<"            => Graph_Lib."<",
+         "="            => Graph_Lib."=",
+         Object_Sets    => Graph_Lib.Node_Id_Sets,
+         Converted_Type => Vis_Data.Vis_Node_Id,
+         Convert        => Look_Up,
+         Action         => Action);
+
+   begin
+      Process (Widget, Nodes);
+   end For_All_Graph_Nodes;
 
 
    -------------------------------
@@ -660,10 +811,9 @@ package body Giant.Graph_Widgets is
       Lock : Lock_Type;
    begin
       Lock_All_Content (Widget, Lock);
-      ------------------------------------------------------- something missing
-      --  Shift everything to Unsized_Nodes
-      --  Shift everything to Unsized_Edges
-      --  Settings.Set_Style (Widget, Style);
+--      Move_All_Nodes_To_Unsized (Widget);
+--      Move_All_Edges_To_Unsized (Widget);
+      Settings.Set_Style (Widget, Style);
       Release_Lock (Widget, Lock);
    end Set_Vis_Style;
 
@@ -706,32 +856,236 @@ package body Giant.Graph_Widgets is
      (Widget    : access Graph_Widget_Record'Class;
       Selection : in     Graph_Lib.Selections.Selection;
       Color     : in     Config.Global_Data.Selection_High_Light_ID) is
+
+      Highlight : constant Vis_Data.Local_Highlight_Type :=
+        To_Local_Highlight_Type (Color);
+
+      procedure Add_Local_Edge_Highlighting
+        (Widget : access Graph_Widget_Record'Class;
+         Edge   : in     Vis_Data.Vis_Edge_Id) is
+
+         Current : Vis_Data.Flags_Type;
+      begin
+         if Edge /= null then
+            Current := Vis_Data.Get_Highlighting (Edge);
+            if not Current (Highlight) then
+               Move_Edge_To_Unsized (Widget, Edge);
+               Vis_Data.Add_Highlight_Color (Edge, Highlight);
+            end if;
+         else
+            raise Unknown_Edge_Id;
+         end if;
+      end Add_Local_Edge_Highlighting;
+
+      procedure Add_Local_Node_Highlighting
+        (Widget : access Graph_Widget_Record'Class;
+         Node   : in     Vis_Data.Vis_Node_Id) is
+
+         Current : Vis_Data.Flags_Type;
+      begin
+         if Node /= null then
+            Current := Vis_Data.Get_Highlighting (Node);
+            if not Current (Highlight) then
+               Vis_Data.Add_Highlight_Color (Node, Highlight);
+               Vis_Data.Pollute_Node (Widget.Manager, Node);
+            end if;
+         else
+            raise Unknown_Node_Id;
+         end if;
+      end Add_Local_Node_Highlighting;
+
+      procedure Local_Highlight_Edges is new For_All_Graph_Edges
+        (Action => Add_Local_Edge_Highlighting);
+      procedure Local_Highlight_Nodes is new For_All_Graph_Nodes
+        (Action => Add_Local_Node_Highlighting);
+
+      Lock : Lock_Type;
    begin
-      null;
+      Lock_All_Content (Widget, Lock);
+      Local_Highlight_Nodes
+        (Widget => Widget,
+         Nodes  => Graph_Lib.Selections.Get_All_Nodes (Selection));
+      Local_Highlight_Edges
+        (Widget => Widget,
+         Edges  => Graph_Lib.Selections.Get_All_Edges (Selection));
+      Release_Lock (Widget, Lock);
    end Add_Local_Highlighting;
 
    procedure Remove_Local_Highlighting
      (Widget    : access Graph_Widget_Record'Class;
       Selection : in     Graph_Lib.Selections.Selection;
       Color     : in     Config.Global_Data.Selection_High_Light_ID) is
+
+      Highlight : constant Vis_Data.Local_Highlight_Type :=
+        To_Local_Highlight_Type (Color);
+
+      procedure Remove_Local_Edge_Highlighting
+        (Widget : access Graph_Widget_Record'Class;
+         Edge   : in     Vis_Data.Vis_Edge_Id) is
+
+         Current : Vis_Data.Flags_Type;
+      begin
+         if Edge /= null then
+            Current := Vis_Data.Get_Highlighting (Edge);
+            if Current (Highlight) then
+               Move_Edge_To_Unsized (Widget, Edge);
+               Vis_Data.Remove_Highlight_Color (Edge, Highlight);
+            end if;
+         else
+            raise Unknown_Edge_Id;
+         end if;
+      end Remove_Local_Edge_Highlighting;
+
+      procedure Remove_Local_Node_Highlighting
+        (Widget : access Graph_Widget_Record'Class;
+         Node   : in     Vis_Data.Vis_Node_Id) is
+
+         Current : Vis_Data.Flags_Type;
+      begin
+         if Node /= null then
+            Current := Vis_Data.Get_Highlighting (Node);
+            if Current (Highlight) then
+               Vis_Data.Remove_Highlight_Color (Node, Highlight);
+               Vis_Data.Pollute_Node (Widget.Manager, Node);
+            end if;
+         else
+            raise Unknown_Node_Id;
+         end if;
+      end Remove_Local_Node_Highlighting;
+
+      procedure Local_Unhighlight_Edges is new For_All_Graph_Edges
+        (Action => Remove_Local_Edge_Highlighting);
+      procedure Local_Unhighlight_Nodes is new For_All_Graph_Nodes
+        (Action => Remove_Local_Node_Highlighting);
+
+      Lock : Lock_Type;
    begin
-      null;
+      Lock_All_Content (Widget, Lock);
+      Local_Unhighlight_Nodes
+        (Widget => Widget,
+         Nodes  => Graph_Lib.Selections.Get_All_Nodes (Selection));
+      Local_Unhighlight_Edges
+        (Widget => Widget,
+         Edges  => Graph_Lib.Selections.Get_All_Edges (Selection));
+      Release_Lock (Widget, Lock);
    end Remove_Local_Highlighting;
 
    procedure Add_Global_Highlighting
      (Widget   : access Graph_Widget_Record'Class;
       Subgraph : in     Graph_Lib.Subgraphs.Subgraph;
       Color    : in     Config.Global_Data.Subgraph_High_Light_ID) is
+
+      Highlight : constant Vis_Data.Global_Highlight_Type :=
+        To_Global_Highlight_Type (Color);
+
+      procedure Add_Global_Edge_Highlighting
+        (Widget : access Graph_Widget_Record'Class;
+         Edge   : in     Vis_Data.Vis_Edge_Id) is
+
+         Current : Vis_Data.Flags_Type;
+      begin
+         if Edge /= null then
+            Current := Vis_Data.Get_Highlighting (Edge);
+            if not Current (Highlight) then
+               Move_Edge_To_Unsized (Widget, Edge);
+               Vis_Data.Add_Highlight_Color (Edge, Highlight);
+            end if;
+         else
+            raise Unknown_Edge_Id;
+         end if;
+      end Add_Global_Edge_Highlighting;
+
+      procedure Add_Global_Node_Highlighting
+        (Widget : access Graph_Widget_Record'Class;
+         Node   : in     Vis_Data.Vis_Node_Id) is
+
+         Current : Vis_Data.Flags_Type;
+      begin
+         if Node /= null then
+            Current := Vis_Data.Get_Highlighting (Node);
+            if not Current (Highlight) then
+               Move_Node_To_Unsized (Widget, Node);
+               Vis_Data.Add_Highlight_Color (Node, Highlight);
+            end if;
+         else
+            raise Unknown_Node_Id;
+         end if;
+      end Add_Global_Node_Highlighting;
+
+      procedure Global_Highlight_Edges is new For_All_Graph_Edges
+        (Action => Add_Global_Edge_Highlighting);
+      procedure Global_Highlight_Nodes is new For_All_Graph_Nodes
+        (Action => Add_Global_Node_Highlighting);
+
+      Lock : Lock_Type;
    begin
-      null;
+      Lock_All_Content (Widget, Lock);
+      Global_Highlight_Nodes
+        (Widget => Widget,
+         Nodes  => Graph_Lib.Subgraphs.Get_All_Nodes (Subgraph));
+      Global_Highlight_Edges
+        (Widget => Widget,
+         Edges  => Graph_Lib.Subgraphs.Get_All_Edges (Subgraph));
+      Release_Lock (Widget, Lock);
    end Add_Global_Highlighting;
 
    procedure Remove_Global_Highlighting
      (Widget   : access Graph_Widget_Record'Class;
       Subgraph : in     Graph_Lib.Subgraphs.Subgraph;
       Color    : in     Config.Global_Data.Subgraph_High_Light_ID) is
+
+      Highlight : constant Vis_Data.Global_Highlight_Type :=
+        To_Global_Highlight_Type (Color);
+
+      procedure Remove_Global_Edge_Highlighting
+        (Widget : access Graph_Widget_Record'Class;
+         Edge   : in     Vis_Data.Vis_Edge_Id) is
+
+         Current : Vis_Data.Flags_Type;
+      begin
+         if Edge /= null then
+            Current := Vis_Data.Get_Highlighting (Edge);
+            if Current (Highlight) then
+               Move_Edge_To_Unsized (Widget, Edge);
+               Vis_Data.Remove_Highlight_Color (Edge, Highlight);
+            end if;
+         else
+            raise Unknown_Edge_Id;
+         end if;
+      end Remove_Global_Edge_Highlighting;
+
+      procedure Remove_Global_Node_Highlighting
+        (Widget : access Graph_Widget_Record'Class;
+         Node   : in     Vis_Data.Vis_Node_Id) is
+
+         Current : Vis_Data.Flags_Type;
+      begin
+         if Node /= null then
+            Current := Vis_Data.Get_Highlighting (Node);
+            if Current (Highlight) then
+               Move_Node_To_Unsized (Widget, Node);
+               Vis_Data.Remove_Highlight_Color (Node, Highlight);
+            end if;
+         else
+            raise Unknown_Node_Id;
+         end if;
+      end Remove_Global_Node_Highlighting;
+
+      procedure Global_Unhighlight_Edges is new For_All_Graph_Edges
+        (Action => Remove_Global_Edge_Highlighting);
+      procedure Global_Unhighlight_Nodes is new For_All_Graph_Nodes
+        (Action => Remove_Global_Node_Highlighting);
+
+      Lock : Lock_Type;
    begin
-      null;
+      Lock_All_Content (Widget, Lock);
+      Global_Unhighlight_Nodes
+        (Widget => Widget,
+         Nodes  => Graph_Lib.Subgraphs.Get_All_Nodes (Subgraph));
+      Global_Unhighlight_Edges
+        (Widget => Widget,
+         Edges  => Graph_Lib.Subgraphs.Get_All_Edges (Subgraph));
+      Release_Lock (Widget, Lock);
    end Remove_Global_Highlighting;
 
    procedure Clear_Highlighting
@@ -925,7 +1279,7 @@ package body Giant.Graph_Widgets is
       if not Vis_Edge_Sets.Is_Member (Widget.Unsized_Edges, Edge) then
 
          --  will not insert twice, even if already
-         --  'Is_Member (Widget.Locked_Nodes, Node)'
+         --  'Is_Member (Widget.Locked_Edges, Edge)'
          Vis_Edge_Sets.Insert (Widget.Locked_Edges, Edge);
       end if;
    end Add_Edge_To_Locked;
@@ -966,6 +1320,52 @@ package body Giant.Graph_Widgets is
          Add_Edges_To_Locked (Widget, Edge_Iterator);
       end if;
    end Add_Node_To_Locked;
+
+   procedure Move_Edge_To_Unsized
+     (Widget : access Graph_Widget_Record'Class;
+      Edge   : in     Vis_Data.Vis_Edge_Id) is
+   begin
+      if Vis_Data.Has_Manager (Edge) then
+         Vis_Data.Drop_Edge (Widget.Manager, Edge);
+      end if;
+      Vis_Edge_Sets.Remove_If_Exists (Widget.Locked_Edges, Edge);
+      --  will not insert twice, even if already
+      --  'Is_Member (Widget.Unsized_Edges, Edge)'
+      Vis_Edge_Sets.Insert (Widget.Unsized_Edges, Edge);
+   end Move_Edge_To_Unsized;
+
+   procedure Move_Edges_To_Unsized
+     (Widget : access Graph_Widget_Record'Class;
+      Edges  : in     Vis_Edge_Lists.ListIter) is
+
+      Iterator : Vis_Edge_Lists.ListIter := Edges;
+      Edge     : Vis_Data.Vis_Edge_Id;
+   begin
+      while Vis_Edge_Lists.More (Iterator) loop
+         Vis_Edge_Lists.Next (Iterator, Edge);
+         Move_Edge_To_Unsized (Widget, Edge);
+      end loop;
+   end Move_Edges_To_Unsized;
+
+   procedure Move_Node_To_Unsized
+     (Widget : access Graph_Widget_Record'Class;
+      Node   : in     Vis_Data.Vis_Node_Id) is
+
+      Edge_Iterator : Vis_Edge_Lists.ListIter;
+   begin
+      if Vis_Data.Has_Manager (Node) then
+         Vis_Data.Drop_Node (Widget.Manager, Node);
+      end if;
+      Vis_Node_Sets.Remove_If_Exists (Widget.Locked_Nodes, Node);
+      --  will not insert twice, even if already
+      --  'Is_Member (Widget.Unsized_Nodes, Node)'
+      Vis_Node_Sets.Insert (Widget.Unsized_Nodes, Node);
+      --  add all incident
+      Vis_Data.Make_Outgoing_Iterator (Node, Edge_Iterator);
+      Move_Edges_To_Unsized (Widget, Edge_Iterator);
+      Vis_Data.Make_Incoming_Iterator (Node, Edge_Iterator);
+      Move_Edges_To_Unsized (Widget, Edge_Iterator);
+   end Move_Node_To_Unsized;
 
    procedure Add_Logic_Position
      (Widget   : access Graph_Widget_Record'Class;
@@ -1103,46 +1503,6 @@ package body Giant.Graph_Widgets is
          return null;
    end Look_Up;
 
-
-   ----------------------------------------------------------------------------
-   --  Calls 'Action (Widget, I)' for each Item 'I' in 'Set'.
-   generic
-      type Object_Type is private;
-      with function "<"
-        (Left  : in Object_Type;
-         Right : in Object_Type)
-        return Boolean;
-      with function "="
-        (Left  : in Object_Type;
-         Right : in Object_Type)
-        return Boolean;
-      with package Object_Sets is new Ordered_Sets
-        (Item_Type => Object_Type,
-         "<"       => "<",
-         "="       => "=");
-      with procedure Action
-        (Widget : access Graph_Widget_Record'Class;
-         Object : in     Object_Type);
-   procedure For_All
-     (Widget : access Graph_Widget_Record'Class;
-      Set    : in     Object_Sets.Set);
-
-   procedure For_All
-     (Widget : access Graph_Widget_Record'Class;
-      Set    : in     Object_Sets.Set) is
-
-      procedure For_One
-        (Item : in     Object_Type) is
-      begin
-         Action (Widget, Item);
-      end For_One;
-
-      procedure Apply_For_All is new Object_Sets.Apply
-        (Execute => For_One);
-
-   begin
-      Apply_For_All (Set);
-   end For_All;
 
    procedure Update_Node_Positions is new For_All
      (Object_Type => Vis_Data.Vis_Node_Id,
