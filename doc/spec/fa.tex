@@ -1,6 +1,6 @@
 % =============================================================================
-%  $RCSfile: fa.tex,v $, $Revision: 1.27 $
-%  $Date: 2003/04/06 21:14:53 $
+%  $RCSfile: fa.tex,v $, $Revision: 1.28 $
+%  $Date: 2003/04/07 18:53:13 $
 %  $Author: squig $
 %
 %  Description:
@@ -51,23 +51,23 @@ die folgenden Optionen.
   \begin {enumerate}
 
   \item
-    \verb+--newproject='Pfad'+ oder \verb+-n 'Pfad'+
+    \verb+--newproject=Pfad+ oder \verb+-n Pfad+
 
     Angabe des Pfades für die neu zu erstellenden Projektdatei.  Die
     Datei darf nicht vorhanden sein. Das Verzeichnis der Projektdatei ist
     automatisch Projektverzeichnis und muss bereits existieren.
 
-    \verb+--iml='Pfad'+ oder \verb+-i 'Pfad'+
+    \verb+--iml=Pfad+ oder \verb+-i Pfad+
 
     Angabe des Pfades zu einer existierenden IML-Graph Datei.
     
   \item 
-    \verb+--loadproject='Pfad'+ oder \verb+-l 'Pfad'+
+    \verb+--loadproject=Pfad+ oder \verb+-l Pfad+
 
     Angabe des Pfades zu einer existierenden Projektdatei.
           
   \item
-    \verb+--execute='Pfad'+ oder \verb+-e 'Pfad'+
+    \verb+--execute=Pfad+ oder \verb+-e Pfad+
 
     Pfad zu einer Datei in der ein GQSL Skript gespeichert ist.
   
@@ -89,17 +89,17 @@ die folgenden Optionen.
     GIANT startet und zeigt das Main Window an. 
     Es ist noch kein Projekt geladen.
     
-    \item Eingabe von: \verb+giant --newproject='/home/projekt/sample.giant' --iml='sample.iml'+\\
+    \item Eingabe von: \verb+giant --newproject=/home/projekt/sample.giant --iml=sample.iml+\\
     Ein neues Projekt wird geöffnet und erhält den Namen der Projektdatei.
     \label{Kommandozeile_neus}
 
-    \item Eingabe von: \verb+giant --loadproject='sample.giant'+\\
+    \item Eingabe von: \verb+giant --loadproject=sample.giant+\\
     Das angegebene Projekt wird geöffnet.
     \label{Kommandozeile_altes}
     
     \item
     Bei \ref{Kommandozeile_neus} und \ref{Kommandozeile_altes}
-    kann zusätzlich der Parameter \verb+--execute='file.script'+ 
+    kann zusätzlich der Parameter \verb+--execute=file.script+ 
     eingegeben werden.\\
     In diesem Falle wird das übergebene GQSL Skript ausgeführt.
 
@@ -107,23 +107,18 @@ die folgenden Optionen.
   
 % ==============================================================================
 \section{Beenden von GIANT} \index{Beenden von GIANT}
-GIANT kann durch Auswahl des entsprechenden Eintrags im Hauptmenü 
-beendet werden.\\
 Ablauf:
 
 \begin {enumerate}
-  \item Der Benutzer gibt das Kommando zum Beenden von GIANT.
-  \item 
-  Ist ein Projekt geöffnet, so fragt GIANT nach, ob das Projekt gespeichert
-  werden soll. Falls der Benutzer das Speichern ablehnt, so gehen alle
-  nicht gespeicherten Informationen verloren.\\
-  Entscheidet er sich für speichern, so wird 
-  die unter \ref{Alles Speichern} beschriebene Funktionalität 
-  ausgeführt.
- 
+  \item GIANT wählt \gq{Quit} im Hauptmenü 
     
-  \item 
-  Das System GIANT wird beendet.
+  \item Ist ein Projekt geöffnet, so fragt GIANT nach, ob das Projekt
+    gespeichert werden soll. Falls der Benutzer das Speichern ablehnt,
+    so gehen alle nicht gespeicherten Informationen verloren.
+    Entscheidet er sich für Speichern, so wird die unter \ref{Alles
+      Speichern} beschriebene Funktionalität ausgeführt.
+     
+  \item GIANT wird beendet.
     
 \end {enumerate}
   

@@ -1,6 +1,6 @@
 % ==============================================================================
 %  $RCSfile: node_annotations.tex,v $
-%  $Date: 2003/04/05 12:41:57 $
+%  $Date: 2003/04/07 18:53:13 $
 %  $Author: squig $
 %
 %  Description: UseCases zum Annotieren von Knoten
@@ -10,9 +10,8 @@
 % ==============================================================================
 
 \begin{uc}[Fenster-Knoten annotieren]{UC: Fenster-Knoten annotieren}
-  Dieser UseCase dient zum Erzeugen von Knoten-Annotationen.
-  Für weitere Informationen siehe auch Abschnitt
-  \ref{Project Persistenz von Knoten-Annotationen}. 
+  Dieser UseCase dient zum Erzeugen von Knoten-Annotationen (siehe
+  auch \ref{Project Persistenz von Knoten-Annotationen}).
   
   \begin{precond}
     \cond Es gibt mindestens ein Anzeigefenster mit Fenster-Knoten.
@@ -51,11 +50,11 @@
     ein.
   
     \step[4]
-    Nach Abschluss der Eingabe betätigt der Benutzer den \gq{OK Button}.
+    Nach Abschluss der Eingabe wählt der Benutzer OK aus.
             
     \step[5]
-    GIANT übernimmt die neu Annotation. Die eingegebene Annotation 
-    muss allerdings mindestens ein Zeichen haben, ansonsten erscheint eine
+    GIANT übernimmt die neue Annotation. Die eingegebene Annotation 
+    muss allerdings mindestens ein Zeichen haben, sonst erscheint eine
     Fehlermeldung.
 
   \end{proc}
@@ -64,7 +63,7 @@
 
     \astep{3}
     Der Benutzer kann die Eingabe der neuen Knoten-Annotation jeder Zeit 
-    mittels des \gq{Cancel Buttons} abbrechen.
+    mit Cancel abbrechen.
     
 
   \end{aproc}
@@ -73,11 +72,9 @@
 % ==============================================================================
 
 \begin{uc}[Knoten-Annotation ändern]{UC: Knoten-Annotation ändern}
-  Dient zum Ändern bestehender Knoten-Annotationen (weitere Informationen
-  zu Knoten-Annotationen sind unter Abschnitt 
-  \ref{Project Persistenz von Knoten-Annotationen} zu finden).
-  Dieser UseCase ist auch für das Anzeigen von Knoten-Annotationen
-  vorgesehen.
+  Dient zum Ändern bestehender Knoten-Annotationen (siehe auch
+  \ref{Project Persistenz von Knoten-Annotationen}). Dieser UseCase
+  ist auch für das Anzeigen von Knoten-Annotationen vorgesehen.
   
   \begin{precond}
     \cond Es gibt mindestens einen annotierten Fenster-Knoten
@@ -120,7 +117,7 @@
     zu ändern.
   
     \step[4]
-    Nach Abschluss der Eingabe betätigt der Benutzer den \gq{OK Button}.
+    Nach Abschluss der Eingabe wählt der Benutzer den OK aus.
             
     \step[5]
     GIANT übernimmt die vorgenommenen Änderungen an der Annotation. 
@@ -132,7 +129,7 @@
   \begin{aproc}
     \ageneral 
     Der Benutzer kann das Ändern der Annotation jeder Zeit 
-    mittels des \gq{Cancel Buttons} abbrechen.
+    mit Cancel abbrechen.
     
 
   \end{aproc}
@@ -141,14 +138,12 @@
 % ==============================================================================
 
 \begin{uc}[Knoten-Annotation löschen]{UC: Knoten-Annotation löschen}
-  Löscht eine bestehende Knoten-Annotationen (für weitere Informationen
-  zu Knoten-Annotationen siehe
-  \ref{Project Persistenz von Knoten-Annotationen}). 
+  Löscht eine bestehende Knoten-Annotationen (siehe auch \ref{Project
+    Persistenz von Knoten-Annotationen}).
   
   \begin{precond}
-    \cond Es gibt mindestens einen annotierten Fenster-Knoten (
-          ist mit einen speziellen Icon gekennzeichnet 
-           -- siehe \ref {Visualsization Icon für Knoten-Annotationen}).
+    \cond Es gibt mindestens einen annotierten Fenster-Knoten (siehe
+    \ref {Visualsization Icon für Knoten-Annotationen}).
   \end{precond}
 
   \begin{postsuccess}
@@ -185,11 +180,11 @@
 % ==============================================================================
 
 \begin{uc}[Knoten-Annotationen filtern]{UC: Unreferenzierte Knoten-Annotationen löschen}
-  Löscht alle bestehenden Knoten-Annotationen des Projektes für die es
-  in Anzeigefenstern und
-  IML-Teilgraphen keine Fenster-Knoten und Graph-Knoten gibt.\\
-  Dieser Filter soll es ermöglichen, nicht mehr benötigte Annotationen
-  automatisch entfernen zu lassen.
+  Dieser UseCase soll es ermöglichen, nicht mehr benötigte
+  Annotationen automatisch entfernen zu lassen.  Es werden alle
+  bestehenden Knoten-Annotationen des Projektes für die es in
+  Anzeigefenstern und IML-Teilgraphen keine Fenster-Knoten und
+  Graph-Knoten gibt gelöscht.
   
   \begin{precond}
      \cond Ein Projekt ist geladen.
@@ -211,9 +206,8 @@
     \begin{proc}
 
      \step[1] 
-     Der Benutzer wählt im Hauptmenü des 
-     Hauptfensters den Eintag 
-     \gq{Tools -- Delete Annotations having no visible Node}
+     Der Benutzer wählt im Hauptmenü den Eintag 
+     \gq{Delete Annotations Having No Visible Node}
      (siehe \ref{Main-Window-Tools}) aus.
     
      \step[2]
@@ -234,7 +228,7 @@
 
    \begin{aproc}
 
-     \astep{2} Der Benutzer bricht mit Cancel ab.
+     \astep{3} Der Benutzer bricht mit Cancel ab.
 
    \end{aproc} 
 \end{uc}

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.36 $
-%  $Date: 2003/04/06 21:14:55 $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.37 $
+%  $Date: 2003/04/07 18:53:13 $
 %  $Author: squig $
 %
 %  Description: UseCases für die Fensterfunktionalität der GUI
@@ -30,17 +30,14 @@ Projektes anlegen.
   
   \begin{proc}    
     \step[1] 
-    Der Benutzer startet den UseCase über das Popup Menü
-    \ref{WINDOW-LIST-POPUP} durch Auswahl von \gq{New Window}.        
+    Der Benutzer startet den UseCase über das Popup-Menü
+    (siehe \ref{WINDOW-LIST-POPUP}) durch Auswahl von \gq{New Window}.        
     
     \step[2]
-    GIANT erzeugt ein neues Anzeigefenster (siehe  \ref{GUI Anzeigefenster})
-    mit einem Namen nach dem Schema \gq{Unknown\_xx} und öffnet dies.
+    GIANT erzeugt ein neues Anzeigefenster (siehe \ref{GUI Anzeigefenster})
+    mit einem Standard-Namen und öffnet dies.
   \end{proc}
 
-  \begin{aproc}
-    \ageneral Es sind keine alternativen Abläufe vorgesehen.
-  \end{aproc}
 \end{uc}
 
 
@@ -64,7 +61,7 @@ Dient zum Öffnen eines Anzeigefensters des Projektes.
     Der Benutzer führt einen Doppelklick auf ein nicht geöffnetes
     Anzeigefenster in der Liste über die Anzeigefenster
     (siehe \ref{WINDOW-LIST}) durch, oder wählt im zugehöhrigen Popup-Menü
-    (siehe \ref{WINDOW-LIST-POPUP}) den \gq{Open Window} aus.
+    (siehe \ref{WINDOW-LIST-POPUP}) \gq{Open Window} aus.
    
     \step[2]
     GIANT öffnet das entsprechende Anzeigefenster.
@@ -93,8 +90,8 @@ Dient zum Umbenennen eines Anzeigefensters des Projektes.
     Popup-Menü (siehe \ref{WINDOW-LIST-POPUP}) \gq{Rename Window} aus.
 
     \step[2] 
-    GIANT öffnet den allgemeinen Texteingabedialog 
-    \gq{Enter Name For Window} (siehe \ref{DIALOG-WINDOW}).
+    GIANT öffnet den allgemeinen Texteingabedialog (siehe \ref{DIALOG-WINDOW})
+    \gq{Enter Name For Window}.
 
     \step[3]
     Der Benutzer gibt dort einen zulässigen Namen für das Anzeigefenster ein
@@ -104,9 +101,6 @@ Dient zum Umbenennen eines Anzeigefensters des Projektes.
     GIANT benennt das Anzeigefenster (siehe \ref{GUI Anzeigefenster}) um.
   \end{proc}  
 
-  \begin{aproc}
-    \ageneral Es sind keine alternativen Abläufe vorgesehen.
-  \end{aproc}
 \end{uc}
 
 
@@ -132,7 +126,7 @@ Näheres zur Persistenz von Anzeigefenstern ist unter Abschnitt
     \step[1]
     Der Benutzer führt einen Rechtsklick auf ein Anzeigefenster in der Liste
     über die Anzeigefenster (siehe \ref{WINDOW-LIST}) durch und wählt im
-    Popup-Menü \ref{WINDOW-LIST-POPUP} \gq{Save Window} aus.
+    Popup-Menü (siehe \ref{WINDOW-LIST-POPUP}) \gq{Save Window} aus.
     
     \step[2]
     GIANT schreibt alle Änderungen in die Verwaltungsdatei des Anzeigefensters.
@@ -166,7 +160,7 @@ Näheres zur Persistenz von Anzeigefenstern ist unter Abschnitt
     \step[1]
     Der Benutzer führt einen Rechtsklick auf ein Anzeigefenster in der Liste
     über die Anzeigefenster (siehe \ref{WINDOW-LIST}) durch und wählt im
-    Popup-Menü \ref{WINDOW-LIST-POPUP} \gq{Close Window} aus.
+    Popup-Menü (siehe \ref{WINDOW-LIST-POPUP}) \gq{Close Window} aus.
 
     \step[2]
     GIANT zeigt die allgemeine Sicherheitsabfrage 
@@ -175,7 +169,7 @@ Näheres zur Persistenz von Anzeigefenstern ist unter Abschnitt
     \gq{The content has changed. Do you want to save the changes?}.
     
     \step[3]
-    Bestätigt der Benutzer mit \gq{Yes}, werden die Änderungen in die 
+    Bestätigt der Benutzer mit Yes, werden die Änderungen in die 
     Verwaltungsdatei geschrieben. Anderenfalls gehen sämtliche 
     nicht gespeicherten Änderungen am Anzeigefenster verloren.
     
@@ -217,15 +211,15 @@ unwiederbringlich verloren.
     \step[1]
     Der Benutzer führt einen Rechtsklick auf ein Anzeigefenster in der Liste
     über die Anzeigefenster (siehe \ref{WINDOW-LIST}) durch und wählt im
-    Popup-Menü \ref{WINDOW-LIST-POPUP} \gq{Delete Window} aus.
+    Popup-Menü (siehe \ref{WINDOW-LIST-POPUP}) \gq{Delete Window} aus.
     
     \step[2] 
     GIANT zeigt die allgemeine Sicherheitsabfrage (siehe 
-    \ref{Sicherheitsabfrage}) und fragt nach, ob das Anzeigefenster wirklich
-    gelöscht werden soll. \gq{Do you really want to delete the selected window?}
+    \ref{Sicherheitsabfrage}) an und fragt nach, ob das Anzeigefenster wirklich
+    gelöscht werden soll: \gq{Do you really want to delete the selected window?}
       
     \step[3] 
-    Der Benutzer bestätigt mit \gq{Yes}.
+    Der Benutzer bestätigt mit Yes.
     
     \step[4]
     GIANT entfernt das Anzeigefenster aus dem Projekt und löscht die 
@@ -234,7 +228,7 @@ unwiederbringlich verloren.
   \end{proc}
 
   \begin{aproc}
-    \astep{3} Der Benutzer bricht die Verarbeitung mit \gq{No} ab.
+    \astep{3} Der Benutzer bricht die Verarbeitung mit No ab.
   \end{aproc}
 \end{uc}
 
@@ -282,7 +276,7 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase über das Popup-Menü 
-    \ref{SUBGRAPH-LIST-POPUP}
+    (siehe \ref{SUBGRAPH-LIST-POPUP})
     im Hauptfenster \gq{Insert IML Subgraph}.
     Hierdurch wird der einzufügende IML-Teilgraph bestimmt (immer
     der IML-Teilgraph, auf dem der Rechtsklick ausgeführt wurde).
@@ -375,10 +369,10 @@ Ziel-Anzeigefenster unter Beibehaltung des Layouts kopiert werden
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase über das Popup-Menü
-    \ref{Popup-Menü Subgraph List} in der Subgraph Liste im Hauptfenster.
+    (siehe \ref{Selektionsauswahlliste}) in der Selektionsauswahlliste.
     Durch Auswahl eines der beiden Menüeinträge 
-    \gq{Copy Selection keep existing layout} oder 
-    \gq{Copy Selection change existing layout}.
+    \gq{Copy SelEction Keep Existing Layout} oder 
+    \gq{Copy Selection Change Existing Layout}.
     Hierdurch wird automatisch die Selektion bestimmt (immer
     die Selektion, auf der der Rechtsklick ausgeführt wurde).
     
@@ -400,14 +394,14 @@ Ziel-Anzeigefenster unter Beibehaltung des Layouts kopiert werden
     geschieht mit den bereits im Ziel-Anzeigefenster vorhandenen 
     Fenster-Knoten der Selektion folgendes:
     \begin {enumerate}
-       \item
-       Falls \gq{Copy Selection keeping existing layout} gewählt wurde, wird
-       ihre Position im Ziel-Anzeigefenster nicht verändert.
+      
+    \item Falls \gq{Copy Selection Keeping Existing Layout} gewählt
+      wurde, wird ihre Position im Ziel-Anzeigefenster nicht
+      verändert.
        
-       \item 
-       Falls \gq{Copy Selection changing existing layout} gewählt wurde,
-       ihre Position im Zielanzeigefenster gemäß dem Layout der
-       Selektion verändert.
+     \item Falls \gq{Copy Selection Changing Existing Layout} gewählt
+       wurde, wird ihre Position im Zielanzeigefenster gemäß dem
+       Layout der Selektion verändert.
         
     \end {enumerate}
       
@@ -466,18 +460,18 @@ Fenster-Kanten}).
     \step[1]
     Der Benutzer führt einen Rechtsklick auf die entsprechende Selektion in der
     Selektionsauswahlliste durch (siehe \ref{Selektionsauswahlliste})
-    und wählt im entsprechenden Popup-Menü den Eintrag \gq{Delete Selection}
+    und wählt im entsprechenden Popup-Menü \gq{Delete Selection}
     aus.
       
     
     \step[2]
     GIANT zeigt die Sicherheitsabfrage (siehe \ref{Sicherheitsabfrage}) 
     und fragt nach, ob es die Selektion samt ihrer Knoten und Kanten
-    wirklich löschen soll (\gq{Really delete Selection xy from its window 
+    wirklich löschen soll (\gq{Really delete Selection from its window 
     including Nodes and Edges?}).
     
     \step[3]
-    Der Benutzer bestätigt mit \gq{Yes}.
+    Der Benutzer bestätigt mit Yes.
     
     \step[4]
     GIANT löscht die Selektion samt allen zugehörigen Fenster-Knoten und
@@ -487,7 +481,7 @@ Fenster-Kanten}).
   \end{proc}
 
   \begin{aproc}
-    \astep{2} Der Benutzer bricht den UseCase mit \gq{No} ab.
+    \astep{2} Der Benutzer bricht den UseCase mit No ab.
   \end{aproc}
 
 
@@ -509,8 +503,7 @@ Visualisierungsstile ändern (siehe auch \ref{Config Visualisierungsstile}).
     Es gibt ein geöffnetes Anzeigefenster.    
    
     \cond
-    Es gibt mindestens einen definierten Visualisierungsstil
-    (siehe auch \ref{Config Visualisierungsstile}). 
+    Es gibt mindestens einen definierten Visualisierungsstil.
        
   \end{precond}
 
@@ -612,8 +605,6 @@ Verändert den Maßstab der Darstellung von Knoten und Kanten.
   \begin{proc}    
   
     \step[1]
-    \begin {enumerate}
-      \item
       Der Benutzer gibt in der Zoom-Kontrolle-Combobox 
       (siehe \ref{GUI Zoom-Kontrolle})
       des Anzeigefensters einen
@@ -621,8 +612,6 @@ Verändert den Maßstab der Darstellung von Knoten und Kanten.
       ändert den Zoomwert in festgelegten Schritten mit den \gq{+} oder 
       \gq{-} Buttons. 
       
-    \end {enumerate}
-    
     \step[2]
     GIANT berechnet den neuen sichtbaren Anzeigeinhalt anhand der neuen
     Zoomstufe.
@@ -658,10 +647,9 @@ sichtbar ist.
 
   \begin{proc}    
   
-    \step[1]
-    Der Benutzer klickt auf \gq{Zoom to make selection fill window} 
-    im Popup-Menü
-    der Selektionsauswahlliste (siehe \ref{Selektionsauswahlliste}).
+    \step[1] Der Benutzer klickt auf \gq{Zoom To Make Selection Fill
+      Window} im Popup-Menü der Selektionsauswahlliste (siehe
+    \ref{Selektionsauswahlliste}).
       
     \step[2]
     GIANT scrollt und zoomt automatisch so, dass die gesamte Selektion
@@ -711,7 +699,7 @@ dargestellt wird.
 \index{zoomen auf eine Kante}
 
 Wählt die passende Zoomstufe und scrollt den sichtbaren Anzeigeinhalt
-so, dass eine Kante mit ihren Start- und Ziel-Fenster-Knoten komplett
+so, dass eine Kante mit ihren Start-- und Ziel-Fenster-Knoten komplett
 im sichtbaren Anzeigeinhalt liegt.
 
   \begin{precond}
@@ -743,13 +731,13 @@ im sichtbaren Anzeigeinhalt liegt.
   \begin{proc}    
   
     \step[1]
-    Der Benutzer Klickt den Button \gq{Pick Edge} in der Zoomkontrolle
-    (siehe \ref{GUI Zoom-Kontrolle}).
+    Der Benutzer wählt den Button \gq{Pick Edge} in der Zoomkontrolle
+    (siehe \ref{GUI Zoom-Kontrolle}) aus.
    
     \step[2] 
     Daraufhin erscheint in der Statuszeile von GIANT im Hauptfenster
     der Text 
-    \gq{Select Edge in Window (Fenstername) to be zoomed onto} und
+    \gq{Select edge to be zoomed onto} und
     der Fadenkreuz-Cursor (siehe \ref{Fadenkreuzcursor}) wird
     angezeigt, wenn der Mauscursor über den sichtbaren Anzeigeinhalt
     eines Anzeigefensters bewegt wird.
@@ -820,12 +808,11 @@ Anzeigeinhalt verschoben werden. Dieses Verschieben geschieht mittels
       \item
       Einen Rechtsklick auf eine Selektion in der Selektionsauswahlliste
       durchführt (siehe \ref{Selektionsauswahlliste}) und im
-      Popup-Menü den Eintrag \gq{Move Selection} auswählt,
+      Popup-Menü \gq{Move Selection} auswählt,
 
       \item
       oder einen Rechtsklick auf einen Fenster-Knoten durchführt
-      und im Popup Menü (siehe \ref{Node-Popup-Menü}) den Eintrag
-      \gq{Move Node} auswählt.
+      und im Popup Menü (siehe \ref{Node-Popup-Menü}) \gq{Move Node} auswählt.
 
     \end{enumerate}
     
@@ -902,10 +889,11 @@ Drop auf dem sichtbaren Anzeigeinhalt verschoben werden.
 \begin{uc}[Platz schaffen]{UC: Platz schaffen}
 \index{Fenster-Knoten!auseinanderschieben}
 
-Dieser UseCase wird benötigt, um Fenster-Knoten auseinander schieben zu 
-können. So kann der Benutzer an einer beliebigen Stelle des Anzeigefensters
-genügend Platz zum Einfügen neuer Fenster-Knoten und Fenster-Kanten schaffen.
-Siehe auch Abschnitt \ref{Auseinanderschieben von Fenster-Knoten}.
+Dieser UseCase wird benötigt, um Fenster-Knoten auseinander schieben
+zu können. So kann der Benutzer an einer beliebigen Stelle des
+Anzeigefensters genügend Platz zum Einfügen neuer Fenster-Knoten und
+Fenster-Kanten schaffen (siehe auch \ref{Auseinanderschieben von
+  Fenster-Knoten}).
 
 
   \begin{precond}
@@ -945,7 +933,7 @@ Siehe auch Abschnitt \ref{Auseinanderschieben von Fenster-Knoten}.
     
     \step[2]
     GIANT zeigt in der Statuszeile im Hauptfenster 
-    \gq{Select Position in Display Window}.
+    \gq{Select position in display window}.
     Der Benutzer gibt den Punkt um den herum die Fenster-Knoten (und damit
     automatisch auch die Fenster-Kanten) auseinander geschoben werden
     sollen über das Fadenkreuz vor (siehe \ref{Fadenkreuzcursor}).
@@ -957,7 +945,7 @@ Siehe auch Abschnitt \ref{Auseinanderschieben von Fenster-Knoten}.
     Betrag die Fenster-Knoten auseinander geschoben werden sollen (siehe
     \ref{Platz Schaffen-Dialog}).
    
-    \step[4]
+    \Step[4]
     Der Benutzer wählt einen geeigneten Betrag aus und bestätigt mit OK.
     
     \step[5]
@@ -971,8 +959,7 @@ Siehe auch Abschnitt \ref{Auseinanderschieben von Fenster-Knoten}.
               Maus einen Rechtsklick auf eine beliebige Stelle 
               durchführt.
 
-    \astep{3} Der Benutzer kann den UseCase durch Betätigen des \gq{Cancel}
-              Buttons abbrechen.
+    \astep{3} Der Benutzer kann den UseCase mit Cancel abbrechen.
 
   \end{aproc}
 
@@ -984,8 +971,8 @@ Siehe auch Abschnitt \ref{Auseinanderschieben von Fenster-Knoten}.
 \begin{uc}[Pin anlegen]{UC: Pin anlegen}
 \index{Pins!anlegen}
 
-Mit diesem UseCase kann ein neuer Pin 
-(siehe auch \ref{VIS-PANE-Pins}) erzeugt werden.
+Mit diesem UseCase kann ein neuer Pin erzeugt werden (siehe auch
+\ref{Pins}).
 
  \begin{precond}
     \cond Es gibt ein geöffnetes Anzeigefenster.
@@ -1008,7 +995,7 @@ Mit diesem UseCase kann ein neuer Pin
     
     Der Benutzer führt einen Rechtsklick auf den Anzeigeinhalt eines
     Anzeigefensters durch und wählt aus dem Popup-Menü 
-    (siehe \ref{Empty Vis Pane Right click}) den Eintrag \gq{New Pin} aus.
+    (siehe \ref{Empty Vis Pane Right click}) \gq{New Pin} aus.
     Der später erstellte Pin verweist dann auf die Stelle im Anzeigeinhalt,
     auf die der Rechtklick durchgeführt wurde.
  
@@ -1040,8 +1027,8 @@ Mit diesem UseCase kann ein neuer Pin
 \begin{uc}[Pin anspringen]{UC: Pin anspringen}
 \index{Pins!anspringen}
 
-Stellt die im Pin (siehe auch \ref{VIS-PANE-Pins}) gespeicherte 
-Position des sichtbaren Anzeigeinhaltes wieder her.
+Stellt die im Pin gespeicherte Position des sichtbaren Anzeigeinhaltes
+wieder her (siehe auch \ref{Pins}).
 
  \begin{precond}
     \cond Es gibt ein geöffnetes Anzeigefenster mit mindestens 
@@ -1067,11 +1054,9 @@ Position des sichtbaren Anzeigeinhaltes wieder her.
       Der Benutzer führt einen Doppelklick auf den entsprechenden Pin
       in der Pinliste (siehe \ref{VIS-PANE-Pins}) aus.
          
-      \item
-      Der Benutzer öffnet ein Popup-Menü durch
-      Rechtsklick auf den anzuspringenden Pin 
-      in der Pinliste (siehe \ref{VIS-PANE-Pins}) und wählt den Eintrag
-      \gq{Focus Pin} aus.
+    \item Der Benutzer öffnet ein Popup-Menü durch Rechtsklick auf den
+      anzuspringenden Pin in der Pinliste (siehe \ref{VIS-PANE-Pins})
+      und wählt \gq{Focus Pin} aus.
         
     \end {enumerate}
     
@@ -1091,7 +1076,7 @@ Position des sichtbaren Anzeigeinhaltes wieder her.
 \begin{uc}[Pin löschen]{UC: Pin löschen}
 \index{Pins!löschen}
 
-Löscht einen Pin (siehe auch \ref{VIS-PANE-Pins}).
+Löscht einen Pin (siehe auch \ref{Pins}).
 
  \begin{precond}
     \cond Es gibt ein geöffnetes Anzeigefenster mit mindestens 
@@ -1108,7 +1093,7 @@ Löscht einen Pin (siehe auch \ref{VIS-PANE-Pins}).
   \begin{proc}    
     \step[1]
     Der Benutzer öffnet das  Popup-Menü der Pinliste (siehe \ref{VIS-PANE-Pins})
-    durch Rechtsklick auf den Pin  und wählt den Eintrag \gq{Delete Pin} aus.
+    durch Rechtsklick auf den Pin  und wählt \gq{Delete Pin} aus.
      
     \step[2]
     GIANT löscht den Pin.
