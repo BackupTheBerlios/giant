@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.20 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.21 $
 --  $Author: squig $
---  $Date: 2003/06/25 18:59:59 $
+--  $Date: 2003/06/27 11:33:22 $
 --
 --
 ------------------------------------------------------------------------------
@@ -47,6 +47,32 @@ is
 
    Config_Filename : String
      := File_Management.Get_User_Config_Path & "settings.xml";
+
+   procedure New_Test_Project
+   is
+   begin
+      begin
+         File_Management.Delete_File ("test/resources/test.xml");
+      exception
+         when others =>
+            null;
+      end;
+      Controller.Create_Project ("test/resources/test.xml",
+                                 "test/resources/rfg_examp.iml");
+   exception
+      when others =>
+         null;
+   end New_Test_Project;
+
+   procedure Open_Test_Project
+   is
+   begin
+      Controller.Open_Project ("test/resources/test.xml");
+   exception
+     when others =>
+        null;
+   end Open_Test_Project;
+
 begin
    Default_Logger.Init;
 
@@ -66,21 +92,7 @@ begin
       Default_Vis_Style_File =>
         "test/resources/vis_styles/only_defaults_giant_vis_style.xml");
 
-   -- FIX: remove the following lines
-   declare
-   begin
---        declare
---        begin
---           File_Management.Delete_File ("test/resources/GiantTest.xml");
---        exception
---           when others =>
---              null;
---        end;
-      Controller.Open_Project ("test/resources/test.xml");
-   exception
-      when others =>
-         null;
-   end;
+   Open_Test_Project;
 
    Logger.Debug ("starting giant");
 

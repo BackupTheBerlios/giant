@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-dialogs.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-dialogs.adb,v $, $Revision: 1.8 $
 --  $Author: squig $
---  $Date: 2003/06/26 13:43:52 $
+--  $Date: 2003/06/27 11:33:22 $
 --
 
 with Gtk.Box;
@@ -45,9 +45,8 @@ package body Giant.Dialogs is
       Response : Default_Dialog.Response_Type;
    begin
       --  FIX: query setting
-      if (Config_Settings.Boolean_Settings.Get
-          (Config_Settings.Get_Setting_As_String
-           ("Confirm.Delete")) = False) then
+      if (Config_Settings.Get_Setting_As_Boolean
+           ("Confirm.Delete") = False) then
          return True;
       end if;
 
@@ -56,11 +55,13 @@ package body Giant.Dialogs is
       Box := Default_Dialog.Add_Icon_Box
         (Dialog, Gtkada.Pixmaps.Confirmation_Xpm, Message);
 
-      Gtk.Check_Button.Gtk_New (Check, -"Do not show delete Confirmations again");
+      Gtk.Check_Button.Gtk_New
+        (Check, -"Do not show delete confirmations again");
       Gtk.Box.Add (Default_Dialog.Get_Center_Box (Dialog), Check);
 
       Default_Dialog.Show_Modal (Dialog);
 
+      --  save confirm setting
       Config_Settings.Set_Setting
         ("Confirm.Delete",
          Boolean'Image (not Gtk.Check_Button.Get_Active (Check)));

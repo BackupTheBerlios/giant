@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.11 $
+-- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.12 $
 -- $Author: squig $
--- $Date: 2003/06/26 13:43:52 $
+-- $Date: 2003/06/27 11:33:22 $
 --
 -- -----
 -- This package holds the functionality needed to access and handle
@@ -139,11 +139,11 @@ package Giant.Config_Settings is
 
       (To_UStr ("Confirm.Delete"),
        To_UStr ("True"),
-       Boolean_Settings.Validate'Access),
+       null),
 
       (To_UStr ("Editor.Source"),
        To_UStr ("/usr/bin/emacs +%l:%c %f"),
-       Boolean_Settings.Validate'Access)
+       null)
       );
 
    ---------------------------------------------------------------------------
@@ -305,6 +305,26 @@ package Giant.Config_Settings is
    function Get_Setting_With_Path_Expanded (Name : in String) return String;
 
    ---------------------------------------------------------------------------
+   -- This method returns a config setting as a boolean value.
+   -- As described above, each config setting is identified by a unique
+   -- name (a string).
+   --
+   -- Parameters:
+   --   Name - The unique identifier of a config setting.
+   -- Returns:
+   --   The config setting corresponding to "Name_of_Setting"
+   -- Raises:
+   --   Config_Settings_ADO_Not_Initialized_Exception -
+   --     raised if this subprogram is called before "
+   --     Initialize_Config_Settings".
+   --   Config_Setting_Does_Not_Exist_Exception - raised if there is
+   --     no config setting with the name "Name".
+   --   Config_Setting_Is_Not_An_Integer_Value - raised if the
+   --     value if the setting "Name_Of_Setting" is not an integer value.
+   function Get_Setting_As_Boolean (Name : in String)
+     return Boolean;
+
+   ---------------------------------------------------------------------------
    -- This method returns a config setting as a integer value.
    -- As described above, each config setting is identified by a unique
    -- name (a string).
@@ -352,6 +372,21 @@ package Giant.Config_Settings is
    --     raised if this subprogram is called before "
    --     Initialize_Config_Settings".
    procedure Set_Setting (Name : in String; Value : in Integer);
+
+   ---------------------------------------------------------------------------
+   -- Adds a new setting or changes the value of an existing setting.
+   --
+   -- Parameters:
+   --   Name - The name of the setting that should
+   --     be added or those value should be changed (if already
+   --     exists).
+   --   Value - A boolean value for the setting - will be converted
+   --     to String by Integer'Image (Value).
+   -- Raises:
+   --   Config_Settings_ADO_Not_Initialized_Exception -
+   --     raised if this subprogram is called before "
+   --     Initialize_Config_Settings".
+   procedure Set_Setting (Name : in String; Value : in Boolean);
 
    ---------------------------------------------------------------------------
    -- Returns an absolute path to the "User_Config_File" if no

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.18 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.19 $
 --  $Author: squig $
---  $Date: 2003/06/26 13:05:16 $
+--  $Date: 2003/06/27 11:33:22 $
 --
 
 with Ada.Strings.Unbounded;
@@ -407,13 +407,13 @@ package body Giant.Gui_Manager is
          return True;
       end if;
 
-      if (Is_Window_Open (Name)) then
-         if (not Dialogs.Show_Delete_Confirmation_Dialog) then
-            return False;
-         end if;
+      if (not Dialogs.Show_Delete_Confirmation_Dialog) then
+         return False;
+      end if;
 
-         if (Close (Name, False)) then
-            --  user has aborted close
+      if (Is_Window_Open (Name)) then
+         if (not Close (Name, False)) then
+            --  user has aborted close, should never happen
             return False;
          end if;
       end if;

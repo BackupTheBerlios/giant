@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.26 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.27 $
 --  $Author: squig $
---  $Date: 2003/06/26 13:05:16 $
+--  $Date: 2003/06/27 11:33:22 $
 --
 
 with Ada.Strings.Unbounded;
@@ -65,17 +65,19 @@ package body Giant.Controller is
      return Boolean
    is
    begin
-      Logger.Info (-"Closing current project");
-
-      if (Gui_Manager.Close_Project (Ask_For_Confirmation)) then
-         Project_Loaded := False;
-         --FIX: Current_Project := null;
-         return True;
+      if (not Gui_Manager.Close_Project (Ask_For_Confirmation)) then
+         return False;
       end if;
 
+      Logger.Info (-"Closing current project");
+
+      Project_Loaded := False;
+      --FIX: Current_Project := null;
+
+      Projects.Deallocate_Project_Deep (Current_Project);
       Graph_Lib.Unload;
 
-      return False;
+      return True;
    end;
 
    procedure Create_Project
@@ -154,11 +156,12 @@ package body Giant.Controller is
       Graph_Filename : Ada.Strings.Unbounded.Unbounded_String;
       Checksum : Integer;
    begin
-      --  fix
       Projects.Get_Bauhaus_IML_Graph_Data_File
         (Filename, Graph_Filename, Checksum);
 
       --  create graph
+      Logger.Info (-"Loading graph "
+                   & Ada.Strings.Unbounded.To_String (Graph_Filename));
       Giant.Graph_Lib.Load (Ada.Strings.Unbounded.To_String (Graph_Filename));
 
       Logger.Info (-"Opening project " & Filename);
@@ -546,8 +549,11 @@ package body Giant.Controller is
    is
    begin
       if (Gui_Manager.Remove_Window (Name, Ask_For_Confirmation)) then
-         Projects.Remove_Visualisation_Window
-           (Current_Project, Name);
+         if (Projects.Is_Vis_Window_Memory_Loaded (Current_Project, Name)) then
+            Projects.Free_Memory_For_Vis_Window (Current_Project, Name);
+         end if;
+
+         Projects.Remove_Visualisation_Window (Current_Project, Name);
          return True;
       end if;
 
@@ -572,11 +578,13 @@ package body Giant.Controller is
      (Name : in String)
    is
       --  make sure the window is loaded
-      Window : Vis_Windows.Visual_Window_Access
-        := Projects.Get_Visualisation_Window (Current_Project, Name);
+      Window : Vis_Windows.Visual_Window_Access;
    begin
-      Projects.Store_Single_Visualisation_Window (Current_Project, Name);
-      Logger.Info ("Saved window " & Name);
+      if (Projects.Is_Vis_Window_Memory_Loaded (Current_Project, Name)) then
+         Window := Projects.Get_Visualisation_Window (Current_Project, Name);
+         Projects.Store_Single_Visualisation_Window (Current_Project, Name);
+         Logger.Info ("Saved window " & Name);
+      end if;
    end Save_Window;
 
 end Giant.Controller;

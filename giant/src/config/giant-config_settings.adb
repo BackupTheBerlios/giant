@@ -20,11 +20,12 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.10 $
+-- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.11 $
 -- $Author: squig $
--- $Date: 2003/06/25 18:59:59 $
+-- $Date: 2003/06/27 11:33:22 $
 --
 with Ada.Unchecked_Deallocation;
+with Ada.Strings.Fixed;
 with Ada.Text_IO;
 
 with GNAT.Directory_Operations; -- from GNAT
@@ -587,6 +588,31 @@ package body Giant.Config_Settings is
    end Get_Setting_With_Path_Expanded;
 
    ---------------------------------------------------------------------------
+   function Get_Setting_As_Boolean (Name : in String)
+                                   return Boolean is
+
+   begin
+
+      if not ADO_Initialized then
+         raise Config_Settings_ADO_Not_Initialized_Exception;
+      end if;
+
+      if not Does_Setting_Exist (Name) then
+         raise Config_Setting_Does_Not_Exist_Exception;
+      end if;
+
+      declare
+         --Ada.Strings.Fixed.Trim (
+         Value : String := Get_Setting_As_String (Name);
+      begin
+         return (Value = "True" or else Value = "On");
+      exception
+         when Constraint_Error =>
+            raise Invalid_Type_Exception;
+      end;
+   end Get_Setting_As_Boolean;
+
+   ---------------------------------------------------------------------------
    function Get_Setting_As_Integer (Name : in String)
                                    return Integer is
 
@@ -640,6 +666,16 @@ package body Giant.Config_Settings is
       end if;
 
       Set_Setting (Name, Integer'Image (Value));
+   end Set_Setting;
+
+   ---------------------------------------------------------------------------
+   procedure Set_Setting (Name : in String; Value : in Boolean) is
+   begin
+      if not ADO_Initialized then
+         raise Config_Settings_ADO_Not_Initialized_Exception;
+      end if;
+
+      Set_Setting (Name, Boolean'Image (Value));
    end Set_Setting;
 
    ---------------------------------------------------------------------------
