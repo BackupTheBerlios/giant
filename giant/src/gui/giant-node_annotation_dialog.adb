@@ -20,25 +20,14 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-node_annotation_dialog.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-node_annotation_dialog.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/03 22:05:21 $
+--  $Date: 2003/06/05 11:08:50 $
 --
 
-with Ada.IO_Exceptions;
-with Ada.Text_Io; use Ada.Text_Io;
-
 with Glib;
-with Gtkada.File_Selection;
-with Gtk.Box;
-with Gtk.Button;
-with Gtk.Editable;
 with Gtk.Enums; use Gtk.Enums;
-with Gtk.Scrolled_Window;
-with Gtk.Text;
-with Gtk.Widget;
 
-with Giant.Default_Dialog;
 with Giant.Gui_Utils; use Giant.Gui_Utils;
 
 package body Giant.Node_Annotation_Dialog is
@@ -50,7 +39,7 @@ package body Giant.Node_Annotation_Dialog is
       Position : Glib.Gint := 0;
    begin
       Gtk.Text.Delete_Text (Dialog.Text_Area);
-	  Gtk.Text.Insert_Text (Dialog.Text_Area, Text, Position);      
+      Gtk.Text.Insert_Text (Dialog.Text_Area, Text, Position);
    end Set_Text;
 
    procedure On_Delete_Button_Clicked
@@ -60,7 +49,7 @@ package body Giant.Node_Annotation_Dialog is
    begin
       Dialog := Node_Annotation_Dialog_Access (Gtk.Widget.Get_Toplevel
                                    (Gtk.Widget.Gtk_Widget (Source)));
-	  -- FIX: delete annotation
+      -- FIX: delete annotation
    end On_Delete_Button_Clicked;
 
    function Can_Hide
@@ -84,11 +73,11 @@ package body Giant.Node_Annotation_Dialog is
 
    procedure Create
      (Dialog :    out Node_Annotation_Dialog_Access;
-	  Node	 : in     Graph_Lib.Node_Id)
+      Node   : in     Graph_Lib.Node_Id)
    is
    begin
       Dialog := new Node_Annotation_Dialog_Record;
-	  Dialog.Node := Node;
+      Dialog.Node := Node;
       Initialize (Dialog);
    end Create;
 
@@ -113,13 +102,13 @@ package body Giant.Node_Annotation_Dialog is
       Default_Dialog.Set_Center_Widget (Dialog, Scrolled_Window);
       Set_Default (Dialog, Dialog.Text_Area);
 
-	  -- FIX: set node annotation
-	  Set_Text (Dialog, "Annotation");
+      -- FIX: set node annotation
+      Set_Text (Dialog, "Annotation");
 
       -- buttons
-      Default_Dialog.Add (Dialog, 
-						  New_Button (-"Delete",
-									  On_Delete_Button_Clicked'Access));
+      Default_Dialog.Add (Dialog,
+                          New_Button (-"Delete",
+                                      On_Delete_Button_Clicked'Access));
    end;
 
 end Giant.Node_Annotation_Dialog;

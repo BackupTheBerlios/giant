@@ -2,6 +2,8 @@
 # GIANT Makefile
 #
 
+TMP_PATH		= /tmp/$(shell id -un)
+
 # gnatmake is called from this directory
 # therefore all pathes need to be relative to this directory
 OUT_PATH        = obj/
@@ -49,3 +51,8 @@ clean :
 
 tags :
 	find -name "*.ad[bs]" | xargs etags
+
+fetch-iml:
+	mkdir -p $(TMP_PATH)
+	scp droste.informatik.uni-stuttgart.de:/home/bauhaus/imbphase/iml_browser_030203.tar.gz $(TMP_PATH)
+	tar -C $(TMP_PATH) -xzvf $(TMP_PATH)/iml_browser_030203.tar.gz
