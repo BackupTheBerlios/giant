@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config.ads,v $, $Revision: 1.3 $
+-- $RCSfile: giant-config.ads,v $, $Revision: 1.4 $
 -- $Author: schwiemn $
--- $Date: 2003/06/11 12:38:44 $
+-- $Date: 2003/06/17 14:03:02 $
 --
 -- -----
 -- This package holds the functionality needed to access the
@@ -37,6 +37,33 @@ with Ada.Unchecked_Deallocation;
 with Gtkada.Types; -- from GTK
 
 package Giant.Config is
+
+
+   ---------------------------------------------------------------------------
+   -- Required settings.
+   -- A List of setting identifiers. These settings must be known to
+   -- the config ADO after parsing both config files
+   -- (GIANT_Config_File, User_Config_File);
+   type Required_Settings_Type is array (integer range <>) 
+     of Ada.Strings.Unbounded.Unbounded_String;
+     
+   Required_Settings : constant Required_Settings_Type :=
+     (Ada.Strings.Unbounded.To_Unbounded_String 
+        ("Icon_For_Node_Annotations"),
+      Ada.Strings.Unbounded.To_Unbounded_String 
+        ("Actual_Selection_Highlight_Color"),
+      Ada.Strings.Unbounded.To_Unbounded_String 
+        ("Selection_Highlight_Color_1"),
+      Ada.Strings.Unbounded.To_Unbounded_String 
+        ("Selection_Highlight_Color_2"),
+      Ada.Strings.Unbounded.To_Unbounded_String 
+        ("Selection_Highlight_Color_3"),
+      Ada.Strings.Unbounded.To_Unbounded_String 
+        ("IML_Subgraph_Highlight_Color_1"),
+      Ada.Strings.Unbounded.To_Unbounded_String 
+        ("IML_Subgraph_Highlight_Color_2"),
+      Ada.Strings.Unbounded.To_Unbounded_String 
+        ("IML_Subgraph_Highlight_Color_2"));
 
    ---------------------------------------------------------------------------
    -- A String Pointer used to describe a Color.
@@ -81,6 +108,11 @@ package Giant.Config is
    -- Raised if a passed config file could not be parsed as a
    -- valid xml file.
    Config_File_Not_Correct_Exception : exception;
+   
+   ---------------------------------------------------------------------------
+   -- Raised when a required config setting is not found after reading
+   -- both config files.
+   Required_Config_Setting_Not_Found_Exception : exception;
 
    ---------------------------------------------------------------------------
    -- Raised if a passed config file could not be opened for any reasons
@@ -145,6 +177,9 @@ package Giant.Config is
    --      ONLY ABSOLUTE PATHS WILL WORK.
    --
    -- Raises:
+   --   Required_Config_Setting_Not_Found_Exception - Raise when none
+   --     of the two passed coonfig files holds an required config setting
+   --     (as defined in the array "Required_Settings").
    --   Config_File_Not_Correct_Exception - Raised when the file passed
    --     (parameter "GIANT_Config_File" and "User_Config_File") is
    --     not a correct (valid) config file.

@@ -20,12 +20,11 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.2 $
+-- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.3 $
 -- $Author: schwiemn $
--- $Date: 2003/06/11 12:00:17 $
+-- $Date: 2003/06/17 14:03:02 $
 --
 with Giant.File_Management;  -- from GIANT
-with Giant.Valid_Names;      -- from GIANT
 with Giant.XML_File_Access;  -- from GIANT
 with Giant.Edge_Class_Proc;  -- from GIANT
 
@@ -215,27 +214,10 @@ package body Giant.Config.Class_Sets is
             -- name of class set: "my_set";
             -- an already existing class set with the same name will be 
             --  replaced.
-            --
-            -- Class sets whose calculated name does not correspond to
-            -- "Standard Name" (see package Valid_Names) will be IGNORED
-            begin  
-               New_Class_Set_Access.Class_Set_Name :=
-                 Ada.Strings.Unbounded.To_Unbounded_String
-                 (Valid_Names.To_String
-                  (Valid_Names.Calculate_Name_For_File
-                   (Ada.Strings.Unbounded.To_String(A_File_Name))));
-
-            exception
-               when Valid_Names.
-                 No_Correct_Standard_Name_Calculated_Exception =>
-                 
-                  -- deallocated already allocated memory
-                  Tree_Readers.Free (The_Tree_Reader);
-                  Deallocate_Class_Set (New_Class_Set_Access);
-               
-                  -- procedd with next file if exists
-                  Ignore_File := True;   
-            end;
+            New_Class_Set_Access.Class_Set_Name :=
+              Ada.Strings.Unbounded.To_Unbounded_String
+                (File_Management.Calculate_Name_For_File
+                   (Ada.Strings.Unbounded.To_String (A_File_Name)));
          end if;   
 
          if (Ignore_File = False) then

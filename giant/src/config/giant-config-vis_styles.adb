@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.3 $
--- $Author: squig $
--- $Date: 2003/06/16 21:48:30 $
+-- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.4 $
+-- $Author: schwiemn $
+-- $Date: 2003/06/17 14:03:02 $
 --
 with Unbounded_String_Hash; -- from Bauhaus IML "Reuse.src"
 
@@ -34,7 +34,6 @@ with Tree_Readers;
 with Giant.XML_File_Access; -- from GIANT
 with Giant.XPM_File_Access; -- from GIANT
 with Giant.File_Management; -- from GIANT
-with Giant.Valid_Names;     -- from GIANT
 with GIANT.Edge_Class_Proc; -- from GIANT
 
 package body Giant.Config.Vis_Styles is
@@ -927,24 +926,12 @@ package body Giant.Config.Vis_Styles is
       -- get name of default vis style (the file name without ending and path)
       -- file name: "\def_vis\my_def_vis.xml" -->
       -- name of default vis style: "my_def_vis";
-      --
-      -- the name must correspond to "Standard Name"
-      begin
-         -- INITIALIZE - The name of the default visualisation style
-         Default_Vis_Style_Name :=
-           Ada.Strings.Unbounded.To_Unbounded_String
-           (Valid_Names.To_String
-            (Valid_Names.Calculate_Name_For_File
-             (Default_Vis_Style_File)));
 
-      exception
-         when Valid_Names.No_Correct_Standard_Name_Calculated_Exception =>
-
-            -- deallocated already allocated memory
-            Tree_Readers.Free (Default_Vis_Style_Tree_Reader);
-            String_Lists.Destroy (File_List);
-            raise Illegal_Default_Vis_Style_Exception;
-      end;
+      -- INITIALIZE - The name of the default visualisation style
+      Default_Vis_Style_Name :=
+        Ada.Strings.Unbounded.To_Unbounded_String
+          (File_Management.Calculate_Name_For_File
+            (Default_Vis_Style_File));
 
       -------------------------------
       -- INITIALIZE internal data strucuture
@@ -986,24 +973,11 @@ package body Giant.Config.Vis_Styles is
                -- calculate name and ignore the ones that do not correspond
                -- to standard name
                ------------------
-               begin
-
-                  A_Vis_Style_Name :=
-                    Ada.Strings.Unbounded.To_Unbounded_String
-                    (Valid_Names.To_String
-                     (Valid_Names.Calculate_Name_For_File
-                      (Ada.Strings.Unbounded.To_String
-                       (A_Vis_Style_File_Name))));
-
-               exception
-                  when Valid_Names.
-                    No_Correct_Standard_Name_Calculated_Exception  =>
-
-                     Tree_Readers.Free(A_Vis_Style_Tree_Reader);
-                     Ignore_File := True;
-               end;
-               -----------------------------
-
+               A_Vis_Style_Name :=
+                 Ada.Strings.Unbounded.To_Unbounded_String
+                   (File_Management.Calculate_Name_For_File
+                     (Ada.Strings.Unbounded.To_String
+                       (A_Vis_Style_File_Name)));
             end if;
 
          exception

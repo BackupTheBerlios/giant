@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.4 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.5 $
 -- $Author: schwiemn $
--- $Date: 2003/06/16 17:50:39 $
+-- $Date: 2003/06/17 14:03:02 $
 --
 package body Giant.File_Management is
    ---------------------------------------------------------------------------
@@ -284,5 +284,65 @@ package body Giant.File_Management is
         (Return_Dir_Path_For_File_Path (Exec_File_Call_String));
 
    end Set_Currunt_Working_Dir_To_Exec_Dir;
+   
+   ---------------------------------------------------------------------------
+   function Calculate_Name_For_File (File_Name : in String)
+     return String is
+
+       Name : Ada.Strings.Unbounded.Unbounded_String;
+
+       Dir_Separator : Character := GNAT.OS_Lib.Directory_Separator;
+
+       Cut_Dot_Index : Integer := 0;
+       Dot_Found : Boolean := False;
+
+       Cut_Dir_Sep_Index : Integer := 0;
+       Dir_Sep_Found : Boolean := False;
+
+   begin
+
+      for I in reverse File_Name'Range loop
+
+         -- search firs dot "." from behind
+         if (Dot_Found = False)
+           and then (File_Name(I) = '.') then
+
+            Dot_Found := True;
+            Cut_Dot_Index := I;
+         end if;
+
+         -- search first directory separator from behind
+         if (Dir_Sep_Found = False)
+           and then (File_Name(I) = Dir_Separator) then
+
+            Dir_Sep_Found := True;
+            Cut_Dir_Sep_Index := I;
+
+            -- nessary because the dot must be behind the first
+            -- directory separator
+            exit;
+         end if;
+
+      end loop;
+
+      -- calculate name
+      if (Dir_Sep_Found = True) and (Dot_Found = True)  then
+
+         Name := Ada.Strings.Unbounded.To_Unbounded_String
+           (File_Name (Cut_Dir_Sep_Index + 1 .. Cut_Dot_Index - 1));
+      elsif (Dir_Sep_Found = True) and (Dot_Found = False) then
+
+         Name := Ada.Strings.Unbounded.To_Unbounded_String
+           (File_Name (Cut_Dir_Sep_Index + 1 .. File_Name'Last));
+      elsif (Dir_Sep_Found = False) and (Dot_Found = True) then
+
+         Name := Ada.Strings.Unbounded.To_Unbounded_String
+           (File_Name (File_Name'First .. Cut_Dot_Index - 1));
+      else
+         Name := Ada.Strings.Unbounded.To_Unbounded_String (File_Name);
+      end if;
+
+      return Ada.Strings.Unbounded.To_String (Name);
+   end Calculate_Name_For_File;
 
 end Giant.File_Management;

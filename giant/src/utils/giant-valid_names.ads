@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-valid_names.ads,v $, $Revision: 1.3 $
+-- $RCSfile: giant-valid_names.ads,v $, $Revision: 1.4 $
 -- $Author: schwiemn $
--- $Date: 2003/06/16 15:39:47 $
+-- $Date: 2003/06/17 14:03:02 $
 --
 -- -----------------------
 -- This package provides the functionality needed
@@ -94,32 +94,6 @@ pragma Elaborate_Body;
    -- "Standard name" (see GIANT Specification "3.3.1.1.
    -- Der String "STANDARD NAME")
    No_Correct_Standard_Name_Calculated_Exception : exception;
-
-   ---------------------------------------------------------------------------
-   --
-   -- Calculates a name out of a file name by neglecting the path and the
-   -- ending that may be part of a file name,
-   -- i.e. the ending (all characters after the last dot "." incl. the dot
-   -- itself and the path is removed from "File_Name".
-   --
-   -- The calculated name must be valid according to the affordences of
-   -- "Standard_Name".
-   --
-   -- Paramters:
-   --   File_Name - The full name (optional incl. path) of a file.
-   -- Returns:
-   --   The Name calculated for that file.
-   -- Raises:
-   --   No_Correct_Standard_Name_Calculated_Exception - Raised if the
-   --     calculated name is no standard name.
-   -- Examples:
-   --   - "./test/my_file.xml" --> "my_file"
-   --   - "a.data"             --> "a"
-   --   - "./../../data"       --> "data"
-   function Calculate_Name_For_File (File_Name : in String)
-     return Standard_Name;
-
-
 
 ------------------------------------------------------------------------------
 private

@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.12 $
---  $Author: squig $
---  $Date: 2003/06/16 21:48:31 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.13 $
+--  $Author: schwiemn $
+--  $Date: 2003/06/17 14:03:02 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -34,13 +34,12 @@ with Giant.Graph_Lib;         -- from GIANT
 package body Giant.Vis_Windows is
 
    ---------------------------------------------------------------------------
-   --  The default name used for standard selections. The
-   --  Name must correspond Giant.Valid_Names.Standard_Name.
-   --  This constant is used to determine the name for a new standard
-   --  selection that has to be created during the execution of
-   --  "function Create_New ...".
-   Standard_Selection_Name : constant Valid_Names.Standard_Name :=
-     Valid_Names.To_Standard_Name ("Standard_Selection");
+   --  The default name used for standard selections 
+   --  (when creating a new project). The
+   --  Name should correspond to Giant.Valid_Names.Standard_Name
+   --  (only if used in GIANT). If you use this package separately
+   --  you do not need a name that corresponds to Standard_Name.
+   Standard_Selection_Name : constant String := "Standard_Selection";
 
 
    ---------------------------------------------------------------------------
@@ -139,7 +138,7 @@ package body Giant.Vis_Windows is
 
    ---------------------------------------------------------------------------
    function Create_New
-     (Vis_Window_Name : in Valid_Names.Standard_Name)
+     (Vis_Window_Name : in String)
      return Visual_Window_Access is
 
       New_Window_Ac     : Visual_Window_Access;
@@ -151,8 +150,7 @@ package body Giant.Vis_Windows is
       New_Window_Ac := new Visual_Window_Element;
       -- set name
       New_Window_Ac.Vis_Window_Name :=
-        Ada.Strings.Unbounded.To_Unbounded_String
-          (Valid_Names.To_String (Vis_Window_Name));
+        Ada.Strings.Unbounded.To_Unbounded_String (Vis_Window_Name);
 
       -- set default visualisation style
       New_Window_Ac.The_Visualisation_Style :=
@@ -332,10 +330,9 @@ package body Giant.Vis_Windows is
    ---------------------------------------------------------------------------
    function Get_Name
      (Vis_Window : in Visual_Window_Access)
-     return Valid_Names.Standard_Name is
+     return String is
    begin
-      return Valid_Names.To_Standard_Name
-        (Ada.Strings.Unbounded.To_String (Vis_Window.Vis_Window_Name));
+      return Ada.Strings.Unbounded.To_String (Vis_Window.Vis_Window_Name);
    end Get_Name;
 
    ---------------------------------------------------------------------------
@@ -377,7 +374,7 @@ package body Giant.Vis_Windows is
    ---------------------------------------------------------------------------
    function Does_Selection_Exist
      (Vis_Window     : in Visual_Window_Access;
-      Selection_Name : in Valid_Names.Standard_Name)
+      Selection_Name : in String)
      return Boolean is
 
      Dummy_Selection    : Graph_Lib.Selections.Selection;
@@ -406,7 +403,7 @@ package body Giant.Vis_Windows is
    ---------------------------------------------------------------------------
    function Get_Selection
      (Vis_Window     : in Visual_Window_Access;
-      Selection_Name : in Valid_Names.Standard_Name)
+      Selection_Name : in String)
       return Graph_Lib.Selections.Selection is
 
       Dummy_Selection     : Graph_Lib.Selections.Selection;
@@ -492,8 +489,8 @@ package body Giant.Vis_Windows is
       end if;
 
       if (Does_Selection_Exist
-        (Vis_Window, Valid_Names.To_Standard_Name
-          (Graph_Lib.Selections.Get_Name (Selection))) = True) then
+        (Vis_Window, 
+         Graph_Lib.Selections.Get_Name (Selection)) = True) then
          raise Selection_Is_Already_Part_Of_Window_Exception;
       end if;
 
@@ -509,7 +506,7 @@ package body Giant.Vis_Windows is
    ---------------------------------------------------------------------------
    procedure Remove_Selection_From_Vis_Window
      (Vis_Window     : in Visual_Window_Access;
-      Selection_Name : in Valid_Names.Standard_Name) is
+      Selection_Name : in String) is
 
      Dummy_Selection    : Graph_Lib.Selections.Selection;
      Dummy_Data_Element : Selection_Data_Elemet;
@@ -525,8 +522,7 @@ package body Giant.Vis_Windows is
       end if;
 
       if Ada.Strings.Unbounded."="
-        (Valid_Names.To_String (Selection_Name),
-        Vis_Window.Standard_Selection) then
+        (Selection_Name, Vis_Window.Standard_Selection) then
          raise Standard_Selection_May_Not_Be_Removed_Exception;
       end if;
 
@@ -541,8 +537,7 @@ package body Giant.Vis_Windows is
       --  on removal of current selection the standard selection becomes
       --  the current selection
       if Ada.Strings.Unbounded."="
-        (Valid_Names.To_String (Selection_Name),
-        Vis_Window.Current_Selection) then
+        (Selection_Name, Vis_Window.Current_Selection) then
          Vis_Window.Current_Selection := Vis_Window.Standard_Selection;
       end if;
    end Remove_Selection_From_Vis_Window;
@@ -563,7 +558,7 @@ package body Giant.Vis_Windows is
    ---------------------------------------------------------------------------
    procedure Set_Current_Selection
      (Vis_Window     : in Visual_Window_Access;
-      Selection_Name : in Valid_Names.Standard_Name) is
+      Selection_Name : in String) is
    begin
 
       if Vis_Window = null then
@@ -579,8 +574,7 @@ package body Giant.Vis_Windows is
       end if;
 
       Vis_Window.Current_Selection :=
-        Ada.Strings.Unbounded.To_Unbounded_String
-          (Valid_Names.To_String (Selection_Name));
+        Ada.Strings.Unbounded.To_Unbounded_String (Selection_Name);
    end Set_Current_Selection;
 
    ---------------------------------------------------------------------------
@@ -599,7 +593,7 @@ package body Giant.Vis_Windows is
    ---------------------------------------------------------------------------
    function Get_Highlight_Status
      (Vis_Window     : in Visual_Window_Access;
-      Selection_Name : in Valid_Names.Standard_Name)
+      Selection_Name : in String)
      return Selection_Highlight_Status is
 
       Dummy_Selection     : Graph_Lib.Selections.Selection;
@@ -630,7 +624,7 @@ package body Giant.Vis_Windows is
    ---------------------------------------------------------------------------
    function May_Highlight_Status_Be_Changed
      (Vis_Window     : in Visual_Window_Access;
-      Selection_Name : in Valid_Names.Standard_Name)
+      Selection_Name : in String)
      return Boolean is
    begin
 
@@ -644,8 +638,7 @@ package body Giant.Vis_Windows is
 
       -- check
       if Ada.Strings.Unbounded."="
-        (Vis_Window.Current_Selection,
-        Valid_Names.To_String (Selection_Name)) then
+        (Vis_Window.Current_Selection, Selection_Name) then
 
          return False;
       end if;
@@ -656,7 +649,7 @@ package body Giant.Vis_Windows is
    ---------------------------------------------------------------------------
    procedure Set_Highlight_Status
      (Vis_Window           : in Visual_Window_Access;
-      Selection_Name       : in Valid_Names.Standard_Name;
+      Selection_Name       : in String;
       New_Highlight_Status : in Selection_Highlight_Status) is
 
       Dummy_Selection     : Graph_Lib.Selections.Selection;
@@ -695,7 +688,7 @@ package body Giant.Vis_Windows is
    --------------------------------------------------------------------------
    function May_Be_Faded_Out
      (Vis_Window     : in Visual_Window_Access;
-      Selection_Name : in Valid_Names.Standard_Name)
+      Selection_Name : in String)
      return Boolean is
    begin
 
@@ -709,15 +702,13 @@ package body Giant.Vis_Windows is
 
       -- check
       if Ada.Strings.Unbounded."="
-        (Vis_Window.Current_Selection,
-        Valid_Names.To_String (Selection_Name)) then
+        (Vis_Window.Current_Selection, Selection_Name) then
 
          return False;
       end if;
 
       if Ada.Strings.Unbounded."="
-        (Vis_Window.Standard_Selection,
-        Valid_Names.To_String (Selection_Name)) then
+        (Vis_Window.Standard_Selection, Selection_Name) then
 
          return False;
       end if;
@@ -728,7 +719,7 @@ package body Giant.Vis_Windows is
    --------------------------------------------------------------------------
    function Is_Faded_Out
      (Vis_Window     : in Visual_Window_Access;
-      Selection_Name : in Valid_Names.Standard_Name)
+      Selection_Name : in String)
      return Boolean is
 
       Dummy_Selection     : Graph_Lib.Selections.Selection;
@@ -759,7 +750,7 @@ package body Giant.Vis_Windows is
    --------------------------------------------------------------------------
    procedure Fade_Out_Selection
      (Vis_Window     : in Visual_Window_Access;
-      Selection_Name : in Valid_Names.Standard_Name) is
+      Selection_Name : in String) is
 
       Dummy_Selection     : Graph_Lib.Selections.Selection;
       Dummy_Data_Element  : Selection_Data_Elemet;
@@ -790,7 +781,7 @@ package body Giant.Vis_Windows is
    --------------------------------------------------------------------------
    procedure Fade_In_Selection
      (Vis_Window     : in Visual_Window_Access;
-      Selection_Name : in Valid_Names.Standard_Name) is
+      Selection_Name : in String) is
 
       Dummy_Selection     : Graph_Lib.Selections.Selection;
       Dummy_Data_Element  : Selection_Data_Elemet;
@@ -827,7 +818,7 @@ package body Giant.Vis_Windows is
    --------------------------------------------------------------------------
    function Does_Exist
      (Vis_Window : in Visual_Window_Access;
-      Pin_Name   : in Valid_Names.Standard_Name)
+      Pin_Name   : in String)
      return Boolean is
 
       Dummy_Pin : Pin;
@@ -838,7 +829,7 @@ package body Giant.Vis_Windows is
       end if;
 
       Dummy_Pin.Pin_Name := Ada.Strings.Unbounded.To_Unbounded_String
-        (Valid_Names.To_String (Pin_Name));
+        (Pin_Name);
 
       if Pin_Sets.Is_Member
         (Vis_Window.Set_Of_All_Pins, Dummy_Pin) then
@@ -851,7 +842,7 @@ package body Giant.Vis_Windows is
    --------------------------------------------------------------------------
    function Get_Position
      (Vis_Window : in Visual_Window_Access;
-      Pin_Name   : in Valid_Names.Standard_Name)
+      Pin_Name   : in String)
      return Vis.Logic.Vector_2d is
 
      Dummy_Pin  : Pin;
@@ -867,7 +858,7 @@ package body Giant.Vis_Windows is
       end if;
 
       Dummy_Pin.Pin_Name := Ada.Strings.Unbounded.To_Unbounded_String
-        (Valid_Names.To_String (Pin_Name));
+        (Pin_Name);
 
       Return_Pin := Pin_Sets.Get
         (Vis_Window.Set_Of_All_Pins, Dummy_Pin);
@@ -878,7 +869,7 @@ package body Giant.Vis_Windows is
    --------------------------------------------------------------------------
    function Get_Zoom
      (Vis_Window : in Visual_Window_Access;
-      Pin_Name   : in Valid_Names.Standard_Name)
+      Pin_Name   : in String)
      return Vis.Zoom_Level is
 
      Dummy_Pin  : Pin;
@@ -894,7 +885,7 @@ package body Giant.Vis_Windows is
       end if;
 
       Dummy_Pin.Pin_Name := Ada.Strings.Unbounded.To_Unbounded_String
-        (Valid_Names.To_String (Pin_Name));
+        (Pin_Name);
 
       Return_Pin := Pin_Sets.Get
         (Vis_Window.Set_Of_All_Pins, Dummy_Pin);
@@ -933,7 +924,7 @@ package body Giant.Vis_Windows is
    ---------------------------------------------------------------------------
    procedure Add_Pin
      (Vis_Window : in Visual_Window_Access;
-      Name       : in Valid_Names.Standard_Name;
+      Name       : in String;
       Position   : in Vis.Logic.Vector_2d;
       Zoom_Level : in Vis.Zoom_Level) is
 
@@ -949,7 +940,7 @@ package body Giant.Vis_Windows is
       end if;
 
       New_Pin.Pin_Name := Ada.Strings.Unbounded.To_Unbounded_String
-        (Valid_Names.To_String (Name));
+        (Name);
       New_Pin.Pin_Pos  := Position;
       New_Pin.Pin_Zoom := Zoom_Level;
 
@@ -960,7 +951,7 @@ package body Giant.Vis_Windows is
    ---------------------------------------------------------------------------
    procedure Remove_Pin
      (Vis_Window : in Visual_Window_Access;
-      Pin_Name   : in Valid_Names.Standard_Name) is
+      Pin_Name   : in String) is
 
       Dummy_Pin  : Pin;
    begin
@@ -974,7 +965,7 @@ package body Giant.Vis_Windows is
       end if;
 
       Dummy_Pin.Pin_Name :=  Ada.Strings.Unbounded.To_Unbounded_String
-        (Valid_Names.To_String (Pin_Name));
+        (Pin_Name);
       Pin_Sets.Remove (Vis_Window.Set_Of_All_Pins, Dummy_Pin);
    end Remove_Pin;
 

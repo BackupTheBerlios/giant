@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.ads,v $, $Revision: 1.3 $
+-- $RCSfile: giant-file_management.ads,v $, $Revision: 1.4 $
 -- $Author: schwiemn $
--- $Date: 2003/06/16 17:50:39 $
+-- $Date: 2003/06/17 14:03:02 $
 --
 -- -----------------------------------------------
 --
@@ -209,5 +209,24 @@ package Giant.File_Management is
    -- environment so that it matches the directory there the Executable
    -- file of the program is located.
    procedure Set_Currunt_Working_Dir_To_Exec_Dir;
+   
+   ---------------------------------------------------------------------------
+   -- Calculates a name out of a file name by neglecting the path and the
+   -- ending that may be part of a file name,
+   -- i.e. the ending (all characters after the last dot "." incl. the dot
+   -- itself and the path is removed from "File_Name".
+   --
+   -- Does not check whether the file realy exists.
+   --
+   -- Paramters:
+   --   File_Name - The full name (optional incl. path) of a file.
+   -- Returns:
+   --   The Name calculated for that file.
+   -- Examples:
+   --   - "./test/my_file.xml" --> "my_file"
+   --   - "a.data"             --> "a"
+   --   - "./../../data"       --> "data"
+   function Calculate_Name_For_File (File_Name : in String)
+     return String;
 
 end Giant.File_Management;

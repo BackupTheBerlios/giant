@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.12 $
---  $Author: squig $
---  $Date: 2003/06/16 21:48:31 $
+--  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.13 $
+--  $Author: schwiemn $
+--  $Date: 2003/06/17 14:03:02 $
 --
 --  ----------------
 --  This package realizes a container that administrates the components
@@ -50,7 +50,6 @@ with String_Lists; -- from Bauhaus IML "Reuse.src"
 with Bauhaus_IO;   -- from Bauhaus IML "Reuse.src"
 with Ordered_Sets; -- from Bauhaus IML "Reuse.src"
 
-with Giant.Valid_Names;          -- from GIANT
 with Giant.Graph_Lib;            -- from GIANT
 with Giant.Graph_Lib.Selections; -- from GIANT
 --FIX: with Giant.Graph_Widgets;        -- from GIANT
@@ -98,7 +97,7 @@ package Giant.Vis_Windows is
    --    A pointer that points to a new data object describing a
    --    visualisation window
    function Create_New
-     (Vis_Window_Name : in Valid_Names.Standard_Name)
+     (Vis_Window_Name : in String)
      return Visual_Window_Access;
 
    ---------------------------------------------------------------------------
@@ -181,7 +180,7 @@ package Giant.Vis_Windows is
    --      as parameter.
    function Get_Name
      (Vis_Window : in Visual_Window_Access)
-      return Valid_Names.Standard_Name;
+      return String;
 
    ---------------------------------------------------------------------------
    --  Equal function - to instances of the ADT having the
@@ -273,7 +272,7 @@ package Giant.Vis_Windows is
    --      as parameter.
    function Does_Selection_Exist
      (Vis_Window     : in Visual_Window_Access;
-      Selection_Name : in Valid_Names.Standard_Name)
+      Selection_Name : in String)
      return Boolean;
 
    ---------------------------------------------------------------------------
@@ -302,7 +301,7 @@ package Giant.Vis_Windows is
    --      "Vis_Window" has no selection with the name "Selection_Name".
    function Get_Selection
      (Vis_Window     : in Visual_Window_Access;
-      Selection_Name : in Valid_Names.Standard_Name)
+      Selection_Name : in String)
      return Graph_Lib.Selections.Selection;
 
    ---------------------------------------------------------------------------
@@ -377,7 +376,7 @@ package Giant.Vis_Windows is
    --      "Visual_Window_Access".
    procedure Remove_Selection_From_Vis_Window
       (Vis_Window     : in Visual_Window_Access;
-       Selection_Name : in Valid_Names.Standard_Name);
+       Selection_Name : in String);
 
    ---------------------------------------------------------------------------
    --  Returns the name of the current selection.
@@ -416,7 +415,7 @@ package Giant.Vis_Windows is
    --      that is faded out should be made to the current selection.
    procedure Set_Current_Selection
      (Vis_Window     : in Visual_Window_Access;
-      Selection_Name : in Valid_Names.Standard_Name);
+      Selection_Name : in String);
 
    ---------------------------------------------------------------------------
    --  Returns the name of the standard selection.
@@ -453,7 +452,7 @@ package Giant.Vis_Windows is
    --      "Visual_Window_Access"
    function Get_Highlight_Status
      (Vis_Window     : in Visual_Window_Access;
-      Selection_Name : in Valid_Names.Standard_Name)
+      Selection_Name : in String)
      return Selection_Highlight_Status;
 
    ---------------------------------------------------------------------------
@@ -477,7 +476,7 @@ package Giant.Vis_Windows is
    --      "Visual_Window_Access"
    function May_Highlight_Status_Be_Changed
      (Vis_Window     : in Visual_Window_Access;
-      Selection_Name : in Valid_Names.Standard_Name)
+      Selection_Name : in String)
      return Boolean;
 
    ---------------------------------------------------------------------------
@@ -500,7 +499,7 @@ package Giant.Vis_Windows is
    --      "Selection".
    procedure Set_Highlight_Status
      (Vis_Window           : in Visual_Window_Access;
-      Selection_Name       : in Valid_Names.Standard_Name;
+      Selection_Name       : in String;
       New_Highlight_Status : in Selection_Highlight_Status);
 
 
@@ -539,7 +538,7 @@ package Giant.Vis_Windows is
    --      "Visual_Window_Access"
    function May_Be_Faded_Out
      (Vis_Window     : in Visual_Window_Access;
-      Selection_Name : in Valid_Names.Standard_Name)
+      Selection_Name : in String)
      return Boolean;
 
    --------------------------------------------------------------------------
@@ -559,7 +558,7 @@ package Giant.Vis_Windows is
    --     "Visual_Window_Access"
    function Is_Faded_Out
      (Vis_Window     : in Visual_Window_Access;
-      Selection_Name : in Valid_Names.Standard_Name)
+      Selection_Name : in String)
      return Boolean;
 
    --------------------------------------------------------------------------
@@ -583,7 +582,7 @@ package Giant.Vis_Windows is
    --     may not be faded out.
    procedure Fade_Out_Selection
      (Vis_Window     : in Visual_Window_Access;
-      Selection_Name : in Valid_Names.Standard_Name);
+      Selection_Name : in String);
 
    --------------------------------------------------------------------------
    -- Fades in a selection (only selections that are currently faded out).
@@ -603,7 +602,7 @@ package Giant.Vis_Windows is
    --     currently not faded out.
    procedure Fade_In_Selection
      (Vis_Window     : in Visual_Window_Access;
-      Selection_Name : in Valid_Names.Standard_Name);
+      Selection_Name : in String);
 
 
    --------------------------------------------------------------------------
@@ -634,7 +633,7 @@ package Giant.Vis_Windows is
    --     as parameter.
    function Does_Exist
      (Vis_Window : in Visual_Window_Access;
-      Pin_Name   : in Valid_Names.Standard_Name)
+      Pin_Name   : in String)
      return Boolean;
 
    --------------------------------------------------------------------------
@@ -655,7 +654,7 @@ package Giant.Vis_Windows is
    --     pin "Pin_Name" is not found.
    function Get_Position
      (Vis_Window : in Visual_Window_Access;
-      Pin_Name   : in Valid_Names.Standard_Name)
+      Pin_Name   : in String)
      return Vis.Logic.Vector_2d;
 
    --------------------------------------------------------------------------
@@ -675,7 +674,7 @@ package Giant.Vis_Windows is
    --     pin "Pin_Name" is not found.
    function Get_Zoom
      (Vis_Window : in Visual_Window_Access;
-      Pin_Name   : in Valid_Names.Standard_Name)
+      Pin_Name   : in String)
      return Vis.Zoom_Level;
 
    --------------------------------------------------------------------------
@@ -711,7 +710,7 @@ package Giant.Vis_Windows is
    --     already exist.
    procedure Add_Pin
      (Vis_Window : in Visual_Window_Access;
-      Name       : in Valid_Names.Standard_Name;
+      Name       : in String;
       Position   : in Vis.Logic.Vector_2d;
       Zoom_Level : in Vis.Zoom_Level);
 
@@ -729,7 +728,7 @@ package Giant.Vis_Windows is
    --     pin "Pin_Name" is not found.
    procedure Remove_Pin
       (Vis_Window : in Visual_Window_Access;
-       Pin_Name   : in Valid_Names.Standard_Name);
+       Pin_Name   : in String);
 
 
    ---------------------------------------------------------------------------

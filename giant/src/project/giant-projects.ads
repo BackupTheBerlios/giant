@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.12 $
--- $Author: squig $
--- $Date: 2003/06/16 21:48:31 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.13 $
+-- $Author: schwiemn $
+-- $Date: 2003/06/17 14:03:02 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -43,7 +43,6 @@ with Ada.Strings.Unbounded;
 
 with Giant.Graph_Lib;           -- from GIANT
 with Giant.Graph_Lib.Subgraphs; -- from GIANT
-with Giant.Valid_Names;         -- from GIANT
 with Giant.Vis_Windows;         -- from GIANT
 with Giant.Node_Annotations;    -- from GIANT
 
@@ -109,7 +108,7 @@ package Giant.Projects is
    --   Invalid_Project_Directory_Excpetion - Raised if the passed directory
    --     "Project_Directory" is not found or could not be accessed.
    function Does_Project_Exist
-     (Project_Name      : in Valid_Names.Standard_Name;
+     (Project_Name      : in String;
       Project_Directory : in String)
       return Boolean;
 
@@ -154,7 +153,7 @@ package Giant.Projects is
    --   Invalid_Project_Directory_Excpetion - Raised if the passed directory
    --     "Project_Directory" is not found or could not be accessed.
    procedure Get_Bauhaus_IML_Graph_Data
-     (Project_Name           : in     Valid_Names.Standard_Name;
+     (Project_Name           : in     String;
       Project_Directory      : in     String;
       Bauhaus_IML_Graph_File :    out Ada.Strings.Unbounded.Unbounded_String;
       Bauhaus_IML_Graph_File_Checksum : out Integer);
@@ -191,7 +190,7 @@ package Giant.Projects is
    --     by giant.graph_lib has a checksum that differs to the checksum
    --     stored in the project.
    function Load_Project
-     (Project_Name : in Valid_Names.Standard_Name;
+     (Project_Name : in String;
       Project_Directory : in String)
      return Project_Access;
 
@@ -217,7 +216,7 @@ package Giant.Projects is
    --   Directory_Holds_Already_A_Project_File_Exception - Raised if
    --     "Project_Directory" already holds a project file.
    function Create_Empty_Project
-     (Project_Name                    : in Valid_Names.Standard_Name;
+     (Project_Name                    : in String;
       Project_Directory               : in String;
       Bauhaus_IML_Graph_File          : in String;
       Bauhaus_IML_Graph_File_Checksum : in Integer)
@@ -301,7 +300,7 @@ package Giant.Projects is
    --     "Project_Directory" already holds a project file.
    procedure Store_Whole_Project_As
       (Project           : in Project_Access;
-       Project_Name      : in Valid_Names.Standard_Name;
+       Project_Name      : in String;
        Project_Directory : in String);
 
    ---------------------------------------------------------------------------
@@ -422,7 +421,7 @@ package Giant.Projects is
    --     parameter.
    function Does_Vis_Window_Exist
      (Project         : in Project_Access;
-      Vis_Window_Name : in Valid_Names.Standard_Name)
+      Vis_Window_Name : in String)
      return Boolean;
 
    ---------------------------------------------------------------------------
@@ -443,7 +442,7 @@ package Giant.Projects is
    --     parameter.
    function Is_Vis_Window_Memory_Loaded
      (Project         : in Project_Access;
-      Vis_Window_Name : in Valid_Names.Standard_Name)
+      Vis_Window_Name : in String)
      return Boolean;
 
    ---------------------------------------------------------------------------
@@ -499,7 +498,7 @@ package Giant.Projects is
    --     parameter.
    function Get_Visualisation_Window
      (Project         : in Project_Access;
-      Vis_Window_Name : in Valid_Names.Standard_Name)
+      Vis_Window_Name : in String)
      return Vis_Windows.Visual_Window_Access;
 
    ---------------------------------------------------------------------------
@@ -559,7 +558,7 @@ package Giant.Projects is
    --     parameter.
    procedure Store_Single_Project_Visualisation_Window
      (Project         : in Project_Access;
-      Vis_Window_Name : in Valid_Names.Standard_Name);
+      Vis_Window_Name : in String);
 
    ---------------------------------------------------------------------------
    -- Changes the status of a visualisation window model to "File_Linked".
@@ -603,7 +602,7 @@ package Giant.Projects is
    --     parameter.
    procedure Close_Window_In_Project
      (Project         : in Project_Access;
-      Vis_Window_Name : in Valid_Names.Standard_Name);
+      Vis_Window_Name : in String);
 
 
    ---------------------------------------------------------------------------
@@ -644,7 +643,7 @@ package Giant.Projects is
    --     parameter.
    procedure Remove_Visualisation_Window
      (Project         : in Project_Access;
-      Vis_Window_Name : in Valid_Names.Standard_Name);
+      Vis_Window_Name : in String);
 
 
    ---------------------------------------------------------------------------
@@ -680,8 +679,8 @@ package Giant.Projects is
    --     initialized instance of "Project_Access" is passed as
    --     parameter.
    function Does_Subgraph_Exist
-     (Project           : in Project_Access;
-      Subgraph_Name : in Valid_Names.Standard_Name)
+     (Project       : in Project_Access;
+      Subgraph_Name : in String)
      return Boolean;
 
    ---------------------------------------------------------------------------
@@ -708,8 +707,8 @@ package Giant.Projects is
    --   Subgraph_Is_Not_Part_Of_Project_Exception - Raised if
    --   "Project" has no subgraph with the name "Subgraph_Name".
    function Get_Subgraph
-     (Project           : in Project_Access;
-      Subgraph_Name : in Valid_Names.Standard_Name)
+     (Project       : in Project_Access;
+      Subgraph_Name : in String)
      return Graph_Lib.Subgraphs.Subgraph;
 
    ---------------------------------------------------------------------------
@@ -787,7 +786,7 @@ package Giant.Projects is
    --     "Subgraph_Name".
    procedure Remove_Subgraph
       (Project       : in Project_Access;
-       Subgraph_Name : in Valid_Names.Standard_Name);
+       Subgraph_Name : in String);
               
    ---------------------------------------------------------------------------  
    -- Determines the highlight status of a subgraph.    
@@ -806,7 +805,7 @@ package Giant.Projects is
    --     "Subgraph_Name".   
    function Get_Highlight_Status
      (Project       : in Project_Access;
-      Subgraph_Name : in Valid_Names.Standard_Name) 
+      Subgraph_Name : in String) 
      return Subgraph_Highlight_Status;
      
    ---------------------------------------------------------------------------
@@ -831,7 +830,7 @@ package Giant.Projects is
    --     "Subgraph_Name".  
    procedure Change_Highlight_Status
      (Project              : in Project_Access;
-      Subgraph_Name        : in Valid_Names.Standard_Name;
+      Subgraph_Name        : in String;
       New_Highlight_Status : in Subgraph_Highlight_Status);
      
    ---------------------------------------------------------------------------

@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config.adb,v $, $Revision: 1.2 $
+-- $RCSfile: giant-config.adb,v $, $Revision: 1.3 $
 -- $Author: schwiemn $
--- $Date: 2003/06/11 12:00:17 $
+-- $Date: 2003/06/17 14:03:02 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -120,7 +120,22 @@ package body Giant.Config is
    ---------------------------------------------------------------------------
    -- 0.2
    -- Internal utility subprograms.
-   -------------------------------------
+   ---------------------------------------------------------------------------
+   
+   ---------------------------------------------------------------------------
+   -- check whether all required settings exist.
+   procedure Does_Config_ADO_Hold_All_Required_Settings is
+   
+   begin
+      for I in Required_Settings'Range loop
+      
+        if (Does_Setting_Exist (Ada.Strings.Unbounded.To_String
+          (Required_Settings (i))) = False) then
+          
+           raise Required_Config_Setting_Not_Found_Exception;
+         end if; 
+      end loop;
+   end Does_Config_ADO_Hold_All_Required_Settings;
 
    -------------------------------------
    -- check whether ADO is initialized
@@ -283,7 +298,6 @@ package body Giant.Config is
          -- deallocate used memory for list
          DOM.Core.Free (Setting_Nodes_List);
 
-
       end Read_Config_Entries;
 
       ------------------------------------------------------------------------
@@ -352,19 +366,9 @@ package body Giant.Config is
          Process_Config_File (User_Config_File);
       end if;
 
-      -- Further processing of some special settings
-      -- Check whether all required settings exists
-      if not Does_Setting_Exist ("Icon_For_Node_Annotations")
-        or not Does_Setting_Exist ("Actual_Selection_Highlight_Color")
-        or not Does_Setting_Exist ("Selection_Highlight_Color_1")
-        or not Does_Setting_Exist ("Selection_Highlight_Color_2")
-        or not Does_Setting_Exist ("Selection_Highlight_Color_3")
-        or not Does_Setting_Exist ("IML_Subgraph_Highlight_Color_1")
-        or not Does_Setting_Exist ("IML_Subgraph_Highlight_Color_2")
-        or not Does_Setting_Exist ("IML_Subgraph_Highlight_Color_2") then
 
-         raise Config_File_Not_Correct_Exception;
-      end if;
+      -- Check whether all required settings exists
+      Does_Config_ADO_Hold_All_Required_Settings;
 
       -- organize color pointers
       -- selections
