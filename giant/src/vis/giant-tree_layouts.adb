@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.25 $
+--  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.26 $
 --  $Author: koppor $
---  $Date: 2003/09/23 11:43:35 $
+--  $Date: 2003/09/23 18:08:17 $
 --
 ------------------------------------------------------------------------------
 --  Variables are named according to the paper
@@ -338,8 +338,22 @@ package body Giant.Tree_Layouts is
               (Layout.SecondWalk_Stack, SecondWalk_Data);
 
             X := SecondWalk_Data.V.Prelim + SecondWalk_Data.M;
-            Y := Level_Mappings.Fetch (Layout.Level_Heights,
-                                       SecondWalk_Data.V.Level);
+            --  Adjust Max_X, used for matrix_layout later
+            if Layout.Max_X < X then
+               Layout.Max_X := X;
+            end if;
+
+            --  After a call to Init_Calculation_Part_Two, in
+            --    Layout.Level_Heights the position meassured from 0.0
+            --    is stored
+            if SecondWalk_Data.V.Level = 1 then
+               Y := 0.0;
+            else
+               --  take value of one level above, since the TOP and not the
+               --    bottom of the current node is set
+               Y := Level_Mappings.Fetch (Layout.Level_Heights,
+                                          SecondWalk_Data.V.Level - 1);
+            end if;
 
             --  Logger.Debug ("Self:  " & Graph_Lib.Node_Id_Image
             --                (SecondWalk_Data.V.Node));
@@ -359,7 +373,6 @@ package body Giant.Tree_Layouts is
             --  Logger.Debug ("Level: " & Natural'Image (SecondWalk_Data.V.Level));
             --  Logger.Debug ("Y:     " & Float'Image (Y));
 
-
             New_Relative_Position := Vis.Logic.Combine_Vector
               (X => X,
                Y => Y);
@@ -368,11 +381,6 @@ package body Giant.Tree_Layouts is
 --              Logger.Debug ("  TPos " & Vis.Logic.Image
 --                            (Vis.Logic."+" (New_Relative_Position,
 --                                            Layout.Target_Position)));
-
-            --  Adjust Max_X, used for matrix_layout later
-            if Layout.Max_X < X then
-               Layout.Max_X := X;
-            end if;
 
             Graph_Widgets.Set_Top_Middle
               (Layout.Widget,
@@ -548,7 +556,7 @@ package body Giant.Tree_Layouts is
 
       ------------------------------------------------------------------
       --  add/adjustcurrent_node_height in mapping having always the
-      --    highest hight of the level
+      --    highest height of the level
       procedure Adjust_Level_Height
         (Node  : in Graph_Lib.Node_Id;
          Level : in Positive) is
@@ -760,8 +768,8 @@ package body Giant.Tree_Layouts is
       end Init_Calculation_Part_One;
 
       ----------------------------------------------------------------------
-      --  Adjust level heights, so that for each level the height from 0.0
-      --  is stored
+      --  Adjust level heights, so that for each level the height meassured
+      --    from 0.0 is stored
       procedure Init_Calculation_Part_Two
       is
          Level       : Positive;
@@ -795,7 +803,7 @@ package body Giant.Tree_Layouts is
             Level_Mappings.Bind (Layout.Level_Heights, Level, Cur_Height);
 
             --  Next step means next level
-            Level := Level +1;
+            Level := Level + 1;
          end loop;
 
          Evolutions.Advance_Progress (Layout, Level - 1);
