@@ -1,3 +1,8 @@
+2003-09-14  Steffen Keul  <keulsn@gspc24.informatik.uni-stuttgart.de>
+
+    * src/: Changed elaboration pragmas so correct elaboration order
+    can be found by 3.15p as well.
+
 2003-09-12  Steffen Pingel  <squig@users.sourceforge.net>
 
 	* src/gui/giant-progress_dialog.ads: Added Set_Cancel_Enabled to

@@ -59,7 +59,7 @@ HTML_MAIN       = $(shell namei $(MAIN) | xargs | sed s/.*\ -\ //)
 
 VERSION = $(shell grep VERSION src/giant-constants.ads | sed -e 's/.* "//;s/".*//')
 SRCDIST = compile.bat.dist COPYING Makefile.dist src
-DIST = COPYING etc giant.sh Makefile README shared
+DIST = COPYING etc giant.sh README shared
 DIST_PATH = /projects/tmp/giant/releases/giant-$(VERSION)
 RELEASE_TAG = $(shell echo giant-$(VERSION) | sed -e 's/\./_/g')
 
