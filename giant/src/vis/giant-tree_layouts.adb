@@ -20,15 +20,17 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.4 $
 --  $Author: koppor $
---  $Date: 2003/07/03 15:59:35 $
+--  $Date: 2003/07/04 17:32:55 $
 --
 ------------------------------------------------------------------------------
 --  Variables are named according to the paper
 --    http://citeseer.nj.nec.com/buchheim02improving.html
 --    Revised version at http://www.zaik.uni-koeln.de/~paper/preprints.html
 --      ?show=zaik2002-431&preprint_session=877c83a63d7134d8123dd3e6dd0ab004
+
+with Giant.Matrix_Layouts;
 
 package body Giant.Tree_Layouts is
 
@@ -43,6 +45,12 @@ package body Giant.Tree_Layouts is
    is
       Res : Tree_Layout;
    begin
+      if not Graph_Lib.Node_Id_Sets.Is_Member
+        (Graph_Lib.Selections.Get_All_Nodes (Selection_To_Layout),
+         Root_Node) then
+         raise Root_Node_Not_In_Selection;
+      end if;
+
       Res                 := new Tree_Layout_Record;
       Res.Widget          := Widget;
       Res.Widget_Lock     := Widget_Lock;
@@ -51,7 +59,7 @@ package body Giant.Tree_Layouts is
          (Selection_To_Layout));
       Res.Target_Position := Target_Position;
       Res.Root_Node       := Root_Node;
-      Res.State           := Init;
+      Res.State           := Init_Start;
 
       --  Evolutions.Initialize
       --  TBD: complexity, can be estimated, but I don't know how by now
@@ -75,15 +83,40 @@ package body Giant.Tree_Layouts is
       Next_Action :    out Evolutions.Evolution_Action)
    is
 
-      procedure Init_Calculation
+      procedure Start_Matrix_Layout
       is
+         The_Matrix_Layout : Matrix_Layouts.Matrix_Layout;
+         The_Selection     : Graph_Lib.Selections.Selection;
       begin
-         null;
-      end Init_Calculation;
+         --  Create selection used as parameter for the layout
+         --  a speed-optimization could be done here
+         --  Selections.Create_Temp_Selection (Set, Set)
+         --    which creates a wrapper-selection, which doesn't
+         --    copy given sets and which doesn't destroy them either
+         --    at Destroy
+         The_Selection := Graph_Lib.Selections.Create ("tmp");
+         Graph_Lib.Selections.Add_Node_Set
+           (The_Selection, Layout.Nodes_To_Layout);
+
+         The_Matrix_Layout := Matrix_Layouts.Initialize
+           (Layout.Widget,
+            Layout.Widget_Lock,
+            The_Selection,
+            Layout.Target_Position); --  TBD: modify to right corner of tree
+
+         Graph_Lib.Selections.Destroy (The_Selection);
+
+         --  do the matrix layout and return to here again
+         Evolutions.Start_Sub_Calculation (Layout, The_Matrix_Layout);
+         Next_Action := Evolutions.Finish;
+      end Start_Matrix_Layout;
 
    begin
       case Layout.State is
-         when Init =>
+         when Init_Start =>
+            --  Depending on the amount of nodes to layout,
+            --    we can do it now (0, 1) or we have to a non-trivial layout
+            --    (>=2)
             case Graph_Lib.Node_Id_Sets.Size (Layout.Nodes_To_Layout) is
                when 0 =>
                   Next_Action := Evolutions.Finish;
@@ -101,31 +134,80 @@ package body Giant.Tree_Layouts is
                   end;
                   Next_Action := Evolutions.Finish;
                when others =>
-                  Init_Calculation;
-                  Layout.State := FirstWalk;
-                  Next_Action  := Evolutions.Run;
+                  --  Initialization can only be done in a synchronized
+                  --    environment. With following statement, it is
+                  --    jumped to there
+                  Next_Action  := Evolutions.Synchronize;
             end case;
+         when Init_Run =>
+            Layout.State := FirstWalk;
+            Next_Action  := Evolutions.Run;
          when FirstWalk =>
             Layout.State := SecondWalk;
             Next_Action  := Evolutions.Run;
          when SecondWalk =>
-            Next_Action := Evolutions.Finish;
+            Layout.State := Matrix;
+            Next_Action  := Evolutions.Run;
+         when Matrix =>
+            Start_Matrix_Layout;
       end case;
    end Step;
 
+   procedure Synchronized_Step
+     (Layout      : access Tree_Layout_Record;
+      Next_Action :    out Evolutions.Evolution_Action)
+   is
+
+      ------------------------------------------------------------------------
+      --  Inits the Init_Calculation, so that a break in the initialization
+      --    is possible
+      procedure Init_Calculation_Start
+      is
+      begin
+         Graph_Lib.Node_Id_Sets.Remove
+           (Layout.Nodes_To_Layout, Layout.Root_Node);
+
+         Layout.Layout_Queue :=
+           Graph_Lib.Node_Id_Lists.MakeList (Layout.Root_Node);
+         Layout.Layout_Queue_Last := Layout.Layout_Queue;
+
+         Layout.State := Init_Run;
+         Next_Action  := Evolutions.Synchronize;
+      end Init_Calculation_Start;
+
+      ------------------------------------------------------------------------
+      --  Converts Nodes_To_Layout to Layout_Tree
+      procedure Init_Calculation_Run
+      is
+      begin
+         --  here should be the real initialization
+         --  remaining questions:
+         --    * how
+         --    * how to deal with the root, and the mapping
+         --      node-id to node_layout_data, getting the children etc.
+         Layout.State := FirstWalk;
+         Next_Action  := Evolutions.Run;
+      end Init_Calculation_Run;
+
+   begin
+      case Layout.State is
+         when Init_Start =>
+            Init_Calculation_Start;
+         when Init_Run =>
+            Init_Calculation_Run;
+         when others =>
+            Next_Action  := Evolutions.Run;
+      end case;
+   end Synchronized_Step;
+
    ---------------------------------------------------------------------------
    function Are_Silblings
-     (First  : in Node_Layout_Data_Access;
-      Second : in Node_Layout_Data_Access)
+     (First  : in Node_Layout_Data;
+      Second : in Node_Layout_Data)
      return Boolean
    is
-      Temp_Node : Node_Layout_Data_Access;
    begin
-      Temp_Node:=First.Leftmost_Silbling;
-      while (Temp_Node /= null) and (Temp_Node /= Second) loop
-         Temp_Node := Temp_Node.Right_Silbling;
-      end loop;
-      return Temp_Node/=null;
+      return (First.Leftmost_Silbling = Second.Leftmost_Silbling);
    end Are_Silblings;
 
 end Giant.Tree_Layouts;
