@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.13 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.14 $
 --  $Author: schwiemn $
---  $Date: 2003/06/17 14:03:02 $
+--  $Date: 2003/06/17 15:01:35 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -573,6 +573,10 @@ package body Giant.Vis_Windows is
          raise Illegal_Current_Selection_Exception;
       end if;
 
+      if Get_Highlight_Status (Vis_Window, Selection_Name) /= None then
+         raise Illegal_Current_Selection_Exception;
+      end if;
+
       Vis_Window.Current_Selection :=
         Ada.Strings.Unbounded.To_Unbounded_String (Selection_Name);
    end Set_Current_Selection;
@@ -676,7 +680,13 @@ package body Giant.Vis_Windows is
         (Vis_Window.All_Managed_Selections, Dummy_Data_Element);
 
       Change_Data_Element.Highlight_Status := New_Highlight_Status;
+      
+      Selection_Data_Sets.Remove
+        (Vis_Window.All_Managed_Selections, Dummy_Data_Element);
 
+      Selection_Data_Sets.Insert
+        (Vis_Window.All_Managed_Selections, Change_Data_Element);
+       
       Graph_Lib.Selections.Destroy (Dummy_Selection);
    end Set_Highlight_Status;
 

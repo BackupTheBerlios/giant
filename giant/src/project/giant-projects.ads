@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.13 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.14 $
 -- $Author: schwiemn $
--- $Date: 2003/06/17 14:03:02 $
+-- $Date: 2003/06/17 15:01:35 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -810,12 +810,6 @@ package Giant.Projects is
      
    ---------------------------------------------------------------------------
    -- Changes the highlightstatus of a subgraph.
-   --
-   -- Note
-   --   If there is already a subgraph with the new highlight status
-   --   (does not count for "None"), its
-   --   highlight status is set to "None" as only one subgraph may be 
-   --   highlighted with the same color.
    --
    -- Parameters:
    --   Project - The instance of the ADT holding a project.

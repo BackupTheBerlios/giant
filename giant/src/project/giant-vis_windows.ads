@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.13 $
+--  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.14 $
 --  $Author: schwiemn $
---  $Date: 2003/06/17 14:03:02 $
+--  $Date: 2003/06/17 15:01:35 $
 --
 --  ----------------
 --  This package realizes a container that administrates the components
@@ -412,7 +412,9 @@ package Giant.Vis_Windows is
    --      selection with the name "Selection_Name" is not part of
    --      "Visual_Window_Access".
    --    Illegal_Current_Selection_Exception - Raised if a selection
-   --      that is faded out should be made to the current selection.
+   --      that is faded out should be made to the current selection 
+   --      or if the selection that should become the current selection
+   --      has a highlight status diffrent from "None".
    procedure Set_Current_Selection
      (Vis_Window     : in Visual_Window_Access;
       Selection_Name : in String);

@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.10 $
 --  $Author: schwiemn $
---  $Date: 2003/06/17 14:03:02 $
+--  $Date: 2003/06/17 15:01:35 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -234,10 +234,17 @@ package body Giant.Projects is
       Bauhaus_Out_Stream : Bauhaus_IO.Out_Stream_Type;
    begin
    
-      -- check if file exists, create new one if necessary
---      !!!TODO
+      -- check if file exists, create new one if necessary   
+      if (GNAT.OS_Lib.Is_Writable_File (File_Path) = True) then
       
-
+         Ada.Streams.Stream_IO.Create
+           (Stream_File,
+            Ada.Streams.Stream_IO.Out_File,
+            File_Path);
+            
+         Ada.Streams.Stream_IO.Close (Stream_File);    
+      end if;       
+      
       Ada.Streams.Stream_IO.Open
         (Stream_File,
          Ada.Streams.Stream_IO.Out_File,
@@ -297,7 +304,18 @@ package body Giant.Projects is
       Bauhaus_Out_Stream : Bauhaus_IO.Out_Stream_Type;
 
    begin
-
+   
+      -- check if file exists, create new one if necessary   
+      if (GNAT.OS_Lib.Is_Writable_File (File_Path) = True) then
+      
+         Ada.Streams.Stream_IO.Create
+           (Stream_File,
+            Ada.Streams.Stream_IO.Out_File,
+            File_Path);
+            
+         Ada.Streams.Stream_IO.Close (Stream_File);    
+      end if;  
+   
       Ada.Streams.Stream_IO.Open
         (Stream_File,
          Ada.Streams.Stream_IO.Out_File,
@@ -417,7 +435,7 @@ package body Giant.Projects is
 
       Abs_Project_File_Name := Create_Name_For_File
         (Ada.Strings.Unbounded.To_String (The_Project.Abs_Project_Dirctory),
-         Ada.Strings.Unbounded.To_String (The_Project.Project_Name)),
+         Ada.Strings.Unbounded.To_String (The_Project.Project_Name),
          ".xml");
 
       --  create the file
@@ -707,14 +725,13 @@ package body Giant.Projects is
 
    begin
 
---     TODO
-
--- BEIM LADEN CHECKEN OB ZWEIMAL DER GLEICHE NAME VORKOMMT; FALLS JA
---EXCEPTION
-
+   --  TODO
+   --  BEIM LADEN CHECKEN OB ZWEIMAL DER GLEICHE NAME VORKOMMT; FALLS JA
+   --  EXCEPTION (bei Anzeigefenstern oder Subgraphen)
 
 
-     return null;
+
+      return null;
    end Load_Project;
 
    ---------------------------------------------------------------------------
@@ -1425,7 +1442,6 @@ package body Giant.Projects is
       A_Subgraph_Data_Element   : Subgraph_Data_Elemet;
       New_Subgraph_Data_Element : Subgraph_Data_Elemet;
 
-      Subgraphs_Iter : Subgraph_Data_Hashs.Values_Iter;
    begin
 
       if (Project = null) then
@@ -1435,61 +1451,28 @@ package body Giant.Projects is
       if (Does_Subgraph_Exist (Project, Subgraph_Name) = False) then
          raise Subgraph_Is_Not_Part_Of_Project_Exception;
       end if;
+ 
+      A_Subgraph_Data_Element := Subgraph_Data_Hashs.Fetch
+        (Project.All_Subgraphs,
+         Ada.Strings.Unbounded.To_Unbounded_String (Subgraph_Name));
 
-      -- Iterate over all Subgraphs (check whether there is already another
-      -- subgraph with the passed highlight status).
-      Subgraphs_Iter := Subgraph_Data_Hashs.Make_Values_Iter
-        (Project.All_Subgraphs);
+      -- change highlight status
+      New_Subgraph_Data_Element := A_Subgraph_Data_Element;
+      New_Subgraph_Data_Element.Highlight_Status :=
+        New_Highlight_Status;
 
-      while Subgraph_Data_Hashs.More (Subgraphs_Iter) loop
-         Subgraph_Data_Hashs.Next
-           (Subgraphs_Iter, A_Subgraph_Data_Element);
+      Subgraph_Data_Hashs.Unbind
+        (Project.All_Subgraphs,
+          Ada.Strings.Unbounded.To_Unbounded_String
+            (Graph_Lib.Subgraphs.Get_Name
+              (A_Subgraph_Data_Element.Subgraph)));
 
-         if (A_Subgraph_Data_Element.Highlight_Status = New_Highlight_Status)
-           and (Graph_Lib.Subgraphs.Get_Name
-             (A_Subgraph_Data_Element.Subgraph) /= Subgraph_Name) then
-
-            -- set status to "None"
-            New_Subgraph_Data_Element := A_Subgraph_Data_Element;
-            New_Subgraph_Data_Element.Highlight_Status := None;
-
-            Subgraph_Data_Hashs.Unbind
-              (Project.All_Subgraphs,
-               Ada.Strings.Unbounded.To_Unbounded_String
-                 (Graph_Lib.Subgraphs.Get_Name
-                   (A_Subgraph_Data_Element.Subgraph)));
-
-            Subgraph_Data_Hashs.Bind
-              (Project.All_Subgraphs,
-               Ada.Strings.Unbounded.To_Unbounded_String
-                 (Graph_Lib.Subgraphs.Get_Name
-                   (A_Subgraph_Data_Element.Subgraph)),
-               New_Subgraph_Data_Element);
-
-         elsif (Graph_Lib.Subgraphs.Get_Name
-           (A_Subgraph_Data_Element.Subgraph) = Subgraph_Name) then
-
-            -- change highlight status
-            New_Subgraph_Data_Element := A_Subgraph_Data_Element;
-            New_Subgraph_Data_Element.Highlight_Status :=
-              New_Highlight_Status;
-
-            Subgraph_Data_Hashs.Unbind
-              (Project.All_Subgraphs,
-               Ada.Strings.Unbounded.To_Unbounded_String
-                 (Graph_Lib.Subgraphs.Get_Name
-                   (A_Subgraph_Data_Element.Subgraph)));
-
-            Subgraph_Data_Hashs.Bind
-              (Project.All_Subgraphs,
-               Ada.Strings.Unbounded.To_Unbounded_String
-                 (Graph_Lib.Subgraphs.Get_Name
-                   (A_Subgraph_Data_Element.Subgraph)),
-               New_Subgraph_Data_Element);
-         else
-            null;
-         end if;
-      end loop;
+      Subgraph_Data_Hashs.Bind
+        (Project.All_Subgraphs,
+          Ada.Strings.Unbounded.To_Unbounded_String
+            (Graph_Lib.Subgraphs.Get_Name
+              (New_Subgraph_Data_Element.Subgraph)),
+                New_Subgraph_Data_Element);
    end Change_Highlight_Status;
 
    ---------------------------------------------------------------------------
