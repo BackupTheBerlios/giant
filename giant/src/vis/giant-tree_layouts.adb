@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.24 $
+--  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.25 $
 --  $Author: koppor $
---  $Date: 2003/09/15 13:35:27 $
+--  $Date: 2003/09/23 11:43:35 $
 --
 ------------------------------------------------------------------------------
 --  Variables are named according to the paper
@@ -198,7 +198,7 @@ package body Giant.Tree_Layouts is
 
          Matrix_Target_Position :=
            Vis.Logic.Combine_Vector
-           (Layout.Max_X,
+           (Layout.Max_X + Layout.X_Distance,
             Vis.Logic.Get_Y (Layout.Target_Position));
 
          --  TBD: Matrix Layout may NOT release lock!
