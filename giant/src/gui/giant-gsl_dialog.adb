@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.9 $
 --  $Author: squig $
---  $Date: 2003/06/26 09:41:53 $
+--  $Date: 2003/06/30 15:46:28 $
 --
 
 with Ada.IO_Exceptions;
@@ -150,13 +150,13 @@ package body Giant.Gsl_Dialog is
       return Boolean
    is
       use type Default_Dialog.Response_Type;
-      use Ada.Strings.Unbounded;
+      use type Ada.Strings.Unbounded.Unbounded_String;
 
       Response : Default_Dialog.Response_Type;
    begin
       if (Dialog.Text_Has_Changed) then
          Response := Dialogs.Show_Confirmation_Dialog
-           (-"The text has changed. Save changes?",
+           (-"The script has changed. The saved script will be executed. Save changes?",
             Default_Dialog.Button_Yes_No_Cancel);
          if (Response = Default_Dialog.Response_Yes) then
             if (Dialog.Filename
@@ -237,25 +237,33 @@ package body Giant.Gsl_Dialog is
      (Dialog : access Gsl_Dialog_Record)
      return Boolean
    is
-      -- the reason for closing the dialog
-      Response : Default_Dialog.Response_Type;
-      use Default_Dialog;
+      use type Ada.Strings.Unbounded.Unbounded_String;
+      use type Default_Dialog.Response_Type;
    begin
-      Response := Get_Response (Dialog);
-
       if (not Save_Changes (Dialog)) then
          return False;
       end if;
 
-      if (Get_Response (Dialog) = Default_Dialog.Response_Okay) then
+      if (Get_Response (Dialog) = Default_Dialog.Response_Okay
+          and then Dialog.Filename
+          /= Ada.Strings.Unbounded.Null_Unbounded_String) then
          -- the okay button was pressed
-         declare
-            Script : String := Gtk.Text.Get_Chars (Dialog.Text_Area);
          begin
-            Controller.Execute_GSL (Script);
+            Controller.Execute_GSL
+              (Ada.Strings.Unbounded.To_String (Dialog.Filename));
+
+            --  the script was executed successfully
+            return True;
+         exception
+           when others =>
+              Dialogs.Show_Error_Dialog ("Error while executing the script.");
          end;
+
+         --  the script failed
+         return False;
       end if;
 
+      --  the dialog was cancelled
       return True;
    end Can_Hide;
 

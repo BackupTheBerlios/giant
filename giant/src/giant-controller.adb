@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.34 $
---  $Author: schwiemn $
---  $Date: 2003/06/30 13:03:56 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.35 $
+--  $Author: squig $
+--  $Date: 2003/06/30 15:46:28 $
 --
 
 with Ada.Strings.Unbounded;
@@ -72,9 +72,20 @@ package body Giant.Controller is
    procedure Execute_GSL
      (Script : in String)
    is
+      use type Gsl.Interpreters.Interpreter;
+
+      Started : Boolean;
    begin
-      -- FIX: execute script
-      null;
+      if (Gsl_Interpreter = null) then
+         --  lazily instanciate
+         Gsl_Interpreter := Gsl.Interpreters.Create_Interpreter;
+      end if;
+
+      Gsl.Interpreters.Execute_Script (Gsl_Interpreter, Script);
+      Gsl.Interpreters.Start_Calculation
+        (Individual => Gsl_Interpreter,
+         Started    => Started,
+         Dialog     => Gui_Manager.Create_Gsl_Progress_Dialog);
    end Execute_GSL;
 
    ---------------------------------------------------------------------------

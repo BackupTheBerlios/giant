@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.24 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.25 $
 --  $Author: squig $
---  $Date: 2003/06/30 10:44:52 $
+--  $Date: 2003/06/30 15:46:28 $
 --
 ------------------------------------------------------------------------------
 --
@@ -49,6 +49,8 @@
 --
 
 with Giant.Graph_Lib;
+with Giant.Gsl;
+with Giant.Gsl.Interpreters;
 with Giant.Projects;
 with Giant.Valid_Names;
 with Giant.Vis;
@@ -393,5 +395,7 @@ private
    Current_Project : Projects.Project_Access;
    Project_Loaded : Boolean := False;
    Project_Changed : Boolean := False;
+
+   Gsl_Interpreter : Gsl.Interpreters.Interpreter := null;
 
 end Giant.Controller;

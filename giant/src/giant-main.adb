@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.24 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.25 $
 --  $Author: squig $
---  $Date: 2003/06/30 14:48:33 $
+--  $Date: 2003/06/30 15:46:28 $
 --
 --
 ------------------------------------------------------------------------------
@@ -36,6 +36,7 @@ with Ada.Text_IO;
 with GNAT.Command_Line;
 with GNAT.OS_Lib;
 
+with Giant.Config;
 with Giant.Config_Settings;
 with Giant.Config.Global_Data;
 with Giant.Config.Vis_Styles;
