@@ -5,5 +5,5 @@ framework_test
 graphlib_test
 layout_factory_test
 martin_test
-matrix_layout_test
+matrix_layouts_test
 mini_map
