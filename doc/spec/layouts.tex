@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: layouts.tex,v $, $Revision: 1.6 $
-%  $Date: 2003/04/07 08:23:39 $
+%  $RCSfile: layouts.tex,v $, $Revision: 1.7 $
+%  $Date: 2003/04/08 12:31:13 $
 %  $Author: koppor $
 %
 %  Description: Beschreibung der Layouts
@@ -60,7 +60,13 @@ Die Position, an der die linke obere Ecke des Quadrats liegen soll.
 \end{enumerate}
 
 \subsection{Beschreibung}
-Im Matrixlayout werden die Knoten in einem Quadrat ausgerichtet.
-Dabei werden die Knoten mittels einer Breitensuche besucht und in dieser Besuchsreihenfolge in das Quadrat eingef\"ugt. 
-Der vertikale Abstand von Ebene zu Ebene richtet sich nach der H\"ohe des h\"ochsten Knotens (siehe \ref{Visualization-Knoten-Rechteck}).
+Im Matrixlayout werden die Knoten in einem Rechteck ausgerichtet.
+Dabei ist die Zahl der Knoten pro Zeile und Spalte gleich.  Die Breite
+des Rechtecks wird mittels der abgerundeten Wurzel der Anzahl der zu
+layouteten Knoten bestimmt; die H\"ohe ergibt sich automatisch.  Die
+Knoten werden mittels einer Breitensuche besucht und in dieser
+Besuchsreihenfolge in das Rechteck zeilenweise eingef\"ugt. Dabei hat
+die obere Begrenzung jedes Knotens einer Zeile die selbe Y-Koordinate.
+Der vertikale Abstand von Zeile zu Zeile richtet sich nach der H\"ohe
+des h\"ochsten Knotens (siehe \ref{Visualization-Knoten-Rechteck}).
 
