@@ -20,13 +20,14 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-node_attribute_filters.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-graph_lib-node_attribute_filters.adb,v $, $Revision: 1.8 $
 --  $Author: koppor $
---  $Date: 2003/06/24 19:52:41 $
+--  $Date: 2003/06/25 13:46:30 $
 --
 ------------------------------------------------------------------------------
 
 with Ada.Strings.Unbounded;
+with Ada.Unchecked_Deallocation;
 
 package body Giant.Graph_Lib.Node_Attribute_Filters is
 
@@ -37,16 +38,25 @@ package body Giant.Graph_Lib.Node_Attribute_Filters is
       return Filter
    is
       Res          : Filter;
+      I            : Positive;
       Iter         : String_Lists.ListIter;
       Current_Name : Ada.Strings.Unbounded.Unbounded_String;
    begin
-      Res  := new Filter_Record (Number_Of_Attributes => 1);
+      Res  := new Filter_Type
+        (1.. String_Lists.Length (Node_Attribute_Names_List));
 
-      Iter := STring_Lists.MakeListIter (Node_Attribute_Names_List);
+      Iter := String_Lists.MakeListIter (Node_Attribute_Names_List);
+      I    := 1;
 
+      --  Fill Filter with Node_Attributes
       while String_Lists.More (Iter) loop
          String_Lists.Next (Iter, Current_Name);
 
+         Res (I) :=
+           Convert_Node_Attribute_Name_To_Id
+           (Node_Class, Ada.Strings.Unbounded.To_String (Current_Name));
+
+         I:=I+1;
       end loop;
 
       return Res;
@@ -56,21 +66,24 @@ package body Giant.Graph_Lib.Node_Attribute_Filters is
    procedure Destroy
      (Node_Attribute_Filter  : in out Filter)
    is
+
+      procedure Free_Filter is new Ada.Unchecked_Deallocation
+        (Filter_Type, Filter);
+
    begin
-      --  Filter has not to be destroyed since it is a record
-      null;
+      Free_Filter (Node_Attribute_Filter);
    end Destroy;
 
    ---------------------------------------------------------------------------
    function Make_Filtered_Iter
-     (Node_Attribute_Filter : in Filter;
-      Node                  : in Node_Id)
+     (Node_Attribute_Filter : in Filter)
      return Filtered_Iterator
    is
       Res : Filtered_Iterator;
    begin
+      Res.Used_Filter      := Node_Attribute_Filter;
+      Reset (Res);
       return Res;
-      --  TBD
    end Make_Filtered_Iter;
 
    ---------------------------------------------------------------------------
@@ -79,8 +92,7 @@ package body Giant.Graph_Lib.Node_Attribute_Filters is
      return Boolean
    is
    begin
-      return False;
-      --  TBD
+      return Iter.Current_Position <= Iter.Used_Filter'Last;
    end More;
 
    ---------------------------------------------------------------------------
@@ -89,7 +101,11 @@ package body Giant.Graph_Lib.Node_Attribute_Filters is
       Attrib :    out Node_Attribute_Id)
    is
    begin
-      null;
+      if More (Iter) then
+         Attrib := Iter.Used_Filter (Iter.Current_Position);
+      else
+         raise NoMore;
+      end if;
    end Next;
 
    ---------------------------------------------------------------------------
@@ -97,7 +113,7 @@ package body Giant.Graph_Lib.Node_Attribute_Filters is
      (Iter   : in out Filtered_Iterator)
    is
    begin
-      null;
+      Iter.Current_Position := Iter.Used_Filter'First;
    end Reset;
 
 end Giant.Graph_Lib.Node_Attribute_Filters;

@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-node_attribute_filters.ads,v $, $Revision: 1.5 $
+--  $RCSfile: giant-graph_lib-node_attribute_filters.ads,v $, $Revision: 1.6 $
 --  $Author: koppor $
---  $Date: 2003/06/24 19:24:25 $
+--  $Date: 2003/06/25 13:47:15 $
 --
 ------------------------------------------------------------------------------
 --
@@ -40,7 +40,7 @@ package Giant.Graph_Lib.Node_Attribute_Filters is
    --  Create & Destroy of a filter  --
    ------------------------------------
 
-   --  -----------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    --  If a given attribute does not exist in Node_Class of the given filter,
    --    it is ignored
    --
@@ -59,7 +59,7 @@ package Giant.Graph_Lib.Node_Attribute_Filters is
       Node_Attribute_Names_List : in     String_Lists.List)
      return Filter;
 
-   --  -----------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    procedure Destroy
       (Node_Attribute_Filter  : in out Filter);
 
@@ -68,10 +68,13 @@ package Giant.Graph_Lib.Node_Attribute_Filters is
    ----------------------------------------
 
    ---------------------------------------------------------------------------
+   --  Sets the Iterator to the first element
    function Make_Filtered_Iter
-     (Node_Attribute_Filter : in Filter;
-      Node                  : in Node_Id)
+     (Node_Attribute_Filter : in Filter)
      return Filtered_Iterator;
+
+   ---------------------------------------------------------------------------
+   NoMore    : exception;
 
    ---------------------------------------------------------------------------
    function More
@@ -89,15 +92,14 @@ package Giant.Graph_Lib.Node_Attribute_Filters is
      (Iter : in out Filtered_Iterator);
 
 private
-   type Filter_Record
-     (Number_Of_Attributes : Positive) is
-   record
-      Attributes : Node_Attribute_Id_Array (1 .. Number_Of_Attributes);
+   subtype Filter_Type is Node_Attribute_Id_Array;
+
+   type Filter is access Filter_Type;
+
+   type Filtered_Iterator is record
+      Used_Filter      : Filter;
+      Current_Position : Positive;
    end record;
-
-   type Filter is access Filter_Record;
-
-   type Filtered_Iterator is null record;
 
    --  taken from mail from keulsn, 20030426
    --
