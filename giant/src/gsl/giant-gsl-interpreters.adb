@@ -21,8 +21,8 @@
 -- First Author: Gerrit Schulz
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
--- $Author: keulsn $
--- $Date: 2003/09/02 13:19:07 $
+-- $Author: schulzgt $
+-- $Date: 2003/09/16 16:47:06 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -162,8 +162,6 @@ package body Giant.Gsl.Interpreters is
         Individual.Main_Activation_Record;
 
       -- register runtime functions
-      Default_Logger.Debug
-        ("Interpreter: Register runtime functions.", "Giant.Gsl.Interpreter");
       -- assignment (ref. GIANT Scripting Language Specification 1.5.1.1)
       Register_Runtime (Runtime_Set'Access,   "set");
       Register_Runtime (Runtime_Deref'Access, "deref");
@@ -318,8 +316,6 @@ package body Giant.Gsl.Interpreters is
       Individual.Gsl_Time := Ada.Real_Time.Clock;
 
       -- initilze the evolution object, comlexity is 0
-      Default_Logger.Debug
-        ("Interpreter: Initiliaze evolution.", "Giant.Gsl.Interpreter");
       Initialize (Individual, 0);
 
       -- handling of exceptions
@@ -362,7 +358,6 @@ package body Giant.Gsl.Interpreters is
       -- |                                                       |
       --
       -- execution stack
-      Default_Logger.Debug ("=== Building execution stack...");
       Individual.Execution_Stack := Execution_Stacks.Create;
       Execution_Stacks.Push (Individual.Execution_Stack, Get_Execution_Stack
         (Individual.Gsl_Compiler, Create_Node
@@ -376,7 +371,6 @@ package body Giant.Gsl.Interpreters is
       Log_Execution_Stack;
 
       -- result stack for the activation of "run"
-      Default_Logger.Debug ("=== Building result stack...");
       Script := Copy (Get_Var ("run"));
       Param_Run := Create_Gsl_List (1);
       Set_Value_At (Param_Run, 1, Gsl_Type (Create_Gsl_String (Name)));
@@ -388,8 +382,6 @@ package body Giant.Gsl.Interpreters is
       Individual.Gsl_Time := Ada.Real_Time.Clock;
 
       -- initilze the evolution object, comlexity is 0
-      Default_Logger.Debug
-        ("Interpreter: Initilize evolution.", "Giant.Gsl.Interpreter");
       Initialize (Individual, 0);
    end Execute_Script;
 
@@ -461,8 +453,9 @@ package body Giant.Gsl.Interpreters is
    begin
       Benchmark := Ada.Real_Time.To_Duration
         (Ada.Real_Time."-" (Ada.Real_Time.Clock, Individual.Gsl_Time));
-      Default_Logger.Debug
-        ("Gsl Script finished: Time " & Benchmark'Img);
+       Default_Logger.Debug
+         ("Gsl Script finished: Time " & Benchmark'Img,
+          "Giant.Gsl.Interpreters");
       Destroy_Activation_Record (Individual.Main_Activation_Record);
    end Finish;
 
