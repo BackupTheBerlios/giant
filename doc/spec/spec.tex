@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: spec.tex,v $, $Revision: 1.20 $
-%  $Date: 2003/02/25 14:33:50 $
+%  $RCSfile: spec.tex,v $, $Revision: 1.21 $
+%  $Date: 2003/02/25 22:02:49 $
 %  $Author: squig $
 %
 %  Description: Master Datei der Spezifikation
@@ -12,14 +12,17 @@
 \usepackage{../styles/common}
 \usepackage{spec}
 
+% subsubsections nummerieren
+\setcounter{secnumdepth}{3}
+
 %\newcommand\version{Version 1.0\xspace}
 \newcommand\version{\today\xspace}
 
 % header
 \fancyhead{}
-\fancyhead[LE,RO]{\slshape \rightmark}
+\fancyhead[LE,RO]{\slshape \version}
 \fancyhead[LO,RE]{\slshape \leftmark}
-\fancyfoot[LE,RO]{\version}
+\fancyfoot[LE,RO]{\company}
 \fancyfoot[LO,RE]{\thepage{} / \pageref{LastPage}}
 
 \makeindex
@@ -29,13 +32,16 @@
 % title page
 \thispagestyle{empty}
 \hfill
-\parbox{5cm}{Universität Stuttgart \\ Studienprojekt A IML Browser}
+\parbox{5cm}
+{Universität Stuttgart\\
+Studienprojekt A - IML Browser\\
+\company}
 
 \vspace{5cm}
 
 \begin{center}
   \Huge
-  \textsf{Spezifikation}\\
+  \textsf{Spezifikation \product}\\
   \vspace{1cm}\Large\today
 \end{center}
 \newpage
@@ -81,10 +87,8 @@ beachtet werden sollen.
 %
 % Allgemeines zu den Funktionalen ANforderungen
 %
-\chapter{Allgemeines zu den funktionalen Anforderungen}
+\chapter{Allgemeine Funktionale Anforderungen}
 \input{afa}
-
-
 
 
 %===============================================================================
