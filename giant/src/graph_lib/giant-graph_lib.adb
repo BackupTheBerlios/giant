@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.15 $
 --  $Author: koppor $
---  $Date: 2003/06/13 17:56:56 $
+--  $Date: 2003/06/13 17:58:24 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -1172,7 +1172,7 @@ package body Giant.Graph_Lib is
    begin
       return
         Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
-        (Get_Class_Of_Node (Edge.Source_Node),
+        (Get_Node_Class_Id (Edge.Source_Node),
          Edge.Attribute);
    end Get_Edge_Class_Id;
 
