@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.6 $
+--  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.7 $
 --  $Author: koppor $
---  $Date: 2003/06/14 08:33:07 $
+--  $Date: 2003/06/14 11:04:25 $
 --
 ------------------------------------------------------------------------------
 --
@@ -42,8 +42,8 @@ package Giant.Graph_Lib.Selections is
    type Selection is private;
 
    ---------------------------------------------------------------------------
-   --  Creates a new selection,
-   --    which has to be destroyed afterwards
+   --  Creates a new selection with no nodes and edges
+   --   has to be destroyed with "destroy" after usage
    --  Name is converted to a String and not used during the run
    function Create
       (Name : in    Valid_Names.Standard_Name)
@@ -119,7 +119,7 @@ package Giant.Graph_Lib.Selections is
 
    ---------------------------------------------------------------------------
    --  Adds all nodes in given set to the Selection
-   procedure Add_Node_Set
+   procedure Add_Edge_Set
       (Selection_To_Modify : in out Selection;
        Edge_Set            : in     Edge_Id_Set);
 
