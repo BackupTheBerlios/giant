@@ -1,15 +1,22 @@
 % ==============================================================================
-%  $RCSfile: technical.tex,v $, $Revision: 1.2 $
-%  $Date: 2003/02/13 04:23:25 $
+%  $RCSfile: technical.tex,v $, $Revision: 1.3 $
+%  $Date: 2003/02/13 21:17:51 $
 %  $Author: schulzgt $
 %
-%  Description:
+%  Description: Hier sind die Anforderungen an die Programmumgebung 
+%  spezifiziert. Dazu gehöhren die verwendete Hard- und Software, sowie
+%  Schnittstellen zu anderen Produkten.
 %
 % ==============================================================================
 
 \section{Software}
 Das Programm stellt an die installierte Software folgende Anforderungen:
-Betriebssystem: Sun Solaris und Linux.
+\begin{itemize}
+  \item Sun Solaris oder Linux Betriebssystem
+  \item Bauhaus Tools
+  \item Emacs oder vi Texteditor
+\end{itemize}
+
 
 \section{Hardware}
 Das Programm läuft auf SPARC Workstations und x86 kompatiblen PCs.
@@ -30,3 +37,9 @@ Die minimalen Hardwareanforderungen sind im Folgenden beschrieben.
   \item 8 Bit Grafik mit einer min. Auflösung von 1024*786
   \item Maus mit mindestens 3 Tasten
 \end{itemize}
+
+\section{Produkt-Schnittstellen}
+Das Programm soll in die Bauhaus Suite integriert werden können.
+Als Schnittstelle dient dabei die Bauhaus IML Bibliothek. Weiterhin
+kann die Verwendung von Kommandozeilenparametern und der GQSL zur 
+Integration in das vorhandene System genutzt werden.
