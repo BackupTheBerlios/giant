@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.11 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.12 $
 --  $Author: keulsn $
---  $Date: 2003/06/24 10:55:04 $
+--  $Date: 2003/06/24 18:15:55 $
 --
 ------------------------------------------------------------------------------
 --
@@ -134,6 +134,31 @@ package Giant.Vis_Data is
    --    Constraint_Error if Precondition not satisfied
    procedure Shrink_Pool
      (Pool : in out Layer_Pool);
+
+
+   --------------
+   -- Clipping --
+   --------------
+
+   type Layer_Clipping_Change_Type is (Add, Delete);
+
+   type Layer_Clipping_Type is
+      record
+         Height : Layer_Type;
+         Action : Layer_Clipping_Change_Type;
+         Area   : Vis.Absolute.Rectangle_2d;
+      end record;
+
+   function Is_Below
+     (Left  : in     Layer_Clipping_Type;
+      Right : in     Layer_Clipping_Type)
+     return Boolean;
+
+   package Clipping_Queues is new Simple_Priority_Queues
+     (Item_Type           => Layer_Clipping_Type;
+      Has_Higher_Priority => Is_Below);
+
+   type Clipping_Queue_Access is access Clipping_Queues.Queue;
 
 
    -----------
@@ -535,6 +560,30 @@ package Giant.Vis_Data is
       Edges           :    out Edge_Update_Iterators.Merger_Access;
       Nodes           :    out Node_Update_Iterators.Merger_Access;
       Refresh_Pending : in     Boolean);
+
+   procedure Start_Edge_Refresh
+     (Manager         : in out Region_Manager;
+      Display_Area    : in     Vis.Absolute.Rectangle_2d;
+      Clipping        :    out Clipping_Queue_Access;
+      Edges           :    out Edge_Update_Iterators.Merger_Access;
+      Refresh_Pending : in     Boolean);
+
+   procedure End_Edge_Refresh
+     (Clipping        : in out Clipping_Queue_Access;
+      Edges           : in out Edge_Update_Queues.Queue_Access);
+
+
+   procedure Start_Node_Refresh
+     (Manager         : in out Region_Manager;
+      Display_Area    : in     Vis.Absolute.Rectangle_2d;
+      Clipping        :    out Clipping_Queue_Access;
+      Nodes           :    out Node_Update_Queues.Merger_Access;
+      Refresh_Pending : in     Boolean);
+
+   procedure End_Node_Refresh
+     (Clipping        : in out Clipping_Queue_Access;
+      Nodes           : in out Node_Update_Queues.Queue_Access);
+
 
    ----------------------------------------------------------------------------
    --  Deallocates the storage used by 'Start_Refresh_Foreground'. This

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.9 $
 --  $Author: keulsn $
---  $Date: 2003/06/24 10:55:04 $
+--  $Date: 2003/06/24 18:15:55 $
 --
 ------------------------------------------------------------------------------
 
@@ -1103,8 +1103,6 @@ package body Giant.Vis_Data is
       Nodes           :    out Node_Update_Iterators.Merger_Access;
       Refresh_Pending : in     Boolean) is
 
-      package Edge_Iterator_Lists renames
-        Edge_Update_Iterators.Iterator_Lists;
       package Node_Iterator_Lists renames
         Node_Update_Iterators.Iterator_Lists;
       Pool           : Position_Pool;
@@ -1155,6 +1153,82 @@ package body Giant.Vis_Data is
       Edge_Update_Iterators.Destroy (Edges);
       Node_Update_Iterators.Destroy (Nodes);
    end End_Refresh_Foreground;
+
+   procedure Start_Edge_Refresh
+     (Manager         : in out Region_Manager;
+      Display_Area    : in     Vis.Absolute.Rectangle_2d;
+      Clipping        :    out Clipping_Queue_Access;
+      Edges           :    out Edge_Update_Iterators.Merger_Access;
+      Refresh_Pending : in     Boolean) is
+
+      package Edge_Iterator_Lists renames
+        Edge_Update_Iterators.Iterator_Lists;
+      Region_Count  : Natural;
+      Pool          : Position_Pool;
+      Iterator      : Position_Iterator;
+      Edge_Iterator : Vis_Edge_Sets.Iterator;
+      Region        : Region_Id;
+      Region_Clip   : Layer_Clipping_Type;
+   begin
+      Pool := Create_Position_Pool_From_Area (Manager, Display_Area);
+      Region_Count := Get_Size (Pool);
+      Clipping := new Clipping_Queues.Queue (Region_Count);
+      Edges := new Edge_Update_Iterators.Merger_Type (Region_Count);
+
+      Make_Position_Iterator (Pool, Iterator);
+      while Has_More (Iterator) loop
+         Position := Get_Current (Iterator);
+         Next (Iterator);
+         Region := Get_Region_If_Exists (Manager, Position);
+         if Region /= null then
+
+            Edge_Iterator := Get_Polluted_Edges (Region);
+
+            if Vis_Edge_Sets.More (Edge_Iterator) then
+               First_Edge := Vis_Edge_Sets.Current (Edge_Iterator);
+               Region_Clip :=
+                 (Height => Get_Layer (First_Edge),
+                  Action => Add,
+                  Area   => Get_Region_Extent (Region));
+               Clipping_Queues.Insert (Clipping.all, Region_Clip);
+            end if;
+
+            Edge_Update_Iterators.Add_Iterator
+              (Merger   => Edges.all,
+               Iterator => Edge_Iterator);
+
+            if Refresh_Pending then
+               Remove_Edge_Pollution (Region);
+            end if;
+         end if;
+      end loop;
+
+   end Start_Edge_Refresh;
+
+   procedure End_Edge_Refresh
+     (Clipping        : in out Clipping_Queue_Access;
+      Edges           : in out Edge_Update_Queues.Queue_Access) is
+   begin
+      Free (Clipping);
+      Free (Edges);
+   end End_Edge_Refresh;
+
+
+   procedure Start_Node_Refresh
+     (Manager         : in out Region_Manager;
+      Display_Area    : in     Vis.Absolute.Rectangle_2d;
+      Clipping        :    out Clipping_Queue_Access;
+      Nodes           :    out Node_Update_Queues.Merger_Access;
+      Refresh_Pending : in     Boolean) is
+   begin
+   end Start_Node_Refresh;
+
+   procedure End_Node_Refresh
+     (Clipping        : in out Clipping_Queue_Access;
+      Nodes           : in out Node_Update_Queues.Queue_Access) is
+   begin
+   end End_Node_Refresh;
+
 
    procedure Initialize
      (Manager : in out Region_Manager) is
