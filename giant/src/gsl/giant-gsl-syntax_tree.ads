@@ -22,15 +22,23 @@
 --
 -- $RCSfile: giant-gsl-syntax_tree.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/09 14:15:28 $
+-- $Date: 2003/06/30 16:00:51 $
 --
--- This package implements the syntax tree used by GSL.
+-- This package implements functions needed to work with the Gsl syntax tree.
+-- The datastructure for the nodes is located in the parent package Giant.Gsl.
 --
 
 package Giant.Gsl.Syntax_Tree is
 
    ---------------------------------------------------------------------------
-   -- creates a new Syntax_Node
+   --  Creates a new Syntax_Node.
+   --
+   --  Parameters:
+   --    N_Type - type of the node
+   --    Child1 -
+   --    Child2 -
+   --  Returns:
+   --    the new Syntay_Node
    function Create_Node
      (N_Type : Node_Type;
       Child1 : Syntax_Node;
@@ -38,8 +46,19 @@ package Giant.Gsl.Syntax_Tree is
       return Syntax_Node;
 
    ---------------------------------------------------------------------------
+   --
+   function Copy_Node
+     (Node : Syntax_Node)
+      return Syntax_Node;
+
+   ---------------------------------------------------------------------------
    -- destroys a Syntax_Node with all children and frees the memory
    procedure Destroy_Node
+     (Node : in out Syntax_Node);
+
+   ---------------------------------------------------------------------------
+   -- destroys a Syntax_Node with all children and frees the memory
+   procedure Destroy_Syntax_Tree
      (Node : in out Syntax_Node);
 
    ---------------------------------------------------------------------------

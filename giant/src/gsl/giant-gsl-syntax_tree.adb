@@ -20,17 +20,13 @@
 --
 -- First Author: Gerrit Schulz
 --
--- $RCSfile: giant-gsl-syntax_tree.adb,v $, $Revision: 1.2 $
+-- $RCSfile: giant-gsl-syntax_tree.adb,v $, $Revision: 1.3 $
 -- $Author: schulzgt $
--- $Date: 2003/06/09 14:15:28 $
+-- $Date: 2003/06/30 16:00:51 $
 --
 with Unchecked_Deallocation;
 
 package body Giant.Gsl.Syntax_Tree is
-
-   procedure Free is new Unchecked_Deallocation
-     (Syntax_Node_Record,
-      Syntax_Node);
 
    ---------------------------------------------------------------------------
    -- creates a new Syntax_Node
@@ -51,18 +47,49 @@ package body Giant.Gsl.Syntax_Tree is
    end Create_Node;
 
    ---------------------------------------------------------------------------
+   --
+   function Copy_Node
+     (Node : Syntax_Node)
+      return Syntax_Node is
+
+      N : Syntax_Node;
+   begin
+      N := new Syntax_Node_Record;
+      N.all := Node.all;
+      return N;
+   end Copy_Node;
+
+   ---------------------------------------------------------------------------
    -- destroys a Syntax_Node with all children and frees the memory
    procedure Destroy_Node
      (Node : in out Syntax_Node) is
+
+      procedure Free is new Unchecked_Deallocation
+        (Syntax_Node_Record,
+         Syntax_Node);
+
    begin
-      if Node.Child1 /= Null_Node then
-         Destroy_Node (Node.Child1);
-      end if;
-      if Node.Child2 /= Null_Node then
-         Destroy_Node (Node.Child2);
-      end if;
       Free (Node);
    end Destroy_Node;
+
+   ---------------------------------------------------------------------------
+   -- destroys a Syntax_Node with all children and frees the memory
+   procedure Destroy_Syntax_Tree
+     (Node : in out Syntax_Node) is
+
+      procedure Free is new Unchecked_Deallocation
+        (Syntax_Node_Record,
+         Syntax_Node);
+
+   begin
+      if Node.Child1 /= Null_Node then
+         Destroy_Syntax_Tree (Node.Child1);
+      end if;
+      if Node.Child2 /= Null_Node then
+         Destroy_Syntax_Tree (Node.Child2);
+      end if;
+      Free (Node);
+   end Destroy_Syntax_Tree;
 
    ---------------------------------------------------------------------------
    -- get the type of a Syntax_Node
