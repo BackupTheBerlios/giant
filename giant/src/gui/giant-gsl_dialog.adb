@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.10 $
 --  $Author: squig $
---  $Date: 2003/06/30 15:46:28 $
+--  $Date: 2003/06/30 16:18:18 $
 --
 
 with Ada.IO_Exceptions;
@@ -253,7 +253,7 @@ package body Giant.Gsl_Dialog is
               (Ada.Strings.Unbounded.To_String (Dialog.Filename));
 
             --  the script was executed successfully
-            return True;
+            --return True;
          exception
            when others =>
               Dialogs.Show_Error_Dialog ("Error while executing the script.");
