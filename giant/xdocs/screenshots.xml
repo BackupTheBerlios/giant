@@ -19,7 +19,7 @@
                   <tr valign="center">
                     <td>
                       <a href="images/graph_window_1.png"><img
-                       src="images/graph_window_1_thumb.png"/></a>
+                       src="images/graph_window_1_thumb.png" border="0"/></a>
                     </td>
                     <td>
                       Graph Window
@@ -28,7 +28,7 @@
                   <tr valign="center">
                     <td>
                       <a href="images/gsl_editor.png"><img
-                       src="images/gsl_editor_thumb.png"/></a>
+                       src="images/gsl_editor_thumb.png" border="0"/></a>
                     </td>
                     <td>
                       GSL Editor
@@ -37,7 +37,7 @@
                   <tr valign="center">
                     <td>
                       <a href="images/apply_layout_dialog.png"><img
-                       src="images/apply_layout_dialog_thumb.png"/></a>
+                       src="images/apply_layout_dialog_thumb.png" border="0"/></a>
                     </td>
                     <td>
                       Apply Layout Dialog
@@ -46,7 +46,7 @@
                   <tr valign="center">
                     <td>
                       <a href="images/node_info_dialog.png"><img
-                       src="images/node_info_dialog_thumb.png"/></a>
+                       src="images/node_info_dialog_thumb.png" border="0"/></a>
                     </td>
                     <td>
                       Node Information Dialog
