@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.4 $
 --  $Author: koppor $
---  $Date: 2003/06/14 08:32:37 $
+--  $Date: 2003/06/14 11:03:57 $
 
 package body Giant.Graph_Lib.Selections is
 
@@ -31,142 +31,154 @@ package body Giant.Graph_Lib.Selections is
       return Boolean
    is
    begin
+      --  TBD
       return False;
    end "<";
 
-   --------------
-   -- Add_Edge --
-   --------------
-
+   ---------------------------------------------------------------------------
    procedure Add_Edge
      (Selection_To_Modify : in out Selection;
       Edge                : in     Edge_Id)
    is
    begin
-      null;
+      Edge_Id_Sets.Insert
+        (Selection_To_Modify.Edges,
+         Edge);
    end Add_Edge;
 
-   --------------
-   -- Add_Node --
-   --------------
+   ---------------------------------------------------------------------------
+   procedure Add_Edge_Set
+     (Selection_To_Modify : in out Selection;
+      Edge_Set            : in     Edge_Id_Set)
+   is
+   begin
+      null;
+   end Add_Edge_Set;
 
+   ---------------------------------------------------------------------------
    procedure Add_Node
      (Selection_To_Modify : in out Selection;
       Node                : in     Node_Id)
    is
    begin
-      null;
+      Node_Id_Sets.Insert
+        (Selection_To_Modify.Nodes,
+         Node);
    end Add_Node;
 
-   ------------------
-   -- Add_Node_Set --
-   ------------------
-
+   ---------------------------------------------------------------------------
    procedure Add_Node_Set
      (Selection_To_Modify : in out Selection;
       Node_Set            : in     Node_Id_Set)
    is
+
+      procedure Execute (Node : in Node_Id) is
+      begin
+         Add_Node (Selection_To_Modify,
+                   Node);
+      end Execute;
+
+      procedure Apply is new Node_Id_Sets.Apply (Execute => Execute);
+
    begin
-      null;
+      Apply (Selection_To_Modify.Nodes);
    end Add_Node_Set;
 
-   ------------------
-   -- Add_Node_Set --
-   ------------------
-
-   procedure Add_Node_Set
-     (Selection_To_Modify : in out Selection;
-      Edge_Set            : in     Edge_Id_Set)
-   is
-   begin
-      null;
-   end Add_Node_Set;
-
-   -----------
-   -- Clone --
-   -----------
-
+   ---------------------------------------------------------------------------
    function Clone
      (Selection_To_Clone : in Selection)
       return Selection
    is
+      Res : Selection;
    begin
-      --  TBD
-      return new Selection_Record (Name_Length => 1);
+      Res := new Selection_Record
+        (Name_Length => Selection_To_Clone.Name'Length);
+      Res.Name  := Selection_To_Clone.Name;
+      Res.Edges := Edge_Id_Sets.Copy (Selection_To_Clone.Edges);
+      Res.Nodes := Node_Id_Sets.Copy (Selection_To_Clone.Nodes);
+      return Res;
    end Clone;
 
    ---------------------------------------------------------------------------
-   --  Creates a new Selection with no nodes and no edges
-   --
    function Create
      (Name : in    Valid_Names.Standard_Name)
       return Selection
    is
+      Res      : Selection;
+      New_Name : String := Valid_Names.To_String (Name);
    begin
-      --  TBD
-      return new Selection_Record (Name_Length => 1);
+      Res := new Selection_Record (Name_Length => New_Name'Length);
+      Res.Name  := New_Name;
+      Res.Edges := Edge_Id_Sets.Empty_Set;
+      Res.Nodes := Node_Id_Sets.Empty_Set;
+      return Res;
    end Create;
 
-   -------------
-   -- Destroy --
-   -------------
-
+   ----------------------------------------------------------------------------
    procedure Destroy
      (Selection_To_Destroy : in out Selection)
    is
    begin
-      null;
+      --  TBD: Destroy_Deep
+      Selection_To_Destroy := null;
    end Destroy;
 
-   --------------
-   -- Get_Name --
-   --------------
-
+   ----------------------------------------------------------------------------
    function Get_Name
      (Selection_To_Read : in Selection)
       return String
    is
    begin
-      --  TBD
-      return "";
+      return Selection_To_Read.Name;
    end Get_Name;
 
-   ------------------
-   -- Intersection --
-   ------------------
-
+   ----------------------------------------------------------------------------
    function Intersection
      (Left  : in Selection;
       Right : in Selection)
       return Selection
    is
+      Res      : Selection;
+      New_Name : String := Get_Name (Left) & " U " & Get_Name (Right);
    begin
-      --  TBD
-      return new Selection_Record (Name_Length => 1);
+      Res := new Selection_Record (Name_Length => New_Name'Length);
+      Res.Name := New_Name;
+      Res.Edges := Edge_Id_Sets."*" (Left.Edges, Right.Edges);
+      Res.Nodes := Node_Id_Sets."*" (Left.Nodes, Right.Nodes);
+      return Res;
    end Intersection;
 
-   -----------------
-   -- Remove_Edge --
-   -----------------
-
+   ----------------------------------------------------------------------------
    procedure Remove_Edge
      (Selection_To_Modify : in out Selection;
       Edge                : in     Edge_Id)
    is
    begin
-      null;
+      begin
+         Edge_Id_Sets.Remove (Selection_To_Modify.Edges,
+                              Edge);
+      exception
+         when Edge_Id_Sets.No_Member =>
+            raise Edge_Does_Not_Exist;
+      end;
    end Remove_Edge;
 
-   ---------------------
-   -- Remove_Edge_Set --
-   ---------------------
-
+   ----------------------------------------------------------------------------
    procedure Remove_Edge_Set
      (Selection_To_Modify : in out Selection;
       Edge_Set            : in     Edge_Id_Set)
    is
+
+      procedure Execute (Edge : in Edge_Id) is
+      begin
+         Remove_Edge (Selection_To_Modify,
+                      Edge);
+      end Execute;
+
+      procedure Apply is new Edge_Id_Sets.Apply (Execute => Execute);
+
    begin
-      null;
+      Apply (Edge_Set);
    end Remove_Edge_Set;
 
    ----------------------------------------------------------------------------
@@ -189,6 +201,7 @@ package body Giant.Graph_Lib.Selections is
      (Selection_To_Modify : in out Selection;
       Node_Set            : in     Node_Id_Set)
    is
+
       procedure Execute (Node : in Node_Id) is
       begin
          Remove_Node (Selection_To_Modify,
@@ -238,18 +251,20 @@ package body Giant.Graph_Lib.Selections is
       null;
    end Selection_Write;
 
-   -------------------------
-   -- Symetric_Difference --
-   -------------------------
-
+   ----------------------------------------------------------------------------
    function Symetric_Difference
      (Left  : in Selection;
       Right : in Selection)
       return Selection
    is
+      Res      : Selection;
+      New_Name : String := Get_Name (Left) & " U " & Get_Name (Right);
    begin
-      --  TBD
-      return new Selection_Record (Name_Length => 1);
+      Res := new Selection_Record (Name_Length => New_Name'Length);
+      Res.Name := New_Name;
+      Res.Edges := Edge_Id_Sets.Symmetric_Difference (Left.Edges, Right.Edges);
+      Res.Nodes := Node_Id_Sets.Symmetric_Difference (Left.Nodes, Right.Nodes);
+      return Res;
    end Symetric_Difference;
 
    ----------------------------------------------------------------------------
@@ -258,10 +273,13 @@ package body Giant.Graph_Lib.Selections is
       Right : in Selection)
       return Selection
    is
-      Res : Selection;
+      Res      : Selection;
+      New_Name : String := Get_Name (Left) & " U " & Get_Name (Right);
    begin
-      --  TBD
-      Res := new Selection_Record (Name_Length => 1);
+      Res := new Selection_Record (Name_Length => New_Name'Length);
+      Res.Name := New_Name;
+      Res.Edges := Edge_Id_Sets."+" (Left.Edges, Right.Edges);
+      Res.Nodes := Node_Id_Sets."+" (Left.Nodes, Right.Nodes);
       return Res;
    end Union;
 
