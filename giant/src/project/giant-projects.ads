@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.3 $
--- $Author: squig $
--- $Date: 2003/06/03 22:05:21 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.4 $
+-- $Author: schwiemn $
+-- $Date: 2003/06/05 17:15:59 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -807,12 +807,17 @@ private
      (Stream       : access Root_Stream_Type'Class;
       IML_Subgraph : out IML_Subgraph_Data_Elemet);
 
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+   Use Hash_Map !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! instead of set
+
    package IML_Subgraph_Data_Sets is new Ordered_Sets
      (Item_Type => IML_Subgraph_Data_Elemet,
       "="       => IML_Subgraph_Data_Elemet_Equal,
       "<"       => IML_Subgraph_Data_Elemet_Less_Than,
       Write     => IML_Subgraph_Data_Elemet'Write,
       Read      => IML_Subgraph_Data_Elemet'Read);
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
 
   ----------------------------------------------------------------------------
   -- Project Data object

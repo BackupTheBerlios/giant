@@ -1,48 +1,48 @@
 ------------------------------------------------------------------------------
--- GIANT - Graphical IML Analysis and Navigation Tool
+--  GIANT - Graphical IML Analysis and Navigation Tool
 --
--- Copyright (C) 2003 Philipp Haeuser, Steffen Keul, Oliver Kopp,
--- Steffen Pingel, Gerrit Schulz and Martin Schwienbacher.
+--  Copyright (C) 2003 Philipp Haeuser, Steffen Keul, Oliver Kopp,
+--  Steffen Pingel, Gerrit Schulz and Martin Schwienbacher.
 --
--- This program is free software; you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation; either version 2 of the License, or
--- (at your option) any later version.
+--  This program is free software; you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation; either version 2 of the License, or
+--  (at your option) any later version.
 --
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
--- GNU General Public License for more details.
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+--  GNU General Public License for more details.
 --
--- You should have received a copy of the GNU General Public License
--- along with this program; if not, write to the Free Software
--- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+--  You should have received a copy of the GNU General Public License
+--  along with this program; if not, write to the Free Software
+--  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- First Author: Martin Schwienbacher
+--  First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.4 $
--- $Author: schwiemn $
--- $Date: 2003/06/04 13:43:03 $
+--  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.5 $
+--  $Author: schwiemn $
+--  $Date: 2003/06/05 17:15:59 $
 --
--- ----------------
--- This package realizes a container that administrates the components
--- that decribe a visualisation window, i.e. this is the data model
--- for a visualisation_window.
+--  ----------------
+--  This package realizes a container that administrates the components
+--  that decribe a visualisation window, i.e. this is the data model
+--  for a visualisation_window.
 --
--- Each Container is an Abstract Data Type (ADT), the administrated
--- Components are selections, pins and a graph_widget.
--- The container holds all data needed to sava a visual window
--- persistent into a file.
+--  Each Container is an Abstract Data Type (ADT), the administrated
+--  Components are selections, pins and a graph_widget.
+--  The container holds all data needed to sava a visual window
+--  persistent into a file.
 --
--- This "data model" is absolute independent from any kind
--- of a graphical represenation of a visualiasation window.
--- --> Zhe user of this package has to take care for the
--- consistency between this "data model" and any graphical
--- representation.
+--  This "data model" is absolute independent from any kind
+--  of a graphical represenation of a visualiasation window.
+--  --> Zhe user of this package has to take care for the
+--  consistency between this "data model" and any graphical
+--  representation.
 --
--- The purpose of this package is to combine all components
--- describing the not redundant data needed for the persistence of
--- a visualisation window.
+--  The purpose of this package is to combine all components
+--  describing the not redundant data needed for the persistence of
+--  a visualisation window.
 --
 with String_Lists; -- from Bauhaus IML "Reuse.src"
 with Bauhaus_IO;   -- from Bauhaus IML "Reuse.src" 
@@ -50,7 +50,6 @@ with Bauhaus_IO;   -- from Bauhaus IML "Reuse.src"
 with Giant.Valid_Names;              -- from GIANT
 with Giant.Graph_Lib.Selections;     -- from GIANT
 with Giant.Graph_Lib.Selection_Sets; -- from GIANT
-
 
 package Giant.Vis_Window_Management is
 
@@ -180,9 +179,6 @@ package Giant.Vis_Window_Management is
    -- fact, that each visualisation window of a project must have a
    -- unique name.
    --
-   -- This function is used to organize instances of the ADT
-   -- in ordered sets (package ordered_sets from Bauhaus Reuse.src).
-   --
    -- It is garanted that:
    -- (Equal (Vis_Window_A, Vis_Window_B) = TRUE) if and only if
    -- (Get_Vis_Window_Name(Vis_Window_A) = Get_Vis_Window_Name(Vis_Window_B))
@@ -196,35 +192,30 @@ package Giant.Vis_Window_Management is
    --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
-   function Equal
+   function Is_Equal
      (Left  : in Visual_Window_Data_Access;
       Right : in Visual_Window_Data_Access)
      return Boolean;
 
    ---------------------------------------------------------------------------
-   -- "Less Than" Function for the ADT.
+   -- A Hash Function for the ADT.
    --
-   -- This function is used to organize instances of the ADT
-   -- in ordered sets (package ordered_sets from Bauhaus Reuse.src).
-   --
-   -- It is garanted that:
-   -- Visual_Window_Data_Access_A < Visual_Window_Data_Access_A
-   -- if and only if
-   -- Get_Vis_Window_Name(Window_A) < Get_Vis_Window_Name(Window_B)
+   -- It is garanted that if
+   --   Equal (Window_A, Window_B)  -> 
+   --     (Get_Hash_Value (Window_A) = Get_Hash_Value (Window_B));
    --
    -- Parameters:
-   --   Left : An instance of the ADT.
-   --   Right: An instance of the ADT:
+   --   Vis_Window : An instance of the ADT for that an hash value should
+   --     be calculated.
    -- Returns:
-   --   True, if Left < Right; False, otherwise (Left >= Right);
+   --   A hash value for "Vis_Window".
    -- Raises:
    --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
-   function Less_Than
-     (Left  : in Visual_Window_Data_Access;
-      Right : in Visual_Window_Data_Access)
-     return Boolean;
+   function Get_Hash_Value
+     (Vis_Window  : in Visual_Window_Data_Access;
+     return Integer;
 
 
    ---------------------------------------------------------------------------
@@ -264,7 +255,7 @@ package Giant.Vis_Window_Management is
    Selection_Is_Not_Faded_Out_Exception : exception;
    
    ---------------------------------------------------------------------------
-   -- Checks whether the data model vor a visualisation window ha a
+   -- Checks whether the data model vor a visualisation window has a
    -- selection with the given name.
    --
    -- Parameters:
@@ -274,7 +265,7 @@ package Giant.Vis_Window_Management is
    --   True, if "Vis_Window" has a selection with the given name
    --   "Selection_Name"; False, otherwise.
    -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized - Raised if a not
+   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter
    function Does_Selection_Exist
@@ -307,16 +298,14 @@ package Giant.Vis_Window_Management is
    --   Selection_With_Passed_Name_Not_Found_Exception - Raise if
    --     "Vis_Window" has no selection with the name "Selection_Name".
    function Get_Selection
-     (Vis_Window     : in Visual_Window_Accsess;
+     (Vis_Window     : in Visual_Window_Access;
       Selection_Name : in Valid_Names.Standard_Name)
      return Graph_Lib.Selections.Selection_Access;
 
    ---------------------------------------------------------------------------
-   -- Returns a list of a all selections that belong to this model for a
-   -- visualisation window.
+   -- Returns a list (not sorted in any way) holding the names
+   -- of a all selections that belong to "Vis_Window".
    -- The standard selection is the first selection in this list.
-   -- The other selections are sorted in ascending alphabetical order
-   -- according to the selection names.
    --
    -- Parameters:
    --   Vis_Window - The "model" for a visualisation window.
@@ -326,7 +315,7 @@ package Giant.Vis_Window_Management is
    --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
-   function Get_All_Selection_Names_Sorted
+   function Get_All_Selections
      (Vis_Window : in Visual_Window_Data_Access)
      return String_Lists.List;
 
@@ -353,13 +342,15 @@ package Giant.Vis_Window_Management is
    -- Selection is only removed from the visualisation window
    -- NO DEALLOCATION is done for the selection.
    -- After the call of that subprogram a selection may be deallocated
-   -- without affeting Vis_Window.
+   -- without affecting the ADT Vis_Window.
    --
    -- The Standard Selection may not be removed.
+   -- If the Current Selection is removed, the standard selection will
+   -- become the current selection.
    --
    -- Parameters:
    --   Vis_Window - The "model" for a visualisation window.
-   --   Selection  - The selection that should be removed.
+   --   Selection_Name  - The name of the selection that should be removed.
    -- Raises:
    --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
@@ -368,28 +359,29 @@ package Giant.Vis_Window_Management is
    --     "Vis_Window" has no selection with the name "Selection_Name".
    --   Standard_Selection_May_Not_Be_Removed_Exception - Raised on Trail
    --     to remove the standard selection.
-   --   Selection_Not_Found_Exception - Raised if the selection "Selection"
-   --     is not part of "Visual_Window_Data_Access".
+   --   Selection_With_Passed_Name_Not_Found_Exception - Raised if a
+   --     selection with the name "Selection_Name" is not part of 
+   --     "Visual_Window_Data_Access".
    function Remove_Selection_From_Vis_Window
-      (Vis_Window : in Visual_Window_Data_Access;
-       Selection  : in Graph_Lib.Selections.Selection_Access);
+      (Vis_Window     : in Visual_Window_Data_Access;
+       Selection_Name : in Valid_Names.Standard_Name);
 
    ---------------------------------------------------------------------------
-   -- Returns the current selection.
-   -- There is always an current selection.
+   -- Returns the name of the current selection.
+   -- There is always a current selection.
    --
    -- Parameters:
    --   Vis_Window - The "model" for a visualisation window whose current
    --     selection should be returned.
    -- Returns:
-   --   The current seclection.
+   --   The name of the current seclection.
    -- Raises:
    --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
    function Get_Current_Selection
      (Vis_Window : in Visual_Window_Data_Access)
-     return Graph_Lib.Selections.Selection_Access;
+     return String;
 
    ---------------------------------------------------------------------------
    -- Sets the current selection.
@@ -398,16 +390,17 @@ package Giant.Vis_Window_Management is
    -- Parameters:
    --   Vis_Window - The "model" for a visualisation window whose current
    --     selection should be changed.
-   --   Selection  - The selection that should be the new current selection.
+   --   Selection_Name  - The selection that should be the new current selection.
    -- Raises:
    --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
-   --   Selection_Not_Found_Exception - Raised if the selection "Selection"
-   --     is not part of "Visual_Window_Data_Access".
+   --   Selection_With_Passed_Name_Not_Found_Exception - Raised if a
+   --     selection with the name "Selection_Name" is not part of 
+   --     "Visual_Window_Data_Access"
    procedure Set_Current_Selection
-     (Vis_Window  : in Visual_Window_Accsess;
-      Selection   : in Graph_Lib.Selections.Selection_Access);
+     (Vis_Window     : in Visual_Window_Accsess;
+      Selection_Name : in Valid_Names.Standard_Name);
 
    ---------------------------------------------------------------------------
    -- Returns the standard selection.
@@ -431,19 +424,20 @@ package Giant.Vis_Window_Management is
    --
    -- Parameters:
    --   Vis_Window - The "model" for a visualisation window.
-   --   Selection - The selection whose "Highlight-Status" is
-   --     returned.
+   --   Selection_Name - The name of the selection 
+   --     whose "Highlight-Status" is returned.
    -- Returns:
    --   The highlight status.
    -- Raises:
    --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
-   --   Selection_Not_Found_Exceptionv - Raised if the passed selection
-   --     is not part of "Vis_Window".
+   --   Selection_With_Passed_Name_Not_Found_Exception - Raised if a
+   --     selection with the name "Selection_Name" is not part of 
+   --     "Visual_Window_Data_Access"
    function Get_Highlight_Status_Of_Selection
      (Vis_Window : in Visual_Window_Accsess;
-      Selection  : in Graph_Lib.Selections.Selection_Access)
+      Selection_Name : in Valid_Names.Standard_Name);
      return Highlight_Status;
 
    ---------------------------------------------------------------------------
