@@ -1,0 +1,56 @@
+% ==============================================================================
+%  $RCSfile: nfa.tex,v $ 
+%  $Date: 2003/02/13 03:15:14 $
+%  $Author: schulzgt $ 
+%
+%  Description: Nichtfunktionale Anforderungen
+%
+% ==============================================================================
+
+\section{Plattformunabhängigkeit}
+Das Produkt soll ein hohes Maß an Plattformunabhängigkeit, wie sie sich aus der eingesetzten Entwicklungsumgebung ergibt, 
+verfügen (also alle Systeme auf denen GTK/ADA 1.2.12 lauffähig ist). Explizit während der Entwicklung getestet 
+werden kann dies aber nur für Sun Solaris und Linux.
+
+\section{Wartbarkeit}
+Das System soll sich durch ein hohes Maß an Wartbarkeit und Erweiterbarkeit auszeichnen.
+12.3.1  Wartbarkeit und Erweiterbarkeit gehen über Performance
+Entsprechende Kapselung und Strukturierung des Entwurfes (Informationhiding, hohe Lokalität, 
+strikte Trennung von GUI und Funktionalität etc.).
+
+\section{IML}
+Das System soll so an Bauhaus angebunden werden, dass Änderungen in der Spezifikation des IML-Graphen 
+möglichst keine Wartungsarbeiten erfordern. Besonders soll dies für die verschiedenen Attribute, 
+Knoten- und Kantenklassen des Bauhaus-IML-Graphen gelten, da diese sich oft ändern können.
+Die Klassen und Attribute der Bauhaus-IML-Graph Bibliothek werden durch den IML-Browser nur so unterschieden, 
+dass neu hinzukommende Attribute automatisch mit erfasst und damit angezeigt werden können.
+
+\section{Mengengerüst}
+Ein explizites Mengengerüst, z.B. hinsichtlich der minimalen und maximalen Anzahl von darstellbaren Knoten, 
+gibt es nicht. Größenbeschränkungen (z.B. Größe der zu ladenden IML-Graph-Datei, Anzahl Knoten in einem Anzeigefenster ...) 
+sollen sich alleine aus dem verfügbaren Arbeitsspeicher ergeben. Falls der verfügbare Arbeitsspeicher erschöpft ist, 
+soll das System nicht abstürzen, sondern vielmehr die entsprechende Aktion kontrolliert abbrechen und dem Benutzer 
+ein Weiterarbeiten ermöglichen.
+
+\section{Unterstützung paralleler Rechner}
+Layoutalgorithmen werden zur Unterstützung paralleler Rechner in separaten Threads ausgeführt. 
+Die einzelnen Layoutalgorithmen sind nicht parallel. In einem Anzeigefenster kann immer nur ein es können 
+aber mehrere Layoutalgorithmen in verschiedenen Anzeigefenstern gleichzeitig laufen.
+
+\section{Leistungsanforderungen}
+Ein-Benutzer System.
+
+\section{Antwortverhalten}
+Layoutalgorithmen können abgebrochen werden (darauf kann falls zu schwer verzichtet werden).
+
+\section{Sicherheit}
+Eventuell Sicherheitsabfrage zur Datensicherung bei Beenden des Programms!
+
+\section{Robustheit}
+Fehlermeldungen, keine Sicherheit bei defektem IML-Graphen  
+
+\section{Wartbarkeit}
+
+\section{Portabilität}
+
+\section{Erweiterbarkeit}

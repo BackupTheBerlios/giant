@@ -1,0 +1,48 @@
+% ==============================================================================
+%  $RCSfile: config.tex,v $, $Revision: 1.1 $
+%  $Date: 2003/02/13 03:15:14 $
+%  $Author: schulzgt $
+%
+%  Description:
+%
+% ==============================================================================
+
+\section{Menü-Makros}
+Es können sogenannte Menü-Makros definiert werden. 
+Jeder Makro erhält einen eindeutigen Namen und eine ``Anweisung''.
+
+\section{Visualisierungsstiele}
+Es können verschiedene Visualisierungsstiele angelegt werden. 
+Sie beschreiben die Art und Weise wie Knoten und Kanten in den Anzeigefenstern 
+dargestellt werden. Für jedes Anzeigefenster kann hierbei ein eigener 
+vordefinierter Visualisierungsstiel ausgewählt werden.\\
+Folgende Einstellungen können hierbei vorgenommen werden:
+
+\subsection{Global für jeden Visualisierungsstiel}
+\begin{itemize}
+  \item Die Hintergrundfarbe im Anzeigefenster.
+  \item Die Position der Kantenbeschriftung (immer im Sichtbaren Anzeigeinhalt,
+        pauschal in der Mitte der Kante, am Startknoten oder am Zielknoten).
+\end{itemize}
+
+\subsection{Knoten}
+Folgende  Einstellungen können für jede Knotenklasse vorgenommen werden.
+Des weiteren muss eine DEFAULT-Einstellung erstellt werden, die für alle
+Knotenklassen angewendet wird, für die nichts anderes definiert ist.
+\begin{itemize}  
+  \item Ein Icon für die Knotenklasse (als Verweis auf ein entsprechendes Bild).  
+  \item Eine Liste der Attribute der Knotenklasse, welche dirket innerhalb des
+        Anzeigefensters dargestellt werden sollen.
+  \item Die Farbe des ``Vierecks'' in welchem die Attribute zu de
+  \item Ob die ID eines Knotens angezeigt werden soll oder nicht.
+\end{itemize}
+
+\subsection{Kanten}
+Folgende Einstellungen können für jede Kantenklasse vorgenommen werden. 
+Des weiteren muss eine DEFAULT-Einstellung erstellt werden, die für alle
+Kantenklassen angewendet wird, für die nichts anderes definiert ist.
+\begin{itemize}
+  \item Die Farbe der Kante.
+  \item Die Art der Linie der Kante (normal, gestrichelt).
+  \item Ob die Kante mit ihrer Kantenklasse beschriftet werden soll oder nicht.
+\end{itemize}
