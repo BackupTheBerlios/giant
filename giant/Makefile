@@ -149,3 +149,6 @@ release :
 	mv $(DIST_PATH)/src/giant/Makefile.dist $(DIST_PATH)/src/Makefile
 	ssh zweig "cd $(DIST_PATH)/src && make && cp giant/giant-SunOS ../"
 	ssh schmidt "setenv PATH /usr/local/ada/bin:$$PATH && cd $(DIST_PATH)/src && make && cp giant/giant-Linux ../"
+
+release-tag:
+	cvs tag $(RELEASE_TAG) . ../doc/handbuch ../doc/spec/gsl/gsl-final.pdf
