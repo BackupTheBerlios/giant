@@ -3,7 +3,7 @@
   <!-- If not defined relative paths will be expanded towards
        the directory there the config file is loacted.
   -->
-  <!ElEMENT absolute_path_root EMPTY>
+  <!ELEMENT absolute_path_root EMPTY>
   <!ATTLIST absolute_path_root
     root_directory  CDATA #REQUIRED
   >

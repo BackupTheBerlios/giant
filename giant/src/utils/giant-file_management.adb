@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.8 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.9 $
 -- $Author: schwiemn $
--- $Date: 2003/06/22 14:28:01 $
+-- $Date: 2003/06/22 21:21:10 $
 --
 --
 with Ada.Streams;
@@ -97,9 +97,7 @@ package body Giant.File_Management is
                GNAT_File_Name_String_Access.all'Last)
 
               /= Filter_String(Filter_String'First .. Filter_String'Last)
-              ) )
-
-         then
+              ) ) then
 
             -- deallocates file names that are not needed according
             -- to the filter criterion

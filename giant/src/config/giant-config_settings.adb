@@ -20,12 +20,15 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.4 $
+-- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.5 $
 -- $Author: schwiemn $
--- $Date: 2003/06/22 16:14:50 $
+-- $Date: 2003/06/22 21:21:09 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Text_IO;
+
+with GNAT.Directory_Operations; -- from GNAT
+with GNAT.OS_Lib;               -- from GNAT
 
 with Hashed_Mappings;       -- from Bauhaus Reuse.src
 pragma Elaborate_All (Hashed_Mappings);
@@ -39,6 +42,7 @@ with DOM.Core.Elements;  -- from xmlada
 
 with Giant.Logger;          -- from GIANT
 with Giant.XML_File_Access; -- from GIANT
+with Giant.File_Management; -- from GIANT
 
 package body Giant.Config_Settings is
 
@@ -55,18 +59,22 @@ package body Giant.Config_Settings is
       Hash       => Unbounded_String_Hash,
       Value_Type => Ada.Strings.Unbounded.Unbounded_String);
 
+   type Config_Data_Element is record
+      -- holds all settings
+      Settings_Map         : Setting_Hashs.Mapping;
+      -- the absolute path to the config file - needed for path expansion
+      -- a file
+      Abs_Config_File_Path : Ada.Strings.Unbounded.Unbounded_String;
+      -- the optional root for relative paths - needed for expansion
+      -- a directory
+      Abs_Path_Root        : Ada.Strings.Unbounded.Unbounded_String;
+   end record;
+
    -- Settings read from "GIANT_Config_File"
-   Giant_Settings_Map : Setting_Hashs.Mapping;
-   -- the root for relative paths - needed for expansion
-   Giant_Config_File_Abs_Path_Root : Ada.Strings.Unbounded.Unbounded_String;
-   -- the directory there the config file is located - needed for expansion
-   Giant_Config_File_Dir : Ada.Strings.Unbounded.Unbounded_String;
+   GIANT_Config : Config_Data_Element;
 
    -- Settings read from "User_Config_File"
-   User_Settings_Map  : Setting_Hashs.Mapping;
-   User_Config_File_Abs_Path_Root : Ada.Strings.Unbounded.Unbounded_String;
-   -- the directory there the config file is located - needed for expansion
-   User_Config_File_Dir : Ada.Strings.Unbounded.Unbounded_String;
+   User_Config : Config_Data_Element;
 
    -- Used to check initialisation
    ADO_Initialized : Boolean := False;
@@ -77,10 +85,10 @@ package body Giant.Config_Settings is
 
    --------------------------------------------------------------------------
    function Validate_Integer (Value : in String) return Boolean is
-     Test_Int : Integer;
+      Test_Int : Integer;
    begin
       begin
-        Test_Int := Integer'Value (Value);
+         Test_Int := Integer'Value (Value);
       exception
          when Constraint_Error =>
 
@@ -103,11 +111,10 @@ package body Giant.Config_Settings is
       for I in Default_Settings'Range loop
          if not Does_Setting_Exist
            (Ada.Strings.Unbounded.To_String (Default_Settings (I).Name))
-           then
-
+         then
             -- add entry
             Setting_Hashs.Bind
-              (Giant_Settings_Map,
+              (GIANT_Config.Settings_Map,
                Default_Settings (I).Name,
                Default_Settings (I).Def_Value);
          end if;
@@ -116,46 +123,50 @@ package body Giant.Config_Settings is
 
    ---------------------------------------------------------------------------
    procedure Validate_Read_Settings
-     (Source_Map : in out Setting_Hashs.Mapping) is
+     (Config_Data  : in out Config_Data_Element) is
 
    begin
 
       for I in Default_Settings'Range loop
 
          if (Default_Settings (I).Validator_Function /= null) and then
-           Setting_Hashs.Is_Bound (Source_Map, Default_Settings (I).Name) then
+           Setting_Hashs.Is_Bound
+           (Config_Data.Settings_Map, Default_Settings (I).Name) then
 
-           -- replace with default if validation failes
-           if not Default_Settings (I).Validator_Function
-             (Ada.Strings.Unbounded.To_String
-               (Setting_Hashs.Fetch (Source_Map, Default_Settings (I).Name)))
-             then
+            -- replace with default if validation failes
+            if not Default_Settings (I).Validator_Function
+              (Ada.Strings.Unbounded.To_String
+               (Setting_Hashs.Fetch
+                (Config_Data.Settings_Map, Default_Settings (I).Name)))
+            then
 
-              Logger.Info
-                ("Validation failed for config setting with name: """
-                 & Ada.Strings.Unbounded.To_String
-                   (Default_Settings (I).Name)
-                 & """ - value: """
-                 & Ada.Strings.Unbounded.To_String
-                     (Setting_Hashs.Fetch
-                       (Source_Map, Default_Settings (I).Name))
-                 & """ not valid");
+               Logger.Info
+                 ("Validation failed for config setting with name: """
+                  & Ada.Strings.Unbounded.To_String
+                  (Default_Settings (I).Name)
+                  & """ - value: """
+                  & Ada.Strings.Unbounded.To_String
+                  (Setting_Hashs.Fetch
+                   (Config_Data.Settings_Map, Default_Settings (I).Name))
+                  & """ not valid "
+                  & "- in config file: "
+                  & Ada.Strings.Unbounded.To_String
+                  (Config_Data.Abs_Config_File_Path));
 
-              Setting_Hashs.Update_Value
-                (Source_Map,
-                 Default_Settings (I).Name,
-                 Default_Settings (I).Def_Value);
-           end if;
+               Setting_Hashs.Update_Value
+                 (Config_Data.Settings_Map,
+                  Default_Settings (I).Name,
+                  Default_Settings (I).Def_Value);
+            end if;
          end if;
       end loop;
    end Validate_Read_Settings;
 
    ---------------------------------------------------------------------------
-   procedure Read_Setting_Entries_Into_Hash_Map
+   procedure Read_Setting_Entries
      (Source_XML_Document : in     Dom.Core.Document;
-      Target_Map          : in out Setting_Hashs.Mapping) is
+      Config_Data         : in out Config_Data_Element) is
 
-      -- holds all <setting> nodes descibing user defined settings
       Setting_Nodes_List : DOM.Core.Node_List;
       A_Setting_Node     : DOM.Core.Node;
 
@@ -163,11 +174,59 @@ package body Giant.Config_Settings is
       Setting_Value      : Ada.Strings.Unbounded.Unbounded_String;
    begin
 
+      -- determine absolute path root
+      -------------------------------
+      Setting_Nodes_List :=
+        DOM.Core.Documents.Get_Elements_By_Tag_Name
+        (Source_XML_Document, "absolute_path_root");
+
+      -- Element <absolute_path_root> is not required
+      if not (DOM.Core.Nodes.Length(Setting_Nodes_List) <= 0) then
+
+         -- only holds one Element
+         A_Setting_Node := DOM.Core.Nodes.Item (Setting_Nodes_List,0);
+
+         -- expand when necessary if path not found take path of
+         -- the directory of the config file
+         begin
+            Config_Data.Abs_Path_Root :=
+              Ada.Strings.Unbounded.To_Unbounded_String
+              (File_Management.Get_Absolute_Path_To_Directory_From_Relative
+               (GNAT.Directory_Operations.Get_Current_Dir,
+                DOM.Core.Elements.Get_Attribute
+                (A_Setting_Node, "absolute_path_root")));
+         exception
+            when File_Management.Directory_Does_Not_Exist_Exception =>
+               Config_Data.Abs_Path_Root :=
+                 Ada.Strings.Unbounded.To_Unbounded_String
+                 (File_Management.Return_Dir_Path_For_File_Path
+                  (Ada.Strings.Unbounded.To_String
+                   (Config_Data.Abs_Config_File_Path)));
+
+               Logger.Info
+                 ("Invalid path defined in <absolute_path_root> node "
+                  &"in config file: "
+                  & Ada.Strings.Unbounded.To_String
+                  (Config_Data.Abs_Config_File_Path));
+         end;
+      else
+         Logger.Info ("No <absolute_path_root> node defined in config file: "
+                      & Ada.Strings.Unbounded.To_String
+                      (Config_Data.Abs_Config_File_Path));
+         Config_Data.Abs_Path_Root :=
+           Ada.Strings.Unbounded.To_Unbounded_String
+           (File_Management.Return_Dir_Path_For_File_Path
+            (Ada.Strings.Unbounded.To_String
+             (Config_Data.Abs_Config_File_Path)));
+      end if;
+
+      DOM.Core.Free (Setting_Nodes_List);
+
       -- get all <setting> nodes
       --------------------------
       Setting_Nodes_List :=
-         DOM.Core.Documents.Get_Elements_By_Tag_Name
-           (Source_XML_Document, "setting");
+        DOM.Core.Documents.Get_Elements_By_Tag_Name
+        (Source_XML_Document, "setting");
 
       -- insert new setting with "a possibly already
       -- existing setting with the same name will be replaced
@@ -178,39 +237,41 @@ package body Giant.Config_Settings is
 
          Setting_Name :=
            Ada.Strings.Unbounded.To_Unbounded_String
-            (DOM.Core.Elements.Get_Attribute
-              (A_Setting_Node, "name"));
+           (DOM.Core.Elements.Get_Attribute
+            (A_Setting_Node, "name"));
 
          Setting_Value :=
            Ada.Strings.Unbounded.To_Unbounded_String
-             (DOM.Core.Elements.Get_Attribute
-               (A_Setting_Node, "value"));
+           (DOM.Core.Elements.Get_Attribute
+            (A_Setting_Node, "value"));
 
          -- check if setting already exists and remove it if that
          -- is the case
-         if Setting_Hashs.Is_Bound (Target_Map, Setting_Name) then
+         if Setting_Hashs.Is_Bound
+           (Config_Data.Settings_Map, Setting_Name) then
             Logger.Info ("Config Setting with name: """
-              & Ada.Strings.Unbounded.To_String (Setting_Name)
-              & """ already read - value replaced by new one: """
-              & Ada.Strings.Unbounded.To_String (Setting_Value)
-              & """");
-
-            Setting_Hashs.Unbind (Target_Map, Setting_Name);
+                         & Ada.Strings.Unbounded.To_String (Setting_Name)
+                         & """ already read - value replaced by new one: """
+                         & Ada.Strings.Unbounded.To_String (Setting_Value)
+                         & """ - last value read from config file: "
+                         & Ada.Strings.Unbounded.To_String
+                         (Config_Data.Abs_Config_File_Path));
+            Setting_Hashs.Unbind (Config_Data.Settings_Map, Setting_Name);
          end if;
 
          Setting_Hashs.Bind
-            (Target_Map, Setting_Name, Setting_Value);
+           (Config_Data.Settings_Map, Setting_Name, Setting_Value);
       end loop;
 
       -- deallocate used memory for list
       ----------------------------------
       DOM.Core.Free (Setting_Nodes_List);
-   end Read_Setting_Entries_Into_Hash_Map;
+   end Read_Setting_Entries;
 
    ------------------------------------------------------------------------
    procedure Access_Config_File
-     (Config_File : in     String;
-      Target_Map  : in out Setting_Hashs.Mapping) is
+     (Config_File  : in     String;
+      Config_Data  : in out Config_Data_Element) is
 
       -- Needed for deallocation
       The_Tree_Reader  : Tree_Readers.Tree_Reader;
@@ -243,14 +304,20 @@ package body Giant.Config_Settings is
           (Config_File_Identifier, The_XML_Document) = False) then
 
          Logger.Fatal ("Procedure: Access_Config_File - XML File is not"
-                        & "of correct type: "
-                        & Config_File);
+                       & "of correct type: "
+                       & Config_File);
          raise Config_File_Not_Correct_Exception;
       end if;
 
       begin
+         -- set abs path to config file
+         Config_Data.Abs_Config_File_Path :=
+           Ada.Strings.Unbounded.To_Unbounded_String
+           (File_Management.Get_Absolute_Path_To_File_From_Relative
+            (GNAT.Directory_Operations.Get_Current_Dir, Config_File));
+
          -- read settings into internal data structures
-         Read_Setting_Entries_Into_Hash_Map (The_XML_Document, Target_Map);
+         Read_Setting_Entries (The_XML_Document, Config_Data);
          -- deallocate memory
          Tree_Readers.Free(The_Tree_Reader);
       exception
@@ -270,25 +337,38 @@ package body Giant.Config_Settings is
       User_Config_File  : in String) is
 
    begin
-      Giant_Settings_Map := Setting_Hashs.Create;
-      User_Settings_Map  := Setting_Hashs.Create;
+
+      -- Basic Initialisation
+      -- must happen at this point
+      ----------------------------
+      GIANT_Config.Settings_Map := Setting_Hashs.Create;
+      GIANT_Config.Abs_Config_File_Path :=
+        Ada.Strings.Unbounded.Null_Unbounded_String;
+      GIANT_Config.Abs_Path_Root :=
+        Ada.Strings.Unbounded.Null_Unbounded_String;
+
+      User_Config.Settings_Map := Setting_Hashs.Create;
+      User_Config.Abs_Config_File_Path :=
+        Ada.Strings.Unbounded.Null_Unbounded_String;
+      User_Config.Abs_Path_Root :=
+        Ada.Strings.Unbounded.Null_Unbounded_String;
 
       -- Read files
       -------------
       if not (GIANT_Config_File = "") then
-         Access_Config_File (GIANT_Config_File, Giant_Settings_Map);
+         Access_Config_File (GIANT_Config_File, GIANT_Config);
       end if;
 
       if not (User_Config_File = "") then
-         Access_Config_File (User_Config_File, User_Settings_Map);
+         Access_Config_File (User_Config_File, User_Config);
       end if;
 
       -- Validate settings
       --------------------
-      Validate_Read_Settings (Giant_Settings_Map);
-      Validate_Read_Settings (User_Settings_Map);
+      Validate_Read_Settings (GIANT_Config);
+      Validate_Read_Settings (User_Config);
 
-      -- Add default values for not read settings into Giant_Settings_Map
+      -- Add default values for not read settings into GIANT_Config_Data
       -------------------------------------------------------------------
       Add_Default_Values_If_Necessary;
 
@@ -298,15 +378,14 @@ package body Giant.Config_Settings is
 
    ---------------------------------------------------------------------------
    procedure Clear_Config_Data is
-
    begin
 
       if not ADO_Initialized then
          raise Config_Settings_ADO_Not_Initialized_Exception;
       end if;
 
-      Setting_Hashs.Destroy (Giant_Settings_Map);
-      Setting_Hashs.Destroy (User_Settings_Map);
+      Setting_Hashs.Destroy (GIANT_Config.Settings_Map);
+      Setting_Hashs.Destroy (User_Config.Settings_Map);
 
       ADO_Initialized := False;
    end Clear_Config_Data;
@@ -318,30 +397,55 @@ package body Giant.Config_Settings is
    ---------------------------------------------------------------------------
 
    ---------------------------------------------------------------------------
-   function Does_Setting_Exist (Name : in String)
+   function Does_Setting_Exist_In_Data_Element
+     (Config_Data : in Config_Data_Element;
+      Name        : in String)
      return Boolean is
+   begin
+
+      return Setting_Hashs.Is_Bound
+        (Config_Data.Settings_Map,
+         Ada.Strings.Unbounded.To_Unbounded_String (Name));
+   end Does_Setting_Exist_In_Data_Element;
+
+   ---------------------------------------------------------------------------
+   function Does_Setting_Exist (Name : in String)
+                               return Boolean is
    begin
 
       if not ADO_Initialized then
          raise Config_Settings_ADO_Not_Initialized_Exception;
       end if;
 
-      if Setting_Hashs.Is_Bound
-        (Giant_Settings_Map,
-         Ada.Strings.Unbounded.To_Unbounded_String (Name)) or
-        Setting_Hashs.Is_Bound
-        (User_Settings_Map,
-         Ada.Strings.Unbounded.To_Unbounded_String (Name)) then
+      if Does_Setting_Exist_In_Data_Element (User_Config, Name) or
+        Does_Setting_Exist_In_Data_Element (GIANT_Config, Name) then
 
          return True;
-      end if;
+      else
 
-      return False;
+         return False;
+      end if;
    end Does_Setting_Exist;
 
    ---------------------------------------------------------------------------
-   function Get_Setting_As_String (Name : in String)
+   function Get_Setting_As_String_From_Data_Element
+     (Config_Data : in Config_Data_Element;
+      Name        : in String)
      return String is
+   begin
+
+      return Ada.Strings.Unbounded.To_String
+        (Setting_Hashs.Fetch
+         (Config_Data.Settings_Map,
+          Ada.Strings.Unbounded.To_Unbounded_String (Name)));
+   end Get_Setting_As_String_From_Data_Element;
+
+
+   ---------------------------------------------------------------------------
+   function Get_Setting_As_String
+     (Name : in String)
+     return String is
+
    begin
 
       if not ADO_Initialized then
@@ -352,37 +456,23 @@ package body Giant.Config_Settings is
          raise Config_Setting_Does_Not_Exist_Exception;
       end if;
 
-      -- first search User_Settings_Map
-      if Setting_Hashs.Is_Bound
-        (User_Settings_Map,
-         Ada.Strings.Unbounded.To_Unbounded_String (Name)) then
+      -- first search User_Config !!!
+      if Does_Setting_Exist_In_Data_Element (User_Config, Name) then
 
-        return Ada.Strings.Unbounded.To_String
-          (Setting_Hashs.Fetch
-            (User_Settings_Map,
-             Ada.Strings.Unbounded.To_Unbounded_String (Name)));
+         return Get_Setting_As_String_From_Data_Element (User_Config, Name);
       else
-        return Ada.Strings.Unbounded.To_String
-          (Setting_Hashs.Fetch
-            (Giant_Settings_Map,
-             Ada.Strings.Unbounded.To_Unbounded_String (Name)));
+
+         return Get_Setting_As_String_From_Data_Element (GIANT_Config, Name);
       end if;
    end Get_Setting_As_String;
-
 
    ---------------------------------------------------------------------------
    function Get_Setting_With_Path_Expanded (Name : in String) return String is
 
-   begin
-      -- TODO
-      return "!";
-   end Get_Setting_With_Path_Expanded;
-
-
-   ---------------------------------------------------------------------------
-   function Get_Setting_As_Integer (Name : in String)
-     return Integer is
-
+      Abs_Path            : Ada.Strings.Unbounded.Unbounded_String;
+      Source_Data         : Config_Data_Element;
+      Found               : Boolean := False;
+      Directory_Separator : Character := GNAT.OS_Lib.Directory_Separator;
    begin
 
       if not ADO_Initialized then
@@ -393,6 +483,117 @@ package body Giant.Config_Settings is
          raise Config_Setting_Does_Not_Exist_Exception;
       end if;
 
+      -- first search User_Config !!!
+      if Does_Setting_Exist_In_Data_Element (User_Config, Name) then
+         Source_Data := User_Config;
+      else
+         Source_Data := GIANT_Config;
+      end if;
+
+      Abs_Path := Ada.Strings.Unbounded.To_Unbounded_String
+        (Get_Setting_As_String_From_Data_Element
+         (Source_Data, Name));
+
+      -- differ between directories and files
+      if Get_Setting_As_String_From_Data_Element (Source_Data, Name)
+        (Get_Setting_As_String_From_Data_Element
+         (Source_Data, Name)'Last) = Directory_Separator then
+         -- assume Abs_Path is a path to a directory
+
+         -- try expansion regarding  <absolute_path_root> node
+         begin
+            Abs_Path := Ada.Strings.Unbounded.To_Unbounded_String
+              (File_Management.Get_Absolute_Path_To_Directory_From_Relative
+               (Ada.Strings.Unbounded.To_String (Source_Data.Abs_Path_Root),
+                Ada.Strings.Unbounded.To_String (Abs_Path)));
+            Found := True;
+         exception
+            -- catch exception
+            when File_Management.Directory_Does_Not_Exist_Exception =>
+               Found := False;
+         end;
+
+         -- try expansion regarding directory of config file
+         if not Found then
+            begin
+               Abs_Path := Ada.Strings.Unbounded.To_Unbounded_String
+                 (File_Management.
+                  Get_Absolute_Path_To_Directory_From_Relative
+                  (File_Management.Return_Dir_Path_For_File_Path
+                   (Ada.Strings.Unbounded.To_String
+                    (Source_Data.Abs_Config_File_Path)),
+                   Ada.Strings.Unbounded.To_String (Abs_Path)));
+
+               Found := True;
+            exception
+               -- catch exception
+               when File_Management.Directory_Does_Not_Exist_Exception =>
+                  Found := False;
+            end;
+         end if;
+
+         if Found then
+            return Ada.Strings.Unbounded.To_String (Abs_Path);
+         else
+            -- retrun empty string if nothing works
+            return "";
+         end if;
+      else
+         -- asume Abs_Path is a path to file
+
+         -- try expansion regarding  <absolute_path_root> node
+         begin
+            Abs_Path := Ada.Strings.Unbounded.To_Unbounded_String
+              (File_Management.Get_Absolute_Path_To_File_From_Relative
+               (Ada.Strings.Unbounded.To_String (Source_Data.Abs_Path_Root),
+                Ada.Strings.Unbounded.To_String (Abs_Path)));
+            Found := True;
+         exception
+            -- catch exception
+            when File_Management.File_Does_Not_Exist_Exception =>
+               Found := False;
+         end;
+
+         -- try expansion regarding directory of config file
+         if not Found then
+            begin
+               Abs_Path := Ada.Strings.Unbounded.To_Unbounded_String
+                 (File_Management.Get_Absolute_Path_To_File_From_Relative
+                  (File_Management.Return_Dir_Path_For_File_Path
+                   (Ada.Strings.Unbounded.To_String
+                    (Source_Data.Abs_Config_File_Path)),
+                   Ada.Strings.Unbounded.To_String (Abs_Path)));
+
+               Found := True;
+            exception
+               -- catch exception
+               when File_Management.File_Does_Not_Exist_Exception =>
+                  Found := False;
+            end;
+         end if;
+
+         if Found then
+            return Ada.Strings.Unbounded.To_String (Abs_Path);
+         else
+            -- retrun empty string if nothing works
+            return "";
+         end if;
+      end if;
+   end Get_Setting_With_Path_Expanded;
+
+   ---------------------------------------------------------------------------
+   function Get_Setting_As_Integer (Name : in String)
+                                   return Integer is
+
+   begin
+
+      if not ADO_Initialized then
+         raise Config_Settings_ADO_Not_Initialized_Exception;
+      end if;
+
+      if not Does_Setting_Exist (Name) then
+         raise Config_Setting_Does_Not_Exist_Exception;
+      end if;
 
       begin
          return Integer'Value
@@ -410,20 +611,20 @@ package body Giant.Config_Settings is
          raise Config_Settings_ADO_Not_Initialized_Exception;
       end if;
 
-      -- insert or replace setting in User_Settings_Map
+      -- insert or replace setting in User_Config
       if Setting_Hashs.Is_Bound
-        (User_Settings_Map,
+        (User_Config.Settings_Map,
          Ada.Strings.Unbounded.To_Unbounded_String (Name)) then
 
          Setting_Hashs.Unbind
-           (User_Settings_Map,
+           (User_Config.Settings_Map,
             Ada.Strings.Unbounded.To_Unbounded_String (Name));
       end if;
 
       Setting_Hashs.Bind
-         (User_Settings_Map,
-          Ada.Strings.Unbounded.To_Unbounded_String (Name),
-          Ada.Strings.Unbounded.To_Unbounded_String (Value));
+        (User_Config.Settings_Map,
+         Ada.Strings.Unbounded.To_Unbounded_String (Name),
+         Ada.Strings.Unbounded.To_Unbounded_String (Value));
    end Set_Setting;
 
    ---------------------------------------------------------------------------
@@ -435,6 +636,20 @@ package body Giant.Config_Settings is
 
       Set_Setting (Name, Integer'Image (Value));
    end Set_Setting;
+
+   ---------------------------------------------------------------------------
+   function Get_User_Config_File return String is
+   begin
+
+      if not ADO_Initialized then
+         raise Config_Settings_ADO_Not_Initialized_Exception;
+      end if;
+
+      -- if no User_Config_File was passed for the initialisation when
+      -- the value "User_Config.Abs_Config_File_Path" contains a Null_String
+      return Ada.Strings.Unbounded.To_String
+        (User_Config.Abs_Config_File_Path);
+   end Get_User_Config_File;
 
    ---------------------------------------------------------------------------
    procedure Store_User_Config_File (File_Name : in String) is
@@ -472,25 +687,32 @@ package body Giant.Config_Settings is
       Ada.Text_IO.Put_Line
         ("<giant_config_file>");
 
+      --  write absolute_path_root
+      ----------------------------
+      Ada.Text_IO.Put_Line
+        ("  <absolute_path_root root_directory  = """
+         & Ada.Strings.Unbounded.To_String (User_Config.Abs_Path_Root)
+         & """ />");
+
       --  write setting entries
       -------------------------------------------
       User_Settings_Iter :=
-        Setting_Hashs.Make_Bindings_Iter (User_Settings_Map);
+        Setting_Hashs.Make_Bindings_Iter (User_Config.Settings_Map);
 
       while Setting_Hashs.More (User_Settings_Iter) loop
          Setting_Hashs.Next
            (User_Settings_Iter, Setting_Name, Setting_Value);
 
-            Ada.Text_IO.Put_Line
-              ("  <setting name  = """
-              & Ada.Strings.Unbounded.To_String
-                  (Setting_Name)
-              & """");
-            Ada.Text_IO.Put_Line
-              ("           value = """
-              & Ada.Strings.Unbounded.To_String
-                  (Setting_Value)
-              & """ />");
+         Ada.Text_IO.Put_Line
+           ("  <setting name  = """
+            & Ada.Strings.Unbounded.To_String
+            (Setting_Name)
+            & """");
+         Ada.Text_IO.Put_Line
+           ("           value = """
+            & Ada.Strings.Unbounded.To_String
+            (Setting_Value)
+            & """ />");
       end loop;
 
       -- last entry in file - close top level xml node (document node)

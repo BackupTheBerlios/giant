@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.5 $
+-- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.6 $
 -- $Author: schwiemn $
--- $Date: 2003/06/22 16:14:50 $
+-- $Date: 2003/06/22 21:21:09 $
 --
 -- -----
 -- This package holds the functionality needed to access and handle
@@ -330,6 +330,20 @@ package Giant.Config_Settings is
    procedure Set_Setting (Name : in String; Value : in Integer);
 
    ---------------------------------------------------------------------------
+   -- Returns an absolute path to the "User_Config_File" if no
+   -- "User_Config_File" was parsed duiring initialisation
+   -- (e.g. >Initialize_Config_Settings ("/My_Giant_Config__File", "");< )
+   -- an empty String ("") will be returned.
+   --
+   -- Returns:
+   --   An absolute path to the "User_Config_File".
+   -- Raises:
+   --   Config_Settings_ADO_Not_Initialized_Exception -
+   --     raised if this subprogram is called before
+   --     "Initialize_Config_Settings".
+   function Get_User_Config_File return String;
+
+   ---------------------------------------------------------------------------
    -- Writes all config settings that have been read from "User_Config_File"
    -- or that have been added/changed by ("Set_Setting") into
    -- a file.
@@ -341,8 +355,8 @@ package Giant.Config_Settings is
    --     written.
    -- Raises:
    --   Config_Settings_ADO_Not_Initialized_Exception -
-   --     raised if this subprogram is called before "
-   --     Initialize_Config_Settings".
+   --     raised if this subprogram is called before
+   --     "Initialize_Config_Settings".
    procedure Store_User_Config_File (File_Name : in String);
 
 end Giant.Config_Settings;
