@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.14 $
--- $Author: schwiemn $
--- $Date: 2003/07/02 11:31:19 $
+-- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.15 $
+-- $Author: squig $
+-- $Date: 2003/08/15 16:37:18 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Strings.Fixed;
@@ -475,18 +475,18 @@ package body Giant.Config_Settings is
    end Get_Setting_As_String;
 
    ---------------------------------------------------------------------------
-   function Internal_Try_Path_Expansion 
+   function Internal_Try_Path_Expansion
      (Abs_Path_Root        : in String;
       Abs_Config_File_Dir  : in String;
       Unexpanded_Path      : in String)
      return String is
-          
+
       Abs_Path : Ada.Strings.Unbounded.Unbounded_String;
    begin
 
       -- 1. try expansion regarding abs_path_root
       begin
-      
+
          return File_Management.Get_Absolute_Path_From_Relative
            (Abs_Path_Root,
             Unexpanded_Path);
@@ -497,7 +497,7 @@ package body Giant.Config_Settings is
 
       -- 2. try expansion regarding directory of config file
       begin
-       
+
           return File_Management.Get_Absolute_Path_From_Relative
             (Abs_Config_File_Dir,
              Unexpanded_Path);
@@ -507,7 +507,7 @@ package body Giant.Config_Settings is
       end;
 
       -- 3. retrun empty string if nothing works
-      return "";    
+      return "";
    end Internal_Try_Path_Expansion;
 
    ---------------------------------------------------------------------------
@@ -536,32 +536,31 @@ package body Giant.Config_Settings is
       Unexp_Path := Ada.Strings.Unbounded.To_Unbounded_String
         (Get_Setting_As_String_From_Data_Element
          (Source_Data, Name));
-                           
-      return Internal_Try_Path_Expansion 
+
+      return Internal_Try_Path_Expansion
         (Ada.Strings.Unbounded.To_String (Source_Data.Abs_Path_Root),
          File_Management.Return_Dir_Path_For_File_Path
              (Ada.Strings.Unbounded.To_String
                (Source_Data.Abs_Config_File_Path)),
-         Ada.Strings.Unbounded.To_String (Unexp_Path));           
+         Ada.Strings.Unbounded.To_String (Unexp_Path));
    end Get_Setting_With_Path_Expanded;
-   
+
    ---------------------------------------------------------------------------
-   function Get_Setting_As_Expanded_Path_List 
-     (Name : in String) 
+   function Get_Setting_As_Expanded_Path_List
+     (Name : in String)
      return String_Lists.List is
-     
+
      use Ada.Strings.Unbounded;
-     
+
      Source_Data   : Config_Data_Element;
-     
-     Splitted_List      : String_Lists.List;   
-     Splitted_List_Iter : String_Lists.ListIter;  
-     Result_List   : String_Lists.List;         
-     Path_Sep      : String (1 .. 1) := (1 => GNAT.OS_Lib.Path_Separator); 
-     A_Pot_Path    : Ada.Strings.Unbounded.Unbounded_String; 
-     A_Exp_Path    : Ada.Strings.Unbounded.Unbounded_String;  
+
+     Splitted_List      : String_Lists.List;
+     Splitted_List_Iter : String_Lists.ListIter;
+     Result_List   : String_Lists.List;
+     A_Pot_Path    : Ada.Strings.Unbounded.Unbounded_String;
+     A_Exp_Path    : Ada.Strings.Unbounded.Unbounded_String;
    begin
-      
+
       if not ADO_Initialized then
          raise Config_Settings_ADO_Not_Initialized_Exception;
       end if;
@@ -569,49 +568,49 @@ package body Giant.Config_Settings is
       if not Does_Setting_Exist (Name) then
          raise Config_Setting_Does_Not_Exist_Exception;
       end if;
-      
+
       -- first search User_Config !!!
       if Does_Setting_Exist_In_Data_Element (User_Config, Name) then
          Source_Data := User_Config;
       else
          Source_Data := GIANT_Config;
       end if;
-                 
-      Result_List := String_Lists.Create;      
-      
+
+      Result_List := String_Lists.Create;
+
       Splitted_List := String_Split.Split_String
         (Get_Setting_As_String_From_Data_Element (Source_Data, Name),
-         Path_Sep);
+         File_Management.Path_Separator);
 
       Splitted_List_Iter := String_Lists.MakeListIter (Splitted_List);
-      
-      while String_Lists.More (Splitted_List_Iter) loop     
-         
+
+      while String_Lists.More (Splitted_List_Iter) loop
+
          String_Lists.Next (Splitted_List_Iter, A_Pot_Path);
-         
+
          if A_Pot_Path /= Ada.Strings.Unbounded.Null_Unbounded_String then
-         
+
             A_Exp_Path := Ada.Strings.Unbounded.To_Unbounded_String
-              (Internal_Try_Path_Expansion 
-                (Ada.Strings.Unbounded.To_String 
+              (Internal_Try_Path_Expansion
+                (Ada.Strings.Unbounded.To_String
                   (Source_Data.Abs_Path_Root),
                  File_Management.Return_Dir_Path_For_File_Path
                    (Ada.Strings.Unbounded.To_String
                      (Source_Data.Abs_Config_File_Path)),
-                 Ada.Strings.Unbounded.To_String (A_Pot_Path)));              
-                  
+                 Ada.Strings.Unbounded.To_String (A_Pot_Path)));
+
             if A_Exp_Path /= Ada.Strings.Unbounded.Null_Unbounded_String then
-            
-               String_Lists.Attach (Result_List, A_Exp_Path);            
-            end if;         
-         end if;                          
+
+               String_Lists.Attach (Result_List, A_Exp_Path);
+            end if;
+         end if;
       end loop;
 
       String_Lists.Destroy (Splitted_List);
 
       return Result_List;
    end Get_Setting_As_Expanded_Path_List;
-      
+
    ---------------------------------------------------------------------------
    function Get_Setting_As_Boolean (Name : in String)
                                    return Boolean is

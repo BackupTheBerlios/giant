@@ -20,10 +20,10 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.ads,v $, $Revision: 1.18 $
+-- $RCSfile: giant-file_management.ads,v $, $Revision: 1.19 $
 
 -- $Author: squig $
--- $Date: 2003/08/15 11:42:17 $
+-- $Date: 2003/08/15 16:37:18 $
 --
 -- -----------------------------------------------
 --
@@ -33,10 +33,16 @@ with Ada.Text_IO;
 with Ada.Strings.Unbounded;
 -- with Ada.Command_Line;
 
+with GNAT.Os_Lib;
 
 with String_Lists; -- from Bauhaus IML "Reuse.src"
 
 package Giant.File_Management is
+
+   ---------------------------------------------------------------------------
+   -- The system path separator.
+   Path_Separator : constant String (1 .. 1)
+     := (1 => GNAT.OS_Lib.Path_Separator);
 
    ---------------------------------------------------------------------------
    -- The maximum length of a file name (only the name - no path)

@@ -20,17 +20,14 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.16 $
+--  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.17 $
 --  $Author: squig $
---  $Date: 2003/07/18 14:27:39 $
+--  $Date: 2003/08/15 16:37:18 $
 --
 ------------------------------------------------------------------------------
 --
 --  Provides common gui utility methods.
 --
-
-with Ada.Exceptions;
-with Ada.IO_Exceptions;
 
 with Glib;
 with Gtk.Button;
@@ -160,17 +157,6 @@ package Giant.Gui_Utils is
    function Get_Selected_Row
      (List : access Gtk.Clist.Gtk_Clist_Record'Class)
      return Glib.Gint;
-
-   ---------------------------------------------------------------------------
-   --  Shows an error dialog for io exceptions.
-   --
-   --  These io errors are considered programming errors and not
-   --  caught:
-   --    Ada.IO_Exceptions.Mode_Error
-   --    Ada.IO_Exceptions.Use_Error
-   procedure Handle_IO_Exception
-     (Error    : in Ada.Exceptions.Exception_Occurrence;
-      Filename : in String);
 
    function New_Button
      (Label    : in     String;

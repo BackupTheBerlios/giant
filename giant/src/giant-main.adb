@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.38 $
---  $Author: schwiemn $
---  $Date: 2003/08/12 17:04:55 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.39 $
+--  $Author: squig $
+--  $Date: 2003/08/15 16:37:18 $
 --
 --
 ------------------------------------------------------------------------------
@@ -67,6 +67,40 @@ is
       Ada.Text_IO.Put_Line
         ("usage: giant project-file [-g graph-file] [-e script-file] | -h | -v");
    end;
+
+   procedure Evaluate_Arguments
+     (Project_Filename : in String;
+      Graph_Filename   : in String;
+      Script_Filename  : in String)
+   is
+   begin
+      begin
+         Controller.Open_Project (Project_Filename);
+      exception
+        when E: others =>
+           Controller.Handle_Project_Exception (E, Project_Filename);
+
+           if (Graph_Filename /= "") then
+              begin
+                 Controller.Create_Project (Project_Filename, Graph_Filename);
+              exception
+                when E: others =>
+                   Controller.Handle_Project_Exception (E, Project_Filename);
+                   return;
+              end;
+           end if;
+      end;
+
+      if (Script_Filename /= "") then
+         begin
+            Controller.Execute_GSL
+              (Filename => Script_Filename);
+         exception
+           when E : others =>
+              Controller.Handle_IO_Exception (E, Script_Filename);
+         end;
+      end if;
+   end Evaluate_Arguments;
 
    procedure Parse_Arguments
    is
@@ -130,21 +164,10 @@ is
       Project_Filename := new String' (GNAT.Command_Line.Get_Argument);
 
       if (Project_Filename.all /= "") then
-         begin
-            Controller.Open_Project (Project_Filename.all);
-         exception
-           when E: others =>
-              Logger.Info ("Could not open project " & Project_Filename.all);
-              Logger.Error (E);
-              if (Graph_Filename.all /= "") then
-                 Controller.Create_Project (Project_Filename.all,
-                                            Graph_Filename.all);
-              end if;
-         end;
-
-         if (Script_Filename.all /= "") then
-            Controller.Execute_GSL (Script_Filename.all);
-         end if;
+         Evaluate_Arguments
+           (Project_Filename => Project_Filename.all,
+            Graph_Filename   => Graph_Filename.all,
+            Script_Filename  => Script_Filename.all);
       end if;
 
       Free (Project_Filename);
@@ -158,6 +181,8 @@ is
         Put_Help;
         GNAT.OS_Lib.OS_Exit (1);
    end Parse_Arguments;
+
+
 
    procedure New_Test_Project
    is
@@ -184,9 +209,9 @@ is
         null;
    end Open_Test_Project;
 
-    
+
    type t_typ is range 0 .. 1_000_000_000;
-   
+
    t : t_typ := 0;
 
 begin
@@ -198,7 +223,7 @@ begin
         ("dist/global_config.xml", Config_Filename);
 
       Config.Global_Data.Initialize_Config_Data;
-           
+
       Giant.Graph_Lib.Initialize;
 
       Logger.Debug ("reading configuration");

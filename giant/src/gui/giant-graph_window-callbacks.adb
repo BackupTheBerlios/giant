@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.15 $
 --  $Author: squig $
---  $Date: 2003/08/15 11:42:16 $
+--  $Date: 2003/08/15 16:37:18 $
 --
 
 with Ada.Unchecked_Conversion;
@@ -38,6 +38,7 @@ with Giant.Dialogs;
 with Giant.Layout_Dialog;
 with Giant.Gui_Manager;
 with Giant.Gui_Manager.Actions;
+with Giant.Gsl.Interpreters;
 with Giant.Make_Room_Dialog;
 with Giant.Node_Annotation_Dialog;
 with Giant.Node_Info_Dialog;
@@ -103,14 +104,22 @@ package body Giant.Graph_Window.Callbacks is
    --  Edge Menu Callbacks
    ---------------------------------------------------------------------------
 
-   procedure On_Edge_Zoom
-     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+   procedure On_Edge_Script
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event  : in     Menu_Factory.Script_Event)
    is
-      Window : Graph_Window_Access := Graph_Window_Access (Source);
+      Window : Graph_Window_Access := Graph_Window_Access (Event.Widget);
+      Params : Gsl.Interpreters.Gsl_Params
+        := Gsl.Interpreters.Create_Parameter_List;
    begin
       pragma Assert (Graph_Lib."/=" (Window.Current_Edge, null));
-      Controller.Zoom_To_Edge (Get_Window_Name (Window), Window.Current_Edge);
-   end;
+      Gsl.Interpreters.Add_Parameter (Params, Window.Current_Edge);
+
+      Controller.Execute_GSL
+        (Script_Name => Event.Label,
+         Context     => Get_Window_Name (Window),
+         Parameter   => Params);
+   end On_Edge_Script;
 
    procedure On_Edge_Show_Source
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
@@ -132,6 +141,16 @@ package body Giant.Graph_Window.Callbacks is
       pragma Assert (Graph_Lib."/=" (Window.Current_Edge, null));
       Node := Graph_Lib.Get_Target_Node (Window.Current_Edge);
       Controller.Center_On_Node (Get_Window_Name (Window), Node);
+   end;
+
+
+   procedure On_Edge_Zoom
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
+   begin
+      pragma Assert (Graph_Lib."/=" (Window.Current_Edge, null));
+      Controller.Zoom_To_Edge (Get_Window_Name (Window), Window.Current_Edge);
    end;
 
    ---------------------------------------------------------------------------
@@ -237,6 +256,23 @@ package body Giant.Graph_Window.Callbacks is
    ---------------------------------------------------------------------------
    --  Node Menu Callbacks
    ---------------------------------------------------------------------------
+
+   procedure On_Node_Script
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event  : in     Menu_Factory.Script_Event)
+   is
+      Window : Graph_Window_Access := Graph_Window_Access (Event.Widget);
+      Params : Gsl.Interpreters.Gsl_Params
+        := Gsl.Interpreters.Create_Parameter_List;
+   begin
+      pragma Assert (Graph_Lib."/=" (Window.Current_Node, null));
+      Gsl.Interpreters.Add_Parameter (Params, Window.Current_Node);
+
+      Controller.Execute_GSL
+        (Script_Name => Event.Label,
+         Context     => Get_Window_Name (Window),
+         Parameter   => Params);
+   end On_Node_Script;
 
    procedure On_Node_Show_Info
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)

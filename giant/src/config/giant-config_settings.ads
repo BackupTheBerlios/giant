@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.16 $
--- $Author: schwiemn $
--- $Date: 2003/07/03 13:15:38 $
+-- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.17 $
+-- $Author: squig $
+-- $Date: 2003/08/15 16:37:18 $
 --
 -- -----
 -- This package holds the functionality needed to access and handle
@@ -121,12 +121,12 @@ package Giant.Config_Settings is
 
        (To_UStr ("IML_Subgraph_Highlight_Color_3"),
         To_UStr ("RGB:AA/AA/AA"), null),
-        
-       -- You may enter a sequence of paths separated by the OS' 
+
+       -- You may enter a sequence of paths separated by the OS'
        -- path separator for environment variables
        (To_UStr ("GSL.Include_Paths"),
-        To_UStr ("."), null),        
-                
+        To_UStr ("."), null),
+
        (To_UStr ("Main_Window.Height"),
         To_UStr ("400"),
         Validate_Integer'Access),
@@ -145,7 +145,23 @@ package Giant.Config_Settings is
 
        (To_UStr ("Editor.Source"),
         To_UStr ("/usr/bin/emacs +%l:%c %f"),
-        null)
+        null),
+
+      (To_UStr ("Scripts.Edge"),
+       To_UStr (""),
+       null),
+
+      (To_UStr ("Scripts.Main"),
+       To_UStr ("Entire Graph:-:Message Box"),
+       null),
+
+      (To_UStr ("Scripts.Node"),
+       To_UStr ("Follow Edges"),
+       null),
+
+      (To_UStr ("Scripts.Subgraph"),
+       To_UStr (""),
+       null)
       );
 
    ---------------------------------------------------------------------------
@@ -308,17 +324,17 @@ package Giant.Config_Settings is
    --   Config_Setting_Does_Not_Exist_Exception - raised if there is
    --     no config setting with the name "Name";
    function Get_Setting_With_Path_Expanded (Name : in String) return String;
-         
+
    ---------------------------------------------------------------------------
    -- Same functionality as Get_Setting_With_Path_Expanded - used for
    -- settings that hold several paths to directories or files.
    --
    -- Splitts a setting holding several paths, each element of the list
-   -- will hold an expanded path. 
-   -- 
+   -- will hold an expanded path.
+   --
    -- Not expandable paths will be ignored.
    --
-   -- Paths have to be separated by the OS' 
+   -- Paths have to be separated by the OS'
    -- path separator for environment variables.
    --
    -- Parameters:
@@ -332,9 +348,9 @@ package Giant.Config_Settings is
    --     raised if this subprogram is called before "
    --     Initialize_Config_Settings".
    --   Config_Setting_Does_Not_Exist_Exception - raised if there is
-   --     no config setting with the name "Name"; 
-   function Get_Setting_As_Expanded_Path_List 
-     (Name : in String) 
+   --     no config setting with the name "Name";
+   function Get_Setting_As_Expanded_Path_List
+     (Name : in String)
      return String_Lists.List;
 
    ---------------------------------------------------------------------------

@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.21 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.22 $
 -- $Author: squig $
--- $Date: 2003/07/18 14:27:39 $
+-- $Date: 2003/08/15 16:37:18 $
 --
 
 with Glib;
@@ -111,29 +111,6 @@ package body Giant.Gui_Utils is
 
       return Glib.Gint (-1);
    end Get_Selected_Row;
-
-   procedure Handle_IO_Exception
-     (Error    : in Ada.Exceptions.Exception_Occurrence;
-      Filename : in String)
-   is
-   begin
-      Ada.Exceptions.Reraise_Occurrence (Error);
-   exception
-     when Ada.IO_Exceptions.Data_Error =>
-        Dialogs.Show_Error_Dialog (-"Unexpected data type: " & Filename);
-     when Ada.IO_Exceptions.Device_Error =>
-        Dialogs.Show_Error_Dialog (-"Device error during io operation: " & Filename);
-     when Ada.IO_Exceptions.End_Error =>
-        Dialogs.Show_Error_Dialog (-"Unexpected end of file: " & Filename);
-     when Ada.IO_Exceptions.Layout_Error =>
-        Dialogs.Show_Error_Dialog (-"Unexpected file layout: " & Filename);
-     when Ada.Io_Exceptions.Name_Error =>
-        Dialogs.Show_Error_Dialog(-"File not found: " & Filename);
-     when Ada.IO_Exceptions.Status_Error =>
-        Dialogs.Show_Error_Dialog (-"File already open: " & Filename);
-     when Ada.IO_Exceptions.Use_Error =>
-        Dialogs.Show_Error_Dialog (-"Could not open file: " & Filename);
-   end Handle_IO_Exception;
 
    function New_Button
      (Label    : in String;

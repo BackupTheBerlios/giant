@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.15 $
 --  $Author: squig $
---  $Date: 2003/08/15 11:42:17 $
+--  $Date: 2003/08/15 16:37:18 $
 --
 
 with Ada.Exceptions;
@@ -88,7 +88,7 @@ package body Giant.Gsl_Dialog is
         Logger.Warn ("error reading file: " & Filename);
         Logger.Error (E);
 
-        Gui_Utils.Handle_IO_Exception (E, Filename);
+        Controller.Handle_IO_Exception (E, Filename);
         return False;
    end Read;
 
@@ -121,7 +121,7 @@ package body Giant.Gsl_Dialog is
         Logger.Warn ("error writing file: " & Filename);
         Logger.Error (E);
 
-        Gui_Utils.Handle_IO_Exception (E, Filename);
+        Controller.Handle_IO_Exception (E, Filename);
         return False;
    end Write;
 

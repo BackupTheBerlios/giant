@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.53 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.54 $
 --  $Author: squig $
---  $Date: 2003/08/15 11:42:17 $
+--  $Date: 2003/08/15 16:37:18 $
 --
 
 with Ada.Exceptions;
@@ -67,11 +67,13 @@ with Giant.File_Management;
 with Giant.Graph_Lib;
 with Giant.Graph_Lib.Subgraphs;
 with Giant.Gsl_Dialog;
+with Giant.Gsl.Interpreters;
 with Giant.Gui_Manager;
 with Giant.Gui_Manager.Actions;
 with Giant.Gui_Utils;
 with Giant.Logger;
 with Giant.Main_Window.Actions;
+with Giant.Menu_Factory;
 with Giant.Node_Info_Dialog;
 with Giant.Projects;
 with Giant.Subgraph_Operation_Dialog;
@@ -153,30 +155,6 @@ package body Giant.Main_Window is
    end Get_Selected_Window;
 
    Loaded: Boolean;
-
-   procedure Handle_Project_Exception
-     (Error    : in Ada.Exceptions.Exception_Occurrence;
-      Filename : in String)
-   is
-   begin
-      Ada.Exceptions.Reraise_Occurrence (Error);
-   exception
-     when Giant.Graph_Lib.Load_Error =>
-        Dialogs.Show_Error_Dialog (-"The IML graph could not be loaded.");
-     when Projects.Invalid_Project_Directory_Excpetion =>
-        Dialogs.Show_Error_Dialog (-"The selected directory is invalid.");
-     when Projects.Wrong_IML_Graph_Loaded_Exception =>
-        Dialogs.Show_Error_Dialog (-"The IML graph is invalid.");
-     when Projects.Project_Does_Not_Exist_Exception =>
-        Dialogs.Show_Error_Dialog (-"The project file is invalid.");
-     when Projects.Directory_Holds_Already_A_Project_File_Exception =>
-        Dialogs.Show_Error_Dialog (-"The project could not be created. The directory already contains a project.");
-     when E : others =>
-        Logger.Error ("An exceptions has occured while processing projects.");
-        Logger.Error (E);
-
-        Gui_Utils.Handle_IO_Exception (E, Filename);
-   end Handle_Project_Exception;
 
    procedure Update_Children
      (Widget : access Gtk.Widget.Gtk_Widget_Record'Class)
@@ -273,7 +251,7 @@ package body Giant.Main_Window is
                        (Project_Filename, Graph_Filename);
                   exception
                     when E: others =>
-                       Handle_Project_Exception (E, Graph_Filename);
+                       Controller.Handle_Project_Exception (E, Graph_Filename);
                   end;
                end if;
             end;
@@ -296,7 +274,7 @@ package body Giant.Main_Window is
                Controller.Open_Project (Filename);
             exception
               when E: others =>
-                 Handle_Project_Exception (E, Filename);
+                 Controller.Handle_Project_Exception (E, Filename);
             end;
          end if;
       end;
@@ -332,7 +310,7 @@ package body Giant.Main_Window is
                Controller.Save_Project (Filename);
             exception
               when E: others =>
-                 Handle_Project_Exception (E, Filename);
+                 Controller.Handle_Project_Exception (E, Filename);
             end;
          end if;
       end;
@@ -381,6 +359,23 @@ package body Giant.Main_Window is
    begin
       Controller.Create_Window;
    end On_Window_New;
+
+   ---------------------------------------------------------------------------
+   --  Scripts Menu Callbacks
+   ---------------------------------------------------------------------------
+
+   procedure On_Script
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event  : in     Menu_Factory.Script_Event)
+   is
+      Params : Gsl.Interpreters.Gsl_Params
+        := Gsl.Interpreters.Create_Parameter_List;
+   begin
+      Controller.Execute_GSL
+        (Script_Name => Event.Label,
+         Context     => "",
+         Parameter   => Params);
+   end On_Script;
 
    ---------------------------------------------------------------------------
    --  Help Menu Callbacks
@@ -559,6 +554,15 @@ package body Giant.Main_Window is
       end;
    end On_Subgraph_List_Rename;
 
+   procedure On_Subgraph_List_Execute_Script
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event  : in     Menu_Factory.Script_Event)
+   is
+   begin
+      -- FIX
+      Logger.Warn ("Run: " & Event.Label);
+   end On_Subgraph_List_Execute_Script;
+
    ---------------------------------------------------------------------------
    --  Status Bar Callbacks
    ---------------------------------------------------------------------------
@@ -667,6 +671,15 @@ package body Giant.Main_Window is
       Gtk.Menu.Add (Menu, New_Menu_Separator);
       Gtk.Menu.Add (Menu, New_Menu_Item (-"Set Operation...",
                                          On_Subgraph_Set_Operation'Access));
+
+      --  scripts menu
+      Menu := New_Sub_Menu (Menu_Bar, -"Scripts");
+      Giant.Menu_Factory.Generate
+        (Labels    => Config_Settings.Get_Setting_As_String ("Scripts.Main"),
+         Separator => File_Management.Path_Separator,
+         Menu      => Menu,
+         Callback  => On_Script'Access,
+         Widget    => Window);
 
       --  help menu
       Gtk.Menu_item.Gtk_New (Item, -"Help");
@@ -790,6 +803,13 @@ package body Giant.Main_Window is
       Gtk.Menu.Append (Subgraph_List_Menu,
                        New_Menu_Item (-"Delete",
                                       On_Subgraph_List_Delete'Access));
+      Submenu := New_Sub_Menu (Subgraph_List_Menu, -"Scripts");
+      Giant.Menu_Factory.Generate
+        (Labels    => Config_Settings.Get_Setting_As_String ("Scripts.Subgraph"),
+         Separator => File_Management.Path_Separator,
+         Menu      => Submenu,
+         Callback  => On_Subgraph_List_Execute_Script'Access,
+         Widget    => Window);
 
       --  sub graph list
       String_Clists.Create (Subgraph_List, 4, Update_Subgraph'Access);

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.81 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.82 $
 --  $Author: squig $
---  $Date: 2003/08/15 11:42:16 $
+--  $Date: 2003/08/15 16:37:18 $
 --
 
 with Ada.Strings.Unbounded;
@@ -41,6 +41,7 @@ with Giant.Graph_Lib.Selections;
 with Giant.Graph_Lib.Subgraphs;
 with Giant.Graph_Widgets;
 with Giant.Gui_Manager;
+with Giant.Gsl_Support;
 with Giant.Layout_Factory;
 With Giant.Logger;
 With Giant.Node_Annotations;
@@ -75,6 +76,82 @@ package body Giant.Controller is
          Gsl.Interpreters.Destroy (Gsl_Interpreter);
       end if;
    end Exit_Application;
+
+   procedure Handle_IO_Exception
+     (Error    : in Ada.Exceptions.Exception_Occurrence;
+      Filename : in String)
+   is
+   begin
+      Ada.Exceptions.Reraise_Occurrence (Error);
+   exception
+     when Ada.IO_Exceptions.Data_Error =>
+        Show_Error (-"Unexpected data type: " & Filename);
+     when Ada.IO_Exceptions.Device_Error =>
+        Show_Error (-"Device error during io operation: " & Filename);
+     when Ada.IO_Exceptions.End_Error =>
+        Show_Error (-"Unexpected end of file: " & Filename);
+     when Ada.IO_Exceptions.Layout_Error =>
+        Show_Error (-"Unexpected file layout: " & Filename);
+     when Ada.Io_Exceptions.Name_Error =>
+        Show_Error(-"File not found: " & Filename);
+     when Ada.IO_Exceptions.Status_Error =>
+        Show_Error (-"File already open: " & Filename);
+     when Ada.IO_Exceptions.Use_Error =>
+        Show_Error (-"Could not open file: " & Filename);
+   end Handle_IO_Exception;
+
+   procedure Handle_Project_Exception
+     (Error    : in Ada.Exceptions.Exception_Occurrence;
+      Filename : in String)
+   is
+   begin
+      Ada.Exceptions.Reraise_Occurrence (Error);
+   exception
+     when Giant.Graph_Lib.Load_Error =>
+        Show_Error (-"The IML graph could not be loaded.");
+     when Projects.Invalid_Project_Directory_Excpetion =>
+        Show_Error (-"The selected directory is invalid.");
+     when Projects.Wrong_IML_Graph_Loaded_Exception =>
+        Show_Error (-"The IML graph is invalid.");
+     when Projects.Project_Does_Not_Exist_Exception =>
+        Show_Error (-"The project file is invalid.");
+     when Projects.Directory_Holds_Already_A_Project_File_Exception =>
+        Show_Error (-"The project could not be created. The directory already contains a project.");
+     when E : others =>
+        Logger.Error ("An exceptions has occured while processing projects.");
+        Logger.Error (E);
+
+        Controller.Handle_IO_Exception (E, Filename);
+   end Handle_Project_Exception;
+
+   procedure Show_Error
+     (Message : in String)
+   is
+   begin
+      if (Gui_Manager.Is_Initialized) then
+         Dialogs.Show_Error_Dialog (Message);
+      else
+         Ada.Text_IO.Put_Line (Ada.Text_IO.Standard_Error, Message);
+      end if;
+   end Show_Error;
+
+   function Show_Input
+     (Message : in String)
+      return String is
+   begin
+      if (Gui_Manager.Is_Initialized) then
+         return Dialogs.Show_Input_Dialog (Message);
+      else
+         declare
+            Input : String (1 .. 1024);
+            Last : Natural;
+         begin
+            Ada.Text_IO.Put (Message & ": ");
+            Ada.Text_IO.Get_Line (Ada.Text_IO.Standard_Input, Input, Last);
+            return Input (1 .. Last);
+         end;
+      end if;
+   end Show_Input;
 
    function Show_Source
      (Node : in Graph_Lib.Node_Id)
@@ -123,17 +200,6 @@ package body Giant.Controller is
       return Gui_Manager.Hide (Ask_For_Confirmation);
    end Hide_Gui;
 
-   procedure Show_Error
-     (Message : in String)
-   is
-   begin
-      if (Gui_Manager.Is_Initialized) then
-         Dialogs.Show_Error_Dialog (Message);
-      else
-         Ada.Text_IO.Put_Line (Ada.Text_IO.Standard_Error, Message);
-      end if;
-   end Show_Error;
-
    procedure Show_Gui
    is
    begin
@@ -144,13 +210,10 @@ package body Giant.Controller is
    --  GSL
    ---------------------------------------------------------------------------
 
-   procedure Execute_GSL
-     (Filename : in String)
+   procedure Pre_Execute_Gsl
    is
-      use type Gsl.Interpreters.Interpreter;
-
       Confirm : Boolean;
-      Started : Boolean;
+      use type Gsl.Interpreters.Interpreter;
    begin
       if (Gsl_Interpreter = null) then
          --  lazily instanciate
@@ -160,25 +223,54 @@ package body Giant.Controller is
       --  XXX: ?
       Confirm := Config_Settings.Get_Setting_As_Boolean ("Confirm.Delete");
       Config_Settings.Set_Setting ("Confirm.Delete", False);
+   end Pre_Execute_Gsl;
 
-      Gsl.Interpreters.Execute_Script (Gsl_Interpreter, Filename, "");
+   procedure Start_Interpreter
+   is
+      Started : Boolean;
+   begin
       Gsl.Interpreters.Start_Calculation
         (Individual => Gsl_Interpreter,
          Started    => Started,
          Dialog     => Gui_Manager.Create_Progress_Dialog
          (-"Executing GSL Script", -"Script is running..."));
+      -- FIX: Evaluate started
 
       --  XXX: ?
-      Config_Settings.Set_Setting ("Confirm.Delete", Confirm);
-      Logger.Info ("Script finished:");
+      --FIX : Config_Settings.Set_Setting ("Confirm.Delete", Confirm);
+      Logger.Info ("Script finished");
+   end Start_Interpreter;
+
+   procedure Execute_GSL
+     (Filename : in String)
+   is
+   begin
+      Pre_Execute_Gsl;
+      Gsl.Interpreters.Execute_Script
+        (Individual => Gsl_Interpreter,
+         Name       => Filename,
+         Context    => "");
+      Start_Interpreter;
    end Execute_GSL;
 
-   function Gsl_Input
-     (Input_Name : String)
-      return String is
+   procedure Execute_GSL
+     (Script_Name : in String;
+      Context     : in String;
+      Parameter   : in Gsl.Interpreters.Gsl_Params)
+   is
    begin
-      return Dialogs.Show_Input_Dialog (Input_Name);
-   end Gsl_Input;
+      Pre_Execute_Gsl;
+      Gsl.Interpreters.Execute_Script
+        (Individual => Gsl_Interpreter,
+         Name       => Script_Name,
+         Context    => Context,
+         Params     => Parameter);
+      Start_Interpreter;
+   exception
+     when Giant.Gsl_Support.Gsl_Script_Not_Found_Exception =>
+       Show_Error ("The file " & Script_Name & ".gsl could not be "
+                   & "found in the include path.");
+   end Execute_GSL;
 
    ---------------------------------------------------------------------------
    --  Layout

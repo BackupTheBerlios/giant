@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.48 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.49 $
 --  $Author: squig $
---  $Date: 2003/08/15 11:42:16 $
+--  $Date: 2003/08/15 16:37:18 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -41,10 +41,12 @@ with Gtk.Widget;
 
 with Giant.Clists;
 with Giant.Config;
+with Giant.Config_Settings;
 with Giant.Config.Global_Data;
 with Giant.Controller;
 with Giant.Default_Dialog;
 with Giant.Dialogs;
+with Giant.File_Management;
 with Giant.Graph_Lib.Selections;
 with Giant.Graph_Widgets.Handlers;
 with Giant.Gui_Manager;
@@ -53,6 +55,7 @@ with Giant.Gui_Utils;
 with Giant.Input_Dialog;
 with Giant.Logger;
 with Giant.Main_Window;
+with Giant.Menu_Factory;
 
 with Giant.Graph_Window.Callbacks; use Giant.Graph_Window.Callbacks;
 
@@ -690,6 +693,8 @@ package body Giant.Graph_Window is
      (Window : access Graph_Window_Record'Class)
    is
       use Giant.Gui_Utils;
+
+      Submenu : Gtk.Menu.Gtk_Menu;
    begin
       Gtk.Menu.Gtk_New (Window.Edge_Menu);
       Gtk.Menu.Append (Window.Edge_Menu,
@@ -697,17 +702,27 @@ package body Giant.Graph_Window is
                                       On_Edge_Zoom'Access, Window));
       Gtk.Menu.Append (Window.Edge_Menu, New_Menu_Separator);
       Gtk.Menu.Append (Window.Edge_Menu,
-                       New_Menu_Item (-"Show Source Node",
+                       New_Menu_Item (-"Center On Source Node",
                                       On_Edge_Show_Source'Access, Window));
       Gtk.Menu.Append (Window.Edge_Menu,
-                       New_Menu_Item (-"Zoom Target Edge",
+                       New_Menu_Item (-"Center On Target Node",
                                       On_Edge_Show_Target'Access, Window));
+      Gtk.Menu.Append (Window.Edge_Menu, New_Menu_Separator);
+      Submenu := New_Sub_Menu (Window.Edge_Menu, -"Scripts");
+      Giant.Menu_Factory.Generate
+        (Labels    => Config_Settings.Get_Setting_As_String ("Scripts.Edge"),
+         Separator => File_Management.Path_Separator,
+         Menu      => Submenu,
+         Callback  => On_Node_Script'Access,
+         Widget    => Window);
    end Initialize_Edge_Menu;
 
    procedure Initialize_Node_Menu
      (Window : access Graph_Window_Record'Class)
    is
       use Giant.Gui_Utils;
+
+      Submenu : Gtk.Menu.Gtk_Menu;
    begin
       Gtk.Menu.Gtk_New (Window.Node_Menu);
       Gtk.Menu.Append (Window.Node_Menu,
@@ -721,6 +736,14 @@ package body Giant.Graph_Window is
       Gtk.Menu.Append (Window.Node_Menu,
                        New_Menu_Item (-"Annotate...",
                                       On_Node_Annotate'Access, Window));
+      Gtk.Menu.Append (Window.Node_Menu, New_Menu_Separator);
+      Submenu := New_Sub_Menu (Window.Node_Menu, -"Scripts");
+      Giant.Menu_Factory.Generate
+        (Labels    => Config_Settings.Get_Setting_As_String ("Scripts.Node"),
+         Separator => File_Management.Path_Separator,
+         Menu      => Submenu,
+         Callback  => On_Node_Script'Access,
+         Widget    => Window);
    end Initialize_Node_Menu;
 
    procedure Initialize

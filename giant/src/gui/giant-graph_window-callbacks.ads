@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.ads,v $, $Revision: 1.10 $
+--  $RCSfile: giant-graph_window-callbacks.ads,v $, $Revision: 1.11 $
 --  $Author: squig $
---  $Date: 2003/08/12 13:14:05 $
+--  $Date: 2003/08/15 16:37:18 $
 --
 ------------------------------------------------------------------------------
 --
@@ -37,6 +37,7 @@ with Giant.Graph_Lib.Selections;
 with Giant.Graph_Widgets;
 with Giant.Graph_Widgets.Handlers;
 with Giant.Graph_Widgets.Notifications;
+with Giant.Menu_Factory;
 
 package Giant.Graph_Window.Callbacks is
 
@@ -60,13 +61,17 @@ package Giant.Graph_Window.Callbacks is
    --  Edge Menu Callbacks
    ---------------------------------------------------------------------------
 
-   procedure On_Edge_Zoom
-     (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
+   procedure On_Edge_Script
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event  : in     Menu_Factory.Script_Event);
 
    procedure On_Edge_Show_Source
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
 
    procedure On_Edge_Show_Target
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
+
+   procedure On_Edge_Zoom
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
 
    ---------------------------------------------------------------------------
@@ -100,6 +105,10 @@ package Giant.Graph_Window.Callbacks is
    ---------------------------------------------------------------------------
    --  Node Menu Callbacks
    ---------------------------------------------------------------------------
+
+   procedure On_Node_Script
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event  : in     Menu_Factory.Script_Event);
 
    procedure On_Node_Show_Info
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class);

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.46 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.47 $
 --  $Author: squig $
---  $Date: 2003/08/15 11:42:16 $
+--  $Date: 2003/08/15 16:37:18 $
 --
 ------------------------------------------------------------------------------
 --
@@ -48,6 +48,9 @@
 --      returned.
 --
 
+with Ada.Exceptions;
+with Ada.IO_Exceptions;
+
 with Giant.Evolutions;
 with Giant.Graph_Lib;
 with Giant.Graph_Lib.Selections;
@@ -70,6 +73,43 @@ package Giant.Controller is
    procedure Exit_Application;
 
    ---------------------------------------------------------------------------
+   --  Shows an error dialog for io exceptions.
+   --
+   --  These io errors are considered programming errors and not
+   --  caught:
+   --    Ada.IO_Exceptions.Mode_Error
+   --    Ada.IO_Exceptions.Use_Error
+   --
+   --  See:
+   --    Show_Error
+   procedure Handle_IO_Exception
+     (Error    : in Ada.Exceptions.Exception_Occurrence;
+      Filename : in String);
+
+   ---------------------------------------------------------------------------
+   --  Shows an error dialog for exceptions while opening a project.
+   --
+   --  Invokes Handle_IO_Exception as a fallback.
+   --
+   --  See:
+   --    Handle_IO_Exception
+   procedure Handle_Project_Exception
+     (Error    : in Ada.Exceptions.Exception_Occurrence;
+      Filename : in String);
+
+   -------------------------------------------------------------------------
+   --  Shows an error dialog. Shows error message on console, if gui is
+   --  not initialized.
+   procedure Show_Error
+     (Message : in String);
+
+   -------------------------------------------------------------------------
+   --  Shows an input dialog.
+   function Show_Input
+     (Message : in String)
+      return String;
+
+   ---------------------------------------------------------------------------
    --  Shows an error dialog or error message, if gui is not
    --  initialized.
    --
@@ -85,12 +125,6 @@ package Giant.Controller is
    ---------------------------------------------------------------------------
    --  GUI
    ---------------------------------------------------------------------------
-
-   -------------------------------------------------------------------------
-   --  Shows an error dialog.Shows error message on console, if gui is
-   --  not initialized.
-   procedure Show_Error
-     (Message : in String);
 
    ---------------------------------------------------------------------------
    --  Shows the main window.
@@ -114,12 +148,25 @@ package Giant.Controller is
    --  GSL
    ---------------------------------------------------------------------------
 
+   ---------------------------------------------------------------------------
+   --  Executes a gsl script from a file. A shared interpreter
+   --  instance is used for all scripts.
+   --
+   --  If gui is shown a progress dialog is displayed.
+   --
+   --  Exceptions:
+   --    Throws any IO Exception when script file access fails. Other
+   --    exceptions are handled by the interpreter.
+   --  See:
+   --    Gsl.Interpreters.Execute_Script
+   --    Gsl.Interpreters.Start_Calculation
    procedure Execute_GSL
-     (Filename : in String);
+     (Filename             : in String);
 
-   function Gsl_Input
-     (Input_Name : String)
-      return String;
+   procedure Execute_GSL
+     (Script_Name : in String;
+      Context     : in String;
+      Parameter   : in Gsl.Interpreters.Gsl_Params);
 
    ---------------------------------------------------------------------------
    --  Layout
