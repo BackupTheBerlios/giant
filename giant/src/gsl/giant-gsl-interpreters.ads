@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/16 14:13:53 $
+-- $Date: 2003/08/19 11:02:30 $
 --
 -- This package implements the Gsl interpreter.
 --
@@ -91,7 +91,7 @@ package Giant.Gsl.Interpreters is
    ---------------------------------------------------------------------------
    --
    procedure Set_Current_Context
-     (Context : String);
+     (Context : in String);
 
    --------------------------------------------------------------------------
    -- destroys a Gsl Interpreter
@@ -101,9 +101,9 @@ package Giant.Gsl.Interpreters is
    ---------------------------------------------------------------------------
    --
    procedure Initialize_Interpreter
-     (Individual : Interpreter;
-      Name       : String;
-      Context    : String);
+     (Individual : in Interpreter;
+      Name       : in String;
+      Context    : in String);
 
    ---------------------------------------------------------------------------
    --
@@ -124,18 +124,31 @@ package Giant.Gsl.Interpreters is
 
    ---------------------------------------------------------------------------
    --
+   procedure Add_Parameter
+     (List  : in out Gsl_Params;
+      Param : in     String);
+
+   ---------------------------------------------------------------------------
+   --
+   procedure Add_Parameter
+     (List    : in out Gsl_Params;
+      Param   : in     String;
+      Context : in     String);
+
+   ---------------------------------------------------------------------------
+   --
    procedure Execute_Gsl_File
-     (Individual : Interpreter;
-      Name       : String;
-      Context    : String);
+     (Individual : in Interpreter;
+      Name       : in String;
+      Context    : in String);
 
    ---------------------------------------------------------------------------
    --
    procedure Execute_Script
-     (Individual : Interpreter;
-      Name       : String;
-      Context    : String;
-      Params     : Gsl_Params);
+     (Individual : in Interpreter;
+      Name       : in String;
+      Context    : in String;
+      Params     : in Gsl_Params);
 
    ---------------------------------------------------------------------------
    --
@@ -152,8 +165,8 @@ package Giant.Gsl.Interpreters is
    ---------------------------------------------------------------------------
    --
    procedure Register_Runtime
-     (Runtime    : Runtime_Function;
-      Name       : String);
+     (Runtime    : in Runtime_Function;
+      Name       : in String);
 
    ---------------------------------------------------------------------------
    --
@@ -166,29 +179,28 @@ package Giant.Gsl.Interpreters is
    ---------------------------------------------------------------------------
    --
    procedure Create_Var
-     (Name            : String);
-
+     (Name : in String);
    ---------------------------------------------------------------------------
    --
    procedure Exists_Var
-     (Name            : String);
+     (Name : in String);
 
    ---------------------------------------------------------------------------
    --
    function Get_Var
-     (Name            : String)
+     (Name : in String)
       return Gsl_Type;
 
    ---------------------------------------------------------------------------
    --
    procedure Set_Var
-     (Name            : String;
-      Value           : Gsl_Type);
+     (Name  : in String;
+      Value : in Gsl_Type);
 
    ---------------------------------------------------------------------------
    --
    procedure Set_Activation_Record
-     (AR : Activation_Record);
+     (AR : in Activation_Record);
 
    ---------------------------------------------------------------------------
    --
@@ -197,7 +209,7 @@ package Giant.Gsl.Interpreters is
    ---------------------------------------------------------------------------
    --
    function Create_Activation_Record
-     (Parent : Activation_Record)
+     (Parent : in Activation_Record)
       return Activation_Record;
    
 private
@@ -209,7 +221,7 @@ private
    ---------------------------------------------------------------------------
    --
    procedure Destroy_Activation_Record
-     (AR : Activation_Record);
+     (AR : in Activation_Record);
 
    ---------------------------------------------------------------------------
    -- the GSL interpreter, inherits Iterative_Evolution 

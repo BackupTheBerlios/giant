@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/18 12:02:19 $
+-- $Date: 2003/08/19 11:02:30 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -114,7 +114,7 @@ package body Giant.Gsl.Interpreters is
    ---------------------------------------------------------------------------
    -- sets the context of the current interpreter
    procedure Set_Current_Context
-     (Context : String) is
+     (Context : in String) is
    begin
       Current_Interpreter.Context := To_Unbounded_String (Context);
    end Set_Current_Context;
@@ -139,9 +139,9 @@ package body Giant.Gsl.Interpreters is
    ---------------------------------------------------------------------------
    -- initilizes the gsl interpreter for evolution
    procedure Initialize_Interpreter
-     (Individual : Interpreter;
-      Name       : String;
-      Context    : String) is
+     (Individual : in Interpreter;
+      Name       : in String;
+      Context    : in String) is
 
       use Gsl.Runtime;
    begin
@@ -277,11 +277,32 @@ package body Giant.Gsl.Interpreters is
    end Add_Parameter;
 
    ---------------------------------------------------------------------------
+   --
+   procedure Add_Parameter
+     (List  : in out Gsl_Params;
+      Param : in     String) is
+   begin
+      --Add_Parameter (List, Gsl_Type (Create_Gsl_Edge_Id (Param)));
+      null;
+   end Add_Parameter;
+
+   ---------------------------------------------------------------------------
+   --
+   procedure Add_Parameter
+     (List    : in out Gsl_Params;
+      Param   : in     String;
+      Context : in     String) is
+   begin
+      --Add_Parameter (List, Gsl_Type (Create_Gsl_Edge_Id (Param)));
+      null;
+   end Add_Parameter;
+
+   ---------------------------------------------------------------------------
    -- initilizes the gsl interpreter for evolution
    procedure Execute_Gsl_File
-     (Individual : Interpreter;
-      Name       : String;
-      Context    : String) is
+     (Individual : in Interpreter;
+      Name       : in String;
+      Context    : in String) is
 
    begin
       -- initialize the basics
@@ -310,10 +331,10 @@ package body Giant.Gsl.Interpreters is
    ---------------------------------------------------------------------------
    -- initilizes the gsl interpreter for evolution
    procedure Execute_Script
-     (Individual : Interpreter;
-      Name       : String;
-      Context    : String;
-      Params     : Gsl_Params) is
+     (Individual : in Interpreter;
+      Name       : in String;
+      Context    : in String;
+      Params     : in Gsl_Params) is
 
       use Gsl.Compilers;
       use Gsl.Syntax_Tree;
@@ -446,8 +467,8 @@ package body Giant.Gsl.Interpreters is
    ---------------------------------------------------------------------------
    --
    procedure Register_Runtime
-      (Runtime    : Runtime_Function;
-      Name       : String) is
+     (Runtime : in Runtime_Function;
+      Name    : in String) is
 
       Script : Gsl_Script_Reference;
    begin
@@ -492,8 +513,9 @@ package body Giant.Gsl.Interpreters is
       Default_Logger.Debug ("", "Giant.Gsl");
    end Log_Result_Stack;
 
-------------------------------------------------------------------------------
--- functions for Activation_Records
+   ------------------------
+   -- activation records --
+   ------------------------
 
    ---------------------------------------------------------------------------
    -- sets the current activation record
@@ -523,7 +545,7 @@ package body Giant.Gsl.Interpreters is
    -- creates a new Activation_Record with Parent as
    -- the parent Activation_Record
    function Create_Activation_Record
-     (Parent : Activation_Record)
+     (Parent : in Activation_Record)
       return Activation_Record is
 
       AR : Activation_Record;
@@ -553,7 +575,7 @@ package body Giant.Gsl.Interpreters is
    --------------------------------------------------------------------------
    -- creates a new variable in the current activation record
    procedure Create_Var
-     (Name : String) is
+     (Name : in String) is
 
       use Ada.Strings.Unbounded;
       AR : Activation_Record;
@@ -573,7 +595,7 @@ package body Giant.Gsl.Interpreters is
    ---------------------------------------------------------------------------
    --
    procedure Exists_Var
-     (Name : String) is
+     (Name : in String) is
 
       use Ada.Strings.Unbounded;
       AR : Activation_Record;
@@ -596,7 +618,7 @@ package body Giant.Gsl.Interpreters is
    ---------------------------------------------------------------------------
    --
    function Get_Var
-     (Name : String)
+     (Name : in String)
       return Gsl_Type is
 
       use Ada.Strings.Unbounded;
@@ -621,8 +643,8 @@ package body Giant.Gsl.Interpreters is
    ---------------------------------------------------------------------------
    --
    procedure Set_Var
-     (Name  : String;
-      Value : Gsl_Type) is
+     (Name  : in String;
+      Value : in Gsl_Type) is
 
       use Ada.Strings.Unbounded;
       AR : Activation_Record;
