@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-handlers.ads,v $, $Revision: 1.5 $
+--  $RCSfile: giant-graph_widgets-handlers.ads,v $, $Revision: 1.6 $
 --  $Author: keulsn $
---  $Date: 2003/07/02 16:49:15 $
+--  $Date: 2003/07/09 19:45:36 $
 --
 ------------------------------------------------------------------------------
 --
@@ -97,6 +97,35 @@ package Giant.Graph_Widgets.Handlers is
      (Args : in Gtk.Arguments.Gtk_Args;
       Num  : in Natural)
      return Button_Press_Action;
+
+
+   --------------------------------------
+   -- "edge_popup_event" --
+   --------------------------------------
+
+   ----------------------------------------------------------------------------
+   --  Emitted whenever the user has requested a pop up-menu on an edge
+   Action_Mode_Button_Press_Event : constant String :=
+     "edge_popup_event";
+
+   ----------------------------------------------------------------------------
+   --  Type of handlers for signal Edge_Popup_Event
+   --  Parameters:
+   --    Widget - The graph widget
+   --    Action - The user action inside 'Widget'
+   type Edge_Popup_Event_Cb is access procedure
+     (Widget      : access Graph_Widget_Record'Class;
+      User_Action : in     Edge_Popup_Action);
+
+   --  Package providing the 'Connect' subprograms, if no user data is needed.
+   package Edge_Popup_Cbs renames Graph_Widget_Callbacks;
+
+   ----------------------------------------------------------------------------
+   --  Emits the signal.
+   procedure Emit_Edge_Popup_Event
+     (Widget : access Graph_Widget_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event_Button;
+      Edge   : in     Graph_Lib.Edge_Id);
 
 
    --------------------------------------

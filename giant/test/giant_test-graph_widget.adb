@@ -20,14 +20,15 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant_test-graph_widget.adb,v $, $Revision: 1.5 $
---  $Author: squig $
---  $Date: 2003/07/09 16:22:35 $
+--  $RCSfile: giant_test-graph_widget.adb,v $, $Revision: 1.6 $
+--  $Author: keulsn $
+--  $Date: 2003/07/09 19:45:37 $
 --
 ------------------------------------------------------------------------------
 
 
 with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Unchecked_Conversion;
 
 with Gdk.Event;
 with Gdk.Threads;
@@ -106,8 +107,6 @@ procedure Giant_Test.Graph_Widget is
    Quit_Button   : Gtk.Button.Gtk_Button;
    Main_Window   : Gtk.Window.Gtk_Window;
    Scroller      : Gtk.Scrolled_Window.Gtk_Scrolled_Window;
-   Lock          : Giant.Graph_Widgets.Lock_Type;
-   Selection     : Giant.Graph_Lib.Selections.Selection;
 begin
    Giant.Default_Logger.Init;
    Gdk.Threads.Init;
@@ -188,21 +187,45 @@ begin
 
    Giant.Graph_Lib.Load ("resources/rfg_examp.iml");
    --  selection erzeugen,
-   Selection := Giant.Graph_Lib.Selections.Create ("Funny_Selection");
-   Test_Log.Debug ("Funny_Selection created.");
-   Giant.Graph_Lib.Selections.Add_Node
-     (Selection, Giant.Graph_Lib.Get_Root_Node);
-   Test_Log.Debug
-     ("Root node added, nodes count = " &
-      Natural'Image (Giant.Graph_Lib.Selections.Get_Node_Count (Selection)));
-   --  einfügen
-   Giant.Graph_Widgets.Insert_Selection (Graph_Widget, Selection, Lock);
-   Test_Log.Debug ("Selection inserted.");
-   Giant.Graph_Widgets.Release_Lock (Graph_Widget, Lock);
-   Test_Log.Debug ("Lock released.");
-   --  fertig
-   Giant.Graph_Lib.Selections.Destroy (Selection);
-   Test_Log.Debug ("Selection destroyed.");
+   declare
+      Lock          : Giant.Graph_Widgets.Lock_Type;
+      Selection     : Giant.Graph_Lib.Selections.Selection;
+      Node          : Giant.Graph_Lib.Node_Id;
+      Second_Node   : Giant.Graph_Lib.Node_Id;
+      Edge          : Giant.Graph_Lib.Edge_Id;
+      Edge_Set      : Giant.Graph_Lib.Edge_Id_Sets.Set;
+      Iterator      : Giant.Graph_Lib.Edge_Id_Sets.Iterator;
+
+      function To_Integer is new Ada.Unchecked_Conversion
+        (Source => Giant.Graph_Lib.Edge_Id,
+         Target => Integer);
+   begin
+      Test_Log.Debug ("Create Funny_Selection");
+      Selection := Giant.Graph_Lib.Selections.Create ("Funny_Selection");
+      Node := Giant.Graph_Lib.Get_Root_Node;
+      Giant.Graph_Lib.Selections.Add_Node (Selection, Node);
+      Test_Log.Debug
+        ("Root node added, nodes count = " &
+         Natural'Image (Giant.Graph_Lib.Selections.Get_Node_Count (Selection)));
+--      Edge_Set := Giant.Graph_Lib.Get_Outgoing_Edges (Node);
+--      Iterator := Giant.Graph_Lib.Edge_Id_Sets.Make_Iterator (Edge_Set);
+--      pragma Assert (Giant.Graph_Lib.Edge_Id_Sets.More (Iterator));
+--      Giant.Graph_Lib.Edge_Id_Sets.Next (Iterator, Edge);
+--      Test_Log.Debug ("Edge_Id =" & Integer'Image (To_Integer (Edge)));
+--      Giant.Graph_Lib.Edge_Id_Sets.Destroy (Iterator);
+--      Giant.Graph_Lib.Edge_Id_Sets.Destroy (Edge_Set);
+--      Giant.Graph_Lib.Selections.Add_Edge (Selection, Edge);
+--      Second_Node := Giant.Graph_Lib.Get_Target_Node (Edge);
+--      Giant.Graph_Lib.Selections.Add_Node (Selection, Second_Node);
+      --  einfügen
+      Giant.Graph_Widgets.Insert_Selection (Graph_Widget, Selection, Lock);
+      Test_Log.Debug ("Selection inserted.");
+      Giant.Graph_Widgets.Release_Lock (Graph_Widget, Lock);
+      Test_Log.Debug ("Lock released.");
+      --  fertig
+      Test_Log.Debug ("Destroy Funny_Selection.");
+      Giant.Graph_Lib.Selections.Destroy (Selection);
+   end;
 
 
    Gdk.Threads.Enter;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.16 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.17 $
 --  $Author: keulsn $
---  $Date: 2003/07/09 10:38:33 $
+--  $Date: 2003/07/09 19:45:36 $
 --
 ------------------------------------------------------------------------------
 
@@ -465,7 +465,7 @@ package body Giant.Vis_Data is
      (Node : in     Vis_Node_Id)
      return Boolean is
    begin
-      return Node.Flags (Annotated);
+      return True; --Node.Flags (Annotated);
    end Is_Annotated;
 
    function Get_Highlighting

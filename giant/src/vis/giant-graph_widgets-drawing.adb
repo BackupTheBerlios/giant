@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.9 $
 --  $Author: keulsn $
---  $Date: 2003/07/09 10:38:33 $
+--  $Date: 2003/07/09 19:45:36 $
 --
 ------------------------------------------------------------------------------
 
@@ -461,10 +461,9 @@ package body Giant.Graph_Widgets.Drawing is
         Settings.Get_Node_Attribute_Count (Widget, Node);
       Font_Height          : Vis.Absolute_Natural :=
         Settings.Get_Node_Font_Height (Widget);
-      Icon_Size            : Vis.Absolute.Vector_2d :=
-        Settings.Get_Node_Icon_Size (Widget, Node);
-      Annotation_Size      : Vis.Absolute.Vector_2d :=
-        Settings.Get_Annotation_Icon_Size (Widget);
+      Icon_Height          : Vis.Absolute_Natural;
+      Annotation_Height    : Vis.Absolute_Natural;
+      Header_Height        : Vis.Absolute_Natural;
       Highlighting         : Vis_Data.Flags_Type :=
         Vis_Data.Get_Highlighting (Node);
    begin
@@ -473,11 +472,20 @@ package body Giant.Graph_Widgets.Drawing is
       Attributes_Height := Number_Of_Attributes *
         (Default_Text_Spacing + Font_Height);
 
-      Height :=
-        Border_Thickness +
-        Vis.Absolute_Int'Max
-          (Vis.Absolute_Int'Max (Get_Y (Icon_Size), Get_Y (Annotation_Size)),
-           Default_Text_Spacing + Font_Height);
+      Header_Height := Default_Text_Spacing + Font_Height;
+      Icon_Height := Get_Y (Settings.Get_Node_Icon_Size (Widget, Node));
+      if Icon_Height > Header_Height then
+         Header_Height := Icon_Height;
+      end if;
+      if Vis_Data.Is_Annotated (Node) then
+         Annotation_Height := Get_Y
+           (Settings.Get_Annotation_Icon_Size (Widget));
+         if Annotation_Height > Header_Height then
+            Header_Height := Annotation_Height;
+         end if;
+      end if;
+
+      Height := Border_Thickness + Header_Height;
       if Settings.Show_Node_Class_Name (Widget, Node) then
          Height := Height + Default_Text_Spacing + Font_Height;
       end if;
@@ -716,6 +724,8 @@ package body Giant.Graph_Widgets.Drawing is
                      Width    => Width,
                      Height   => Height);
                end if;
+            else
+               Drawing_Logger.Debug ("... no icon.");
             end if;
          end Draw_Icon;
 
@@ -739,6 +749,9 @@ package body Giant.Graph_Widgets.Drawing is
          Line_Feed         : Vis.Absolute.Vector_2d :=
            Combine_Vector (0, Get_Height (Font) + Default_Text_Spacing);
       begin
+         Gdk.GC.Set_Foreground
+           (GC        => Widget.Drawing.Node_Text,
+            Color     => Settings.Get_Node_Text_Color (Widget, Node));
          --  Icons
          Settings.Get_Node_Icon
            (Widget, Node,
@@ -776,7 +789,11 @@ package body Giant.Graph_Widgets.Drawing is
             X_2 => Get_Right (Draw_Rect),
             Y_2 => Icons_Bottom + Default_Text_Spacing + Get_Height (Font));
 
+         Drawing_Logger.Debug ("... class name?");
          if Settings.Show_Node_Class_Name (Widget, Node) then
+            Drawing_Logger.Debug
+              ("... class name " & Vis.Absolute.Image (Class_Name_Rect) &
+               " """ & Graph_Lib.Get_Node_Class_Tag (Graph_Node_Class) & '"');
             Draw_Text
               (Buffer => Buffer,
                Font   => Font,

@@ -14,7 +14,7 @@
       icon         = "node_icon1.xpm"
       text_color   = "yellow"
       border_color = "red"
-      fill_color   = "black"> 
+      fill_color   = "green"> 
    </default_node_setting>
 
 

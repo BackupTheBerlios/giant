@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.12 $
+--  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.13 $
 --  $Author: keulsn $
---  $Date: 2003/07/09 10:38:33 $
+--  $Date: 2003/07/09 19:45:36 $
 --
 ------------------------------------------------------------------------------
 
@@ -685,6 +685,7 @@ package body Giant.Graph_Widgets.Settings is
          Width  : Glib.Gint := 0;
          Height : Glib.Gint := 0;
       begin
+         Settings_Logger.Debug ("Icon loaded: " & File_Name);
          Gdk.Pixmap.Create_From_Xpm
            (Pixmap      => Pixmap,
             Window      => Get_Window (Widget),
@@ -715,12 +716,14 @@ package body Giant.Graph_Widgets.Settings is
          if Icons /= null then
             return;
             --  Shut_Down_Icon_Array (Widget);
+            --  Do not call shutdown because the Icons array is shared for
+            --  all widgets
          end if;
          Icons := new Icon_Array_Type'
            (Files'First .. Files'Last + 1 =>
               (Gdk.Pixmap.Null_Pixmap, 0, 0));
          Icons (Icons'Last) := Load_Icon
-           (Widget, Config.Global_Data.Get_Node_Annotations_Icon);
+           (Widget, "resources/vis_styles/resources_dir/node_icon1.xpm");--Config.Global_Data.Get_Node_Annotations_Icon);
          for I in Files'Range loop
             Icons (I) := Load_Icon
               (Widget, Ada.Strings.Unbounded.To_String (Files (I)));
