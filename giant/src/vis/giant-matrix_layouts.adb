@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-matrix_layouts.adb,v $, $Revision: 1.12 $
+--  $RCSfile: giant-matrix_layouts.adb,v $, $Revision: 1.13 $
 --  $Author: koppor $
---  $Date: 2003/07/14 16:10:53 $
+--  $Date: 2003/07/14 16:14:07 $
 --
 
 with Ada.Numerics.Generic_Elementary_Functions;
@@ -175,6 +175,8 @@ package body Giant.Matrix_Layouts is
             Layout.Current_Row_Height := 0.0;
          end if;
 
+         --  TBD: state says 51482 of 53398, but layout is finished
+         --       don't think, it's this routine's fault
          Evolutions.Advance_Progress (Layout, Number_Nodes_To_Layout);
 
          --  Logger.Debug ("Set.Size:        " & Natural'Image
