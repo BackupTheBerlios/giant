@@ -1,0 +1,160 @@
+------------------------------------------------------------------------------
+-- GIANT - Graphical IML Analysis and Navigation Tool
+--
+-- Copyright (C) 2003 Phillip Haeuser, Steffen Keul, Oliver Kopp,
+-- Steffen Pingel, Gerrit Schulz and Martin Schwienbacher.
+--
+-- This program is free software; you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation; either version 2 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program; if not, write to the Free Software
+-- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+--
+-- First Author: Steffen Keul
+--
+-- $RCSfile: giant-parser.y,v $
+-- $Author: schulzgt $
+-- $Date: 2003/05/27 13:46:44 $
+--
+-- GSL Parser rules
+-- Use ayacc to generate code, needs scanner scanner.aflex
+--
+
+-- Declarations Section
+%token SUBGRAPH_T, SELECTION_T, INT_LITERAL_T,
+  STRING_LITERAL_T, IDENTIFIER_T, VISIBLE_REF_T, NULL_T, FALSE_T, TRUE_T
+
+
+{
+  subtype YYSType is Syntax_Node;
+
+  Root_Node : Syntax_Node;
+}
+
+%start root 
+
+%% 
+------------------------------------------------------------------------------
+-- Rules section
+root               : expression
+                     { Put_Line ("Program finished");
+                       Root_Node := $1; };
+
+expression         : literal
+                     { $$ := $1; }
+                   | global_var
+                     { $$ := $1; }
+                   | visible_var
+                     { $$ := $1; }
+                   | global_ref
+                     { $$ := $1; }
+                   | visible_ref
+                     { $$ := $1; }
+                   | var_creation
+                     { $$ := $1; }
+                   | list
+                     { $$ := $1; }
+                   | sequence
+                     { $$ := $1; }
+                   | '{' list  expression '}'
+                     { $$ := Create_Node (Script_Decl, $2, $3); }
+                   | expression list
+                     { $$ := Create_Node (Script_Activation, $1, $2); };
+
+list_body          : expression
+                     { $$ := Create_Node (List, $1, Null_Node); }
+                   | expression ',' list_body
+                     { $$ := Create_Node (List, $1, $3); };
+
+list               : '(' ')'
+                     { $$ := Create_Node (List, Null_Node, Null_Node); }
+                   | '(' list_body ')'
+                     { $$ := $2; };
+
+sequence_body      : expression ';'
+                     { $$ := Create_Node (Sequence, $1, Null_Node); }
+                   | expression ';' sequence_body
+                     { $$ := Create_Node (Sequence, $1, $3); };
+
+sequence           : '[' ']'
+                     { $$ := Create_Node (Sequence, Null_Node, Null_Node); }
+                   | '[' sequence_body ']'
+                     { $$ := $2; };
+
+-- Literals
+literal            : FALSE_T
+                     { $$ := Create_Node (Literal, Null_Node, Null_Node);}
+                   | TRUE_T
+                     { $$ := Create_Node (Literal, Null_Node, Null_Node);}
+                   | INT_LITERAL_T
+                     { $$ := Create_Node (Literal, Null_Node, Null_Node);
+                       Put_Line (scanner_dfa.yytext); }
+                   | STRING_LITERAL_T
+                     { $$ := Create_Node (Literal, Null_Node, Null_Node);
+                       Put_Line (scanner_dfa.yytext
+                                 (2..scanner_dfa.yylength-1)); }
+                   | NULL_T
+                     { $$ := Create_Node (Literal, Null_Node, Null_Node);};
+
+-- Identifiers
+global_var         : SUBGRAPH_T '.' IDENTIFIER_T
+                     { $$ := Create_Node (Global_Var, Null_Node, Null_Node);}
+                   | SELECTION_T '.' IDENTIFIER_T
+                     { $$ := Create_Node (Global_Var, Null_Node, Null_Node);};
+global_ref         : VISIBLE_REF_T SUBGRAPH_T '.' IDENTIFIER_T
+                     { $$ := Create_Node (Global_Ref, Null_Node, Null_Node);}
+                   | VISIBLE_REF_T SELECTION_T '.' IDENTIFIER_T
+                     { $$ := Create_Node (Global_Ref, Null_Node, Null_Node);};
+
+visible_var        : IDENTIFIER_T
+                     { $$ := Create_Node (Visible_Var, Null_Node, Null_Node);};
+visible_ref        : VISIBLE_REF_T IDENTIFIER_T
+                     { $$ := Create_Node (Visible_Ref, Null_Node, Null_Node);};
+var_creation       : '+' IDENTIFIER_T
+                     { $$ := Create_Node (Var_Creation, Null_Node, Null_Node);};
+
+
+%% -- next section will go before package statement in SPEC file
+with Giant.Syntax_Tree;
+use  Giant.Syntax_Tree;
+
+## -- next section will go after package statement in SPEC file  
+
+   procedure YYParse;
+
+   function Get_Syntax_Tree return Syntax_Node;
+
+## -- next section will go before package statement in BODY file
+
+with Giant.Scanner, Giant.Scanner.dfa, Giant.Scanner.IO, Text_IO;
+use  Giant.Scanner, Giant.Scanner.dfa, Giant.Scanner.IO, Text_IO;
+
+## -- next section will go after package statement in BODY file
+
+package scanner_dfa renames scanner.dfa;
+package scanner_io renames scanner.io;
+
+   function YYLex return Token is
+      Tok : Token := Scanner.YYLex;
+   begin
+      -- Put (Scanner_Dfa.YYText);
+      return Tok;
+   end YYLex;
+
+   procedure YYError (Message : in String) is
+   begin
+      Put_Line (Message);
+   end YYError;
+
+   function Get_Syntax_Tree return Syntax_Node is
+   begin
+      return Root_Node; 
+   end Get_Syntax_Tree;
