@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.ads,v $, $Revision: 1.14 $
+--  $RCSfile: giant-main_window.ads,v $, $Revision: 1.15 $
 --  $Author: squig $
---  $Date: 2003/08/15 11:42:17 $
+--  $Date: 2003/09/12 00:18:24 $
 --
 --  Provides the main window. The main window is only instanciated once.
 --
@@ -114,6 +114,8 @@ package Giant.Main_Window is
 
    procedure Set_Graph_Filename
      (Text : in String);
+
+   procedure Update_Column_Sizes;
 
 private
 

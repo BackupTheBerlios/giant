@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-basic_evolutions.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-basic_evolutions.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/09/11 18:44:24 $
+--  $Date: 2003/09/12 00:18:24 $
 --
 ------------------------------------------------------------------------------
 
@@ -85,12 +85,33 @@ package body Giant.Basic_Evolutions is
       Free (Individual);
    end Destroy;
 
+   function Iterate_Main
+     (Individual   : in Basic_Evolution_Access;
+      Force_Update : in Boolean)
+     return Boolean
+   is
+     use type Ada.Real_Time.Time;
+     Dead : Boolean;
+   begin
+     if (Force_Update
+         or else (Ada.Real_Time.Clock
+                  >= Individual.Last_Main_Iteration
+                  + Ada.Real_Time.Milliseconds (1000))) then
+        while Gtk.Main.Events_Pending loop
+           Dead := Gtk.Main.Main_Iteration;
+           pragma Assert (not Dead);
+        end loop;
+        Individual.Last_Main_Iteration := Ada.Real_Time.Clock;
+     end if;
+
+      return Individual.Cancelled;
+   end Iterate_Main;
+
    function Step
      (Individual       : in Basic_Evolution_Access;
       Delta_Complexity : in Natural                := 1)
       return Boolean
-     is
-      Dead : Boolean;
+   is
    begin
       if (Individual = null) then
          return False;
@@ -102,13 +123,28 @@ package body Giant.Basic_Evolutions is
                                     Float (Individual.Complexity));
       end if;
 
-      while Gtk.Main.Events_Pending loop
-         Dead := Gtk.Main.Main_Iteration;
-         pragma Assert (not Dead);
-      end loop;
-
-      return Individual.Cancelled;
+      return Iterate_Main (Individual, Force_Update => False);
    end Step;
+
+   function Set_Percentage
+     (Individual : in Basic_Evolution_Access;
+      Percentage : in Float;
+      Text       : in String := "")
+     return Boolean
+   is
+   begin
+      if (Individual = null) then
+         return False;
+      end if;
+
+      if (Individual.Dialog /= null) then
+         Progress_Dialog.Set_Percentage (Individual.Dialog, Percentage);
+         Progress_Dialog.Set_Activity_Mode (Individual.Dialog, False);
+         Progress_Dialog.Set_Progress_Text (Individual.Dialog, Text);
+      end if;
+
+      return Iterate_Main (Individual, Force_Update => True);
+   end Set_Percentage;
 
    procedure Set_Text
      (Individual : in Basic_Evolution_Access;
@@ -128,15 +164,20 @@ package body Giant.Basic_Evolutions is
      (Individual       : in Basic_Evolution_Access;
       Total_Complexity : in     Natural)
    is
+      Cancel : Boolean;
    begin
       if (Individual = null) then
          return;
       end if;
 
+      Individual.Complexity := 0;
       if (Individual.Dialog /= null) then
          Progress_Dialog.Set_Upper (Individual.Dialog, Float (Total_Complexity));
-         Progress_Dialog.Set_Activity_Mode (Individual.Dialog, Total_Complexity /= 0);
+         Progress_Dialog.Set_Activity_Mode
+           (Individual.Dialog, Total_Complexity = 0);
       end if;
+
+      Cancel := Iterate_Main (Individual, Force_Update => True);
    end Set_Total_Complexity;
 
 end Giant.Basic_Evolutions;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.36 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.37 $
 --  $Author: squig $
---  $Date: 2003/09/09 21:17:44 $
+--  $Date: 2003/09/12 00:18:24 $
 --
 
 with Ada.Strings.Unbounded;
@@ -36,6 +36,7 @@ with Giant.Config;
 with Giant.Config.Vis_Styles;
 with Giant.Controller;
 with Giant.Dialogs;
+with Giant.Gui_Utils;
 with Giant.Main_Window;
 with Giant.Graph_Window;
 with Giant.Projects;
@@ -211,6 +212,7 @@ package body Giant.Gui_Manager is
 
       Main_Window.Initialize_Project;
       Initialize_Project_Internal;
+      Main_Window.Update_Column_Sizes;
    end Initialize_Project;
 
    procedure Set_Status
@@ -604,6 +606,7 @@ package body Giant.Gui_Manager is
 
       Graph_Window.Show_All (Window);
       Initialize_Graph_Window (Window);
+      Gui_Utils.Set_Icon (Window, "giant.xpm");
 
       --  update status
       Main_Window.Update_Window (Vis_Windows.Get_Name (Visual_Window));

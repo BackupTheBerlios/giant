@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-basic_evolutions.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-basic_evolutions.ads,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/09/11 18:44:24 $
+--  $Date: 2003/09/12 00:18:24 $
 --
 ------------------------------------------------------------------------------
 --
@@ -30,6 +30,8 @@
 --
 --  See Giant.Evolutions for more details.
 --
+
+with Ada.Real_Time;
 
 with Gtk.Handlers;
 
@@ -57,6 +59,12 @@ package Giant.Basic_Evolutions is
    function Step
      (Individual       : in Basic_Evolution_Access;
       Delta_Complexity : in Natural                := 1)
+     return Boolean;
+
+   function Set_Percentage
+     (Individual : in Basic_Evolution_Access;
+      Percentage : in Float;
+      Text       : in String := "")
      return Boolean;
 
    ----------------------------------------------------------------------------
@@ -105,14 +113,19 @@ package Giant.Basic_Evolutions is
 
 private
 
+   function Iterate_Main
+     (Individual   : in Basic_Evolution_Access;
+      Force_Update : in Boolean)
+     return Boolean;
+
    type Basic_Evolution is
       record
          --  A monitoring dialog or null
-         Dialog          : Progress_Dialog.Progress_Dialog_Access;
-         Cancel_Handler  : Gtk.Handlers.Handler_Id;
-         Cancelled       : Boolean := False;
-         Complexity      : Natural := 0;
+         Dialog              : Progress_Dialog.Progress_Dialog_Access;
+         Cancel_Handler      : Gtk.Handlers.Handler_Id;
+         Cancelled           : Boolean := False;
+         Complexity          : Natural := 0;
+         Last_Main_Iteration : Ada.Real_Time.Time;
       end record;
-
 
 end Giant.Basic_Evolutions;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.18 $
+--  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.19 $
 --  $Author: squig $
---  $Date: 2003/09/08 16:31:24 $
+--  $Date: 2003/09/12 00:18:24 $
 --
 
 with Ada.Exceptions;
@@ -37,6 +37,7 @@ with Gtk.Button;
 with Gtk.Editable;
 with Gtk.Enums; use Gtk.Enums;
 with Gtk.Scrolled_Window;
+with Gtk.Stock;
 with Gtk.Text;
 with Gtk.Widget;
 
@@ -351,24 +352,29 @@ package body Giant.Gsl_Dialog is
                         Padding => 0);
 
       Gtk.Status_Bar.Gtk_New (Dialog.Filename_Bar);
+      Gtk.Status_Bar.Set_Has_Resize_Grip (Dialog.Filename_Bar, False);
       Gtk.Box.Pack_Start (Status_Box, Dialog.Filename_Bar, Expand => True,
                           Fill => True, Padding => 0);
 
       Gtk.Status_Bar.Gtk_New (Dialog.Location_Bar);
+      Gtk.Status_Bar.Set_Has_Resize_Grip (Dialog.Location_Bar, False);
       --  disabled because the content makes no sense
       --Gtk.Box.Pack_Start (Status_Box, Dialog.Location_Bar, Expand => False,
       --                    Fill => True, Padding => 0);
 
       -- buttons
-      Add_Button (Dialog, New_Button (-"Run",
-                                      On_Run_Button_Clicked'Access,
-                                      Dialog));
-      Add_Button (Dialog, New_Button (-"Save As...",
-                                      On_Save_As_Button_Clicked'Access,
-                                      Dialog));
-      Add_Button (Dialog, New_Button (-"Open...",
-                                      On_Open_Button_Clicked'Access,
-                                      Dialog));
+--        Add_Button (Dialog, New_Button (-"Run",
+--                                        On_Run_Button_Clicked'Access,
+--                                        Dialog));
+      Add_Button (Dialog, New_Stock_Button (Gtk.Stock.Stock_Execute,
+                                            On_Run_Button_Clicked'Access,
+                                            Dialog));
+      Add_Button (Dialog, New_Stock_Button (Gtk.Stock.Stock_Save_As,
+                                            On_Save_As_Button_Clicked'Access,
+                                            Dialog));
+      Add_Button (Dialog, New_Stock_Button (Gtk.Stock.Stock_Open,
+                                            On_Open_Button_Clicked'Access,
+                                            Dialog));
 
       Set_Default (Dialog, Dialog.Text_Area);
 

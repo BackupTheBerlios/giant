@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-progress_dialog.adb,v $, $Revision: 1.11 $
+--  $RCSfile: giant-progress_dialog.adb,v $, $Revision: 1.12 $
 --  $Author: squig $
---  $Date: 2003/09/11 18:44:24 $
+--  $Date: 2003/09/12 00:18:24 $
 --
 
 with Interfaces.C.Strings;
@@ -143,6 +143,14 @@ package body Giant.Progress_Dialog is
                                 Glib.Gdouble (Lower));
    end Set_Lower;
 
+   procedure Set_Message
+     (Dialog  : access Progress_Dialog_Record;
+      Message : in     String)
+   is
+   begin
+      Gtk.Label.Set_Text (Dialog.Progress_Label, Message);
+   end Set_Message;
+
    procedure Set_Percentage
      (Dialog     : access Progress_Dialog_Record;
       Percentage : in     Float)
@@ -157,9 +165,8 @@ package body Giant.Progress_Dialog is
       Text   : in     String)
    is
    begin
-      --Gtk.Progress_Bar.Set_Show_Text (Dialog.Progress_Bar, True);
-      --Gtk.Progress_Bar.Set_Format_String (Dialog.Progress_Bar, Text);
-      Gtk.Progress_Bar.Set_Text (Dialog.Progress_Bar, Text);
+      Gtk.Progress_Bar.Set_Show_Text (Dialog.Progress_Bar, True);
+      Gtk.Progress_Bar.Set_Format_String (Dialog.Progress_Bar, Text);
    end Set_Progress_Text;
 
    procedure Set_Upper (Dialog : access Progress_Dialog_Record;

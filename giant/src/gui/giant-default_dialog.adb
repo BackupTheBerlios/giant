@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.20 $
+--  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.21 $
 --  $Author: squig $
---  $Date: 2003/09/09 15:31:24 $
+--  $Date: 2003/09/12 00:18:24 $
 --
 
 with Ada.Text_Io; use Ada.Text_Io;
@@ -35,6 +35,7 @@ with Gtk.Label;
 with Gtk.Main;
 with Gtk.Pixmap;
 with Gtk.Separator;
+with Gtk.Stock;
 with Gtkada.Types;
 
 with Giant.Gui_Utils;
@@ -153,29 +154,35 @@ package body Giant.Default_Dialog is
 
       --  buttons
       if (Buttons = Button_Close) then
-         Button := New_Button (-"Close", On_Close_Button_Clicked'access);
+         Button := New_Stock_Button
+           (Gtk.Stock.Stock_Close,
+            On_Close_Button_Clicked'access);
          Add_Button (Dialog, Button, False);
          Gtk.Button.Grab_Default (Button);
       elsif (Buttons = Button_Okay
              or else Buttons = Button_Okay_Cancel) then
-         Button := New_Button (-"Okay", On_Okay_Button_Clicked'access);
+         Button := New_Stock_Button
+           (Gtk.Stock.Stock_Ok,
+            On_Okay_Button_Clicked'access);
          Add_Button (Dialog, Button, False);
          Gtk.Button.Grab_Default (Button);
       elsif (Buttons = Button_Yes_No
              or else Buttons = Button_Yes_No_Cancel) then
-         Button := New_Button (-"Yes", On_Yes_Button_Clicked'access);
+         Button := New_Stock_Button
+           (Gtk.Stock.Stock_Yes,
+            On_Yes_Button_Clicked'access);
          Add_Button (Dialog, Button, False);
          Gtk.Button.Grab_Default (Button);
-         Add_Button (Dialog, New_Button (-"No",
-                                         On_No_Button_Clicked'access),
+         Add_Button (Dialog, New_Stock_Button (Gtk.Stock.Stock_No,
+                                               On_No_Button_Clicked'access),
                      False);
       end if;
 
       if (Buttons = Button_Cancel
           or else Buttons = Button_Okay_Cancel
           or else Buttons = Button_Yes_No_Cancel) then
-         Add_Button (Dialog, New_Button (-"Cancel",
-                                         On_Cancel_Button_Clicked'access),
+         Add_Button (Dialog, New_Stock_Button (Gtk.Stock.Stock_Cancel,
+                                               On_No_Button_Clicked'access),
                      False);
       end if;
 

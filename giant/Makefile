@@ -18,6 +18,8 @@ GCOV_OUT_PATH   = gcov/
   IMLLIB_PATH     = $(HOME)/GIANT/IML/iml_browser
 #endif
 
+GTKADA_CONFIG   = gtkada-config
+
 # relative to $(OUT_PATH)
 GIANT_PATH      = ../
 
@@ -31,9 +33,9 @@ IMLLIB_LIBS =
 GIANT_INCLUDES  = -I$(GIANT_PATH)/src -I$(GIANT_PATH)/src/config -I$(GIANT_PATH)/src/control -I$(GIANT_PATH)/src/graph_lib -I$(GIANT_PATH)/src/gsl -I$(GIANT_PATH)/src/gsl/generated -I$(GIANT_PATH)/src/gui -I$(GIANT_PATH)/src/project -I$(GIANT_PATH)/src/reuse -I$(GIANT_PATH)/src/utils -I$(GIANT_PATH)/src/vis
 XMLADA_INCLUDES = -I$(XMLADA_PATH)/dom -I$(XMLADA_PATH)/input_sources -I$(XMLADA_PATH)/sax -I$(XMLADA_PATH)/unicode
 
-INCLUDES        = $(GIANT_INCLUDES) $(IMLLIB_INCLUDES) $(AUNIT_INCLUDES) $(XMLADA_INCLUDES) $(shell gtkada-config --cflags)
+INCLUDES        = $(GIANT_INCLUDES) $(IMLLIB_INCLUDES) $(AUNIT_INCLUDES) $(XMLADA_INCLUDES) $(shell $(GTKADA_CONFIG) --cflags)
 
-LIBS            = -largs $(IMLLIB_LIBS) $(shell gtkada-config --libs) 
+LIBS            = -largs $(IMLLIB_LIBS) $(shell $(GTKADA_CONFIG) --libs) 
 
 CFLAGS          = -g 
 #-O2 -funroll-loops

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-input_dialog.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-input_dialog.ads,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/08/26 16:07:16 $
+--  $Date: 2003/09/12 00:18:24 $
 --
 ------------------------------------------------------------------------------
 --
@@ -30,6 +30,7 @@
 --
 
 with Gtk.Gentry;
+with Gtk.Widget;
 
 with Giant.Default_Dialog;
 
@@ -98,6 +99,10 @@ package Giant.Input_Dialog is
       return String;
 
 private
+
+   procedure On_Input_Activated
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
+
    type Input_Dialog_Record is
      new Default_Dialog.Default_Dialog_Record with record
         Input : Gtk.Gentry.Gtk_Entry;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.63 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.64 $
 --  $Author: squig $
---  $Date: 2003/09/11 18:44:24 $
+--  $Date: 2003/09/12 00:18:24 $
 --
 
 with Ada.Exceptions;
@@ -30,10 +30,8 @@ with Ada.Strings.Unbounded;
 with Interfaces.C.Strings;
 with System;
 
-with Gdk.Bitmap;
 with Gdk.Color;
 with Gdk.Event;
-with Gdk.Pixmap;
 with Gdk.Types;
 with Gdk.Window;
 with Glib; use type Glib.Gint;
@@ -44,6 +42,7 @@ pragma Elaborate_All (Gtk.Clist);
 with Gtk.Container;
 with Gtk.Enums; use Gtk.Enums;
 with Gtk.Handlers;
+with Gtk.Label;
 with Gtk.Main;
 with Gtk.Menu;
 with Gtk.Menu_Bar;
@@ -51,12 +50,12 @@ with Gtk.Menu_Item;
 with Gtk.Object;
 with Gtk.Paned;
 with Gtk.Status_Bar;
+with Gtk.Stock;
 with Gtk.Style;
 with Gtk.Tooltips;
 with Gtk.Widget;
 with Gtk.Window;
 with Gtk.Tearoff_Menu_Item;
-with Gtkada.File_Selection;
 with Gtkada.Types;
 
 with Giant.About_Dialog;
@@ -69,6 +68,7 @@ with Giant.Default_Dialog;
 with Giant.Default_Logger;
 with Giant.Dialogs;
 with Giant.File_Management;
+with Giant.File_Selection;
 with Giant.Graph_Lib;
 with Giant.Graph_Lib.Subgraphs;
 with Giant.Gsl_Dialog;
@@ -132,7 +132,10 @@ package body Giant.Main_Window is
    Subgraph_List : Gui_Utils.String_Clists.Giant_Data_Clist;
 
    Status_Bar : Gtk.Status_Bar.Gtk_Status_Bar;
-   Graph_Filename_Bar : Gtk.Status_Bar.Gtk_Status_Bar;
+   Graph_Filename_Bar : Gtk.Label.Gtk_Label;
+
+   --  holds multiple status bars
+   Status_Box : Gtk.Box.Gtk_Hbox;
 
    Styles : array (Projects.Subgraph_Highlight_Status) of Gtk.Style.Gtk_Style
      := (others => null);
@@ -233,7 +236,7 @@ package body Giant.Main_Window is
    is
    begin
       declare
-         Project_Filename : String := Gtkada.File_Selection.File_Selection_Dialog
+         Project_Filename : String := Giant.File_Selection.File_Selection_Dialog
            (Title       => -"Enter New Project File",
             Default_Dir => "",
             Dir_Only    => False,
@@ -248,7 +251,7 @@ package body Giant.Main_Window is
 
             declare
                Graph_Filename : String
-                 := Gtkada.File_Selection.File_Selection_Dialog
+                 := Giant.File_Selection.File_Selection_Dialog
                  (Title       => -"Select IML File",
                   Default_Dir => Project_Filename & ".iml",
                   Dir_Only    => False,
@@ -273,7 +276,7 @@ package body Giant.Main_Window is
    is
    begin
       declare
-         Filename : String := Gtkada.File_Selection.File_Selection_Dialog
+         Filename : String := Giant.File_Selection.File_Selection_Dialog
            (Title       => -"Open Project",
             Default_Dir => "",
             Dir_Only    => False,
@@ -310,7 +313,7 @@ package body Giant.Main_Window is
    is
    begin
       declare
-         Filename : String := Gtkada.File_Selection.File_Selection_Dialog
+         Filename : String := Giant.File_Selection.File_Selection_Dialog
            (-"Save Project",
             Projects.Get_Project_File_Name (Controller.Get_Project),
             Dir_Only => False, Must_Exist => False);
@@ -655,22 +658,25 @@ package body Giant.Main_Window is
       Project_Menu := Menu;
 
       Gtk.Menu.Add (Menu, New_TearOff_Menu_Item);
-      Project_New_Menu_Item := New_Menu_Item (-"New", On_Project_New'Access);
+      Project_New_Menu_Item
+        := New_Stock_Menu_Item (Gtk.Stock.Stock_New, On_Project_New'Access);
       Gtk.Menu.Add (Menu, Project_New_Menu_Item);
       Project_Open_Menu_Item
         := New_Menu_Item (-"Open...", On_Project_Open'Access);
       Gtk.Menu.Add (Menu, Project_Open_Menu_Item);
-      Gtk.Menu.Add (Menu, New_Menu_Item (-"Close",
-                                         On_Project_Close'Access));
+      Gtk.Menu.Add (Menu, New_Stock_Menu_Item (Gtk.Stock.Stock_Close,
+                                               On_Project_Close'Access));
       Gtk.Menu.Add (Menu, New_Menu_Separator);
-      Gtk.Menu.Add (Menu, New_Menu_Item (-"Save", On_Project_Save'Access));
-      Gtk.Menu.Add (Menu, New_Menu_Item (-"Save As...",
-                                         On_Project_Save_As'Access));
+      Gtk.Menu.Add (Menu, New_Stock_Menu_Item (Gtk.Stock.Stock_Save,
+                                               On_Project_Save'Access));
+      Gtk.Menu.Add (Menu, New_Stock_Menu_Item (Gtk.Stock.Stock_Save_As,
+                                               On_Project_Save_As'Access));
       Gtk.Menu.Add (Menu, New_Menu_Separator);
       Gtk.Menu.Add (Menu, New_Menu_Item (-"Info...",
                                          On_Project_Info'Access));
       Gtk.Menu.Add (Menu, New_Menu_Separator);
-      Project_Quit_Menu_Item := New_Menu_Item (-"Quit", On_Project_Quit'Access);
+      Project_Quit_Menu_Item
+        := New_Stock_Menu_Item (Gtk.Stock.Stock_Quit, On_Project_Quit'Access);
       Gtk.Menu.Add (Menu, Project_Quit_Menu_Item);
 
       --  tools menu
@@ -710,7 +716,7 @@ package body Giant.Main_Window is
       Gtk.Menu_Item.Set_Submenu (Item, Menu);
 
       Gtk.Menu.Add (Menu, New_TearOff_Menu_Item);
-      Gtk.Menu.Add (Menu, New_Menu_Item (-"About...", On_Help_About'Access));
+      Gtk.Menu.Add (Menu, New_Menu_Item ("About", On_Help_About'Access));
 
       return Menu_Bar;
    end Initialize_Menu;
@@ -736,8 +742,6 @@ package body Giant.Main_Window is
 
       Box : Gtk.Box.Gtk_Vbox;
       Submenu : Gtk.Menu.Gtk_Menu;
-      --  holds multiple status bars
-      Status_Box : Gtk.Box.Gtk_Hbox;
    begin
       Gtk.Window.Initialize (Window, Window_Toplevel);
       Set_Title (Window, -"GIANT");
@@ -854,15 +858,17 @@ package body Giant.Main_Window is
 
       --  status bar
       Gtk.Box.Gtk_New_Hbox (Status_Box);
+      Gtk.Box.Set_Homogeneous (Status_Box, False);
       Gtk.Box.Pack_End (Box, Status_Box, Expand => False, Fill => True,
                         Padding => 0);
 
       Gtk.Status_Bar.Gtk_New (Status_Bar);
+      Gtk.Status_Bar.Set_Has_Resize_Grip (Status_Bar, False);
       Gtk.Box.Pack_Start (Status_Box, Status_Bar, Expand => True,
                           Fill => True, Padding => 0);
       Default_Logger.Set_Listener (On_Log_Message'Access);
 
-      Gtk.Status_Bar.Gtk_New (Graph_Filename_Bar);
+      Gtk.Label.Gtk_New (Graph_Filename_Bar);
       Gtk.Box.Pack_Start (Status_Box, Graph_Filename_Bar,
                           Expand => False, Fill => True, Padding => 0);
 
@@ -1074,8 +1080,6 @@ package body Giant.Main_Window is
 
    procedure Show
    is
-      Icon : Gdk.Pixmap.Gdk_Pixmap;
-      Mask : Gdk.Bitmap.Gdk_Bitmap := Gdk.Bitmap.Null_Bitmap;
    begin
       Window := new Main_Window_Record;
       Initialize;
@@ -1096,23 +1100,7 @@ package body Giant.Main_Window is
       Set_Project_Loaded (False);
 
       Show_All (Window);
-
-      --  set window icon
-      Gdk.Pixmap.Create_From_Xpm
-        (Pixmap      => Icon,
-         Window      => Get_Window (Window),
-         Mask        => Mask,
-         Transparent => Gdk.Color.Null_Color,
-         Filename    => Gui_Utils.Get_Icon ("giant.xpm"));
-      if Gdk."/=" (Icon, Gdk.Pixmap.Null_Pixmap) then
-         Gdk.Window.Set_Icon
-           (Window      => Get_Window (Window),
-            Icon_Window => Get_Window (Window),
-            Pixmap      => Icon,
-            Mask        => Mask);
-      else
-         Logger.Warn ("Failed to load giant.xpm.");
-      end if;
+      Gui_Utils.Set_Icon (Window, "giant.xpm");
    end Show;
 
    procedure Set_Status
@@ -1120,15 +1108,22 @@ package body Giant.Main_Window is
    is
       Id : Gtk.Status_Bar.Message_Id;
    begin
-      Id := Gtk.Status_Bar.Push (Status_Bar, 1, Text);
+      Gtk.Status_Bar.Pop (Status_Bar, 1);
+      Id := Gtk.Status_Bar.Push (Status_Bar, 1, " " & Text & " ");
    end Set_Status;
 
    procedure Set_Graph_Filename
      (Text : in String)
    is
-      Id : Gtk.Status_Bar.Message_Id;
    begin
-      Id := Gtk.Status_Bar.Push (Graph_Filename_Bar, 1, Text);
+      Gtk.Label.Set_Text (Graph_Filename_Bar, " " & Text & " ");
    end Set_Graph_Filename;
+
+   procedure Update_Column_Sizes
+   is
+   begin
+      Gui_Utils.String_Clists.Columns_Autosize (Window_List);
+      Gui_Utils.String_Clists.Columns_Autosize (Subgraph_List);
+   end Update_Column_Sizes;
 
 end Giant.Main_Window;

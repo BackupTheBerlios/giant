@@ -18,23 +18,27 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.24 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.25 $
 -- $Author: squig $
--- $Date: 2003/09/11 18:44:24 $
+-- $Date: 2003/09/12 00:18:24 $
 --
 
 with Glib;
+with Gdk.Bitmap;
+with Gdk.Color;
 with Gdk.Event;
+with Gdk.Pixmap;
 with Gdk.Types;
+with Gdk.Window;
 with Gtk.Arguments;
 with Gtk.Enums; use Gtk.Enums;
+with Gtk.Image_Menu_Item;
 with Gtk.Tearoff_Menu_Item;
 
 with Gnat.OS_Lib;
 
 with Giant.Config;
 with Giant.Config.Global_Data;
-with Giant.Dialogs;
 with Giant.Logger;
 
 package body Giant.Gui_Utils is
@@ -141,13 +145,18 @@ package body Giant.Gui_Utils is
    end Get_Selected_Row;
 
    function New_Button
-     (Label    : in String;
-      Callback : in Button_Callback.Marshallers.Void_Marshaller.Handler)
+     (Label      : in String;
+      Callback   : in Button_Callback.Marshallers.Void_Marshaller.Handler;
+      From_Stock : in Boolean                                             := False)
      return Gtk.Button.Gtk_Button
    is
      Button : Gtk.Button.Gtk_Button;
    begin
-      Gtk.Button.Gtk_New (Button, Label);
+      if (From_Stock) then
+         Gtk.Button.Gtk_New_From_Stock (Button, Label);
+      else
+         Gtk.Button.Gtk_New (Button, Label);
+      end if;
       Gtk.Button.Set_Flags (Button, Gtk.Widget.Can_Default);
       Button_Callback.Connect
         (Button, "clicked", Button_Callback.To_Marshaller (Callback));
@@ -155,14 +164,19 @@ package body Giant.Gui_Utils is
    end New_Button;
 
    function New_Button
-     (Label    : in     String;
-      Callback : in     Widget_Callback.Marshallers.Void_Marshaller.Handler;
-      Widget   : access Gtk.Widget.Gtk_Widget_Record'Class)
+     (Label      : in     String;
+      Callback   : in     Widget_Callback.Marshallers.Void_Marshaller.Handler;
+      Widget     : access Gtk.Widget.Gtk_Widget_Record'Class;
+      From_Stock : in     Boolean                                             := False)
      return Gtk.Button.Gtk_Button
    is
      Button : Gtk.Button.Gtk_Button;
    begin
-      Gtk.Button.Gtk_New (Button, Label);
+      if (From_Stock) then
+         Gtk.Button.Gtk_New_From_Stock (Button, Label);
+      else
+         Gtk.Button.Gtk_New (Button, Label);
+      end if;
       Gtk.Button.Set_Flags (Button, Gtk.Widget.Can_Default);
       Widget_Callback.Object_Connect
         (Button, "clicked", Widget_Callback.To_Marshaller (Callback), Widget);
@@ -207,22 +221,30 @@ package body Giant.Gui_Utils is
    end;
 
    function New_Menu_Item
-     (Label    : in String;
-      Callback : in Menu_Item_Callback.Marshallers.Void_Marshaller.Handler)
+     (Label      : in String;
+      Callback   : in Menu_Item_Callback.Marshallers.Void_Marshaller.Handler;
+      From_Stock : in Boolean                                                := False)
       return Gtk.Menu_Item.Gtk_Menu_Item
    is
+      Image_Item : Gtk.Image_Menu_Item.Gtk_Image_Menu_Item;
       Item : Gtk.Menu_Item.Gtk_Menu_Item;
    begin
-      Gtk.Menu_Item.Gtk_New (Item, Label);
+      if (From_Stock) then
+         Gtk.Image_Menu_Item.Gtk_New_From_Stock (Image_Item, Label);
+         Item := Gtk.Menu_Item.Gtk_Menu_Item (Image_Item);
+      else
+         Gtk.Menu_Item.Gtk_New (Item, Label);
+      end if;
       Menu_Item_Callback.Connect
         (Item, "activate", Menu_Item_Callback.To_Marshaller (Callback));
       return Item;
    end New_Menu_Item;
 
    function New_Menu_Item
-     (Label    : in     String;
-      Callback : in     Widget_Callback.Marshallers.Void_Marshaller.Handler;
-      Widget   : access Gtk.Widget.Gtk_Widget_Record'Class)
+     (Label      : in     String;
+      Callback   : in     Widget_Callback.Marshallers.Void_Marshaller.Handler;
+      Widget     : access Gtk.Widget.Gtk_Widget_Record'Class;
+      From_Stock : in     Boolean                                             := False)
       return Gtk.Menu_Item.Gtk_Menu_Item
    is
       Item : Gtk.Menu_Item.Gtk_Menu_Item;
@@ -242,6 +264,58 @@ package body Giant.Gui_Utils is
       Gtk.Menu_Item.Gtk_New (item);
       return Item;
    end New_Menu_Separator;
+
+   function New_Stock_Button
+     (Stock_Id : in String;
+      Callback : in Button_Callback.Marshallers.Void_Marshaller.Handler)
+     return Gtk.Button.Gtk_Button
+   is
+   begin
+      return New_Button
+        (Label      => Stock_Id,
+         Callback   => Callback,
+         From_Stock => True);
+   end New_Stock_Button;
+
+   function New_Stock_Button
+     (Stock_Id : in     String;
+      Callback : in     Widget_Callback.Marshallers.Void_Marshaller.Handler;
+      Widget   : access Gtk.Widget.Gtk_Widget_Record'Class)
+     return Gtk.Button.Gtk_Button
+   is
+   begin
+      return New_Button
+        (Label      => Stock_Id,
+         Callback   => Callback,
+         Widget     => Widget,
+         From_Stock => True);
+   end New_Stock_Button;
+
+   function New_Stock_Menu_Item
+     (Stock_Id   : in String;
+      Callback   : in Menu_Item_Callback.Marshallers.Void_Marshaller.Handler)
+     return Gtk.Menu_Item.Gtk_Menu_Item
+   is
+   begin
+      return New_Menu_Item
+        (Label      => Stock_Id,
+         Callback   => Callback,
+         From_Stock => True);
+   end New_Stock_Menu_Item;
+
+   function New_Stock_Menu_Item
+     (Stock_Id : in     String;
+      Callback : in     Widget_Callback.Marshallers.Void_Marshaller.Handler;
+      Widget   : access Gtk.Widget.Gtk_Widget_Record'Class)
+     return Gtk.Menu_Item.Gtk_Menu_Item
+   is
+   begin
+      return New_Menu_Item
+        (Label      => Stock_Id,
+         Callback   => Callback,
+         Widget     => Widget,
+         From_Stock => True);
+   end New_Stock_Menu_Item;
 
    function New_Vpaned
      return Gtk.Paned.Gtk_Vpaned
@@ -324,6 +398,30 @@ package body Giant.Gui_Utils is
       Gtk.Widget.Grab_Default (Widget);
       Result := Gtk.Window.Activate_Default (Window);
    end;
+
+   procedure Set_Icon
+     (Window   : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Filename : in     String)
+   is
+      Icon : Gdk.Pixmap.Gdk_Pixmap;
+      Mask : Gdk.Bitmap.Gdk_Bitmap := Gdk.Bitmap.Null_Bitmap;
+   begin
+      Gdk.Pixmap.Create_From_Xpm
+        (Pixmap      => Icon,
+         Window      => Gtk.Widget.Get_Window (Window),
+         Mask        => Mask,
+         Transparent => Gdk.Color.Null_Color,
+         Filename    => Gui_Utils.Get_Icon (Filename));
+      if Gdk."/=" (Icon, Gdk.Pixmap.Null_Pixmap) then
+         Gdk.Window.Set_Icon
+           (Window      => Gtk.Widget.Get_Window (Window),
+            Icon_Window => Gtk.Widget.Get_Window (Window),
+            Pixmap      => Icon,
+            Mask        => Mask);
+      else
+         Logger.Warn ("Failed to load icon " & Filename);
+      end if;
+   end Set_Icon;
 
    function To_Display_Name
      (Highlight_Status : in Projects.Subgraph_Highlight_Status)

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.59 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.60 $
 --  $Author: squig $
---  $Date: 2003/09/09 21:32:03 $
+--  $Date: 2003/09/12 00:18:24 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -37,6 +37,7 @@ with Gtk.Handlers;
 with Gtk.List;
 with Gtk.List_Item;
 with Gtk.Menu_Item;
+with Gtk.Stock;
 with Gtk.Widget;
 
 with Giant.Clists;
@@ -778,6 +779,7 @@ package body Giant.Graph_Window is
       Hbox : Gtk.Box.Gtk_Hbox;
       Vis_Styles : Gtk.Enums.String_List.Glist;
       Zoom_Levels : Gtk.Enums.String_List.Glist;
+      Button : Gtk.Button.Gtk_Button;
    begin
       Gtk.Window.Initialize (Window, Gtk.Enums.Window_Toplevel);
       Update_Title (Window);
@@ -879,48 +881,45 @@ package body Giant.Graph_Window is
       Gtk.Box.Gtk_New_Hbox (Hbox, Homogeneous => False, Spacing => 0);
       Gtk.Box.Set_Border_Width (Hbox, DEFAULT_SPACING);
       Gtk.Box.Pack_Start (Left_Box, Add_Frame (Hbox, -"Style"),
-                          Expand => False, Fill => False, Padding => 0);
+                          Expand => False, Fill => True, Padding => 0);
 
-      --  Causes: Gtk-WARNING **: gtk_scrolled_window_add(): cannot add non scrollable widget use gtk_scrolled_window_add_with_viewport() instead
       Gtk.Combo.Gtk_New (Window.Vis_Style_Combo);
       Gtk.Combo.Disable_Activate (Window.Vis_Style_Combo);
       Gtk.Box.Pack_Start (Hbox, Window.Vis_Style_Combo,
-                          Expand => False, Fill => False, Padding => 0);
---        Widget_Callback.Object_Connect
---          (Gtk.Combo.Get_List (Window.Vis_Style_Combo), "select_child",
---           Widget_Callback.To_Marshaller (On_Vis_Style_Selected'Access),
---           Window);
+                          Expand => True, Fill => True, Padding => 0);
+      Widget_Callback.Object_Connect
+        (Gtk.Combo.Get_List (Window.Vis_Style_Combo), "select_child",
+         Widget_Callback.To_Marshaller (On_Vis_Style_Selected'Access),
+         Window);
       Widget_Callback.Object_Connect
            (Gtk.Combo.Get_Entry (Window.Vis_Style_Combo), "activate",
             Widget_Callback.To_Marshaller (On_Vis_Style_Selected'Access),
             Window);
 
-      Gtk.Box.Pack_Start (Hbox,
-                          New_Button (-"OK", On_Vis_Style_Selected'Access,
-                                      Window),
-                          Expand => False, Fill => False, Padding => 0);
+--        Gtk.Box.Pack_Start (Hbox,
+--                            New_Button (-"OK", On_Vis_Style_Selected'Access,
+--                                        Window),
+--                            Expand => False, Fill => False, Padding => 0);
 
       --  zoom
-      Gtk.Box.Gtk_New_Hbox (Hbox, Homogeneous => False, Spacing => 0);
+      Gtk.Box.Gtk_New_Hbox (Hbox, Homogeneous => False,
+                            Spacing => DEFAULT_SPACING);
       Gtk.Box.Set_Border_Width (Hbox, DEFAULT_SPACING);
       Gtk.Box.Pack_Start (Left_Box, Add_Frame (Hbox, -"Zoom"),
-                          Expand => False, Fill => False, Padding => 0);
+                          Expand => False, Fill => True, Padding => 0);
 
       --  zoom selection
 --        Gtk.Box.Gtk_New_Hbox (Hbox, Homogeneous => False, Spacing => 0);
 --        Gtk.Box.Pack_Start (Vbox, Hbox,
 --                            Expand => False, Fill => False, Padding => 0);
-
-      Gtk.Box.Pack_Start (Hbox,
-                          New_Button (" - ", On_Zoom_Out_Clicked'Access,
-                                      Window),
-                          Expand => False, Fill => False, Padding => 0);
+      Button := New_Button (" - ", On_Zoom_Out_Clicked'Access, Window);
+      Gtk.Box.Pack_Start (Hbox, Button, Expand => False, Fill => False,
+                          Padding => 0);
 
       Gtk.Enums.String_List.Append (Zoom_Levels, -"100%");
       Gtk.Enums.String_List.Append (Zoom_Levels, -"50%");
       Gtk.Enums.String_List.Append (Zoom_Levels, -"Whole Graph");
 
-      --  causes: Gtk-WARNING **: gtk_scrolled_window_add(): cannot add non scrollable widget use gtk_scrolled_window_add_with_viewport() instead
       Gtk.Combo.Gtk_New (Window.Zoom_Combo);
       Gtk.Combo.Disable_Activate (Window.Zoom_Combo);
       Gtk.Combo.Set_Popdown_Strings (Window.Zoom_Combo,
@@ -939,10 +938,9 @@ package body Giant.Graph_Window is
             Widget_Callback.To_Marshaller (On_Zoom_Level_Selected'Access),
             Window);
 
-      Gtk.Box.Pack_Start (Hbox,
-                          New_Button (" + ", On_Zoom_In_Clicked'Access,
-                                      Window),
-                          Expand => False, Fill => False, Padding => 0);
+      Button := New_Button (" + ", On_Zoom_In_Clicked'Access, Window);
+      Gtk.Box.Pack_Start (Hbox, Button, Expand => False, Fill => False,
+                          Padding => 0);
 
       --  listen for the close button
       Widget_Boolean_Callback.Connect

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-input_dialog.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-input_dialog.adb,v $, $Revision: 1.7 $
 --  $Author: squig $
---  $Date: 2003/09/09 15:31:24 $
+--  $Date: 2003/09/12 00:18:24 $
 --
 
 with Gtk.Button;
@@ -30,7 +30,16 @@ with Gtk.Box;
 with Gtk.Widget;
 with Gtkada.Pixmaps;
 
+with Giant.Gui_Utils;
+
 package body Giant.Input_Dialog is
+
+   procedure On_Input_Activated
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+   begin
+      Default_Dialog.Hide (Source, Default_Dialog.Response_Okay);
+   end On_Input_Activated;
 
    procedure Create
      (Dialog          :    out Input_Dialog_Access;
@@ -62,6 +71,10 @@ package body Giant.Input_Dialog is
       Box := Add_Icon_Box (Dialog, Gtkada.Pixmaps.Confirmation_Xpm, Message);
 
       Gtk.Gentry.Gtk_New (Dialog.Input);
+      Gui_Utils.Widget_Callback.Object_Connect
+           (Dialog.Input, "activate",
+            Gui_Utils.Widget_Callback.To_Marshaller (On_Input_Activated'Access),
+            Dialog);
       Gtk.Box.Add (Box, Dialog.Input);
 
       Gtk.Gentry.Set_Flags (Dialog.Input, Gtk.Widget.Can_Default);

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.19 $
+--  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.20 $
 --  $Author: squig $
---  $Date: 2003/09/11 18:44:24 $
+--  $Date: 2003/09/12 00:18:24 $
 --
 ------------------------------------------------------------------------------
 --
@@ -164,14 +164,16 @@ package Giant.Gui_Utils is
      return Glib.Gint;
 
    function New_Button
-     (Label    : in     String;
-      Callback : in     Button_Callback.Marshallers.Void_Marshaller.Handler)
+     (Label      : in String;
+      Callback   : in Button_Callback.Marshallers.Void_Marshaller.Handler;
+      From_Stock : in Boolean                                             := False)
      return Gtk.Button.Gtk_Button;
 
    function New_Button
-     (Label    : in     String;
-      Callback : in     Widget_Callback.Marshallers.Void_Marshaller.Handler;
-      Widget   : access Gtk.Widget.Gtk_Widget_Record'Class)
+     (Label      : in     String;
+      Callback   : in     Widget_Callback.Marshallers.Void_Marshaller.Handler;
+      Widget     : access Gtk.Widget.Gtk_Widget_Record'Class;
+      From_Stock : in     Boolean                                             := False)
      return Gtk.Button.Gtk_Button;
 
    function New_Column_Label
@@ -189,14 +191,16 @@ package Giant.Gui_Utils is
    --  @deprecated
    --
    function New_Menu_Item
-     (Label    : in String;
-      Callback : in Menu_Item_Callback.Marshallers.Void_Marshaller.Handler)
+     (Label      : in String;
+      Callback   : in Menu_Item_Callback.Marshallers.Void_Marshaller.Handler;
+      From_Stock : in Boolean                                                := False)
      return Gtk.Menu_Item.Gtk_Menu_Item;
 
    function New_Menu_Item
-     (Label    : in     String;
-      Callback : in     Widget_Callback.Marshallers.Void_Marshaller.Handler;
-      Widget   : access Gtk.Widget.Gtk_Widget_Record'Class)
+     (Label      : in     String;
+      Callback   : in     Widget_Callback.Marshallers.Void_Marshaller.Handler;
+      Widget     : access Gtk.Widget.Gtk_Widget_Record'Class;
+      From_Stock : in     Boolean                                             := False)
      return Gtk.Menu_Item.Gtk_Menu_Item;
 
    function New_Menu_Separator
@@ -207,6 +211,28 @@ package Giant.Gui_Utils is
       Label    : in String)
      return Gtk.Menu.Gtk_Menu;
 
+   function New_Stock_Button
+     (Stock_Id : in     String;
+      Callback : in     Button_Callback.Marshallers.Void_Marshaller.Handler)
+     return Gtk.Button.Gtk_Button;
+
+   function New_Stock_Button
+     (Stock_Id : in     String;
+      Callback : in     Widget_Callback.Marshallers.Void_Marshaller.Handler;
+      Widget   : access Gtk.Widget.Gtk_Widget_Record'Class)
+     return Gtk.Button.Gtk_Button;
+
+   function New_Stock_Menu_Item
+     (Stock_Id   : in String;
+      Callback   : in Menu_Item_Callback.Marshallers.Void_Marshaller.Handler)
+     return Gtk.Menu_Item.Gtk_Menu_Item;
+
+   function New_Stock_Menu_Item
+     (Stock_Id : in     String;
+      Callback : in     Widget_Callback.Marshallers.Void_Marshaller.Handler;
+      Widget   : access Gtk.Widget.Gtk_Widget_Record'Class)
+     return Gtk.Menu_Item.Gtk_Menu_Item;
+
    function New_TearOff_Menu_Item
      return Gtk.Menu_Item.Gtk_Menu_Item;
 
@@ -216,6 +242,14 @@ package Giant.Gui_Utils is
    procedure Set_Default
      (Window : access Gtk.Window.Gtk_Window_Record'Class;
       Widget : access Gtk.Widget.Gtk_Widget_Record'Class);
+
+   ---------------------------------------------------------------------------
+   --  Sets the icon of Window to the pixmap with Filename. Filename is
+   --  searched in the shared icon directory. If icon can not be found, a
+   --  warning is logged.
+   procedure Set_Icon
+     (Window   : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Filename : in     String);
 
    function To_Display_Name
      (Highlight_Status : in Projects.Subgraph_Highlight_Status)

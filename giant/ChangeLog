@@ -1,4 +1,18 @@
+2003-09-12  Steffen Pingel  <squig@users.sourceforge.net>
+
+	* src/gui/giant-main_window.ads: Resize columns after project has
+	been loaded.
+
+	* src/gui/giant-main_window.adb: Replaced east Status_Bar by
+	Gtk_Label to work around resize oddness.
+
+	* src/gui/giant-gui_manager.adb: Set giant icon for all graph
+	windows. 
+
 2003-09-11  Steffen Pingel  <squig@users.sourceforge.net>
+
+	* src/gui/giant-input_dialog.adb: Close dialog when enter is
+	pressed in text widget.
 
 	* src/graph_lib/giant-graph_lib.adb: Started to integrate
 	Basic_Evolutions. 

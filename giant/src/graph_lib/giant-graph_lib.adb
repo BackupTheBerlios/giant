@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.66 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.67 $
 --  $Author: squig $
---  $Date: 2003/09/11 18:44:23 $
+--  $Date: 2003/09/12 00:18:23 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -366,8 +366,7 @@ package body Giant.Graph_Lib is
       Individual       : in Basic_Evolutions.Basic_Evolution_Access := null)
      is
 
-      -- FIX
-      Node_Count : Integer := 10000;
+      Node_Count : Natural := 0;
       Cancel : Boolean := False;
 
       -----------------------------------------------------------
@@ -459,6 +458,7 @@ package body Giant.Graph_Lib is
             New_Node.IML_Node  := IMLNode;
             New_Node.Edges_In  := Edge_Lists.Create;
             New_Node.Edges_Out := Edge_Lists.Create;
+            Node_Count := Node_Count + 1;
             return New_Node;
          end Create_Node;
 
@@ -694,8 +694,9 @@ package body Giant.Graph_Lib is
             Queue_Tail := Queue;
 
             Basic_Evolutions.Set_Total_Complexity
-              (Individual,
-               Node_Count);
+              (Individual, Node_Count);
+            Basic_Evolutions.Set_Text (Individual, -"Processing Node %v of %u");
+
             while Load_Nodes.Node_Queues.More (Iter) loop
                Node := Load_Nodes.Node_Queues.CellValue (Iter);
 
@@ -728,20 +729,14 @@ package body Giant.Graph_Lib is
       begin
          Logger.Debug ("Begin: Convert_IML_Graph_To_Temp_Structure");
 
-         Basic_Evolutions.Set_Text (Individual, -"Loading IML file");
-         Cancel := Basic_Evolutions.Step (Individual);
          Queue := Load_Nodes.Node_Queues.Create;
 
          Root_Node := IML_Graphs.Get_Raw_Graph (IML_Graph);
 
-         Basic_Evolutions.Set_Text (Individual, -"Creating Node Mapper");
-         Cancel := Basic_Evolutions.Step (Individual, 50);
          IML_Node_Mapper.Get (Root_Node, Node, Created);
 
          Load_Nodes.Node_Queues.Attach (Queue, Node);
 
-         Basic_Evolutions.Set_Text (Individual, -"Processing Node %v of %u");
-         Cancel := Basic_Evolutions.Step (Individual, 10);
          Process_Queue;
       end Convert_IML_Graph_To_Temp_Structure;
 
@@ -774,6 +769,10 @@ package body Giant.Graph_Lib is
             --  Mapping's initial size is about 4 million nodes
             IML_Node_ID_Mapping := IML_Node_ID_Hashed_Mappings.Create (21);
 
+            Basic_Evolutions.Set_Total_Complexity
+              (Individual, Node_Count);
+            Basic_Evolutions.Set_Text (Individual, -"Converting Node %v of %u");
+
             Node_Iter := Load_Nodes.Node_Queues.MakeListIter (Queue);
             while Load_Nodes.Node_Queues.More (Node_Iter) loop
                Load_Nodes.Node_Queues.Next (Node_Iter, Cur_Node);
@@ -794,6 +793,7 @@ package body Giant.Graph_Lib is
 
                --  set variable to enable edge-conversion
                Cur_Node.Internal_Node := New_Node;
+               Cancel := Basic_Evolutions.Step (Individual);
             end loop;
          end Convert_Nodes;
 
@@ -869,6 +869,11 @@ package body Giant.Graph_Lib is
 
             All_Edges_Set := Edge_Id_Sets.Empty_Set;
 
+            Basic_Evolutions.Set_Total_Complexity
+              (Individual, Node_Count);
+            Basic_Evolutions.Set_Text
+              (Individual, -"Converting Outgoing Edge %v of %u");
+
             Node_Iter := Load_Nodes.Node_Queues.MakeListIter (Queue);
             while Load_Nodes.Node_Queues.More (Node_Iter) loop
                Load_Nodes.Node_Queues.Next (Node_Iter, Cur_Node);
@@ -878,6 +883,7 @@ package body Giant.Graph_Lib is
                Convert_Outgoing_Edges_Of_A_Node
                  (Cur_Node.Edges_Out,
                   New_Node.Outgoing_Edges);
+               Cancel := Basic_Evolutions.Step (Individual);
             end loop;
          end Convert_Outgoing_Edges;
 
@@ -919,6 +925,11 @@ package body Giant.Graph_Lib is
          begin
             Logger.Debug ("Begin: Convert_Outgoing_Edges");
 
+            Basic_Evolutions.Set_Total_Complexity
+              (Individual, Node_Count);
+            Basic_Evolutions.Set_Text
+              (Individual, -"Converting Incoming Edge %v of %u");
+
             Node_Iter := Load_Nodes.Node_Queues.MakeListIter (Queue);
             while Load_Nodes.Node_Queues.More (Node_Iter) loop
                Load_Nodes.Node_Queues.Next (Node_Iter, Cur_Node);
@@ -928,6 +939,7 @@ package body Giant.Graph_Lib is
                Convert_Incoming_Edges_Of_A_Node
                  (Cur_Node.Edges_In,
                   New_Node.Incoming_Edges);
+               Cancel := Basic_Evolutions.Step (Individual);
             end loop;
          end Convert_Incoming_Edges;
 
@@ -1017,6 +1029,8 @@ package body Giant.Graph_Lib is
 
    begin
       --  Load Graph into memory
+      Cancel := Basic_Evolutions.Set_Percentage
+        (Individual, 0.0, "Loading IML file");
       begin
          IML_Graph := IML.IO.Load (Path_To_IML_File);
       exception
@@ -1024,17 +1038,29 @@ package body Giant.Graph_Lib is
             raise Load_Error;
       end;
 
+      Cancel := Basic_Evolutions.Set_Percentage
+        (Individual, 0.3, "Creating IML Mapper");
       IML_Node_Mapper.Create;
 
       declare
          Queue : Load_Nodes.Node_Queue;
       begin
+         Cancel := Basic_Evolutions.Set_Percentage
+           (Individual, 0.5, "Creating Temporary Structure");
          Convert_IML_Graph_To_Temp_Structure (Queue);
+
+         Cancel := Basic_Evolutions.Set_Percentage
+           (Individual, 0.7, "Converting Temporary Structure");
          Convert_Temp_Structure_To_Used_Structure (Queue);
+
+         Cancel := Basic_Evolutions.Set_Percentage
+           (Individual, 0.9, "Cleaning up");
          Destroy_TEmp_Structure (Queue);
       end;
 
       IML_Node_Mapper.Destroy;
+      Cancel := Basic_Evolutions.Set_Percentage
+        (Individual, 1.0, "Done");
    end Load;
 
    ---------------------------------------------------------------------------

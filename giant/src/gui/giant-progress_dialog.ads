@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-progress_dialog.ads,v $, $Revision: 1.5 $
+--  $RCSfile: giant-progress_dialog.ads,v $, $Revision: 1.6 $
 --  $Author: squig $
---  $Date: 2003/09/09 15:31:24 $
+--  $Date: 2003/09/12 00:18:24 $
 --
 ------------------------------------------------------------------------------
 --
@@ -67,8 +67,15 @@ package Giant.Progress_Dialog is
      (Dialog        : access Progress_Dialog_Record;
       Activity_Mode : in     Boolean);
 
-   procedure Set_Lower (Dialog : access Progress_Dialog_Record;
-                        Lower  : in     Float);
+   procedure Set_Lower
+     (Dialog : access Progress_Dialog_Record;
+      Lower  : in     Float);
+
+   -------------------------------------------------------------------------
+   --  Sets the message that is displayed above the progress bar.
+   procedure Set_Message
+     (Dialog  : access Progress_Dialog_Record;
+      Message : in     String);
 
    procedure Set_Percentage
      (Dialog     : access Progress_Dialog_Record;
@@ -83,13 +90,14 @@ package Giant.Progress_Dialog is
    --  %l - the lower bound for the progress value.
    --  %u - the upper bound for the progress value.
    --  %p - the current progress percentage.
+   --
+   --  Text is only displayed in activity mode.
    procedure Set_Progress_Text
      (Dialog : access Progress_Dialog_Record;
       Text   : in     String);
 
    procedure Set_Upper (Dialog : access Progress_Dialog_Record;
                         Upper  : in     Float);
-
 
    -------------------------------------------------------------------------
    --  Sets the current value. If value is higher than upper_bound,
