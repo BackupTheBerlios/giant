@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.7 $
+-- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.8 $
 -- $Author: schwiemn $
--- $Date: 2003/06/24 18:23:30 $
+-- $Date: 2003/06/24 19:02:04 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -1507,8 +1507,6 @@ package body Giant.Config.Vis_Styles is
          
       return Encoded_Icons_Array;      
    end Get_All_Node_Icons;
-
-
 
    ---------------------------------------------------------------------------
    function Get_Node_Icon_Encoding

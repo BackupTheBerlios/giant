@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-global_data.ads,v $, $Revision: 1.2 $
+-- $RCSfile: giant-config-global_data.ads,v $, $Revision: 1.3 $
 -- $Author: schwiemn $
--- $Date: 2003/06/24 13:10:49 $
+-- $Date: 2003/06/24 19:02:04 $
 --
 -- -----
 -- This package holds the functionality needed to access the
@@ -133,7 +133,7 @@ package Giant.Config.Global_Data is
    -- Used to initialize the ADT "Color_Access".
    --
    -- Returns the String describing the highlight color for the
-   -- actual selection.
+   -- current selection.
    -- As this function is not supposed to be used frequently, the
    -- implementation is not very performant.
    --
@@ -146,7 +146,7 @@ package Giant.Config.Global_Data is
    -- Raises:
    --   Config_ADO_Not_Initialized_Exception - raised if this subprogram
    --   is called before "Initialize_Config_Data".
-   function Return_Highlight_Color_For_Actual_Selection
+   function Get_Current_Selection_Highlight_Color
      return Color_Access;
 
    ---------------------------------------------------------------------------
@@ -167,7 +167,7 @@ package Giant.Config.Global_Data is
    -- Raises:
    --   Config_ADO_Not_Initialized_Exception - raised if this subprogram
    --     is called before "Initialize_Config_Data"
-   function Return_Highlight_Color_For_Selection
+   function Get_Selection_Highlight_Color
      (Highlight_ID : in Selection_High_Light_ID)
      return Color_Access;
 
@@ -189,7 +189,7 @@ package Giant.Config.Global_Data is
    -- Raises:
    --   Config_ADO_Not_Initialized_Exception - raised if this subprogram
    --     is called before "Initialize_Config_Data".
-   function Return_Highlight_Color_For_Subgraph
+   function Get_Subgraph_Highlight_Color
      (Highlight_ID : in Subgraph_High_Light_ID)
      return Color_Access;
 
@@ -206,7 +206,7 @@ package Giant.Config.Global_Data is
    -- Raises:
    --   Config_ADO_Not_Initialized_Exception - raised if this subprogram
    --     is called before "Initialize_Config_Data".
-   function Return_Icon_For_Node_Annotations
+   function Get_Node_Annotations_Icon
      return String;
 
 end Giant.Config.GlobaL_Data;

@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-global_data.adb,v $, $Revision: 1.2 $
+-- $RCSfile: giant-config-global_data.adb,v $, $Revision: 1.3 $
 -- $Author: schwiemn $
--- $Date: 2003/06/24 18:19:48 $
+-- $Date: 2003/06/24 19:02:04 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -203,7 +203,7 @@ package body Giant.Config.Global_Data is
    ---------------------------------------------------------------------------
 
    ---------------------------------------------------------------------------
-   function Return_Highlight_Color_For_Actual_Selection
+   function Get_Current_Selection_Highlight_Color
      return Color_Access is
    begin
       if (Is_Config_ADO_Initialized = False) then
@@ -211,10 +211,10 @@ package body Giant.Config.Global_Data is
       end if;
 
       return Proc_Settings.Actual_Selection_Highlight_Color;
-   end Return_Highlight_Color_For_Actual_Selection;
+   end Get_Current_Selection_Highlight_Color;
 
    ---------------------------------------------------------------------------
-   function Return_Highlight_Color_For_Selection
+   function Get_Selection_Highlight_Color
      (Highlight_ID : in Selection_High_Light_ID)
      return Color_Access is
 
@@ -224,10 +224,10 @@ package body Giant.Config.Global_Data is
       end if;
 
       return Proc_Settings.Selection_Highlight (Highlight_ID);
-   end Return_Highlight_Color_For_Selection;
+   end Get_Selection_Highlight_Color;
 
    ---------------------------------------------------------------------------
-   function Return_Highlight_Color_For_Subgraph
+   function Get_Subgraph_Highlight_Color
      (Highlight_ID : in Subgraph_High_Light_ID)
      return Color_Access is
    begin
@@ -236,10 +236,10 @@ package body Giant.Config.Global_Data is
       end if;
 
       return Proc_Settings.Subgraph_Highlight (Highlight_ID);
-   end Return_Highlight_Color_For_Subgraph;
+   end Get_Subgraph_Highlight_Color;
 
    ---------------------------------------------------------------------------
-   function Return_Icon_For_Node_Annotations
+   function Get_Node_Annotations_Icon
      return String is
 
    begin
@@ -249,6 +249,6 @@ package body Giant.Config.Global_Data is
 
       return Ada.Strings.Unbounded.To_String
         (Proc_Settings.Node_Annotations_Icon);
-   end Return_Icon_For_Node_Annotations;
+   end Get_Node_Annotations_Icon;
 
 end Giant.Config.Global_Data;
