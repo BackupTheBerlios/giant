@@ -1,6 +1,3 @@
 [
-    less (3, 3);
-    less (6,9);
-    "Lib1";
+    "Test Lib1";
 ]
-
