@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-global_data.adb,v $, $Revision: 1.1 $
+-- $RCSfile: giant-config-global_data.adb,v $, $Revision: 1.2 $
 -- $Author: schwiemn $
--- $Date: 2003/06/24 13:08:05 $
+-- $Date: 2003/06/24 18:19:48 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -144,6 +144,7 @@ package body Giant.Config.Global_Data is
            Ada.Strings.Unbounded.Null_Unbounded_String; 
       end if;  
          
+      ADO_Initialized := True;
    end Initialize_Config_Data;
 
    ---------------------------------------------------------------------------
