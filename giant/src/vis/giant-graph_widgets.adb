@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.45 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.46 $
 --  $Author: keulsn $
---  $Date: 2003/08/17 00:34:24 $
+--  $Date: 2003/08/19 12:51:46 $
 --
 ------------------------------------------------------------------------------
 
@@ -463,25 +463,37 @@ package body Giant.Graph_Widgets is
 
       procedure Write_Node
         (Node : in     Vis_Data.Vis_Node_Id) is
+
+         Only_Local_Mask : constant Vis_Data.Highlight_Array :=
+           (Vis_Data.Local_Highlight_Type => True,
+            others => False);
+         Highlighting    : Vis_Data.Highlight_Array :=
+           Vis_Data."and" (Vis_Data.Get_Highlighting (Node), Only_Local_Mask);
       begin
          Graph_Lib.Write_Node_Id
            (Stream, Vis_Data.Get_Graph_Node (Node));
          Bauhaus_IO.Write_Boolean
            (Stream, Vis_Data.Is_Hidden (Node));
          Vis_Data.Write_Highlight_Array
-           (Stream, Vis_Data.Get_Highlighting (Node));
+           (Stream, Highlighting);
          Vis.Logic.Write_Vector (Stream, Vis_Data.Get_Position (Node));
       end Write_Node;
 
       procedure Write_Edge
         (Edge : in     Vis_Data.Vis_Edge_Id) is
+
+         Only_Local_Mask : constant Vis_Data.Highlight_Array :=
+           (Vis_Data.Local_Highlight_Type => True,
+            others => False);
+         Highlighting    : Vis_Data.Highlight_Array :=
+           Vis_Data."and" (Vis_Data.Get_Highlighting (Edge), Only_Local_Mask);
       begin
          Graph_Lib.Write_Edge_Id
            (Stream, Vis_Data.Get_Graph_Edge (Edge));
          Bauhaus_IO.Write_Boolean
            (Stream, Vis_Data.Is_Hidden (Edge));
          Vis_Data.Write_Highlight_Array
-           (Stream, Vis_Data.Get_Highlighting (Edge));
+           (Stream, Highlighting);
       end Write_Edge;
 
    begin
