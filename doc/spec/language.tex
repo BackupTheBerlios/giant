@@ -1,6 +1,6 @@
 % =============================================================================
-%  $RCSfile: language.tex,v $, $Revision: 1.4 $
-%  $Date: 2003/04/06 04:23:11 $
+%  $RCSfile: language.tex,v $, $Revision: 1.5 $
+%  $Date: 2003/04/07 05:45:39 $
 %  $Author: keulsn $
 %
 %  Description:
@@ -12,11 +12,25 @@
 %%%% Non-terminals
 \nonterminal{\gqslargumentlist}{argument\_list}
 \nonterminal{\gqslassignment}{assignment}
+\nonterminal{\gqslatomicsloc}{atomic\_sloc}
+\nonterminal{\gqslatomiclinktarget}{atomic\_link\_target}
+\nonterminal{\gqslatomiclistchoice}{atomic\_list\_choice}
+\nonterminal{\gqslatomicsize}{atomic\_size}
+\nonterminal{\gqslatomicstringlist}{atomic\_string\_list}
+\nonterminal{\gqslatomictargettype}{atomic\_target\_type}
+\nonterminal{\gqslatomicvalue}{atomic\_value}
+\nonterminal{\gqslattribatomicvalue}{attrib\_atomic\_value}
+\nonterminal{\gqslattribexpr}{attrib\_expr}
+\nonterminal{\gqslattribproduct}{attrib\_product}
+\nonterminal{\gqslattribstatement}{attrib\_statement}
 \nonterminal{\gqslcalculation}{calculation}
 \nonterminal{\gqslcomplexstatement}{complex\_statement}
+\nonterminal{\gqslcompop}{compare\_operator}
 \nonterminal{\gqsldeclaration}{declaration}
 \nonterminal{\gqsldeclarationpart}{declaration\_part}
 \nonterminal{\gqsldigit}{digit}
+\nonterminal{\gqsledgechoosingproduct}{edge\_choosing\_product}
+\nonterminal{\gqsledgechoosingstatement}{edge\_choosing\_statement}
 \nonterminal{\gqsledgepredicate}{edge\_predicate}
 \nonterminal{\gqsledgesetexpression}{edge\_set\_expression}
 \nonterminal{\gqslexpression}{expression}
@@ -24,6 +38,8 @@
 \nonterminal{\gqslintliteral}{int\_literal}
 \nonterminal{\gqslletter}{letter}
 \nonterminal{\gqslliteralexpression}{literal\_expression}
+\nonterminal{\gqslnodechoosingproduct}{node\_choosing\_product}
+\nonterminal{\gqslnodechoosingstatement}{node\_choosing\_statement}
 \nonterminal{\gqslnodepredicate}{node\_predicate}
 \nonterminal{\gqslnodesetexpression}{node\_set\_expression}
 \nonterminal{\gqslparameterlist}{parameter\_list}
@@ -36,6 +52,9 @@
 \nonterminal{\gqslscriptbody}{script\_body}
 \nonterminal{\gqslscriptcall}{script\_call}
 \nonterminal{\gqslselectionexpression}{selection\_expression}
+\nonterminal{\gqslsimplenodechoice}{simple\_node\_choice}
+\nonterminal{\gqslsimpleedgechoice}{simple\_edge\_choice}
+\nonterminal{\gqslsimpleattribstatement}{simple\_attrib\_statement}
 \nonterminal{\gqslstatement}{statement}
 \nonterminal{\gqslstringchar}{string\_char}
 \nonterminal{\gqslstringliteral}{string\_literal}
@@ -45,6 +64,7 @@
 
 %%%% Tokens
 \token{\tokaccept}{accept}
+\token{\tokand}{and}
 \token{\tokallnodes}{all\_nodes}
 \token{\tokbased}{based}
 \token{\tokbegin}{begin}
@@ -53,25 +73,37 @@
 \token{\tokbuild}{build}
 \token{\tokclosebracket}{)}
 \token{\tokcolon}{:}
+\token{\tokcolumn}{column}
 \token{\tokcomma}{,}
 \token{\tokdepth}{depth}
-\token{\tokequal}{=}
+\token{\tokdifferent}{!=}
+\token{\tokdot}{.}
 \token{\tokedges}{edges}
 \token{\tokedgeset}{edge\_set}
 \token{\tokend}{end}
 \token{\tokendrequote}{>}
+\token{\tokequal}{=}
+\token{\tokfilename}{file\_name}
 \token{\tokfollow}{follow}
 \token{\tokfrom}{from}
 \token{\tokgraph}{graph}
+\token{\tokgreater}{>}
+\token{\tokgreaterequal}{>=}
+\token{\tokhaving}{having}
+\token{\tokin}{in}
 \token{\tokintersect}{intersect}
 \token{\tokinteger}{integer}
 \token{\tokis}{is}
+\token{\tokline}{line}
 \token{\tokmake}{make}
 \token{\tokminus}{-}
 \token{\toknodes}{nodes}
 \token{\toknodeset}{node\_set}
+\token{\toknot}{not}
 \token{\tokon}{on}
 \token{\tokopenbracket}{(}
+\token{\tokor}{or}
+\token{\tokpath}{path}
 \token{\tokplus}{+}
 \token{\tokquery}{query}
 \token{\tokquote}{''}
@@ -81,9 +113,14 @@
 \token{\tokselect}{select}
 \token{\tokselection}{selection}
 \token{\toksemicolon}{;}
+\token{\toksize}{size}
+\token{\toksmaller}{<}
+\token{\toksmallerequal}{<=}
 \token{\tokstring}{string}
 \token{\toksubgraph}{subgraph}
+\token{\toktargettype}{target\_type}
 \token{\tokto}{to}
+\token{\toktype}{type}
 \token{\tokuntil}{until}
 
 \section{IML-Graphen}
@@ -945,6 +982,75 @@ sein Wert gleich dem Rückgabewert von $Q$.
                        | \gqslexpression \tokintersect \gqslexpression
 \end{EBNF}
 
+\begin{enumerate}
+\item Der Typ aller \gqslexpression muss der selbe sein.
+\item \textbf{Hinweis}: nicht alle Typen sind für jede rechte Seite der
+Regel legal. Details werden in Punkt \ref{language_calc_validity} dieser
+Aufzählung spezifiziert.
+\item Der Typ der \gqslcalculation ist der selbe Typ wie der der
+\gqslexpression.
+\item Die \gqslcalculation wird erfolgreich ausgewertet genau dann alle
+\gqslexpression korrekt ausgewertet werden und keine Einschränkung aus
+Punkt \ref{language_calc_validity} zutrifft. Sonst ist sie fehlerhaft
+ausgewertet.
+\item Die Operatoren \tokplus, \tokminus, \tokintersect haben alle eine
+gleich hohe Priorität. In einer Kette mehrerer \gqslcalculation dieser
+Operatoren erfolgt die Auswertung von links nach rechts.
+\item Die rechte Seite \tokopenbracket ... \tokclosebracket wird zur
+Veränderung der Auswertungsreihenfolge verwendet.
+\item \label{language_calc_validity} Gültigkeit und Wert in Abhängigkeit von
+der gewählten Regel:
+  \begin{description}
+  \item[\tokopenbracket\tokclosebracket] \begin{enumerate}
+                    \item Es ist jeder Typ zulässig.
+                    \item Der Wert ist der Wert der \gqslexpression.
+                    \end{enumerate}
+  \item[\tokplus]   Es ist jeder Typ zulässig. Der Wert ist abhängig vom
+                    verwendeten Typ:
+                    \begin{description}
+                    \item[\tokinteger] Summe der \gqslexpression. Falls
+                    die Summe den (implementationsabhängigen) Wertebereich
+                    des Typs \tokinteger verlässt, so ist die \gqslcalculation
+                    fehlerhaft ausgewertet.
+                    \item[\tokstring] Konkatenation der \gqslexpression.
+                    \item[\toknodeset, \tokedgeset] Vereinigung der
+                    \gqslexpression.
+                    \item[\toksubgraph, \tokselection]
+                    Alle IML-Knoten aus beiden \gqslexpression mit allen
+                    IML-Kanten aus beiden \gqslexpression.
+                    \end{description}
+  \item[\tokminus]  Es sind alle Typen außer \tokstring zugelassen. Der Wert
+                    ist abhängig vom verwendeten Typ:
+                    \begin{description}
+                    \item[\tokinteger] Differenz der \gqslexpression. Falls
+                    die Differenz den (implementationsabhängigen) Wertebereich
+                    verlässt, so ist die \gqslcalculation fehlerhaft
+                    ausgewertet.
+                    \item[\tokstring] Illegal.
+                    \item[\toknodeset, \tokedgeset] Mengendifferenz der
+                    \gqslexpression.
+                    \item[\toksubgraph] Menge der IML-Knoten ist die Differenz
+                    der IML-Knoten-Mengen der \gqslexpression. Menge der
+                    IML-Kanten ist die größte Teilmenge der Differenz der
+                    IML-Kanten-Mengen, so dass der Start- und Zielknoten jeder
+                    Kante in der Differenz der IML-Knoten-Mengen enthalten ist.
+                    \item[\tokselection] Differenz der IML-Knoten-Mengen und
+                    Differenz der IML-Kanten-Mengen.
+                    \end{description}
+  \item[\tokintersect] Die Typen \tokinteger und \tokstring sind nicht
+                    zugelassen. Der Wert ist abhängig vom angegebenen Typ:
+                    \begin{description}
+                    \item[\tokinteger, \tokstring] Illegal.
+                    \item[\toknodeset, \tokedgeset] Mengenschnitt der
+                    \gqslexpression
+                    \item[\toknodeset, \tokedgeset] Menge der IML-Knoten ist
+                    Schnittmenge der IML-Knoten-Mengen der \gqslexpression.
+                    Menge der IML-Kanten ist Schnittmenge der \gqslexpression.
+                    \end{description}
+  \end{description}
+\end{enumerate}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Literal Expression}
@@ -956,18 +1062,14 @@ sein Wert gleich dem Rückgabewert von $Q$.
 
 Eine \gqslliteralexpression wird stets erfolgreich ausgewertet.
 \begin{description}
-\item[\gqslintliteral]
-   \begin{enumerate}
-   \item Der Typ der \gqslliteralexpression ist \tokinteger.
-   \item Der Wert der \gqslliteralexpression ist die Interpretation die
-   Ableitung des \gqslintliteral im 10er Zahlensystem.
-   \end{enumerate}
-\item[\gqslstringliteral]
-   \begin{enumerate}
-   \item Der Typ der \gqslliteralexpression ist \tokstring.
-   \item Der Wert der \gqslliteralexpression ist die Ableitung
-   des \gqslstringliteral.
-   \end{enumerate}
+\item[\gqslintliteral] Der Typ der \gqslliteralexpression ist \tokinteger.
+Der Wert der \gqslliteralexpression ist die Interpretation die
+Ableitung des \gqslintliteral im 10er Zahlensystem. Falls dieser Wert den
+(implementationsabhängigen) Wertebereich überschreitet, so ist die
+\gqslliteralexpression nicht zulässig.
+\item[\gqslstringliteral] Der Typ der \gqslliteralexpression ist \tokstring.
+Der Wert der \gqslliteralexpression ist die Ableitung
+des \gqslstringliteral.
 \end{description}
 
 
@@ -976,11 +1078,319 @@ Eine \gqslliteralexpression wird stets erfolgreich ausgewertet.
 
 \begin{EBNF}
 \label{language_node_predicate}
-\item[\gqslnodepredicate]
+\item[\gqslnodepredicate] \gqslnodechoosingproduct
+                            [ \tokor \gqslnodepredicate ]
 \label{language_edge_predicate}
-\item[\gqsledgepredicate]
+\item[\gqsledgepredicate] \gqsledgechoosingproduct
+                            [ \tokor \gqsledgepredicate ]
+\item[\gqslattribexpr] \gqslattribproduct [ \tokor \gqslattribexpr ]
 \end{EBNF}
 
+\begin{enumerate}
+\item  Das \gqslnodepredicate bzw. das \gqsledgepredicate bzw. die
+\gqslattribexpr wird erfolgreich ausgewertet, falls auf der rechten Seite
+der Regel sowohl das
+\gqslnodechoosingproduct bzw. das
+\gqsledgechoosingproduct bzw. das \gqslattribproduct und (falls angegeben) das
+\gqslnodepredicate bzw. das \gqsledgepredicate bzw. die \gqslattribexpr
+erfolgreich ausgewertet werden. Andernfalls wird fehlerhaft ausgewertet.
+\item Das \gqslnodepredicate bzw. das \gqsledgepredicate bzw. die
+\gqslattribexpr wird erfüllt dann und nur dann, falls
+das \gqslnodechoosingproduct bzw. das \gqsledgechoosingproduct bzw.
+das \gqslattribproduct oder auf der rechten Seite der Regel das
+\gqslnodepredicate bzw. das \gqsledgepredicate bzw. die \gqslattribexpr
+angegeben ist und erfüllt wird.
+\end{enumerate}
+
+%%%%
+\begin{EBNF}
+\item[\gqslnodechoosingproduct] \gqslnodechoosingstatement [ \tokand
+                                \gqslnodechoosingproduct ]
+\item[\gqsledgechoosingproduct] \gqsledgechoosingstatement [ \tokand
+                                \gqsledgechoosingproduct ]
+\item[\gqslattribproduct] \gqslattribstatement [ \tokand \gqslattribproduct ]
+\end{EBNF}
+
+\begin{enumerate}
+\item Das \gqslnodechoosingproduct bzw. das \gqsledgechoosingproduct bzw.
+das \gqslattribproduct wird
+erfolgreich ausgewertet, falls auf der rechten Seite das
+\gqslnodechoosingstatement bzw. das \gqsledgechoosingstatement bzw. das
+\gqslattribstatement und (falls angegeben) das 
+\gqslnodechoosingproduct bzw. das \gqsledgechoosingproduct bzw. das
+\gqslattribproduct erfolgreich
+ausgewertet werden. Andernfalls ist die Auswertung fehlerhaft.
+\item Das \gqslnodechoosingproduct bzw. das \gqsledgechoosingproduct bzw.
+das \gqslattribproduct wird
+erfüllt genau dann, falls das \gqslnodechoosingstatement bzw. das
+\gqsledgechoosingstatement bzw. das \gqslattribstatement und auf der rechten
+Seite das \gqslnodechoosingproduct bzw. das \gqsledgechoosingproduct
+bzw. das \gqslattribproduct nicht angegeben
+ist oder erfüllt wird.
+\end{enumerate}
+
+%%%%
+\begin{EBNF}
+\item[\gqslnodechoosingstatement] \tokopenbracket \gqslnodepredicate
+                                  \tokclosebracket \\
+                                  | \toknot \gqslnodechoosingstatement \\
+                                  | \gqslsimplenodechoice
+\item[\gqsledgechoosingstatement] \tokopenbracket \gqsledgepredicate
+                                  \tokclosebracket \\
+                                  | \toknot \gqsledgechoosingstatement \\
+                                  | \gqslsimpleedgechoice
+\item[\gqslattribstatement] \tokopenbracket \gqslattribexpr \tokclosebracket \\
+                            | \toknot \gqslattribstatement \\
+                            | \gqslsimpleattribstatement
+\end{EBNF}
+
+\begin{description}
+\item[Klammerung] Wird verwendet, um die Auswertungsreihenfolge zu
+beeinflussen.
+  \begin{enumerate}
+  \item Das \gqslnodechoosingstatement bzw. das \gqsledgechoosingstatement
+  bzw. das \gqslattribstatement wird erfolgreich ausgewertet, falls auf der
+  rechten Seite das \gqslnodepredicate bzw. das \gqsledgepredicate bzw. die
+  \gqslattribexpr erfolgreich ausgewertet wird. Andernfalls ist die
+  Auswertung fehlerhaft.
+  \item Das \gqslnodechoosingstatement bzw. das \gqsledgechoosingstatement
+  bzw. das \gqslattribstatement wird erfüllt genau dann, falls das
+  \gqslnodepredicate bzw. das \gqsledgepredicate bzw. die \gqslattribexpr
+  erfüllt wird.
+  \end{enumerate}
+\item[Negation] Logische Negation.
+  \begin{enumerate}
+  \item Das \gqslnodechoosingstatement bzw. das \gqsledgechoosingstatement
+  bzw. das \gqslattribstatement wird erfolgreich ausgewertet, falls auf der
+  rechten Seite das \gqslnodechoosingstatement bzw. das
+  \gqsledgechoosingstatement bzw. das
+  \gqslattribstatement erfolgreich ausgewertet wird. Andernfalls ist die
+  Auswertung fehlerhaft.
+  \item Das \gqslnodechoosingstatement bzw. das \gqsledgechoosingstatement
+  bzw. das \gqslattribstatement wird erfüllt genau dann, falls auf der
+  rechten Seite das \gqslnodechoosingstatement bzw. das
+  \gqsledgechoosingstatement bzw. das \gqslattribstatement nicht erfüllt wird.
+  \end{enumerate}
+\item[Simple Statement] Logische Aussage.
+  \begin{enumerate}
+  \item Das \gqslnodechoosingstatement bzw. das \gqsledgechoosingstatement
+  bzw. das \gqslattribstatement wird erfolgreich ausgewertet, falls auf der
+  rechten Seite der \gqslsimplenodechoice bzw. der \gqslsimpleedgechoice bzw.
+  das \gqslsimpleattribstatement erfolgreich ausgewertet wird.
+  Andernfalls ist die
+  Auswertung fehlerhaft.
+  \item Das \gqslnodechoosingstatement bzw. das \gqsledgechoosingstatement
+  bzw. das \gqslattribstatement wird erfüllt genau dann, falls der
+  \gqslsimplenodechoice bzw. der \gqslsimpleedgechoice bzw. das
+  \gqslsimpleattribstatement
+  erfüllt wird.
+  \end{enumerate}
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Simple Node Choice}
+
+\begin{EBNF}
+\item[\gqslsimplenodechoice] \tokhaving
+                          \tokopenbracket \gqslattribexpr \tokclosebracket
+                            | \toktype \gqslregexp
+\end{EBNF}
+
+%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Simple Edge Choice}
+
+\begin{EBNF}
+\item[\gqslsimpleedgechoice] \toktype \gqslregexp
+\end{EBNF}
+
+
+%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Atomic Attribute Values}
+
+Die Eine Attributinspektion wird auf einen einzelnen IML-Knoten $N$
+angewendet. Sie hat als Ergebnis den Wert eines bestimmten Attributs
+dieses IML-Knotens. Der Typ einer Attributinspektion kann nicht statisch
+bestimmt werden.
+
+\begin{EBNF}
+\item[\gqslattribatomicvalue] \gqslatomicvalue | \gqslatomicstringlist
+                            | \gqslatomicsloc
+                            | \gqslatomictargettype | \gqslatomiclinktarget
+                            | \gqslatomicsize | \gqslatomiclistchoice
+\end{EBNF}
+
+Das Nicht-Terminal \gqslattribatomicvalue ist eine Zusammenfassung aller
+möglichen Attributinspektionen. Das rechts stehende Nicht-Terminal bestimmt
+die Semantik der Inspektion.
+
+\begin{EBNF}
+\item[\gqslatomicvalue] \gqslidentifier
+\end{EBNF}
+
+\begin{enumerate}
+\item Die Auswertung ist erfolgreich, falls $N$ ein einfaches Attribut $a$ mit
+Namen \gqslidentifier besitzt und der Typ dieses Attributs Boolean oder
+Natural ist. Andernfalls ist die Auswertung fehlerhaft.
+\item Falls die Auswertung erfolgreich ist, dann ist der Typ des
+\gqslatomicvalue gleich dem Typ von $a$.
+\item Falls die Auswertung erfolgreich ist, dann ist der Wert des
+\gqslatomicvalue der Wert des Attributs $a$.
+\end{enumerate}
+
+\begin{EBNF}
+\item[\gqslatomicstringlist] \gqslidentifier \tokopenbracket \gqslexpression
+                              \tokclosebracket
+\end{EBNF}
+
+\begin{enumerate}
+\item Die Auswertung ist erfolgreich, falls
+  \begin{enumerate}
+  \item $N$ ein Einfaches Attribut $a$ mit Namen \gqslidentifier besitzt.
+  \item Falls der Typ von $a$ Folge von Strings ist.
+  \item Falls der Typ der \gqslexpression \tokinteger ist.
+  \item Falls die \gqslexpression erfolgreich ausgewertet wird.
+  \item Falls der Wert $i$ der \gqslexpression im Bereich $1 \leq i \leq max$
+  ist, wenn $max$ die Anzahl der Folgenglieder in $a$ ist.
+  \end{enumerate}
+  Andernfalls ist die Auswertung fehlerhaft.
+\item Der Typ ist String.
+\item Falls die Auswertung erfolgreich ist, so ist der Wert der
+\gqslexpression-te String von $a$.
+\end{enumerate}
+
+\begin{EBNF}
+\item[\gqslatomicsloc] \gqslidentifier \tokdot
+                        ( \tokline | \tokcolumn | \tokfilename | \tokpath )
+\end{EBNF}
+
+\begin{enumerate}
+\item Die Auswertung ist erfolgreich genau dann, wenn $N$ ein Attribut $a$
+besitzt mit Namen \gqslidentifier und Typ Source Location. Sonst ist die
+Auswertung fehlerhaft.
+\item Falls die Auswertung erfolgreich ist, so ist der Typ Natural, falls
+die Regel nach \tokline oder \tokcolumn abgeleitet wurde. Andernfalls
+ist der Typ String.
+\item Falls die Auswertung erfolgreich war, dann ist der Wert:
+  \begin{description}
+  \item[\tokline] Die Zeilennummer von $a$
+  \item[\tokcolumn] Die Spaltennummer von $a$
+  \item[\tokfilename] Der Dateiname von $a$
+  \item[\tokpath] Der Pfad von $a$
+  \end{description}
+\end{enumerate}
+
+\begin{EBNF}
+\item[\gqslatomictargettype] \gqslidentifier \tokdot \toktargettype
+\end{EBNF}
+
+\begin{enumerate}
+\item Die Auswertung ist erfolgreich, falls $N$ ein
+Genutztes Verweis-Attribut $a_g$, ein Ungenutztes Verweis-Attribut $a_u$, ein
+Verweismengen-Attribut $a_m$ oder ein Verweisfolgen-Attribut $a_f$ mit Namen
+\gqslidentifier besitzt. Sonst ist die Auswertung fehlerhaft.
+\item Der Typ ist String.
+\item Falls die Auswertung erfolgreich ist, so ist der Wert der Name des
+Typs von IML-Knoten auf den $a_g$ verweist bzw. auf den $a_u$ verweisen
+könnte bzw. auf den ein Genutzter Verweis in $a_m$ verweist bzw. auf den
+ein Genutzter Verweis in $a_f$ verweist.
+\end{enumerate}
+
+\begin{EBNF}
+\item[\gqslatomiclinktarget] \gqslidentifier \tokdot \gqslattribatomicvalue
+\end{EBNF}
+
+\begin{enumerate}
+\item Besitzt $N$ ein Genutztes Verweis-Attribut $a$ mit Namen \gqslidentifier,
+so wird \gqslattribatomicvalue auf dem Knoten $M$ ausgewertet, auf den $a$
+verweist.
+\item Die Auswertung ist erfolgreich, falls $a$ existiert und falls die
+Auswertung von \gqslattribatomicvalue auf $M$ erfolgreich ist.
+Sonst ist die Auswertung fehlerhaft.
+\item Falls $a$ existiert, so ist der Typ der Typ der Auswertung von
+\gqslattribatomicvalue auf $M$.
+\item Falls die Auswertung erfolgreich ist, so ist der Wert der Wert der
+Auswertung von \gqslattribatomicvalue auf $M$.
+\end{enumerate}
+
+\begin{EBNF}
+\item[\gqslatomicsize] \gqslidentifier \tokdot \toksize
+\end{EBNF}
+
+\begin{enumerate}
+\item Die Auswertung ist erfolgreich, falls $N$ ein Verweisfolgen-Attribut
+$a_f$ oder ein Verweismengen-Attribut $a_m$ mit Namen \gqslidentifier besitzt.
+Andernfalls ist die Auswertung fehlerhaft.
+\item Der Typ ist Natural.
+\item Falls die Auswertung erfolgreich ist, so ist der Wert die Kardinalität
+von $a_m$ bzw. die Anzahl der Folgenglieder von $a_f$.
+\end{enumerate}
+
+\begin{EBNF}
+\item[\gqslatomiclistchoice] \gqslidentifier \tokopenbracket \gqslexpression
+                              \tokclosebracket \tokdot \gqslattribatomicvalue
+\end{EBNF}
+
+\begin{enumerate}
+\item Die Auswertung ist erfolgreich, falls
+  \begin{enumerate}
+  \item $N$ ein Verweisfolgen-Attribut $a$ mit Namen \gqslidentifier besitzt.
+  \item Falls der Typ der \gqslexpression \tokinteger ist.
+  \item Falls die \gqslexpression erfolgreich ausgewertet wird.
+  \item Falls der Wert $i$ der \gqslexpression im Bereich $1 \leq i \leq max$
+  ist, wenn $max$ die Anzahl der Folgenglieder in $a$ ist.
+  \end{enumerate}
+  Andernfalls ist die Auswertung fehlerhaft.
+\item Falls die Auswertung erfolgreich ist, so ist der Typ der Typ von
+\gqslattribatomicvalue.
+\item Falls die Auswertung erfolgreich ist, so ist der Wert der Wert der
+Auswertung von \gqslattribatomicvalue.
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Simple Attribute Statement}
+
+\begin{EBNF}
+\item[\gqslsimpleattribstatement] \gqslattribatomicvalue [ \gqslcompop 
+                                                              \gqslexpression ]
+\item[\gqslcompop] \toksmaller | \tokequal | \tokgreater | \toksmallerequal
+                  | \tokgreaterequal | \tokdifferent
+\end{EBNF}
+
+\begin{enumerate}
+\item Das \gqslsimpleattribstatement wird erfolgreich ausgewertet, falls
+das \gqslattribatomicvalue erfolgreich ausgewertet wird und die
+\gqslexpression entweder nicht angegeben ist oder erfolgreich ausgewertet wird.
+Andernfalls wird das \gqslsimpleattribstatement fehlerhaft ausgewertet.
+\item Es sind nur die nachfolgend genannten Kombinationen der Typen von
+\gqslattribatomicvalue, \gqslexpression und des \gqslcompop zulässig:
+  \begin{description}
+  \item[Boolean, ---] Es darf kein \gqslcompop und keine \gqslexpression
+  angegeben sein. Das \gqslsimpleattribstatement wird erfüllt, falls das
+  \gqslattribatomicvalue den Wert true hat.
+  Sonst wird das \gqslsimpleattribstatement nicht erfüllt.
+  \item[Natural, \tokinteger] Zulässig sind alle Möglichkeiten für \gqslcompop.
+  Das \gqslsimpleattribstatement wird erfüllt, falls der Ausdruck nach der
+  mathematischen Definition korrekt ist.
+  \item[String, \tokstring] Zulässig sind alle Möglichkeiten für \gqslcompop.
+  Das \gqslsimpleattribstatement wird erfüllt falls der entstehende Ausdruck
+  korrekt ist. Eine Zeichenfolge $a$ gilt als kleiner als eine Zeichenfolge
+  $b$, falls $a$ lexikographisch von $b$ kommt.
+  \end{description}
+\end{enumerate}
+
+\begin{EBNF}
+\item[\gqslsimpleattribstatement] \gqslattribatomicvalue \tokin \gqslregexp
+\end{EBNF}
+
+\begin{enumerate}
+\item Das \gqslsimpleattribstatement wird erfolgreich ausgewertet, falls
+das \gqslattribatomicvalue erfolgreich ausgewertet wird und vom Typ String
+ist.
+Andernfalls wird das \gqslsimpleattribstatement fehlerhaft ausgewertet.
+\item Das \gqslsimpleattribstatement wird erfüllt, falls
+\gqslattribatomicvalue in der durch \gqslregexp gegebenen Sprache enthalten
+ist. Andernfalls wird \gqslsimpleattribstatement nicht erfüllt.
+\end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{GQSL vordefinierte Sprachumgebung}
@@ -1070,6 +1480,22 @@ Falls  kein Anzeigefenster des Namens \texttt{Window\_Name} existiert,
 so ist die Ausführung dieses Scripts fehlerhaft. Falls
 \texttt{Layout\_Algo} kein gültiger Layout-Algorithmus ist, so ist die
 Ausführung dieses Scripts fehlerhaft.
+
+\begin{verbatim}
+Set_Selection
+  (Window_Name    : string;
+   Selection_Name : string;
+   Value          : selection) is
+// ... implementation definded ...
+\end{verbatim}
+
+Falls in dem Anzeigefenster \texttt{Window\_Name} noch keine Selektion mit
+Name \texttt{Selection\_Name} existiert, dann erzeugt diese Selektion. Setzt
+den Inhalt der Selektion mit Name \texttt{Selection\_Name} im Anzeigefenster
+\texttt{Window\_Name} auf \texttt{Value}.
+
+Falls \texttt{Selection\_Name} kein gültiger Name für Selektionen ist,
+so ist die Ausführung dieses Scripts fehlerhaft.
 
 \begin{verbatim}
 Set_Subgraph
