@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: visulization.tex,v $, $Revision: 1.9 $
-%  $Date: 2003/02/25 14:33:50 $
-%  $Author: squig $
+%  $RCSfile: visulization.tex,v $, $Revision: 1.10 $
+%  $Date: 2003/02/25 16:11:30 $
+%  $Author: schwiemn $
 %
 %  Description:
 %
@@ -12,42 +12,20 @@ in einem Anzeigefenster. Insbeondere soll hier die Darstellung von
 Fenster-Knoten und Fenster-Kanten erläutert werden.
 
 
-\section{Visualisierungsstiele}
-\begin {enumerate}
-  \item
-   Der Benutzer kann über XML-Konfigurationsdateien beliebige viele 
-   Visualisierungsstiele erzeugen. 
-
-   \item
-   Über einen Visualisierungsstiel kann er definieren, wie Fenster-Knoten und
-   Fenster-Kanten in den Anzeigefenstern dargestellt werden.
-   
-   \item
-   Diese Einstellungen kann er differenziert für die verschiedenen 
-   Knoten- und Kantenklassen des IML-Graphen vornehmen.
-   
-   \item
-   Zu jedem Anzeigefenster gibt es eine Liste aus der zur Laufzeit ein 
-   entsprechender vordefinierter Visualisierungsstiel ausgewählt werden kann.
-\end {enumerate}
-
->>WAS KANN ALLES KONFIGURIERT WERDEN USW.:- VERWEIS AUF KONFIGURATIONSDATEIEN
-
-
 \section{Visualisierung von Knoten}
 Hier wird die Visualisierung eines Fenster-Knoten innerhalb eines 
 Anzeigefensters beschrieben. Die tatsächliche Darstellung hängt natürlich 
-stark von der aktuellen Zoomstufe und dem gewählten Visualisierungsstiel ab.
+stark von der aktuellen Zoomstufe und dem gewählten Visualisierungsstil ab.
 
   \subsection {Grafik zur Visualisierung von Fenster-Knoten und Fenster-Kanten}
-  HIER EVENTUELL SKIZZE EINFÜGEN; WELCHE DAS AUSSEHEN EINES KNOTENS BESCHREIBT
+  HIER EVENTUELL SKIZZE EINFÜGEN; WELCHE DAS AUSSEHEN EINES KNOTENS BESCHREIBT.
 
 
   \subsection {Knoten-Rechteck}
   \begin {enumerate}
     \item
     Grundlage der Darstellung eines Fenster-Knotens ist immer ein Rechteck mit 
-    fixer (automatisch berechneter) Breite. 
+    fester, automatisch berechneter Breite. 
     
     \item
     Die Höhe des Rechtecks ist proportional zur Anzahl der Attribute des 
@@ -66,7 +44,7 @@ stark von der aktuellen Zoomstufe und dem gewählten Visualisierungsstiel ab.
   
   \subsection {Icon für Knoten-Annotationen}
   Der Benutzer kann Knoten annotieren. Jeder Knoten, für den so eine Annotation
-  verfasst wurde, zeigt dies über ein entsprechendes Icon rechts oben im
+  verfasst wurde, zeigt dies über ein entsprechendes Icon im
   Knoten-Rechteck an.
   
 
@@ -97,10 +75,7 @@ stark von der aktuellen Zoomstufe und dem gewählten Visualisierungsstiel ab.
   
 \end {enumerate}
 
-  \subsection{Kantenknickpunkte}
-  >>>>>>>>>>>>>>>>>>>>>>>>>>>> EVENTUELL GANZ WEG LASSEN
-  Kantenknickpunkte sind vorerst nicht vorgesehen.
-
+ 
   \subsection{Vorhandene Kanten nicht anzeigen}
   In den Konfigurationsdateien kann genau eingestellt werden, wann eine Kante 
   angezeigt werden soll und wann nicht.\\ 
@@ -199,29 +174,29 @@ unterschiedbar hervorgehoben werden.
 
 Es wird in etwa die folgenden Detailstufen geben.
 
-  \subsection {Maximale Details}
+  \subsection {Maximale Detailstufe}
   Bei maximaler bis hoher Zoomstufe (nahe ans Bild herangezoomt).\\
   Alle oben beschriebenen Bestandteile von Knoten und Kanten werden angezeigt.\\
   Alle Beschriftungen in maximaler Schriftgröße.
 
-  \subsection {Volle Details}
+  \subsection {Sehr hohe Detailstufe}
   Nur die Schriftgröße für Knoten- und Kantenbeschriftungen wird verringert. 
 
-  \subsection {Hohe Details}
+  \subsection {Hohe Detailstufe}
   Alle oben beschriebenen Bestandteile von Kanten werden angezeigt.\\
   Bei Knoten werden nur noch das Icon, der Klassenname und die ID im 
   Knoten-Rechteck angezeigt, die anderen Attribute aber nicht mehr.
 
-  \subsection {Mäßige Deteils}
+  \subsection {Durchschnittliche Deteilstufe}
   Die Beschriftungen von Kanten werden nicht mehr angezeigt.\\
-  Bei Knoten enthält das Knoten-Rechteck nur noch das Icon.\\
+  Bei Knoten enthält das Knoten-Rechteck nur noch das Icon.
 
-  \subsection {Geringe Details}
+  \subsection {Geringe Detailstufe}
   Bei sehr geringer Zoomstufe.\\
   Bei Knoten wird nur noch das reine Knoten-Rechteck mit Rahmen und 
   Füllfarbe angezeigt (kein Icon mehr).
 
-  \subsection {Minimale Details}
+  \subsection {Minimale Detailstufe}
   Bei sehr geringer bis hin zur minimalen Zoomstufe.\\
   Die Knoten-Rechtecke werden immer kleiner gezeichnet, 
   bis sie ihre minimale Größe erreicht haben.

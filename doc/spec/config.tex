@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.10 $
-%  $Date: 2003/02/25 14:33:49 $
-%  $Author: squig $
+%  $RCSfile: config.tex,v $, $Revision: 1.11 $
+%  $Date: 2003/02/25 16:11:30 $
+%  $Author: schwiemn $
 %
 %  Description:
 %
@@ -15,23 +15,27 @@ Es gibt genau eine \gq{globale Konfigurationsdatei}. Zudem kann es beliebig
 viele weitere XML-Dateien zur Konfiguration der weiter unten beschriebenen 
 Visualisierungsstiele geben.
 
-\section {Die globale Konfigurationsdatei}
-Diese Datei ist in XML verfasst und existiert genau ein mal. In ihr werden 
-die anschließend beschriebenen Einstellungen vorgenommen.
+\section {Die Konfigurationsdatei}
+Diese Datei ist in XML verfasst. In Ihr können die anschließend beschriebenen
+Einstellungen vorgenommen werden.
 
-  \subsection {Verweise auf Menü-Makros}
-  Es können beliebig viele Menü-Makros definiert werden.
-  Jeder Makro wird durch einen eindeutigen Namen und durch einen Verweis
-  auf die Datei, welche den Makro enthält, spezifiziert.
+%EVENTUELL FÜR JEDEN BENUTZER EIGENE KONFIG-DATEI VORSEHEN.
+
+  \subsection {Verweise auf GQSL-Skript-Makros}
+  Es können GQSL-Skript-Makros definiert werden. Jeder Makro wird durch 
+  einen eindeutigen Namen und durch einen Verweis
+  auf die Datei, welche das GQSL-Skript enthält, spezifiziert.
+  Der Makro kann dann aus einem PopUp Menü heraus aufgerufen werden, wobei
+  dann das in der Datei stehende GQSL Skript ausgeführt wird.
 
   \subsection {Farbe von Hervorhebungen}
   Einstellung der Farben, mittels derer Selektionen oder IML-Teilgraphen 
   hervorgehoben werden.
   \begin {enumerate}
     \item Eine beliebige Farbe für die aktuelle Selektion.
-    \item Beliebige (sinnvoll wären verschiedene) Farben für das
+    \item Beliebige Farben für das
           Hervorheben weiterer Selektionen.
-    \item Beliebige (sinnvoll wären verschiedene) Farben für das 
+    \item Beliebige Farben für das 
           Hervorheben von IML-Teilgraphen.
   \end {enumerate}
 
@@ -70,21 +74,21 @@ die anschließend beschriebenen Einstellungen vorgenommen.
 
   \subsection {Name des Visualisierungsstils}
   Jeder Visualisierungsstiel erhält einen Namen. Unter diesem Namen ist der 
-  Visualisierungsstiel in der GUI (bei den Anzeigefenstern) auswählbar.
+  Visualisierungsstiel für jedes Anzeigefenster einzeln auswählbar.
  
   \subsection {Einstellungen innerhalb des Visualisierungsstils}
     \begin{enumerate}
       \item Die Hintergrundfarbe im Anzeigefenster.
 
-      \item Wann Kanten im sichtbaren Anzeigeinhalt angezeigt werden sollen.
-      >>>>>>>>>>>>>>>>>>>>>>>      ACHTUNG - ES KANN AUCH SCHLEIFEN GEBEN
-        \subitem Nur falls Start- und Zielknoten ebenfalls im sichtbaren 
-                 Anzeigeinhalt.
-        \subitem Auch anzeigen falls nur Startknoten im sichtbaren 
-                 Anzeigeinhalt.
-        \subitem Auch anzeigen falls nur Zielknoten im sichtbaren Anzeigeinhalt.
-        \subitem Auch anzeigen falls weder Start- und Zielknoten im sichtbaren 
-                 Anzeigeinhalt. 
+     % \item Wann Kanten im sichtbaren Anzeigeinhalt angezeigt werden sollen.
+ 
+     %  \subitem Nur falls Start- und Zielknoten ebenfalls im sichtbaren 
+     %           Anzeigeinhalt.
+     %  \subitem Auch anzeigen falls nur Startknoten im sichtbaren 
+     %           Anzeigeinhalt.
+     %  \subitem Auch anzeigen falls nur Zielknoten im sichtbaren Anzeigeinhalt.
+     %  \subitem Auch anzeigen falls weder Start- und Zielknoten im sichtbaren 
+     %           Anzeigeinhalt. 
     \end{enumerate}
 
 
@@ -93,23 +97,22 @@ die anschließend beschriebenen Einstellungen vorgenommen.
   Es muss eine Standard-Einstellung erstellt werden, die für alle
   Knotenklassen angewendet wird, für die nichts anderes definiert ist.
   \begin{enumerate}  
+  
     \item Ein Icon für die Knotenklasse (Verweis auf eine entsprechende 
-          Bilddatei). Das Icon muss im Pixmap Format bei 32*32 Pixel
+          Bilddatei). Das Icon muss im Pixmap Format bei 16*16 Pixel
           vorliegen.
-
     \item Eine Liste der Attribute der Knotenklasse, welche dirket innerhalb 
-          des Anzeigefensters in dem \gq(Viereck) für den Knoten dargestellt 
+          des Anzeigefensters in dem \gq(Rechteck) für den Knoten dargestellt 
           werden sollen.
-    \item Die Füllfarbe des \gq{Vierecks} in welchem die Attribute zu dem 
+    \item Die Füllfarbe des \gq{Rechtecks} in welchem die Attribute zu dem 
           Knoten dargestellt werden.
-    \item Die Farbe des Rahmens für das \gq{Viereck} in welchem die 
-          Attribute zu dem Knoten dargestellt werden.
-
+    \item Die Rahmenfarbe des \gq{Rechtecks}.
+    
   \end{enumerate}
 
   
   \subsection {Klassenspezifische Einstellungen für Kanten}
-  Folgende Einstellungen können für Kantenklassen vorgenommen werden. \\
+  Folgende Einstellungen können für Kantenklassen vorgenommen werden.
   Es muss eine Standard-Einstellung erstellt werden, die für alle
   Kantenklassen angewendet wird, für die nichts anderes definiert ist.
   \begin{enumerate}
@@ -120,13 +123,12 @@ die anschließend beschriebenen Einstellungen vorgenommen.
   \end{enumerate}
 
 
-
 \section {Anfrage-Dateien}
-Eine Textdatei, die genau eine Anfrage enthält - also genau ein gemäß der 
-Grammitk für die Anfragesprache zulässiges Wort. 
+Eine Textdatei, die genau eine Anfrage in Form eines GQSL-Skriptes enthält 
+- also genau ein gemäß der Grammitk für die Anfragesprache zulässiges Wort. 
 Auf diese Art und Weise können komplexe Anfragen gespeichert und 
 wiederverwendet werden.\\
 Erstellt werden können solche Anfrage-Dateien entweder manuell oder
-automatisch aus einer im ENTSPRECHENDEN DIALOG eingegebenen Anfrage.\\
+automatisch aus einer eingegebenen Anfrage.
 Geldaden werden können solche Dateien beim Kommandozeilenaufruf
 oder im entsprechenden Dialog zur Eingabe einer Anfrage.

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: project.tex,v $, $Revision: 1.18 $
-%  $Date: 2003/02/25 14:37:57 $
+%  $RCSfile: project.tex,v $, $Revision: 1.19 $
+%  $Date: 2003/02/25 16:11:30 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -174,14 +174,14 @@ GIANT speichert persistente Informationen in so genannten Projekten.
 
     \item
     Sämtliche dem Projekt bekannten Anzeigefenster (alle Anzeigefenster zu 
-    denen es eine entsprechende Verwaltungsdatei gibt) werden auf der GUI in 
+    denen es eine entsprechende Verwaltungsdatei gibt) werden in 
     der Liste über die Anzeigefenster angezeigt, egal ob sie geöffnet sind
     oder nicht. 
 
     \item 
-    Zu jedem Anzeigefenster eines Projektes gibt es eine Verwaltungsdatei,
-    beim Öffnen eines neuen Fensters wird diese Datei automatisch mit
-    erzeugt.
+    Zu jedem Anzeigefenster eines Projektes gibt es eine Verwaltungsdatei.
+    Bei neu erzeugten Anzeigefenstern wird diese Verwaltungsdatei beim
+    ersten Speichern angelegt.
 
     \item
     Wird ein geöffnetes Anzeigefenster geschlossen, 
@@ -198,11 +198,6 @@ GIANT speichert persistente Informationen in so genannten Projekten.
     nach deren Durchführung gespeichert (so kann notfalls ein
     Undo durchgeführt werden).
 
-    \item
-    Ein zu einem Projekt gehörendes Anzeigefenster kann gelöscht werden, 
-    hierbei werden alle Information über das Anzeigefenster einschließlich
-    der Verwaltungsdatei vernichtet.
-    >>>>>>>>>>>>>>>>USE CASE - Löschen persistenter Anzeigefenster
   \end {enumerate}
 
   %===
@@ -210,32 +205,26 @@ GIANT speichert persistente Informationen in so genannten Projekten.
   \begin {enumerate}
 
     \item
-    Alle in einem Projekt bereits vorhandenen IML-Teilgraphen werden auf der 
-    GUI angezeigt (in einer entsprechenden Liste).
+    Alle in einem Projekt bereits vorhandenen IML-Teilgraphen werden in einer 
+    entsprechenden Liste angezeigt.
   
     \item
     Neu erzeugte IML-Teilgraphen und Änderungen an bestehenden 
-    IML-Teilgraphen können über \gq{alles Speichern} (siehe oben) 
+    IML-Teilgraphen können nur über \gq{Alles Speichern} (siehe oben) 
     gespeichert werden.
        
     \item
     Wird das Programm beendet, ohne das zuvor \gq{Alles Speichern} ausgeführt 
-    worden ist, so gehen  alle nicht gespeicherten Informationen zu den 
+    worden ist, so gehen alle nicht gespeicherten Informationen zu den 
     IML-Teilgraphen verloren (alle zwischenzeitlich ausgeführten Modifikationen 
     und alle zwischenzeitlich neu erzeugten IML-Teilgraphen). 
-    Der Zustand des Projektes  nach dem letzten Speichern bleibt dann erhalten.
+    Der Zustand nach dem letzten Speichern bleibt dann erhalten.
 
     \item
     Modifikationen an bestehenden IML-Teilgraphen werden nicht automatisch 
-    gespeichert, zu neu erzeugten IML-Teilgraphen wird nicht automatisch
+    gespeichert. Zu neu erzeugten IML-Teilgraphen wird nicht automatisch
     eine Verwaltungsdatei erzeugt.
-    \\
-    NÖTIG; DA SONST ANFRAGEN EVENTUELL AUSGEBREMST.
-    IM GEGENSATZ ZU ANZEIGEFENSTERN KANN MAN IML-TEILGRAPHEN NICHT ÖFFNEN
-    IM GEGENSATZ ZU ANZEIGEFENSTERN (fliegen beim Schließen aus dem
-    speicher raus) WERDEN ALL IML-TEILGRAPHEN pauschal im
-    SPEICHER GEHALTEN.
-
+  
     \item
     IML-Teilgraphen können gelöscht werden. Falls vorhanden, wird dann auch
     die entsprechende Verwaltungsdatei ebenfalls sofort gelöscht.
@@ -257,10 +246,8 @@ GIANT speichert persistente Informationen in so genannten Projekten.
    visualisiert sind. Ein Knoten kann auch annotiert sein, wenn er in keinem
    Anzeigefenster visualisiert ist. Wird ein annotierter Knoten gelöscht 
    (aus einem Anzeigefenster entfernt), so wird der dazu vorhandene 
-   Eintrag für die Annotation in der Verwaltungsdatei nicht automatisch mit gelöscht.
-   
-   >>>>>>>>>>>>>>>> EVENTUELL MÜSSEN WIR HIER EINEN FILTER BAUEN
-   DER KNOTEN-Annotationen entfernt, die nicht mehr gebraucht werden.
+   Eintrag für die Annotation in der Verwaltungsdatei nicht automatisch mit 
+   gelöscht.
    
  \end {enumerate}
   

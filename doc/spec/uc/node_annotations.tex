@@ -1,7 +1,7 @@
 % ==============================================================================
 %  $RCSfile: node_annotations.tex,v $
-%  $Date: 2003/02/24 20:55:23 $
-%  $Author: birdy $
+%  $Date: 2003/02/25 16:11:30 $
+%  $Author: schwiemn $
 %
 %  Description: Use-Cases zum Annotieren von Knoten
 %
@@ -20,7 +20,7 @@
           in der Verwaltungsdatei für Knoten-Annotationen eingetragen.
     \cond Der annotierte Knoten wird in allen Anzeigefenstern als annotiert
           hervorgehoben (hat nun das entsprechende Icon).
-	  
+          
   \end{postsuccess}
 
   \begin{postfail}
@@ -72,7 +72,7 @@
           in der Verwaltungsdatei für Knoten-Annotationen eingetragen.
     \cond Die Änderung der Annotation ist dem System bekannt und wird
           entsprechend angezeigt.
-	  
+          
   \end{postsuccess}
 
   \begin{postfail}
@@ -126,7 +126,7 @@
           der Verwaltungsdatei für Knoten-Annotationen entfernt.
     \cond Das Entfernen der Annotation ist dem System bekannt und wird
           entsprechend angezeigt.
-	  
+          
   \end{postsuccess}
 
   \begin{postfail}
@@ -150,51 +150,51 @@
 
 % ==============================================================================
 
-\begin{uc}[Label]{UC: Knoten-Annotationen filtern}
-  Löscht alle bestehenden Knoten-Annotationen des Projektes
-  für die es in den dem Projekt bekannten Anzeigefenstern keine
-  Fenster-Knoten und auch keine Graph-Knoten gibt.\\
-  Dies dieser Filter soll es ermöglichen, nicht mehr benötigte 
-  Annotationen automatisch zu entfernen.
+% \begin{uc}[Label]{UC: Knoten-Annotationen filtern}
+%   Löscht alle bestehenden Knoten-Annotationen des Projektes
+%   für die es in den dem Projekt bekannten Anzeigefenstern keine
+%   Fenster-Knoten und auch keine Graph-Knoten gibt.\\
+%   Dies dieser Filter soll es ermöglichen, nicht mehr benötigte 
+%   Annotationen automatisch zu entfernen.
   
-  \begin{precond}
-    \cond Ein Projekt ist geladen.
-  \end{precond}
+%   \begin{precond}
+%     \cond Ein Projekt ist geladen.
+%   \end{precond}
 
-  \begin{postsuccess}
-    \cond Die Annotationen sind noch nicht aus
-          der Verwaltungsdatei für Knoten-Annotationen entfernt.
-    \cond Das Entfernen der Annotationen ist dem System bekannt und wird
-          entsprechend angezeigt.
-	  
-  \end{postsuccess}
+%   \begin{postsuccess}
+%     \cond Die Annotationen sind noch nicht aus
+%           der Verwaltungsdatei für Knoten-Annotationen entfernt.
+%     \cond Das Entfernen der Annotationen ist dem System bekannt und wird
+%           entsprechend angezeigt.
+          
+%   \end{postsuccess}
 
-  \begin{postfail}
-    \cond Das System bleibt im bisherigen Zustand.
-  \end{postfail}
+%   \begin{postfail}
+%     \cond Das System bleibt im bisherigen Zustand.
+%   \end{postfail}
   
-  \begin{proc}
-    \step[1] 
-    Der Benutzer wählt im HAUPTMENÜ \ref{Main Window}den entsprechenden Eintrag aus.
+%   \begin{proc}
+%     \step[1] 
+%     Der Benutzer wählt im HAUPTMENÜ \ref{Main Window}den entsprechenden Eintrag aus.
     
-    \step[2]
-    GIANT Zeigt eine Sicherheitsabfrage und fordert den Benutzer zur 
-    Bestätigung auf.
+%     \step[2]
+%     GIANT Zeigt eine Sicherheitsabfrage und fordert den Benutzer zur 
+%     Bestätigung auf.
     
-    \step[3]
-    Der Benutzer bestätigt Sicherheitsabfrage.
+%     \step[3]
+%     Der Benutzer bestätigt Sicherheitsabfrage.
            
-    \step[4]
-    GIANT löscht alle Annotationen für die es keine Fenster-Knoten und
-    Graph-Knoten gibt, d.h. jede Knoten-Annotation deren Knoten weder in 
-    einem Anzeigefenster visualisiert noch Bestandteil eines IML-Teilgraphen
-    ist, wird entfernt.
+%     \step[4]
+%     GIANT löscht alle Annotationen für die es keine Fenster-Knoten und
+%     Graph-Knoten gibt, d.h. jede Knoten-Annotation deren Knoten weder in 
+%     einem Anzeigefenster visualisiert noch Bestandteil eines IML-Teilgraphen
+%     ist, wird entfernt.
 
-  \end{proc}
+%   \end{proc}
 
-  \begin{aproc}
-    \astep[2] Der Vorgang kann natürlich Abgebrochen werden, indem die
-    Sicherheitsabfrage nicht bestätigt wird.
+%   \begin{aproc}
+%     \astep[2] Der Vorgang kann natürlich Abgebrochen werden, indem die
+%     Sicherheitsabfrage nicht bestätigt wird.
 
-  \end{aproc}
-\end{uc}
+%   \end{aproc}
+% \end{uc}
