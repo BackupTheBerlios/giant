@@ -12,9 +12,7 @@
   
   <!-- All edge classes being a member of the class set -->
   <associated_edge_classes>
-    <edge_class
-      start_node_class = "*"
-      attribute_name   = "Parent" />   
+
   </associated_edge_classes>
 </giant_class_set_file>
 
