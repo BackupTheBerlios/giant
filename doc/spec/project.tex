@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: project.tex,v $, $Revision: 1.5 $
-%  $Date: 2003/02/13 12:02:52 $
+%  $RCSfile: project.tex,v $, $Revision: 1.6 $
+%  $Date: 2003/02/13 12:10:00 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -25,10 +25,9 @@ von Reflektion zum IML-Graphen unterstützt wird.
 
   \subsection {Das Projektverzeichnis}
   In dem Projektverzeichnis liegt die Projektdatei, der Name des Projektverzeichnisses ist beliebig.
-  Im Projektverzeichnis befindet sich acuh Dateien für jedes gespeicherte Anzeigefenster und jeden 
+  Im Projektverzeichnis befindet sich auch die Dateie für jedes gespeicherte Anzeigefenster und jeden 
   gespeicherten IML-Teilgraphen.
   In jedem Projektverzeichnis darf nur ein Projekt gespeichert werden.
-
 
   \subsection {Die Projektdatei}
   Die Projektdatei befindet sich im Projektverzeichnis und enthält Informationen, 
@@ -52,38 +51,25 @@ von Reflektion zum IML-Graphen unterstützt wird.
   Für jedes gespeicherte Anzeigefenster gibt es eine Verwaltungsdatei. 
   Diese Verwaltungsdatei enthält alle Informationen zur kompletten Rekonstruktion 
   eines Anzeigefensters. Gespeichert werden:
-
+ 
   \begin {itemize}
-
+ 
     \item Der komplette Anzeigeinahlt (alle visualisierten Knoten und Kanten mit Position).
     \item Alle Pins (gespeicherte sichtbare Anzeigeinhalte).
     \item Alle dem Anzeigefenster bekannten Selektion.
-
+ 
   \end {itemize}
-
+ 
   Die VISUALISIERUNGSSTIELE (für jedes Anzeigefenster kann ein VISUALISIERUNGSSTIEL ausgewählt werden)
   werden aber nicht gespeichert, da sie von der Konfiguartionsdatei vorgegeben werden.
 
-
+  \subsection{Verwaltungsdateien für IML-Teilgraphen}
+  Sämtliche erzeugten IML-Teilgraphen werden ebenfalls in Verwaltungsdateien gespeichert. 
+  Für jeden IML-Teilgraphen gibt es
  
 
 
-\subsection {Name des Projekts}
-Jedes Projekt hat einen vom Benutzer definierbaren Namen, dieser Name entspricht dem Namen der 
-Projektdatei und wird innerhalb des IML-Browsers angezeigt.
-Es kann mehrere Projektverzeichnisse geben, wobei der Name des Projektverzeichnisses dem Namen 
-der Projektes selbst entspricht.
-Keine der weiter unten beschriebenen Dateien ist zwischen Projekten austauschbar, darf also nicht in
-ein anderes Projektverzeichnis kopiert werden.
-
-
-
-   \subsection {Die Projektdatei}
-   Die Projektdatei 
-   
-   Die Projektdatei enthält Informationen, die zur Identifikation der zu einem 
-   Projekt gehörenden 
-  
+ 
 
     
 
