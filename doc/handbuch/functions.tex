@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: functions.tex,v $, $Revision: 1.13 $
-%  $Date: 2003/09/05 22:01:08 $
+%  $RCSfile: functions.tex,v $, $Revision: 1.14 $
+%  $Date: 2003/09/05 22:19:52 $
 %  $Author: birdy $
 %
 %  Description: 
@@ -18,7 +18,7 @@ Wichtige Informationen zur Persitzenz der Projekte in GIANT,
 welche Informationen jeweils gespeichert werden, finden sich
 im Abschnitt \ref{Project Persistenz der Projekte}.
 
-\section {Kommandozeilenaufruf} \label[fa Starten von GIANT}
+\section {Kommandozeilenaufruf} \label{fa Starten von GIANT}
 
 Giant kann wie folgt von der Kommandozeile aus gestartet werden:
 
@@ -29,10 +29,13 @@ Giant kann wie folgt von der Kommandozeile aus gestartet werden:
 
  \item{Mit Parametern, [] bedeutet \gq{optional}, | bedeutet \gq{oder}:}\\
 
-°./giant project-file [-g graph-file] [-e script-file] | -h | -v°
+°./giant  project-file [-g graph-file] [-e script-file] [-c config-file] | -h | -v°
 
 project-file ist der Filename der Projektdatei, graph-file der Filename
-des IML-Graphen, script-file ein auszuführendes GSL-Skript.
+des IML-Graphen, script-file ein auszuführender GSL-Ausdruck, config-file die
+optional anzugebende globale Konfigurationsdatei, siehe Abschnitt
+\ref{config-allgemeines-punkt2}.
+
 Die Option -h steht für Hilfe, -v für ausführlicheres Output auf
 der Konsole (z.B. xterm).
 
@@ -43,7 +46,7 @@ der Konsole (z.B. xterm).
 
 \begin{figure}[h!]
    \centering
-   \includegraphics{gui/main_window}
+   \includegraphics[scale=.75]{gui/main_window}
    \caption{Main-Window}
    \label{Main-Window-Pic}
 \end{figure}
@@ -711,7 +714,7 @@ Subgraph List.
 
     \begin{figure}[!htbp]
        \centering
-       \includegraphics{gui/node_information_dialog}
+       \includegraphics[scale=0.6]{gui/node_information_dialog}
        \caption{Node-Info-Window}
        \label{Node-Info-Window-Pic}
     \end{figure}

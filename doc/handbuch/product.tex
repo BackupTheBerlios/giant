@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: product.tex,v $, $Revision: 1.3 $
-%  $Date: 2003/08/09 20:15:05 $
+%  $RCSfile: product.tex,v $, $Revision: 1.4 $
+%  $Date: 2003/09/05 22:19:52 $
 %  $Author: birdy $
 %
 %  Description: Beschreibung des Produktes. Übersicht über die Funktionen
@@ -94,40 +94,9 @@ Knoten-Annotationen}.
 Eine vielseitige Anfragesprache -- die GIANT Scripting Language GSL --
 stellt nahezu die gesamte Funktionalität von GIANT zur Verfügung und kann 
 insbesondere auch zum Aufruf via Kommandozeile
-genutzt werden. Die drei Schritte des anschließend beschriebenen 
-\gq{Drei-Stufen-Konzeptes} können über diese Anfragesprache auch \gq{auf 
-einen Schlag} erledigt werden.\\
+genutzt werden.\\
 Es ist auch möglich, GSL Skripte im Zusammenhang mit Knoten
 über Popup-Menüs zu starten. Mehr Info hierzu unter Abschnitt \ref{Node-Popup-Menü}.\\
 Die GSL ist unter Kapitel \ref {GIANT Scripting Language} im
 Detail spezifiziert.
 
-
-% ==============================================================================
-\section{Drei-Stufen-Konzept} \index{Drei-Stufen-Konzept}
-
-Die im Folgenden beschriebenen drei Schritte sollen dem Benutzer die Möglichkeit
-bieten, von den IML-Knoten und IML-Kanten des IML-Graphen ausgehend geeignete
-IML-Teilgraphen in Anzeigefenstern zu visualisieren. 
-Die Funktionalität von GIANT ist so konzipiert, dass zur Visualisierung
-von IML-Graphen in Anzeigefenstern folgende drei Schritte sequentiell
-nacheinander ausgeführt werden. Mittels der Anfragesprache GSL 
-(siehe Kapitel \ref{GIANT Scripting Language}) und mittels der über die 
-GUI zugänglichen Funktionen (beschrieben ab Kapitel \ref{Kapitel-Funktionale Anforderungen})
-kann der Benutzer diese Schritte wahlweise einzeln \gq{Step by Step} oder auch 
-\gq{auf einen Schlag}, d.h. durch Eingabe einer einzigen Anfrage, ausführen.\\
-
-Der \gq{Visualisierungsvorgang} von IML-Graphen ist aber rein logisch betrachtet
-in die folgenden drei Schritte unterteilt:
-
-\begin {enumerate}
-  \item Erzeugen geeigneter IML-Teilgraphen, d.h.\ Auswahl geeigneter IML-Knoten 
-        und IML-Kanten aus dem IML-Graphen mittels der Anfragesprache GSL.
-  
-  \item Einfügen dieser IML-Teilgraphen in ein Anzeigefenster unter Anwendung
-  eines Layoutalgorithmus. \index{Layoutalgorithmen} 
-  
-  \item Weitere Bearbeitung der Fenster-Knoten und Fenster-Kanten (wie z.B.
-  Verschieben, Annotieren und Erzeugen von Selektionen).
-
-\end {enumerate}
