@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-parser.y,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/02 11:41:49 $
+-- $Date: 2003/06/06 20:05:07 $
 --
 -- GSL Parser rules
 -- Use ayacc to generate code, needs scanner scanner.aflex
@@ -49,8 +49,7 @@
 ------------------------------------------------------------------------------
 -- Rules section
 root               : expression
-                     { Put_Line ("Program finished");
-                       Root_Node := $1; };
+                     { Root_Node := $1; };
 
 expression         : literal
                      { $$ := $1; }
@@ -120,9 +119,6 @@ literal            : FALSE_T
                         Literal_String := Create_Gsl_String
                           (scanner_dfa.yytext (2..scanner_dfa.yylength-1));
                         Set_Literal ($$, Gsl_Type (Literal_String));
-
-                        Put_Line (scanner_dfa.yytext
-                                 (2..scanner_dfa.yylength-1));
                      }
                    | NULL_T
                      { 
