@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.74 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.75 $
 --  $Author: koppor $
---  $Date: 2003/09/18 18:14:59 $
+--  $Date: 2003/10/01 20:06:21 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -524,8 +524,7 @@ package body Giant.Graph_Lib is
 
          procedure Create is
          begin
-            Mapping := Mapping_IML_Load_Nodes.Create (19);
-            -- FIX: breaks when (19) is passed
+            Mapping := Mapping_IML_Load_Nodes.Create (4194300);
          end Create;
 
          procedure Destroy is
@@ -768,7 +767,8 @@ package body Giant.Graph_Lib is
             Logger.Debug ("Begin: Convert_Nodes");
 
             --  Mapping's initial size is about 4 million nodes
-            IML_Node_ID_Mapping := IML_Node_ID_Hashed_Mappings.Create (21);
+            IML_Node_ID_Mapping := IML_Node_ID_Hashed_Mappings.Create
+              (4194300);
 
             Basic_Evolutions.Set_Total_Complexity (Individual, Node_Count);
             Basic_Evolutions.Set_Text
@@ -1265,6 +1265,15 @@ package body Giant.Graph_Lib is
 
       return Res;
    end Get_Successors;
+
+   ---------------------------------------------------------------------------
+   function Edge_Id_Image
+     (Edge : in Edge_Id)
+     return String
+   is
+   begin
+      return Natural'Image (Edge.Internal_Id);
+   end Edge_Id_Image;
 
    ---------------------------------------------------------------------------
    function Node_Id_Image
@@ -2219,6 +2228,13 @@ package body Giant.Graph_Lib is
    end Write_Edge_Id;
 
    ----------------------------------------------------------------------
+   --  The handling is not as straight-forward as in Write_Edge_Id,
+   --    since Node_Ids are connected to IML-Nodes and Edges are created
+   --    by graph_lib itself
+   --  This could change, if graph_lib introduced an own numbering of the
+   --    nodes, like it exists with the edge_ids.
+   --  But this is an enourmos impact to the whole lib, which means,
+   --    a refactoring has to be done.
    procedure Write_Node_Id
      (Stream : in Bauhaus_Io.Out_Stream_Type;
       Node   : in Node_Id)
