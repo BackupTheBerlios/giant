@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.2 $
 --  $Author: koppor $
---  $Date: 2003/05/28 12:17:02 $
+--  $Date: 2003/06/01 13:38:39 $
 --
 
 --  Bauhaus / IML
@@ -153,6 +153,7 @@ package Giant.Graph_Lib is
    --  Exceptions  --
    ------------------
 
+   Node_Does_Not_Exist           : exception;
    Node_Class_Does_Not_Exist     : exception;
    Node_Attribute_Does_Not_Exist : exception;
    Edge_Class_Does_Not_Exist     : exception;
@@ -492,6 +493,9 @@ package Giant.Graph_Lib is
    --
    --  Returns:
    --    String-representation of given Node_Id
+   --
+   --  Raises:
+   --    Storables.Unknown_Node if something is wrong in the IML-Graph
    function Node_Id_Image
      (Node : in Node_Id)
      return String;
@@ -500,7 +504,7 @@ package Giant.Graph_Lib is
    --  Converts given string containing a Node_Id to a Node_Id
    --
    --  Raises:
-   --    Invalid_Node_Id if given node_id_string does not match an
+   --    Node_Does_Not_Exist if given node_id_string does not match an
    --    existing node
    function Node_Id_Value
      (Node : in String)

@@ -18,20 +18,23 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.2 $
 --  $Author: koppor $
---  $Date: 2003/05/28 12:17:02 $
+--  $Date: 2003/06/01 13:38:16 $
 --
 
 --  from Bauhaus
-with Constant_Ptr_Hashs;
-with Ptr_Normal_Hashs;
+with Giant.Constant_Ptr_Hashs;
+with Giant.Ptr_Normal_Hashs;
 with Hashed_Mappings;
 with SLocs;
 with Storables;
+with IML.IO;
+with IML_Node_IDs;
+with IML_Graphs;
 
-pragma Elaborate_All (Constant_Ptr_Hashs);
-pragma Elaborate_All (Ptr_Normal_Hashs);
+pragma Elaborate_All (Giant.Constant_Ptr_Hashs);
+pragma Elaborate_All (Giant.Ptr_Normal_Hashs);
 pragma Elaborate_All (Hashed_Mappings);
 
 package body Giant.Graph_Lib is
@@ -43,7 +46,7 @@ package body Giant.Graph_Lib is
    --------------------------------------
 
    ---------------------------------------------------------------------------
-   --  How large should be the hashtable
+   --  Hashtable-size
    --    Default of ptr_hashs: 17
    Node_Attribute_Id_Hash_Range_Size : constant := 29;
 
@@ -66,7 +69,7 @@ package body Giant.Graph_Lib is
    ----------------------------------
 
    ---------------------------------------------------------------------------
-   --  How large should be the hashtable
+   --  Hashtable-size
    --    Default of ptr_hashs: 17
    Node_Class_Id_Hash_Range_Size : constant := 29;
 
@@ -79,7 +82,7 @@ package body Giant.Graph_Lib is
 
    ---------------------------------------------------------------------------
    type Node_Class_Id_Hash_Data is record
-      --  Hastable hasing Node_Attribute_Ids to Edge_Class_Ids
+      --  Hashtable hasing Node_Attribute_Ids to Edge_Class_Ids
       Node_Attribute_Id_Mapping :
         Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.Mapping;
 
@@ -96,6 +99,28 @@ package body Giant.Graph_Lib is
       Value_Type => Node_Class_Id_Hash_Data_Access,
       Hash       => Node_Class_Id_Hash_Functions.Integer_Hash);
 
+   ---------------------------------------------------------------------------
+   Node_Class_Id_Mapping : Node_Class_Id_Hashed_Mappings.Mapping;
+
+   ----------------------------------
+   --  Hashing for IML_Node_IDs    --
+   --    needed for Node_Id_Value  --
+   ----------------------------------
+
+   ---------------------------------------------------------------------------
+   package IML_Node_ID_Hashed_Mappings is
+      new Hashed_Mappings
+     (Key_Type   => IML_Node_IDs.Node_ID,
+      Value_Type => Node_Id,
+      Hash       => IML_Node_IDs.Hash);
+
+   IML_Node_ID_Mapping : IML_Node_ID_Hashed_Mappings.Mapping;
+
+   ---------------------
+   --  Miscellaneous  --
+   ---------------------
+
+   ---------------------------------------------------------------------------
    function "<"
      (Left  : Node_Id;
       Right : Node_Id)
@@ -106,9 +131,6 @@ package body Giant.Graph_Lib is
       --  therefore, we have to trick a bit :)
       return Storables.Less (Left.Iml_Node, Right.Iml_Node);
    end "<";
-
-   ---------------------------------------------------------------------------
-   Node_Class_Id_Mapping : Node_Class_Id_Hashed_Mappings.Mapping;
 
    ---------------------------------------------------------------------------
    --  Compares using IML_Reflection-Data
@@ -267,8 +289,14 @@ package body Giant.Graph_Lib is
       return Edge_Class;
    end Convert_Node_Class_Node_Attribute_To_Edge_Class_Id;
 
+   ----------------------------------------------------------
+   -- Create the internal representation of the IML-Graph  --
+   ----------------------------------------------------------
    procedure Create (Path_To_IML_File : in String) is
+      Root_Node : Storables.Storable;
    begin
+      Root_Node :=
+      --  init: IML_Node_Id_Mapping
       null;
    end Create;
 
@@ -332,16 +360,43 @@ package body Giant.Graph_Lib is
      (Node : in Node_Id)
      return String
    is
+      IML_Node_Id : IML_Node_IDs.Node_Id;
    begin
-      return Node_Id_Image (Node);
+      IML_Node_Id := Storables.Get_Node_Id (Node.Iml_Node);
+
+      return IML_Node_IDs.Image (IML_Node_Id);
    end Node_Id_Image;
 
+   ---------------------------------------------------------------------------
+   --  Implemented with 'Image, since IML_Node_IDs does not offer "Value"
+   --
+   --  Precondition:
+   --    IML_Node_IDs.Node_IDs are stored internally as strings
    function Node_Id_Value
      (Node : in String)
      return Node_Id
    is
+      P           : Positive;
+      IML_Node_ID : IML_Node_IDs.Node_ID;
+      Value       : Node_Id;
    begin
-      return Node_Id_Value (Node);
+      begin
+         P := Positive'Value (Node);
+      exception
+         --  following could be done better using different exceptions for
+         --  different errors, but I don't think, that such a differenciation
+         --  makes sence
+         when others => raise Node_Does_Not_Exist;
+      end;
+
+      IML_Node_ID := IML_Node_IDs.Make_Node_ID (P);
+
+      Value :=
+        IML_Node_ID_Hashed_Mappings.Fetch
+        (IML_Node_ID_Mapping,
+         IML_Node_ID);
+
+      return Value;
    end Node_Id_Value;
 
    function Does_Node_Id_Exist
