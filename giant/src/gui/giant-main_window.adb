@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.28 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.29 $
 --  $Author: squig $
---  $Date: 2003/06/24 19:25:57 $
+--  $Date: 2003/06/24 19:45:44 $
 --
 
 with Ada.Strings.Unbounded;
@@ -460,14 +460,16 @@ package body Giant.Main_Window is
    is
       Style : Gtk.Style.Gtk_Style;
       Color_Access : Config.Color_Access;
+      Color : Gdk.Color.Gdk_Color;
    begin
       Color_Access
         := Config.Global_Data.Get_Subgraph_Highlight_Color (Config_Id);
-      Style := Gtk.Style.Copy
-        (String_Clists.Get_Style (Subgraph_List));
-      Gtk.Style.Set_Base (Style, State_Normal,
-                          Gdk.Color.Parse
-                          (Config.Get_Color_Value (Color_Access)));
+      Color := Gdk.Color.Parse (Config.Get_Color_Value (Color_Access));
+
+      Style := Gtk.Style.Copy (String_Clists.Get_Style (Subgraph_List));
+      Gtk.Style.Set_Base (Style, State_Normal, Color);
+      Gtk.Style.Set_Base (Style, State_Selected, Color);
+      Gtk.Style.Set_Foreground (Style, State_Selected, Color);
       return Style;
    end;
 

@@ -34,7 +34,7 @@ LIBS            = $(shell gtkada-config)
 CFLAGS          = -g -O2 -funroll-loops
 GNAT_FLAGS      = -j2 -gnatX -gnata -gnatf -gnatwl -gnato 
                   #-gnaty3abcefhiklmprt #-gnatys 
-ALL_CFLAGS      = $(CFLAGS) $(TARGET_CFLAGS) $(GNAT_FLAGS) $(INCLUDES) 
+ALL_CFLAGS      = $(CFLAGS) $(TARGET_CFLAGS) $(GNAT_FLAGS) $(INCLUDES) $(CUSTOM_CFLAGS)
 ALL_LFLAGS      = $(LFLAGS) $(TARGET_LFLAGS) $(LIBS)
 
 MAIN = src/giant-main.adb
@@ -49,7 +49,7 @@ endif
 all: 
 	test -x $(OUT_PATH) || mkdir $(OUT_PATH)
 	cd $(OUT_PATH) && \
-	gnatmake -k -m $(ALL_CFLAGS) $(GIANT_PATH)/$(MAIN) -o $(GIANT_PATH)/$(EXEC) $(GNATMAKE_FLAGS) $(ALL_LFLAGS) -bargs -static -E -largs 
+	gnatmake -m $(ALL_CFLAGS) $(GIANT_PATH)/$(MAIN) -o $(GIANT_PATH)/$(EXEC) $(GNATMAKE_FLAGS) $(ALL_LFLAGS) -bargs -static -E -largs 
 
 static :
 	make LIBS="$(shell gtkada --static)" all
