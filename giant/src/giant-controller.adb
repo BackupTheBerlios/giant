@@ -21,9 +21,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/06/16 16:08:42 $
+--  $Date: 2003/06/16 21:48:30 $
 --
 
 with Giant.Graph_Lib;
@@ -61,13 +61,25 @@ package body Giant.Controller is
    end;
 
    procedure Create_Window
-     (Name : in Valid_Names.Standard_Name)
+     (Name : in Valid_Names.Standard_Name
+        := Valid_Names.To_Standard_Name ("Unknown"))
    is
       Window : Vis_Windows.Visual_Window_Access;
    begin
       Window := Vis_Windows.Create_New (Name);
+      Projects.Add_Visualisation_Window (Current_Project, Window);
       Gui_Manager.Add (Window);
    end Create_Window;
+
+   procedure Remove_Window
+     (Name : in Valid_Names.Standard_Name)
+   is
+   begin
+      --Gui_Manager.Remove (Window);
+      --Projects.Remove_Visualisation_Window
+      --  (Current_Project, Vis_Windows.Get_Name (Window));
+      null;
+   end Remove_Window;
 
    procedure Show
    is

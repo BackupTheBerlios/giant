@@ -1,0 +1,5 @@
+2003-06-16  Steffen Pingel  <squig@users.sourceforge.net>
+
+	* src/project/giant-vis_windows.ads: Changed return type of
+	Get_Name. 
+

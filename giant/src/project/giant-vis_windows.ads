@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.11 $
+--  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.12 $
 --  $Author: squig $
---  $Date: 2003/06/16 15:27:58 $
+--  $Date: 2003/06/16 21:48:31 $
 --
 --  ----------------
 --  This package realizes a container that administrates the components
@@ -179,9 +179,9 @@ package Giant.Vis_Windows is
    --    Visual_Window_Access_Not_Initialized_Exception - Raised if a not
    --      initialized instance of "Vis_Window_Data_Access" is passed
    --      as parameter.
-   function Get_Vis_Window_Name
+   function Get_Name
      (Vis_Window : in Visual_Window_Access)
-     return String;
+      return Valid_Names.Standard_Name;
 
    ---------------------------------------------------------------------------
    --  Equal function - to instances of the ADT having the

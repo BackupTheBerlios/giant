@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.5 $
+--  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.6 $
 --  $Author: squig $
---  $Date: 2003/06/03 19:20:59 $
+--  $Date: 2003/06/16 21:48:30 $
 --
 ------------------------------------------------------------------------------
 --
@@ -45,6 +45,8 @@ with Gtk.Widget;
 with Gtk.Window;
 
 package Giant.Gui_Utils is
+
+   pragma Elaborate_Body;
 
    -----------------
    --  Constants  --
@@ -93,9 +95,9 @@ package Giant.Gui_Utils is
      (List : access Gtk.Clist.Gtk_Clist_Record'Class;
       Menu : access Gtk.Menu.Gtk_Menu_Record'Class);
 
-   procedure Set_Default
-     (Window : access Gtk.Window.Gtk_Window_Record'Class;
-      Widget : access Gtk.Widget.Gtk_Widget_Record'Class);
+   function Get_Selected_Row
+     (List : access Gtk.Clist.Gtk_Clist_Record'Class)
+     return Glib.Gint;
 
    function New_Button
      (Label    : in String;
@@ -128,6 +130,23 @@ package Giant.Gui_Utils is
 
    function New_Vpaned
      return Gtk.Paned.Gtk_Vpaned;
+
+   procedure Set_Default
+     (Window : access Gtk.Window.Gtk_Window_Record'Class;
+      Widget : access Gtk.Widget.Gtk_Widget_Record'Class);
+
+   generic
+      type Data_Type (<>) is private;
+   package Clist_Row_Data is
+
+      package Data is new Gtk.Clist.Row_Data (Data_Type);
+
+      function Find
+        (List : access Gtk.Clist.Gtk_Clist_Record'Class;
+         Value : in     Data_Type)
+         return Glib.Gint;
+
+   end Clist_Row_Data;
 
 end Giant.Gui_Utils;
 

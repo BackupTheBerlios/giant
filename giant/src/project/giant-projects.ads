@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.11 $
--- $Author: schwiemn $
--- $Date: 2003/06/16 17:50:39 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.12 $
+-- $Author: squig $
+-- $Date: 2003/06/16 21:48:31 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -88,10 +88,10 @@ package Giant.Projects is
    ---------------------------------------------------------------------------
    -- Raised if a project with the passed name does not exist.
    Project_Does_Not_Exist_Exception : exception;
-   
+
    ---------------------------------------------------------------------------
-   -- Raised on attempt to load a project while the "giant.graph_lib" holds 
-   -- an iml graph that has a different check sum. 
+   -- Raised on attempt to load a project while the "giant.graph_lib" holds
+   -- an iml graph that has a different check sum.
    Wrong_IML_Graph_Loaded_Exception : exception;
 
 
@@ -173,7 +173,7 @@ package Giant.Projects is
    -- from the project file and from the management files of the
    -- projects components.
    --
-   -- All relativ paths inside an xml file describing a project are 
+   -- All relativ paths inside an xml file describing a project are
    -- regarded as absolute paths towards "Project_Directory".
    --
    -- Parameters:
@@ -424,7 +424,7 @@ package Giant.Projects is
      (Project         : in Project_Access;
       Vis_Window_Name : in Valid_Names.Standard_Name)
      return Boolean;
-     
+
    ---------------------------------------------------------------------------
    -- Determines whether a Visualisation Window is loaded
    -- into the main memory.
@@ -435,7 +435,7 @@ package Giant.Projects is
    --     visualisation window.
    -- Returns:
    --   True, if the visualisation window "Vis_Window_Name" is
-   --   loaded into the main memory; False, otherwise 
+   --   loaded into the main memory; False, otherwise
    --   (e.g. if the window is not part of the project at all).
    -- Raises:
    --   Project_Access_Not_Initialized_Exception - Raised if a not
@@ -627,8 +627,8 @@ package Giant.Projects is
    --   If it exists the management file for this visualisation window
    --   is DELETED too.
    --
-   --   An "Emergency Save File" (describing the actual status of the window) 
-   --   will be created (this file will be removed on execution of 
+   --   An "Emergency Save File" (describing the actual status of the window)
+   --   will be created (this file will be removed on execution of
    --   Store_Whole_Project or Store_Whole_Project_As).
    --
    -- Parameters:
@@ -642,7 +642,7 @@ package Giant.Projects is
    --  Project_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Project_Access" is passed as
    --     parameter.
-   procedure Remove_Vis_Window_From_Project
+   procedure Remove_Visualisation_Window
      (Project         : in Project_Access;
       Vis_Window_Name : in Valid_Names.Standard_Name);
 
@@ -652,7 +652,7 @@ package Giant.Projects is
    --
    -- All functionality necessarry to administrate Subgraphs
    -- inside a project is specified here.
-   -- Needed to handle the IML-Subgraphs 
+   -- Needed to handle the IML-Subgraphs
    --
    -- -> see GIANT Spec. "12.2.3. Persistenz von IML-Teilgraphen"
    ---------------------------------------------------------------------------
@@ -713,7 +713,7 @@ package Giant.Projects is
      return Graph_Lib.Subgraphs.Subgraph;
 
    ---------------------------------------------------------------------------
-   -- Returns the names of all subgraphs of the project (not sorted by 
+   -- Returns the names of all subgraphs of the project (not sorted by
    -- any order).
    -- If there are no subgraphs part of the project than
    -- an empty list will be returned.
@@ -767,7 +767,7 @@ package Giant.Projects is
    --   deallocated).
    --   Beware of memory leacks!
    --
-   --   The management file for the subgraph is deallocated too 
+   --   The management file for the subgraph is deallocated too
    --   (if one exists).
    --
    --   After the call of that subprogram you may do what ever you want
@@ -885,27 +885,27 @@ private
    ---------------------------------------------------------------------------
 
    -- needed to describe the status of a visualistion window
-   type Vis_Window_Data_Element is record 
+   type Vis_Window_Data_Element is record
       Is_File_Linked           : Boolean;
       Is_Memory_Loaded         : Boolean;
       -- the management file for the visualisation window
       -- null string ("") if such a file does not exist yet
       Existing_Vis_Window_File : Ada.Strings.Unbounded.Unbounded_String;
-      Vis_Window_Name          : Ada.Strings.Unbounded.Unbounded_String;      
+      Vis_Window_Name          : Ada.Strings.Unbounded.Unbounded_String;
    end record;
 
    package Known_Vis_Windows_Hashs is new Hashed_Mappings
      (Key_Type   => Ada.Strings.Unbounded.Unbounded_String,
       Equal      => Ada.Strings.Unbounded."=",
       Hash       => Unbounded_String_Hash,
-      Value_Type => Vis_Window_Data_Element); 
+      Value_Type => Vis_Window_Data_Element);
 
    package Memory_Loaded_Vis_Window_Hashs is new Hashed_Mappings
      (Key_Type   => Ada.Strings.Unbounded.Unbounded_String,
       Equal      => Ada.Strings.Unbounded."=",
       Hash       => Unbounded_String_Hash,
       Value_Type => Vis_Windows.Visual_Window_Access);
-      
+
    ---------------------------------------------------------------------------
    -- Management of Subgraphs
    ---------------------------------------------------------------------------
@@ -913,7 +913,7 @@ private
    type Subgraph_Data_Elemet is record
      Subgraph         : Graph_Lib.Subgraphs.Subgraph;
      Highlight_Status : Subgraph_Highlight_Status;
-     -- True if an management file for the iml subgraph already exists, False     
+     -- True if an management file for the iml subgraph already exists, False
      -- otherwise.
      Is_File_Linked : Boolean;
      -- Null string ("") if such a file does not exist yet,
@@ -942,7 +942,7 @@ private
     -- The name of the project
     -- Value not written to project xml file
     Project_Name     : Ada.Strings.Unbounded.Unbounded_String;
-    
+
     -- The directory there all data (including management files
     -- for visualisation windows, Subgraphs and the
     -- management file for node annatations) describing the
@@ -952,10 +952,10 @@ private
 
     -- The file holding the Bauhaus IML-Graph
     Abs_Bauhaus_IML_Graph_File : Ada.Strings.Unbounded.Unbounded_String;
-    
+
     -- Checksum of the Bauhaus IML Graph
     Bauhaus_IML_Graph_File_Checksum : Integer;
-    
+
     -- The file holding the node annotations
     Node_Annotations_File : Ada.Strings.Unbounded.Unbounded_String;
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-vis_windows-test.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-vis_windows-test.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/16 15:27:58 $
+--  $Date: 2003/06/16 21:48:31 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -30,16 +30,17 @@ with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
 
 with Giant.Vis_Windows;
 with Giant.Default_Logger;
+use type Giant.Valid_Names.Standard_Name;
 
 package body Giant.Vis_Windows.Test is
 
    procedure Test_Init (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
-	  Window : Visual_Window_Access;
+      Window : Visual_Window_Access;
    begin
       Window := Vis_Windows.Create_New (Valid_Names.To_Standard_Name ("Name"));
 
-      Assert (Vis_Windows.Get_Vis_Window_Name (Window) = "Name", "Name");
+      Assert (Vis_Windows.Get_Name (Window) = Valid_Names.To_Standard_Name ("Name"), "Name");
    end;
 
    function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is

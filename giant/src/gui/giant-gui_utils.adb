@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.5 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.6 $
 -- $Author: squig $
--- $Date: 2003/06/03 19:20:59 $
+-- $Date: 2003/06/16 21:48:30 $
 --
 
 with Glib;
@@ -86,6 +86,20 @@ package body Giant.Gui_Utils is
          Clist_User_Return_Callback.To_Marshaller
          (On_Clist_Button_Press'Access), Gtk.Menu.Gtk_Menu (Menu));
    end Connect_Popup_Menu;
+
+   function Get_Selected_Row
+     (List : access Gtk.Clist.Gtk_Clist_Record'Class)
+     return Glib.Gint
+   is
+      use type Gint_List.Glist;
+      Selection : constant Gint_List.Glist := Gtk.Clist.Get_Selection (List);
+   begin
+      if Selection /= Gint_List.Null_List then
+         return Gint_List.Get_Data (Gint_List.First (Selection));
+      end if;
+
+      return Glib.Gint (-1);
+   end Get_Selected_Row;
 
    function New_Button
      (Label    : in String;
@@ -230,5 +244,24 @@ package body Giant.Gui_Utils is
       Gtk.Widget.Grab_Default (Widget);
       Result := Gtk.Window.Activate_Default (Window);
    end;
+
+   package body Clist_Row_Data is
+
+      function Find
+        (List  : access Gtk.Clist.Gtk_Clist_Record'Class;
+         Value : in     Data_Type)
+         return Glib.Gint
+      is
+      begin
+         for I in 1..Gtk.Clist.Get_Rows (List) loop
+            if (Data.Get (List, I) = Value) then
+               return I;
+            end if;
+         end loop;
+
+         return Glib.Gint (-1);
+      end Find;
+
+   end Clist_Row_Data;
 
 end Giant.Gui_Utils;

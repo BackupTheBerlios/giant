@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.2 $
--- $Author: schwiemn $
--- $Date: 2003/06/11 12:00:17 $
+-- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.3 $
+-- $Author: squig $
+-- $Date: 2003/06/16 21:48:30 $
 --
 with Unbounded_String_Hash; -- from Bauhaus IML "Reuse.src"
 
@@ -647,14 +647,14 @@ package body Giant.Config.Vis_Styles is
                Node_Class_Id_Hashed_Mappings.Unbind
                  (New_Vis_Style_Access.Node_Class_Specific_Vis,
                    A_Node_Class_Id);
-                   
+
                ------
                -- add new setting to hash_map
                Node_Class_Id_Hashed_Mappings.Bind
                  (New_Vis_Style_Access.Node_Class_Specific_Vis,
                   A_Node_Class_Id,
                   Node_Setting);
-               
+
             end if;
          end loop; -- end while
 
@@ -754,7 +754,7 @@ package body Giant.Config.Vis_Styles is
                Graph_Lib.Edge_Class_Id_Sets.Destroy
                  (A_Edge_Class_ID_Set);
             else
-            
+
                -- insert settings for edge classes into vis style
                -- the already existing setting for affected edge classes
                -- wille be overwritten
@@ -843,7 +843,7 @@ package body Giant.Config.Vis_Styles is
      (GIANT_Vis_Directory    : in String;
       User_Vis_Directory     : in String;
       Default_Vis_Style_File : in String) is
-      
+
       -- needed to ignore not correct xml files for visualisation styles
       Ignore_File : Boolean := False;
 
@@ -960,7 +960,7 @@ package body Giant.Config.Vis_Styles is
 
       while String_Lists.More (File_List_Iter) loop
 
-         -- when a security check sets ignore = true the actual file will 
+         -- when a security check sets ignore = true the actual file will
          -- file "A_Vis_Style_File_Name" will no longer be processed
          Ignore_File := False;
 
@@ -973,18 +973,18 @@ package body Giant.Config.Vis_Styles is
               (Ada.Strings.Unbounded.To_String (A_Vis_Style_File_Name),
                A_Vis_Style_Tree_Reader,
                A_Vis_Style_XML_Document);
-               
+
             -- ignore files that do not describe a visualisation style
             if (XML_File_Access.Does_XML_Document_Belong_To_Type
                 ("giant_visualisation_style_file",
                  A_Vis_Style_XML_Document) = False) then
 
-               Tree_Readers.Free(A_Vis_Style_Tree_Reader);               
-               Ignore_File := True;               
-            else 
-                        
-               -- calculate name and ignore the ones that do not correspond 
-               -- to standard name     
+               Tree_Readers.Free(A_Vis_Style_Tree_Reader);
+               Ignore_File := True;
+            else
+
+               -- calculate name and ignore the ones that do not correspond
+               -- to standard name
                ------------------
                begin
 
@@ -998,14 +998,14 @@ package body Giant.Config.Vis_Styles is
                exception
                   when Valid_Names.
                     No_Correct_Standard_Name_Calculated_Exception  =>
-                    
+
                      Tree_Readers.Free(A_Vis_Style_Tree_Reader);
                      Ignore_File := True;
                end;
                -----------------------------
-               
+
             end if;
-                             
+
          exception
             when XML_File_Access.XML_File_Access_Error_Exception =>
                Ignore_File := True;
@@ -1037,10 +1037,10 @@ package body Giant.Config.Vis_Styles is
             end;
          end if;
 
-         
-     
-         if (Ignore_File = False) then 
-             
+
+
+         if (Ignore_File = False) then
+
             -- remove older vis_style (with same name) if exists
             if All_Vis_Styles_Hashed_Mappings.Is_Bound
               (All_Vis_Styles_Map, A_Vis_Style_Name) then
@@ -1063,8 +1063,8 @@ package body Giant.Config.Vis_Styles is
             -- deallocate Dom Tree for actual processed vis style
             Tree_Readers.Free(A_Vis_Style_Tree_Reader);
          end if;
-         
-      end loop; -- end while String_Lists.More (File_List_Iter) 
+
+      end loop; -- end while String_Lists.More (File_List_Iter)
 
       -- deallocation
       String_Lists.Destroy (File_List);
@@ -1073,7 +1073,7 @@ package body Giant.Config.Vis_Styles is
       -- Insert Default vis style - ensure that another vis style
       -- with the same name that was read befor will be replaced
       -- by the default vis style.
-    
+
       -- build default vis style
       -- this style must be correct
       begin
@@ -1356,7 +1356,7 @@ package body Giant.Config.Vis_Styles is
       end if;
 
       return Initialize_Vis_Style_By_Name
-        (Ada.Strings.Unbounded.To_String(Default_Vis_Style_Name));
+        (Ada.Strings.Unbounded.To_String (Default_Vis_Style_Name));
    end Get_Default_Vis_Style;
 
 

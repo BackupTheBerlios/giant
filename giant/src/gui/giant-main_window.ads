@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-main_window.ads,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/05/31 19:23:40 $
+--  $Date: 2003/06/16 21:48:30 $
 --
 --  Provides the main window. The main window is only instanciated once.
 --
@@ -30,7 +30,20 @@
 --    ADT
 --
 
+with Giant.Vis_Windows;
+with Giant.Valid_Names;
+
 package Giant.Main_Window is
+
+   ---------------------------------------------------------------------------
+   --  Window Methods
+   ---------------------------------------------------------------------------
+
+   procedure Add (Window_Name : Valid_Names.Standard_Name);
+
+   procedure Update (Window_Name : Valid_Names.Standard_Name);
+
+   procedure Remove (Window_Name : Valid_Names.Standard_Name);
 
    ---------------------------------------------------------------------------
    --  Sets windows visible.

@@ -1,4 +1,4 @@
-framework_test : *-test.ad[bs] framework_test.adb
+framework_test :
 	make -C ../ MAIN=test/framework_test EXEC=test/framework_test
 
 mini_map :
@@ -16,3 +16,4 @@ graph_lib : giant_test-graph_lib.adb
 all:
 	make -C ../ all
 
+.PHONY : framework_test

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/06/16 16:08:42 $
+--  $Date: 2003/06/16 21:48:30 $
 --
 ------------------------------------------------------------------------------
 --
@@ -53,6 +53,10 @@ package Giant.Controller is
      return Projects.Project_Access;
 
    procedure Create_Window
+     (Name : in Valid_Names.Standard_Name
+        := Valid_Names.To_Standard_Name ("Unknown"));
+
+   procedure Remove_Window
      (Name : in Valid_Names.Standard_Name);
 
    procedure Show;
