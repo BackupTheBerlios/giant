@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.12 $
+--  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.13 $
 --  $Author: koppor $
---  $Date: 2003/06/25 18:51:23 $
+--  $Date: 2003/06/26 14:07:22 $
 --
 ------------------------------------------------------------------------------
 --
@@ -100,14 +100,6 @@ package Giant.Graph_Lib.Selections is
    procedure Selection_Write
       (Stream : in Bauhaus_Io.Out_Stream_Type;
        Sel    : in Selection);
-
-   ---------------------------------------------------------------------------
-   --  Has to be called before any usage of Selection_Read
-   procedure Start_Reading;
-
-   ---------------------------------------------------------------------------
-   --  Has to be called after finishing using Selection_Read
-   procedure Stop_Reading;
 
    ---------------------------------------------------------------------------
    procedure Selection_Read
