@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.63 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.64 $
 --  $Author: koppor $
---  $Date: 2003/08/26 13:45:48 $
+--  $Date: 2003/08/31 12:04:36 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -752,6 +752,8 @@ package body Giant.Graph_Lib is
             New_Node  : Node_Id; --  of the internal structure
 
          begin
+            Logger.Debug ("Begin: Convert_Nodes");
+
             IML_Node_ID_Mapping := IML_Node_ID_Hashed_Mappings.Create;
 
             Node_Iter := Load_Nodes.Node_Queues.MakeListIter (Queue);
@@ -845,6 +847,8 @@ package body Giant.Graph_Lib is
             New_Node  : Node_Id; --  of the graph_lib-internal structure
 
          begin
+            Logger.Debug ("Begin: Convert_Outgoing_Edges");
+
             All_Edges_Set := Edge_Id_Sets.Empty_Set;
 
             Node_Iter := Load_Nodes.Node_Queues.MakeListIter (Queue);
@@ -895,6 +899,8 @@ package body Giant.Graph_Lib is
             Cur_Node  : Load_Nodes.Node_Access; --  of the temporary structure
             New_Node  : Node_Id; --  of the internal structure
          begin
+            Logger.Debug ("Begin: Convert_Outgoing_Edges");
+
             Node_Iter := Load_Nodes.Node_Queues.MakeListIter (Queue);
             while Load_Nodes.Node_Queues.More (Node_Iter) loop
                Load_Nodes.Node_Queues.Next (Node_Iter, Cur_Node);
@@ -959,9 +965,11 @@ package body Giant.Graph_Lib is
             Convert_Outgoing_Edges (All_Edges_Set);
 
             --  Convert set containing all edges to "public" array of all edges
+            Logger.Debug ("Begin: Convert_Edge_Set_To_Edge_Array");
             All_Edges := Convert_Edge_Set_To_Edge_Array
               (All_Edges_Set, All_Edges_First_Index);
 
+            Logger.Debug ("Begin: Destroy");
             Edge_Id_Sets.Destroy (All_Edges_Set);
          end;
 
