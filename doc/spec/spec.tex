@@ -53,50 +53,34 @@ Hier ist der Text.
 
 \paragraph{Paragraph} Hier ist noch mehr Text.
 
-
-%===============================================================================
-%
-% ToDo Files - Aus fertigem Dokument entferenen (verbrochen von Martin Schwienbacher)
-%
-\chapter{ToDo -- nicht in fertiger SPez.}
-Hier Sachen beschreiben, die irgenwie beim Erstellen der Spez.\ beachtet werden sollen.
-\input{todo_spec}
-
-
 %===============================================================================
 %
 % Funktionale Anforderungen
 %
-\chapter{Teilgraphen}
-Hier Text zu Teilgraphen
-\input{uc/subgraph}
+\chapter{Funktionale Anforderungen}
+\input{uc/load_store}
+\input{uc/gui_window}
+\input{uc/additional}
 
 \chapter{Selektionen}
 Hier Text zu Selektionen
 \input{uc/selection}
 
-\chapter{GUI: Anzeigefenster}
-Hier Text zum Anzeigefenster
-\input{uc/gui_window}
-
 \chapter{Filter}
 Hier Text zu Filtern
 \input{uc/filter}
+
+\chapter{Teilgraphen}
+Hier Text zu Teilgraphen
+\input{uc/subgraph}
 
 \chapter{Anfragen}
 Hier Text zu Anfragen
 \input{uc/query}
 
-\chapter{Laden und Speichern}
-Hier Text zur Lade- und Speicherfunktionalität
-\input{uc/load_store}
-
-\chapter{Sonstige Use-Cases}
-Hier Text zu sonstigen Use-Cases
-\input{uc/additional}
 
 % sample usecase
-
+\chapter{UC Sample}
 \begin{uc}[Label]{Use-Case}
 
   \begin{actors}
@@ -123,6 +107,10 @@ Hier Text zu sonstigen Use-Cases
   \end{postcond}
   
 \end{uc}
+
+\chapter{Beschreibung der GUI}
+
+\chapter{Nichtfunktionale Anforderungen}
 
 \chapter{Begriffslexikon}
 \include{nomenclature}
