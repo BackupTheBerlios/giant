@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.13 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.14 $
 --  $Author: koppor $
---  $Date: 2003/06/13 17:35:44 $
+--  $Date: 2003/06/13 17:56:56 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -1165,7 +1165,7 @@ package body Giant.Graph_Lib is
    end Get_All_Nodes;
 
    ---------------------------------------------------------------------------
-   function Get_Class_Of_Edge
+   function Get_Edge_Class_Id
      (Edge : in Edge_Id)
       return Edge_Class_Id
    is
@@ -1174,16 +1174,16 @@ package body Giant.Graph_Lib is
         Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
         (Get_Class_Of_Node (Edge.Source_Node),
          Edge.Attribute);
-   end Get_Class_Of_Edge;
+   end Get_Edge_Class_Id;
 
    ---------------------------------------------------------------------------
-   function Get_Class_Of_Node
+   function Get_Node_Class_Id
      (Node : in Node_Id)
       return Node_Class_Id
    is
    begin
       return IML_Roots.Get_Class_ID (IML_Roots.IML_Root (Node.IML_Node));
-   end Get_Class_Of_Node;
+   end Get_Node_Class_id;
 
    ---------------------------------------------------------------------------
    function Get_Edge_Tag
