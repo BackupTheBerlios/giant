@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.ads,v $, $Revision: 1.7 $
+--  $RCSfile: giant-tree_layouts.ads,v $, $Revision: 1.8 $
 --  $Author: koppor $
---  $Date: 2003/07/07 19:55:13 $
+--  $Date: 2003/07/07 23:43:04 $
 --
 ------------------------------------------------------------------------------
 --
@@ -31,6 +31,9 @@
 
 with Lists;
 pragma Elaborate_All (Lists);
+
+with Hashed_Mappings;
+pragma Elaborate_All (Hashed_Mappings);
 
 --  Speed optimization:
 --    Include Last_Element-"hack" into Stacks_Unbounded
@@ -137,11 +140,12 @@ package Giant.Tree_Layouts is
 
 private
    ---------------------------------------------------------------------------
-   type Layout_State is (Init_Start, Init_Run,
+   type Layout_State is (Init_Start,
+                         Init_Run_Part_One,
+                         Init_Run_Part_Two,
                          FirstWalk_Start,
                          FirstWalk_Run_Part_One,
                          FirstWalk_Run_Part_Two,
-                         FirstWalk_Run_Part_Three,
                          SecondWalk_Start,
                          SecondWalk_Run,
                          Matrix);
@@ -152,7 +156,11 @@ private
    type Node_Layout_Data_Record is record
       Thread            : Node_Layout_Data;
 
+      --  by algorithm
       Ancestor          : Node_Layout_Data;
+
+      --  by init-routine
+      Parent            : Node_Layout_Data;
 
       --  = self, if self is leftmost silbling
       Leftmost_Silbling : Node_Layout_Data;
@@ -176,7 +184,7 @@ private
       Shift             : Vis.Logic_Float;
 
       --  Level in the tree
-      Level             : Integer;
+      Level             : Positive;
 
       --  Node in graph_lib
       Node              : Graph_Lib.Node_Id;
@@ -188,7 +196,6 @@ private
 
    ---------------------------------------------------------------------------
    type FirstWalk_Part_Two_Data_Record is record
-      V               : Node_Layout_Data;
       W               : Node_Layout_Data;
       DefaultAncestor : Node_Layout_Data;
    end record;
@@ -202,10 +209,6 @@ private
      Stacks_Unbounded (Elem_Type => FirstWalk_Part_Two_Data_Record);
 
    ---------------------------------------------------------------------------
-   package FirstWalk_Part_Three_Stacks is new
-     Stacks_Unbounded (Elem_Type => Node_Layout_Data);
-
-   ---------------------------------------------------------------------------
    type SecondWalk_Data_Record is record
       V               : Node_Layout_Data;
       M               : Vis.Logic_Float;
@@ -214,6 +217,14 @@ private
    ---------------------------------------------------------------------------
    package SecondWalk_Stacks is new
      Stacks_Unbounded (Elem_Type => SecondWalk_Data_Record);
+
+   ---------------------------------------------------------------------------
+   function Id (P : in Positive) return Positive;
+   package Level_Mappings is new
+     Hashed_Mappings
+     (Key_Type   => Positive,
+      Value_Type => Vis.Logic_Float,
+      Hash       => Id);
 
    ---------------------------------------------------------------------------
    type Tree_Layout_Record is
@@ -245,9 +256,11 @@ private
         Queue_Last       : Node_Layout_Data_Lists.List;
         Queue            : Node_Layout_Data_Lists.List;
 
+        Level_Heights              : Level_Mappings.Mapping;
+
         FirstWalk_Part_One_Stack   : FirstWalk_Part_One_Stacks.Stack;
         FirstWalk_Part_Two_Stack   : FirstWalk_Part_Two_Stacks.Stack;
-        FirstWalk_Part_Three_Stack : FirstWalk_Part_Three_Stacks.Stack;
+
         SecondWalk_Stack           : SecondWalk_Stacks.Stack;
      end record;
 
