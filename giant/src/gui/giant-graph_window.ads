@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.15 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.16 $
 --  $Author: squig $
---  $Date: 2003/06/29 11:51:56 $
+--  $Date: 2003/06/29 21:23:23 $
 --
 ------------------------------------------------------------------------------
 --
@@ -40,7 +40,9 @@ with Gtk.Paned;
 with Gtk.Style;
 with Gtk.Window;
 
+with Giant.Graph_Widgets;
 with Giant.Gui_Utils;
+with Giant.Mini_Maps;
 with Giant.Vis;
 with Giant.Vis_Windows;
 
@@ -82,9 +84,8 @@ package Giant.Graph_Window is
 
    end Actions;
 
-
    function Close
-     (Window               : access Graph_Window_Record'Class;
+     (Window               : access Graph_Window_Record;
       Ask_For_Confirmation : in     Boolean)
      return Boolean;
 
@@ -96,14 +97,14 @@ package Giant.Graph_Window is
      (Window : access Graph_Window_Record'Class);
 
    function Get_Vis_Window
-     (Window : access Graph_Window_Record'Class)
+     (Window : access Graph_Window_Record)
      return Vis_Windows.Visual_Window_Access;
 
    procedure Update_Title
-     (Window : access Graph_Window_Record'Class);
+     (Window : access Graph_Window_Record);
 
    procedure Set_Global_Action_Mode
-     (Widget : access Graph_Window_Record'Class;
+     (Widget : access Graph_Window_Record;
       Enable : in     Boolean);
 
    ---------------------------------------------------------------------------
@@ -111,15 +112,19 @@ package Giant.Graph_Window is
    ---------------------------------------------------------------------------
 
    procedure Add_Pin
-     (Window : access Graph_Window_Record'Class;
+     (Window : access Graph_Window_Record;
       Name   : in     String);
 
+   function Get_Selected_Pin
+     (Window : access Graph_Window_Record)
+     return String;
+
    procedure Update_Pin
-     (Window : access Graph_Window_Record'Class;
+     (Window : access Graph_Window_Record;
       Name   : in     String);
 
    procedure Remove_Pin
-     (Window : access Graph_Window_Record'Class;
+     (Window : access Graph_Window_Record;
       Name   : in     String);
 
    ---------------------------------------------------------------------------
@@ -127,15 +132,15 @@ package Giant.Graph_Window is
    ---------------------------------------------------------------------------
 
    procedure Add_Selection
-     (Window : access Graph_Window_Record'Class;
+     (Window : access Graph_Window_Record;
       Name   : in     String);
 
    procedure Update_Selection
-     (Window : access Graph_Window_Record'Class;
+     (Window : access Graph_Window_Record;
       Name   : in     String);
 
    procedure Remove_Selection
-     (Window : access Graph_Window_Record'Class;
+     (Window : access Graph_Window_Record;
       Name   : in     String);
 
 private
@@ -152,6 +157,9 @@ private
         Vis_Style_Menu : Gtk.Option_Menu.Gtk_Option_Menu;
         Zoom_Combo : Gtk.Combo.Gtk_Combo;
         Zoom_Entry : Gtk.Gentry.Gtk_Entry;
+
+        Graph : Graph_Widgets.Graph_Widget;
+        Mini_Map : Mini_Maps.Mini_Map;
 
         Is_Modified : Boolean := True;
 

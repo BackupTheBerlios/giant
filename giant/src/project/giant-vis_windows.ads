@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.19 $
+--  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.20 $
 --  $Author: squig $
---  $Date: 2003/06/22 23:03:19 $
+--  $Date: 2003/06/29 21:23:23 $
 --
 --  ----------------
 --  This package realizes a container that administrates the components
@@ -686,7 +686,7 @@ package Giant.Vis_Windows is
    --   Visual_Window_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
-   function Does_Exist
+   function Does_Pin_Exist
      (Vis_Window : in Visual_Window_Access;
       Pin_Name   : in String)
      return Boolean;

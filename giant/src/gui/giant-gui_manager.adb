@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.22 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.23 $
 --  $Author: squig $
---  $Date: 2003/06/29 11:51:56 $
+--  $Date: 2003/06/29 21:23:23 $
 --
 
 with Ada.Strings.Unbounded;
@@ -193,6 +193,80 @@ package body Giant.Gui_Manager is
    end Set_Status;
 
    ---------------------------------------------------------------------------
+   --  Pins
+   ---------------------------------------------------------------------------
+
+   procedure Add_Pin
+     (Window_Name : in String;
+      Name        : in String)
+   is
+      Window : Graph_Window.Graph_Window_Access
+        := Get_Open_Window (Window_Name);
+   begin
+      if (Window = null) then
+         --  window is not shown
+         return;
+      end if;
+
+      Graph_Window.Add_Pin (Window, Name);
+   end Add_Pin;
+
+   function Remove_Pin
+     (Window_Name          : in String;
+      Name                 : in String;
+      Ask_For_Confirmation : in Boolean := True)
+     return Boolean
+   is
+      Window : Graph_Window.Graph_Window_Access
+        := Get_Open_Window (Window_Name);
+   begin
+      if (Window = null) then
+         --  window is not shown
+         return True;
+      end if;
+
+      if (Ask_For_Confirmation
+          and then not Dialogs.Show_Delete_Confirmation_Dialog) then
+         return False;
+      end if;
+
+      Graph_Window.Remove_Pin (Window, Name);
+      return True;
+   end Remove_Pin;
+
+   procedure Rename_Pin
+     (Window_Name : in String;
+      Old_Name    : in String;
+      New_Name    : in String)
+   is
+      Window : Graph_Window.Graph_Window_Access
+        := Get_Open_Window (Window_Name);
+   begin
+      if (Window = null) then
+         --  window is not shown
+         return;
+      end if;
+
+      Graph_Window.Remove_Pin (Window, Old_Name);
+      Graph_Window.Add_Pin (Window, New_Name);
+   end Rename_Pin;
+
+   procedure Update_Pin
+     (Window_Name : in String;
+      Name        : in String)
+   is
+      Window : Graph_Window.Graph_Window_Access
+        := Get_Open_Window (Window_Name);
+   begin
+      if (Window = null) then
+         --  window is not shown
+         return;
+      end if;
+
+      Graph_Window.Update_Pin (Window, Name);
+   end Update_Pin;
+
+   ---------------------------------------------------------------------------
    --  Selections
    ---------------------------------------------------------------------------
 
@@ -223,6 +297,11 @@ package body Giant.Gui_Manager is
       if (Window = null) then
          --  window is not shown
          return True;
+      end if;
+
+      if (Ask_For_Confirmation
+          and then not Dialogs.Show_Delete_Confirmation_Dialog) then
+         return False;
       end if;
 
       Graph_Window.Remove_Selection (Window, Name);

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.38 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.39 $
 --  $Author: squig $
---  $Date: 2003/06/29 11:51:56 $
+--  $Date: 2003/06/29 21:23:23 $
 --
 
 with Ada.Exceptions;
@@ -315,8 +315,8 @@ package body Giant.Main_Window is
    begin
       Logger.Info ("Nodes : " & Integer'Image
                    (Graph_Lib.Node_Id_Sets.Size
-                    (Graph_Lib.Get_All_Nodes)));
-      Logger.Info ("Edges : " & Integer'Image
+                    (Graph_Lib.Get_All_Nodes))
+                   & ", Edges : " & Integer'Image
                    (Graph_Lib.Edge_Id_Sets.Size
                     (Graph_Lib.Get_All_Edges)));
       Node_Info_Dialog.Create (Dialog);

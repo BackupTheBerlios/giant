@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.20 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.21 $
 --  $Author: squig $
---  $Date: 2003/06/29 11:51:56 $
+--  $Date: 2003/06/29 21:23:23 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -903,7 +903,7 @@ package body Giant.Vis_Windows is
    --------------------------------------------------------------------------
 
    --------------------------------------------------------------------------
-   function Does_Exist
+   function Does_Pin_Exist
      (Vis_Window : in Visual_Window_Access;
       Pin_Name   : in String)
      return Boolean is
@@ -924,7 +924,7 @@ package body Giant.Vis_Windows is
       end if;
 
       return False;
-   end Does_Exist;
+   end Does_Pin_Exist;
 
    --------------------------------------------------------------------------
    function Get_Position
@@ -940,7 +940,7 @@ package body Giant.Vis_Windows is
          raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
 
-      if (Does_Exist (Vis_Window, Pin_Name) = False) then
+      if (Does_Pin_Exist (Vis_Window, Pin_Name) = False) then
          raise Pin_With_Passed_Name_Not_Found_Exception;
       end if;
 
@@ -967,7 +967,7 @@ package body Giant.Vis_Windows is
          raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
 
-      if (Does_Exist (Vis_Window, Pin_Name) = False) then
+      if (Does_Pin_Exist (Vis_Window, Pin_Name) = False) then
          raise Pin_With_Passed_Name_Not_Found_Exception;
       end if;
 
@@ -1022,7 +1022,7 @@ package body Giant.Vis_Windows is
          raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
 
-      if (Does_Exist (Vis_Window, Name) = True) then
+      if (Does_Pin_Exist (Vis_Window, Name) = True) then
          raise Pin_Does_Already_Exist_Exception;
       end if;
 
@@ -1047,7 +1047,7 @@ package body Giant.Vis_Windows is
          raise Visual_Window_Access_Not_Initialized_Exception;
       end if;
 
-      if (Does_Exist (Vis_Window, Pin_Name) = False) then
+      if (Does_Pin_Exist (Vis_Window, Pin_Name) = False) then
          raise Pin_With_Passed_Name_Not_Found_Exception;
       end if;
 

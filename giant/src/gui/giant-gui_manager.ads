@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.20 $
+--  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.21 $
 --  $Author: squig $
---  $Date: 2003/06/29 11:51:56 $
+--  $Date: 2003/06/29 21:23:23 $
 --
 --  Stores the window records. Handles the controller updates. Provides
 --  a facade for the gui.
@@ -68,6 +68,29 @@ package Giant.Gui_Manager is
 
    procedure Set_Status
      (Text : in String);
+
+   ---------------------------------------------------------------------------
+   --  Pins
+   ---------------------------------------------------------------------------
+
+   procedure Add_Pin
+     (Window_Name : in String;
+      Name        : in String);
+
+   function Remove_Pin
+     (Window_Name          : in String;
+      Name                 : in String;
+      Ask_For_Confirmation : in Boolean := True)
+     return Boolean;
+
+   procedure Rename_Pin
+     (Window_Name : in String;
+      Old_Name    : in String;
+      New_Name    : in String);
+
+   procedure Update_Pin
+     (Window_Name : in String;
+      Name        : in String);
 
    ---------------------------------------------------------------------------
    --  Selections

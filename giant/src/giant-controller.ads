@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.22 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.23 $
 --  $Author: squig $
---  $Date: 2003/06/29 11:51:56 $
+--  $Date: 2003/06/29 21:23:23 $
 --
 ------------------------------------------------------------------------------
 --
@@ -51,16 +51,10 @@
 with Giant.Graph_Lib;
 with Giant.Projects;
 with Giant.Valid_Names;
+with Giant.Vis;
 with Giant.Vis_Windows;
 
 package Giant.Controller is
-
-   ---------------------------------------------------------------------------
-   --  GSL
-   ---------------------------------------------------------------------------
-
-   procedure Execute_GSL
-     (Script : in String);
 
    ---------------------------------------------------------------------------
    --  GUI
@@ -83,6 +77,13 @@ package Giant.Controller is
    function Hide_Gui
      (Ask_For_Confirmation : in Boolean := True)
      return Boolean;
+
+   ---------------------------------------------------------------------------
+   --  GSL
+   ---------------------------------------------------------------------------
+
+   procedure Execute_GSL
+     (Script : in String);
 
    ---------------------------------------------------------------------------
    --  Node Annotations
@@ -110,6 +111,31 @@ package Giant.Controller is
    --  Removes the annotation for Node.
    procedure Remove_Node_Annotation
      (Node : in Graph_Lib.Node_Id);
+
+   ---------------------------------------------------------------------------
+   --  Pins
+   ---------------------------------------------------------------------------
+
+   procedure Create_Pin
+     (Window_Name : in String;
+      Name        : in String;
+      Position    : in Vis.Logic.Vector_2d;
+      Zoom_Level  : in Vis.Zoom_Level);
+
+   function Remove_Pin
+     (Window_Name          : in String;
+      Name                 : in String;
+      Ask_For_Confirmation : in Boolean := True)
+     return Boolean;
+
+   procedure Rename_Pin
+     (Window_Name : in String;
+      Old_Name    : in String;
+      New_Name    : in String);
+
+   procedure Show_Pin
+     (Window_Name : in String;
+      Name        : in String);
 
    ---------------------------------------------------------------------------
    --  Projects
@@ -191,7 +217,7 @@ package Giant.Controller is
 
    procedure Create_Selection
      (Window_Name : in String;
-      Name        : in String := "Name");
+      Name        : in String);
 
    procedure Create_Selection_From_Subgraph
      (Subgraph_Name : in String;
@@ -204,12 +230,12 @@ package Giant.Controller is
       Target_Name : in String);
 
    procedure Hide_Selection
-     (Window_Name    : in String;
-      Selection_Name : in String);
+     (Window_Name : in String;
+      Name        : in String);
 
    procedure Highlight_Selection
      (Window_Name      : in String;
-      Selection_Name   : in String;
+      Name             : in String;
       Highlight_Status : in Vis_Windows.Selection_Highlight_Status);
 
    function Remove_Selection
@@ -231,8 +257,8 @@ package Giant.Controller is
      (Window_Name    : in String);
 
    procedure Show_Selection
-     (Window_Name    : in String;
-      Selection_Name : in String);
+     (Window_Name : in String;
+      Name        : in String);
 
    procedure Unhighlight_Selection
      (Window_Name : in String;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.29 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.30 $
 --  $Author: squig $
---  $Date: 2003/06/29 11:51:56 $
+--  $Date: 2003/06/29 21:23:23 $
 --
 
 with Ada.Strings.Unbounded;
@@ -46,6 +46,86 @@ package body Giant.Controller is
       Right       : in Graph_Lib.Subgraphs.Subgraph;
       Target_Name : in String)
      return Graph_Lib.Subgraphs.Subgraph;
+
+   ---------------------------------------------------------------------------
+   --  GUI
+   ---------------------------------------------------------------------------
+
+   function Hide_Gui
+     (Ask_For_Confirmation : in Boolean := True)
+     return Boolean
+   is
+   begin
+      return Gui_Manager.Hide (Ask_For_Confirmation);
+   end Hide_Gui;
+
+   procedure Show_Gui
+   is
+   begin
+      Gui_Manager.Show;
+   end Show_Gui;
+
+   ---------------------------------------------------------------------------
+   --  GSL
+   ---------------------------------------------------------------------------
+
+   procedure Execute_GSL
+     (Script : in String)
+   is
+   begin
+      -- FIX: execute script
+      null;
+   end Execute_GSL;
+
+   ---------------------------------------------------------------------------
+   --  Node Annotations
+   ---------------------------------------------------------------------------
+
+   function Get_Node_Annotation
+     (Node : in Graph_Lib.Node_Id)
+     return String
+   is
+   begin
+      if (Is_Node_Annotated (Node)) then
+         return Node_Annotations.Get_Annotation_Text
+           (Projects.Get_Node_Annotations (Current_Project), Node);
+      else
+         return "";
+      end if;
+   end;
+
+   function Is_Node_Annotated
+     (Node : in Graph_Lib.Node_Id)
+     return Boolean
+   is
+   begin
+      return Node_Annotations.Is_Annotated
+        (Projects.Get_Node_Annotations (Current_Project), Node);
+   end;
+
+   procedure Set_Node_Annotation
+     (Node : in Graph_Lib.Node_Id;
+      Text : in String)
+   is
+   begin
+      if (Is_Node_Annotated (Node)) then
+         Node_Annotations.Change_Node_Annotation
+           (Projects.Get_Node_Annotations (Current_Project), Node, Text);
+      else
+         Node_Annotations.Add_Node_Annotation
+           (Projects.Get_Node_Annotations (Current_Project), Node, Text);
+      end if;
+   end;
+
+   procedure Remove_Node_Annotation
+     (Node : in Graph_Lib.Node_Id)
+   is
+   begin
+      if (Is_Node_Annotated (Node)) then
+         Node_Annotations.Remove_Node_Annotation
+           (Projects.Get_Node_Annotations (Current_Project), Node);
+      end if;
+   end;
 
    ---------------------------------------------------------------------------
    --  Projects
@@ -187,83 +267,64 @@ package body Giant.Controller is
    end Save_Project;
 
    ---------------------------------------------------------------------------
-   --  GSL
+   --  Pins
    ---------------------------------------------------------------------------
 
-   procedure Execute_GSL
-     (Script : in String)
+   procedure Create_Pin
+     (Window_Name : in String;
+      Name        : in String;
+      Position    : in Vis.Logic.Vector_2d;
+      Zoom_Level  : in Vis.Zoom_Level)
    is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
    begin
-      -- FIX: execute script
+      Vis_Windows.Add_Pin (Window, Name, Position, Zoom_Level);
+      Gui_Manager.Add_Pin (Window_Name, Name);
+   end Create_Pin;
+
+   function Remove_Pin
+     (Window_Name          : in String;
+      Name                 : in String;
+      Ask_For_Confirmation : in Boolean := True)
+     return Boolean
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+   begin
+      if (Gui_Manager.Remove_Pin (Window_Name, Name)) then
+         Vis_Windows.Remove_Pin (Window, Name);
+         return True;
+      else
+         return False;
+      end if;
+   end Remove_Pin;
+
+   procedure Rename_Pin
+     (Window_Name : in String;
+      Old_Name    : in String;
+      New_Name    : in String)
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+   begin
+      if (New_Name /= Old_Name) then
+         -- FIX: the following method is missing in Vis_Windows
+--           Vis_Windows.Change_Pin_Name
+--             (Window, Old_Name, New_Name);
+         Gui_Manager.Rename_Pin (Window_Name, Old_Name, New_Name);
+      end if;
+   end Rename_Pin;
+
+   procedure Show_Pin
+     (Window_Name : in String;
+      Name        : in String)
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+   begin
+      -- FIX: center graph_widget on pin
       null;
-   end Execute_GSL;
-
-   ---------------------------------------------------------------------------
-   --  GUI
-   ---------------------------------------------------------------------------
-
-   function Hide_Gui
-     (Ask_For_Confirmation : in Boolean := True)
-     return Boolean
-   is
-   begin
-      return Gui_Manager.Hide (Ask_For_Confirmation);
-   end Hide_Gui;
-
-   procedure Show_Gui
-   is
-   begin
-      Gui_Manager.Show;
-   end Show_Gui;
-
-   ---------------------------------------------------------------------------
-   --  Node Annotations
-   ---------------------------------------------------------------------------
-
-   function Get_Node_Annotation
-     (Node : in Graph_Lib.Node_Id)
-     return String
-   is
-   begin
-      if (Is_Node_Annotated (Node)) then
-         return Node_Annotations.Get_Annotation_Text
-           (Projects.Get_Node_Annotations (Current_Project), Node);
-      else
-         return "";
-      end if;
-   end;
-
-   function Is_Node_Annotated
-     (Node : in Graph_Lib.Node_Id)
-     return Boolean
-   is
-   begin
-      return Node_Annotations.Is_Annotated
-        (Projects.Get_Node_Annotations (Current_Project), Node);
-   end;
-
-   procedure Set_Node_Annotation
-     (Node : in Graph_Lib.Node_Id;
-      Text : in String)
-   is
-   begin
-      if (Is_Node_Annotated (Node)) then
-         Node_Annotations.Change_Node_Annotation
-           (Projects.Get_Node_Annotations (Current_Project), Node, Text);
-      else
-         Node_Annotations.Add_Node_Annotation
-           (Projects.Get_Node_Annotations (Current_Project), Node, Text);
-      end if;
-   end;
-
-   procedure Remove_Node_Annotation
-     (Node : in Graph_Lib.Node_Id)
-   is
-   begin
-      if (Is_Node_Annotated (Node)) then
-         Node_Annotations.Remove_Node_Annotation
-           (Projects.Get_Node_Annotations (Current_Project), Node);
-      end if;
    end;
 
    ---------------------------------------------------------------------------
@@ -272,7 +333,7 @@ package body Giant.Controller is
 
    procedure Create_Selection
      (Window_Name : in String;
-      Name        : in String := "Name")
+      Name        : in String)
    is
       Window : Vis_Windows.Visual_Window_Access
         := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
@@ -316,26 +377,28 @@ package body Giant.Controller is
    end Duplicate_Selection;
 
    procedure Hide_Selection
-     (Window_Name    : in String;
-      Selection_Name : in String)
+     (Window_Name : in String;
+      Name        : in String)
    is
       Window : Vis_Windows.Visual_Window_Access
         := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
    begin
-      Vis_Windows.Fade_Out_Selection (Window, Selection_Name);
+      if (not Vis_Windows.Is_Faded_Out (Window, Name)) then
+         Vis_Windows.Fade_Out_Selection (Window, Name);
+      end if;
    end;
 
    procedure Highlight_Selection
      (Window_Name      : in String;
-      Selection_Name   : in String;
+      Name             : in String;
       Highlight_Status : in Vis_Windows.Selection_Highlight_Status)
    is
       Window : Vis_Windows.Visual_Window_Access
         := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
    begin
       Vis_Windows.Set_Highlight_Status
-        (Window, Selection_Name, Highlight_Status);
-      Gui_Manager.Update_Selection (Window_Name, Selection_Name);
+        (Window, Name, Highlight_Status);
+      Gui_Manager.Update_Selection (Window_Name, Name);
    end;
 
    function Remove_Selection
@@ -347,6 +410,12 @@ package body Giant.Controller is
       Window : Vis_Windows.Visual_Window_Access
         := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
    begin
+      if (Vis_Windows.Get_Standard_Selection (Window) = Name) then
+         --  we need to raise this before Gui_Manager.Remove_Selection
+         --  is called, otherwise we loose gui consistency
+         raise Vis_Windows.Standard_Selection_May_Not_Be_Removed_Exception;
+      end if;
+
       if (Gui_Manager.Remove_Selection (Window_Name, Name)) then
          Vis_Windows.Remove_Selection (Window, Name);
          return True;
@@ -363,9 +432,11 @@ package body Giant.Controller is
       Window : Vis_Windows.Visual_Window_Access
         := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
    begin
-      Vis_Windows.Change_Selection_Name
-        (Window, Old_Name, New_Name);
-      Gui_Manager.Rename_Selection (Window_Name, Old_Name, New_Name);
+      if (New_Name /= Old_Name) then
+         Vis_Windows.Change_Selection_Name
+           (Window, Old_Name, New_Name);
+         Gui_Manager.Rename_Selection (Window_Name, Old_Name, New_Name);
+      end if;
    end Rename_Selection;
 
    procedure Set_Current_Selection
@@ -377,26 +448,51 @@ package body Giant.Controller is
       Previous_Selection_Name : String
         := Vis_Windows.Get_Current_Selection (Window);
    begin
-      Unhighlight_Selection (Window_Name, Name);
+      if (Name /= Previous_Selection_Name) then
+         Unhighlight_Selection (Window_Name, Name);
 
-      Vis_Windows.Set_Current_Selection (Window, Name);
-      Gui_Manager.Update_Selection (Window_Name, Previous_Selection_Name);
-      Gui_Manager.Update_Selection (Window_Name, Name);
+         Vis_Windows.Set_Current_Selection (Window, Name);
+         Gui_Manager.Update_Selection (Window_Name, Previous_Selection_Name);
+         Gui_Manager.Update_Selection (Window_Name, Name);
+      else
+         Logger.Info (-"The selection is already active.");
+      end if;
    end Set_Current_Selection;
 
    procedure Show_All_Selections
      (Window_Name    : in String)
    is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+      List : String_Lists.List;
+      Iterator : String_Lists.ListIter;
+      Name : Ada.Strings.Unbounded.Unbounded_String;
    begin
+      --  iterate through all selections
+      List := Vis_Windows.Get_All_Selections (Window);
+      Iterator := String_Lists.MakeListIter (List);
+      while String_Lists.More (Iterator) loop
+         String_Lists.Next (Iterator, Name);
+         if (Vis_Windows.Is_Faded_Out
+             (Window, Ada.Strings.Unbounded.To_String (Name))) then
+            Vis_Windows.Fade_In_Selection
+              (Window, Ada.Strings.Unbounded.To_String (Name));
+         end if;
+      end loop;
+      String_Lists.Destroy (List);
       null;
    end;
 
    procedure Show_Selection
-     (Window_Name    : in String;
-      Selection_Name : in String)
+     (Window_Name : in String;
+      Name        : in String)
    is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
    begin
-      null;
+      if (Vis_Windows.Is_Faded_Out (Window, Name)) then
+         Vis_Windows.Fade_In_Selection (Window, Name);
+      end if;
    end;
 
    procedure Unhighlight_Selection
@@ -473,10 +569,11 @@ package body Giant.Controller is
       New_Name : in String)
    is
    begin
-      Projects.Change_Subgraph_Name
-        (Current_Project, Old_Name, New_Name);
-
-      Gui_Manager.Rename_Subgraph (Old_Name, New_Name);
+      if (New_Name /= Old_Name) then
+         Projects.Change_Subgraph_Name
+           (Current_Project, Old_Name, New_Name);
+         Gui_Manager.Rename_Subgraph (Old_Name, New_Name);
+      end if;
    end Rename_Subgraph;
 
    procedure Set_Subgraph_Highlight_Status
@@ -613,10 +710,11 @@ package body Giant.Controller is
       Window : Vis_Windows.Visual_Window_Access
         := Projects.Get_Visualisation_Window (Current_Project, Old_Name);
    begin
-      Projects.Change_Vis_Window_Name
-        (Current_Project, Old_Name, New_Name);
-
-      Gui_Manager.Rename_Window (Old_Name, New_Name);
+      if (New_Name /= Old_Name) then
+         Projects.Change_Vis_Window_Name
+           (Current_Project, Old_Name, New_Name);
+         Gui_Manager.Rename_Window (Old_Name, New_Name);
+      end if;
    end Rename_Window;
 
    procedure Save_Window

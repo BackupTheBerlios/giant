@@ -20,15 +20,16 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.18 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.19 $
 --  $Author: squig $
---  $Date: 2003/06/29 15:48:19 $
+--  $Date: 2003/06/29 21:23:23 $
 --
 
 with Ada.Unchecked_Deallocation;
 
 with Gdk.Color;
 with Glib;
+with Gtk.Arguments;
 with Gtk.Box;
 with Gtk.Button;
 with Gtk.Enums;
@@ -46,9 +47,12 @@ with Giant.Gui_Manager;
 with Giant.Gui_Manager.Actions;
 with Giant.Gui_Utils;
 with Giant.Input_Dialog;
+with Giant.Logger;
 with Giant.Main_Window;
 
 package body Giant.Graph_Window is
+
+   package Logger is new Giant.Logger("giant.graph_window");
 
    package Graph_Window_Input_Dialog is
      new Input_Dialog (Graph_Window_Access);
@@ -184,6 +188,49 @@ package body Giant.Graph_Window is
    --  Pin Menu Callbacks
    ---------------------------------------------------------------------------
 
+   function Validate_Pin_Name
+     (Name   : in String;
+      Window : in Graph_Window_Access)
+      return Boolean
+   is
+   begin
+      if (Vis_Windows.Does_Pin_Exist (Window.Visual_Window, Name)) then
+         Dialogs.Show_Error_Dialog (-"A pin with this name already exists.");
+         return False;
+      end if;
+      return True;
+   end Validate_Pin_Name;
+
+   procedure On_Pin_List_Delete
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+      Window : constant Graph_Window_Access := Graph_Window_Access (Source);
+      Removed : Boolean;
+   begin
+      Removed := Controller.Remove_Pin
+        (Get_Window_Name (Source), Get_Selected_Pin (Window));
+   end On_Pin_List_Delete;
+
+   procedure On_Pin_List_Rename
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+      Window : constant Graph_Window_Access := Graph_Window_Access (Source);
+   begin
+      declare
+         Old_Name : constant String := Get_Selected_Pin (Window);
+         New_Name : constant String
+           := Graph_Window_Input_Dialog.Show
+           (-"New name", -"Rename Pin",
+            Old_Name, Validate_Pin_Name'Access, Window);
+      begin
+
+         if (New_Name /= "" and then New_Name /= Old_Name) then
+            Controller.Rename_Pin (Get_Window_Name (Source),
+                                   Old_Name, New_Name);
+         end if;
+      end;
+   end On_Pin_List_Rename;
+
    procedure On_Pin_List_Show
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
@@ -209,6 +256,19 @@ package body Giant.Graph_Window is
       end if;
       return True;
    end Validate_Selection_Name;
+
+   procedure On_Selection_List_Delete
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+      Window : constant Graph_Window_Access := Graph_Window_Access (Source);
+      Removed : Boolean;
+   begin
+      Removed := Controller.Remove_Selection
+        (Get_Window_Name (Source), Get_Selected_Selection (Window));
+   exception
+      when Vis_Windows.Standard_Selection_May_Not_Be_Removed_Exception =>
+         Dialogs.Show_Error_Dialog ("The default selection can not be removed.");
+   end On_Selection_List_Delete;
 
    procedure On_Selection_List_Duplicate
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
@@ -236,6 +296,9 @@ package body Giant.Graph_Window is
    begin
       Controller.Hide_Selection (Get_Window_Name (Source),
                                  Get_Selected_Selection (Window));
+   exception
+      when Vis_Windows.Selection_May_Not_Be_Faded_Out_Exception =>
+         Dialogs.Show_Error_Dialog ("The active and default selections can not be hidden.");
    end On_Selection_List_Hide;
 
    generic
@@ -257,6 +320,9 @@ package body Giant.Graph_Window is
            Controller.Highlight_Selection
              (Get_Window_Name (Window), Get_Selected_Selection (Window),
               Highlight_Status);
+        exception
+           when Vis_Windows.Highlight_Status_Of_Selection_May_Not_Be_Changed_Exception =>
+              Dialogs.Show_Error_Dialog (-"The active selection can not be highlighted.");
         end On_Highlight;
 
    end Highlight_Menu_Callback;
@@ -291,18 +357,10 @@ package body Giant.Graph_Window is
                                          Old_Name, New_Name);
          end if;
       end;
+   exception
+      when Vis_Windows.Standard_Selection_Name_May_Not_Be_Changed_Exception =>
+         Dialogs.Show_Error_Dialog ("The default selection can not be renamed.");
    end On_Selection_List_Rename;
-
-   procedure On_Selection_List_Delete
-     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
-   is
-      Window : constant Graph_Window_Access := Graph_Window_Access (Source);
-      Removed : Boolean;
-   begin
-      Removed := Controller.Remove_Selection
-        (Get_Window_Name (Source),
-         Get_Selected_Selection (Window));
-   end On_Selection_List_Delete;
 
    procedure On_Selection_List_Set_Active
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
@@ -312,6 +370,9 @@ package body Giant.Graph_Window is
       Controller.Set_Current_Selection
         (Get_Window_Name (Source),
          Get_Selected_Selection (Window));
+   exception
+      when Vis_Windows.Illegal_Current_Selection_Exception =>
+         Dialogs.Show_Error_Dialog (-"The selection is hidden, please select Show first.");
    end On_Selection_List_Set_Active;
 
    procedure On_Selection_List_Show
@@ -332,7 +393,6 @@ package body Giant.Graph_Window is
         (Vis_Windows.Get_Name (Window.Visual_Window));
    end On_Selection_List_Show_All;
 
-
    ---------------------------------------------------------------------------
    --  Zoom Callbacks
    ---------------------------------------------------------------------------
@@ -340,9 +400,38 @@ package body Giant.Graph_Window is
    procedure On_Zoom_In_Clicked
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
    begin
-      null;
+      Controller.Create_Pin (Get_Window_Name (Window), "Test",
+                             Vis.Logic.Zero_2d, 1.0);
    end On_Zoom_In_Clicked;
+
+   procedure On_Zoom_Level_Selected
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
+      Zoom_String : String := Gtk.Gentry.Get_Chars (Window.Zoom_Entry);
+      Zoom_Level : Vis.Zoom_Level;
+   begin
+      if (Zoom_String = "") then
+         --  nothing to do
+         return;
+      elsif (Zoom_String = -"Whole Graph") then
+         null;
+      else
+         if (Zoom_String (Zoom_String'Last) = '%') then
+            Zoom_Level := Vis.Zoom_Level'Value
+              (Zoom_String (Zoom_String'First .. Zoom_String'Last - 1));
+         else
+            Zoom_Level := Vis.Zoom_Level'Value (Zoom_String);
+         end if;
+         Zoom_Level := Zoom_Level / 100.0;
+      end if;
+   exception
+      when Constraint_Error =>
+         Logger.Debug ("invalid zoom level entered: " & Zoom_String);
+         Dialogs.Show_Error_Dialog (-"The entered zoom level is invalid.");
+   end On_Zoom_Level_Selected;
 
    procedure On_Zoom_Out_Clicked
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
@@ -350,6 +439,26 @@ package body Giant.Graph_Window is
    begin
       null;
    end On_Zoom_Out_Clicked;
+
+   ---------------------------------------------------------------------------
+   --  Graph Widget Callbacks
+   ---------------------------------------------------------------------------
+
+   procedure On_Graph_Action_Mode_Button_Pressed
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Args   : in     Gtk.Arguments.Gtk_Args)
+   is
+      use type Actions.Graph_Window_Action_Access;
+
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
+   begin
+      if (Gui_Manager.Actions.Is_Action_Pending) then
+         Gui_Manager.Actions.Trigger (Window, null, Vis.Logic.Zero_2d);
+      elsif (Window.Local_Action /= null) then
+         Actions.Execute
+           (Window.Local_Action, Window, null, Vis.Logic.Zero_2d);
+      end if;
+   end On_Graph_Action_Mode_Button_Pressed;
 
    ---------------------------------------------------------------------------
    --  Initializers
@@ -421,6 +530,15 @@ package body Giant.Graph_Window is
       Gtk.Paned.Set_Gutter_Size (Window.Split_Pane, 12);
       Add (Window, Window.Split_Pane);
 
+      --  right box: graph widget (needs to be created prior to the minimap)
+      Graph_Widgets.Create (Window.Graph);
+      Widget_Callback.Object_Connect
+        (Window.Graph, "action_mode_button_press_event",
+         On_Graph_Action_Mode_Button_Pressed'Access, Window);
+
+      Gtk.Paned.Pack2 (Window.Split_Pane, Window.Graph,
+                       Resize => True, Shrink => False);
+
       --  left box
       Gtk.Box.Gtk_New_Vbox (Left_Box, Homogeneous => False,
                             Spacing => DEFAULT_SPACING);
@@ -428,9 +546,10 @@ package body Giant.Graph_Window is
       Gtk.Paned.Pack1 (Window.Split_Pane, Left_Box,
                        Resize => False, Shrink => False);
 
-      -- minimap
-      Gtk.Box.Pack_Start (Left_Box,
-                          Add_Frame (New_Label ("[Missing]"), -"MiniMap"),
+      --  minimap
+      -- FIX: use Window.Graph instead of fake graph
+      Mini_Maps.Create (Window.Mini_Map, Mini_Maps.Graph_Widgets.Create);
+      Gtk.Box.Pack_Start (Left_Box, Add_Frame (Window.Mini_Map, -"MiniMap"),
                           Expand => False, Fill => True, Padding => 0);
 
       --  vertical split pane
@@ -445,6 +564,16 @@ package body Giant.Graph_Window is
       Gtk.Menu.Append (Window.Pin_List_Menu,
                        New_Menu_Item (-"Show",
                                       On_Pin_List_Show'Access,
+                                      Window));
+      Gtk.Menu.Append (Window.Pin_List_Menu, New_Menu_Separator);
+      Gtk.Menu.Append (Window.Pin_List_Menu,
+                       New_Menu_Item (-"Rename...",
+                                      On_Pin_List_Rename'Access,
+                                      Window));
+      Gtk.Menu.Append (Window.Pin_List_Menu, New_Menu_Separator);
+      Gtk.Menu.Append (Window.Pin_List_Menu,
+                       New_Menu_Item (-"Delete",
+                                      On_Pin_List_Delete'Access,
                                       Window));
 
       --  pins
@@ -568,6 +697,11 @@ package body Giant.Graph_Window is
 
       Window.Zoom_Entry := Gtk.Combo.Get_Entry (Window.Zoom_Combo);
 
+      Widget_Callback.Object_Connect
+        (Gtk.Combo.Get_List (Window.Zoom_Combo), "select_child",
+         Widget_Callback.To_Marshaller (On_Zoom_Level_Selected'Access),
+         Window);
+
       Gtk.Box.Pack_Start (Hbox,
                           New_Button (" + ", On_Zoom_In_Clicked'Access,
                                       Window),
@@ -583,11 +717,6 @@ package body Giant.Graph_Window is
                           New_Button (-"Pick Edge",
                                       On_Pick_Edge_Clicked'Access, Window),
                           Expand => False, Fill => False, Padding => 0);
-
-
-      --  graph widget
-      Gtk.Paned.Pack2 (Window.Split_Pane, New_Label ("Graph Widget"),
-                       Resize => True, Shrink => False);
 
       --  listen for the close button
       Widget_Boolean_Callback.Connect
@@ -605,7 +734,7 @@ package body Giant.Graph_Window is
    ---------------------------------------------------------------------------
 
    function Close
-     (Window               : access Graph_Window_Record'Class;
+     (Window               : access Graph_Window_Record;
       Ask_For_Confirmation : in     Boolean)
      return Boolean
    is
@@ -621,7 +750,7 @@ package body Giant.Graph_Window is
    end;
 
    function Get_Vis_Window
-     (Window : access Graph_Window_Record'Class)
+     (Window : access Graph_Window_Record)
      return Vis_Windows.Visual_Window_Access
    is
    begin
@@ -629,14 +758,14 @@ package body Giant.Graph_Window is
    end Get_Vis_Window;
 
    procedure Update_Title
-     (Window : access Graph_Window_Record'Class)
+     (Window : access Graph_Window_Record)
    is
    begin
       Set_Title (Window, Vis_Windows.Get_Name (Window.Visual_Window));
    end Update_Title;
 
    procedure Set_Global_Action_Mode
-     (Widget : access Graph_Window_Record'Class;
+     (Widget : access Graph_Window_Record;
       Enable : in     Boolean)
    is
    begin
@@ -657,7 +786,7 @@ package body Giant.Graph_Window is
    end Update_Pin;
 
    procedure Add_Pin
-     (Window : access Graph_Window_Record'Class;
+     (Window : access Graph_Window_Record;
       Name   : in     String)
    is
    begin
@@ -665,7 +794,7 @@ package body Giant.Graph_Window is
    end Add_Pin;
 
    procedure Remove_Pin
-     (Window : access Graph_Window_Record'Class;
+     (Window : access Graph_Window_Record;
       Name   : in     String)
    is
    begin
@@ -673,7 +802,7 @@ package body Giant.Graph_Window is
    end Remove_Pin;
 
    procedure Update_Pin
-     (Window : access Graph_Window_Record'Class;
+     (Window : access Graph_Window_Record;
       Name   : in     String)
    is
    begin
@@ -720,7 +849,7 @@ package body Giant.Graph_Window is
    end Update_Selection;
 
    procedure Add_Selection
-     (Window : access Graph_Window_Record'Class;
+     (Window : access Graph_Window_Record;
       Name   : in     String)
    is
    begin
@@ -728,7 +857,7 @@ package body Giant.Graph_Window is
    end Add_Selection;
 
    procedure Remove_Selection
-     (Window : access Graph_Window_Record'Class;
+     (Window : access Graph_Window_Record;
       Name   : in     String)
    is
    begin
@@ -736,7 +865,7 @@ package body Giant.Graph_Window is
    end Remove_Selection;
 
    procedure Update_Selection
-     (Window : access Graph_Window_Record'Class;
+     (Window : access Graph_Window_Record;
       Name   : in     String)
    is
    begin
