@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/29 18:15:54 $
+-- $Date: 2003/07/19 15:09:36 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -31,6 +31,8 @@ with Ada.Tags;
 use  Ada.Tags;
 
 with String_Hash;
+
+with Giant.Graph_Lib;
 
 with Giant.Gsl.Types;
 use  Giant.Gsl.Types;
@@ -136,6 +138,9 @@ package body Giant.Gsl is
    begin
       if Var = Gsl_Null then
          return "Gsl_Null";
+      elsif Var'Tag = Gsl_Node_Id_Record'Tag then
+         return "Gsl_Node_Id - " &
+                Graph_Lib.Node_Id_Image (Get_Value (Gsl_Node_Id (Var)));
       elsif Var'Tag = Gsl_String_Record'Tag then
          return "Gsl_String - " & Get_Value (Gsl_String (Var));
       elsif Var'Tag = Gsl_Boolean_Record'Tag then

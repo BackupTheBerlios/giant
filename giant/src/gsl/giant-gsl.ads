@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/03 13:45:59 $
+-- $Date: 2003/07/19 15:09:36 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -41,10 +41,8 @@ with Giant.Default_Logger;
 
 package Giant.Gsl is
 
-   Var_Not_Found              : exception;
-   Var_Already_Exists         : exception;
-   Wrong_Number_Of_Parameters : exception;
-   Gsl_Runtime_Error          : exception;
+   Gsl_Syntax_Error  : exception;
+   Gsl_Runtime_Error : exception;
 
    ---------------------------------------------------------------------------
    -- Gsl_Type - parent class for all types in GSL defined in Gsl.Types
