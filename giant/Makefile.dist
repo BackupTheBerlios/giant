@@ -8,10 +8,10 @@ OUT_PATH        = obj-$(shell uname -s)/
 
 AUNIT_PATH      = ../aunit-1.01
 GIANT_PATH      = ../giant
-IMLLIB_PATH     = ../iml_browser_030825
+IMLLIB_PATH     = ../iml_browser_030923
 XMLADA_PATH     = ../xmlada-0.7.1
 
-CFLAGS          = -g -O2 -finline-functions
+CFLAGS          = -O2 -finline-functions
 GNAT_FLAGS      = -gnatX -gnatn
 
 AUNIT_INCLUDES  = -I$(AUNIT_PATH)/aunit/framework -I$(AUNIT_PATH)/aunit/text_reporter

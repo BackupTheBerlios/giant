@@ -1,4 +1,4 @@
-set IML_PATH=../iml_browser_030825
+set IML_PATH=../iml_browser_030923
 set GIANT_PATH=../giant
 set GTKADA_PATH=../GtkAda-2.2.0
 set XMLADA_PATH=../xmlada-0.7.1
