@@ -30,6 +30,8 @@
 					  
   <setting name="IML_Subgraph_Highlight_Color_1" value="RGB:00/FF/FF" />
   <setting name="IML_Subgraph_Highlight_Color_2" value="RGB:FF/00/FF" />
-  <setting name="IML_Subgraph_Highlight_Color_3" value="RGB:FF/FF/00" />  
+  <setting name="IML_Subgraph_Highlight_Color_3" value="RGB:FF/FF/00" />
+
+  <setting name="GSL.Include_Path" value="./gsl" />  
 </giant_config_file>
 
