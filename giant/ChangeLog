@@ -1,3 +1,8 @@
+2003-09-10  Steffen Pingel  <squig@users.sourceforge.net>
+
+	* src/reuse/bauhaus-os.adb: Replaced pragma import realpath by
+	GNAT.OS_Lib.Normalize_Pathname call.
+
 2003-09-09  Steffen Pingel  <squig@users.sourceforge.net>
 
 	* src/giant-controller.adb: Check if Vis_Style exists in
