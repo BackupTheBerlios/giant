@@ -20,8 +20,7 @@
 
     <menu name="Documentation">
       <item name="Specification (german)" href="ftp://ftp.berlios.de/pub/giant/docs/spec.pdf"/>
-      <item name="Design" href="ftp://ftp.berlios.de/pub/giant/docs/design.pdf"/>
-      <item name="User Manual (german)" href="ftp://ftp.berlios.de/pub/giant/docs/"/>
+      <item name="User Manual (german)" href="ftp://ftp.berlios.de/pub/giant/docs/manual.pdf"/>
       <item name="GSL Specification (german)" href="ftp://ftp.berlios.de/pub/giant/docs/gsl.pdf"/>
       <item name="Other documentation" href="ftp://ftp.berlios.de/pub/giant/docs/"/>
     </menu>
