@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-node_annotations.ads,v $, $Revision: 1.5 $
+--  $RCSfile: giant-node_annotations.ads,v $, $Revision: 1.6 $
 --  $Author: schwiemn $
---  $Date: 2003/06/02 17:00:52 $
+--  $Date: 2003/06/03 15:26:38 $
 ------------------------------------------------------------------------------
 --  This package overs the functionality needed to handle node annotations.
 --
@@ -186,6 +186,25 @@ package Giant.Node_Annotations is
       Node             : in Graph_Lib.Node_Id)
      return String;
 
+   ---------------------------------------------------------------------------
+   --  Returns a list of all annotated nodes.
+   --
+   --  Needed to realize the Filter described in the Specification of GIANT
+   --  (see "5.4. UC: Nicht referenzierte Knoten-Annotationen löschen").
+   --
+   --  Parameters:
+   --    Node_Annotations - The Instance of the ADT whose annotated nodes
+   --      should be returned.
+   --  Returns: 
+   --    A list holding the ID's of all nodes that are annotated
+   --    (a empty list may be returned if there are no annotated nodes).
+   --  Raises:
+   --    Node_Annotation_Access_Not_Initialized_Exception - Raised
+   --      if the parameter "Node_Annotations" was not initialized.
+   function Get_All_Annotated_Nodes 
+     (Node_Annotations : in Node_Annotation_Access) 
+     return Graph_Lib.Node_Id_List_Package.List;
+
 
    ---------------------------------------------------------------------------
    --  C
@@ -251,15 +270,12 @@ package Giant.Node_Annotations is
    --  D 
    --  Iterators
    --
-   --  Needed to realize the Filter described in the Specification of GIANT
-   --  (see "5.4. UC: Nicht referenzierte Knoten-Annotationen löschen").
-   --
    --  Note
    --    During an Iteration you may not change the ADT holding the
    --    node annotations. 
    --
-   --  Use the Iterator in the following way in order to "catch" all annotated
-   --  nodes:
+   --  Use the Iterator in the following way in order to "catch" all 
+   --  annotated nodes:
    --
    --    My_Iter := Make_Node_ID_Iter (My_Node_Annotations_ADT);
    --   
