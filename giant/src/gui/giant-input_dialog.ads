@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-input_dialog.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-input_dialog.ads,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/06/23 21:57:04 $
+--  $Date: 2003/08/26 16:07:16 $
 --
 ------------------------------------------------------------------------------
 --
@@ -84,6 +84,11 @@ package Giant.Input_Dialog is
      (Dialog : access Input_Dialog_Record;
       Text   : in     String);
 
+   ----------------------------------------------------------------------------
+   --  Returns the string the user has provided.
+   --
+   --  Returns:
+   --    The empty string, if Cancel was pressed
    function Show
      (Message         : in String;
       Title           : in String               := -"Giant Input";

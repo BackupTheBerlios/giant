@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.48 $
---  $Author: schulzgt $
---  $Date: 2003/08/26 13:43:01 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.49 $
+--  $Author: squig $
+--  $Date: 2003/08/26 16:07:16 $
 --
 ------------------------------------------------------------------------------
 --
@@ -55,6 +55,7 @@ with Giant.Evolutions;
 with Giant.Graph_Lib;
 with Giant.Graph_Lib.Selections;
 with Giant.Graph_Lib.Subgraphs;
+with Giant.Graph_Widgets;
 with Giant.Gsl;
 with Giant.Gsl.Interpreters;
 with Giant.Projects;
@@ -169,7 +170,7 @@ package Giant.Controller is
       Parameter   : in Gsl.Interpreters.Gsl_Params);
 
    ---------------------------------------------------------------------------
-   -- Only a wrapper function for the gsl runtime library to get 
+   -- Only a wrapper function for the gsl runtime library to get
    -- the content of a vis_window.
    --
    -- See:
@@ -327,9 +328,9 @@ package Giant.Controller is
    ---------------------------------------------------------------------------
 
    procedure Add_Selection
-     (Window_Name     : in String;
-      Selection       : in Graph_Lib.Selections.Selection;
-      Replace_Content : in Boolean);
+     (Window_Name     : in     String;
+      Selection       : in     Graph_Lib.Selections.Selection;
+      Replace_Content : in     Boolean);
 
    procedure Create_Selection
      (Window_Name : in String;
@@ -383,6 +384,13 @@ package Giant.Controller is
       Additional_Parameters : in String;
       Parent_Evolution      : in Evolutions.Iterative_Evolution_Class_Access :=
         null);
+
+   ---------------------------------------------------------------------------
+   --  Removes the content of Selection from window named Window_Name
+   procedure Remove_Selection_Content
+     (Window_Name  : in String;
+      Selection    : in Graph_Lib.Selections.Selection;
+      Do_Not_Touch : in String                         := "");
 
    function Remove_Selection
      (Window_Name          : in String;
@@ -619,6 +627,13 @@ package Giant.Controller is
       Edge        : in Graph_Lib.Edge_Id);
 
 private
+
+   procedure Add_Selection
+     (Window_Name     : in String;
+      Selection       : in Graph_Lib.Selections.Selection;
+      Replace_Content : in Boolean;
+      Lock            :    out Graph_Widgets.Lock_Type);
+
 
    Current_Project : Projects.Project_Access := Projects.Null_Project;
    Project_Loaded : Boolean := False;

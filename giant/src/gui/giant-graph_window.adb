@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.54 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.55 $
 --  $Author: squig $
---  $Date: 2003/08/25 16:06:25 $
+--  $Date: 2003/08/26 16:07:16 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -626,7 +626,7 @@ package body Giant.Graph_Window is
 --                                        Window));
 --        Gtk.Menu.Append (Window.Selection_List_Menu, New_Menu_Separator);
       Gtk.Menu.Append (Window.Selection_List_Menu,
-                       New_Menu_Item (-"Apply Layout",
+                       New_Menu_Item (-"Apply Layout...",
                                       On_Apply_Layout'Access, Window));
       Gtk.Menu.Append (Window.Selection_List_Menu, New_Menu_Separator);
       Gtk.Menu.Append (Window.Selection_List_Menu,
@@ -674,7 +674,7 @@ package body Giant.Graph_Window is
    begin
       Gtk.Menu.Gtk_New (Window.Background_Menu);
       Gtk.Menu.Append (Window.Background_Menu,
-                       New_Menu_Item (-"New Pin",
+                       New_Menu_Item (-"New Pin...",
                                       On_Background_Create_Pin'Access, Window));
       Gtk.Menu.Append (Window.Background_Menu, New_Menu_Separator);
       Gtk.Menu.Append (Window.Background_Menu,

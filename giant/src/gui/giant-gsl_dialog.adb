@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.16 $
+--  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.17 $
 --  $Author: squig $
---  $Date: 2003/08/19 10:54:46 $
+--  $Date: 2003/08/26 16:07:16 $
 --
 
 with Ada.Exceptions;
@@ -355,8 +355,9 @@ package body Giant.Gsl_Dialog is
                           Fill => True, Padding => 0);
 
       Gtk.Status_Bar.Gtk_New (Dialog.Location_Bar);
-      Gtk.Box.Pack_Start (Status_Box, Dialog.Location_Bar, Expand => False,
-                          Fill => True, Padding => 0);
+      --  disabled because the content makes no sense
+      --Gtk.Box.Pack_Start (Status_Box, Dialog.Location_Bar, Expand => False,
+      --                    Fill => True, Padding => 0);
 
       -- buttons
       Add_Button (Dialog, New_Button (-"Run",

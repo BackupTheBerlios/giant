@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.85 $
---  $Author: schulzgt $
---  $Date: 2003/08/26 13:43:01 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.86 $
+--  $Author: squig $
+--  $Date: 2003/08/26 16:07:16 $
 --
 
 with Ada.Strings.Unbounded;
@@ -638,9 +638,23 @@ package body Giant.Controller is
    ---------------------------------------------------------------------------
 
    procedure Add_Selection
-     (Window_Name     : in String;
-      Selection       : in Graph_Lib.Selections.Selection;
-      Replace_Content : in Boolean)
+     (Window_Name     : in     String;
+      Selection       : in     Graph_Lib.Selections.Selection;
+      Replace_Content : in     Boolean)
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+      Lock : Graph_Widgets.Lock_Type;
+   begin
+      Add_Selection (Window_Name, Selection, Replace_Content, Lock);
+      Graph_Widgets.Release_Lock (Vis_Windows.Get_Graph_Widget (Window), Lock);
+   end Add_Selection;
+
+   procedure Add_Selection
+     (Window_Name     : in     String;
+      Selection       : in     Graph_Lib.Selections.Selection;
+      Replace_Content : in     Boolean;
+      Lock            :    out Graph_Widgets.Lock_Type)
    is
       Window : Vis_Windows.Visual_Window_Access
         := Projects.Get_Visualisation_Window (Current_Project,
@@ -648,7 +662,6 @@ package body Giant.Controller is
       Name : constant String := Graph_Lib.Selections.Get_Name (Selection);
       Replace : Boolean;
       Removed : Boolean;
-      Lock : Graph_Widgets.Lock_Type;
       Old_Highlight_Status : Vis_Windows.Selection_Highlight_Status;
    begin
       if (Name = Vis_Windows.Get_Standard_Selection (Window)) then
@@ -669,8 +682,6 @@ package body Giant.Controller is
       Vis_Windows.Add_Selection (Window, Selection);
       Graph_Widgets.Insert_Selection
         (Vis_Windows.Get_Graph_Widget (Window), Selection, Lock);
-      Graph_Widgets.Release_Lock
-        (Vis_Windows.Get_Graph_Widget (Window), Lock);
       Gui_Manager.Add_Selection (Window_Name, Name);
 
       if (Replace) then
@@ -696,14 +707,16 @@ package body Giant.Controller is
       Window_Name    : in String;
       Selection_Name : in String)
    is
-      Window : Vis_Windows.Visual_Window_Access
-        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
       Subgraph : Graph_Lib.Subgraphs.Subgraph
         := Projects.Get_Subgraph (Current_Project, Subgraph_Name);
       Selection : Graph_Lib.Selections.Selection
-        := Graph_Lib.Subgraphs.Create_Selection (Subgraph, Selection_Name);
+        := Graph_Lib.Subgraphs.Create_Selection (Subgraph,
+                                                 Selection_Name);
    begin
-      Add_Selection (Window_Name, Selection, Replace_Content => False);
+      Add_Selection
+        (Window_Name,
+         Selection,
+         Replace_Content => False);
    end Create_Selection_From_Subgraph;
 
    procedure Duplicate_Selection
@@ -840,10 +853,11 @@ package body Giant.Controller is
         := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
       Lock : Graph_Widgets.Lock_Type;
    begin
-      Vis_Windows.Add_Selection (Window, Selection);
-      Graph_Widgets.Insert_Selection
-        (Vis_Windows.Get_Graph_Widget (Window), Selection, Lock);
-      Gui_Manager.Add_Selection (Window_Name, Selection_Name);
+      Add_Selection
+        (Window_Name     => Window_Name,
+         Selection       => Selection,
+         Replace_Content => True,
+         Lock            => Lock);
       if (Layout_Name /= "") then
          Apply_Layout (Window, Selection, Lock, Layout_Name, Position,
                        Additional_Parameters, Parent_Evolution);
@@ -878,15 +892,50 @@ package body Giant.Controller is
          end if;
 
          if (Remove_Content) then
-            --  remove the selection from display before it is destroyed
+            --  remove the selection from graph widget before it is destroyed
             Graph_Widgets.Remove_Selection
               (Vis_Windows.Get_Graph_Widget (Window), Selection);
+            Remove_Selection_Content
+              (Window_Name  => Window_Name,
+               Selection    => Selection,
+               Do_Not_Touch => Name);
          end if;
          Vis_Windows.Remove_Selection (Window, Name);
          return True;
       end if;
       return False;
    end Remove_Selection;
+
+   procedure Remove_Selection_Content
+     (Window_Name  : in String;
+      Selection    : in Graph_Lib.Selections.Selection;
+      Do_Not_Touch : in String := "")
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+      List : String_Lists.List;
+      Iterator : String_Lists.ListIter;
+      Target_Name : Ada.Strings.Unbounded.Unbounded_String;
+      Target_Selection : Graph_Lib.Selections.Selection;
+   begin
+         --  iterate through all selections
+      List := Vis_Windows.Get_All_Selections (Window);
+      Iterator := String_Lists.MakeListIter (List);
+      while String_Lists.More (Iterator) loop
+         String_Lists.Next (Iterator, Target_Name);
+         if (Ada.Strings.Unbounded.To_String (Target_Name) /=
+             Do_Not_Touch) then
+            Target_Selection := Get_Selection
+              (Window_Name,
+               Ada.Strings.Unbounded.To_String (Target_Name));
+            Graph_Lib.Selections.Remove (Target_Selection, Selection);
+            Gui_Manager.Update_Selection
+              (Window_Name,
+               Ada.Strings.Unbounded.To_String (Target_Name));
+         end if;
+      end loop;
+      String_Lists.Destroy (List);
+   end Remove_Selection_Content;
 
    procedure Rename_Selection
      (Window_Name : in String;

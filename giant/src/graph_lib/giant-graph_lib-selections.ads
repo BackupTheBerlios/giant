@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.23 $
+--  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.24 $
 --  $Author: squig $
---  $Date: 2003/07/15 15:27:31 $
+--  $Date: 2003/08/26 16:07:16 $
 --
 ------------------------------------------------------------------------------
 --
@@ -196,6 +196,15 @@ package Giant.Graph_Lib.Selections is
    --------------------------
    --  Routines to remove  --
    --------------------------
+
+   ---------------------------------------------------------------------------
+   --  Removes Right from Left.
+   --
+   --  See:
+   --    Difference
+   procedure Remove
+     (Left  : in Selection;
+      Right : in Selection);
 
    ---------------------------------------------------------------------------
    --  Removes given Node from given selection

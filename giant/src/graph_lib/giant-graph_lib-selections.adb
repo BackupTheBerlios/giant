@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.19 $
---  $Author: koppor $
---  $Date: 2003/08/12 09:39:03 $
+--  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.20 $
+--  $Author: squig $
+--  $Date: 2003/08/26 16:07:16 $
 
 with Untagged_Ptr_Ops;
 
@@ -231,6 +231,21 @@ package body Giant.Graph_Lib.Selections is
    begin
       return Node_Id_Sets.Is_Member (Sel.Nodes, Node);
    end Is_Member;
+
+   ----------------------------------------------------------------------------
+   procedure Remove
+     (Left  : in Selection;
+      Right : in Selection)
+   is
+      Old_Edges : Edge_Id_Set := Left.Edges;
+      Old_Nodes : Node_Id_Set := Left.Nodes;
+   begin
+      Left.Edges := Edge_Id_Sets."-" (Left.Edges, Right.Edges);
+      Left.Nodes := Node_Id_Sets."-" (Left.Nodes, Right.Nodes);
+
+      Edge_Id_Sets.Destroy (Old_Edges);
+      Node_Id_Sets.Destroy (Old_Nodes);
+   end Remove;
 
    ----------------------------------------------------------------------------
    procedure Remove_Edge

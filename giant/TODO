@@ -2,14 +2,6 @@ RELEASE
 
  * Create directory on New Project
 
- * Enhance GSL Dialog (Ask Gerrit: Run script as string, not from file)
-
- * !Select All
-
- * Catch exceptions when project is loaded via command line
-
- * Fix Vis_Style signal?
-
 LATER
 
  * Set cursor in action mode
