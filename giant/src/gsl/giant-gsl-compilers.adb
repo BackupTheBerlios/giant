@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-compilers.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/06 20:03:34 $
+-- $Date: 2003/06/09 14:14:22 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -31,8 +31,13 @@ with Text_IO;
 
 with String_Hash;
 
+with Giant.Default_Logger;
+
 with Giant.Parser;
 with Giant.Scanner.IO;
+
+with Giant.Gsl.Syntax_Tree;
+use  Giant.Gsl.Syntax_Tree;
 
 package body Giant.Gsl.Compilers is
 
@@ -103,7 +108,8 @@ package body Giant.Gsl.Compilers is
    end Get_Execution_Stack;
 
    ---------------------------------------------------------------------------
-   --
+   -- creates and builds a new Execution_Stack by a recursive traversing
+   -- of the Syntax_Tree
    function Get_Execution_Stack
      (Comp : Compiler;
       Node : Syntax_Node)
@@ -112,7 +118,57 @@ package body Giant.Gsl.Compilers is
       Stack : Execution_Stacks.Stack;
    begin
       Stack := Execution_Stacks.Create;
+      Push_Syntax_Node (Node, Stack);
       return Stack;
    end Get_Execution_Stack;
+
+
+   procedure Push_Syntax_Node
+     (Node  :        Syntax_Node;
+      Stack : in out Execution_Stacks.Stack) is
+ 
+      Size  : Natural := 1;
+   begin
+      if Node /= Null_Node then
+         if Get_Node_Type (Node) = Sequence or 
+            Get_Node_Type (Node) = List then
+            -- sequence or list needs a recursive traversation
+            Default_Logger.Debug
+              ("Compiler: List or Sequence found.", "Giant.Gsl");
+            Execution_Stacks.Push (Stack, Node);
+            if Get_Child1 (Node) = Null_Node then
+               -- empty sequence or list, set size to 0
+               Set_Size (Node, 0);
+            else
+               -- push all elements of the sequence
+               Push_Sequence (Node, Stack, Size);
+               -- set the size of the sequence
+               Set_Size (Node, Size);
+            end if;
+            Log_Syntax_Node (Node);
+         else
+            Default_Logger.Debug ("Compiler: Push", "Giant.Gsl");
+            Log_Syntax_Node (Node);
+            Execution_Stacks.Push (Stack, Node);
+         end if;
+      end if;
+   end Push_Syntax_Node;
+
+   procedure Push_Sequence
+     (Node  :        Syntax_Node;
+      Stack : in out Execution_Stacks.Stack;
+      Size  : in out Natural) is 
+
+   begin
+      if Get_Child2 (Node) = Null_Node then
+         -- end of a sequence
+         Push_Syntax_Node (Get_Child1 (Node), Stack);
+      else
+         -- recursive
+         Size := Size + 1;
+         Push_Sequence (Get_Child2 (Node) , Stack, Size);
+         Push_Syntax_Node (Get_Child1 (Node), Stack);
+      end if;
+   end Push_Sequence;
 
 end Giant.Gsl.Compilers;

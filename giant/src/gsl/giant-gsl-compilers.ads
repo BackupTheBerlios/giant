@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-compilers.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/06 20:03:34 $
+-- $Date: 2003/06/09 14:14:22 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -94,5 +94,14 @@ private
          Name : String (1 .. Name_Length);
          Syntax_Tree : Syntax_Node;
       end record;
+
+   procedure Push_Syntax_Node
+     (Node  :        Syntax_Node;
+      Stack : in out Execution_Stacks.Stack);
+
+   procedure Push_Sequence
+     (Node  :        Syntax_Node;
+      Stack : in out Execution_Stacks.Stack;
+      Size  : in out Natural);
 
 end Giant.Gsl.Compilers;
