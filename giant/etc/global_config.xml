@@ -12,15 +12,15 @@
   
   <setting name  = "Icon_For_Node_Annotations" value = "../shared/icons/document.xpm" />
   
-  <setting name="Actual_Selection_Highlight_Color" value="RGB:00/00/80" />
+  <setting name="Actual_Selection_Highlight_Color" value="#000080" />
 					  
-  <setting name="Selection_Highlight_Color_1" value="RGB:FF/00/00" />
-  <setting name="Selection_Highlight_Color_2" value="RGB:00/FF/00"/>
-  <setting name="Selection_Highlight_Color_3" value="RGB:00/00/FF" />
+  <setting name="Selection_Highlight_Color_1" value="#FF0000" />
+  <setting name="Selection_Highlight_Color_2" value="#00FF00"/>
+  <setting name="Selection_Highlight_Color_3" value="#0000FF" />
 					  
-  <setting name="IML_Subgraph_Highlight_Color_1" value="RGB:00/FF/FF" />
-  <setting name="IML_Subgraph_Highlight_Color_2" value="RGB:FF/00/FF" />
-  <setting name="IML_Subgraph_Highlight_Color_3" value="RGB:FF/FF/00" />
+  <setting name="IML_Subgraph_Highlight_Color_1" value="#00FFFF" />
+  <setting name="IML_Subgraph_Highlight_Color_2" value="#FF00FF" />
+  <setting name="IML_Subgraph_Highlight_Color_3" value="#FFFF00" />
 
   <setting name="GSL.Include_Path" value="../shared/gsl" />
 
