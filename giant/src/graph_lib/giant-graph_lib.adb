@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.32 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.33 $
 --  $Author: koppor $
---  $Date: 2003/06/28 19:13:51 $
+--  $Date: 2003/06/28 22:20:23 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -1336,15 +1336,8 @@ package body Giant.Graph_Lib is
      (Node : in Node_Id)
       return Edge_Id_Set
    is
-      Set : Edge_Id_Set;
    begin
-      Set := Edge_Id_Sets.Empty_Set;
-
-      for I in Node.Incoming_Edges'Range loop
-         Edge_Id_Sets.Insert (Set, Node.Incoming_Edges (I));
-      end loop;
-
-      return Set;
+      return Edge_Id_Array_Routines.To_Set (Node.Incoming_Edges);
    end Get_Incoming_Edges;
 
    ----------------------------------------------------------------------------
@@ -1352,15 +1345,8 @@ package body Giant.Graph_Lib is
      (Node : in Node_Id)
       return Edge_Id_Set
    is
-      Set : Edge_Id_Set;
    begin
-      Set := Edge_Id_Sets.Empty_Set;
-
-      for I in Node.Outgoing_Edges'Range loop
-         Edge_Id_Sets.Insert (Set, Node.Outgoing_Edges (I));
-      end loop;
-
-      return Set;
+      return Edge_Id_Array_Routines.To_Set (Node.Outgoing_Edges);
    end Get_Outgoing_Edges;
 
    ----------------------------------------------------------------------------
