@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.ads,v $, $Revision: 1.16 $
+--  $RCSfile: giant-tree_layouts.ads,v $, $Revision: 1.17 $
 --  $Author: koppor $
---  $Date: 2003/09/02 13:38:42 $
+--  $Date: 2003/10/06 17:43:39 $
 --
 ------------------------------------------------------------------------------
 --
@@ -103,6 +103,11 @@ package Giant.Tree_Layouts is
    --      This Meta_Class_Set is NOT destroyed after usage, the caller has
    --        to take care for the unloading
    --
+   --    Process_Edges_Reverse:
+   --      Normally, an outgoing edge indicates the target to be the child.
+   --      If this parameter is set to true, the source of an incoming edge is regarded
+   --      as child
+   --
    --  Returns:
    --    derived Evolutions-Object to do the layout
    --
@@ -115,7 +120,8 @@ package Giant.Tree_Layouts is
       Selection_To_Layout      : in Graph_Lib.Selections.Selection;
       Target_Position          : in Vis.Logic.Vector_2d;
       Root_Node                : in Graph_Lib.Node_Id;
-      Meta_Class_Set_To_Layout : in Config.Class_Sets.Meta_Class_Set_Access)
+      Meta_Class_Set_To_Layout : in Config.Class_Sets.Meta_Class_Set_Access;
+      Process_Edges_Reverse    : in Boolean := True)
      return Tree_Layout;
 
    -------------------
@@ -235,6 +241,7 @@ private
         Target_Position  : Vis.Logic.Vector_2d;
         Root_Node        : Graph_Lib.Node_Id;
         Meta_Class_Set   : Config.Class_Sets.Meta_Class_Set_Access;
+        Process_Edges_Reverse : Boolean;
         State            : Layout_State;
 
         --  used at finish to distinguish different cases
