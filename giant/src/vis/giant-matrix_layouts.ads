@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-matrix_layouts.ads,v $, $Revision: 1.9 $
+--  $RCSfile: giant-matrix_layouts.ads,v $, $Revision: 1.10 $
 --  $Author: koppor $
---  $Date: 2003/07/10 23:32:19 $
+--  $Date: 2003/07/11 00:46:15 $
 --
 ------------------------------------------------------------------------------
 --
@@ -48,8 +48,14 @@ package Giant.Matrix_Layouts is
    Max_Nodes_In_One_Run : constant := 100;
 
    ---------------------------------------------------------------------------
-   --  Distance of two neighbours as proportion of Get_Current_Maximum_Node_Width
-   X_Distance           : constant Vis.Logic_Float := 0.07;
+   --  X-Distance of two neighbours as proportion of
+   --    Get_Current_Maximum_Node_Width
+   X_Distance           : constant := 0.07;
+
+   ---------------------------------------------------------------------------
+   --  Y-Distance of two neighbours as proportion of
+   --    The height of predecessing row
+   Y_Distance           : constant := 0.07;
 
    ---------------------
    --  Initilization  --

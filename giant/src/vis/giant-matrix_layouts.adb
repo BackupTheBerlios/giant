@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-matrix_layouts.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-matrix_layouts.adb,v $, $Revision: 1.10 $
 --  $Author: koppor $
---  $Date: 2003/07/10 16:44:57 $
+--  $Date: 2003/07/11 00:46:39 $
 --
 
 with Ada.Numerics.Generic_Elementary_Functions;
@@ -142,7 +142,7 @@ package body Giant.Matrix_Layouts is
               Vis.Logic.Combine_Vector
               (Vis.Logic.Get_X (Layout.Target_Position),
                Vis.Logic.Get_Y (Layout.Current_Position) +
-               Layout.Current_Row_Height);
+               Layout.Current_Row_Height * (1.0+Y_Distance));
             Layout.Current_Row_Height := 0.0;
          end if;
 
