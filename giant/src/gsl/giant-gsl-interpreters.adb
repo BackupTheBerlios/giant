@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/23 13:46:33 $
+-- $Date: 2003/07/24 14:24:01 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -292,7 +292,6 @@ package body Giant.Gsl.Interpreters is
                   Result_Stacks.Push (Current_Interpreter.Result_Stack, 
                     Get_Selection_Reference (Gsl_Var_Reference (Lit)));
                end if;
-               Result_Stacks.Push (Current_Interpreter.Result_Stack, Lit);
 
             ------------------------------------------------------------------
             -- script_decl ::= {list, expression}
@@ -347,8 +346,6 @@ package body Giant.Gsl.Interpreters is
             when Script_Loop =>
                Result_Stacks.Pop (Current_Interpreter.Result_Stack, Res1);
                if Is_Gsl_Boolean (Res1) then
-                  Default_Logger.Debug
-                    ("Interpreter: Loop correct.", "Giant.Gsl");
                   if Get_Value (Gsl_Boolean (Res1)) then
                   -- loop again
                      Execution_Stacks.Push
@@ -361,7 +358,12 @@ package body Giant.Gsl.Interpreters is
                           (Current_Interpreter.Gsl_Compiler,
                            Get_Child1 (Cmd)));
                   else
-                     null;
+                  -- loop finished, restore the activation record
+                     Destroy_Activation_Record
+                       (Current_Interpreter.Current_Activation_Record);
+                     Activation_Record_Stacks.Pop
+                       (Current_Interpreter.Activation_Records,
+                        Current_Interpreter.Current_Activation_Record);
                   end if;
                else
                   Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
