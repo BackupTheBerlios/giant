@@ -1,6 +1,6 @@
 % =============================================================================
-%  $RCSfile: gsl.tex,v $ $Revision: 1.13 $
-%  $Date: 2003/07/02 13:08:26 $
+%  $RCSfile: gsl.tex,v $ $Revision: 1.14 $
+%  $Date: 2003/07/29 21:35:35 $
 %  $Author: keulsn $
 %
 %  Description: Spezifikation der GIANT Scripting Language
@@ -42,7 +42,7 @@
 % subsubsections nummerieren
 \setcounter{secnumdepth}{3}
 
-\newcommand\version{Version 1.1\xspace}
+\newcommand\version{Version 1.2\xspace}
 %\newcommand\version{\today\xspace}
 
 % header
@@ -141,7 +141,7 @@ Studienprojekt A -- IML Browser\\
 \nonterminal{\nsequence}{sequence}
 \nonterminal{\nscriptactivation}{script\_activation}
 
-\newcommand{\bottomenv}{\ensuremath{Standard}\xspace}
+\newcommand{\bottomenv}{\ensuremath{First}\xspace}
 \newcommand{\newenv}{\ensuremath{A_{neu}}\xspace}
 \newcommand{\oldenv}{\ensuremath{A_{alt}}\xspace}
 \newcommand{\startenv}{\ensuremath{A_{start}}\xspace}
@@ -287,12 +287,8 @@ Interpreter muss die vordefinierte Sprachumgebung nach Kapitel
 \label{interpreter_start}
 
 Beim Start des GSL Interpreters erzeugt dieser zunächst die erste
-Aktivierungsumgebung \bottomenv. Dann wertet der GSL Interpreter den Ausdruck
-aus, der in der Datei \gq{standard.gsl} gespeichert ist. Dieser Ausdruck
-initialisiert die Sprachumgebung, die in Kapitel \ref{standard} beschrieben
-wird.
-
-Danach ist der GSL Interpreter bereit und ihm kann ein beliebiger GSL Ausdruck
+Aktivierungsumgebung \bottomenv. Danach ist der GSL Interpreter bereit
+und ihm kann ein beliebiger GSL Ausdruck
 zur Auswertung übergeben werden. In GIANT kann dies geschehen, indem der
 Ausdruck als Kommandozeilenparameter angegeben wird oder indem ein Ausdruck
 in das dafür vorgesehene Anzeigefenster eingegeben wird.
@@ -484,13 +480,6 @@ im Kontext einen Anzeigefensters ausgeführt, so existiert keine dieser
 Variablen.
 
 Die erste Aktivierungsumgebung \bottomenv ist anfangs \emph{aktuell}.
-Der Ausdruck aus der Datei \gq{standard.gsl} wird ausgewertet.
-Dieser Ausdruck kann z.B.\ neue
-Objekte erzeugen und in \bottomenv Variablen an diese Objekte binden. Auf
-diese Weise wird die Sprachumgebung erstellt, die in Kapitel
-\ref{standard} beschrieben wird. Durch Änderungen an der Datei
-\gq{standard.gsl} kann die Sprachumgebung an neue Anforderungen angepasst
-werden. Die Implementierung des GSL Interpreters muss dazu nicht bekannt sein.
 
 \subsubsection{Vererbung von Aktivierungsumgebungen}
 \label{current_env}
@@ -1143,10 +1132,10 @@ Der Variablenname ist der Name einer Variable, deren Inspektion eine
 Die hier beschriebenen Scripts realisieren elementare Funktionalität,
 die der GSL
 Interpreter direkt zur Verfügung stellt. Der GSL Interpreter erzeugt die
-Objekte, in denen die Aktivierungsinformation gespeichert ist. Vor der
-Auswertung des Ausdrucks in der Datei \gq{standard.gsl} erzeugt der GSL
-Interpreter in der Aktivierungsumgebung \bottomenv die hier genannten
-Variablen.
+Objekte, in denen die Aktivierungsinformation gespeichert ist vor
+Beginn einer Auswertung. Der GSL
+Interpreter erzeugt die hier genannten Variablen in der
+Aktivierungsumgebung \bottomenv.
 
 \subsubsection{Zuweisung}
 
@@ -1246,26 +1235,51 @@ Aktivierungsumgebung ausgeführt.}
 \begin{scriptdef}{add}
 \sparam{a}{\tnatural oder \tvarreference}{Entweder eine Zahl oder ein
 Zugriffspfad auf ein Objekt, das einen Wert aus \tnodeset oder \tedgeset hat}
-\sparam{b}{\tnatural bzw.\ \tnodeid bzw.\ \tedgeid}{Abhängig von dem Typ
-von a ebenfalls eine Zahl oder der entsprechende Elementtyp}
+\sparam{b}{\tnatural bzw.\ \tnodeid bzw.\ \tedgeid bzw.\ \tnodeset
+bzw.\ \tedgeset bzw.\ \tvarreference}{Abhängig von dem Typ
+von a ebenfalls eine Zahl oder der entsprechende Elementtyp oder eine
+entsprechende Menge oder ein Zugriffspfad auf ein Objekt des
+entsprechenden Mengen-Typs}
 \sresult{\tnatural bzw.\ der namenlose Typ}{Abhängig von den Argumenten
 entweder die Summe der beiden Zahlen oder der Wert \toknull}
 \saction{Es werden verschiedene Verwendungen unterschieden:
 \begin{enumerate}
 \item a ist vom Typ \tnatural und b ist vom Typ \tnatural. Dann hat
-dieses Script die Summe der beiden Zahlen als Ergebnis. Es ist ein
-Laufzeitfehler, falls der (implementationsabhängige) maximale Wertebereich
-überschritten wird.
+die Aktivierung dieses Script die Summe der beiden Zahlen als
+Ergebnis. Es ist ein Laufzeitfehler, falls der
+(implementationsabhängige) maximale Wertebereich überschritten wird.
 \item a ist vom Typ \tvarreference und hat als Wert einen Zugriffspfad auf
-ein Objekt, dessen Wert $N$ vom Typ \tnodeset ist. Dann muss b vom Typ
-\tnodeid sein. Der Wert $N$ wird um das Element b vergrößert, falls b zuvor
-noch nicht in $N$ enthalten war, andernfalls wird nichts getan. Das Ergebnis
-ist \toknull.
+ein Objekt, dessen Wert $N$ vom Typ \tnodeset ist. Das Ergebnis der
+Script-Aktivierung ist in diesem Fall stets \toknull.
+  \begin{enumerate}
+  \item Falls b vom Typ \tnodeid ist, dann wird der Wert $N$ um das
+  Element b vergrößert, falls b zuvor noch nicht in $N$ enthalten war, 
+  andernfalls wird nichts getan.
+  \item Falls b vom Typ \tnodeset ist, dann wird die Vereinigung von
+  $N$ und b gebildet und dem Objekt, das durch a referenziert wird,
+  zugewiesen.
+  \item Falls b vom Typ \tvarreference ist, dann muss b ein
+  Zugiffspfad auf ein Objekt sein, dessen Wert $N_r$ vom Typ \tnodeset
+  ist. In diesem Fall wird die Vereinigung von $N$ und $N_r$ gebildet
+  und dem Objekt, das durch a referenziert wird, zugewiesen.
+  \item Falls keiner dieser Fälle zutrifft, so ist dies ein Laufzeitfehler.
+  \end{enumerate}
 \item a ist vom Typ \tvarreference und hat als Wert einen Zugriffspfad auf
-ein Objekt, dessen Wert $E$ vom Typ \tedgeset ist. Dann muss b vom Typ
-\tedgeid sein. Der Wert $E$ wird um das Element b vergrößert, falls b zuvor
-noch nicht in $E$ enthalten war, andernfalls wird nichts getan. Das Ergebnis
-ist \toknull.
+ein Objekt, dessen Wert $E$ vom Typ \tedgeset ist. Das Ergebnis der
+Script-Aktivierung ist in diesem Fall stets \toknull.
+  \begin{enumerate}
+  \item Falls b vom Typ \tedgeid ist, dann wird der Wert $E$ um das
+  Element b vergrößert, falls b zuvor noch nicht in $E$ enthalten war, 
+  andernfalls wird nichts getan.
+  \item Falls b vom Typ \tedgeset ist, dann wird die Vereinigung von
+  $E$ und b gebildet und dem Objekt, das durch a referenziert wird,
+  zugewiesen.
+  \item Falls b vom Typ \tvarreference ist, dann muss b ein
+  Zugiffspfad auf ein Objekt sein, dessen Wert $E_r$ vom Typ \tedgeset
+  ist. In diesem Fall wird die Vereinigung von $E$ und $E_r$ gebildet
+  und dem Objekt, das durch a referenziert wird, zugewiesen.
+  \item Falls keiner dieser Fälle zutrifft, so ist dies ein Laufzeitfehler.
+  \end{enumerate}
 \end{enumerate}}
 \end{scriptdef}
 
@@ -1274,8 +1288,11 @@ ist \toknull.
 \begin{scriptdef}{sub}
 \sparam{a}{\tnatural oder \tvarreference}{Entweder eine Zahl oder ein
 Zugriffspfad auf ein Objekt, das einen Wert aus \tnodeset oder \tedgeset hat}
-\sparam{b}{\tnatural bzw.\ \tnodeid bzw.\ \tedgeid}{Abhängig von dem Typ
-von a ebenfalls eine Zahl oder der entsprechende Elementtyp}
+\sparam{b}{\tnatural bzw.\ \tnodeid bzw.\ \tedgeid bzw.\ \tnodeset
+bzw.\ \tedgeset bzw.\ \tvarreference}{Abhängig von dem Typ
+von a ebenfalls eine Zahl oder der entsprechende Elementtyp oder der
+entsprechende Mengentyp oder ein Zugriffspfad auf ein Objekt des
+entsprechenden Mengentyps}
 \sresult{\tnatural bzw.\ der namenlose Typ}{Abhängig von den Argumenten
 entweder die Differenz der beiden Zahlen oder der Wert \toknull}
 \saction{Es werden verschiedene Verwendungen unterschieden:
@@ -1285,15 +1302,35 @@ dieses Script die Differenz a $-$ b der beiden Zahlen als Ergebnis. Es ist ein
 Laufzeitfehler, falls der (implementationsabhängige) maximale Wertebereich
 überschritten wird.
 \item a ist vom Typ \tvarreference und hat als Wert einen Zugriffspfad auf
-ein Objekt, dessen Wert $N$ vom Typ \tnodeset ist. Dann muss b vom Typ
-\tnodeid sein. Der Wert $N$ wird um das Element b verkleinert, falls b zuvor
-in $N$ enthalten war, andernfalls wird nichts getan. Das Ergebnis
-ist \toknull.
+ein Objekt, dessen Wert $N$ vom Typ \tnodeset ist. Das Ergebnis der
+Script-Aktivierung ist in diesem Fall stets \toknull.
+  \begin{enumerate}
+  \item Falls b vom Typ \tnodeid ist, dann wird $N$ um das Element b
+  verkleinert, falls b zuvor in $N$ enthalten war, andernfalls wird
+  nichts getan.
+  \item Falls b vom Typ \tnodeset ist, dann wird die Differenz $N-$ b
+  gebildet und dem Objekt zugewiesen, das durch a referenziert wird.
+  \item Falls b vom Typ \tvarreference ist, dann muss b ein Objekt
+  referenzieren, dessen Wert $N_r$ vom Typ \tnodeset ist. In diesem
+  Fall wird die Differenz $N-N_r$ gebildet und dem Objekt, das durch
+  a referenziert wird, zugewiesen.
+  \item Falls keiner dieser Fälle zutrifft, so ist dies ein Laufzeitfehler.
+  \end{enumerate}
 \item a ist vom Typ \tvarreference und hat als Wert einen Zugriffspfad auf
-ein Objekt, dessen Wert $E$ vom Typ \tedgeset ist. Dann muss b vom Typ
-\tedgeid sein. Der Wert $E$ wird um das Element b verkleinert, falls b zuvor
-in $E$ enthalten war, andernfalls wird nichts getan. Das Ergebnis
-ist \toknull.
+ein Objekt, dessen Wert $E$ vom Typ \tedgeset ist. Das Ergebnis der
+Script-Aktivierung ist in diesem Fall stets \toknull.
+  \begin{enumerate}
+  \item Falls b vom Typ \tedgeid ist, dann wird der Wert $E$ um das
+  Element b verkleinert, falls b zuvor in $E$ enthalten war,
+  andernfalls wird nichts getan.
+  \item Falls b vom Typ \tedgeset ist, dann wird die Differenz $E-$ b
+  gebildet und dem Objekt zugewiesen, das durch a referenziert wird.
+  \item Falls b vom Typ \tvarreference ist, dann muss b ein Objekt
+  referenzieren, dessen Wert $E_r$ vom Typ \tedgeset ist. In diesem
+  Fall wird die Differenz $E-E_r$ gebildet und dem Objekt, das durch
+  a referenziert wird, zugewiesen.
+  \item Falls keiner dieser Fälle zutrifft, so ist dies ein Laufzeitfehler.
+  \end{enumerate}
 \end{enumerate}}
 \end{scriptdef}
 
@@ -1380,34 +1417,38 @@ sie in dem allgemeineren Kapitel \ref{scriptdef_add} aufgeführt.
 \saction{Hat als Ergebnis eine leere Kantenmenge.}
 \end{scriptdef}
 
+%%% get_first
+\begin{scriptdef}{get\_first}
+\sparam{set}{\tnodeset oder \tedgeset oder \tvarreference}{Eine Menge
+von Knoten, eine Menge von Kanten oder eine Referenz auf ein Objekt,
+dessen Wert vom Type \tnodeset oder \tedgeset ist}
+\sresult{\tnodeid oder \tedgeid}{Ein Element $e$ mit is\_in (set,
+$e$)}
+\saction{Hat als Ergebnis ein (von der Implementierung willkürlich
+gewähltes)  Element aus der Menge}
+\end{scriptdef}
+
 %%% is_in
 \begin{scriptdef}{is\_in}
-\sparam{set}{\tnodeset oder \tedgeset}{Ein Wert eines der Mengentypen}
+\sparam{set}{\tnodeset oder \tedgeset oder \tvarreference}{Ein Wert
+eines der Mengentypen oder eine Referenz auf ein Objekt, dessen Wert
+in einem der Mengentypen liegt}
 \sparam{element}{\tnodeid bzw.\ \tedgeid}{Ein Element, der Typ muss zum
 Argument set passend sein. Falls set ein Wert aus \tnodeset ist, so muss
 element ein Wert vom Typ \tnodeid sein. Falls set ein Wert aus \tedgeset
-ist, so muss element ein Wert vom Typ \tedgeid sein.}
+ist, so muss element ein Wert vom Typ \tedgeid sein. Entsprechendes
+gilt, falls set eine \tvarreference ist.}
 \sresult{\tboolean}{\toktrue, falls element in set enthalten ist, \tokfalse
 sonst}
-\saction{Testet, ob element in set enthalten ist.}
-\end{scriptdef}
-
-%%% for_each
-\begin{scriptdef}{for\_each}
-\sparam{set}{\tnodeset oder \tedgeset}{Grundmenge}
-\sparam{action}{\tscriptreference}{Aktivierungsinformation für ein Script,
-das genau einen Parameter vom Elementtyp der Grundmenge hat (Also \tnodeid
-für \tnodeset bzw.\ \tedgeid für \tedgeset)}
-\sresult{}{\toknull}
-\saction{Iteriert über alle Elemente der Grundmenge und aktiviert action
-je einmal für jedes Element. Übergibt das Element an action als einzigen
-Parameter.}
+\saction{Testet, ob element in set bzw.\ der durch set referenzierten
+Menge enthalten ist.}
 \end{scriptdef}
 
 %%% size_of
 \begin{scriptdef}{size\_of}
-\sparam{obj}{\tlist oder \tnodeset oder \tedgeset}{Irgendeine Liste, oder
-eine Menge}
+\sparam{obj}{\tlist oder \tnodeset oder \tedgeset oder \tvarreference}
+{Irgendeine Liste, oder eine Menge oder ein Zugriffspfad auf ein
+Objekt des Types \tnodeset oder \tedgeset.}
 \sresult{\tnatural}{Anzahl der Werte in obj}
 \saction{Ermittelt die Anzahl der Einträge der Liste bzw.\ die Kardinalität
 der Menge.}
@@ -1516,6 +1557,14 @@ ist, \tokfalse andernfalls.}
 Typs ist.}
 \end{scriptdef}
 
+%%% is_object_set
+\begin{scriptdef}{is\_object\_set}
+\sparam{obj}{jeder Typ}{Der Wert irgendeines Ausdrucks}
+\sresult{\tboolean}{\toktrue, falls obj ein Wert des zusammengesetzten
+Typs \tobjectset ist, \tokfalse andernfalls.}
+\saction{Überprüft, ob der Wert obj vom zusammengesetzten Typ \tobjectset ist.}
+\end{scriptdef}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Interaktion mit GIANT}
@@ -1564,6 +1613,17 @@ Auf jeden Fall sollte deshalb das Ergebnis dieses Scripts beachtet werden.}
 \saction{Hat als Ergebnis die Menge aller IML-Knoten des IML-Graph.}
 \end{scriptdef}
 
+%%% instance_of
+\begin{scriptdef}{instance\_of}
+\sparam{n}{\tnodeid}{Ein IML-Knoten}
+\sparam{class}{\tstring}{Name einer Klasse von IML-Knoten}
+\sresult{\tboolean}{\toktrue, falls der IML-Knoten n ein IML-Knoten
+des Typs class ist oder als Typ eine IML-Knoteklasse hat, die class
+beerbt. \tokfalse sonst.}
+\saction{Testet, ob ein bestimmter IML-Knoten einer bestimmten
+IML-Knotenklasse angehört.}
+\end{scriptdef}
+
 %%% has_attribute
 \begin{scriptdef}{has\_attribute}
 \sparam{n}{\tnodeid}{Ein IML-Knoten}
@@ -1604,7 +1664,7 @@ IML-Kante.}
 %%% get_outgoing
 \begin{scriptdef}{get\_outgoing}
 \sparam{e}{\tnodeid}{Ein IML-Knoten}
-\sresult{\tedgeid}{Nachbereich von n}
+\sresult{\tedgeset}{Nachbereich von n}
 \saction{Ermittelt alle IML-Kanten, die n als Source haben.}
 \end{scriptdef}
 
@@ -1660,16 +1720,21 @@ ein solches noch nicht existiert. Öffnet das neue Anzeigefenster.}
 %%% insert_into_window
 \begin{scriptdef}{insert\_into\_window}
 \sparam{window\_name}{\tstring}{Name eines Anzeigefensters}
-\sparam{layout\_algo}{\tstring}{Aufrufstring eines Layoutalgorithmus}
+\sparam{layout\_algo}{\tstring}{Name eines Layoutalgorithmus}
+\sparam{parameters}{\tstring}{Parameter für den Layoutalgorithmus}
 \sparam{add\_content}{\tobjectset}{Einzufügender IML-Teilgraph}
 \sresult{\tnatural}{Anzahl der eingefügten IML-Knoten und IML-Kanten}
 \saction{Bildet die größte Teilmenge $G$ von add\_content, so dass jede
 IML-Kante in $G$ zu genau zwei IML-Knoten in $G$ inzident ist und $G$ alle
 IML-Knoten aus add\_content enthält.
-Wendet den Layoutalgorithmus layout\_algo auf content an. Fügt das Resultat
+Wendet den Layoutalgorithmus layout\_algo auf content an. Übergibt
+parameters als Parameter an den Layoutalgorithmus. Fügt das Resultat
 in das Anzeigefenster mit Name window\_name ein.
 
-Es ist ein Laufzeitfehler, falls layout\_algo kein korrekter Aufrufstring ist.
+Es ist ein Laufzeitfehler, falls layout\_algo kein Name eine bekannten
+Layoutalgorithmus ist.
+Es ist ein Laufzeitfehler, falls parameters kein korrekter
+Parameterstring für den Layoutalgorithmus layout\_algo ist.
 Es ist ein Laufzeitfehler, falls kein Anzeigefenster mit Namen window\_name
 existiert.}
 \end{scriptdef}
@@ -1826,11 +1891,15 @@ ein Ergebnis vom Typ \tboolean hat}
 edge\_set inzident sind und das node\_predicate erfüllen.}
 \end{scriptdef}
 
-\begin{scriptdef}{is\_object\_set}
-\sparam{obj}{jeder Typ}{Der Wert irgendeines Ausdrucks}
-\sresult{\tboolean}{\toktrue, falls obj ein Wert des zusammengesetzten
-Typs \tobjectset ist, \tokfalse andernfalls.}
-\saction{Überprüft, ob der Wert obj vom zusammengesetzten Typ \tobjectset ist.}
+\begin{scriptdef}{for\_each}
+\sparam{set}{\tnodeset oder \tedgeset}{Grundmenge}
+\sparam{action}{\tscriptreference}{Aktivierungsinformation für ein Script,
+das genau einen Parameter vom Elementtyp der Grundmenge hat (Also \tnodeid
+für \tnodeset bzw.\ \tedgeid für \tedgeset)}
+\sresult{}{\toknull}
+\saction{Iteriert über alle Elemente der Grundmenge und aktiviert action
+je einmal für jedes Element. Übergibt das Element an action als einzigen
+Parameter.}
 \end{scriptdef}
 
 
