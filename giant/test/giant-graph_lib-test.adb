@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.13 $
---  $Author: squig $
---  $Date: 2003/07/09 16:22:35 $
+--  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.14 $
+--  $Author: koppor $
+--  $Date: 2003/07/13 00:32:33 $
 --
 
 with Ada.Text_IO;
@@ -40,27 +40,49 @@ package body Giant.Graph_Lib.Test is
    --------------------------------------------------------------------------
    --  Parameters for the graph to use for testing
 
---   IML_Filename   : constant String :=
---     "resources/httpd.iml";
---     "/home/stsopra/giant/graphs/httpd.iml";
---   IML_Edge_Count : constant Integer := 2108289;  --  with all: 2316410
---   IML_Node_Count : constant Integer := 790020;  --  with all: 797777
+   type Graph_Data_Record (Len : Natural) is record
+      Filename   : String (1..Len);
+      Edge_Count : Natural;
+      Node_Count : Natural;
+   end record;
+   type Graph_Data is access constant Graph_Data_Record;
 
---   IML_Filename   : constant String :=
---     "resources/wget.iml";
---     "/home/stsopra/giant/graphs/wget.iml";
---   IML_Edge_Count : constant Integer := 1130446; --  with all: 1274794
---   IML_Node_Count : constant Integer := 465457; --  with all: 472583
+   Rfg_Example : aliased constant Graph_Data_Record :=
+     (Len => 23,
+      Filename => "resources/rfg_examp.iml",
+      Edge_Count => 631,  --  with all: 646
+      Node_Count => 202); --  with all: 216
 
---   IML_Filename   : constant String :=
---     "resources/concept_analysis.iml";
---     "/home/stsopra/giant/graphs/concept_analysis.iml";
---   IML_Edge_Count : constant Integer := 141758; -- with all: 156072
---   IML_Node_Count : constant Integer := 53398; -- with all:
+   Httpd : aliased constant Graph_Data_Record :=
+     (Len => 19,
+      Filename => "resources/httpd.iml",
+      Edge_Count => 2108289,  --  with all: 2316410
+      Node_Count => 790020);  --  with all: 797777
 
-   IML_Filename   : constant String  := "resources/rfg_examp.iml";
-   IML_Edge_Count : constant Integer := 631; --  with all: 646
-   IML_Node_Count : constant Integer := 202; --  with all: 216
+   Wget : aliased constant Graph_Data_Record :=
+     (Len => 18,
+      Filename => "resources/wget.iml",
+      Edge_Count => 1130446, --  with all: 1274794
+      Node_Count => 465457); --  with all: 472583
+
+   Concept_Analysis : aliased constant Graph_Data_Record :=
+     (Len => 30,
+      Filename => "resources/concept_analysis.iml",
+      Edge_Count => 141758, -- with all: 156072
+      Node_Count => 53398); -- with all:
+
+   --  all graphs known
+   --  ordered (by hand) by size
+   Graphs : constant array (1..4) of Graph_Data :=
+     ( Rfg_Example'Access,
+       Concept_Analysis'Access,
+       Wget'Access,
+       Httpd'Access );
+
+   --------------------------------------------------------------------------
+   --  Index in Graphs of graph to test with
+   --  TBD: extention, that all graphs are tested with the same test cases
+   Test_Graph_Number : constant := 1;
 
    -------------------------------------
    --  Global variables and routines  --
@@ -103,7 +125,7 @@ package body Giant.Graph_Lib.Test is
    is
    begin
       Giant.Graph_Lib.Initialize;
-      Giant.Graph_Lib.Load (IML_FileName);
+      Giant.Graph_Lib.Load (Graphs (Test_Graph_Number).FileName);
 
       Root := Get_Root_Node;
    end Init;
@@ -178,21 +200,24 @@ package body Giant.Graph_Lib.Test is
       Logger.Debug ("Edges: " & Integer'Image (Get_Edge_Count));
       Logger.Debug ("Nodes: " & Integer'Image (Get_Node_Count));
 
-      Assert (Get_Edge_Count = IML_Edge_Count, "Edge_Count");
-      Assert (Get_Node_Count = IML_Node_Count, "Node_Count");
+      Assert (Get_Edge_Count =
+              Graphs (Test_Graph_Number).Edge_Count, "Edge_Count");
+      Assert (Get_Node_Count =
+              Graphs (Test_Graph_Number).Node_Count, "Node_Count");
 
       --  check count indirectly
       declare
          Set : Edge_Id_Set;
       begin
          Set := Giant.Graph_Lib.Get_All_Edges;
-         Assert (Edge_Id_Sets.Size (Set) = IML_Edge_Count, "All_Edges.Size");
+         Assert (Edge_Id_Sets.Size (Set) =
+                 Graphs (Test_Graph_Number).Edge_Count, "All_Edges.Size");
          Edge_Id_Sets.Destroy (Set);
       end;
 
       --  check count directly
       Assert (IML_Node_ID_Hashed_Mappings.Size (IML_Node_ID_Mapping) =
-              IML_Node_Count,
+              Graphs (Test_Graph_Number).Node_Count,
               "All_Nodes.Size (via Mapping)");
 
       --  check count indirectly
@@ -201,7 +226,8 @@ package body Giant.Graph_Lib.Test is
       begin
          Set := Giant.Graph_Lib.Get_All_Nodes;
          Logger.Debug ("Size: " & Integer'Image (Node_Id_Sets.Size (Set)));
-         Assert (Node_Id_Sets.Size (Set) = IML_Node_Count, "All_Nodes.Size");
+         Assert (Node_Id_Sets.Size (Set) =
+                 Graphs (Test_Graph_Number).Node_Count, "All_Nodes.Size");
          Node_Id_Sets.Destroy (Set);
       end;
 
