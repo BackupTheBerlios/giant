@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.22 $
+--  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.23 $
 --  $Author: schwiemn $
---  $Date: 2003/06/30 11:53:49 $
+--  $Date: 2003/06/30 12:17:02 $
 --
 --  ----------------
 --  This package realizes a container that administrates the components
@@ -785,6 +785,24 @@ package Giant.Vis_Windows is
       Position   : in Vis.Logic.Vector_2d;
       Zoom_Level : in Vis.Zoom_Level);
 
+   ---------------------------------------------------------------------------
+   --  Changes the name of a pin.
+   --  
+   --  Parameters:
+   --    Vis_Window   - A visualisation window.
+   --    Pin_Name     - The name of the pin whose name should be changed.
+   --    New_Pin_Name - The new name for the pin.
+   --  Raises:
+   --    Visual_Window_Access_Not_Initialized_Exception - Raised if a not
+   --      initialized instance of "Vis_Window_Data_Access" is passed
+   --      as parameter.
+   --    Pin_Does_Already_Exist_Exception - Raised if "New_Pin_Name" does
+   --      already exist.
+   procedure Change_Name 
+      (Vis_Window   : in Visual_Window_Access;
+       Pin_Name     : in String;
+       New_Pin_Name : in String);
+       
    ---------------------------------------------------------------------------
    -- Removes a pin from a visualisation window.
    --

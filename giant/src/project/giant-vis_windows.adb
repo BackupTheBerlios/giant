@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.23 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.24 $
 --  $Author: schwiemn $
---  $Date: 2003/06/30 11:53:49 $
+--  $Date: 2003/06/30 12:17:02 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -1041,9 +1041,40 @@ package body Giant.Vis_Windows is
       New_Pin.Pin_Pos  := Position;
       New_Pin.Pin_Zoom := Zoom_Level;
 
-      Pin_Sets.Insert
-        (Vis_Window.Set_Of_All_Pins, New_Pin);
+      Pin_Sets.Insert (Vis_Window.Set_Of_All_Pins, New_Pin);
    end Add_Pin;
+   
+   
+   ---------------------------------------------------------------------------
+   procedure Change_Name 
+      (Vis_Window   : in Visual_Window_Access;
+       Pin_Name     : in String;
+       New_Pin_Name : in String) is
+       
+      Change_Pin : Pin;       
+   begin
+              
+      if Vis_Window = null then
+         raise Visual_Window_Access_Not_Initialized_Exception;
+      end if;
+
+      if Does_Pin_Exist (Vis_Window, Pin_Name) then
+         raise Pin_Does_Already_Exist_Exception;
+      end if;
+      
+      Change_Pin.Pin_Name := Ada.Strings.Unbounded.To_Unbounded_String
+        (Pin_Name);
+      
+      -- Get all data stored in Pin
+      Change_Pin := Pin_Sets.Get (Vis_Window.Set_Of_All_Pins, Change_Pin);
+      
+      Pin_Sets.Remove (Vis_Window.Set_Of_All_Pins, Change_Pin);     
+      
+      Change_Pin.Pin_Name := Ada.Strings.Unbounded.To_Unbounded_String
+        (New_Pin_Name);
+      
+      Pin_Sets.Insert (Vis_Window.Set_Of_All_Pins, Change_Pin);   
+   end Change_Name;
 
    ---------------------------------------------------------------------------
    procedure Remove_Pin
