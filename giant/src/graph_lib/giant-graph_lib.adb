@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.19 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.20 $
 --  $Author: koppor $
---  $Date: 2003/06/24 17:53:28 $
+--  $Date: 2003/06/25 11:37:42 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -214,40 +214,43 @@ package body Giant.Graph_Lib is
    end Convert_Node_Attribute_Id_To_Name;
 
    ---------------------------------------------------------------------------
-   --  Performance can be increased if no linear search, but a hasing is used
-   --    (In create() the hasing should be instantiated)
-   --
-   --  Case-senstive search
    function Convert_Node_Attribute_Name_To_Id
      (Node_Class_Name     : in String;
       Node_Attribute_Name : in String)
      return Node_Attribute_Id
    is
-      IML_Class      : IML_Reflection.Class_ID;
-      Node_Attrib    : Node_Attribute_Id := Invalid_Node_Attribute_Id;
+      Node_Class     : Node_Class_Id;
    begin
-      IML_Class := Convert_Node_Class_Name_To_Id (Node_Class_Name);
+      Node_Class := Convert_Node_Class_Name_To_Id (Node_Class_Name);
 
-      declare
-         I         : Integer;
-      begin
-         I := IML_Class.Fields'First;
-         while
-           (I <= IML_Class.Fields'Last) and then
-           (IML_Class.Fields (I).Name /= Node_Attribute_Name)
-         loop
-            I := I + 1;
-         end loop;
-         if I <= IML_Class.Fields'Last then
-            return IML_Class.Fields(I);
-         end if;
-      end;
+      return Convert_Node_Attribute_Name_To_Id
+        (Node_Class, Node_Attribute_Name);
+   end Convert_Node_Attribute_Name_To_Id;
 
-      if IML_Reflection."=" (Node_Attrib, Invalid_Node_Attribute_Id) then
+   ---------------------------------------------------------------------------
+   --  Performance can be increased if no linear search, but a hasing is used
+   --    (In create() the hasing should be instantiated)
+   --
+   --  Case-senstive search
+   function Convert_Node_Attribute_Name_To_Id
+     (Node_Class          : in Node_Class_Id;
+      Node_Attribute_Name : in String)
+     return Node_Attribute_Id
+   is
+      I         : Integer;
+   begin
+      I := Node_Class.Fields'First;
+      while
+        (I <= Node_Class.Fields'Last) and then
+        (Node_Class.Fields (I).Name /= Node_Attribute_Name) loop
+         I := I + 1;
+      end loop;
+
+      if I <= Node_Class.Fields'Last then
+         return Node_Class.Fields(I);
+      else
          raise Node_Attribute_Does_Not_Exist;
       end if;
-
-      return Node_Attrib;
    end Convert_Node_Attribute_Name_To_Id;
 
    ---------------------------------------------------------------------------
