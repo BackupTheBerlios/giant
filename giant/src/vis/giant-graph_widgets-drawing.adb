@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.16 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.17 $
 --  $Author: keulsn $
---  $Date: 2003/07/12 03:33:56 $
+--  $Date: 2003/07/12 03:36:46 $
 --
 ------------------------------------------------------------------------------
 
@@ -1040,40 +1040,10 @@ package body Giant.Graph_Widgets.Drawing is
    procedure Update_Display
      (Widget : access Graph_Widget_Record'Class;
       Area   : in     Vis.Absolute.Rectangle_2d) is
-
-      Width  : Glib.Gint;
-      Height : Glib.Gint;
    begin
       Drawing_Logger.Debug ("Update_Display: " & Vis.Absolute.Image (Area));
-      Drawing_Logger.Debug
-        ("Buffer_Area  = " & Image (Widget.Drawing.Buffer_Area));
-      Drawing_Logger.Debug
-        ("Visible_Area = " & Image (Widget.Drawing.Visible_Area));
-      Drawing_Logger.Debug
-        ("Copy from    = " &
-         Image (Get_Top_Left (Widget.Drawing.Visible_Area) -
-                Get_Top_Left (Widget.Drawing.Buffer_Area)));
-      Drawing_Logger.Debug
-        ("Copy size    = " & Image (Get_Size (Widget.Drawing.Visible_Area)));
       Update_Buffer (Widget);
-      Gdk.Window.Get_Size
-        (Window => Widget.Drawing.Buffer,
-         Width  => Width,
-         Height => Height);
-      pragma Assert
-        (Vis.Absolute_Int (Width) = Get_Width (Widget.Drawing.Buffer_Area));
-      pragma Assert
-        (Vis.Absolute_Int (Height) = Get_Height (Widget.Drawing.Buffer_Area));
-      Gdk.Window.Get_Size
-        (Window => Widget.Drawing.Ready_Buffer,
-         Width  => Width,
-         Height => Height);
-      pragma Assert
-        (Vis.Absolute_Int (Width) = Get_Width (Widget.Drawing.Buffer_Area));
-      pragma Assert
-        (Vis.Absolute_Int (Height) = Get_Height (Widget.Drawing.Buffer_Area));
-      Clear
-        (Widget.Drawing.Debug_Gc, Widget.Drawing.Display);
+
       Gdk.Drawable.Copy_Area
         (Dest     => Widget.Drawing.Display,
          GC       => Widget.Drawing.Background,
