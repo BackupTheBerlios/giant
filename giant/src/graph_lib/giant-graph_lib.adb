@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.6 $
 --  $Author: koppor $
---  $Date: 2003/06/09 22:08:53 $
+--  $Date: 2003/06/10 00:27:12 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -30,6 +30,7 @@ with Hashed_Mappings;
 with Ptr_Hashs;
 with SLocs;
 with Storables;
+with IML_Classes;
 with IML_Graphs;
 with IML.IO;
 with IML_Node_IDs;
@@ -197,6 +198,7 @@ package body Giant.Graph_Lib is
         (Left.Source_Node_Attribute < Right.Source_Node_Attribute);
    end "<";
 
+   ---------------------------------------------------------------------------
    function "<"
       (Left  : Node_Attribute_Id;
        Right : Node_Attribute_Id)
@@ -206,6 +208,7 @@ package body Giant.Graph_Lib is
       return (Left.Name < Right.Name);
    end "<";
 
+   ---------------------------------------------------------------------------
    function "="
      (Left  : Node_Class_Id;
       Right : Node_Class_Id)
@@ -215,6 +218,7 @@ package body Giant.Graph_Lib is
       return (Left.Name = Right.Name);
    end "=";
 
+   ---------------------------------------------------------------------------
    function Convert_Node_Attribute_Id_To_Name
      (Node_Attribute : in Node_Attribute_Id)
       return String
@@ -236,13 +240,7 @@ package body Giant.Graph_Lib is
       IML_Class      : IML_Reflection.Class_ID;
       Node_Attrib    : Node_Attribute_Id := Invalid_Node_Attribute_Id;
    begin
-      --  initialise IML_Class
-      declare
-         Node_Class : Node_Class_Id;
-      begin
-         Node_Class := Convert_Node_Class_Name_To_Id (Node_Class_Name);
-         IML_Class  := Node_Class;
-      end;
+      IML_Class := Convert_Node_Class_Name_To_Id (Node_Class_Name);
 
       declare
          I         : Integer;
@@ -255,8 +253,7 @@ package body Giant.Graph_Lib is
             I := I + 1;
          end loop;
          if I <= IML_Class.Fields'Last then
-            --  hash back from IML_Field_Id to Node_Attribute_Id
-            null;
+            return IML_Class.Fields(I);
          end if;
       end;
 
@@ -267,16 +264,34 @@ package body Giant.Graph_Lib is
       return Node_Attrib;
    end Convert_Node_Attribute_Name_To_Id;
 
+   ---------------------------------------------------------------------------
    function Convert_Node_Class_Name_To_Id
      (Node_Class_Name : in String)
       return Node_Class_Id
    is
+      All_Classes : IML_Reflection.Classes;
+      I           : Integer;
    begin
-      --  where the XXX is IML_Classes.Get_all_Classes
-      --  I think, it was never implemented O:)
-      return Convert_Node_Class_Name_To_Id (Node_Class_Name);
+      --  straightforward-implementation, since this function is only
+      --  needed during the initialization
+
+      All_Classes := IML_Classes.Get_All_Classes;
+
+      I := All_Classes'First;
+      while
+        (I <= All_Classes'Last) and then
+        (All_Classes (I).Name /= Node_Class_Name) loop
+         I := I+1;
+      end loop;
+
+      if I <= All_Classes'Last then
+         return All_Classes (I);
+      else
+         raise Node_Class_Does_Not_Exist;
+      end if;
    end Convert_Node_Class_Name_To_Id;
 
+   ---------------------------------------------------------------------------
    function Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
      (Node_Class     : in Node_Class_Id;
       Node_Attribute : in Node_Attribute_Id)
@@ -564,7 +579,7 @@ package body Giant.Graph_Lib is
                      Iter    := IML_Set.Make_Iterator (IML_Node);
 
                      while IML_Reflection.More (Iter) loop
-                        IML_Reflection.Next (ITer, Target);
+                        IML_Reflection.Next (Iter, Target);
                         I := I+1;
 
                         Process_Edge (Node, Target, Attribute, I);
@@ -577,6 +592,7 @@ package body Giant.Graph_Lib is
                   IML_Reflection.Builtin_Field'Class) then
                   null;
                else
+                  My_Logger.Error (Attribute.Name);
                   My_Logger.Error ("Unknown IML_Reflection.Field");
                end if;
             end Process_Attribute;
@@ -790,53 +806,117 @@ package body Giant.Graph_Lib is
       null;
    end Destroy;
 
-   ---------------------------
-   -- Does_Edge_Class_Exist --
-   ---------------------------
-
+   ---------------------------------------------------------------------------
    function Does_Edge_Class_Exist
      (Node_Class     : in Node_Class_Id;
       Node_Attribute : in Node_Attribute_Id)
       return Boolean
    is
+      I : Integer;
    begin
-      return Does_Edge_Class_Exist (Node_Class, Node_Attribute);
+      I := Node_Class.Fields'First;
+      while
+        (I <= Node_Class.Fields'Last) and then
+        (IML_Reflection."/=" (Node_Attribute, Node_Class.Fields (I))) loop
+         I := I+1;
+      end loop;
+
+      if I <= Node_Class.Fields'Last then
+         declare
+            Field : IML_Reflection.Field_Id := Node_Class.Fields (I);
+         begin
+            --  same fields like in ConvertIMLGraphToTempStructure.
+            --    ProcessQueue.Process_Attribute
+            return
+              (Field.all in IML_Reflection.Edge_Field) or
+              (Field.all in IML_Reflection.List_Field) or
+              (Field.all in IML_Reflection.Set_Field);
+         end;
+      else
+         return false;
+      end if;
    end Does_Edge_Class_Exist;
 
-   -------------------------------
-   -- Does_Node_Attribute_Exist --
-   -------------------------------
-
+   ---------------------------------------------------------------------------
    function Does_Node_Attribute_Exist
      (Node_Class_Name     : in String;
       Node_Attribute_Name : in String)
       return Boolean
    is
    begin
-      return Does_Node_Attribute_Exist (Node_Class_Name, Node_Attribute_Name);
+      declare
+         Attribute : Node_Attribute_Id;
+      begin
+         Attribute := Convert_Node_Attribute_Name_To_Id
+           (Node_Class_Name,
+            Node_Attribute_Name);
+
+         --  No exception: Attribute exists
+         return True;
+      exception
+         when Node_Attribute_Does_Not_Exist =>
+            return False;
+      end;
    end Does_Node_Attribute_Exist;
 
-   ---------------------------
-   -- Does_Node_Class_Exist --
-   ---------------------------
-
+   ---------------------------------------------------------------------------
    function Does_Node_Class_Exist
      (Node_Class_Name : in String)
       return Boolean
    is
    begin
-      return Does_Node_Class_Exist (Node_Class_Name);
+      declare
+         Node_Class : Node_Class_Id;
+      begin
+         Node_Class := Convert_Node_Class_Name_To_Id (Node_Class_Name);
+
+         --  no exception risen: class exists
+         return True;
+      exception
+         when Node_Class_Does_Not_Exist =>
+            return False;
+      end;
    end Does_Node_Class_Exist;
 
-   ----------------------------
-   -- Get_All_Edge_Class_Ids --
-   ----------------------------
-
+   ---------------------------------------------------------------------------
+   --  Loops over the hashtables storing the Edgeclasses and returns all
+   --    of them
    function Get_All_Edge_Class_Ids return Edge_Class_Id_Set is
+      Set      : Edge_Class_Id_Set;
+
+      IterData : Node_Class_Id_Hashed_Mappings.Values_Iter;
+      CurData  : Node_Class_Id_Hash_Data_Access;
+
+      --  used for the inner loop
+      IterAttrib : Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.
+        Values_Iter;
+      CurEdge_Class  : Edge_Class_Id;
+
    begin
-      return Get_All_Edge_Class_Ids;
+      Set      := Edge_Class_Id_Sets.Empty_Set;
+      IterData := Node_Class_Id_Hashed_Mappings.Make_Values_Iter
+        (Node_Class_Id_Mapping);
+
+      while Node_Class_Id_Hashed_Mappings.More (IterData) loop
+         Node_Class_Id_Hashed_Mappings.Next (IterData, CurData);
+
+         IterAttrib := Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.
+           Make_Values_Iter
+           (CurData.Node_Attribute_Id_Mapping);
+
+         while Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings
+           .More (IterAttrib) loop
+            Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.
+              Next (IterAttrib, CurEdge_Class);
+
+            Edge_Class_Id_Sets.Insert (Set, CurEdge_Class);
+         end loop;
+      end loop;
+
+      return Set;
    end Get_All_Edge_Class_Ids;
 
+   ---------------------------------------------------------------------------
    function Node_Id_Image
      (Node : in Node_Id)
      return String
@@ -880,117 +960,200 @@ package body Giant.Graph_Lib is
       return Value;
    end Node_Id_Value;
 
+   ---------------------------------------------------------------------------
    function Does_Node_Id_Exist
      (Node : in String)
      return Boolean
    is
    begin
-      --  TBD
-      return False;
+      declare
+         ID : Node_Id;
+      begin
+         ID := Node_Id_Value (Node);
+
+         return True;
+      exception
+         when Node_Does_Not_Exist =>
+            return False;
+      end;
    end Does_Node_Id_Exist;
 
-   -----------------------------------------------
-   -- Get_All_Edge_Class_Ids_For_Node_Attribute --
-   -----------------------------------------------
-
+   ---------------------------------------------------------------------------
    function Get_All_Edge_Class_Ids_For_Node_Attribute
      (Node_Attribute_Name : in String)
       return Edge_Class_Id_Set
    is
+      Set      : Edge_Class_Id_Set;
+
+      IterData : Node_Class_Id_Hashed_Mappings.Values_Iter;
+      CurData  : Node_Class_Id_Hash_Data_Access;
+
+      --  used for the inner loop
+      IterAttrib : Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.
+        Bindings_Iter;
+      CurAttribute   : Node_Attribute_Id;
+      CurEdge_Class  : Edge_Class_Id;
+
    begin
-      return Get_All_Edge_Class_Ids_For_Node_Attribute (Node_Attribute_Name);
+      Set      := Edge_Class_Id_Sets.Empty_Set;
+      IterData := Node_Class_Id_Hashed_Mappings.Make_Values_Iter
+        (Node_Class_Id_Mapping);
+
+      while Node_Class_Id_Hashed_Mappings.More (IterData) loop
+         Node_Class_Id_Hashed_Mappings.Next (IterData, CurData);
+
+         IterAttrib := Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.
+           Make_Bindings_Iter
+           (CurData.Node_Attribute_Id_Mapping);
+
+         while Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings
+           .More (IterAttrib) loop
+            Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.
+              Next (IterAttrib, CurAttribute, CurEdge_Class);
+
+            if CurAttribute.Name = Node_Attribute_Name then
+               Edge_Class_Id_Sets.Insert (Set, CurEdge_Class);
+            end if;
+         end loop;
+      end loop;
+
+      return Set;
    end Get_All_Edge_Class_Ids_For_Node_Attribute;
 
-   -------------------------------------------
-   -- Get_All_Edge_Class_Ids_For_Node_Class --
-   -------------------------------------------
-
+   ---------------------------------------------------------------------------
    function Get_All_Edge_Class_Ids_For_Node_Class
      (Node_Class : in Node_Class_Id)
       return Edge_Class_Id_Set
    is
+      Set       : Edge_Class_Id_Set;
+      ClassData : Node_Class_Id_Hash_Data_Access;
+
+      IterAttrib : Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.
+        Values_Iter;
+      CurEdge_Class  : Edge_Class_Id;
+
    begin
-      return Get_All_Edge_Class_Ids_For_Node_Class (Node_Class);
+      Set := Edge_Class_Id_Sets.Empty_Set;
+
+      ClassData := Node_Class_Id_Hashed_Mappings.Fetch
+        (Node_Class_Id_Mapping, Node_Class);
+
+      IterAttrib := Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.
+        Make_Values_Iter (ClassData.Node_Attribute_Id_Mapping);
+
+      while Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings
+        .More (IterAttrib) loop
+         Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.
+           Next (IterAttrib, CurEdge_Class);
+
+         Edge_Class_Id_Sets.Insert (Set, CurEdge_Class);
+      end loop;
+
+      return Set;
    end Get_All_Edge_Class_Ids_For_Node_Class;
 
-   ----------------------------
-   -- Get_All_Node_Class_Ids --
-   ----------------------------
-
+   ---------------------------------------------------------------------------
    function Get_All_Node_Class_Ids return Node_Class_Id_Set is
+      Set      : Node_Class_Id_Set;
+
+      Iter     : Node_Class_Id_Hashed_Mappings.Keys_Iter;
+      CurClass : Node_Class_Id;
+
    begin
-      return Get_All_Node_Class_Ids;
+      Set  := Node_Class_Id_Sets.Empty_Set;
+      Iter := Node_Class_Id_Hashed_Mappings.Make_Keys_Iter
+        (Node_Class_Id_Mapping);
+
+      while Node_Class_Id_Hashed_Mappings.More (Iter) loop
+         Node_Class_Id_Hashed_Mappings.Next (Iter, CurClass);
+         Node_Class_Id_Sets.Insert (Set, CurClass);
+      end loop;
+
+      return Set;
    end Get_All_Node_Class_Ids;
 
-   -------------------
-   -- Get_All_Nodes --
-   -------------------
-
+   ----------------------------------------------------------------------------
+   --  Analogue to DestroyAllNodes
    function Get_All_Nodes
       return Node_Id_Set
    is
+      Set     : Node_Id_Set;
+      Iter    : IML_Node_ID_Hashed_Mappings.Values_Iter;
+      CurNode : Node_Id;
+
    begin
-      return Get_All_Nodes;
+      Set := Node_Id_Sets.Empty_Set;
+
+      Iter := IML_Node_ID_Hashed_Mappings.Make_Values_Iter
+        (IML_Node_ID_Mapping);
+
+      while IML_Node_ID_Hashed_Mappings.More (Iter) loop
+         IML_Node_ID_Hashed_Mappings.Next (Iter, CurNode);
+
+         Node_Id_Sets.Insert (Set, CurNode);
+      end loop;
+
+      return Set;
    end Get_All_Nodes;
 
-   -----------------------
-   -- Get_Class_Of_Edge --
-   -----------------------
-
+   ---------------------------------------------------------------------------
    function Get_Class_Of_Edge
-     (Node : in Edge_Id)
+     (Edge : in Edge_Id)
       return Edge_Class_Id
    is
    begin
-      return Get_Class_Of_Edge (Node);
+      return
+        Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+        (Get_Class_Of_Node (Edge.Source_Node),
+         Edge.Attribute);
    end Get_Class_Of_Edge;
 
-   -----------------------
-   -- Get_Class_Of_Node --
-   -----------------------
-
+   ---------------------------------------------------------------------------
    function Get_Class_Of_Node
      (Node : in Node_Id)
       return Node_Class_Id
    is
    begin
-      return Get_Class_Of_Node (Node);
+      return IML_Roots.Get_Class_ID (IML_Roots.IML_Root (Node.IML_Node));
    end Get_Class_Of_Node;
 
-   ------------------
-   -- Get_Edge_Tag --
-   ------------------
-
+   ---------------------------------------------------------------------------
    function Get_Edge_Tag
      (Edge : Edge_Id)
       return String
    is
    begin
-      return Get_Edge_Tag (Edge);
+      if Edge.Attribute_Element_Number = 0 then
+         return "0";
+      else
+         return Integer'Image (Edge.Attribute_Element_Number);
+      end if;
    end Get_Edge_Tag;
 
-   ------------------------
-   -- Get_Incoming_Edges --
-   ------------------------
-
+   ----------------------------------------------------------------------------
    function Get_Incoming_Edges
      (Node : in Node_Id)
       return Edge_Id_Set
    is
+      Set : Edge_Id_Set;
    begin
-      return Get_Incoming_Edges (Node);
+      Set := Edge_Id_Sets.Empty_Set;
+
+      for I in Node.Incoming_Edges'Range loop
+         Edge_Id_Sets.Insert (Set, Node.Incoming_Edges (I));
+      end loop;
+
+      return Set;
    end Get_Incoming_Edges;
 
-   -----------------------------------------------------
-   -- Get_Node_Attribute_Attribute_Node_Id_List_Value --
-   -----------------------------------------------------
-
+   ----------------------------------------------------------------------------
    function Get_Node_Attribute_Attribute_Node_Id_List_Value
      (Node      : in     Node_Id;
       Attribute : in     Node_Attribute_Id)
       return Node_Id_List
    is
    begin
+
       return Get_Node_Attribute_Attribute_Node_Id_List_Value (Node, Attribute);
    end Get_Node_Attribute_Attribute_Node_Id_List_Value;
 
@@ -1003,55 +1166,118 @@ package body Giant.Graph_Lib is
       return Get_Node_Attribute_Boolean_Value (Node, Attribute);
    end Get_Node_Attribute_Boolean_Value;
 
-   ---------------------------------
-   -- Get_Node_Attribute_Class_Id --
-   ---------------------------------
-
+   ----------------------------------------------------------------------------
    function Get_Node_Attribute_Class_Id
      (Node_Attribute : in Node_Attribute_Id)
       return Node_Attribute_Class_Id
    is
    begin
-      return Get_Node_Attribute_Class_Id (Node_Attribute);
+      --  Edges to other nodes
+      if Node_Attribute.all in IML_Reflection.Edge_Field'Class then
+         return Class_Node_Id;
+      elsif Node_Attribute.all in IML_Reflection.List_Field'Class then
+         return Class_Node_Id_List;
+      elsif Node_Attribute.all in IML_Reflection.Set_Field'Class then
+         return Class_Node_Id_Set;
+
+         -- Buildin-Fields
+      elsif Node_Attribute.all in IML_Reflection.SLoc_Field'Class then
+         return Class_SLoc;
+      elsif Node_Attribute.all in IML_Reflection.Boolean_Field'Class then
+         return Class_Boolean;
+      elsif Node_Attribute.all in IML_Reflection.Natural_Field'Class then
+         return Class_Natural;
+      elsif Node_Attribute.all in IML_Reflection.Enumerator_Field'Class then
+         return Class_String_List;
+      else
+         My_Logger.Error (Node_Attribute.Name);
+         My_Logger.Error ("Class for Node_Attribute could not be found");
+         return Class_Natural;
+      end if;
    end Get_Node_Attribute_Class_Id;
 
-   --------------------------------------
-   -- Get_Node_Attribute_Natural_Value --
-   --------------------------------------
-
+   ---------------------------------------------------------------------------
    function Get_Node_Attribute_Natural_Value
      (Node      : in     Node_Id;
       Attribute : in     Node_Attribute_Id)
       return Natural
    is
    begin
-      return Get_Node_Attribute_Natural_Value (Node, Attribute);
+      if Get_Node_Attribute_Class_Id (Attribute) /= Class_Natural then
+         raise Wrong_Attribute_Type;
+      end if;
+
+      return IML_Reflection.Natural_Field (Attribute.all).Get_Value
+        (Node.IML_Node);
    end Get_Node_Attribute_Natural_Value;
 
-   ------------------------------------------
-   -- Get_Node_Attribute_Node_Id_Set_Value --
-   ------------------------------------------
-
+   ----------------------------------------------------------------------------
    function Get_Node_Attribute_Node_Id_Set_Value
      (Node      : in     Node_Id;
       Attribute : in     Node_Attribute_Id)
       return Node_Id_Set
    is
+      Set : Node_Id_Set;
    begin
-      return Get_Node_Attribute_Node_Id_Set_Value (Node, Attribute);
+      if Get_Node_Attribute_Class_Id (Attribute) /= Class_Node_Id_Set then
+         raise Wrong_Attribute_Type;
+      end if;
+
+      Set := Node_Id_Sets.Empty_Set;
+
+      declare
+         IML_Set : IML_Reflection.Set_Field :=
+           IML_Reflection.Set_Field (Attribute.all);
+         Iter    : IML_Reflection.Set_Iterator;
+         Target  : Storables.Storable;
+         ResNode : Node_Id;
+      begin
+         Iter := IML_Set.Make_Iterator (Node.IML_Node);
+
+         while IML_Reflection.More (Iter) loop
+            IML_Reflection.Next (Iter, Target);
+
+            ResNode := IML_Node_ID_Hashed_Mappings.Fetch
+              (IML_Node_ID_Mapping,
+               Storables.Get_Node_Id (Target) );
+
+            Node_Id_Sets.Insert (Set, ResNode);
+         end loop;
+      end;
+
+      return Set;
    end Get_Node_Attribute_Node_Id_Set_Value;
 
-   --------------------------------------
-   -- Get_Node_Attribute_Node_Id_Value --
-   --------------------------------------
-
+   ----------------------------------------------------------------------------
    function Get_Node_Attribute_Node_Id_Value
      (Node      : in     Node_Id;
       Attribute : in     Node_Attribute_Id)
       return Node_Id
    is
+      ResNode : Node_Id;
    begin
-      return Get_Node_Attribute_Node_Id_Value (Node, Attribute);
+      if Get_Node_Attribute_Class_Id (Attribute) /= Class_Node_Id then
+         raise Wrong_Attribute_Type;
+      end if;
+
+      declare
+         IML_Edge : IML_Reflection.Edge_Field
+           := IML_Reflection.Edge_Field (Attribute.all);
+         Target   : Storables.Storable;
+      begin
+         Target   := IML_Edge.Get_Target
+           (IML_Roots.IML_Root (Node.IML_Node));
+         if Storables."/=" (Target, null) then
+            ResNode := IML_Node_ID_Hashed_Mappings.Fetch
+              (IML_Node_ID_Mapping,
+               Storables.Get_Node_Id (Target) );
+         else
+            My_Logger.Fatal ("Edge_Field with null target");
+            raise Node_Does_Not_Exist;
+         end if;
+      end;
+
+      return ResNode;
    end Get_Node_Attribute_Node_Id_Value;
 
    ------------------------------------------

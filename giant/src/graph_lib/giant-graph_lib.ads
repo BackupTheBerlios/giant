@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.4 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.5 $
 --  $Author: koppor $
---  $Date: 2003/06/09 22:09:14 $
+--  $Date: 2003/06/10 00:29:09 $
 --
 
 --  Bauhaus / IML
@@ -71,8 +71,8 @@ package Giant.Graph_Lib is
    subtype Node_Class_Id is IML_Reflection.Class_ID;
 
    ---------------------------------------------------------------------------
-   --  Unique id of one single attribute which appears in one or more nodes
-   --    ("name of the attribute")
+   --  Unique id of one single attribute "type" which appears in
+   --    one or more nodes ("type of the attribute")
    --
    --    'Node_Attribute_Id' is declared as a subtype only to simplify
    --    implementation of the package. It is to be considered a private type.
@@ -87,10 +87,10 @@ package Giant.Graph_Lib is
       (Class_Node_Id,
        Class_Node_Id_List,
        Class_Node_Id_Set,
-       Class_String,
+       --  Class_String,
 
-   --  still don't know how to deal with Enumerator_Field
-   --  Class_String_List,
+       --  still don't know how to deal with Enumerator_Field
+       Class_String_List,
 
        Class_SLoc,
        Class_Boolean,
@@ -104,8 +104,11 @@ package Giant.Graph_Lib is
    ---------------------------
 
    ---------------------------------------------------------------------------
+   type Edge_Record is limited private;
+
+   ---------------------------------------------------------------------------
    --  unique Id of one single edge in the duplicated IML-Graph
-   type Edge_Id is private;
+   type Edge_Id is access Edge_Record;
 
    ---------------------------------------------------------------------------
    --  to be considered private
@@ -191,9 +194,9 @@ package Giant.Graph_Lib is
    -------------
    --  Lists  --
    -------------
-   package Node_Id_List_Package is
+   package Node_Id_Lists is
       new Lists (ItemType => Node_Id);
-   subtype Node_Id_List is Node_Id_List_Package.List;
+   subtype Node_Id_List is Node_Id_Lists.List;
 
    ------------
    --  Sets  --
@@ -205,11 +208,11 @@ package Giant.Graph_Lib is
    --
    --  Read and Write will not be used and therefore are not
    --  instantiated.
-   package Node_Id_Set_Package is
+   package Node_Id_Sets is
       new Ordered_Sets (Item_Type => Node_Id,
                         "="       => "=",
                         "<"       => "<");
-   subtype Node_Id_Set is Node_Id_Set_Package.Set;
+   subtype Node_Id_Set is Node_Id_Sets.Set;
 
    ---------------------------------------------------------------------------
    --  This package provides set and iterator operations. The
@@ -217,12 +220,12 @@ package Giant.Graph_Lib is
    --
    --  Read and Write will not be used and therefore are not
    --  instantiated.
-   package Node_Attribute_Class_Id_Set_Package is
+   package Node_Attribute_Class_Id_Sets is
       new Ordered_Sets (Item_Type => Node_Attribute_Class_Id,
                         "="       => "=",
                         "<"       => "<");
    subtype Node_Attribute_Class_Id_Set is
-      Node_Attribute_Class_Id_Set_Package.Set;
+      Node_Attribute_Class_Id_Sets.Set;
 
    ---------------------------------------------------------------------------
    --  This package provides set and iterator operations. The
@@ -230,31 +233,31 @@ package Giant.Graph_Lib is
    --
    --  Read and Write will not be used and therefore are not
    --  instantiated.
-   package Node_Class_Id_Set_Package is
+   package Node_Class_Id_Sets is
       new Ordered_Sets (Item_Type => Node_Class_Id,
                         "="       => "=",
                         "<"       => "<");
-   subtype Node_Class_Id_Set is Node_Class_Id_Set_Package.Set;
+   subtype Node_Class_Id_Set is Node_Class_Id_Sets.Set;
 
    ---------------------------------------------------------------------------
    --  Set and iterator operations are offered by Ordered_Set
    --
    --  Read and Write are not instantiated, since they won't be used
-   package Edge_Id_Set_Package is
-      new Ordered_Sets (Item_Type => Edge_Class_Id,
+   package Edge_Id_Sets is
+      new Ordered_Sets (Item_Type => Edge_Id,
                         "="       => "=",
                         "<"       => "<");
-   subtype Edge_Id_Set is Edge_Id_Set_Package.Set;
+   subtype Edge_Id_Set is Edge_Id_Sets.Set;
 
    ---------------------------------------------------------------------------
    --  Set and iterator operations are offered by Ordered_Set
    --
    --  Read and Write are not instantiated, since they won't be used
-   package Edge_Class_Id_Set_Package is
+   package Edge_Class_Id_Sets is
       new Ordered_Sets (Item_Type => Edge_Class_Id,
                         "="       => "=",
                         "<"       => "<");
-   subtype Edge_Class_Id_Set is Edge_Class_Id_Set_Package.Set;
+   subtype Edge_Class_Id_Set is Edge_Class_Id_Sets.Set;
 
 
    ------------------------
@@ -403,7 +406,7 @@ package Giant.Graph_Lib is
    --  Returns:
    --    "Type of Edge"
    function Get_Class_Of_Edge
-      (Node : in Edge_Id)
+      (Edge : in Edge_Id)
       return Edge_Class_Id;
 
    ---------------------------------------------------------------------------
@@ -543,6 +546,8 @@ package Giant.Graph_Lib is
    --  Raises:
    --    Wrong_Attribute_Type
    --      if Get_Node_Attribute_Class_Id(Attribute) /= Class_Node_Id
+   --    Node_Does_Not_Exist
+   --      if edge does not point to a valid node-id
    function Get_Node_Attribute_Node_Id_Value
       (Node      : in     Node_Id;
        Attribute : in     Node_Attribute_Id)
@@ -708,11 +713,8 @@ private
         Attribute_Element_Number     : Natural;
      end record;
 
-   type Edge_Id is access Edge_Record;
-
-
    ---------------------------------------------------------------------------
-   --  a unique edgeclass
+   --  an unique edgeclass
    type Edge_Class is
      limited record
         Source_Node_Class     : Node_Class_Id;
