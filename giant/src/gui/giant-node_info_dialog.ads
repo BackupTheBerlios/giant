@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-node_info_dialog.ads,v $, $Revision: 1.4 $
+--  $RCSfile: giant-node_info_dialog.ads,v $, $Revision: 1.5 $
 --  $Author: squig $
---  $Date: 2003/08/12 13:14:05 $
+--  $Date: 2003/09/08 15:33:10 $
 --
 ------------------------------------------------------------------------------
 --
@@ -36,6 +36,10 @@ with Gtk.Label;
 with Giant.Clists;
 with Giant.Default_Dialog;
 with Giant.Graph_Lib;
+with Giant.Graph_Widgets;
+with Giant.Graph_Widgets.Handlers;
+with Giant.Graph_Window;
+with Giant.Vis;
 
 package Giant.Node_Info_Dialog is
 
@@ -62,9 +66,33 @@ package Giant.Node_Info_Dialog is
    procedure Show
      (Node : in Graph_Lib.Node_Id);
 
+   package Actions is
+      type Pick_Node_Action_Type is
+        new Graph_Window.Actions.Graph_Window_Action_Type with record
+           Dialog : Node_Info_Dialog_Access;
+        end record;
+
+      type Pick_Node_Action_Access is
+        access all Pick_Node_Action_Type'Class;
+
+      function Create
+        (Dialog : in Node_Info_Dialog_Access)
+        return Pick_Node_Action_Access;
+
+      procedure Cancel
+        (Action : access Pick_Node_Action_Type);
+
+      function Execute
+        (Action   : access Pick_Node_Action_Type;
+         Window   : access Graph_Window.Graph_Window_Record'Class;
+         Event    : in     Graph_Widgets.Handlers.Button_Press_Action)
+        return Boolean;
+   end Actions;
+
 private
    type Node_Info_Dialog_Record is
      new Default_Dialog.Default_Dialog_Record with record
+        Pick_Action : Actions.Pick_Node_Action_Access;
         ID_Label : Gtk.Label.Gtk_Label;
         Type_Label : Gtk.Label.Gtk_Label;
         Attribute_List : Clists.Giant_Clist;

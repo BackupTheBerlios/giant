@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-node_info_dialog.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-node_info_dialog.adb,v $, $Revision: 1.9 $
 --  $Author: squig $
---  $Date: 2003/08/12 13:14:05 $
+--  $Date: 2003/09/08 15:33:10 $
 --
 
 with Interfaces.C.Strings;
@@ -39,7 +39,6 @@ with Giant.Gui_Manager;
 with Giant.Gui_Manager.Actions;
 with Giant.Gui_Utils;
 with Giant.Node_Annotation_Dialog;
-with Giant.Node_Info_Dialog.Actions;
 
 package body Giant.Node_Info_Dialog is
 
@@ -61,6 +60,7 @@ package body Giant.Node_Info_Dialog is
       Dialog : Node_Info_Dialog_Access := Node_Info_Dialog_Access (Source);
       Action : Actions.Pick_Node_Action_Access := Actions.Create (Dialog);
    begin
+      Dialog.Pick_Action := Action;
       Gui_Manager.Actions.Set_Global_Action (Action);
    end On_Pick_Button_Clicked;
 
@@ -144,8 +144,14 @@ package body Giant.Node_Info_Dialog is
      (Dialog : access Node_Info_Dialog_Record)
      return Boolean
    is
+      use type Actions.Pick_Node_Action_Access;
    begin
-      -- FIX: abort a possible pick action
+      --  abort a pending pick action to avoid a dangling pointer to
+      --  this dialog
+      if (Dialog.Pick_Action /= null) then
+         Gui_Manager.Actions.Cancel;
+      end if;
+
       return True;
    end Can_Hide;
 
@@ -199,5 +205,48 @@ package body Giant.Node_Info_Dialog is
       Set_Node (Dialog, Node);
       Show_All (Dialog);
    end Show;
+
+   package body Actions is
+
+      -------------------------------------------------------------------------
+      --  Actions
+      -------------------------------------------------------------------------
+
+      function Create
+        (Dialog : in Node_Info_Dialog_Access)
+        return Pick_Node_Action_Access
+      is
+         Action : Pick_Node_Action_Access;
+      begin
+         Action := new Pick_Node_Action_Type;
+         Action.Dialog := Dialog;
+         return Action;
+      end Create;
+
+      procedure Cancel
+        (Action : access Pick_Node_Action_Type)
+      is
+      begin
+         Action.Dialog.Pick_Action := null;
+      end Cancel;
+
+      function Execute
+        (Action   : access Pick_Node_Action_Type;
+         Window   : access Graph_Window.Graph_Window_Record'Class;
+         Event    : in     Graph_Widgets.Handlers.Button_Press_Action)
+        return Boolean
+      is
+         use type Graph_Widgets.Handlers.Pressed_On_Type;
+      begin
+         if (Event.Pressed_On = Graph_Widgets.Handlers.On_Node) then
+            Node_Info_Dialog.Set_Node (Action.Dialog, Event.Node);
+            return True;
+         end if;
+
+         --  do not cancel action mode until user has selected a node
+         return False;
+      end Execute;
+
+   end Actions;
 
 end Giant.Node_Info_Dialog;

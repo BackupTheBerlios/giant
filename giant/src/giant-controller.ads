@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.49 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.50 $
 --  $Author: squig $
---  $Date: 2003/08/26 16:07:16 $
+--  $Date: 2003/09/08 15:33:10 $
 --
 ------------------------------------------------------------------------------
 --
@@ -357,8 +357,8 @@ package Giant.Controller is
      return Boolean;
 
    function Get_Selection
-     (Window_Name : in String;
-      Name        : in String)
+     (Window_Name    : in String;
+      Selection_Name : in String)
      return Graph_Lib.Selections.Selection;
 
    function Get_Current_Selection
@@ -538,7 +538,7 @@ package Giant.Controller is
    --    Giant.Projects.Add_Visualisation_Window
    --    Open_Window
    procedure Create_Window
-     (Name : in String := "Unknown");
+     (Name : in String);
 
    ---------------------------------------------------------------------------
    --  Returns True, if a window with Name exists.
@@ -625,6 +625,10 @@ package Giant.Controller is
    procedure Zoom_To_Edge
      (Window_Name : in String;
       Edge        : in Graph_Lib.Edge_Id);
+
+   procedure Zoom_To_Selection
+     (Window_Name    : in String;
+      Selection_Name : in String);
 
 private
 

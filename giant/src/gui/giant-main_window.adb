@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.60 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.61 $
 --  $Author: squig $
---  $Date: 2003/09/02 19:51:16 $
+--  $Date: 2003/09/08 15:33:10 $
 --
 
 with Ada.Exceptions;
@@ -363,7 +363,7 @@ package body Giant.Main_Window is
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
    begin
-      Controller.Create_Window;
+      Controller.Create_Window (Controller.Get_Unique_Name);
    end On_Window_New;
 
    ---------------------------------------------------------------------------
@@ -806,6 +806,9 @@ package body Giant.Main_Window is
                        (-"Unhighlight In All Windows", Projects.None));
       Gtk.Menu.Append (Subgraph_List_Menu, New_Menu_Separator);
       Gtk.Menu.Append (Subgraph_List_Menu,
+                       New_Menu_Item (-"Set Operation...",
+                                      On_Subgraph_Set_Operation'Access));
+      Gtk.Menu.Append (Subgraph_List_Menu,
                        New_Menu_Item (-"Insert As Selection...",
                                       On_Subgraph_List_Create_Selection'Access));
       Gtk.Menu.Append (Subgraph_List_Menu, New_Menu_Separator);
@@ -819,6 +822,7 @@ package body Giant.Main_Window is
       Gtk.Menu.Append (Subgraph_List_Menu,
                        New_Menu_Item (-"Delete",
                                       On_Subgraph_List_Delete'Access));
+      Gtk.Menu.Append (Subgraph_List_Menu, New_Menu_Separator);
       Submenu := New_Sub_Menu (Subgraph_List_Menu, -"Scripts");
       Giant.Menu_Factory.Generate
         (Labels

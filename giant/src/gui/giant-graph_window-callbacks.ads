@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.ads,v $, $Revision: 1.13 $
+--  $RCSfile: giant-graph_window-callbacks.ads,v $, $Revision: 1.14 $
 --  $Author: squig $
---  $Date: 2003/08/19 13:09:14 $
+--  $Date: 2003/09/08 15:33:10 $
 --
 ------------------------------------------------------------------------------
 --
@@ -50,6 +50,10 @@ package Giant.Graph_Window.Callbacks is
 
    procedure On_Background_Make_Room
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
+
+   procedure On_Background_Script
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event  : in     Menu_Factory.Script_Event);
 
    procedure On_Background_Select_All
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
@@ -128,5 +132,8 @@ package Giant.Graph_Window.Callbacks is
    procedure On_Selection_Script
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
       Event  : in     Menu_Factory.Script_Event);
+
+   procedure On_Selection_Zoom_To
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
 
 end Giant.Graph_Window.Callbacks;

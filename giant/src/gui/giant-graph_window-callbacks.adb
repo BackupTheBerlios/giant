@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.21 $
---  $Author: keulsn $
---  $Date: 2003/09/02 04:49:38 $
+--  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.22 $
+--  $Author: squig $
+--  $Date: 2003/09/08 15:33:10 $
 --
 
 with Ada.Unchecked_Conversion;
@@ -78,6 +78,20 @@ package body Giant.Graph_Window.Callbacks is
          Controller.Create_Pin (Get_Window_Name (Window), Name);
       end if;
    end;
+
+   procedure On_Background_Script
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event  : in     Menu_Factory.Script_Event)
+   is
+      Window : Graph_Window_Access := Graph_Window_Access (Event.Widget);
+      Params : Gsl.Interpreters.Gsl_Params
+        := Gsl.Interpreters.Create_Parameter_List;
+   begin
+      Controller.Execute_GSL
+        (Script_Name => Event.Label,
+         Context     => Get_Window_Name (Window),
+         Parameter   => Params);
+   end On_Background_Script;
 
    procedure On_Background_Select_All
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
@@ -368,5 +382,15 @@ package body Giant.Graph_Window.Callbacks is
          Context     => Get_Window_Name (Window),
          Parameter   => Params);
    end On_Selection_Script;
+
+   procedure On_Selection_Zoom_To
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
+   begin
+      Controller.Zoom_To_Selection
+        (Window_Name    => Get_Window_Name (Window),
+         Selection_Name => Get_Selected_Selection (Window));
+   end On_Selection_Zoom_To;
 
 end Giant.Graph_Window.Callbacks;

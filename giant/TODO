@@ -4,11 +4,10 @@ RELEASE
 
 NACHBESSERUNGSPHASE
 
- * Set cursor in action mode
-
- * Port to Gtk 2.0
-
  * Use ; as Path_Separator
+
+ * Set cursor in action mode
 
  * Remove Abreissbare Menüs
 
+ * Resize of GSL Dialog

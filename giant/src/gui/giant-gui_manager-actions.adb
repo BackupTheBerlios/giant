@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager-actions.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-gui_manager-actions.adb,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/08/25 16:06:25 $
+--  $Date: 2003/09/08 15:33:10 $
 
 with Giant.Graph_Window;
 
@@ -54,7 +54,6 @@ package body Giant.Gui_Manager.Actions is
         := Get_Open_Window (Window_Name);
    begin
       if (Window /= null) then
-         Gui_Manager.Set_Status (-"Please select the target position");
          Graph_Window.Set_Local_Action (Window, Action);
       end if;
    end Set_Local_Action;
@@ -70,6 +69,7 @@ package body Giant.Gui_Manager.Actions is
    is
    begin
       if (Pending_Action /= null) then
+         Gui_Manager.Set_Status ("");
          Graph_Window.Actions.Cancel (Pending_Action);
          Graph_Window.Actions.Destroy (Pending_Action);
          Pending_Action := null;

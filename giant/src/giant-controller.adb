@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.89 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.90 $
 --  $Author: squig $
---  $Date: 2003/09/02 15:09:54 $
+--  $Date: 2003/09/08 15:33:10 $
 --
 
 with Ada.Strings.Unbounded;
@@ -757,14 +757,14 @@ package body Giant.Controller is
    end Get_Current_Selection;
 
    function Get_Selection
-     (Window_Name : in String;
-      Name        : in String)
+     (Window_Name    : in String;
+      Selection_Name : in String)
      return Graph_Lib.Selections.Selection
    is
       Window : Vis_Windows.Visual_Window_Access
         := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
    begin
-      return Vis_Windows.Get_Selection (Window, Name);
+      return Vis_Windows.Get_Selection (Window, Selection_Name);
    end Get_Selection;
 
    function To_Selection_Hightlight_ID
@@ -1145,9 +1145,8 @@ package body Giant.Controller is
      (Name : in String)
    is
       Subgraph : Graph_Lib.Subgraphs.Subgraph;
-      Unique_Name : String := Get_Unique_Name (Name);
    begin
-      Subgraph := Graph_Lib.Subgraphs.Create (Unique_Name);
+      Subgraph := Graph_Lib.Subgraphs.Create (Name);
       Graph_Lib.Subgraphs.Add_Node_Set (Subgraph, Graph_Lib.Get_All_Nodes);
       Graph_Lib.Subgraphs.Add_Edge_Set (Subgraph, Graph_Lib.Get_All_Edges);
 
@@ -1436,16 +1435,15 @@ package body Giant.Controller is
    end Close_Window;
 
    procedure Create_Window
-     (Name : in String := "Unknown")
+     (Name : in String)
    is
       Window : Vis_Windows.Visual_Window_Access;
-      Unique_Name : String := Get_Unique_Name (Name);
    begin
       Window := Vis_Windows.Create_New
-        (Unique_Name, Projects.Get_Node_Annotations (Current_Project));
+        (Name, Projects.Get_Node_Annotations (Current_Project));
       Projects.Add_Visualisation_Window (Current_Project, Window);
-      Gui_Manager.Add_Window (Unique_Name);
-      Open_Window (Unique_Name);
+      Gui_Manager.Add_Window (Name);
+      Open_Window (Name);
    end Create_Window;
 
    function Exists_Window
@@ -1616,6 +1614,22 @@ package body Giant.Controller is
       Graph_Widgets.Zoom_To_Edge (Vis_Windows.Get_Graph_Widget (Window), Edge);
       Gui_Manager.Update_Zoom_Level (Window_Name);
    end Zoom_To_Edge;
+
+   procedure Zoom_To_Selection
+     (Window_Name    : in String;
+      Selection_Name : in String)
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+      Selection : Graph_Lib.Selections.Selection
+        := Get_Selection (Window_Name    => Window_Name,
+                          Selection_Name => Selection_Name);
+   begin
+      Graph_Widgets.Zoom_To_Selection
+        (Widget    => Vis_Windows.Get_Graph_Widget (Window),
+         Selection => Selection);
+      Gui_Manager.Update_Zoom_Level (Window_Name);
+   end Zoom_To_Selection;
 
 end Giant.Controller;
 

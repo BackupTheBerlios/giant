@@ -1,3 +1,18 @@
+2003-09-08  Steffen Pingel  <squig@users.sourceforge.net>
+
+	* src/gui/giant-graph_window.adb: Added Script submenu to
+	background popup.
+	Added Zoom To Selection.
+
+	* src/giant-controller.adb: Removed Unique_Name mangling in
+	Create_Window and Create_Subgraph.
+
+	* src/gui/giant-graph_window.adb: Added Okay button to next to
+	style combo box. 
+
+	* src/gui/giant-layout_dialog.adb: Merged Actions package to
+	enable double referencing between action and dialog.
+
 2003-06-16  Steffen Pingel  <squig@users.sourceforge.net>
 
 	* src/project/giant-vis_windows.ads: Changed return type of
