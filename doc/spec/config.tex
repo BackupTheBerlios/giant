@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.29 $
-%  $Date: 2003/04/18 00:50:11 $
-%  $Author: keulsn $
+%  $RCSfile: config.tex,v $, $Revision: 1.30 $
+%  $Date: 2003/04/18 16:06:24 $
+%  $Author: birdy $
 %
 %  Description:
 %
@@ -97,23 +97,23 @@ Für die Visualisierungsstile gelten die folgenden Konventionen:
   werden können.
 
   \item
-  In einem Visualisierungsstil können klassenspezifische Einstellungen 
+  In einem Visualisierungsstil können typspezifische Einstellungen 
   vorgenommen werden, die nur für Knoten und Kanten gelten, 
-  die zu den entsprechenden Klassen gehören.
-  Bei jeder klassenspezifischen Einstellung für Knoten und Kanten kann daher 
-  eine Liste der betroffenen Knoten- und Kantenklassen angegeben werden, 
+  die zu dem entsprechenden Typ gehören.
+  Bei jeder typspezifischen Einstellung für Knoten und Kanten kann daher 
+  eine Liste der betroffenen Knoten- und Kantentypen angegeben werden, 
   für die diese Einstellungen gelten sollen.
 
   \item
-  Wird eine Kanten- oder eine Knotenklasse innerhalb eines
-  Visualisierungsstils mehreren klassenspezifischen Einstellungen zugeordnet,   
+  Wird ein Kanten- oder ein Knotentyp innerhalb eines
+  Visualisierungsstils mehreren typspezifischen Einstellungen zugeordnet,   
   führt dies zu keinem Fehler, es bleibt aber unspezifiziert, 
   welche Einstellung tatsächlich genommen wird.
 
   \item
   Es gibt jeweils eine Standard-Einstellung, die für alle
-  Knoten- und Kantenklassen genommen wird, für die keine
-  extra klassenspezifischen Einstellungen vorgenommen wurden.
+  Knoten- und Kantentyp genommen wird, für die keine
+  extra typspezifischen Einstellungen vorgenommen wurden.
 
   \item \index{Visualisierungsstile!Standard-Visualisierungsstil}
   Es gibt immer einen von GIANT fest
@@ -146,59 +146,59 @@ Für die Visualisierungsstile gelten die folgenden Konventionen:
     \end{enumerate}
 
 
-  \subsection {Klassenspezifische Einstellungen für Knoten}
-  \index{Visualisierungsstile!klassenspezifische Einstellungen}
+  \subsection {Typspezifische Einstellungen für Knoten}
+  \index{Visualisierungsstile!typspezifische Einstellungen}
 
-  Folgende  Einstellungen können für Knotenklassen vorgenommen werden. 
+  Folgende  Einstellungen können für Knotentypen vorgenommen werden. 
   Es muss eine Standard-Einstellung erstellt werden, die für alle
-  Knotenklassen angewendet wird, für die nichts anderes definiert ist.
+  Knotentypen angewendet wird, für die nichts anderes definiert ist.
   \begin{enumerate}  
   
-    \item Ein Icon für die Knotenklasse (Verweis auf eine entsprechende 
+    \item Ein Icon für die Knotentyp (Verweis auf eine entsprechende 
           Bilddatei). Das Icon muss im Pixmap Format Pixel
           vorliegen. Die Größe des Icons ist beliebig, bei zu großen
           Icons wird abgeschnitten.
-    \item Eine Liste der Attribute der Knotenklasse, welche direkt innerhalb 
+    \item Eine Liste der Attribute der Knotentyp, welche direkt innerhalb 
           des Anzeigefensters in dem \gq{Rechteck} für den Knoten dargestellt 
           werden sollen.
     \item Die Farbe der Schrift, mit der die Informationen innerhalb
           des Knoten-Rechtecks dargestellt werden.
-     \item Die Füllfarbe des \gq{Rechtecks} in welchem die Attribute zu dem 
+    \item Die Füllfarbe des \gq{Rechtecks} in welchem die Attribute zu dem 
           Knoten dargestellt werden.
     \item Die Rahmenfarbe des \gq{Rechtecks}.
     
   \end{enumerate}
 
   
-  \subsection {Klassenspezifische Einstellungen für Kanten}
-  Folgende Einstellungen können für Kantenklassen vorgenommen werden.
+  \subsection {Typspezifische Einstellungen für Kanten}
+  Folgende Einstellungen können für Kantentyp vorgenommen werden.
   Es muss eine Standard-Einstellung erstellt werden, die für alle
-  Kantenklassen angewendet wird, für die nichts anderes definiert ist.
+  Kantentyp angewendet wird, für die nichts anderes definiert ist.
   \begin{enumerate}
     \item Die Farbe der Kante.
     \item Die Farbe der Kantenbeschriftungen.
     \item Die Art der Linie der Kante (normal, gestrichelt).
-    \item Ob die Kante mit ihrer Kantenklasse beschriftet werden soll oder 
+    \item Ob die Kante mit ihrem Kantentyp beschriftet werden soll oder 
           nicht.
   \end{enumerate}
 
-  Eine Kantenklasse wird durch die Knotenklasse des Start-Knotens 
-  und druch den Namen des Attribtes, welches die Kante darstellt, 
+  Ein Kantentyp wird durch den Knotentyp des Start-Knotens 
+  und durch den Namen des Attribtes, welches die Kante darstellt, 
   eindeutig festgelegt (siehe Begriffslexikon). 
   Will der Benutzer nun Einstellungen für
-  Kantenklassen vornehmen kann er sich entweder auf genau eine 
-  Kantenklasse \gq{Start-Knotenklasse.Attributname} beziehen oder
+  Kantentypen vornehmen kann er sich entweder auf genau einen 
+  Kantentyp \gq{Start-Knotentyp.Attributname} beziehen oder
   mittels eines Platzhalters auch auf mehrere:
 
   \begin{enumerate}
     \item Der Benutzer kann mittels des Platzhalters \gq{*}
-          eine klassenspezifische Einstellung für
-          alle Kanten, deren Start-Knoten zu einer bestimmten
-          Knotenklasse gehört, 
-          vornehmen -- also \gq{Start-Knotenklasse.*}.
+          eine typspezifische Einstellung für
+          alle Kanten, deren Start-Knoten zu einem bestimmten
+          Knotentyp gehört, 
+          vornehmen -- also \gq{Start-Knotentyp.*}.
 
    \item  Der Benutzer kann mittels des Platzhalters \gq{*}
-          eine klassenspezifische Einstellung für
+          eine typspezifische Einstellung für
           alle Kanten, bei denen das sie repräsentierende Attribut
           den gleichen Namen hat,
           vornehmen -- also \gq{*.Attributname}.
