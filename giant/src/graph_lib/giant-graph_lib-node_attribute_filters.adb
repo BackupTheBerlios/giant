@@ -1,29 +1,66 @@
-------------------------------------------------------------------------------
---  GIANT - Graphical IML Analysis and Navigation Tool
---
---  Copyright (C) 2003 Philipp Haeuser, Steffen Keul, Oliver Kopp,
---  Steffen Pingel, Gerrit Schulz and Martin Schwienbacher.
---
---  This program is free software; you can redistribute it and/or modify
---  it under the terms of the GNU General Public License as published by
---  the Free Software Foundation; either version 2 of the License, or
---  (at your option) any later version.
---
---  This program is distributed in the hope that it will be useful,
---  but WITHOUT ANY WARRANTY; without even the implied warranty of
---  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
---  GNU General Public License for more details.
---
---  You should have received a copy of the GNU General Public License
---  along with this program; if not, write to the Free Software
---  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
---
---  $RCSfile: giant-graph_lib-node_attribute_filters.adb,v $, $Revision: 1.1 $
---  $Author: koppor $
---  $Date: 2003/05/28 12:17:02 $
---
-
 package body Giant.Graph_Lib.Node_Attribute_Filters is
+
+   ------------
+   -- Create --
+   ------------
+
+   function Create
+     (Node_Class          : in     Node_Class_Id;
+      Node_Attribute_Names_List : in     String_Lists.List)
+      return Filter
+   is
+   begin
+      return Create (Node_Class, Node_Attribute_Names_List);
+   end Create;
+
+   -------------
+   -- Destroy --
+   -------------
+
+   procedure Destroy
+     (Node_Attribute_Filter  : in out Filter)
+   is
+   begin
+      null;
+   end Destroy;
+
+   ------------------------------
+   -- Iterator_Current_Element --
+   ------------------------------
+
+   procedure Iterator_Current_Element
+     (Node_Attribute_Filter   : in     Filter;
+      Node                    : in     Node_Id;
+      Attribute               :    out Node_Attribute_Id)
+   is
+   begin
+      null;
+   end Iterator_Current_Element;
+
+   ----------------------
+   -- Iterator_HasMore --
+   ----------------------
+
+   function Iterator_HasMore
+     (Node_Attribute_Filter   : in     Filter;
+      Node                    : in     Node_Id)
+      return Boolean
+   is
+   begin
+      return Iterator_HasMore (Node_Attribute_Filter, Node);
+   end Iterator_HasMore;
+
+   --------------------
+   -- Iterator_Reset --
+   --------------------
+
+   procedure Iterator_Reset
+     (Node_Attribute_Filter   : in     Filter;
+      Node                    : in     Node_Id)
+   is
+   begin
+      null;
+   end Iterator_Reset;
 
 end Giant.Graph_Lib.Node_Attribute_Filters;
 
