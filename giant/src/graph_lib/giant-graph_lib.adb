@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.36 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.37 $
 --  $Author: koppor $
---  $Date: 2003/06/30 18:35:17 $
+--  $Date: 2003/06/30 18:55:37 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -908,6 +908,43 @@ package body Giant.Graph_Lib is
             end loop;
          end Convert_Incoming_Edges;
 
+         ----------------------------------------------------------------------
+         --  Convert set containing all edges to "public" array of all edges
+         --
+         --  The conversion cannot be done by Edge_Id_Array_Routines.To_Array
+         --    since this stores the array on the stack, which could be
+         --    too small (cp Revision 1.36)
+         --
+         --  Parameters:
+         --     First_Index - specifies the index to be used as first
+         --                   in the resulting array
+         function Convert_Edge_Set_To_Edge_Array
+           (Edges_Set   : in Edge_Id_Sets.Set;
+            First_Index : in Integer)
+           return Edge_Id_Array_Access
+         is
+
+            Edge_Array         : Edge_Id_Array_Access;
+            Current_Edge_Index : Natural;
+
+            procedure Execute (Edge : Edge_Id)
+            is
+            begin
+               Current_Edge_Index := Current_Edge_Index + 1;
+               Edge_Array (Current_Edge_Index) := Edge;
+            end Execute;
+
+            procedure Apply is new Edge_Id_Sets.Apply
+              (Execute => Execute);
+
+          begin
+             Edge_Array := new Edge_Id_Array
+               (First_Index..Edge_Id_Sets.Size (Edges_Set) - First_Index + 1);
+             Current_Edge_Index := Edge_Array'First - 1;
+             Apply (Edges_Set);
+             return Edge_Array;
+          end Convert_Edge_Set_To_Edge_Array;
+
       begin
          My_Logger.Debug ("Begin: Convert_Temp_Structure_To_Used_Structure");
 
@@ -921,22 +958,8 @@ package body Giant.Graph_Lib is
             Convert_Outgoing_Edges (All_Edges_Set);
 
             --  Convert set containing all edges to "public" array of all edges
-            --
-            --  during this conversion, the used memory is twice the size of
-            --    the set, since the array is allocated twice
-            --  if this is too much, go back to Revision 1.31
-            declare
-               --  the conversion itself
-               All_Edges_Array : Edge_Id_Array :=
-                 Edge_Id_Array_Routines.To_Array (All_Edges_Set);
-            begin
-               --  Convert conversion into public array
-               All_Edges := new Edge_Id_Array
-                 (All_Edges_First_Index ..
-                  All_Edges_First_Index +
-                  All_Edges_Array'Last - All_Edges_Array'First);
-               All_Edges.all := All_Edges_Array;
-            end;
+            All_Edges := Convert_Edge_Set_To_Edge_Array
+              (All_Edges_Set, All_Edges_First_Index);
 
             Edge_Id_Sets.Destroy (All_Edges_Set);
          end;
@@ -1337,6 +1360,22 @@ package body Giant.Graph_Lib is
 
       return Set;
    end Get_All_Nodes;
+
+   ---------------------------------------------------------------------------
+   function Get_Edge_Count
+     return Natural
+   is
+   begin
+      return All_Edges'Length;
+   end Get_Edge_Count;
+
+   ---------------------------------------------------------------------------
+   function Get_Node_Count
+     return Natural
+   is
+   begin
+      return IML_Node_ID_Hashed_Mappings.Size (IML_Node_ID_Mapping);
+   end Get_Node_Count;
 
    ---------------------------------------------------------------------------
    function Get_Edge_Class_Id
