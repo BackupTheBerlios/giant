@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/16 15:01:34 $
+-- $Date: 2003/06/22 22:57:18 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -40,6 +40,8 @@ package Giant.Gsl.Interpreters is
 
    type Interpreter is access all Interpreter_Record'Class;
 
+   Current_Interpreter : Interpreter;
+
    function Create_Interpreter return Interpreter;
 
    procedure Execute_Script
@@ -55,11 +57,15 @@ package Giant.Gsl.Interpreters is
       Canceled   : in     Boolean); 
 
    procedure Register_Runtime
-     (Individual : access Interpreter_Record;
-      Runtime    : Runtime_Function;
+     (Runtime    : Runtime_Function;
       Name       : String);
 
+   procedure Log_Result_Stack;
+
 private 
+
+   procedure Script_Activation_Cmd;
+   procedure Script_Exec_Cmd;
 
    function Create_Activation_Record
      (Parent : Activation_Record)
@@ -69,17 +75,14 @@ private
      (AR : Activation_Record);
 
    procedure Create_Var
-     (Gsl_Interpreter : access Interpreter_Record;
-      Name            : String);
+     (Name            : String);
 
    function Get_Var
-     (Gsl_Interpreter : access Interpreter_Record;
-      Name            : String)
+     (Name            : String)
       return Gsl_Type;
 
    procedure Set_Var
-     (Gsl_Interpreter : access Interpreter_Record;
-      Name            : String;
+     (Name            : String;
       Value           : Gsl_Type);
 
    ---------------------------------------------------------------------------
