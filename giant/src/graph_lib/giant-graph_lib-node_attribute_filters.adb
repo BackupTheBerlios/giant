@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-node_attribute_filters.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-graph_lib-node_attribute_filters.adb,v $, $Revision: 1.10 $
 --  $Author: koppor $
---  $Date: 2003/06/25 15:23:04 $
+--  $Date: 2003/06/28 18:15:33 $
 --
 ------------------------------------------------------------------------------
 
@@ -113,5 +113,14 @@ package body Giant.Graph_Lib.Node_Attribute_Filters is
    begin
       Iter.Current_Position := Iter.Used_Filter'First;
    end Reset;
+
+   ---------------------------------------------------------------------------
+   function Size
+     (Node_Attribute_Filter  : in Filter)
+     return Natural
+   is
+   begin
+      return Node_Attribute_Filter'Length;
+   end Size;
 
 end Giant.Graph_Lib.Node_Attribute_Filters;
