@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.adb,v $, $Revision: 1.5 $
---  $Author: keulsn $
---  $Date: 2003/06/13 14:50:29 $
+--  $RCSfile: giant-vectors.adb,v $, $Revision: 1.6 $
+--  $Author: squig $
+--  $Date: 2003/06/16 15:27:58 $
 --
 ------------------------------------------------------------------------------
 
@@ -380,8 +380,8 @@ package body Giant.Vectors is
       Point     : in     Vector_2d)
      return Boolean is
 
-      X : Coord_Type := Get_X (Point);
-      Y : Coord_Type := Get_Y (Point);
+      X : Coordinate_Type := Get_X (Point);
+      Y : Coordinate_Type := Get_Y (Point);
    begin
       return Coord_Less_Equal (Get_Left (Rectangle), X)
         and then Coord_Less_Equal (Get_Top (Rectangle), Y)

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: framework_test.adb,v $, $Revision: 1.2 $
+--  $RCSfile: framework_test.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/06/15 12:45:42 $
+--  $Date: 2003/06/16 15:27:58 $
 --
 
 with AUnit.Test_Suites; use AUnit.Test_Suites;
@@ -32,6 +32,7 @@ with Giant.Config.Test;
 with Giant.Default_Logger.Test;
 with Giant.File_Management.Test;
 with Giant.Graph_Lib.Test;
+with Giant.Vis_Windows.Test;
 
 procedure Framework_Test is
 
@@ -42,6 +43,7 @@ procedure Framework_Test is
       Add_Test (Result, new Giant.Default_Logger.Test.Test_Case);
       Add_Test (Result, new Giant.File_Management.Test.Test_Case);
       Add_Test (Result, new Giant.Graph_Lib.Test.Test_Case);
+      Add_Test (Result, new Giant.Vis_Windows.Test.Test_Case);
       return Result;
    end Suite;
 

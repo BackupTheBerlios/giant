@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-node_attribute_filters.adb,v $, $Revision: 1.4 $
---  $Author: koppor $
---  $Date: 2003/06/13 13:20:02 $
+--  $RCSfile: giant-graph_lib-node_attribute_filters.adb,v $, $Revision: 1.5 $
+--  $Author: squig $
+--  $Date: 2003/06/16 15:27:58 $
 --
 ------------------------------------------------------------------------------
 
@@ -36,7 +36,7 @@ package body Giant.Graph_Lib.Node_Attribute_Filters is
    is
       Res : Filter;
    begin
-      return Create (Node_Class, Node_Attribute_Names_List);
+      return Res; --Create (Node_Class, Node_Attribute_Names_List);
    end Create;
 
    ---------------------------------------------------------------------------

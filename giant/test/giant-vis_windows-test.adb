@@ -20,32 +20,46 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-vis_windows-test.adb,v $, $Revision: 1.1 $
 --  $Author: squig $
 --  $Date: 2003/06/16 15:27:58 $
 --
---  Stores the window records. Handles the controller updates. Provides
---  a facade for the gui.
---
---  Pattern:
---    ADT
---
+
+with AUnit.Assertions; use AUnit.Assertions;
+with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
 
 with Giant.Vis_Windows;
+with Giant.Default_Logger;
 
-package Giant.Gui_Manager is
+package body Giant.Vis_Windows.Test is
 
-   ---------------------------------------------------------------------------
-   --  Shows the main window.
-   --
-   procedure Show;
+   procedure Test_Init (R : in out AUnit.Test_Cases.Test_Case'Class)
+   is
+	  Window : Visual_Window_Access;
+   begin
+      Window := Vis_Windows.Create_New (Valid_Names.To_Standard_Name ("Name"));
 
-   ---------------------------------------------------------------------------
-   --  Quits the application.
-   --
-   procedure Quit;
+      Assert (Vis_Windows.Get_Vis_Window_Name (Window) = "Name", "Name");
+   end;
 
-   procedure Add (Visual_Window : Vis_Windows.Visual_Window_Access);
+   function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is
+   begin
+      return new String'("Vis_Windows");
+   end Name;
 
-end Giant.Gui_Manager;
+   procedure Register_Tests (T : in out Test_Case) is
+   begin
+      Register_Routine (T, Test_Init'Access, "Init");
+   end Register_Tests;
 
+   procedure Set_Up (T : in out Test_Case) is
+   begin
+      Default_Logger.Init;
+   end Set_Up;
+
+   procedure Tear_Down (T : in out Test_Case) is
+   begin
+      Default_Logger.Close;
+   end Tear_Down;
+
+end Giant.Vis_Windows.Test;

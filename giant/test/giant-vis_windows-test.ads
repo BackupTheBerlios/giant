@@ -20,32 +20,33 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-vis_windows-test.ads,v $, $Revision: 1.1 $
 --  $Author: squig $
 --  $Date: 2003/06/16 15:27:58 $
 --
---  Stores the window records. Handles the controller updates. Provides
---  a facade for the gui.
+------------------------------------------------------------------------------
 --
---  Pattern:
---    ADT
+--  Provides an aunit test.
 --
 
-with Giant.Vis_Windows;
+with Ada.Strings.Unbounded;
 
-package Giant.Gui_Manager is
+with AUnit.Test_Cases;
 
-   ---------------------------------------------------------------------------
-   --  Shows the main window.
-   --
-   procedure Show;
+package Giant.Vis_Windows.Test is
 
-   ---------------------------------------------------------------------------
-   --  Quits the application.
-   --
-   procedure Quit;
-
-   procedure Add (Visual_Window : Vis_Windows.Visual_Window_Access);
-
-end Giant.Gui_Manager;
-
+   type Test_Case is new AUnit.Test_Cases.Test_Case with null record;
+   
+   --  Register routines to be run:
+   procedure Register_Tests (T : in out Test_Case);
+   
+   --  Provide name identifying the test case:
+   function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access;
+   
+   --  Preparation performed before each routine:
+   procedure Set_Up (T : in out Test_Case);
+   
+   --  Cleanup performed after each routine:
+   procedure Tear_Down (T :  in out Test_Case);
+   
+end Giant.Vis_Windows.Test;

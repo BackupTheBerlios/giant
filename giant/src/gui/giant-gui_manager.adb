@@ -20,57 +20,58 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/14 16:40:23 $
+--  $Date: 2003/06/16 15:27:58 $
 --
 
 with Gdk.Threads;
 with Gtk.Main;
 
-with Giant.Main_Window;
+with Lists;
 
-with Reuse.Lists;
+with Giant.Main_Window;
+with Giant.Graph_Window;
 
 package body Giant.Gui_Manager is
 
    Initialized : Boolean := False;
 
    type Window_Record is record
-	  Visual_Window : Visual_Window_Access;
-	  Graph_Window : Graph_Window_Access;
+      Visual_Window : Vis_Windows.Visual_Window_Access;
+      Graph : Graph_Window.Graph_Window_Access;
    end record;
 
-   package Window_Lists is new Lists(Window_Record);
-   Window_List : Window_Lists := Window_Lists.Create;
+   package Window_Lists is new Lists (Window_Record);
+   Window_List : Window_Lists.List := Window_Lists.Create;
 
    procedure Quit
    is
    begin
-	  Main_Window.Quit;
+      Main_Window.Quit;
    end Quit;
 
    procedure Show
    is
    begin
-	  Gtk.Main.Set_Locale;
-	  Gtk.Main.Init;
-	  Gdk.Threads.Init;
+      Gtk.Main.Set_Locale;
+      Gtk.Main.Init;
+      Gdk.Threads.Init;
 
-	  Gdk.Threads.Enter;
-	  Main_Window.Show;
-	  Gtk.Main.Main;
-	  Gdk.Threads.Leave;
+      Gdk.Threads.Enter;
+      Main_Window.Show;
+      Gtk.Main.Main;
+      Gdk.Threads.Leave;
    end Show;
 
-   procedure Add (Visual_Window : Visual_Window_Access)
+   procedure Add (Visual_Window : Vis_Windows.Visual_Window_Access)
    is
-	  Window : Window_Record;
+      Window : Window_Record;
    begin
-	  Window.Visual_Window := Visual_Window_Access;
-	  Graph_Window.Create (Window.Graph_Window);
+      Window.Visual_Window := Visual_Window;
+      Graph_Window.Create (Window.Graph);
 
-	  Window_Lists.Attach (Window_List, Window);
+      Window_Lists.Attach (Window_List, Window);
    end Add;
 
 end Giant.Gui_Manager;

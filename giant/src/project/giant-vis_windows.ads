@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.10 $
---  $Author: schwiemn $
---  $Date: 2003/06/16 07:34:09 $
+--  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.11 $
+--  $Author: squig $
+--  $Date: 2003/06/16 15:27:58 $
 --
 --  ----------------
 --  This package realizes a container that administrates the components
@@ -47,13 +47,13 @@
 with Ada.Strings.Unbounded;
 
 with String_Lists; -- from Bauhaus IML "Reuse.src"
-with Bauhaus_IO;   -- from Bauhaus IML "Reuse.src" 
-with Ordered_Sets; -- from Bauhaus IML "Reuse.src" 
+with Bauhaus_IO;   -- from Bauhaus IML "Reuse.src"
+with Ordered_Sets; -- from Bauhaus IML "Reuse.src"
 
 with Giant.Valid_Names;          -- from GIANT
 with Giant.Graph_Lib;            -- from GIANT
 with Giant.Graph_Lib.Selections; -- from GIANT
-with Giant.Graph_Widgets;        -- from GIANT
+--FIX: with Giant.Graph_Widgets;        -- from GIANT
 with Giant.Vis;                  -- from GIANT
 
 package Giant.Vis_Windows is
@@ -85,9 +85,9 @@ package Giant.Vis_Windows is
    --  by creating a new empty instance of the data model for
    --  visualisation windows.
    --
-   --  An empty standard selection will be created too, this will also 
+   --  An empty standard selection will be created too, this will also
    --  become the current selection.
-   --  
+   --
    --  Per Default the "default visualisation style"
    --  (determinded by Giant.Config.Vis_styles.Get_Default_Vis_Style)
    --  will be used for that visualisation window.
@@ -106,11 +106,11 @@ package Giant.Vis_Windows is
    --  based on the data read from the stream.
    --
    --  If no visualisation style with the
-   --  stored name is not found, the "default 
-   --  visualisation style" will be taken (determinded by 
+   --  stored name is not found, the "default
+   --  visualisation style" will be taken (determinded by
    --  Giant.Config.Vis_styles.Get_Default_Vis_Style).
    --
-   --  Uses platform independent streams from Bauhaus_IO;                               
+   --  Uses platform independent streams from Bauhaus_IO;
    --
    --  Parameters:
    --    Stream - the stream where the data is read.
@@ -118,12 +118,12 @@ package Giant.Vis_Windows is
    procedure Visual_Window_Access_Read
      (Stream     : in  Bauhaus_IO.In_Stream_Type;
       Vis_Window : out Visual_Window_Access);
-      
+
    ---------------------------------------------------------------------------
    --  This subprogram writes the Container including all its components
    --  into a stream.
    --
-   --  Uses platform independent streams from Bauhaus_IO;   
+   --  Uses platform independent streams from Bauhaus_IO;
    --
    --  Parameters:
    --    Stream - the stream into that the data should be written.
@@ -136,7 +136,7 @@ package Giant.Vis_Windows is
    procedure Visual_Window_Access_Write
      (Stream     : in Bauhaus_IO.Out_Stream_Type;
       Vis_Window : in Visual_Window_Access);
-      
+
    ---------------------------------------------------------------------------
    --  Deallocates the ADT.
    --
@@ -147,7 +147,7 @@ package Giant.Vis_Windows is
    --    As Selections are realized as pointers you should
    --    beware of dangling pointers.
    --
-   --    The Graph_Widget (a part of the ADT) will only be 
+   --    The Graph_Widget (a part of the ADT) will only be
    --    deallocated (automatically by GTK) if its
    --    Reference Counter is set to 1 before this subprogram is
    --    executed.
@@ -160,13 +160,13 @@ package Giant.Vis_Windows is
    --      as parameter.
    procedure Deallocate_Vis_Window_Deep
      (Vis_Window : in out Visual_Window_Access);
-     
-     
+
+
    ---------------------------------------------------------------------------
    --  B
    --  General access on Visual_Window_Access
-   ---------------------------------------------------------------------------     
-     
+   ---------------------------------------------------------------------------
+
    ---------------------------------------------------------------------------
    --  Returns the name of a visualisation window.
    --
@@ -212,7 +212,7 @@ package Giant.Vis_Windows is
    --  the name of "Vis_Window".
    --
    --  It is garanted that if
-   --    Equal (Window_A, Window_B)  -> 
+   --    Equal (Window_A, Window_B)  ->
    --      (Get_Hash_Value (Window_A) = Get_Hash_Value (Window_B));
    --
    --  Parameters:
@@ -246,17 +246,17 @@ package Giant.Vis_Windows is
    ---------------------------------------------------------------------------
    --  Raised on trial to remove the standard selection
    Standard_Selection_May_Not_Be_Removed_Exception : exception;
-   
+
    ---------------------------------------------------------------------------
    --  Raised on Trial to change the Highlight-Status of a selection if
    --  that is not allowed.
    Highlight_Status_Of_Selection_May_Not_Be_Changed_Exception : exception;
-     
+
    ---------------------------------------------------------------------------
    --  Raised on attempt to make a selection to current selection that
    --  is faded out.
    Illegal_Current_Selection_Exception : exception;
-   
+
    ---------------------------------------------------------------------------
    --  Checks whether the data model vor a visualisation window has a
    --  selection with the given name.
@@ -277,7 +277,7 @@ package Giant.Vis_Windows is
      return Boolean;
 
    ---------------------------------------------------------------------------
-   --  This function returns a selection. 
+   --  This function returns a selection.
    --
    --  Note
    --    As only a pointer to a "selection data object" is returned
@@ -373,7 +373,7 @@ package Giant.Vis_Windows is
    --    Standard_Selection_May_Not_Be_Removed_Exception - Raised on Trail
    --      to remove the standard selection.
    --    Selection_With_Passed_Name_Not_Found_Exception - Raised if a
-   --      selection with the name "Selection_Name" is not part of 
+   --      selection with the name "Selection_Name" is not part of
    --      "Visual_Window_Access".
    procedure Remove_Selection_From_Vis_Window
       (Vis_Window     : in Visual_Window_Access;
@@ -403,14 +403,14 @@ package Giant.Vis_Windows is
    --  Parameters:
    --    Vis_Window - The "model" for a visualisation window whose current
    --      selection should be changed.
-   --    Selection_Name  - The name of the selection 
+   --    Selection_Name  - The name of the selection
    --      that should become the new current selection.
    --  Raises:
    --    Visual_Window_Access_Not_Initialized_Exception - Raised if a not
    --      initialized instance of "Vis_Window_Data_Access" is passed
    --      as parameter.
    --    Selection_With_Passed_Name_Not_Found_Exception - Raised if a
-   --      selection with the name "Selection_Name" is not part of 
+   --      selection with the name "Selection_Name" is not part of
    --      "Visual_Window_Access".
    --    Illegal_Current_Selection_Exception - Raised if a selection
    --      that is faded out should be made to the current selection.
@@ -440,7 +440,7 @@ package Giant.Vis_Windows is
    --
    --  Parameters:
    --    Vis_Window - The "model" for a visualisation window.
-   --    Selection_Name - The name of the selection 
+   --    Selection_Name - The name of the selection
    --      whose "Highlight-Status" should be returned.
    --  Returns:
    --    The highlight status.
@@ -449,7 +449,7 @@ package Giant.Vis_Windows is
    --      initialized instance of "Vis_Window_Data_Access" is passed
    --      as parameter.
    --    Selection_With_Passed_Name_Not_Found_Exception - Raised if a
-   --      selection with the name "Selection_Name" is not part of 
+   --      selection with the name "Selection_Name" is not part of
    --      "Visual_Window_Access"
    function Get_Highlight_Status
      (Vis_Window     : in Visual_Window_Access;
@@ -457,27 +457,27 @@ package Giant.Vis_Windows is
      return Selection_Highlight_Status;
 
    ---------------------------------------------------------------------------
-   --  Determines whether the "Highlight-Status" of a selection may be 
+   --  Determines whether the "Highlight-Status" of a selection may be
    --  changed.
    --  This is necessary as you are not allowed to change the highlight status
    --  of the current selection.
    --
-   --  Parameters:   
+   --  Parameters:
    --    Vis_Window - The "model" for a visualisation window.
-   --    Selection_Name - The name of the selection whose 
+   --    Selection_Name - The name of the selection whose
    --      "Highlight-Status" should be changed.
-   --  Returns: 
+   --  Returns:
    --    True, if the "Highlight-Status" may be changed; False, otherwise.
    --  Raises:
    --    Visual_Window_Access_Not_Initialized_Exception - Raised if a not
    --      initialized instance of "Vis_Window_Data_Access" is passed
    --      as parameter.
    --    Selection_With_Passed_Name_Not_Found_Exception - Raised if a
-   --      selection with the name "Selection_Name" is not part of 
+   --      selection with the name "Selection_Name" is not part of
    --      "Visual_Window_Access"
    function May_Highlight_Status_Be_Changed
      (Vis_Window     : in Visual_Window_Access;
-      Selection_Name : in Valid_Names.Standard_Name) 
+      Selection_Name : in Valid_Names.Standard_Name)
      return Boolean;
 
    ---------------------------------------------------------------------------
@@ -485,7 +485,7 @@ package Giant.Vis_Windows is
    --
    --  Parameters:
    --    Vis_Window - The "model" for a visualisation window.
-   --    Selection_Name - The name of the selection whose "Highlight-Status" 
+   --    Selection_Name - The name of the selection whose "Highlight-Status"
    --      is changed.
    --    New_Highlight_Status - The new Highlight-Status for the "Selection".
    --  Raises:
@@ -493,11 +493,11 @@ package Giant.Vis_Windows is
    --      initialized instance of "Vis_Window_Data_Access" is passed
    --      as parameter.
    --    Selection_With_Passed_Name_Not_Found_Exception - Raised if a
-   --      selection with the name "Selection_Name" is not part of 
+   --      selection with the name "Selection_Name" is not part of
    --      "Visual_Window_Access"
    --    Highlight_Status_Of_Selection_May_Not_Be_Changed_Exception - raised
    --      if it is not allowed to change the Highlight-Status of
-   --      "Selection".   
+   --      "Selection".
    procedure Set_Highlight_Status
      (Vis_Window           : in Visual_Window_Access;
       Selection_Name       : in Valid_Names.Standard_Name;
@@ -508,21 +508,21 @@ package Giant.Vis_Windows is
    -- D
    -- Filters
    ---------------------------------------------------------------------------
-         
+
    ---------------------------------------------------------------------------
    --  Raised on attempt to fade out a selection that can not be faded out.
    Selection_May_Not_Be_Faded_Out_Exception : exception;
-   
+
    ---------------------------------------------------------------------------
    --  Raised on attemot to fade in a selection that is not faded out.
    Selection_Is_Not_Faded_Out_Exception : exception;
-   
+
    ---------------------------------------------------------------------------
    --  Determines whether it is possible to fade out a selection
-   --  (for further information see GIANT Spec 
+   --  (for further information see GIANT Spec
    --  "7.1. UC: Selektionen ausblenden").
    --
-   --  The current selection and the standard selection may not be faded 
+   --  The current selection and the standard selection may not be faded
    --  out.
    --
    --  Parameters:
@@ -535,7 +535,7 @@ package Giant.Vis_Windows is
    --      initialized instance of "Vis_Window_Data_Access" is passed
    --      as parameter.
    --    Selection_With_Passed_Name_Not_Found_Exception - Raised if a
-   --      selection with the name "Selection_Name" is not part of 
+   --      selection with the name "Selection_Name" is not part of
    --      "Visual_Window_Access"
    function May_Be_Faded_Out
      (Vis_Window     : in Visual_Window_Access;
@@ -549,13 +549,13 @@ package Giant.Vis_Windows is
    --   Vis_Window - The "model" for a visualisation window.
    --   Selection_Name - The name of a selection.
    -- Returns:
-   --   True, if the selection is faded out; False, otherwise. 
+   --   True, if the selection is faded out; False, otherwise.
    -- Raises:
    --   Visual_Window_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
    --   Selection_With_Passed_Name_Not_Found_Exception - Raised if a
-   --     selection with the name "Selection_Name" is not part of 
+   --     selection with the name "Selection_Name" is not part of
    --     "Visual_Window_Access"
    function Is_Faded_Out
      (Vis_Window     : in Visual_Window_Access;
@@ -577,7 +577,7 @@ package Giant.Vis_Windows is
    --      initialized instance of "Vis_Window_Data_Access" is passed
    --      as parameter.
    --    Selection_With_Passed_Name_Not_Found_Exception - Raised if a
-   --      selection with the name "Selection_Name" is not part of 
+   --      selection with the name "Selection_Name" is not part of
    --      "Visual_Window_Access"
    --    Selection_May_Not_Be_Faded_Out_Exception - Raised if the Selection
    --     may not be faded out.
@@ -597,7 +597,7 @@ package Giant.Vis_Windows is
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
    --   Selection_With_Passed_Name_Not_Found_Exception - Raised if a
-   --     selection with the name "Selection_Name" is not part of 
+   --     selection with the name "Selection_Name" is not part of
    --     "Visual_Window_Access".
    --   Selection_Is_Not_Faded_Out_Exception - Raised if the Selection is
    --     currently not faded out.
@@ -613,9 +613,9 @@ package Giant.Vis_Windows is
    --------------------------------------------------------------------------
 
    --------------------------------------------------------------------------
-   -- Raised if a pin with the passed name does not exist.     
+   -- Raised if a pin with the passed name does not exist.
    Pin_With_Passed_Name_Not_Found_Exception : exception;
-   
+
    --------------------------------------------------------------------------
    -- Raised if a added pin already exists.
    Pin_Does_Already_Exist_Exception : exception;
@@ -677,7 +677,7 @@ package Giant.Vis_Windows is
      (Vis_Window : in Visual_Window_Access;
       Pin_Name   : in Valid_Names.Standard_Name)
      return Vis.Zoom_Level;
-     
+
    --------------------------------------------------------------------------
    --  Returns all Pins of a visualisation window.
    --
@@ -692,17 +692,17 @@ package Giant.Vis_Windows is
    function Get_All_Pins
      (Vis_Window : in Visual_Window_Access)
      return String_Lists.List;
-     
-   ---------------------------------------------------------------------------  
+
+   ---------------------------------------------------------------------------
    -- Adds a pin to a visualisation window.
-   --  
+   --
    -- Parameters:
    --   Vis_Window - The "model" for a visualisation window.
    --   Name - The name of the new pin.
    --   Position - The data describing the position a visible window
    --     content
    --   Zoom_Level - The data describing the zoom level of a visible
-   --     window content.   
+   --     window content.
    -- Raises:
    --   Visual_Window_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
@@ -714,14 +714,14 @@ package Giant.Vis_Windows is
       Name       : in Valid_Names.Standard_Name;
       Position   : in Vis.Logic.Vector_2d;
       Zoom_Level : in Vis.Zoom_Level);
-      
+
    ---------------------------------------------------------------------------
    -- Removes a pin from a visualisation window.
    --
    -- Parameters:
    --   Vis_Window - The "model" for a visualisation window.
    --   Pin_Name - The name of a pin.
-   -- Raises 
+   -- Raises
    --   Visual_Window_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
@@ -753,12 +753,12 @@ package Giant.Vis_Windows is
    Vis_Style_Does_Not_Exist_Exception : exception;
 
    ---------------------------------------------------------------------------
-   --  Returns the name of the visualisation style assigned to this 
+   --  Returns the name of the visualisation style assigned to this
    --  visualisation window.
    --
-   --  As already mentioned above it is not garanted that a 
+   --  As already mentioned above it is not garanted that a
    --  visualisation style with the returned name exists.
-   -- 
+   --
    --  Parameters:
    --    Vis_Window - The "model" for a visualisation window.
    --  Returns:
@@ -766,7 +766,7 @@ package Giant.Vis_Windows is
    --  Raises:
    --    Visual_Window_Access_Not_Initialized_Exception - Raised if a not
    --      initialized instance of "Vis_Window_Data_Access" is passed
-   --      as parameter. 
+   --      as parameter.
    function Get_Vis_Style
      (Vis_Window : in Visual_Window_Access)
      return String;
@@ -781,7 +781,7 @@ package Giant.Vis_Windows is
    --    Visual_Window_Access_Not_Initialized_Exception - Raised if a not
    --      initialized instance of "Vis_Window_Data_Access" is passed
    --      as parameter.
-   --    Vis_Style_Does_Not_Exist_Exception - Raised if "Vis_Style" is 
+   --    Vis_Style_Does_Not_Exist_Exception - Raised if "Vis_Style" is
    --      not known by the package "Giant.Config.Vis_Styles".
    procedure Set_Vis_Style
      (Vis_Window     : in Visual_Window_Access;
@@ -799,23 +799,23 @@ private
      Pin_Pos  : Vis.Logic.Vector_2d;
      Pin_Zoom : Vis.Zoom_Level;
    end record;
-   
+
    --  pins are only compared based on "Pin_Name"
    function Pin_Equal (Left : in Pin; Right : in Pin) return Boolean;
-   
+
    --  pins are only compared based on "Pin_Name"
    function Pin_Less_Than (Left : in Pin; Right : in Pin) return Boolean;
-   
+
    package Pin_Sets is new
      Ordered_Sets (Item_Type => Pin,
                    "="       => Pin_Equal,
                    "<"       => Pin_Less_Than);
-						
-                    
-   ---------------------------------------------------------------------------		
+
+
+   ---------------------------------------------------------------------------
    --  Management of Selections inside a visualisation window
    ---------------------------------------------------------------------------
-   
+
    type Selection_Data_Elemet is record
      The_Selection : Graph_Lib.Selections.Selection;
      Highlight_Status : Selection_Highlight_Status;
@@ -829,34 +829,34 @@ private
      return Boolean;
 
    --  selections are only compared based on the name
-   function Selection_Data_Less_Than 
+   function Selection_Data_Less_Than
      (Left  : in Selection_Data_Elemet;
       Right : in Selection_Data_Elemet)
      return Boolean;
 
-   package Selection_Data_Sets is new Ordered_Sets 
+   package Selection_Data_Sets is new Ordered_Sets
      (Item_Type => Selection_Data_Elemet,
       "="       => Selection_Data_Equal,
       "<"       => Selection_Data_Less_Than);
-     
-   
+
+
    ---------------------------------------------------------------------------
    --  The data model for a visualisation window
    ---------------------------------------------------------------------------
-   
+
    type Visual_Window_Element;
- 
+
    type Visual_Window_Access is access Visual_Window_Element;
 
    type Visual_Window_Element is record
-        
+
       Vis_Window_Name         : Ada.Strings.Unbounded.Unbounded_String;
-      
+
       --  The Visualisation Style used for that window (only known by name)
       The_Visualisation_Style : Ada.Strings.Unbounded.Unbounded_String;
 
-      The_Graph_Widget        : Graph_Widgets.Graph_Widget;
-      
+      --FIX: The_Graph_Widget        : Graph_Widgets.Graph_Widget;
+
       Set_Of_All_Pins         : Pin_Sets.Set;
 
       --  The name of the "standard selection"
@@ -866,11 +866,11 @@ private
       --  The name of the "current selection"
       -- (See GIANT Specification 3.4.3. Aktuelle Selektion)
       Current_Selection       : Ada.Strings.Unbounded.Unbounded_String;
-      
+
       --  A ordered set of all selections (including extra
       --  management data) that belong to this
       --  visulalisation window.
-      All_Managed_Selections  : Selection_Data_Sets.Set;      
+      All_Managed_Selections  : Selection_Data_Sets.Set;
    end record;
 
 end Giant.Vis_Windows;

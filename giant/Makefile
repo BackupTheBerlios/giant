@@ -16,9 +16,11 @@ OUT_PATH        = obj/
   IMLLIB_PATH     = $(HOME)/GIANT/IML/iml_browser
 #endif
 
-AUNIT_PATH      = ../../src/aunit-1.01
-XMLADA_PATH     = ../../src/xmlada-0.7.1
+# relative to $(OUT_PATH)
 GIANT_PATH      = ../
+
+AUNIT_PATH      = $(GIANT_PATH)/../src/aunit-1.01
+XMLADA_PATH     = $(GIANT_PATH)/../src/xmlada-0.7.1
 
 AUNIT_INCLUDES  = -I$(AUNIT_PATH)/aunit/framework -I$(AUNIT_PATH)/aunit/text_reporter
 IMLLIB_INCLUDES = -I$(IMLLIB_PATH)/IML.generated -I$(IMLLIB_PATH)/IML.src -I$(IMLLIB_PATH)/Reuse.src -I$(IMLLIB_PATH)/usr.local.reuse
@@ -30,8 +32,8 @@ INCLUDES        = $(GIANT_INCLUDES) $(IMLLIB_INCLUDES) $(AUNIT_INCLUDES) $(XMLAD
 LIBS            = $(shell gtkada-config)
 
 CFLAGS          = -g -O2 -funroll-loops
-GNAT_FLAGS      = -j2 -gnatX -gnata -gnatf -gnatwl -gnatwe -gnato 
-                  #-gnaty3abcefhiklmprt #-gnatys #-gnatwu 
+GNAT_FLAGS      = -j2 -gnatX -gnata -gnatf -gnatwl -gnato 
+                  #-gnaty3abcefhiklmprt #-gnatys 
 ALL_CFLAGS      = $(CFLAGS) $(TARGET_CFLAGS) $(GNAT_FLAGS) $(INCLUDES) 
 ALL_LFLAGS      = $(LFLAGS) $(TARGET_LFLAGS) $(LIBS)
 
@@ -47,7 +49,7 @@ endif
 all: 
 	test -x $(OUT_PATH) || mkdir $(OUT_PATH)
 	cd $(OUT_PATH) && \
-	gnatmake -m $(ALL_CFLAGS) $(GIANT_PATH)/$(MAIN) -o $(GIANT_PATH)/$(EXEC) $(GNATMAKE_FLAGS) $(ALL_LFLAGS) -bargs -static -E -largs 
+	gnatmake -k -m $(ALL_CFLAGS) $(GIANT_PATH)/$(MAIN) -o $(GIANT_PATH)/$(EXEC) $(GNATMAKE_FLAGS) $(ALL_LFLAGS) -bargs -static -E -largs 
 
 static :
 	make LIBS="$(shell gtkada --static)" all
