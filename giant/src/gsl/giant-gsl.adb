@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/16 14:13:53 $
+-- $Date: 2003/08/26 13:59:04 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -151,7 +151,11 @@ package body Giant.Gsl is
             when List              => return "List";
             when Sequence          => return "Sequence";
             when Script_Activation => return "Script_Activation";
-            when others            => return "Unknown";
+            when Script_Exec       => return "Script_Exec";
+            when Script_Finish     => return "Script_Finish";
+            when Script_Loop       => return "Script_Loop";
+            when Result_Pop        => return "Result_Pop";
+            when Param_Fetch       => return "Param_Fetch";
          end case;
       end if;
       return "Null_Node";
