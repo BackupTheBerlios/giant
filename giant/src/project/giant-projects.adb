@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.40 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.41 $
 --  $Author: schwiemn $
---  $Date: 2003/06/27 07:01:02 $
+--  $Date: 2003/06/27 11:31:27 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -790,9 +790,14 @@ package body Giant.Projects is
       --  the list holds only one node
       Data_XML_Node := DOM.Core.Nodes.Item (XML_Nodes_List, 0);
 
-      Bauhaus_IML_Graph_File := Ada.Strings.Unbounded.To_Unbounded_String
-        (DOM.Core.Elements.Get_Attribute
-         (Data_XML_Node, "iml_graph_file_path"));
+
+      Bauhaus_IML_Graph_File  :=
+        Ada.Strings.Unbounded.To_Unbounded_String
+         (File_Management.Get_Absolute_Path_To_File_From_Relative
+          (Project_Directory,
+           DOM.Core.Elements.Get_Attribute
+            (Data_XML_Node, "iml_graph_file_path")));
+                           
       Bauhaus_IML_Graph_File_Checksum :=
         Integer'Value (
                        (DOM.Core.Elements.Get_Attribute
@@ -896,12 +901,15 @@ package body Giant.Projects is
         (File_Management.Return_Dir_Path_For_File_Path
          (Ada.Strings.Unbounded.To_String
           (Absolute_Project_File_Name)));
-
+         
       New_Project_Access.Abs_Bauhaus_IML_Graph_File :=
         Ada.Strings.Unbounded.To_Unbounded_String
-        (DOM.Core.Elements.Get_Attribute
-         (Data_XML_Node, "iml_graph_file_path"));
-
+          (File_Management.Get_Absolute_Path_To_File_From_Relative
+           (Ada.Strings.Unbounded.To_String
+             (New_Project_Access.Abs_Project_Directory),
+           (DOM.Core.Elements.Get_Attribute
+            (Data_XML_Node, "iml_graph_file_path"))));   
+                  
       New_Project_Access.Bauhaus_IML_Graph_File_Checksum :=
         Integer'Value (
                        (DOM.Core.Elements.Get_Attribute
