@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-node_info_dialog.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-node_info_dialog.adb,v $, $Revision: 1.6 $
 --  $Author: squig $
---  $Date: 2003/06/23 11:30:45 $
+--  $Date: 2003/06/23 16:15:41 $
 --
 
 with Interfaces.C.Strings;
@@ -163,7 +163,7 @@ package body Giant.Node_Info_Dialog is
 
       Gtk.Label.Set_Text (Dialog.ID_Label, Graph_Lib.Node_Id_Image (Node));
       Gtk.Label.Set_Text (Dialog.Type_Label,
-                          Graph_Lib.Node_Class_Id_Image
+                          Graph_Lib.Get_Node_Class_Tag
                           (Graph_Lib.Get_Node_Class_Id (Node)));
 
       --  set attributes

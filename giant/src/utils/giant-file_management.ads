@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.ads,v $, $Revision: 1.8 $
--- $Author: schwiemn $
--- $Date: 2003/06/22 16:22:47 $
+-- $RCSfile: giant-file_management.ads,v $, $Revision: 1.9 $
+-- $Author: squig $
+-- $Date: 2003/06/23 16:15:41 $
 --
 -- -----------------------------------------------
 --
@@ -252,6 +252,15 @@ package Giant.File_Management is
    --   A path ending with a directory separator.
    function Append_Dir_Separator_If_Necessary
      (Directory : in String)
+     return String;
+
+   ---------------------------------------------------------------------------
+   --  Returns the path where the user settings are stored. The
+   --  directory is created if it does not exists.
+   --
+   --  A trailing directory separator is appended.
+   --
+   function Get_User_Config_Path
      return String;
 
 end Giant.File_Management;

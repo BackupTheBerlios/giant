@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.9 $
--- $Author: schwiemn $
--- $Date: 2003/06/22 21:21:10 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.10 $
+-- $Author: squig $
+-- $Date: 2003/06/23 16:15:41 $
 --
 --
 with Ada.Streams;
@@ -404,5 +404,19 @@ package body Giant.File_Management is
          return (Directory & Dir_Separator);
       end if;
    end Append_Dir_Separator_If_necessary;
+
+   function Get_User_Config_Path
+     return String
+   is
+      Path : String
+        := Append_Dir_Separator_If_Necessary
+        (GNAT.OS_Lib.Getenv ("HOME").all)
+        & ".giant" & GNAT.OS_Lib.Directory_Separator;
+   begin
+      if (not GNAT.OS_Lib.Is_Directory (Path)) then
+         GNAT.Directory_Operations.Make_Dir (Path);
+      end if;
+      return Path;
+   end Get_User_Config_Path;
 
 end Giant.File_Management;

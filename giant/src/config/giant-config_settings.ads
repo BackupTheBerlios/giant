@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.6 $
--- $Author: schwiemn $
--- $Date: 2003/06/22 21:21:09 $
+-- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.7 $
+-- $Author: squig $
+-- $Date: 2003/06/23 16:15:41 $
 --
 -- -----
 -- This package holds the functionality needed to access and handle
@@ -92,7 +92,8 @@ package Giant.Config_Settings is
    -- If a setting is not found in the config files, these default
    -- values will be used.
    Default_Settings : constant Default_Settings_Array :=
-     ( (To_UStr ("Resources_Directory"),
+     (
+       (To_UStr ("Resources_Directory"),
         To_Ustr ("."), null),
 
        (To_UStr ("Icon_For_Node_Annotations"),
@@ -117,7 +118,20 @@ package Giant.Config_Settings is
         To_UStr ("RGB:AA/AA/AA"), null),
 
        (To_UStr ("IML_Subgraph_Highlight_Color_3"),
-        To_UStr ("RGB:AA/AA/AA"), null));
+        To_UStr ("RGB:AA/AA/AA"), null),
+
+       (To_UStr ("Main_Window.Height"),
+        To_UStr ("400"),
+        Validate_Integer'Access),
+
+       (To_UStr ("Main_Window.Width"),
+        To_UStr ("200"),
+        Validate_Integer'Access),
+
+      (To_UStr ("Main_Window.Separator"),
+       To_UStr ("230"),
+       Validate_Integer'Access)
+      );
 
    ---------------------------------------------------------------------------
    -- A

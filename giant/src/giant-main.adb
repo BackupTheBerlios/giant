@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.15 $
 --  $Author: squig $
---  $Date: 2003/06/21 21:04:02 $
+--  $Date: 2003/06/23 16:15:41 $
 --
 --
 ------------------------------------------------------------------------------
@@ -30,7 +30,8 @@
 --  The GIANT main program.
 --
 
-with Giant.Config;
+with GNAT.OS_Lib;
+
 with Giant.Config_Settings;
 with Giant.Config.Vis_Styles;
 with Giant.Controller;
@@ -41,11 +42,14 @@ with Giant.Logger;
 procedure Giant.Main
 is
    package Logger is new Giant.Logger("giant.main");
+
+   Config_Filename : String
+     := File_Management.Get_User_Config_Path & "settings.xml";
 begin
    Default_Logger.Init;
 
---     Config_Settings.Initialize_Config_Settings
---       ("src/config/giant_global_config.xml", "");
+   --  load config settings
+   Config_Settings.Initialize_Config_Settings ("", Config_Filename);
 
    -- read config
 --     Config.Vis_Styles.Initialize_Config_Vis_Styles
@@ -73,6 +77,10 @@ begin
    Controller.Show_Gui;
 
    Logger.Debug ("closing giant");
+
+   --  store config settings
+   Logger.Debug ("storing config settings: " & Config_Filename);
+   Config_Settings.Store_User_Config_File (Config_Filename);
 
    Giant.Default_Logger.Close;
 end Giant.Main;

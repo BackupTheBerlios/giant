@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.24 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.25 $
 --  $Author: squig $
---  $Date: 2003/06/23 12:40:58 $
+--  $Date: 2003/06/23 16:15:41 $
 --
 
 with Ada.Strings.Unbounded;
@@ -40,16 +40,17 @@ with Gtk.Main;
 with Gtk.Menu;
 with Gtk.Menu_Bar;
 with Gtk.Menu_Item;
+with Gtk.Paned;
 with Gtk.Status_Bar;
 with Gtk.Widget;
 with Gtk.Window;
-with Gtk.Paned;
 with Gtk.Tearoff_Menu_Item;
 with Gtkada.File_Selection;
 with Gtkada.Types;
 
 with Giant.About_Dialog;
 with Giant.Clists;
+with Giant.Config_Settings;
 with Giant.Controller;
 with Giant.Dialogs;
 with Giant.Default_Logger;
@@ -79,6 +80,8 @@ package body Giant.Main_Window is
 
    --  main window instance
    Window : Gtk.Window.Gtk_Window;
+
+   Pane : Gtk.Paned.Gtk_Vpaned;
 
    Menu_Bar : Gtk.Menu_Bar.Gtk_Menu_Bar;
    Project_Menu : Gtk.Menu.Gtk_Menu;
@@ -497,7 +500,6 @@ package body Giant.Main_Window is
 
    procedure Initialize is
       Box : Gtk.Box.Gtk_Vbox;
-      Pane : Gtk.Paned.Gtk_Vpaned;
    begin
       Gtk.Window.Initialize (Window, Window_Toplevel);
       Gtk.Window.Set_Title (Window, -"GIANT");
@@ -680,6 +682,18 @@ package body Giant.Main_Window is
      return Boolean
    is
    begin
+      --  save size
+      Config_Settings.Set_Setting
+        ("Main_Window.Width",
+         Integer (Gtk.Window.Get_Allocation_Width (Window)));
+      Config_Settings.Set_Setting
+        ("Main_Window.Height",
+         Integer (Gtk.Window.Get_Allocation_Height (Window)));
+      Config_Settings.Set_Setting
+        ("Main_Window.Separator",
+         Integer (String_Clists.Get_Allocation_Height (Window_List)));
+      -- Gtk.Paned.Get_Position (Pane)
+
       -- FIX: ask user to save project
       return True;
    end Hide;
@@ -689,6 +703,18 @@ package body Giant.Main_Window is
    begin
       Gtk.Window.Gtk_New (Window);
       Initialize;
+
+      --  restore size
+      Gtk.Window.Set_Default_Size
+        (Window,
+         Glib.Gint (Config_Settings.Get_Setting_As_Integer
+                    ("Main_Window.Width")),
+         Glib.Gint (Config_Settings.Get_Setting_As_Integer
+                    ("Main_Window.Height")));
+      Gtk.Paned.Set_Position
+        (Pane,
+         Glib.Gint (Config_Settings.Get_Setting_As_Integer
+                    ("Main_Window.Separator")));
 
       Gtk.Window.Show_All (Window);
    end Show;
