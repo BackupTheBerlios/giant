@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.18 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.19 $
 -- $Author: squig $
--- $Date: 2003/07/10 21:24:48 $
+-- $Date: 2003/07/10 21:54:53 $
 --
 
 with Glib;
@@ -35,8 +35,11 @@ with Gnat.OS_Lib;
 with Giant.Config;
 with Giant.Config.Global_Data;
 with Giant.Dialogs;
+with Giant.Logger;
 
 package body Giant.Gui_Utils is
+
+   package Logger is new Giant.Logger("giant.gui_utils");
 
    procedure Add_Row_Widgets
      (Table : in     Gtk.Table.Gtk_Table;
@@ -88,6 +91,9 @@ package body Giant.Gui_Utils is
      return String
    is
    begin
+      Logger.Debug ("Loading icon: "
+                    & Config.Global_Data.Get_Resources_Directory & "icons"
+                    & GNAT.OS_Lib.Directory_Separator & Filename);
       return Config.Global_Data.Get_Resources_Directory & "icons"
         & GNAT.OS_Lib.Directory_Separator & Filename;
    end;
