@@ -20,10 +20,13 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-progress_dialog.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-progress_dialog.adb,v $, $Revision: 1.9 $
 --  $Author: squig $
---  $Date: 2003/06/23 10:41:10 $
+--  $Date: 2003/06/25 16:07:51 $
 --
+
+with Interfaces.C.Strings;
+with System;
 
 with Glib;
 with Gtk.Box;
@@ -33,9 +36,6 @@ with Gtk.Object;
 with Gtk.Progress_Bar;
 with Gtk.Window;
 with Gtkada.Types;
-
-with Interfaces.C.Strings;
-with System;
 
 with Giant.Default_Dialog;
 with Giant.Gui_Utils; use Giant.Gui_Utils;
@@ -70,7 +70,7 @@ package body Giant.Progress_Dialog is
    begin
       Default_Dialog.Initialize (Dialog, Title, Default_Dialog.Button_Cancel);
 
-      -- provide signals
+      --  provide signal
       Gtk.Object.Initialize_Class_Record
         (Dialog, Signals, Class_Record);
 

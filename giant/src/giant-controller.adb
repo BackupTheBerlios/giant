@@ -21,9 +21,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.21 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.22 $
 --  $Author: squig $
---  $Date: 2003/06/24 19:25:57 $
+--  $Date: 2003/06/25 16:07:51 $
 --
 
 with Ada.Strings.Unbounded;
@@ -52,33 +52,36 @@ package body Giant.Controller is
    --  Projects
    ---------------------------------------------------------------------------
 
-   procedure Close_Project
-   is
-   begin
-      Project_Loaded := False;
-
-      --FIX: Current_Project := null;
-
-      Gui_Manager.Set_Project_Loaded (Project_Loaded);
-   end;
-
    procedure Initialize_Project
    is
    begin
       Project_Loaded := True;
 
-      Gui_Manager.Set_Project_Loaded (Project_Loaded);
+      Gui_Manager.Initialize_Project;
       Logger.Info (-"Project initialized");
    end;
 
+   function Close_Project
+     (Ask_For_Confirmation : in Boolean := True)
+     return Boolean
+   is
+   begin
+      Logger.Info (-"Closing current project");
+
+      if (Gui_Manager.Close_Project (Ask_For_Confirmation)) then
+         Project_Loaded := False;
+         --FIX: Current_Project := null;
+         return True;
+      end if;
+      return False;
+   end;
+
    procedure Create_Project
-     (Filename       : in String;
-      Graph_Filename : in String)
+     (Filename             : in String;
+      Graph_Filename       : in String)
    is
       Checksum : Integer;
    begin
-      Close_Project;
-
       --  create graph
       Giant.Graph_Lib.Create (Graph_Filename);
       Checksum := Graph_Lib.Get_Graph_Hash;
@@ -142,12 +145,9 @@ package body Giant.Controller is
       Graph_Filename : Ada.Strings.Unbounded.Unbounded_String;
       Checksum : Integer;
    begin
-      Logger.Info (-"Closing current project");
-      Close_Project;
-
       --  fix
-      Projects.Get_Bauhaus_IML_Graph_Data
-        (Filename, "", Graph_Filename, Checksum);
+      Projects.Get_Bauhaus_IML_Graph_Data_File
+        (Filename, Graph_Filename, Checksum);
 
       --  create graph
       Giant.Graph_Lib.Create (Ada.Strings.Unbounded.To_String (Graph_Filename));
@@ -170,7 +170,7 @@ package body Giant.Controller is
      (Filename : in String)
    is
    begin
-      Projects.Store_Whole_Project_As (Current_Project, Filename, "");
+      Projects.Store_Whole_Project_As_For_File (Current_Project, Filename);
       Logger.Info (-"Project saved");
    end Save_Project;
 
@@ -191,7 +191,7 @@ package body Giant.Controller is
    ---------------------------------------------------------------------------
 
    function Hide_Gui
-     (Ask_For_Confirmation: Boolean := True)
+     (Ask_For_Confirmation : in Boolean := True)
      return Boolean
    is
    begin

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.13 $
+--  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.14 $
 --  $Author: squig $
---  $Date: 2003/06/24 19:25:57 $
+--  $Date: 2003/06/25 16:07:51 $
 --
 --  Stores the window records. Handles the controller updates. Provides
 --  a facade for the gui.
@@ -52,8 +52,11 @@ package Giant.Gui_Manager is
      (Ask_For_Confirmation: Boolean)
      return Boolean;
 
-   procedure Set_Project_Loaded
-     (Loaded : in Boolean);
+   function Close_Project
+     (Ask_For_Confirmation : in Boolean := True)
+     return Boolean;
+
+   procedure Initialize_Project;
 
    procedure Set_Status
      (Text : in String);

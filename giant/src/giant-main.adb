@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.17 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.18 $
 --  $Author: squig $
---  $Date: 2003/06/24 19:25:57 $
+--  $Date: 2003/06/25 16:07:51 $
 --
 --
 ------------------------------------------------------------------------------
@@ -55,10 +55,12 @@ begin
 
    Config.Global_Data.Initialize_Config_Data;
 
-
-   -- read config
---     Config.Vis_Styles.Initialize_Config_Vis_Styles
---       ("", "", "test/resources/giant_vis_style.xml");
+   Config.Vis_Styles.Initialize_Config_Vis_Styles
+     (Resources_Root_Dir     => Config.Global_Data.Get_Resources_Directory,
+      GIANT_VIS_Directory    => "",
+      User_Vis_Directory     => "",
+      Default_Vis_Style_File
+      => "test/resources/vis_styles/only_defaults_giant_vis_style.xml");
 
    -- FIX: remove the following lines
    declare
@@ -70,8 +72,7 @@ begin
          when others =>
             null;
       end;
-      Controller.Create_Project ("test/resources/GiantTest.xml",
-                                 "test/resources/rfg_examp.iml");
+      Controller.Open_Project ("test/resources/GiantTest.xml");
    exception
       when others =>
          null;

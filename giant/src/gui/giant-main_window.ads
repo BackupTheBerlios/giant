@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.ads,v $, $Revision: 1.9 $
+--  $RCSfile: giant-main_window.ads,v $, $Revision: 1.10 $
 --  $Author: squig $
---  $Date: 2003/06/23 21:57:04 $
+--  $Date: 2003/06/25 16:07:51 $
 --
 --  Provides the main window. The main window is only instanciated once.
 --
@@ -30,13 +30,21 @@
 --    ADO
 --
 
+with Gtk.Widget;
+with Gtk.Window;
+
 with Giant.Graph_Window;
 with Giant.Vis_Windows;
 with Giant.Valid_Names;
 with Giant.Gui_Manager;
 with Giant.Gui_Manager.Crosshair;
+with Giant.Gui_Utils;
 
 package Giant.Main_Window is
+
+   type Main_Window_Record is new Gtk.Window.Gtk_Window_Record with private;
+
+   type Main_Window_Access is access all Main_Window_Record'Class;
 
    ---------------------------------------------------------------------------
    --  Window Methods
@@ -67,6 +75,14 @@ package Giant.Main_Window is
    --  Other Methods
    ---------------------------------------------------------------------------
 
+   function Close_Project
+     (Ask_For_Confirmation : in Boolean := True)
+     return Boolean;
+
+   procedure Connect_Close_Project
+     (Callback : in     Gui_Utils.Widget_Callback.Marshallers.Void_Marshaller.Handler;
+      Widget   : access Gtk.Widget.Gtk_Widget_Record'Class);
+
    ---------------------------------------------------------------------------
    --  Sets windows visible.
    --
@@ -81,13 +97,15 @@ package Giant.Main_Window is
      (Ask_For_Confirmation: Boolean)
      return Boolean;
 
-   procedure Set_Project_Loaded
-     (Loaded : in Boolean);
+   procedure Initialize_Project;
 
    procedure Set_Status
      (Text : in String);
 
 private
+
+   type Main_Window_Record is new Gtk.Window.Gtk_Window_Record
+     with null record;
 
    ---------------------------------------------------------------------------
    --  Subgraph Crosshair

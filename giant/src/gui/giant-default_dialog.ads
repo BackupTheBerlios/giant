@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.ads,v $, $Revision: 1.10 $
+--  $RCSfile: giant-default_dialog.ads,v $, $Revision: 1.11 $
 --  $Author: squig $
---  $Date: 2003/06/24 10:50:12 $
+--  $Date: 2003/06/25 16:07:51 $
 --
 ------------------------------------------------------------------------------
 --
@@ -111,6 +111,12 @@ package Giant.Default_Dialog is
    function Get_Response
      (Dialog : access Default_Dialog_Record)
      return Response_Type;
+
+   ---------------------------------------------------------------------------
+   --  If dialog is not modal, the dialog is destroyed.
+   --
+   procedure Hide
+     (Dialog : access Default_Dialog_Record);
 
    ---------------------------------------------------------------------------
    --  Called by the button callbacks.

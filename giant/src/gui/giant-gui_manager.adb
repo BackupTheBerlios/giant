@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.15 $
 --  $Author: squig $
---  $Date: 2003/06/24 19:25:57 $
+--  $Date: 2003/06/25 16:07:51 $
 --
 
 with Ada.Strings.Unbounded;
@@ -51,7 +51,7 @@ package body Giant.Gui_Manager is
 
    ---------------------------------------------------------------------------
    --  Initializes the main window.
-   procedure Initialize_Project
+   procedure Initialize_Project_Internal
    is
       List : String_Lists.List;
       Iterator : String_Lists.ListIter;
@@ -129,7 +129,9 @@ package body Giant.Gui_Manager is
       Gui_Initialized := True;
 
       --  initialize state
-      Set_Project_Loaded (Controller.Is_Project_Loaded);
+      if (Controller.Is_Project_Loaded) then
+         Initialize_Project;
+      end if;
 
       -- main loop
       Gtk.Main.Main;
@@ -139,20 +141,34 @@ package body Giant.Gui_Manager is
       Gdk.Threads.Leave;
    end Show;
 
-   procedure Set_Project_Loaded
-     (Loaded : in Boolean)
+   function Close_Project
+     (Ask_For_Confirmation : in Boolean := True)
+     return Boolean
+   is
+   begin
+      if (not Gui_Initialized) then
+         return True;
+      end if;
+
+      if (Ask_For_Confirmation) then
+         if (not Main_Window.Close_Project) then
+            return False;
+         end if;
+      end if;
+
+      return True;
+   end Close_Project;
+
+   procedure Initialize_Project
    is
    begin
       if (not Gui_Initialized) then
          return;
       end if;
 
-      Main_Window.Set_Project_Loaded (Loaded);
-
-      if (Loaded) then
-         Initialize_Project;
-      end if;
-   end Set_Project_Loaded;
+      Main_Window.Initialize_Project;
+      Initialize_Project_Internal;
+   end Initialize_Project;
 
    procedure Set_Status
      (Text : in String)

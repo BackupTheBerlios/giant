@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.15 $
+--  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.16 $
 --  $Author: squig $
---  $Date: 2003/06/24 10:50:12 $
+--  $Date: 2003/06/25 16:07:51 $
 --
 
 with Ada.Text_Io; use Ada.Text_Io;
@@ -36,7 +36,8 @@ with Gtk.Pixmap;
 with Gtk.Separator;
 with Gtkada.Types;
 
-with Giant.Gui_Utils; use Giant.Gui_Utils;
+with Giant.Gui_Utils;
+with Giant.Main_Window;
 --with Giant.Utils; use Giant.Utils;
 
 package body Giant.Default_Dialog is
@@ -64,7 +65,9 @@ package body Giant.Default_Dialog is
    end On_Close_Button_Clicked;
 
    function On_Delete
-     (Source : access Gtk.Widget.Gtk_Widget_Record'Class) return Boolean is
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+     return Boolean
+   is
    begin
       Hide (Source, Response_Close);
       return True;
@@ -90,6 +93,15 @@ package body Giant.Default_Dialog is
    begin
       Hide (Source, Response_Yes);
    end On_Yes_Button_Clicked;
+
+   procedure On_Close_Project
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+      Dialog : Default_Dialog_Access
+        := Default_Dialog_Access (Source);
+   begin
+      Hide (Dialog);
+   end On_Close_Project;
 
    function Can_Hide
      (Dialog : access Default_Dialog_Record)
@@ -118,6 +130,8 @@ package body Giant.Default_Dialog is
       Title   : in     String;
       Buttons : in     Button_Type)
    is
+      use Gui_Utils;
+
       Button : Gtk.Button.Gtk_Button;
    begin
       Gtk.Window.Initialize (Dialog, Window_Toplevel);
@@ -175,6 +189,9 @@ package body Giant.Default_Dialog is
       Widget_Return_Callback.Connect
         (Dialog, "delete_event",
          Widget_Return_Callback.To_Marshaller (On_Delete'Access));
+
+      --  connect close project
+      Main_Window.Connect_Close_Project (On_Close_Project'Access, Dialog);
    end Initialize;
 
    ---------------------------------------------------------------------------
@@ -209,11 +226,11 @@ package body Giant.Default_Dialog is
       --  icon
       --Gtk.Pixmap.Set_Alignment (Dialog.Confirmation_Msg_Pixmap, 0.5, 0.5);
       Gtk.Box.Pack_Start (Box, pixmap, expand => False, Fill => True,
-                          Padding => DEFAULT_SPACING);
+                          Padding => Gui_Utils.DEFAULT_SPACING);
 
       --  widget
       Gtk.Box.Pack_Start (Box, Widget, Expand => True, Fill => True,
-                          Padding => DEFAULT_SPACING);
+                          Padding => Gui_Utils.DEFAULT_SPACING);
 
       return Box;
    end Add_Icon_Box;
@@ -273,19 +290,27 @@ package body Giant.Default_Dialog is
    end Get_Response;
 
    procedure Hide
+     (Dialog : access Default_Dialog_Record)
+   is
+   begin
+      if (Dialog.Is_Modal) then
+         Gtk.Main.Main_Quit;
+      else
+         Destroy (Dialog);
+      end if;
+   end;
+
+   procedure Hide
      (Source   : access Gtk.Widget.Gtk_Widget_Record'Class;
       Response : in     Response_Type)
    is
-      Dialog : Default_Dialog_Access;
+      Dialog : Default_Dialog_Access
+        := Default_Dialog_Access (Gtk.Widget.Get_Toplevel (Source));
    begin
-      Dialog := Default_Dialog_Access (Gtk.Widget.Get_Toplevel (Source));
       Dialog.Response := Response;
 
       if (Can_Hide (Default_Dialog_Access (Dialog))) then
          Hide (Dialog);
-         if (Dialog.Is_Modal) then
-            Gtk.Main.Main_Quit;
-         end if;
       end if;
    end;
 
@@ -296,7 +321,7 @@ package body Giant.Default_Dialog is
    begin
       Gtk.Box.Pack_Start (Dialog.Center_Box, Widget,
                           Expand => True, Fill => True,
-                          Padding => DEFAULT_SPACING);
+                          Padding => Gui_Utils.DEFAULT_SPACING);
    end Set_Center_Widget;
 
    procedure Show_Modal

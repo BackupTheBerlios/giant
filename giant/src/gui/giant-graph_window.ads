@@ -20,15 +20,13 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.10 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.11 $
 --  $Author: squig $
---  $Date: 2003/06/23 19:19:34 $
+--  $Date: 2003/06/25 16:07:51 $
 --
 ------------------------------------------------------------------------------
 --
--- Provides a progress dialog.
---
--- Emits the "cancelled" callback when the cancel button is pressed.
+-- Provides the graph window.
 --
 
 with Gtk.Clist;

@@ -20,13 +20,14 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.31 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.32 $
 --  $Author: squig $
---  $Date: 2003/06/24 22:11:24 $
+--  $Date: 2003/06/25 16:07:51 $
 --
 
 with Ada.Strings.Unbounded;
 with Interfaces.C.Strings;
+with System;
 
 with Gdk.Color;
 with Gdk.Event;
@@ -89,8 +90,18 @@ package body Giant.Main_Window is
       Row  : in     Glib.Gint;
       Name : in     String);
 
+   --  signal stuff
+
+   package Main_Window_Callback is new
+     Gtk.Handlers.Callback (Main_Window_Record);
+
+   Class_Record : System.Address := System.Null_Address;
+
+   Signals : constant Gtkada.Types.Chars_Ptr_Array :=
+     (1 => Interfaces.C.Strings.New_String ("close_project"));
+
    --  main window instance
-   Window : Gtk.Window.Gtk_Window;
+   Window : Main_Window_Access;
 
    Pane : Gtk.Paned.Gtk_Vpaned;
 
@@ -128,6 +139,44 @@ package body Giant.Main_Window is
    begin
       return String_Clists.Get_Selected_Item (Window_List);
    end Get_Selected_Window;
+
+   Loaded: Boolean;
+
+   procedure Update_Children
+     (Widget : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+   begin
+      Gtk.Widget.Set_Sensitive (Widget, Loaded);
+   end;
+
+   procedure Set_Project_Loaded
+     (Loaded : in Boolean)
+   is
+--        package Menu_Bar_Forall is new Gtk.Container.Forall_Pkg
+--          (Boolean);
+
+   begin
+      --  set menu bar sensitive
+      Main_Window.Loaded := Loaded;
+      Gtk.Menu_Bar.Forall (Menu_Bar, Update_Children'Access);
+      Gtk.Menu.Forall (Project_Menu, Update_Children'Access);
+
+      if (Loaded) then
+         Set_Title (Window, "GIANT - "
+                               & Projects.Get_Project_Name
+                               (Controller.Get_Project));
+      else
+         Set_Title (Window, "GIANT");
+
+         --  active a few items that can be selected when no project
+         --  is loaded
+         Gtk.Menu_Item.Set_Sensitive (Project_Menu_Item, True);
+         Gtk.Menu_Item.Set_Sensitive (Project_New_Menu_Item, True);
+         Gtk.Menu_Item.Set_Sensitive (Project_Open_Menu_Item, True);
+         Gtk.Menu_Item.Set_Sensitive (Project_Quit_Menu_Item, True);
+      end if;
+   end Set_Project_Loaded;
+
 
    ---------------------------------------------------------------------------
    --  Callbacks
@@ -171,8 +220,14 @@ package body Giant.Main_Window is
          end if;
       end;
    exception
-      when Projects.Directory_Holds_Already_A_Project_File_Exception =>
-         Dialogs.Show_Error_Dialog (-"The project could not be created. The directory already contains a project.");
+     when Giant.Graph_Lib.Load_Error =>
+        Dialogs.Show_Error_Dialog (-"The IML graph could not be loaded.");
+     when Projects.Invalid_Project_Directory_Excpetion =>
+        Dialogs.Show_Error_Dialog (-"The selected directory is invalid.");
+     when Projects.Wrong_IML_Graph_Loaded_Exception =>
+        Dialogs.Show_Error_Dialog (-"The IML graph is invalid.");
+     when Projects.Directory_Holds_Already_A_Project_File_Exception =>
+        Dialogs.Show_Error_Dialog (-"The project could not be created. The directory already contains a project.");
    end On_Project_New;
 
    procedure On_Project_Open
@@ -193,6 +248,14 @@ package body Giant.Main_Window is
       when Projects.Project_Does_Not_Exist_Exception =>
          Dialogs.Show_Error_Dialog (-"The project could not be opened. One or more project files are missing.");
    end On_Project_Open;
+
+   procedure On_Project_Close
+     (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
+   is
+      Closed : Boolean;
+   begin
+      Closed := Controller.Close_Project;
+   end On_Project_Close;
 
    procedure On_Project_Save
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
@@ -504,6 +567,8 @@ package body Giant.Main_Window is
       Project_Open_Menu_Item
         := New_Menu_Item (-"Open...", On_Project_Open'Access);
       Gtk.Menu.Add (Menu, Project_Open_Menu_Item);
+      Gtk.Menu.Add (Menu, New_Menu_Item (-"Close",
+                                         On_Project_Close'Access));
       Gtk.Menu.Add (Menu, New_Menu_Separator);
       Gtk.Menu.Add (Menu, New_Menu_Item (-"Save", On_Project_Save'Access));
       Gtk.Menu.Add (Menu, New_Menu_Item (-"Save As...",
@@ -559,10 +624,14 @@ package body Giant.Main_Window is
       Submenu : Gtk.Menu.Gtk_Menu;
    begin
       Gtk.Window.Initialize (Window, Window_Toplevel);
-      Gtk.Window.Set_Title (Window, -"GIANT");
+      Set_Title (Window, -"GIANT");
 
+      --  provide signals
+      Gtk.Object.Initialize_Class_Record (Window, Signals, Class_Record);
+
+      --  center box
       Gtk.Box.Gtk_New_Vbox (Box);
-      Gtk.Window.Add (Window, Box);
+      Add (Window, Box);
 
       --  menu bar
       Menu_Bar := Initialize_Menu;
@@ -746,31 +815,35 @@ package body Giant.Main_Window is
    --  Public Methods
    ---------------------------------------------------------------------------
 
+   procedure Connect_Close_Project
+     (Callback : in     Widget_Callback.Marshallers.Void_Marshaller.Handler;
+      Widget   : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+   begin
+      Widget_Callback.Object_Connect
+        (Window, "close_project", Widget_Callback.To_Marshaller (Callback),
+         Widget);
+   end Connect_Close_Project;
+
    function Hide
      (Ask_For_Confirmation: Boolean)
      return Boolean
    is
-      use type Default_Dialog.Response_Type;
-
-      Response : Default_Dialog.Response_Type;
    begin
-      Response := Dialogs.Show_Confirmation_Dialog
-        (-"The project has changed. Save changes?",
-         Default_Dialog.Button_Yes_No_Cancel);
-      if (Response = Default_Dialog.Response_Yes) then
-         -- FIX: save changes
-         Controller.Save_Project;
-      elsif (Response = Default_Dialog.Response_Cancel) then
-         return False;
+      if (Ask_For_Confirmation) then
+         if (not Close_Project (Ask_For_Confirmation)) then
+            --  the user has cancelled
+            return False;
+         end if;
       end if;
 
       --  save settings
       Config_Settings.Set_Setting
         ("Main_Window.Width",
-         Integer (Gtk.Window.Get_Allocation_Width (Window)));
+         Integer (Get_Allocation_Width (Window)));
       Config_Settings.Set_Setting
         ("Main_Window.Height",
-         Integer (Gtk.Window.Get_Allocation_Height (Window)));
+         Integer (Get_Allocation_Height (Window)));
       Config_Settings.Set_Setting
         ("Main_Window.Separator",
          Integer (String_Clists.Get_Allocation_Height (Window_List)));
@@ -778,14 +851,20 @@ package body Giant.Main_Window is
       return True;
    end Hide;
 
+   procedure Initialize_Project
+   is
+   begin
+      Set_Project_Loaded (True);
+   end Initialize_Project;
+
    procedure Show
    is
    begin
-      Gtk.Window.Gtk_New (Window);
+      Window := new Main_Window_Record;
       Initialize;
 
       --  restore size
-      Gtk.Window.Set_Default_Size
+      Set_Default_Size
         (Window,
          Glib.Gint (Config_Settings.Get_Setting_As_Integer
                     ("Main_Window.Width")),
@@ -796,45 +875,39 @@ package body Giant.Main_Window is
          Glib.Gint (Config_Settings.Get_Setting_As_Integer
                     ("Main_Window.Separator")));
 
-      Gtk.Window.Show_All (Window);
+      --  disable all widgets initially
+      Set_Project_Loaded (False);
+
+      Show_All (Window);
    end Show;
 
-   Loaded: Boolean;
-
-   procedure Update_Children
-     (Widget : access Gtk.Widget.Gtk_Widget_Record'Class)
+   function Close_Project
+     (Ask_For_Confirmation : in Boolean := True)
+     return Boolean
    is
+      use type Default_Dialog.Response_Type;
+
+      Response : Default_Dialog.Response_Type;
    begin
-      Gtk.Widget.Set_Sensitive (Widget, Loaded);
-   end;
-
-   procedure Set_Project_Loaded
-     (Loaded : in Boolean)
-   is
---        package Menu_Bar_Forall is new Gtk.Container.Forall_Pkg
---          (Boolean);
-
-   begin
-      --  set menu bar sensitive
-      Main_Window.Loaded := Loaded;
-      Gtk.Menu_Bar.Forall (Menu_Bar, Update_Children'Access);
-      Gtk.Menu.Forall (Project_Menu, Update_Children'Access);
-
-      if (Loaded) then
-         Gtk.Window.Set_Title (Window, "GIANT - "
-                               & Projects.Get_Project_Name
-                               (Controller.Get_Project));
-      else
-         Gtk.Window.Set_Title (Window, "GIANT");
-
-         --  active a few items that can be selected when no project
-         --  is loaded
-         Gtk.Menu_Item.Set_Sensitive (Project_Menu_Item, True);
-         Gtk.Menu_Item.Set_Sensitive (Project_New_Menu_Item, True);
-         Gtk.Menu_Item.Set_Sensitive (Project_Open_Menu_Item, True);
-         Gtk.Menu_Item.Set_Sensitive (Project_Quit_Menu_Item, True);
+      if (Ask_For_Confirmation) then
+         Response := Dialogs.Show_Confirmation_Dialog
+           (-"The project has changed. Save changes?",
+            Default_Dialog.Button_Yes_No_Cancel);
+         if (Response = Default_Dialog.Response_Yes) then
+            Controller.Save_Project;
+         elsif (Response = Default_Dialog.Response_Cancel) then
+            return False;
+         end if;
       end if;
-   end Set_Project_Loaded;
+
+      --  notify all open dialogs
+      Main_Window_Callback.Emit_By_Name (Window, "close_project");
+
+      --  disable widgets
+      Set_Project_Loaded (False);
+
+      return True;
+   end Close_Project;
 
    procedure Set_Status
      (Text : in String)

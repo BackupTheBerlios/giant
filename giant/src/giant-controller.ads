@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.17 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.18 $
 --  $Author: squig $
---  $Date: 2003/06/24 19:25:57 $
+--  $Date: 2003/06/25 16:07:51 $
 --
 ------------------------------------------------------------------------------
 --
@@ -36,40 +36,6 @@ with Giant.Projects;
 with Giant.Valid_Names;
 
 package Giant.Controller is
-
-   ---------------------------------------------------------------------------
-   --  Projects
-   ---------------------------------------------------------------------------
-
-   ---------------------------------------------------------------------------
-   --  Creates a new project.
-   --
-   --  See:
-   --    Project_Management.Create_New_Empty_Project_For_File
-   procedure Create_Project
-     (Filename       : in String;
-      Graph_Filename : in String);
-
-   ---------------------------------------------------------------------------
-   --  Returns the currently open project.
-   --
-   function Get_Project
-     return Projects.Project_Access;
-
-   function Get_Unique_Name
-     (Name : in String := "Unknown")
-      return String;
-
-   function Is_Project_Loaded
-     return Boolean;
-
-   procedure Open_Project
-     (Filename : in String);
-
-   procedure Save_Project;
-
-   procedure Save_Project
-     (Filename : in String);
 
    ---------------------------------------------------------------------------
    --  GSL
@@ -106,6 +72,46 @@ package Giant.Controller is
 
    procedure Remove_Node_Annotation
      (Node : in Graph_Lib.Node_Id);
+
+   ---------------------------------------------------------------------------
+   --  Projects
+   ---------------------------------------------------------------------------
+
+   function Close_Project
+     (Ask_For_Confirmation : in Boolean := True)
+     return Boolean;
+
+   ---------------------------------------------------------------------------
+   --  Creates a new project.
+   --
+   --  See:
+   --    Giant.Graph_Lib.Create
+   --    Giant.Projects.Create_Empty_Project_For_File
+   procedure Create_Project
+     (Filename       : in String;
+      Graph_Filename : in String);
+
+   ---------------------------------------------------------------------------
+   --  Returns the currently open project.
+   --
+   function Get_Project
+     return Projects.Project_Access;
+
+   function Get_Unique_Name
+     (Name : in String := "Unknown")
+      return String;
+
+   function Is_Project_Loaded
+     return Boolean;
+
+   procedure Open_Project
+     (Filename : in String);
+
+   procedure Save_Project;
+
+   procedure Save_Project
+     (Filename : in String);
+
 
    ---------------------------------------------------------------------------
    --  Selections
