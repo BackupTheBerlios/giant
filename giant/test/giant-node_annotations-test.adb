@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-node_annotations-test.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-node_annotations-test.adb,v $, $Revision: 1.2 $
 --  $Author: schwiemn $
---  $Date: 2003/06/30 20:33:19 $
+--  $Date: 2003/07/01 21:43:22 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -54,27 +54,25 @@ package body Giant.Node_Annotations.Test is
       My_Annotations : Giant.Node_Annotations.Node_Annotation_Access;
    begin
       
-      for i in 1 .. 50000000 loop
-  --       Giant.XML_File_Access.Load_XML_File_Validated
-  --         ("./resources/node_annotations/node_annotations.xml",
-  --          My_Tree_Reader,
-  --          My_XML_Document);
+      for i in 1 .. 1 loop
+         Giant.XML_File_Access.Load_XML_File_Validated
+           ("./resources/node_annotations/node_annotations.xml",
+            My_Tree_Reader,
+            My_XML_Document);
          
-  --       Assert (Giant.XML_File_Access.Does_XML_Document_Belong_To_Type 
-  --         ("giant_node_annotations_file", My_XML_Document), 
-  --          "Check whether detects correct file");   
-   --      Assert (not Giant.XML_File_Access.Does_XML_Document_Belong_To_Type 
-   --        ("irgendwas", My_XML_Document), 
-   --         "Check whether detects wrong file");   
+         Assert (Giant.XML_File_Access.Does_XML_Document_Belong_To_Type 
+           ("giant_node_annotations_file", My_XML_Document), 
+            "Check whether detects correct file");   
+         Assert (not Giant.XML_File_Access.Does_XML_Document_Belong_To_Type 
+           ("irgendwas", My_XML_Document), 
+            "Check whether detects wrong file");   
          
-   --      Tree_Readers.Free (My_Tree_Reader);     
+         Tree_Readers.Free (My_Tree_Reader);     
    
-            My_Annotations := 
+         My_Annotations := 
            Node_Annotations.Load_From_File 
              ("resources/node_annotations/node_annotations.xml");
-   
-   
-    
+          
       end loop;
    end Test_Memory_Leacks_XML;         
          
@@ -140,7 +138,7 @@ package body Giant.Node_Annotations.Test is
           
       Node_Annotations.Write_To_File 
         (My_Annotations,
-         "resources/node_annotations/node_annotations2.xml");   
+         "resources/node_annotations/node_annotations_generated_1.xml");   
                                                   
       Node_Annotations.Deallocate (My_Annotations);                         
    end Test_File_Loading;
@@ -182,20 +180,177 @@ package body Giant.Node_Annotations.Test is
      (R : in out AUnit.Test_Cases.Test_Case'Class) is
                     
      Node_Id_18 : Giant.Graph_Lib.Node_Id := Graph_Lib.Node_Id_Value ("18");
-     -- Node_Id_3 is already annotated (annotation loaded from file
+
      Node_Id_3 : Giant.Graph_Lib.Node_Id := Graph_Lib.Node_Id_Value ("3");     
      Node_Id_4 : Giant.Graph_Lib.Node_Id := Graph_Lib.Node_Id_Value ("4");
      Node_Id_7 : Giant.Graph_Lib.Node_Id := Graph_Lib.Node_Id_Value ("7");     
 
      My_Annotations : Giant.Node_Annotations.Node_Annotation_Access;
+     
+     Annotated_Nodes_List : Graph_Lib.Node_Id_Lists.List;
+     
+     Test_String : String (1 .. 2);
    begin
+   
+      --  Build new file
+      ------------------
       My_Annotations := 
-        Node_Annotations.Load_From_File 
-          ("resources/node_annotations/node_annotations.xml");
+        Node_Annotations.Create_Empty;
+        
+      Add_Node_Annotation (My_Annotations, Node_Id_18 , "I am node XXX18");
+      Add_Node_Annotation (My_Annotations, Node_Id_3 , "I am node 3");      
+      Add_Node_Annotation (My_Annotations, Node_Id_4, "I am node 4");      
+
+      
+      begin
+         Add_Node_Annotation (My_Annotations, Node_Id_18 , "I am node XXX18");         
+         Assert (False, "Test Exception Add_Node_Annotation "  
+           & "-  Node_Is_Already_Annoated_Exceptionnot not thrown");           
+      exception
+         when Node_Is_Already_Annoated_Exception =>
+           Assert (True, "Test Exception Add_Node_Annotation "  
+           & "-  Node_Is_Already_Annoated_Exceptionnot");    
+      end;
+      
+      
+      begin
+         Change_Node_Annotation (My_Annotations, Node_Id_7 , "I am node 7");         
+         Assert (False, "Test Exception Change_Node_Annotation "  
+           & "-  Node_Is_Not_Annotated_Exception not thrown");           
+      exception
+         when Node_Is_Not_Annotated_Exception =>
+           Assert (True, "Test Exception Change_Node_Annotation "  
+           & "-  Node_Is_Not_Annotated_Exception");    
+      end;   
+      
+      begin
+         Remove_Node_Annotation (My_Annotations, Node_Id_7);         
+         Assert (False, "Test Exception Remove_Node_Annotation "  
+           & "-  Node_Is_Not_Annotated_Exception not thrown");           
+      exception
+         when Node_Is_Not_Annotated_Exception =>
+           Assert (True, "Test Exception Remove_Node_Annotation "  
+           & "-  Node_Is_Not_Annotated_Exception");    
+      end;       
+                        
+      Add_Node_Annotation    (My_Annotations, Node_Id_7 , "I am node 7");   
+      Change_Node_Annotation (My_Annotations, Node_Id_18 , "I am node 18");         
+      
+      Remove_Node_Annotation (My_Annotations, Node_Id_3);
+              
+      -- Test Status
+      --------------
+      Assert (not Is_Annotated (My_Annotations, Node_Id_3),
+              "Test Removal of node id ""3"".");              
+      begin
+         Test_String := 
+           Get_Annotation_Text (My_Annotations, Node_Id_3) (1..2);         
+         Assert (False, "Test Exception Get_Annotation_Text "  
+           & "-  Node_Is_Not_Annotated_Exception not thrown");           
+      exception
+         when Node_Is_Not_Annotated_Exception =>
+           Assert (True, "Test Exception Get_Annotation_Text "  
+           & "-  Node_Is_Not_Annotated_Exception");    
+      end;  
+            
+      Assert(Get_Annotation_Text (My_Annotations, Node_Id_18) = "I am node 18",
+             "Test Annotation Text Node 18");
+     
+      Assert(Get_Annotation_Text (My_Annotations, Node_Id_4) = "I am node 4",
+             "Test Annotation Text Node 4");  
+      
+      Assert(Get_Annotation_Text (My_Annotations, Node_Id_7) = "I am node 7",
+             "Test Annotation Text Node 7");
+    
+   end Test_Editing_Annotations;
+          
+   ---------------------------------------------------------------------------
+   procedure Test_Lists_Generation
+     (R : in out AUnit.Test_Cases.Test_Case'Class) is
+                    
+     Node_Id_18 : Giant.Graph_Lib.Node_Id := Graph_Lib.Node_Id_Value ("18");
+
+     Node_Id_3 : Giant.Graph_Lib.Node_Id := Graph_Lib.Node_Id_Value ("3");     
+     Node_Id_4 : Giant.Graph_Lib.Node_Id := Graph_Lib.Node_Id_Value ("4");
+     Node_Id_7 : Giant.Graph_Lib.Node_Id := Graph_Lib.Node_Id_Value ("7");     
+
+     My_Annotations : Giant.Node_Annotations.Node_Annotation_Access;
+     
+     Annotated_Nodes_List : Graph_Lib.Node_Id_Lists.List;
+          
+   begin
+   
+      --  Build new type
+      ------------------
+      My_Annotations := 
+        Node_Annotations.Create_Empty;
+        
+      Add_Node_Annotation (My_Annotations, Node_Id_18 , "I am node 18");
+      Add_Node_Annotation (My_Annotations, Node_Id_3 , "I am node 3");      
+      Add_Node_Annotation (My_Annotations, Node_Id_4, "I am node 4");      
+      Add_Node_Annotation (My_Annotations, Node_Id_7, "I am node 7");      
+          
+      -- Test List Output 
+      -------------------       
+      Annotated_Nodes_List := Get_All_Annotated_Nodes (My_Annotations);
+          
+      Assert (Graph_Lib.Node_Id_Lists.Length (Annotated_Nodes_List) = 4, 
+              "Test Length of List over all annotated nodes");
+                               
+      Assert (Graph_Lib.Node_Id_Lists.IsInList 
+        (Annotated_Nodes_List, Node_Id_18), "Test Node Id 18 in List");
+      Assert (Graph_Lib.Node_Id_Lists.IsInList 
+        (Annotated_Nodes_List, Node_Id_3), "Test Node Id 3 in List");
+      Assert (Graph_Lib.Node_Id_Lists.IsInList 
+        (Annotated_Nodes_List, Node_Id_4), "Test Node Id 4 in List");
+      Assert (Graph_Lib.Node_Id_Lists.IsInList 
+        (Annotated_Nodes_List, Node_Id_7), "Test Node Id 7 in List");
+      
+      Graph_Lib.Node_Id_Lists.Destroy (Annotated_Nodes_List);           
 
       Node_Annotations.Deallocate (My_Annotations);       
-   end Test_Editing_Annotations;
+   end Test_Lists_Generation;
+      
+   ---------------------------------------------------------------------------
+   procedure Test_Iterator
+     (R : in out AUnit.Test_Cases.Test_Case'Class) is
+                    
+     Node_Id_18 : Giant.Graph_Lib.Node_Id := Graph_Lib.Node_Id_Value ("18");
 
+     Node_Id_3 : Giant.Graph_Lib.Node_Id := Graph_Lib.Node_Id_Value ("3");     
+   
+
+     My_Annotations : Giant.Node_Annotations.Node_Annotation_Access;
+     
+     The_Node_ID_Iter : Node_ID_Iter;
+     Test_Node : Graph_Lib.Node_Id;
+     Count : Integer;
+          
+   begin
+   
+      --  Build new type
+      ------------------
+      My_Annotations := 
+        Node_Annotations.Create_Empty;
+        
+      Add_Node_Annotation (My_Annotations, Node_Id_18 , "I am node 18");
+      Add_Node_Annotation (My_Annotations, Node_Id_3 , "I am node 3");      
+          
+      -- Test Iterator
+      -------------------    
+      The_Node_ID_Iter := Make_Node_ID_Iter (My_Annotations);
+      
+      Count := 0;
+      while More (The_Node_ID_Iter) loop
+        Next (The_Node_ID_Iter, Test_Node);                        
+        Count := Count + 1;
+      end loop;
+      
+      Assert (Count = 2, "Test correct ammount of iterated elements.");
+        
+      Node_Annotations.Deallocate (My_Annotations);       
+   end Test_Iterator;
+   
    ---------------------------------------------------------------------------
    function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is
    begin
@@ -205,17 +360,16 @@ package body Giant.Node_Annotations.Test is
    procedure Register_Tests (T : in out Test_Case) is
    begin
       
+      --  Register_Routine 
+      --    (T, Test_Memory_Leacks_XML'Access, "Test_Memory_Leacks_XML");
+      
+      
       Register_Routine 
-        (T, Test_Memory_Leacks_XML'Access, "Test_Memory_Leacks_XML");
-      
-      
-  --    Register_Routine 
-  --      (T, Test_Memory_Leack'Access, "Test_Memory_Leack");
+        (T, Test_Memory_Leack'Access, "Test_Memory_Leack");
            
-      --Register_Routine 
-      --  (T, Write_IML_Node_Ids_Into_Logger'Access, 
-      --   "Reading_Node_Id_Images_From_IML_Graph");  
-
+      --  Register_Routine 
+      --    (T, Write_IML_Node_Ids_Into_Logger'Access, 
+      --     "Reading_Node_Id_Images_From_IML_Graph");  
       Register_Routine 
         (T, Test_File_Loading'Access, "Test_File_Loading");
                        
@@ -223,8 +377,14 @@ package body Giant.Node_Annotations.Test is
         (T, Test_Annotations_Status'Access, "Test_Annotations_Status");                     
                         
       Register_Routine 
-        (T, Test_Editing_Annotations'Access, "Test_Editing_Annotations");     
-                
+        (T, Test_Editing_Annotations'Access, "Test_Editing_Annotations"); 
+
+      Register_Routine 
+        (T, Test_Lists_Generation'Access, "Test_Lists_Generation");         
+        
+      Register_Routine 
+        (T, Test_Iterator'Access, "Test_Iterator"); 
+                                    
    end Register_Tests;
 
    procedure Set_Up (T : in out Test_Case) is
