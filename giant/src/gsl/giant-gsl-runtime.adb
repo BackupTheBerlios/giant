@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/26 14:09:13 $
+-- $Date: 2003/08/26 15:21:12 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -46,6 +46,7 @@ with Giant.GSL_Support;
 -- Gsl Includes
 with Giant.Gsl.Compilers;
 with Giant.Gsl.Interpreters;
+with Giant.Gsl.Processors;
 with Giant.Gsl.Syntax_Tree;
 
 package body Giant.Gsl.Runtime is
@@ -74,8 +75,10 @@ package body Giant.Gsl.Runtime is
       then
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
            "Script 'set': Gsl_Var_Reference expected.");
+      
       elsif Get_Ref_Type (Gsl_Var_Reference (Var)) = Gsl.Types.Var then
          Set_Var (Get_Ref_Name (Gsl_Var_Reference (Var)), Value);
+      
       elsif Get_Ref_Type (Gsl_Var_Reference (Var)) = Gsl.Types.Subgraph then
          if Is_Gsl_Object_Set (Value) then
             Sub := Create (Get_Ref_Name (Gsl_Var_Reference (Var)));
@@ -90,17 +93,12 @@ package body Giant.Gsl.Runtime is
          end if;
 
       elsif Get_Ref_Type (Gsl_Var_Reference (Var)) = Gsl.Types.Selection then
-         --if Get_Current_Context = "" then
-         --   Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
-         --     "Runtime error: No context set.");
-         --elsif Is_Gsl_Object_Set (Value) then
          if Is_Gsl_Object_Set (Value) then
             Sel := Create (Get_Ref_Name (Gsl_Var_Reference (Var)));
             Add_Node_Set (Sel, Get_Value (Gsl_Node_Set
               (Get_Value_At (Gsl_List (Value), 1))));
             Add_Edge_Set (Sel, Get_Value (Gsl_Edge_Set
               (Get_Value_At (Gsl_List (Value), 2))));
-            --Controller.Add_Selection (Get_Current_Context, Sel, true);
             Controller.Add_Selection
               (Get_Ref_Context (Gsl_Var_Reference (Var)), Sel, false);
          else
@@ -116,8 +114,33 @@ package body Giant.Gsl.Runtime is
    function Runtime_Deref
      (Parameter : Gsl_List)
       return Gsl_Type is
+
+      Ref   : Gsl_Type;
    begin
-      return Gsl_Null; 
+      if Get_List_Size (Parameter) /= 1 then
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'deref': Expecting 1 parameter.");
+      end if;
+      Ref := Get_Value_At (Parameter, 1);
+      if not (Is_Gsl_Var_Reference (Ref) or Is_Gsl_Global_Reference (Ref))
+      then
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'deref': Gsl_Var_Reference expected.");
+
+      elsif Get_Ref_Type (Gsl_Var_Reference (Ref)) = Gsl.Types.Var then
+         return Gsl.Interpreters.Get_Var
+           (Get_Ref_Name (Gsl_Var_Reference (Ref)));
+
+      elsif Get_Ref_Type (Gsl_Var_Reference (Ref)) = Gsl.Types.Subgraph then
+         return Gsl.Processors.Get_Subgraph
+           (Get_Ref_Name (Gsl_Var_Reference (Ref)));
+
+      elsif Get_Ref_Type (Gsl_Var_Reference (Ref)) = Gsl.Types.Selection then
+         return Gsl.Processors.Get_Selection
+           (Get_Ref_Name (Gsl_Var_Reference (Ref)),
+            Get_Ref_Context (Gsl_Var_Reference (Ref)));
+      end if;
+      return Gsl_Null;
    end Runtime_Deref;
 
    ---------------------------------------------------------------------------
