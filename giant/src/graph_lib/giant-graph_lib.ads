@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.32 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.33 $
 --  $Author: koppor $
---  $Date: 2003/07/07 11:26:51 $
+--  $Date: 2003/07/11 10:51:23 $
 --
 --  TBD:
 --    * Write into comment, when the routine may be used
@@ -410,6 +410,18 @@ package Giant.Graph_Lib is
       (Node_Attribute : in Node_Attribute_Id)
       return Node_Attribute_Class_Id;
 
+   ---------------------------------------------------------------------------
+   --  Used to get all children of given Node_Class
+   --
+   --  If Include_Parent is true, the given Node_Class will be included, too
+   --
+   --  Returns:
+   --    A set including all children of given Node_Class
+   --    This set has to be destroyed - as usual - by the caller
+   function Get_Inherited_Classes
+     (Node_Class     : in Node_Class_Id;
+      Include_Parent : in Boolean := True)
+     return Node_Class_Id_Set;
 
    -----------------------------------
    --  Inspectors                   --
