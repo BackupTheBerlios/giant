@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.8 $
 --  $Author: keulsn $
---  $Date: 2003/06/04 13:25:38 $
+--  $Date: 2003/06/08 16:24:55 $
 --
 ------------------------------------------------------------------------------
 
@@ -894,6 +894,11 @@ package body Giant.Evolutions is
       Perform_Action : Evolution_Action;
       Next_Action    : Evolution_Action;
    begin
+      if Driver_State.Individual = null then
+         Evolution_Logger.Error ("Too many idle signals emitted.");
+         return False;
+      end if;
+
       --  Individual might have produced sub-calculations. Continue with
       --  deepest child
       loop
