@@ -20,14 +20,16 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-file_management-test.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-file_management-test.adb,v $, $Revision: 1.8 $
 --  $Author: koppor $
---  $Date: 2003/09/21 00:06:31 $
+--  $Date: 2003/10/01 22:31:51 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
 with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
 with Ada.Command_Line;
+
+with String_Lists;
 
 with GNAT.Directory_Operations;
 
@@ -66,6 +68,32 @@ package body Giant.File_Management.Test is
 --                "Exec_Path = Current_Dir");
    end;
 
+   --------------------------------------------------------------------------
+   procedure Test_Filter  (R : in out AUnit.Test_Cases.Test_Case'Class)
+   is
+      List : String_Lists.List;
+      Iter : String_Lists.ListIter;
+      S    : Ada.Strings.Unbounded.Unbounded_String;
+   begin
+      List :=
+        File_Management.Get_Filtered_Files_From_Directory
+        (Path_To_Dir   => "resources/class_sets/",
+         Filter        => True,
+         Filter_String => ".xml");
+
+      Iter := String_Lists.MakeListIter (List);
+      while String_Lists.More (Iter) loop
+         String_Lists.Next (Iter, S);
+         Logger.Info (Ada.Strings.Unbounded.To_String (S));
+      end loop;
+
+      Assert (String_Lists.Length (List)=1,
+              "find exactly one file");
+
+      String_Lists.Destroy (List);
+   end Test_Filter;
+
+   --------------------------------------------------------------------------
    procedure Test_Names (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
    begin
@@ -168,6 +196,7 @@ package body Giant.File_Management.Test is
       Register_Routine (T, Test_Init'Access,        "Init");
       Register_Routine (T, Test_Names'Access,       "Names");
       Register_Routine (T, Test_Substitute'Access,  "Substitute");
+      Register_Routine (T, Test_Filter'Access,      "Filter");
 
       -- spawns an external editor - not useful for automated regression tests
       --Register_Routine (T, Test_Editor_Call'Access, "Editor_Call");
