@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.15 $
 --  $Author: keulsn $
---  $Date: 2003/07/08 09:42:13 $
+--  $Date: 2003/07/08 19:41:48 $
 --
 ------------------------------------------------------------------------------
 
@@ -80,7 +80,9 @@ package body Giant.Graph_Widgets is
          Scroll_Adjustments_Signal => Handlers.Get_Scroll_Adjustments_Signal);
 
       Widget.Locked_Edges := Vis_Edge_Sets.Empty_Set;
+      Widget.Unsized_Edges := Vis_Edge_Sets.Empty_Set;
       Widget.Locked_Nodes := Vis_Node_Sets.Empty_Set;
+      Widget.Unsized_Nodes := Vis_Node_Sets.Empty_Set;
 
       Vis_Data.Set_Up (Widget.Manager);
       Widget.Edge_Map := Edge_Id_Mappings.Create;
@@ -133,13 +135,16 @@ package body Giant.Graph_Widgets is
       end loop;
 
       Vis_Node_Sets.Destroy (Widget.Locked_Nodes);
+      Vis_Node_Sets.Destroy (Widget.Unsized_Nodes);
       Vis_Edge_Sets.Destroy (Widget.Locked_Edges);
+      Vis_Edge_Sets.Destroy (Widget.Unsized_Edges);
    end Shut_Down_Graph_Widget;
 
    procedure Read_Graph_Widget
-     (Stream : in     Bauhaus_IO.In_Stream_Type;
-      Widget :    out Graph_Widget;
-      Pool   : in     Node_Annotations.Node_Annotation_Access)  is
+     (Stream      : in     Bauhaus_IO.In_Stream_Type;
+      Widget      :    out Graph_Widget;
+      Style       : in     Config.Vis_Styles.Visualisation_Style_Access;
+      Annotations : in     Node_Annotations.Node_Annotation_Access) is
    begin
       raise Unimplemented;
    end Read_Graph_Widget;
@@ -205,12 +210,54 @@ package body Giant.Graph_Widgets is
       Selection : in     Graph_Lib.Selections.Selection;
       Lock      :    out Lock_Type) is
 
-
+      package Graph_Node_Sets renames Graph_Lib.Node_Id_Sets;
+      Node_Iterator : Graph_Node_Sets.Iterator;
+      Graph_Node    : Graph_Lib.Node_Id;
+      Node          : Vis_Data.Vis_Node_Id;
+      package Graph_Edge_Sets renames Graph_Lib.Edge_Id_Sets;
+      Edge_Iterator : Graph_Edge_Sets.Iterator;
+      Graph_Edge    : Graph_Lib.Edge_Id;
+      Edge          : Vis_Data.Vis_Edge_Id;
    begin
       States.Create_New_Lock (Widget, Lock);
       States.Changed_Visual (Widget);
 
+      Node_Iterator := Graph_Node_Sets.Make_Iterator
+        (Graph_Lib.Selections.Get_All_Nodes (Selection));
+      while Graph_Node_Sets.More (Node_Iterator) loop
+         Graph_Node_Sets.Next (Node_Iterator, Graph_Node);
+         Find_Or_Create (Widget, Graph_Node, Node);
+         if Vis_Data.Has_Manager (Node) then
+            --  Must drop because the node existed already.
+            Vis_Data.Drop_Node (Widget.Manager, Node);
+            Vis_Node_Sets.Insert (Widget.Locked_Nodes, Node);
+         else
+            --  Must assign new size
+            Vis_Node_Sets.Insert (Widget.Unsized_Nodes, Node);
+         end if;
+      end loop;
+      Graph_Node_Sets.Destroy (Node_Iterator);
 
+      Edge_Iterator := Graph_Edge_Sets.Make_Iterator
+        (Graph_Lib.Selections.Get_All_Edges (Selection));
+      while Graph_Edge_Sets.More (Edge_Iterator) loop
+         Graph_Edge_Sets.Next (Edge_Iterator, Graph_Edge);
+         Find_Or_Create (Widget, Graph_Edge, Edge);
+         if Edge /= null then
+            if Vis_Data.Has_Manager (Edge) then
+               --  Must drop because the edge existed already.
+               Vis_Data.Drop_Edge (Widget.Manager, Edge);
+               Vis_Edge_Sets.Insert (Widget.Locked_Edges, Edge);
+            else
+               --  Must assign new size
+               Vis_Edge_Sets.Insert (Widget.Unsized_Edges, Edge);
+            end if;
+         else
+            Graph_Widget_Logger.Error
+              ("Could not insert edge because incident nodes are not "
+               & "contained in graph widget. Ignoring...");
+         end if;
+      end loop;
    end Insert_Selection;
 
    procedure Insert_Selection_Difference
@@ -390,13 +437,69 @@ package body Giant.Graph_Widgets is
       return 0.0;
    end Get_Current_Node_Height;
 
+   procedure Update_Size
+     () is
+   begin
+   end Update_Size;
+
+   --  Settings must have been Set_Up
+   procedure Flush_Locked
+     (Widget : access Graph_Widget_Record'Class) is
+
+      procedure Position_And_Insert
+        (Edge_Set : in out Vis_Edge_Sets.Set;
+         Node_Set : in out Vis_Node_Sets.Set) is
+
+         Edge_Iterator : Vis_Edge_Sets.Iterator;
+         Edge          : Vis_Data.Vis_Edge_Id;
+         Node_Iterator : Vis_Node_Sets.Iterator;
+         Node          : Vis_Data.Vis_Node_Id;
+      begin
+         Update_Positioning
+           (Widget => Widget,
+            Edges  => Edge_Set,
+            Nodes  => Node_Set);
+
+         Edge_Iterator := Vis_Edge_Sets.Make_Iterator (Edge_Set);
+         while Vis_Edge_Sets.More (Edge_Iterator) loop
+            Vis_Edge_Sets.Next (Edge_Iterator, Edge);
+            Vis_Data.Insert_Edge (Widget.Manager, Edge);
+         end loop;
+         Vis_Edge_Sets.Destroy (Edge_Iterator);
+         Vis_Edge_Sets.Remove_All (Edge_Set);
+
+         Node_Iterator := Vis_Node_Sets.Make_Iterator (Node_Set);
+         while Vis_Node_Sets.More (Node_Iterator) loop
+            Vis_Node_Sets.Next (Node_Iterator, Node);
+            Vis_Data.Insert_Node (Widget.Manager, Node);
+         end loop;
+         Vis_Node_Sets.Destroy (Node_Iterator);
+         Vis_Node_Sets.Remove_All (Node_Set);
+      end Position_And_Insert;
+
+   begin
+      States.Flush_Locked_Content (Widget);
+      States.Changed_Visual (Widget);
+
+      Update_Size
+        (Widget => Widget,
+         Edges  => Widget.Unsized_Edges,
+         Nodes  => Widget.Unsized_Nodes);
+
+      Position_And_Insert (Widget.Unsized_Edges, Widget.Unsized_Nodes);
+      Position_And_Insert (Widget.Locked_Edges, Widget.Locked_Nodes);
+
+      Queue_Draw (Widget);
+   end Flush_Locked;
+
    procedure Release_Lock
      (Widget    : access Graph_Widget_Record'Class;
       Lock      : in     Lock_Type) is
    begin
       States.Destroy_Lock (Widget, Lock);
---        if ... then
---        end if;
+      if States.Must_Flush_Locked_Content (Widget) then
+         Flush_Locked (Widget);
+      end if;
    end Release_Lock;
 
 
@@ -711,5 +814,85 @@ package body Giant.Graph_Widgets is
       when Node_Id_Mappings.Not_Bound =>
          return null;
    end Look_Up;
+
+
+   ----------------------------------------------------------------------------
+   --  Calls 'Action (Widget, I)' for each Item 'I' in 'Set'.
+   generic
+      type Object_Type is private;
+      with function "<"
+        (Left  : in Object_Type;
+         Right : in Object_Type)
+        return Boolean;
+      with function "="
+        (Left  : in Object_Type;
+         Right : in Object_Type)
+        return Boolean;
+      with package Object_Sets is new Ordered_Sets
+        (Item_Type => Object_Type,
+         "<"       => "<",
+         "="       => "=");
+      with procedure Action
+        (Widget : access Graph_Widget_Record'Class;
+         Object : in     Object_Type);
+   procedure For_All
+     (Widget : access Graph_Widget_Record'Class;
+      Set    : in     Object_Sets.Set);
+
+   procedure For_All
+     (Widget : access Graph_Widget_Record'Class;
+      Set    : in     Object_Sets.Set) is
+
+      procedure For_One
+        (Item : in     Object_Type) is
+      begin
+         Action (Widget, Item);
+      end For_One;
+
+      procedure Apply_For_All is new Object_Sets.Apply
+        (Execute => For_One);
+
+   begin
+      Apply_For_All (Set);
+   end For_All;
+
+   procedure Update_Node_Positions is new For_All
+     (Object_Type => Vis_Data.Vis_Node_Id,
+      "<"         => Vis_Data.Is_Node_Below,
+      "="         => Vis_Data."=",
+      Object_Sets => Vis_Node_Sets,
+      Action      => Positioning.Update_Node_Position);
+
+   procedure Update_Edge_Positions is new For_All
+     (Object_Type => Vis_Data.Vis_Edge_Id,
+      "<"         => Vis_Data.Is_Edge_Below,
+      "="         => Vis_Data."=",
+      Object_Sets => Vis_Edge_Sets,
+      Action      => Positioning.Update_Edge_Position);
+
+   procedure Adjust_Nodes_Ports is new For_All
+     (Object_Type => Vis_Data.Vis_Node_Id,
+      "<"         => Vis_Data.Is_Node_Below,
+      "="         => Vis_Data."=",
+      Object_Sets => Vis_Node_Sets,
+      Action      => Positioning.Adjust_Ports);
+
+   procedure Adjust_Arrows is new For_All
+     (Object_Type => Vis_Data.Vis_Edge_Id,
+      "<"         => Vis_Data.Is_Edge_Below,
+      "="         => Vis_Data."=",
+      Object_Sets => Vis_Edge_Sets,
+      Action      => Positioning.Adjust_Arrow);
+
+   procedure Update_Positioning
+     (Widget : access Graph_Widget_Record'Class;
+      Edges  : in     Vis_Edge_Sets.Set;
+      Nodes  : in     Vis_Node_Sets.Set) is
+   begin
+      Update_Node_Positions (Widget, Nodes);
+      Update_Edge_Positions (Widget, Edges);
+      Adjust_Nodes_Ports (Widget, Nodes);
+      Adjust_Arrows (Widget, Edges);
+   end Update_Positioning;
 
 end Giant.Graph_Widgets;
