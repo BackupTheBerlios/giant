@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: framework_test.adb,v $, $Revision: 1.15 $
+--  $RCSfile: framework_test.adb,v $, $Revision: 1.16 $
 --  $Author: koppor $
---  $Date: 2003/11/06 14:17:05 $
+--  $Date: 2003/11/06 14:22:30 $
 --
 with AUnit.Test_Suites; use AUnit.Test_Suites;
 with AUnit.Test_Runner;
@@ -58,46 +58,26 @@ procedure Framework_Test is
       Result : Access_Test_Suite := new Test_Suite;
    begin
       --Add_Test (Result, new );
-      Giant.Default_Logger.Info ("1");
       Add_Test (Result, new Giant.Config.Class_Sets.Test.Test_Case);
-      Giant.Default_Logger.Info ("2");
       Add_Test (Result, new Giant.Config.Test.Test_Case);
-      Giant.Default_Logger.Info ("3");
       Add_Test (Result, new Giant.Config.Vis_Styles.Test.Test_Case);
-      Giant.Default_Logger.Info ("4");
       Add_Test (Result, new Giant.Default_Logger.Test.Test_Case);
-      Giant.Default_Logger.Info ("5");
       Add_Test (Result, new Giant.File_Management.Test.Test_Case);
-      Giant.Default_Logger.Info ("6");
       Add_Test (Result, new Giant.Graph_Lib.Test.Test_Case);
-      Giant.Default_Logger.Info ("7");
       Add_Test
         (Result, new Giant.Graph_Lib.Node_Attribute_Filters.Test.Test_Case);
-      Giant.Default_Logger.Info ("8");
       Add_Test (Result, new Giant.Graph_Lib.Subgraphs.Test.Test_Case);
-      Giant.Default_Logger.Info ("9");
       Add_Test (Result, new Giant.Graph_Lib.Subgraphs.Atomic_Tests.Test_Case);
-      Giant.Default_Logger.Info ("a");
       Add_Test (Result, new Giant.Gsl.Test.Test_Case);
-      Giant.Default_Logger.Info ("b");
       Add_Test (Result, new Giant.Gsl_Support.Test.Test_Case);
-      Giant.Default_Logger.Info ("c");
       Add_Test (Result, new Giant.Layout_Factory.Test.Test_Case);
-      Giant.Default_Logger.Info ("d");
       Add_Test (Result, new Giant.Matrix_Layouts.Test.Test_Case);
-      Giant.Default_Logger.Info ("d");
       Add_Test (Result, new Giant.Node_Annotations.Test.Test_Case);
-      Giant.Default_Logger.Info ("e");
       Add_Test (Result, new Giant.Projects.Test.Test_Case);
-      Giant.Default_Logger.Info ("f");
       Add_Test (Result, new Giant.Tree_Layouts.Test.Test_Case);
-      Giant.Default_Logger.Info ("g");
       Add_Test (Result, new Giant.Valid_Names.Test.Test_Case);
-      Giant.Default_Logger.Info ("h");
       Add_Test (Result, new Giant.Vis_Windows.Test.Test_Case);
-      Giant.Default_Logger.Info ("i");
       Add_Test (Result, new Giant.XML_File_Access.Test.Test_Case);
-      Giant.Default_Logger.Info ("j");
       return Result;
    end Default_Suite;
 
