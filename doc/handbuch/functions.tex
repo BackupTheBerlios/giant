@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: functions.tex,v $, $Revision: 1.2 $
-%  $Date: 2003/06/30 17:11:25 $
+%  $RCSfile: functions.tex,v $, $Revision: 1.3 $
+%  $Date: 2003/07/02 14:35:30 $
 %  $Author: birdy $
 %
 %  Description: 
@@ -12,13 +12,16 @@
 
 \section{Über dieses Kapitel}    
 
-Hier werden alle Elemente der Benutzeroberfläche von GIANT beschrieben.
+Hier werden alle Elemente der Benutzeroberfläche (Anzeigeelemente und
+aktive Elemente wie Menüs etc.) von GIANT beschrieben.
 Sofern nicht anders angegeben, sind hintereinander angegebene Elemente
 (z.B. Listeneinträge) immer von links nach rechts oder von oben nach
 unten beschrieben.
 Alle Ausgaben sind immer linksbündig formatiert, sofern nicht anders
 vermerkt.
-
+Wichtige Informationen zur Persitzenz der Projekte in GIANT,
+welche Informationen jeweils gespeichert werden, finden sich
+im Abschnitt \ref{Project Persistenz der Projekte}.
 
 \clearpage
 \section {Main Window}
@@ -118,12 +121,20 @@ Subgraph List (4 Spalten).
           Graph-Knoten gibt, gelöscht.
 	  
           \item {Execute GSL Script}
+	  
+	  Mit diesem Menüpunkt kann ein GSL Script ausgeführt werden.
+	  Es erscheint der Skriptdialog, in den das Skript eingegeben
+	  werden kann. Es ist auch möglich, Skripte zu laden oder zu
+	  speichern. Details hierzu finden sich unter \ref{GUI Anfragedialog}.
+	  
         \end{enumerate}
         
 
     \subsubsection {Untermenü Info }  \label{Main-Window-Info}     
        \begin{enumerate}
           \item {About GIANT}
+	  Dieser Menüpunkt gibt ein Fenster mit Informationen zur
+	  GIANT Programmversion und zu den Autoren aus.
         \end{enumerate}
      
 
@@ -136,8 +147,10 @@ Subgraph List (4 Spalten).
 
    \subsection {Window List}
   
-   Im Fenster befindet sich zuoberst eine Liste \gq{Window List}, welche
+   Im Hauptfenster befindet sich zuoberst eine Liste \gq{Window List}, welche
    alle Anzeigefenster des Projektes (offen und geschlossen anzeigt).
+   Eine Beschreibung, was alles mit einem Fenster gespeichert wird,
+   befindet sich in Abschnitt \ref{Project Persistenz der Projekte}.
    
    \subsubsection {Inhalt Window List}
    \label{WINDOW-LIST}
@@ -155,19 +168,28 @@ Subgraph List (4 Spalten).
         \label{WINDOW-LIST-POPUP}
 
         \begin{enumerate}
-          \item New Window % OK
-          \item Open Window % OK
-          \item Close Window % OK
-          \item Save Window
-          \item Delete Window % OK
-          \item Rename Window % OK
+          \item New Window\\
+	     Erzeugt ein neues leeres Fenster mit einem Standardnamen
+	     (\gq{NewWindow}). 
+          \item Open Window\\
+	     Öffnet ein im Speicher vorhandenes, momentan geschlossenes Fenster.
+          \item Close Window\\
+	     Schließt ein vorhandenes Fenster, es kann wieder geöffnet werden.
+	     Falls das Fenster noch nicht gespeichert wurde, wird eine
+	     Sicherheitsabfrage durchgeführt, ob gespeichert werden soll.
+          \item Save Window\\
+	     Speichert ein Fenster im Projektverzeichnis.
+          \item Delete Window\\
+	     Löscht ein Fenster aus dem Projektverzeichnis, es wird auch aus der Window List gelöscht.
+          \item Rename Window\\
+	     Ändert den Namen eines Fensters, ein entsprechender Dialog erscheint.
         \end{enumerate}
     
   \subsection {Subgraph List}
   \label{GUI Subgraph List}
     
-    Unter der Window List befindet sich eine Liste \gq{Subgraph List} über
-    alle IML-Teilgraphen des Projektes.
+    Unter der Window List befindet sich eine Liste \gq{Subgraph List} mit
+    allen IML-Teilgraphen des Projektes.
    
     \subsubsection {Inhalt Subgraph List} 
     
@@ -199,12 +221,22 @@ Subgraph List (4 Spalten).
             \begin{enumerate}
               \item Color 1
               \item Color 2
-              \item Color 3
+              \item Color 3\\
+	      Mit diesen drei Menüpunkten kann der angewählte IML-Teilgraph
+	      in allen Fenstern in der ausgewählten Farbe markiert werden.
             \end{enumerate}
-          \item Unhighlight In All Windows
-          \item Copy IML Subgraph
+          \item Unhighlight In All Windows\\
+	     Mit diesen drei Menüpunkten kann der angewählte IML-Teilgraph
+	      in allen Fenstern wieder entfärbt werden, die Markierung also
+	      entfernt werden.
+          \item Copy IML Subgraph\\
+	     Mit diesem Menüpunkt kann ein IML-Teilgraph kopiert werden.
+	     Ein Dialog zur Eingabe des neuen Namens erscheint.
 	  \item Insert IML Subgraph
+	     ??????????????? % Wie funktioniert das?
           \item Delete IML Subgraph
+	     Mit diesem Menüpunkt kann ein IML-Teilgraph nach Sicherheitsabfrage
+	     gelöscht werden.
 	  \item Create Window Selection % OK
           \item IML Subgraph Set Operation 
         \end{enumerate}   
