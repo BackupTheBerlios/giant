@@ -20,22 +20,19 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.33 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.34 $
 --  $Author: squig $
---  $Date: 2003/08/05 21:12:44 $
+--  $Date: 2003/08/05 22:10:10 $
 --
 
 with Ada.Strings.Unbounded;
 
-with Gdk.Threads;
 with Gtk.Main;
-with Gtkada.Intl;
 
 with Lists;
 with String_Lists;
 
 with Giant.Config;
-with Giant.Config.Global_Data;
 with Giant.Config.Vis_Styles;
 with Giant.Controller;
 with Giant.Dialogs;
@@ -155,17 +152,7 @@ package body Giant.Gui_Manager is
 
    procedure Show
    is
-      Locale_Path : String
-        := Config.Global_Data.Get_Resources_Directory & "locale";
    begin
-      Gtkada.Intl.Bind_Text_Domain ("giant", Locale_Path);
-
-      Gtk.Main.Set_Locale;
-      Gtk.Main.Init;
-      Gdk.Threads.Init;
-
-      Gdk.Threads.Enter;
-
       --  initialize main window
       Main_Window.Show;
       Gui_Initialized := True;
@@ -179,8 +166,6 @@ package body Giant.Gui_Manager is
       Gtk.Main.Main;
 
       Gui_Initialized := False;
-
-      Gdk.Threads.Leave;
    end Show;
 
    function Close_Project

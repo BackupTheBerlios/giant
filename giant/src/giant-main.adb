@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.36 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.37 $
 --  $Author: squig $
---  $Date: 2003/08/05 21:12:44 $
+--  $Date: 2003/08/05 22:10:10 $
 --
 --
 ------------------------------------------------------------------------------
@@ -35,6 +35,10 @@ with Ada.Text_IO;
 
 with GNAT.Command_Line;
 with GNAT.OS_Lib;
+
+with Gdk.Threads;
+with Gtk.Main;
+with Gtkada.Intl;
 
 with Giant.Config;
 with Giant.Config_Settings;
@@ -68,7 +72,7 @@ is
    is
       use Ada.Strings.Unbounded;
 
-      Project_Filename : String_Access := new String' ("");
+      Project_Filename : String_Access;
       Graph_Filename   : String_Access := new String' ("");
       Script_Filename  : String_Access := new String' ("");
 
@@ -129,21 +133,24 @@ is
          begin
             Controller.Open_Project (Project_Filename.all);
          exception
-           when others =>
+           when E: others =>
+              Logger.Info ("Could not open project " & Project_Filename.all);
+              Logger.Error (E);
               if (Graph_Filename.all /= "") then
                  Controller.Create_Project (Project_Filename.all,
                                             Graph_Filename.all);
-                 Free (Project_Filename);
               end if;
          end;
 
-         Free (Project_Filename);
-
          if (Script_Filename.all /= "") then
             Controller.Execute_GSL (Script_Filename.all);
-            Free (Script_Filename);
          end if;
       end if;
+
+      Free (Project_Filename);
+      Free (Graph_Filename);
+      Free (Script_Filename);
+
    exception
      when Gnat.Command_Line.Invalid_Switch =>
         Ada.Text_IO.Put_Line (Ada.Text_IO.Standard_Error, "Invalid argument.");
@@ -180,7 +187,7 @@ is
 begin
    Default_Logger.Init ("debug.log");
 
---     begin
+   begin
       --  load config settings
       Config_Settings.Initialize_Config_Settings
         ("dist/global_config.xml", Config_Filename);
@@ -203,7 +210,18 @@ begin
 --       when E: others =>
 --          Logger.Warn ("Error during intialization");
 --          Logger.Error (E);
---     end;
+   end;
+
+   Logger.Debug ("Initializing GTK");
+
+   Gtkada.Intl.Bind_Text_Domain
+     ("giant", Config.Global_Data.Get_Resources_Directory & "locale");
+
+   Gtk.Main.Set_Locale;
+   Gtk.Main.Init;
+   Gdk.Threads.Init;
+
+   Gdk.Threads.Enter;
 
    Logger.Debug ("parsing command line arguments");
    Parse_Arguments;
@@ -214,6 +232,8 @@ begin
       Logger.Debug ("initializing gui");
       Controller.Show_Gui;
    end if;
+
+   Gdk.Threads.Leave;
 
    Logger.Debug ("closing giant");
 
