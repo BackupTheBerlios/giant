@@ -21,7 +21,7 @@
 --
 -- $RCSfile: giant-gsl-types.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/13 13:07:08 $
+-- $Date: 2003/06/16 15:02:43 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -205,6 +205,10 @@ package Giant.Gsl.Types is
    type Gsl_List_Record (Size : Natural) is new Gsl_Type_Record with private;
    type Gsl_List is access all Gsl_List_Record;
 
+   function Create_Gsl_List
+     (Size : Natural)
+      return Gsl_List;
+
    function Get_List_Size
      (Var      : Gsl_List)
       return Natural;
@@ -259,10 +263,31 @@ package Giant.Gsl.Types is
    type Gsl_Script_Reference_Record is new Gsl_Type_Record with private;
    type Gsl_Script_Reference is access all Gsl_Script_Reference_Record;
 
+   type Gsl_Script_Type is (Gsl_Script, Gsl_Runtime);
+
+   --------------------------------------------------------------------------
+   --
+   type Runtime_Function is access
+     function
+       (Parameter : Gsl_List)
+        return Gsl_Type;
+
    function Create_Gsl_Script_Reference
      (Parameter_List : Syntax_Node;
       Script_Node    : Syntax_Node) 
       return Gsl_Script_Reference;
+
+   function Create_Gsl_Script_Reference
+     (Runtime : Runtime_Function)
+      return Gsl_Script_Reference;
+
+   function Get_Script_Type
+     (Object : Gsl_Script_Reference)
+      return Gsl_Script_Type; 
+
+   function Get_Gsl_Runtime
+     (Object : Gsl_Script_Reference)
+      return Runtime_Function;
 
    function Copy
      (Object : access Gsl_Script_Reference_Record)
@@ -344,9 +369,11 @@ private
    -- Gsl_Script_Reference
    type Gsl_Script_Reference_Record is new Gsl_Type_Record with
       record
+         Script_Type              : Gsl_Script_Type;
          Parameter_List           : Syntax_Node;
          Script_Node              : Syntax_Node;
          Parent_Activation_Record : Activation_Record;
+         Runtime                  : Runtime_Function;
       end record;
 
 end Giant.Gsl.Types;

@@ -20,9 +20,9 @@
 --
 -- First Author: Gerrit Schulz
 --
--- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.3 $
+-- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.4 $
 -- $Author: schulzgt $
--- $Date: 2003/06/13 13:07:08 $
+-- $Date: 2003/06/16 15:02:43 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -228,7 +228,7 @@ package body Giant.Gsl.Types is
 
       Var : Gsl_String;
    begin
-      Var := new Gsl_String_Record (Object.Size);
+      Var := new Gsl_String_Record (Object.Value'Length);
       Var.all := Object.all;
       return Gsl_Type (Var);
    end Copy;
@@ -337,6 +337,17 @@ package body Giant.Gsl.Types is
 
    ---------------------------------------------------------------------------
    -- Gsl_List
+   function Create_Gsl_List
+     (Size : Natural)
+      return Gsl_List is
+
+      Var : Gsl_List;
+   begin
+      Var := new Gsl_List_Record (Size);
+      Var.List_Size := Size;
+      return Var;
+   end Create_Gsl_List;
+
    function Get_List_Size
      (Var      : Gsl_List)
       return Natural is
@@ -409,12 +420,13 @@ package body Giant.Gsl.Types is
    function Copy
      (Object : access Gsl_Var_Reference_Record)
       return Gsl_Type is
-   begin
-      return Gsl_Null;
-   end Copy;
 
-   --procedure Free is new Ada.Unchecked_Deallocation
-   --  (Gsl_Var_Reference_Record, Gsl_Var_Reference);
+      Var        : Gsl_Var_Reference;
+   begin
+      Var := new Gsl_Var_Reference_Record (Object.Ref_Name'Length);
+      Var.all := Object.all;
+      return Gsl_Type (Var);
+   end Copy;
 
    procedure Destroy
      (Object : out Gsl_Var_Reference) is
@@ -436,17 +448,48 @@ package body Giant.Gsl.Types is
       Var : Gsl_Script_Reference;
    begin
       Var := new Gsl_Script_Reference_Record;
+      Var.Script_Type := Gsl_Script;
       Var.Parameter_List := Parameter_List;
       Var.Script_Node := Script_Node;
       Var.Parent_Activation_Record := null;
       return Var;
    end;
 
+   function Create_Gsl_Script_Reference
+     (Runtime : Runtime_Function)
+      return Gsl_Script_Reference is
+
+      Var : Gsl_Script_Reference;
+   begin
+      Var := new Gsl_Script_Reference_Record;
+      Var.Script_Type := Gsl_Runtime;
+      Var.Runtime := Runtime;
+      return Var;
+   end;
+
+   function Get_Script_Type
+     (Object : Gsl_Script_Reference)
+      return Gsl_Script_Type is
+   begin
+      return Object.Script_Type;
+   end Get_Script_Type;
+
+   function Get_Gsl_Runtime
+     (Object : Gsl_Script_Reference)
+      return Runtime_Function is
+   begin
+      return Object.Runtime;
+   end Get_Gsl_Runtime;
+
    function Copy
      (Object : access Gsl_Script_Reference_Record)
       return Gsl_Type is
+
+      Var : Gsl_Script_Reference;
    begin
-      return Gsl_Null;
+      Var := new Gsl_Script_Reference_Record;
+      Var.all := Object.all;
+      return Gsl_Type (Var);
    end Copy;
    
    procedure Destroy
