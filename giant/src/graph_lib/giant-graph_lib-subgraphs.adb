@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.9 $
 --  $Author: koppor $
---  $Date: 2003/06/26 15:55:57 $
+--  $Date: 2003/06/28 22:17:30 $
 
 package body Giant.Graph_Lib.Subgraphs is
 
@@ -41,11 +41,18 @@ package body Giant.Graph_Lib.Subgraphs is
       Edge               : in     Edge_Id)
    is
    begin
-      Selections.Add_Edge
+      if Selections.Is_Member
         (Selections.Selection (Subgraph_To_Modify),
-         Edge);
-
-      Ensure_Graph_Edge_Properties (Subgraph_To_Modify, Edge);
+         Edge.Source_Node)
+        and
+        Selections.Is_Member
+        (Selections.Selection (Subgraph_To_Modify),
+         Edge.Target_Node)
+      then
+         Selections.Add_Edge
+           (Selections.Selection (Subgraph_To_Modify),
+            Edge);
+      end if;
    end Add_Edge;
 
    ---------------------------------------------------------------------------
@@ -134,6 +141,7 @@ package body Giant.Graph_Lib.Subgraphs is
    end Create_Selection;
 
    ---------------------------------------------------------------------------
+   --  It is intended not to return a clone
    function Convert_To_Selection
      (Source : in Subgraph)
      return Graph_Lib.Selections.Selection
@@ -231,11 +239,32 @@ package body Giant.Graph_Lib.Subgraphs is
       --    node
       --
       --  Destroys given set after checking
+      --
+      --  Parameters:
+      --    Edges_In : Edges to check,
+      --               all incomig or outgoing edges of a node
       procedure Check_Edges (Edges_In : in Edge_Id_Set)
       is
          Edges : Edge_Id_Set  := Edges_In;
+
+         procedure Execute (Edge : in Edge_Id)
+         is
+         begin
+            begin
+               Selections.Remove_Edge
+                 (Selections.Selection (Subgraph_To_Modify), Edge);
+            exception
+               when Edge_Does_Not_Exist =>
+                  --  simulates a "Remove_If_Exists"
+                  null;
+            end;
+         end Execute;
+
+         procedure Apply is new Edge_Id_Sets.Apply
+           (Execute => Execute);
+
       begin
-         --  TBD
+         Apply (Edges);
          Edge_Id_Sets.Destroy (Edges);
       end Check_Edges;
 
@@ -247,6 +276,12 @@ package body Giant.Graph_Lib.Subgraphs is
          Node);
 
       --  Check_Edges also destroys the given set
+      --    therefore there is no memory leak produced here
+      --  Optimization:
+      --    Write "apply" for Edges of a node
+      --      --> this routine could traverse directly the array of edges
+      --          at the node and there is no need anymore to convert that
+      --          array to an Edge_Id_Set
       Check_Edges (Get_Incoming_Edges (Node));
       Check_Edges (Get_Outgoing_Edges (Node));
    end Remove_Node;
@@ -266,16 +301,24 @@ package body Giant.Graph_Lib.Subgraphs is
       procedure Apply is new Node_Id_Sets.Apply (Execute => Execute);
 
    begin
-      if True then
-         --  TBD: true should be replaced by an expression which
-         --       expresses the dence of the graph
+      if Node_Id_Sets.Size (Node_Set) <=
+        (Selections.Get_Node_Count
+         (Selections.Selection (Subgraph_To_Modify)) / 2) then
+         --  if less than half of the nodes are to be removed,
+         --    it's faster to check all incoming and outgoing edges
+         --    of the nodes to be removed
          Apply (Selections.Get_All_Nodes
                 (Selections.Selection (Subgraph_To_Modify)));
       else
-        Selections.Remove_Node_Set
-          (Selections.Selection (Subgraph_To_Modify),
-           Node_Set);
-        Ensure_Graph_Edge_Properties (Subgraph_To_Modify);
+         --  if more than half of the nodes are to be removed
+         --    it's faster to check all edges in the selection
+         --    if they are still valid
+         --
+         --  TBD: CHECK: maybe .25 is even more faster
+         Selections.Remove_Node_Set
+           (Selections.Selection (Subgraph_To_Modify),
+            Node_Set);
+         Ensure_Graph_Edge_Properties (Subgraph_To_Modify);
       end if;
    end Remove_Node_Set;
 
@@ -351,17 +394,47 @@ package body Giant.Graph_Lib.Subgraphs is
      (Graph : in out Subgraph;
       Edge  : in     Edge_Id)
    is
+      Source_And_Target_In_Subgraph : Boolean;
    begin
-      --  TBD
-      null;
+      Source_And_Target_In_Subgraph :=
+        Selections.Is_Member
+        (Selections.Selection (Graph),
+         Edge.Source_Node) and
+        Selections.Is_Member
+        (Selections.Selection (Graph),
+         Edge.Target_Node);
+
+      if not Source_And_Target_In_Subgraph then
+         --  "Edge_Does_Not_Exist" could be risen here.
+         --     It is not catched nor converted, since the preconditions
+         --     assures, that this cannot happen
+         Selections.Remove_Edge (Selections.Selection (Graph), Edge);
+      end if;
    end Ensure_Graph_Edge_Properties;
 
    ---------------------------------------------------------------------------
    procedure Ensure_Graph_Edge_Properties (Graph : in out Subgraph)
    is
+
+      procedure Execute (Edge : in Edge_Id)
+      is
+      begin
+         Ensure_Graph_Edge_Properties (Graph, Edge);
+      end Execute;
+
+      procedure Apply is new Edge_Id_Sets.Apply
+        (Execute => Execute);
+
+      --  since edges are removed during the traversal through the edge_set
+      --    and the iterator cannot deal with sets being modified during the
+      --    traversal, a clone has to be used
+      Clone : Edge_Id_Sets.Set;
+
    begin
-      --  TBD
-      null;
+      Clone := Edge_Id_Sets.Copy
+        (Selections.Get_All_Edges (Selections.Selection (Graph)));
+      Apply (Clone);
+      Edge_Id_Sets.Destroy (Clone);
    end Ensure_Graph_Edge_Properties;
 
 end Giant.Graph_Lib.Subgraphs;
