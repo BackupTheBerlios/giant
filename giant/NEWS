@@ -4,25 +4,19 @@ This file contains short descriptions of what has changed between
 GIANT releases. Only major changes are included here, see ChangeLog
 in the source directory for details.
 
-Version ?
+Version 1.1.2 (2003-11-24)
 
- * ported to IML-lib 20030923
- * gui
-     - added "Generate Subgraph..." in context-menu of subgraph
- * class_sets
-     - new all_nodes.xml matching all nodes
- * Treelayout: 
-     - position of matrix-layout fixed
-     - New Parameter "Reverse_Edges" - useful for layouting edges
-       belonging to "parent_edge_class_set"
-     - fixed root-node-finding
- * gsl:
-     - speed up
-     - new script "generate_subgraph__only_parent_edges"
- * documentation:
-     - added layoutparameters @ GSL-Documentation @ handbook
-     - added instance_of for edges and class_sets @ gsl-spec
-     - added further explanation of class_sets of tree_layout
+ * Ported to IML-lib 20030923
+ * Added "Generate Subgraph..." to subgraph menu
+ * Added Class set that matches all nodes
+ * Tree layout
+    - Position of matrix-layout fixed
+    - Added parameter "Reverse_Edges" - useful for layout of edges
+      belonging to "parent_edge_class_set"
+    - Fixed root node discovery
+ * Improved GSL performance
+ * Added more GSL scripts
+ * Fixed various exceptions
 
 Version 1.1.1 (2003-09-24)
 
