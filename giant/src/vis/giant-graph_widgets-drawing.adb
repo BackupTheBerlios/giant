@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.12 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.13 $
 --  $Author: keulsn $
---  $Date: 2003/07/10 23:36:39 $
+--  $Date: 2003/07/11 02:26:39 $
 --
 ------------------------------------------------------------------------------
 
@@ -246,7 +246,7 @@ package body Giant.Graph_Widgets.Drawing is
       X : Glib.Gint;
       Y : Glib.Gint;
    begin
-      Vis.To_Gdk (Get_Top_Left (Area) + Origin, X, Y);
+      Vis.To_Gdk (Get_Top_Left (Area) - Origin, X, Y);
       Gdk.Drawable.Copy_Area
         (Dest     => Widget.Drawing.Buffer,
          GC       => Widget.Drawing.Background,
@@ -259,24 +259,6 @@ package body Giant.Graph_Widgets.Drawing is
          Height   => Glib.Gint (Get_Height (Area)));
    end Copy_Ready_Into_Normal_Buffer;
    pragma Inline (Copy_Ready_Into_Normal_Buffer);
-
---     procedure Revert_Clipping
---       (Widget   : access Graph_Widget_Record'Class;
---        Clipping : in     Vis_Data.Layer_Clipping_Type;
---        Origin   : in     Vis.Absolute.Vector_2d) is
---     begin
---        case Clipping.Action is
---           when Vis_Data.Add =>
---              Draw_Filled
---                (Drawable  => Widget.Drawing.Clip_Mask,
---                 Gc        => Widget.Drawing.Clip_Close,
---                 Rectangle => Clipping.Area,
---                 Origin    => Origin);
---           when Vis_Data.Delete =>
---              null;
---        end case;
---     end Revert_Clipping;
---     pragma Inline (Revert_Clipping);
 
    --  NOTE: Must be synced with 'Draw_Edge'
    procedure Update_Edge_Size
@@ -874,6 +856,9 @@ package body Giant.Graph_Widgets.Drawing is
       Origin           : Vis.Absolute.Vector_2d :=
         Get_Top_Left (Widget.Drawing.Buffer_Area);
    begin
+      Drawing_Logger.Debug
+        ("Update_Buffer_Edges, Origin = " & Vis.Absolute.Image (Origin));
+
       while Iterators.Has_More (Edges) loop
          Current_Edge := Iterators.Get_Current (Edges);
          Current_Layer := Vis_Data.Get_Layer (Current_Edge);
@@ -884,6 +869,10 @@ package body Giant.Graph_Widgets.Drawing is
             Current_Clipping := Clipping_Queues.Get_Head (Clipping.all);
             exit when Vis_Data.Is_Below
               (Current_Layer, Current_Clipping.Height);
+            Drawing_Logger.Debug
+              ("... open clipping: " &
+               Vis.Absolute.Image (Current_Clipping.Area) & ", Origin: " &
+               Vis.Absolute.Image (Origin));
             Copy_Ready_Into_Normal_Buffer
               (Widget => Widget,
                Area   => Current_Clipping.Area,
@@ -891,12 +880,15 @@ package body Giant.Graph_Widgets.Drawing is
             Clipping_Queues.Remove_Head (Clipping.all);
          end loop;
 
+         Drawing_Logger.Debug
+           ("... Draw_Edge, Text area = " &
+            Vis.Absolute.Image (Vis_Data.Get_Text_Area (Current_Edge)));
          Draw_Edge
            (Widget, Widget.Drawing.Buffer, Current_Edge, Origin);
 
          Iterators.Forward (Edges);
       end loop;
-
+      Drawing_Logger.Debug ("... Edges done.");
    end Update_Buffer_Edges;
 
    procedure Update_Buffer_Nodes
@@ -1054,10 +1046,9 @@ package body Giant.Graph_Widgets.Drawing is
 
    ----------------------------------------------------------------------------
    --  Calculates the size of the display (desktop size + optimization)
-   procedure Calculate_Display_Size
-     (Widget        : access Graph_Widget_Record'Class;
-      Result_Width  :    out Glib.Gint;
-      Result_Height :    out Glib.Gint) is
+   function Calculate_Display_Size
+     (Widget        : access Graph_Widget_Record'Class)
+     return Vis.Absolute.Vector_2d is
 
       X             : Glib.Gint;
       Y             : Glib.Gint;
@@ -1082,16 +1073,14 @@ package body Giant.Graph_Widgets.Drawing is
       Vis_Data.Optimize_Drawing_Area
         (Manager => Widget.Manager,
          Area    => Area);
-      Result_Width := Glib.Gint (Get_Width (Area));
-      Result_Height := Glib.Gint (Get_Height (Area));
+      return Get_Size (Area);
    end Calculate_Display_Size;
 
    ----------------------------------------------------------------------------
    --  Calculates the size of the buffer (window size + optimization)
-   procedure Calculate_Buffer_Size
-     (Widget        : access Graph_Widget_Record'Class;
-      Result_Width  :    out Glib.Gint;
-      Result_Height :    out Glib.Gint) is
+   function Calculate_Buffer_Size
+     (Widget        : access Graph_Widget_Record'Class)
+     return Vis.Absolute.Vector_2d is
 
       Width         : Glib.Gint;
       Height        : Glib.Gint;
@@ -1107,9 +1096,112 @@ package body Giant.Graph_Widgets.Drawing is
       Vis_Data.Optimize_Drawing_Area
         (Manager => Widget.Manager,
          Area    => Area);
-      Result_Width := Glib.Gint (Get_Width (Area));
-      Result_Height := Glib.Gint (Get_Height (Area));
+      return Get_Size (Area);
    end Calculate_Buffer_Size;
+
+   procedure Resize_Display
+     (Widget : access Graph_Widget_Record'Class) is
+
+      Window           : Gdk.Window.Gdk_Window := Get_Window (Widget);
+      Old_Area         : Vis.Absolute.Rectangle_2d;
+      Old_Size         : Vis.Absolute.Vector_2d;
+      New_Area         : Vis.Absolute.Rectangle_2d;
+      New_Size         : Vis.Absolute.Vector_2d;
+      Old_Ready_Buffer : Gdk.Pixmap.Gdk_Pixmap;
+      Width            : Glib.Gint;
+      Height           : Glib.Gint;
+   begin
+      if not States.Can_Resize (Widget) then
+         return;
+      end if;
+      Old_Area := Widget.Drawing.Buffer_Area;
+      Old_Size := Get_Size (Old_Area);
+      New_Size := Calculate_Buffer_Size (Widget);
+      New_Area := Combine_Rectangle
+        (Top_Left     => Get_Top_Left (Old_Area),
+         Bottom_Right => Get_Top_Left (Old_Area) + New_Size -
+                           Combine_Vector (1, 1));
+
+      if New_Size /= Old_Size then
+         States.Changed_Visual (Widget);
+         --  re-create 'Buffer'
+         Gdk.Pixmap.Unref (Widget.Drawing.Buffer);
+         Gdk.Pixmap.Gdk_New
+           (Pixmap => Widget.Drawing.Buffer,
+            Window => Window,
+            Width  => Glib.Gint (Get_X (New_Size)),
+            Height => Glib.Gint (Get_Y (New_Size)));
+         --  re-create 'Ready_Buffer' use all data that is still valid
+         Old_Ready_Buffer := Widget.Drawing.Ready_Buffer;
+         Gdk.Pixmap.Gdk_New
+           (Pixmap => Widget.Drawing.Ready_Buffer,
+            Window => Window,
+            Width  => Glib.Gint (Get_X (New_Size)),
+            Height => Glib.Gint (Get_Y (New_Size)));
+         Gdk.Drawable.Copy_Area
+           (Dest     => Widget.Drawing.Ready_Buffer,
+            GC       => Widget.Drawing.Background,
+            X        => 0,
+            Y        => 0,
+            Source   => Old_Ready_Buffer,
+            Source_X => 0,
+            Source_Y => 0,
+            Width    => Glib.Gint (Vis.Absolute_Int'Min
+                                   (Get_X (Old_Size), Get_X (New_Size))),
+            Height   => Glib.Gint (Vis.Absolute_Int'Min
+                                   (Get_Y (Old_Size), Get_Y (New_Size))));
+         Gdk.Pixmap.Unref (Old_Ready_Buffer);
+
+         Widget.Drawing.Buffer_Area := New_Area;
+
+         Vis_Data.Pollute_Area (Widget.Manager, New_Area);
+         --  If size of buffer is smaller in any coordinate then must
+         --  add pollution. If size has increased then pollution must be
+         --  set already
+         if Get_X (New_Size) < Get_X (Old_Size) then
+            Vis_Data.Pollute_Area
+              (Widget.Manager,
+               Combine_Rectangle
+                 (Top_Left     => Combine_Vector
+                                    (X => Get_Right (New_Area) + 1,
+                                     Y => Get_Top (Old_Area)),
+                  Bottom_Right => Get_Bottom_Right (Old_Area)));
+         end if;
+         if Get_Y (New_Size) < Get_Y (Old_Size) then
+            Vis_Data.Pollute_Area
+              (Widget.Manager,
+               Combine_Rectangle
+                 (Top_Left     => Combine_Vector
+                                    (X => Get_Left (Old_Area),
+                                     Y => Get_Bottom (New_Area) + 1),
+                  Bottom_Right => Get_Bottom_Right (Old_Area)));
+         end if;
+
+         --  update 'Display's size
+         New_Size := Calculate_Display_Size (Widget);
+         Gdk.Window.Get_Size
+           (Window => Widget.Drawing.Display,
+            Width  => Width,
+            Height => Height);
+         Old_Size := Combine_Vector
+           (X => Vis.Absolute_Int (Width),
+            Y => Vis.Absolute_Int (Height));
+         if New_Size /= Old_Size then
+            Width := Glib.Gint'Max (Width, Glib.Gint (Get_X (New_Size)));
+            Height := Glib.Gint'Max (Height, Glib.Gint (Get_Y (New_Size)));
+            Gdk.Pixmap.Unref (Widget.Drawing.Display);
+            Gdk.Pixmap.Gdk_New
+              (Pixmap => Widget.Drawing.Display,
+               Window => Window,
+               Width  => Width,
+               Height => Height);
+            Clear (Widget.Drawing.Background, Widget.Drawing.Display);
+         end if;
+
+         --  force redraw
+         Queue_Draw (Widget);
+      end if;
+   end Resize_Display;
 
    ----------------------------------------------------------------------------
    --  Sets up the 'Background' gc
@@ -1159,8 +1251,6 @@ package body Giant.Graph_Widgets.Drawing is
    begin
       for I in Edge_Style_Type loop
          Gdk.GC.Gdk_New (Widget.Drawing.Edge_Line (I), Window);
---           Gdk.GC.Set_Clip_Mask
---             (Widget.Drawing.Edge_Line (I), Widget.Drawing.Clip_Mask);
       end loop;
       Gdk.GC.Set_Dashes
         (Gc          => Widget.Drawing.Edge_Line (Dashed_Line),
@@ -1172,15 +1262,11 @@ package body Giant.Graph_Widgets.Drawing is
          Dash_List   => Dots);
 
       Gdk.GC.Gdk_New (Widget.Drawing.Edge_Label, Window);
---        Gdk.GC.Set_Clip_Mask
---          (Widget.Drawing.Edge_Label, Widget.Drawing.Clip_Mask);
       Gdk.GC.Set_Font
         (Widget.Drawing.Edge_Label, Settings.Get_Edge_Font (Widget));
 
       for I in Vis_Data.Highlight_Type loop
          Gdk.GC.Gdk_New (Widget.Drawing.Edge_Light (I), Window);
---           Gdk.GC.Set_Clip_Mask
---             (Widget.Drawing.Edge_Light (I), Widget.Drawing.Clip_Mask);
          Gdk.GC.Set_Foreground
            (Widget.Drawing.Edge_Light (I),
             Settings.Get_Highlight_Color (Widget, I));
@@ -1191,11 +1277,13 @@ package body Giant.Graph_Widgets.Drawing is
    procedure Set_Up
      (Widget : access Graph_Widget_Record'Class) is
 
-      Window : Gdk.Window.Gdk_Window := Get_Window (Widget);
-      Height : Glib.Gint;
-      Width  : Glib.Gint;
+      Window      : Gdk.Window.Gdk_Window := Get_Window (Widget);
+      Buffer_Size : Vis.Absolute.Vector_2d;
+      Height      : Glib.Gint;
+      Width       : Glib.Gint;
    begin
-      Calculate_Display_Size (Widget, Width, Height);
+      Buffer_Size := Calculate_Display_Size (Widget);
+      Vis.To_Gdk (Buffer_Size, Width, Height);
       Gdk.Pixmap.Gdk_New
         (Pixmap => Widget.Drawing.Display,
          Window => Window,
@@ -1206,10 +1294,12 @@ package body Giant.Graph_Widgets.Drawing is
          (Vis.Absolute.Combine_Vector
           (Vis.Absolute_Int (Width), Vis.Absolute_Int (Height))));
 
-      Calculate_Buffer_Size (Widget, Width, Height);
+      Buffer_Size := Calculate_Buffer_Size (Widget);
+      Vis.To_Gdk (Buffer_Size, Width, Height);
       --  Buffer area, centered on (0, 0)
       Widget.Drawing.Buffer_Area := Combine_Rectangle
-        (0, 0, Vis.Absolute_Int (Width) - 1, Vis.Absolute_Int (Height) - 1);
+        (Top_Left     => Vis.Absolute.Zero_2d,
+         Bottom_Right => Buffer_Size - Combine_Vector (1, 1));
       Set_Center (Widget.Drawing.Buffer_Area, Zero_2d);
       --  Buffer
       Gdk.Pixmap.Gdk_New

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-states.ads,v $, $Revision: 1.4 $
+--  $RCSfile: giant-graph_widgets-states.ads,v $, $Revision: 1.5 $
 --  $Author: keulsn $
---  $Date: 2003/07/10 00:16:54 $
+--  $Date: 2003/07/11 02:26:39 $
 --
 ------------------------------------------------------------------------------
 --
@@ -121,6 +121,13 @@ package Giant.Graph_Widgets.States is
    --  Returns True if any visible content on the graph widget might have
    --  changed and the visual buffer must be updated.
    function Has_Display_Changed
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean;
+
+   --  Returns True if the widget might resize:
+   --  * check the size of the widget
+   --  * allocate and destroy pixmaps
+   function Can_Resize
      (Widget : access Graph_Widget_Record'Class)
      return Boolean;
 

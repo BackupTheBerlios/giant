@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.ads,v $, $Revision: 1.5 $
+--  $RCSfile: giant-graph_widgets-drawing.ads,v $, $Revision: 1.6 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 03:35:59 $
+--  $Date: 2003/07/11 02:26:39 $
 --
 ------------------------------------------------------------------------------
 --
@@ -85,6 +85,12 @@ package Giant.Graph_Widgets.Drawing is
      (Widget : access Graph_Widget_Record'Class;
       Node   : in     Vis_Data.Vis_Node_Id)
      return Vis.Absolute.Vector_2d;
+
+   ----------------------------------------------------------------------------
+   --  Resizes the display. Must be called after the size of a graph window
+   --  has changed.
+   procedure Resize_Display
+     (Widget : access Graph_Widget_Record'Class);
 
 private
 

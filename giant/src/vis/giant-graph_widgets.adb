@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.21 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.22 $
 --  $Author: keulsn $
---  $Date: 2003/07/10 23:36:39 $
+--  $Date: 2003/07/11 02:26:39 $
 --
 ------------------------------------------------------------------------------
 
@@ -443,9 +443,14 @@ package body Giant.Graph_Widgets is
      (Widget    : access Graph_Widget_Record'Class;
       Node      : in     Graph_Lib.Node_Id)
      return Vis.Logic.Vector_2d is
+
+      Vis_Node : Vis_Data.Vis_Node_Id := Look_Up (Widget, Node);
    begin
-      raise Unimplemented;
-      return Vis.Logic.Zero_2d;
+      if Vis_Node /= null then
+         return Vis_Data.Get_Position (Vis_Node);
+      else
+         raise Unknown_Node_Id;
+      end if;
    end Get_Top_Middle;
    pragma Inline (Get_Top_Middle);
 
@@ -792,8 +797,7 @@ package body Giant.Graph_Widgets is
      (Widget : access Graph_Widget_Record'Class;
       Size   : in     Vis.Absolute.Vector_2d) is
    begin
-      ---------------------------------------------raise Unimplemented;
-      null;
+      Drawing.Resize_Display (Widget);
    end Resize_Graph_Widget;
 
    procedure Find_Or_Create

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.6 $
 --  $Author: keulsn $
---  $Date: 2003/07/10 00:16:54 $
+--  $Date: 2003/07/11 02:26:39 $
 --
 ------------------------------------------------------------------------------
 
@@ -173,5 +173,13 @@ package body Giant.Graph_Widgets.States is
    begin
       return Widget.States.Visual_Polluted;
    end Has_Display_Changed;
+
+   function Can_Resize
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean is
+   begin
+      return Widget.States.Drawing_Ready and then
+        Gtk.Widget.Realized_Is_Set (Widget);
+   end Can_Resize;
 
 end Giant.Graph_Widgets.States;
