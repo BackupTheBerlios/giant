@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-config-class_sets-test.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-config-class_sets-test.adb,v $, $Revision: 1.7 $
 --  $Author: koppor $
---  $Date: 2003/10/01 18:02:19 $
+--  $Date: 2003/10/01 18:10:25 $
 --
 with Ada.Strings.Unbounded;
 
@@ -50,7 +50,7 @@ package body Giant.Config.Class_Sets.Test is
       Set_4 :  Config.Class_Sets.Class_Set_Access;
 
       A_Node_Class : Giant.Graph_Lib.Node_Class_id;
-      A_Edge_Class : Giant.Graph_Lib.Edge_Class_Id;
+      An_Edge_Class : Giant.Graph_Lib.Edge_Class_Id;
    begin
 
       for i in 1 .. 1 loop
@@ -75,7 +75,7 @@ package body Giant.Config.Class_Sets.Test is
          -- class_set_1
          Assert
            (Config.Class_Sets.Is_Empty (Set_1),
-            "Teste whether class_set_1 is empty");
+            "Tests whether class_set_1 is empty");
 
          -- class_set_2
          A_Node_Class :=
@@ -99,24 +99,24 @@ package body Giant.Config.Class_Sets.Test is
              (Set_2, A_Node_Class),
            "Test class_set_2 not holds node class ""SymNode""");
 
-         A_Edge_Class :=
+         An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("IML_Root"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("IML_Root", "Parent"));
          Assert
            (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Set_2, A_Edge_Class),
+             (Set_2, An_Edge_Class),
            "Test class_set_2 holds edge class ""IML_Root.Parent""");
 
-         A_Edge_Class :=
+         An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("HPGNode"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("HPGNode", "Parent"));
          Assert
            (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Set_2, A_Edge_Class),
+             (Set_2, An_Edge_Class),
            "Test class_set_2 holds edge class ""HPGNode.Parent""");
 
          -- class_set_3
@@ -134,14 +134,14 @@ package body Giant.Config.Class_Sets.Test is
              (Set_3, A_Node_Class),
            "Test class_set_3 holds node class ""OC_Entity""");
 
-        A_Edge_Class :=
+        An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("HPGNode"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("HPGNode", "Parent"));
          Assert
            (not Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Set_3, A_Edge_Class),
+             (Set_3, An_Edge_Class),
            "Test class_set_3 not holds edge class ""HPGNode.Parent""");
 
          -- class_set_4
@@ -159,54 +159,54 @@ package body Giant.Config.Class_Sets.Test is
              (Set_4, A_Node_Class),
            "Test class_set_4 holds node class ""O_Node""");
 
-         A_Edge_Class :=
+         An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("T_Node"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("T_Node", "Parent"));
          Assert
            (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Set_4, A_Edge_Class),
+             (Set_4, An_Edge_Class),
            "Test class_set_4 holds edge class ""T_Node.Parent""");
 
-         A_Edge_Class :=
+         An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("O_Node"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("O_Node", "Parent"));
          Assert
            (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Set_4, A_Edge_Class),
+             (Set_4, An_Edge_Class),
            "Test class_set_4 holds edge class ""O_Node.Parent""");
 
-         A_Edge_Class :=
+         An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("OC_Component"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("OC_Component", "Its_Type"));
          Assert
            (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Set_4, A_Edge_Class),
+             (Set_4, An_Edge_Class),
            "Test class_set_4 holds edge class ""OC_Component.Its_Type""");
 
-         A_Edge_Class :=
+         An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("OC_Enum"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("OC_Enum", "Its_Type"));
          Assert
            (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Set_4, A_Edge_Class),
+             (Set_4, An_Edge_Class),
            "Test class_set_4 holds edge class ""OC_Enum.Its_Type""");
 
-         A_Edge_Class :=
+         An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("OC_Enum"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("OC_Enum", "Parent"));
          Assert
            (not Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Set_4, A_Edge_Class),
+             (Set_4, An_Edge_Class),
             "Test class_set_4 not holds edge class ""OC_Enum.Parent""");
 
          -- deallocate
@@ -233,7 +233,7 @@ package body Giant.Config.Class_Sets.Test is
       Empty_Class_Set_List : Class_Sets_Lists.List;
 
       A_Node_Class : Giant.Graph_Lib.Node_Class_id;
-      A_Edge_Class : Giant.Graph_Lib.Edge_Class_Id;
+      An_Edge_Class : Giant.Graph_Lib.Edge_Class_Id;
    begin
 
       Config.Class_Sets.Initialize_Class_Sets
@@ -285,24 +285,24 @@ package body Giant.Config.Class_Sets.Test is
              (Meta_1, A_Node_Class),
            "Test Meta_1 holds node class ""HPGNode""");
 
-         A_Edge_Class :=
+         An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("IML_Root"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("IML_Root", "Parent"));
          Assert
            (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Meta_1, A_Edge_Class),
+             (Meta_1, An_Edge_Class),
            "Test Meta_1 holds edge class ""IML_Root.Parent""");
 
-         A_Edge_Class :=
+         An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("HPGNode"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("HPGNode", "Parent"));
          Assert
            (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Meta_1, A_Edge_Class),
+             (Meta_1, An_Edge_Class),
            "Test Meta_1 holds edge class ""HPGNode.Parent""");
 
          A_Node_Class :=
@@ -333,54 +333,54 @@ package body Giant.Config.Class_Sets.Test is
              (Meta_1, A_Node_Class),
            "Test Meta_1 holds node class ""O_Node""");
 
-         A_Edge_Class :=
+         An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("T_Node"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("T_Node", "Parent"));
          Assert
            (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Meta_1, A_Edge_Class),
+             (Meta_1, An_Edge_Class),
            "Test Meta_1 holds edge class ""T_Node.Parent""");
 
-         A_Edge_Class :=
+         An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("O_Node"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("O_Node", "Parent"));
          Assert
            (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Meta_1, A_Edge_Class),
+             (Meta_1, An_Edge_Class),
            "Test Meta_1 holds edge class ""O_Node.Parent""");
 
-         A_Edge_Class :=
+         An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("OC_Component"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("OC_Component", "Its_Type"));
          Assert
            (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Meta_1, A_Edge_Class),
+             (Meta_1, An_Edge_Class),
            "Test Meta_1 holds edge class ""OC_Component.Its_Type""");
 
-         A_Edge_Class :=
+         An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("OC_Enum"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("OC_Enum", "Its_Type"));
          Assert
            (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Meta_1, A_Edge_Class),
+             (Meta_1, An_Edge_Class),
            "Test Meta_1 holds edge class ""OC_Enum.Its_Type""");
 
-         A_Edge_Class :=
+         An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("OC_Enum"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("OC_Enum", "Parent"));
          Assert
            (not Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Meta_1, A_Edge_Class),
+             (Meta_1, An_Edge_Class),
            "Test Meta_1 not holds edge class ""OC_Enum.Parent""");
 
          A_Node_Class :=
@@ -407,7 +407,7 @@ package body Giant.Config.Class_Sets.Test is
       Set_Inherit  :  Config.Class_Sets.Class_Set_Access;
 
       A_Node_Class : Giant.Graph_Lib.Node_Class_id;
-      A_Edge_Class : Giant.Graph_Lib.Edge_Class_Id;
+      An_Edge_Class : Giant.Graph_Lib.Edge_Class_Id;
    begin
 
       for i in 1 .. 1 loop
@@ -476,110 +476,110 @@ package body Giant.Config.Class_Sets.Test is
          -- test edge classes - inheritance
          ----------------------------------
 
-         A_Edge_Class :=
+         An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("IML_Root"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("IML_Root", "Parent"));
          Assert
            (not Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Set_Inherit, A_Edge_Class),
+             (Set_Inherit, An_Edge_Class),
            "Test holds edge class ""IML_Root.Parent""");
 
-         A_Edge_Class :=
+         An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("Prog_Unit"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("Prog_Unit", "Subunits"));
          Assert
            (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Set_Inherit, A_Edge_Class),
+             (Set_Inherit, An_Edge_Class),
            "Test holds edge class ""Prog_Unit.Subunits""");
 
          -- inherited from "Prog_Unit.Subunits"
-         A_Edge_Class :=
+         An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("Routine"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("Routine", "Subunits"));
          Assert
            (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Set_Inherit, A_Edge_Class),
+             (Set_Inherit, An_Edge_Class),
            "Test holds edge class ""Routine.Subunits""");
 
-         A_Edge_Class :=
+         An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("Routine"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("Routine", "Symbol_Table"));
          Assert
            (not Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Set_Inherit, A_Edge_Class),
+             (Set_Inherit, An_Edge_Class),
            "Test not holds edge class ""Routine.Symbol_Table""");
 
          -- inherited from "Op."*""
-         A_Edge_Class :=
+         An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("Op"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("Op", "Parent"));
          Assert
            (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Set_Inherit, A_Edge_Class),
+             (Set_Inherit, An_Edge_Class),
            "Test holds edge class ""Op.Parent""");
 
-         A_Edge_Class :=
+         An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("Op"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("Op", "CF_Basic_Block"));
          Assert
            (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Set_Inherit, A_Edge_Class),
+             (Set_Inherit, An_Edge_Class),
            "Test holds edge class ""Op.CF_Basic_Block""");
 
-         A_Edge_Class :=
+         An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("Explicit_Conversion"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("Explicit_Conversion", "Source_Type"));
          Assert
            (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Set_Inherit, A_Edge_Class),
+             (Set_Inherit, An_Edge_Class),
            "Test holds edge class "
            & """Explicit_Conversion.Source_Type""");
 
          -- inherited from "Return_Statement."*""
-         A_Edge_Class :=
+         An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("Return_Statement"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("Return_Statement", "EType"));
          Assert
            (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Set_Inherit, A_Edge_Class),
+             (Set_Inherit, An_Edge_Class),
            "Test holds edge class "
            & """Return_Statement.EType""");
 
-         A_Edge_Class :=
+         An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("Return_With_Value"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("Return_With_Value", "EType"));
          Assert
            (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Set_Inherit, A_Edge_Class),
+             (Set_Inherit, An_Edge_Class),
            "Test holds edge class "
            & """Return_With_Value.EType""");
 
-         A_Edge_Class :=
+         An_Edge_Class :=
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
              (Graph_Lib.Convert_Node_Class_Name_To_Id ("Return_With_Value"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id
                ("Return_With_Value", "Return_Value"));
          Assert
            (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-             (Set_Inherit, A_Edge_Class),
+             (Set_Inherit, An_Edge_Class),
            "Test holds edge class "
            & """Return_With_Value.Return_Value""");
 
