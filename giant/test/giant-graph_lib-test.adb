@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.15 $
 --  $Author: koppor $
---  $Date: 2003/07/13 00:32:33 $
+--  $Date: 2003/07/14 17:05:29 $
 --
 
 with Ada.Text_IO;
@@ -242,7 +242,7 @@ package body Giant.Graph_Lib.Test is
    ---------------------------------------------------------------------------
    --  Could be implemented more efficient
    --    a) traverse All_Nodes "by hand"
-   --         don't use function Get_All_Nodes, but travel thourgh the hashmap
+   --         don't use function Get_All_Nodes, but travel through the hashmap
    --         directly
    procedure All_Edges_Test (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
@@ -271,15 +271,15 @@ package body Giant.Graph_Lib.Test is
          return Result;
       end Get_All_Edges_Indirectly;
 
-
       All_Edges_Indirectly : Edge_Id_Sets.Set;
-      All_Edges_Directly : Edge_Id_Sets.Set;
+      All_Edges_Directly   : Edge_Id_Sets.Set;
 
    begin
       All_Edges_Indirectly := Get_All_Edges_Indirectly;
       All_Edges_Directly   := Get_All_Edges;
 
-      -- FIXME: Assert ( "=", 1, 2);
+      Assert (Edge_Id_Sets."=" (All_Edges_Directly, All_Edges_Indirectly),
+              "Edges aren't matching");
 
       Edge_Id_Sets.Destroy (All_Edges_Directly);
       Edge_Id_Sets.Destroy (All_Edges_Indirectly);
