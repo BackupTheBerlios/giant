@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.6 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.7 $
 --  $Author: koppor $
---  $Date: 2003/06/10 07:33:57 $
+--  $Date: 2003/06/12 13:33:54 $
 --
 
 --  Bauhaus / IML
@@ -648,7 +648,16 @@ package Giant.Graph_Lib is
       return Node_Attribute_Iterator;
 
    ---------------------------------------------------------------------------
-   --  missing: nomore, advance, etc.
+   --  analogue to Bauhaus::Lists
+   function More
+     (Iterator : in Node_Attribute_Iterator)
+     return Boolean;
+
+   ---------------------------------------------------------------------------
+   --  analogue to Bauhaus::Lists
+   procedure Next
+     (Iterator : in out Node_Attribute_Iterator;
+      Info     :    out Node_Attribute_Id);
 
    -------------
    -- Hashing --

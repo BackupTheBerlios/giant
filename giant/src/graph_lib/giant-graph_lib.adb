@@ -18,16 +18,16 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.9 $
 --  $Author: koppor $
---  $Date: 2003/06/10 10:38:32 $
+--  $Date: 2003/06/12 13:33:38 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
 
 --  from Bauhaus
 with Hashed_Mappings;
-with Ptr_Hashs;
+with Tagged_Ptr_Hash;
 with SLocs;
 with Storables;
 with IML_Classes;
@@ -46,7 +46,7 @@ with Giant.Logger;
 pragma Elaborate_All (Giant.Constant_Ptr_Hashs);
 pragma Elaborate_All (Giant.Ptr_Normal_Hashs);
 pragma Elaborate_All (Hashed_Mappings);
-pragma Elaborate_All (Ptr_Hashs);
+pragma Elaborate_All (Tagged_Ptr_Hash);
 
 package body Giant.Graph_Lib is
 
@@ -463,13 +463,13 @@ package body Giant.Graph_Lib is
 
       package body IML_Node_Mapper is
 
-         package Storable_Hashs is new Ptr_Hashs
+         function Storable_Hash is new Tagged_Ptr_Hash
            (T     => Storables.Storable_Class,
             T_Ptr => Storables.Storable);
 
          package Mapping_Iml_LoadNodes is new Hashed_Mappings
            (Key_Type   => Storables.Storable,
-            Hash       => Storable_Hashs.Integer_Hash,
+            Hash       => Storable_Hash,
             Value_Type => Load_Nodes.Node_Access);
 
          Mapping : Mapping_Iml_LoadNodes.Mapping;
@@ -1542,5 +1542,23 @@ package body Giant.Graph_Lib is
       Iter.Dummy := 0;
       return Iter;
    end Make_Attribute_Iterator;
+
+   ---------------------------------------------------------------------------
+   function More
+     (Iterator : in Node_Attribute_Iterator)
+     return Boolean
+   is
+   begin
+      return False;
+   end More;
+
+   ---------------------------------------------------------------------------
+   procedure Next
+     (Iterator : in out Node_Attribute_Iterator;
+      Info     :    out Node_Attribute_Id)
+   is
+   begin
+      Info := null;
+   end Next;
 
 end Giant.Graph_Lib;
