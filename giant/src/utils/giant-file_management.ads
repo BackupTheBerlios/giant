@@ -20,10 +20,10 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.ads,v $, $Revision: 1.15 $
+-- $RCSfile: giant-file_management.ads,v $, $Revision: 1.16 $
 
 -- $Author: schwiemn $
--- $Date: 2003/07/01 21:42:55 $
+-- $Date: 2003/07/15 11:57:48 $
 --
 -- -----------------------------------------------
 --
@@ -31,10 +31,8 @@
 --
 with Ada.Text_IO;
 with Ada.Strings.Unbounded;
-with Ada.Command_Line;
+-- with Ada.Command_Line;
 
-with GNAT.Directory_Operations;
-with GNAT.OS_Lib;
 
 with String_Lists; -- from Bauhaus IML "Reuse.src"
 
@@ -164,6 +162,18 @@ package Giant.File_Management is
    --   Source - The name of the source file.
    --   Target - The name of the target file.
    procedure Copy_File (Source : in String; Target : in String);
+
+   ---------------------------------------------------------------------------
+   -- For a passed path to a directory this subprogram will check whether
+   -- all directories that are part of the path exist, if not the missing 
+   -- directories (at the ende of "Dir_Path") will be created.
+   --
+   -- Parameters:
+   --   Dir_Path: A path to a directory - you should only pass absolute
+   --     paths. A path to a file may cause unpredictable errors.
+   --     - If you pass a relative path it will be expanded regarding
+   --       the working directory of the current execution environment.
+   procedure Create_Dir_Path (Dir_Path : in String);
 
    ---------------------------------------------------------------------------
    -- For a given realtive Path to a file and a path to a directory there the

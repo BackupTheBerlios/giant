@@ -20,18 +20,19 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.19 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.20 $
 -- $Author: schwiemn $
--- $Date: 2003/07/01 21:42:55 $
+-- $Date: 2003/07/15 11:57:48 $
 --
 --
 with Ada.Streams;
 with Ada.Streams.Stream_IO;
 with Ada.Strings.Fixed;
 with Ada.Unchecked_Deallocation;
+with Ada.Command_Line;
 
+with GNAT.Directory_Operations;
 with GNAT.OS_Lib;
-
 
 package body Giant.File_Management is
 
@@ -239,6 +240,24 @@ package body Giant.File_Management is
       Ada.Streams.Stream_IO.Close (Target_File);
    end Copy_File;
 
+   ---------------------------------------------------------------------------
+   procedure Create_Dir_Path (Dir_Path : in String) is
+   
+      Dir_Separator : Character := GNAT.OS_Lib.Directory_Separator;
+   begin
+          
+      for I in Dir_Path'range loop      
+        if (Dir_Path (I) = Dir_Separator) or (I = Dir_Path'Last) then          
+           if not GNAT.OS_Lib.Is_Directory (Dir_Path (Dir_Path'First .. I)) 
+           then         
+              
+              GNAT.Directory_Operations.Make_Dir 
+                (Dir_Path (Dir_Path'First .. I));                                      
+           end if;
+        end if;      
+      end loop;               
+   end Create_Dir_Path;
+      
    ---------------------------------------------------------------------------
    function Get_Absolute_Path_To_File_From_Relative
      (Start_Dir : in String;

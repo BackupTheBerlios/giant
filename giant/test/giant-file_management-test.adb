@@ -20,13 +20,16 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-file_management-test.adb,v $, $Revision: 1.5 $
---  $Author: squig $
---  $Date: 2003/07/09 16:22:35 $
+--  $RCSfile: giant-file_management-test.adb,v $, $Revision: 1.6 $
+--  $Author: schwiemn $
+--  $Date: 2003/07/15 11:57:48 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
 with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
+with Ada.Command_Line;
+
+with GNAT.Directory_Operations;
 
 with Giant.Config;
 with Giant.Logger;
