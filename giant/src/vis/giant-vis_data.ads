@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.10 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.11 $
 --  $Author: keulsn $
---  $Date: 2003/06/23 23:37:17 $
+--  $Date: 2003/06/24 10:55:04 $
 --
 ------------------------------------------------------------------------------
 --
@@ -565,7 +565,7 @@ private
 
    ----------------------------------------------------------------------------
    --  Top layer in the pool.
-   type Layer_Pool is new Layer_Type;
+   type Layer_Pool is new Natural; --  Layer_Type;
 
    Bottom_Layer : constant Layer_Pool := Layer_Pool'First;
    Top_Layer    : constant Layer_Pool := Layer_Pool'Last;

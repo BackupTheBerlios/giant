@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/06/23 23:52:30 $
+--  $Date: 2003/06/24 10:55:04 $
 --
 ------------------------------------------------------------------------------
 
@@ -117,7 +117,7 @@ package body Giant.Graph_Widgets.Settings is
       --  Adds all icons needed for 'Style'
       procedure Add_Vis_Style
         (Widget : access Graph_Widget_Record'Class;
-         Style : in     Config.Vis_Styles.Visualisation_Style_Access);
+         Style  : in     Config.Vis_Styles.Visualisation_Style_Access);
 
       function Get_Icon
         (Data   : in     Config.Chars_Ptr_Array_Access)

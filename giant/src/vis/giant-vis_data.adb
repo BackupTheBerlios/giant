@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.8 $
 --  $Author: keulsn $
---  $Date: 2003/06/23 23:37:17 $
+--  $Date: 2003/06/24 10:55:04 $
 --
 ------------------------------------------------------------------------------
 
@@ -108,6 +108,13 @@ package body Giant.Vis_Data is
    -- Edges --
    -----------
 
+   function Get_Layer
+     (Edge  : in     Vis_Edge_Id)
+     return Layer_Type is
+   begin
+      return Edge.Layer;
+   end Get_Layer;
+
    function Get_Graph_Edge
      (Edge : in     Vis_Edge_Id)
      return Graph_Lib.Edge_Id is
@@ -128,13 +135,6 @@ package body Giant.Vis_Data is
    begin
       return Edge.Target;
    end Get_Target;
-
-   function Get_Layer
-     (Edge  : in     Vis_Edge_Id)
-     return Layer_Type is
-   begin
-      return Edge.Layer;
-   end Get_Layer;
 
    function Get_Thickness
      (Edge : in     Vis_Edge_Id)
@@ -194,13 +194,20 @@ package body Giant.Vis_Data is
       Right : in     Vis_Edge_Id)
      return Boolean is
    begin
-      return Is_Below (Left.Layer, Right.Layer);
+      return Is_Below (Get_Layer (Left), Get_Layer (Right));
    end Is_Edge_Below;
 
 
    -----------
    -- Nodes --
    -----------
+
+   function Get_Layer
+     (Node  : in     Vis_Node_Id)
+     return Layer_Type is
+   begin
+      return Node.Layer;
+   end Get_Layer;
 
    function Get_Graph_Node
      (Node : in     Vis_Node_Id)
@@ -222,13 +229,6 @@ package body Giant.Vis_Data is
    begin
       return Node.Extent;
    end Get_Extent;
-
-   function Get_Layer
-     (Node  : in     Vis_Node_Id)
-     return Layer_Type is
-   begin
-      return Node.Layer;
-   end Get_Layer;
 
    procedure Make_Incoming_Iterator
      (Node           : in     Vis_Node_Id;
@@ -266,7 +266,7 @@ package body Giant.Vis_Data is
       Right : in     Vis_Node_Id)
      return Boolean is
    begin
-      return Is_Below (Left.Layer, Right.Layer);
+      return Is_Below (Get_Layer (Left), Get_Layer (Right));
    end Is_Node_Below;
 
 
@@ -993,6 +993,10 @@ package body Giant.Vis_Data is
       Region : Region_Id;
    begin
       while not Region_Lists.IsEmpty (Node.Regions) loop
+         Remove_Node_From_Region
+           (Region_Lists.FirstValue (Node.Regions), Node);
+         Region_Lists.DeleteHead
+           (Node.Regions);
          Region := Region_Lists.FirstValue (Node.Regions);
          Remove_Node_From_Region (Region, Node);
          Add_Background_Pollution (Region);
