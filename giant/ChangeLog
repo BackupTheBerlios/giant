@@ -1,3 +1,7 @@
+2003-10-07  Oliver Kopp  <koppor@studi.informatik.uni-stuttgart.de>
+
+	* src/vis/giant-layout_factory.adb: fixed root-node-finding
+
 2003-10-06  Oliver Kopp  <koppor@studi.informatik.uni-stuttgart.de>
 
 	* src/gsl/giant-gsl-runtime.adb: fixed inconsistency with spec

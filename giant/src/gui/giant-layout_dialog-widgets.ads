@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-layout_dialog-widgets.ads,v $, $Revision: 1.2 $
---  $Author: squig $
---  $Date: 2003/07/15 11:50:26 $
+--  $RCSfile: giant-layout_dialog-widgets.ads,v $, $Revision: 1.3 $
+--  $Author: koppor $
+--  $Date: 2003/10/07 14:38:08 $
 --
 ------------------------------------------------------------------------------
 --
@@ -30,6 +30,7 @@
 --
 
 with Gtk.Box;
+with Gtk.Check_Button;
 with Gtk.Gentry;
 
 with Giant.Gui_Utils;
@@ -134,9 +135,10 @@ private
    type Tree_Layout_Container_Record is
      new Layout_Container_Record with
       record
-         Widget : Gtk.Box.Gtk_Vbox;
-         Root_Node : Gtk.Gentry.Gtk_Entry;
+         Widget         : Gtk.Box.Gtk_Vbox;
+         Root_Node      : Gtk.Gentry.Gtk_Entry;
          Class_Set_List : Gui_Utils.String_Clists.Giant_Data_Clist;
+         Check          : Gtk.Check_Button.Gtk_Check_Button;
       end record;
 
    type Other_Layout_Container_Record is

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.68 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.69 $
 --  $Author: koppor $
---  $Date: 2003/10/06 18:56:20 $
+--  $Date: 2003/10/07 14:38:08 $
 --
 
 with Ada.Exceptions;
@@ -511,7 +511,9 @@ package body Giant.Main_Window is
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
    begin
+      --  Fixme
       On_Help_About (Source);
+
       --  insert got subgraph into subgraph-list
    end On_Subgraph_Generate_New_Subgraph;
 

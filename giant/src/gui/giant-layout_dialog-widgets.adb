@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-layout_dialog-widgets.adb,v $, $Revision: 1.4 $
---  $Author: squig $
---  $Date: 2003/09/09 15:31:24 $
+--  $RCSfile: giant-layout_dialog-widgets.adb,v $, $Revision: 1.5 $
+--  $Author: koppor $
+--  $Date: 2003/10/07 14:38:08 $
 
 with Glib;
 with Gtk.Enums;
@@ -35,6 +35,7 @@ with Giant.Config;
 with Giant.Config.Class_Sets;
 with Giant.Graph_Lib;
 with Giant.Gui_Utils;
+with Giant.Layout_Factory;
 
 package body Giant.Layout_Dialog.Widgets is
 
@@ -107,9 +108,9 @@ package body Giant.Layout_Dialog.Widgets is
       use Giant.Gui_Utils;
 
       Container : Tree_Layout_Container_Access;
-      List : String_Lists.List;
-      Iterator : String_Lists.ListIter;
-      Name : Ada.Strings.Unbounded.Unbounded_String;
+      List      : String_Lists.List;
+      Iterator  : String_Lists.ListIter;
+      Name      : Ada.Strings.Unbounded.Unbounded_String;
    begin
       Container := new Tree_Layout_Container_Record;
 
@@ -144,6 +145,13 @@ package body Giant.Layout_Dialog.Widgets is
       String_Lists.Destroy (List);
       Gtk.Box.Pack_Start (Container.Widget, Container.Class_Set_List,
                           Expand => True, Fill => True,
+                          Padding => Gui_Utils.DEFAULT_SPACING);
+
+      Gtk.Check_Button.Gtk_New
+        (Container.Check, -"Process edges reverse");
+      Gtk.Box.Pack_Start (Container.Widget,
+                          Container.Check,
+                          Expand => False, Fill => True,
                           Padding => Gui_Utils.DEFAULT_SPACING);
 
       return Container;
@@ -183,6 +191,7 @@ package body Giant.Layout_Dialog.Widgets is
       Selection : Gtk.Enums.Gint_List.Glist
         := Gui_Utils.String_Clists.Get_Selection (Container.Class_Set_List);
       Row : Glib.Gint;
+
    begin
       while (Selection /= Gtk.Enums.Gint_List.Null_List) loop
          Row := Gtk.Enums.Gint_List.Get_Data (Selection);
@@ -192,8 +201,17 @@ package body Giant.Layout_Dialog.Widgets is
             & ",");
          Selection := Gtk.Enums.Gint_List.Next (Selection);
       end loop;
-      return Gtk.Gentry.Get_Text (Container.Root_Node)
-        & ";" & Ada.Strings.Unbounded.To_String (Classes);
+
+      declare
+         Res : String := Gtk.Gentry.Get_Text (Container.Root_Node) & ";" &
+           Ada.Strings.Unbounded.To_String (Classes);
+      begin
+         if Gtk.Check_Button.Get_Active (Container.Check) then
+            return Res & ";" & Layout_Factory.Process_Edges_Reverse;
+         else
+            return Res;
+         end if;
+      end;
    end Get_Layout_Parameters;
 
    ---------------------------------------------------------------------------

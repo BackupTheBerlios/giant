@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.ads,v $, $Revision: 1.11 $
+--  $RCSfile: giant-layout_factory.ads,v $, $Revision: 1.12 $
 --  $Author: koppor $
---  $Date: 2003/10/06 18:23:38 $
+--  $Date: 2003/10/07 14:38:09 $
 --
 ------------------------------------------------------------------------------
 --
@@ -41,6 +41,9 @@ package Giant.Layout_Factory is
 
    Invalid_Format             : exception;
    Unknown_Algorithm          : exception;
+
+   --  string indicating, that edges have to be processed reverse
+   Process_Edges_Reverse      : constant String := "Reverse_Edges";
 
    ----------------------------------------------------------------------------
    --  Initialises an layout-algorithm
