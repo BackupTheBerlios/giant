@@ -20,12 +20,14 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: framework_test.adb,v $, $Revision: 1.9 $
+--  $RCSfile: framework_test.adb,v $, $Revision: 1.10 $
 --  $Author: squig $
---  $Date: 2003/06/27 15:26:16 $
+--  $Date: 2003/07/02 19:03:42 $
 --
 with AUnit.Test_Suites; use AUnit.Test_Suites;
 with AUnit.Test_Runner;
+
+with Hashed_Mappings_Test;
 
 with Giant.Config.Test;
 with Giant.Config.Vis_Styles.Test;
@@ -49,14 +51,14 @@ procedure Framework_Test is
 --        Add_Test (Result, new Giant.Config.Vis_Styles.Test.Test_Case);
 --        Add_Test (Result, new Giant.Default_Logger.Test.Test_Case);
 --        Add_Test (Result, new Giant.File_Management.Test.Test_Case);
-      Add_Test (Result, new Giant.Graph_Lib.Test.Test_Case);
-      Add_Test (Result, new Giant.Graph_Lib.Node_Attribute_Filters.Test.Test_Case);
-      Add_Test (Result, new Giant.Graph_Lib.Subgraphs.Test.Test_Case);
+--        Add_Test (Result, new Giant.Graph_Lib.Test.Test_Case);
+--        Add_Test (Result, new Giant.Graph_Lib.Node_Attribute_Filters.Test.Test_Case);
+--        Add_Test (Result, new Giant.Graph_Lib.Subgraphs.Test.Test_Case);
 --        Add_Test (Result, new Giant.Projects.Test.Test_Case);
 --        Add_Test (Result, new Giant.Valid_Names.Test.Test_Case);
 --        Add_Test (Result, new Giant.Vis_Windows.Test.Test_Case);
 --        Add_Test (Result, new Giant.XML_File_Access.Test.Test_Case);
-
+      Add_Test (Result, new Hashed_Mappings_Test.Test_Case);
       return Result;
    end Suite;
 

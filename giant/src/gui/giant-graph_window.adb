@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.23 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.24 $
 --  $Author: squig $
---  $Date: 2003/06/30 19:59:13 $
+--  $Date: 2003/07/02 19:03:42 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -568,7 +568,7 @@ package body Giant.Graph_Window is
 
       --  minimap
       -- FIX: use Window.Graph instead of fake graph
-      Mini_Maps.Create (Window.Mini_Map, Mini_Maps.Graph_Widgets.Create);
+      Mini_Maps.Create (Window.Mini_Map, Window.Graph);
       Gtk.Box.Pack_Start (Left_Box, Add_Frame (Window.Mini_Map, -"MiniMap"),
                           Expand => False, Fill => True, Padding => 0);
 

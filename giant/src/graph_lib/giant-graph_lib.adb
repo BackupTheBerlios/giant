@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.38 $
---  $Author: koppor $
---  $Date: 2003/07/01 13:51:32 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.39 $
+--  $Author: squig $
+--  $Date: 2003/07/02 19:03:42 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -528,6 +528,7 @@ package body Giant.Graph_Lib is
          procedure Create is
          begin
             Mapping := Mapping_Iml_LoadNodes.Create;
+            -- FIX: breaks when (19) is passed
          end Create;
 
          procedure Destroy is

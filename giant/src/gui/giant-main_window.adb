@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.42 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.43 $
 --  $Author: squig $
---  $Date: 2003/06/30 19:03:03 $
+--  $Date: 2003/07/02 19:03:42 $
 --
 
 with Ada.Exceptions;
@@ -234,19 +234,23 @@ package body Giant.Main_Window is
    begin
       declare
          --FIX: default directory
-         Filename : String := Gtkada.File_Selection.File_Selection_Dialog
+         Project_Filename : String := Gtkada.File_Selection.File_Selection_Dialog
            (-"Select Project File", "test/resources/",
             Dir_Only => False, Must_Exist => False);
       begin
-         if (Filename /= "") then
+         if (Project_Filename /= "") then
+            if (Projects.Does_Project_Exist_File (Project_Filename)) then
+               raise Projects.Directory_Holds_Already_A_Project_File_Exception;
+            end if;
+
             declare
-               IML_Filename : String
+               Graph_Filename : String
                  := Gtkada.File_Selection.File_Selection_Dialog
-                 (-"Select IML File", Filename & ".iml",
+                 (-"Select IML File", Project_Filename & ".iml",
                   Dir_Only => False, Must_Exist => False);
             begin
-               if (IML_Filename /= "") then
-                  Controller.Create_Project (Filename, IML_Filename);
+               if (Graph_Filename /= "") then
+                  Controller.Create_Project (Project_Filename, Graph_Filename);
                end if;
             end;
          end if;
