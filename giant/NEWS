@@ -4,7 +4,7 @@ This file contains short descriptions of what has changed between
 GIANT releases. Only major changes are included here, see ChangeLog
 in the source directory for details.
 
-Version 1.1.0 (2003-09-02)
+Version 1.1.0 (2003-09-15)
 
  * Ported GUI code to Gtk2 Fixed elaboration code for compilation with
    GNAT 3.15p 
