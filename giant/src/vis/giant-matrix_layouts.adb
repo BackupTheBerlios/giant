@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-matrix_layouts.adb,v $, $Revision: 1.11 $
+--  $RCSfile: giant-matrix_layouts.adb,v $, $Revision: 1.12 $
 --  $Author: koppor $
---  $Date: 2003/07/13 00:39:57 $
+--  $Date: 2003/07/14 16:10:53 $
 --
 
 with Ada.Numerics.Generic_Elementary_Functions;
@@ -70,7 +70,9 @@ package body Giant.Matrix_Layouts is
    is
    begin
       if Layout.Release_Widget_Lock then
+         --  Logger.Debug ("Release_Lock.");
          Graph_Widgets.Release_Lock (Layout.Widget, Layout.Widget_Lock);
+         --  Logger.Debug ("Release_Lock done.");
       end if;
    end Finish;
 
@@ -95,6 +97,8 @@ package body Giant.Matrix_Layouts is
          Layout.Max_Node_Width     :=
            Graph_Widgets.Get_Current_Maximum_Node_Width (Layout.Widget);
          Layout.X_Distance := Layout.Max_Node_Width * (X_Distance);
+
+         --  Logger.Debug ("Width: " & Natural'Image (Layout.Matrix_Width));
       end Init_Calculation;
 
       procedure Do_Calculation
@@ -104,6 +108,7 @@ package body Giant.Matrix_Layouts is
          Node                   : Graph_Lib.Node_Id;
 
       begin
+         --  Logger.Debug ("Do_Calculation: Start");
          Number_Nodes_To_Layout := Natural'Min
            (Layout.Matrix_Width - Layout.Current_Column + 1,
             Max_Nodes_In_One_Run);
@@ -111,7 +116,23 @@ package body Giant.Matrix_Layouts is
            (Number_Nodes_To_Layout,
             Graph_Lib.Node_Id_Sets.Size (Layout.Nodes_To_Layout));
 
-         for I in Layout.Current_Column..Number_Nodes_To_Layout loop
+         --  Logger.Debug ("Nodes_To_Layout: " & Natural'Image
+         --                (Number_Nodes_To_Layout));
+         --  Logger.Debug ("Set.Size:        " & Natural'Image
+         --                (Graph_Lib.Node_Id_Sets.Size
+         --                 (Layout.Nodes_To_Layout)));
+
+         --  Logger.Debug ("CurCol:          " & Natural'Image
+         --                (Layout.Current_Column));
+         --  Logger.Debug ("Loop until:      " & Natural'Image
+         --                (Layout.Current_Column +
+         --                 Number_Nodes_To_Layout - 1));
+
+         for I in Layout.Current_Column ..
+           Layout.Current_Column + Number_Nodes_To_Layout - 1 loop
+
+            --  Logger.Debug ("I: " & Natural'Image (I));
+
             --  TBD: find next node by a breadth-first-search
             --       (according to spec)
 
@@ -139,6 +160,10 @@ package body Giant.Matrix_Layouts is
                Layout.X_Distance);
          end loop;
 
+         --  Logger.Debug ("CurCol:          " & Natural'Image
+         --                (Layout.Current_Column));
+         --  Logger.Debug ("Width: " & Natural'Image (Layout.Matrix_Width));
+
          if Layout.Current_Column > Layout.Matrix_Width then
             --  we have reached EOL, go to beginning of line
             Layout.Current_Column := 1;
@@ -152,14 +177,22 @@ package body Giant.Matrix_Layouts is
 
          Evolutions.Advance_Progress (Layout, Number_Nodes_To_Layout);
 
-         if Graph_Lib.Node_Id_Sets.Size (Layout.Nodes_To_Layout) = 0 then
+         --  Logger.Debug ("Set.Size:        " & Natural'Image
+         --                (Graph_Lib.Node_Id_Sets.Size
+         --                 (Layout.Nodes_To_Layout)));
+
+         if Graph_Lib.Node_Id_Sets.Is_Empty (Layout.Nodes_To_Layout) then
             Next_Action := Evolutions.Finish;
          else
             Next_Action := Evolutions.Run;
          end if;
+
+         --  Logger.Debug ("Do_Calculation: Finished");
       end Do_Calculation;
 
    begin
+      --  Logger.Debug ("Begin: Step");
+
       case Layout.State is
          when Init =>
             case Graph_Lib.Node_Id_Sets.Size (Layout.Nodes_To_Layout) is
@@ -186,7 +219,8 @@ package body Giant.Matrix_Layouts is
          when Calc =>
             Do_Calculation;
       end case;
+
+      --  Logger.Debug ("End: Step");
    end Step;
 
 end Giant.Matrix_Layouts;
-
