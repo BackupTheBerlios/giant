@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_lib-subgraphs-atomic_tests.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-graph_lib-subgraphs-atomic_tests.adb,v $, $Revision: 1.2 $
 --  $Author: koppor $
---  $Date: 2003/06/30 12:15:10 $
+--  $Date: 2003/06/30 12:29:59 $
 --
 
 with Ada.Text_IO;
@@ -79,6 +79,20 @@ package body Giant.Graph_Lib.Subgraphs.Atomic_Tests is
         (Test_Subgraph, Graph_Lib.Get_All_Nodes);
    end Add_Nodes;
 
+   procedure Number_Edges
+     (R : in out AUnit.Test_Cases.Test_Case'Class)
+   is
+   begin
+      declare
+         Set : Edge_Id_Set;
+      begin
+         Set := Giant.Graph_Lib.Get_All_Edges;
+         Assert (Edge_Id_Sets.Size (Set) =
+                 Get_Edge_Count (Test_Subgraph), "Number of Edges");
+         Edge_Id_Sets.Destroy (Set);
+      end;
+   end Number_Edges;
+
    procedure Destroy
      (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
@@ -106,8 +120,9 @@ package body Giant.Graph_Lib.Subgraphs.Atomic_Tests is
    begin
       Register_Routine (T, Init'Access, "Init");
       Register_Routine (T, Create'Access, "Create");
-      Register_Routine (T, Add_Edges'Access, "Add_Edges");
       Register_Routine (T, Add_Nodes'Access, "Add_Nodes");
+      Register_Routine (T, Add_Edges'Access, "Add_Edges");
+      Register_Routine (T, Number_Edges'Access, "Number of Edges");
       Register_Routine (T, Destroy'Access, "Destroy");
       Register_Routine (T, Done'Access, "Done");
    end Register_Tests;
