@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-handlers.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-graph_widgets-handlers.adb,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/06/29 14:00:49 $
+--  $Date: 2003/07/02 16:49:15 $
 --
 ------------------------------------------------------------------------------
 
@@ -153,14 +153,41 @@ package body Giant.Graph_Widgets.Handlers is
    ----------------------------------------------------------------------------
    --  Global Variable containing all Signals, never gets destroyed.
    Signal_Array : constant Gtkada.Types.Chars_Ptr_Array :=
+     Set_Scroll_Adjustments_Signal +
      Action_Mode_Button_Press_Event +
      Logical_Area_Changed_Signal +
      Visible_Area_Changed_Signal;
+
+   Signal_Parameters : constant Gtk.Object.Signal_Parameter_Types :=
+     (--  Set_Scroll_Adjustments_Signal
+      1 => (1 => Gtk.Gtk_Type_Object, 2 => Gtk.Gtk_Type_Object),
+      --  Action_Mode_Button_Press_Event
+      2 => (1 => Gtk.Gtk_Type_Pointer, 2 => Gtk.Gtk_Type_None),
+      --  Logical_Area_Changed_Signal
+      3 => (1 => Gtk.Gtk_Type_Pointer, 2 => Gtk.Gtk_Type_None),
+      --  Visible_Area_Changed_Signal
+      4 => (1 => Gtk.Gtk_Type_Pointer, 2 => Gtk.Gtk_Type_None));
 
    function Get_Signal_Array
      return Gtkada.Types.Chars_Ptr_Array is
    begin
       return Signal_Array;
    end Get_Signal_Array;
+
+   function Get_Signal_Parameters
+     return Gtk.Object.Signal_Parameter_Types is
+   begin
+      return Signal_Parameters;
+   end Get_Signal_Parameters;
+
+   --  returns the index for the "set_scroll_adjustments" signal in the
+   --  array returned by 'Get_Signal_Array'
+   function Get_Scroll_Adjustments_Signal
+     return Glib.Guint is
+
+      Value : Glib.Guint := 1;
+   begin
+      return Value;
+   end Get_Scroll_Adjustments_Signal;
 
 end Giant.Graph_Widgets.Handlers;

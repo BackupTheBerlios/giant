@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.8 $
 --  $Author: keulsn $
---  $Date: 2003/07/02 13:05:09 $
+--  $Date: 2003/07/02 16:49:15 $
 --
 ------------------------------------------------------------------------------
 
@@ -54,9 +54,13 @@ package body Giant.Graph_Widgets is
    begin
       Gtk.Widget.Initialize_Widget (Widget);
       Gtk.Object.Initialize_Class_Record
-        (Object       => Widget,
-         Signals      => Handlers.Get_Signal_Array,
-         Class_Record => Class_Record);
+        (Object                    => Widget,
+         Signals                   => Handlers.Get_Signal_Array,
+         Class_Record              => Class_Record,
+         Parameters                => Handlers.Get_Signal_Parameters,
+         Scroll_Adjustments_Signal => Handlers.Get_Scroll_Adjustments_Signal);
+
+      Callbacks.Connect_All_Callbacks (Widget);
 
       --  Cannot set up yet, but must set visualization style.
       Settings.Set_Style (Widget, Style);
@@ -65,7 +69,7 @@ package body Giant.Graph_Widgets is
    procedure Create
      (Widget :    out Graph_Widget;
       Style  : in     Config.Vis_Styles.Visualisation_Style_Access
-                       := Config.Vis_Styles.Get_Default_Vis_Style) is
+                        := Config.Vis_Styles.Get_Default_Vis_Style) is
    begin
       Widget := new Graph_Widget_Record;
       Initialize (Widget, Style);
@@ -429,6 +433,20 @@ package body Giant.Graph_Widgets is
    begin
       raise Unimplemented;
    end Zoom_To_All;
+
+   function Get_Logical_Area
+     (Widget     : access Graph_Widget_Record'Class)
+     return Vis.Logic.Rectangle_2d is
+   begin
+      return Vis.Logic.Combine_Rectangle (0.0, 0.0, 0.0, 0.0);
+   end Get_Logical_Area;
+
+   function Get_Visible_Area
+     (Widget     : access Graph_Widget_Record'Class)
+     return Vis.Logic.Rectangle_2d is
+   begin
+      return Vis.Logic.Combine_Rectangle (0.0, 0.0, 0.0, 0.0);
+   end Get_Visible_Area;
 
    function Get_Location
      (Widget     : access Graph_Widget_Record'Class)

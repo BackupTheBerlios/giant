@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-handlers.ads,v $, $Revision: 1.4 $
+--  $RCSfile: giant-graph_widgets-handlers.ads,v $, $Revision: 1.5 $
 --  $Author: keulsn $
---  $Date: 2003/06/29 13:56:08 $
+--  $Date: 2003/07/02 16:49:15 $
 --
 ------------------------------------------------------------------------------
 --
@@ -34,7 +34,9 @@
 with Gdk.Event;
 with Gtk.Arguments;
 with Gtk.Handlers;
+with Gtk.Object;
 with Gtkada.Types;
+with Glib;
 
 package Giant.Graph_Widgets.Handlers is
 
@@ -191,8 +193,22 @@ package Giant.Graph_Widgets.Handlers is
    -- All Signals --
    -----------------
 
+   ----------------------------------------------------------------------------
+   --  Signal to be emitted when the Gdk.Scrolled_Window sets new
+   --  Gtk.Adjustments
+   Set_Scroll_Adjustments_Signal : constant String := "set_scroll_adjustments";
+
+   --  value is constant
    function Get_Signal_Array
      return Gtkada.Types.Chars_Ptr_Array;
 
+   --  parameters for the signals in the array returned by 'Get_Signal_Array'
+   function Get_Signal_Parameters
+     return Gtk.Object.Signal_Parameter_Types;
+
+   --  returns the index for the "set_scroll_adjustments" signal in the
+   --  array returned by 'Get_Signal_Array'
+   function Get_Scroll_Adjustments_Signal
+     return Glib.Guint;
 
 end Giant.Graph_Widgets.Handlers;

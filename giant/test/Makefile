@@ -3,6 +3,9 @@ framework_test :
         
 martin_test :
 	make -C ../ MAIN=test/martin_test EXEC=test/martin_test
+
+graph_widget :
+	make -C ../ MAIN=test/giant_test-graph_widget EXEC=test/graph_widget all
 mini_map :
 	make -C ../ MAIN=test/giant_test-mini_map EXEC=test/mini_map all
 
@@ -27,4 +30,4 @@ layout_factory :
 all:
 	make -C ../ all
 
-.PHONY : framework_test martin_test mini_map evolution
+.PHONY : framework_test martin_test mini_map graph_widget evolution

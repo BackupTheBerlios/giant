@@ -20,21 +20,56 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/06/29 13:56:08 $
+--  $Date: 2003/07/02 16:49:15 $
 --
 ------------------------------------------------------------------------------
 
 
+with System;
+
+with Gdk.Rectangle;
 with Gdk.Types;
+with Gdk.Window;
+with Gdk.Window_Attr;
 with Gtk.Arguments;
+with Gtk.Enums;
 with Gtk.Handlers;
+with Gtk.Style;
+with Glib;
 
 with Giant.Graph_Widgets.Drawing;
+with Giant.Graph_Widgets.Handlers;
 with Giant.Graph_Widgets.Settings;
 
 package body Giant.Graph_Widgets.Callbacks is
+
+   --------------------------
+   -- Explicit Marshallers --
+   --------------------------
+
+   procedure Set_Scroll_Adjustments_Handler
+     (Widget : access Graph_Widget_Record'Class;
+      Args   : in     Gtk.Arguments.Gtk_Args) is
+
+      function To_Adjustment (Addr : in System.Address)
+        return Gtk.Adjustment.Gtk_Adjustment is
+
+         Stub : Gtk.Adjustment.Gtk_Adjustment_Record;
+      begin
+         return Gtk.Adjustment.Gtk_Adjustment
+           (Gtk.Get_User_Data (Addr, Stub));
+      end To_Adjustment;
+
+      H_Adj : Gtk.Adjustment.Gtk_Adjustment := To_Adjustment
+        (Gtk.Arguments.Get_Nth (Args, 1));
+      V_Adj : Gtk.Adjustment.Gtk_Adjustment := To_Adjustment
+        (Gtk.Arguments.Get_Nth (Args, 2));
+   begin
+      On_Set_Scroll_Adjustments (Widget, H_Adj, V_Adj);
+   end Set_Scroll_Adjustments_Handler;
+
 
    -----------------------
    -- Connect Callbacks --
@@ -49,6 +84,10 @@ package body Giant.Graph_Widgets.Callbacks is
    package Realize_Cbs renames Graph_Widget_Callback;
 
    package Unrealize_Cbs renames Graph_Widget_Callback;
+
+   package Set_Scroll_Adjustment_Cbs renames Graph_Widget_Callback;
+   --  cannot provide marshaller instanciation because GtkAda supports
+   --  only one argument per signal
 
    package Size_Request_Cbs renames Graph_Widget_Callback;
    package Requisition_Marshallers is new
@@ -96,6 +135,10 @@ package body Giant.Graph_Widgets.Callbacks is
         (Widget => Widget,
          Name   => "destroy",
          Marsh  => Destroy_Cbs.To_Marshaller (On_Destroy'Access));
+      Set_Scroll_Adjustment_Cbs.Connect
+        (Widget => Widget,
+         Name   => Handlers.Set_Scroll_Adjustments_Signal,
+         Cb     => Set_Scroll_Adjustments_Handler'Access);
       Size_Request_Cbs.Connect
         (Widget => Widget,
          Name   => "size_request",
@@ -125,8 +168,53 @@ package body Giant.Graph_Widgets.Callbacks is
 
    procedure On_Realize
      (Widget : access Graph_Widget_Record'Class) is
+
+      Attributes      : Gdk.Window_Attr.Gdk_Window_Attr;
+      Attributes_Mask : Gdk.Types.Gdk_Window_Attributes_Type;
+      Window          : Gdk.Window.Gdk_Window;
+
+      procedure Set_User_Data
+        (Window : Gdk.Gdk_Window; Widget : System.Address);
+      pragma Import (C, Set_User_Data, "gdk_window_set_user_data");
+
    begin
-      raise Unimplemented;
+      Set_Flags (Widget, Gtk.Widget.Realized);
+
+      Gdk.Window_Attr.Gdk_New
+        (Window_Attr => Attributes,
+         Event_Mask  => Gdk.Types."or"
+                          (Get_Events (Widget), Gdk.Types.Exposure_Mask),
+         X           => Get_Allocation_X (Widget),
+         Y           => Get_Allocation_Y (Widget),
+         Width       => Glib.Gint (Get_Allocation_Width (Widget)),
+         Height      => Glib.Gint (Get_Allocation_Height (Widget)),
+         Window_Type => Gdk.Types.Window_Child,
+         Visual      => Get_Visual (Widget),
+         Colormap    => Get_Colormap (Widget));
+
+      Attributes_Mask :=
+        Gdk.Types."or" (Gdk.Types."or" (Gdk.Types."or"
+        (Gdk.Types.Wa_X, Gdk.Types.Wa_Y), Gdk.Types.Wa_Visual),
+         Gdk.Types.Wa_Colormap);
+      Gdk.Window.Gdk_New
+        (Window,
+         Gtk.Widget.Get_Window (Get_Parent (Widget)),
+         Attributes,
+         Attributes_Mask);
+      Set_Window
+        (Widget,
+         Window);
+      Set_Style
+        (Widget,
+         Gtk.Style.Attach (Get_Style (Widget), Get_Window (Widget)));
+      Gtk.Style.Set_Background
+        (Get_Style (Widget),
+         Get_Window (Widget),
+         Gtk.Enums.State_Active);
+
+      Set_User_Data
+        (Window,
+         Gtk.Get_Object (Widget));
    end On_Realize;
 
    procedure After_Realize
@@ -134,42 +222,81 @@ package body Giant.Graph_Widgets.Callbacks is
    begin
       Settings.Set_Up (Widget);
       Drawing.Set_Up (Widget);
-      raise Unimplemented;
+      -----------------------------------raise Unimplemented;
    end After_Realize;
 
    procedure On_Unrealize
      (Widget : access Graph_Widget_Record'Class) is
    begin
-      raise Unimplemented;
+      --  Drawing.Shut_Down (Widget);
+      --  Settings.Shut_Down (Widget);
+      null;
+      ----------------------------------raise Unimplemented;
    end On_Unrealize;
 
    procedure On_Destroy
      (Widget : access Graph_Widget_Record'Class) is
    begin
-      raise Unimplemented;
+      null;
+      ----------------------------------raise Unimplemented;
    end On_Destroy;
+
+   procedure On_Set_Scroll_Adjustments
+     (Widget     : access Graph_Widget_Record'Class;
+      Horizontal : in     Gtk.Adjustment.Gtk_Adjustment;
+      Vertical   : in     Gtk.Adjustment.Gtk_Adjustment) is
+   begin
+      -----------------------------------raise Unimplemented;
+      null;
+   end On_Set_Scroll_Adjustments;
 
    procedure On_Size_Request
      (Widget      : access Graph_Widget_Record'Class;
       Requisition : in     Gtk.Widget.Gtk_Requisition_Access) is
    begin
-      raise Unimplemented;
+      Requisition.Width  := Default_Width;
+      Requisition.Height := Default_Height;
+      Gtk.Handlers.Emit_Stop_By_Name (Widget, "size_request");
    end On_Size_Request;
 
    procedure On_Size_Allocate
      (Widget     : access Graph_Widget_Record'Class;
       Allocation : in     Gtk.Widget.Gtk_Allocation_Access) is
    begin
-      raise Unimplemented;
+      if Gtk.Widget.Realized_Is_Set (Widget) then
+         Gdk.Window.Move_Resize
+           (Get_Window (Widget),
+            Allocation.X,
+            Allocation.Y,
+            Glib.Gint (Allocation.Width),
+            Glib.Gint (Allocation.Height));
+      end if;
+      Gtk.Handlers.Emit_Stop_By_Name (Widget, "size_allocate");
+      -----------------------------------raise Unimplemented;
    end On_Size_Allocate;
 
    function On_Expose_Event
      (Widget : access Graph_Widget_Record'Class;
       Event  : in     Gdk.Event.Gdk_Event_Expose)
      return Boolean is
+
+      --  Area : Gdk.Rectangle.Gdk_Rectangle;
    begin
-      raise Unimplemented;
-      return False;
+      --  Clear has happened before this is called.
+      --  Correct Buffer is set as background pixmap therefore
+      --  nothing needs to be drawn except if graph widget was polluted
+
+      --  Relevant Fields in Event: Area, Count, Graphics_Expose
+      --  type: Expose
+      Gtk.Handlers.Emit_Stop_By_Name (Widget, "expose_event");
+      --  Ignore event, if more expose events are to follow.
+      if Glib.">" (Gdk.Event.Get_Count (Event), 0) then
+         return True;
+      end if;
+
+      -->  Add buffer refresh here if necessary
+
+      return True;
    end On_Expose_Event;
 
    function On_Button_Press_Event

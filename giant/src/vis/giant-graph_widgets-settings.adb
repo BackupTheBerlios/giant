@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.8 $
 --  $Author: keulsn $
---  $Date: 2003/06/30 02:55:18 $
+--  $Date: 2003/07/02 16:49:15 $
 --
 ------------------------------------------------------------------------------
 
@@ -35,7 +35,7 @@ with Gdk.Pixmap;
 with Gdk.Window;
 with Glib;
 
-with Giant.Controller;
+--with Giant.Controller;
 with Giant.Logger;
 
 package body Giant.Graph_Widgets.Settings is
@@ -325,7 +325,8 @@ package body Giant.Graph_Widgets.Settings is
       Node         : in     Vis_Data.Vis_Node_Id)
      return Boolean is
    begin
-      return Controller.Is_Node_Annotated (Vis_Data.Get_Graph_Node (Node));
+      return False;
+      --Controller.Is_Node_Annotated (Vis_Data.Get_Graph_Node (Node));
    end Is_Annotated;
 
    procedure Get_Annotation_Icon

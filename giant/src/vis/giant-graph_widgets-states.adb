@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/06/30 02:55:18 $
+--  $Date: 2003/07/02 16:49:15 $
 --
 ------------------------------------------------------------------------------
 
@@ -32,20 +32,22 @@ package body Giant.Graph_Widgets.States is
    procedure Enable_Drawing
      (Widget : access Graph_Widget_Record'Class) is
    begin
-      raise Unimplemented;
+      ----------------------------raise Unimplemented;
+      null;
    end Enable_Drawing;
 
    procedure Disable_Drawing
      (Widget : access Graph_Widget_Record'Class) is
    begin
-      raise Unimplemented;
+      ----------------------------raise Unimplemented;
+      null;
    end Disable_Drawing;
 
    function Is_Visible
      (Widget : access Graph_Widget_Record'Class)
      return Boolean is
    begin
-      raise Unimplemented;
+      ----------------------------raise Unimplemented;
       return False;
    end Is_Visible;
 

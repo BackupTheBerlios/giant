@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.16 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.17 $
 --  $Author: keulsn $
---  $Date: 2003/07/02 13:05:09 $
+--  $Date: 2003/07/02 16:49:15 $
 --
 ------------------------------------------------------------------------------
 --
@@ -128,8 +128,8 @@ package Giant.Graph_Widgets is
    --    Style  - The visualization style to be used for 'Widget'
    procedure Create
      (Widget :    out Graph_Widget;
-      Style  : in     Config.Vis_Styles.Visualisation_Style_Access
-                       := Config.Vis_Styles.Get_Default_Vis_Style);
+      Style  : in     Config.Vis_Styles.Visualisation_Style_Access :=
+                        Config.Vis_Styles.Get_Default_Vis_Style);
 
    ----------------------------------------------------------------------------
    --  Creates a new Graph_Widget and sets its state to the state stored in
@@ -834,6 +834,29 @@ package Giant.Graph_Widgets is
      (Widget     : access Graph_Widget_Record'Class);
 
    ----------------------------------------------------------------------------
+   --  Returns an approximation of the smallest rectangle containing the
+   --  complete graph
+   --
+   --  Parameters:
+   --    Widget - The graph widget
+   --  Result:
+   --    Approximation of the rectangle the entire graph is contained in
+   function Get_Logical_Area
+     (Widget     : access Graph_Widget_Record'Class)
+     return Vis.Logic.Rectangle_2d;
+
+   ----------------------------------------------------------------------------
+   --  Returns the rectangle currently visible in the graph widget
+   --
+   --  Parameters:
+   --    Widget - The graph widget
+   --  Result:
+   --    The rectangle currently visible inside graph widget
+   function Get_Visible_Area
+     (Widget     : access Graph_Widget_Record'Class)
+     return Vis.Logic.Rectangle_2d;
+
+   ----------------------------------------------------------------------------
    --  Returns the center of the visible area currently visible within
    --  'Widget'.
    --
@@ -873,6 +896,7 @@ package Giant.Graph_Widgets is
       Zoom       : in     Vis.Zoom_Level);
 
 
+
    ----------------------------------------------------------------------------
    --  Style for drawing of edges
    --  can be 'Continuous_Line', 'Dashed_Line', 'Dotted_Line'
@@ -881,6 +905,11 @@ package Giant.Graph_Widgets is
                            ------------------
 private                    -- private part --
                            ------------------
+
+   ----------------------------------------------------------------------------
+   --  Default size of a graph widget
+   Default_Width  : constant := 300;
+   Default_Height : constant := 200;
 
    ----------------------------------------------------------------------------
    --  Hashmap that maps Graph_Lib.Edge_Id to Vis_Data.Vis_Edge_Id

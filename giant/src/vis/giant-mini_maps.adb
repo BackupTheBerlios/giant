@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-mini_maps.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-mini_maps.adb,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/06/09 18:07:36 $
+--  $Date: 2003/07/02 16:49:15 $
 --
 ------------------------------------------------------------------------------
 
@@ -44,6 +44,7 @@ with Gtk.Object;
 with Gtk.Style;
 with Gtkada.Types;
 
+with Giant.Graph_Widgets.Handlers;
 with Giant.Logger;
 
 package body Giant.Mini_Maps is
@@ -85,6 +86,108 @@ package body Giant.Mini_Maps is
             Height   => Glib.Gint (Get_Height (Rectangle) - 1));
       end if;
    end Draw_Rectangle;
+
+
+   ---------------
+   -- Callbacks --
+   ---------------
+
+   procedure On_Realize
+     (Widget : access Mini_Map_Record'Class);
+
+   procedure After_Realize
+     (Widget : access Mini_Map_Record'Class);
+
+   procedure On_Unrealize
+     (Widget : access Mini_Map_Record'Class);
+
+   procedure On_Destroy
+     (Widget : access Mini_Map_Record'Class);
+
+   procedure On_Size_Request
+     (Widget      : access Mini_Map_Record'Class;
+      Requisition : in     Gtk.Widget.Gtk_Requisition_Access);
+
+   procedure On_Size_Allocate
+     (Widget     : access Mini_Map_Record'Class;
+      Allocation : in     Gtk.Widget.Gtk_Allocation_Access);
+
+   function On_Expose_Event
+     (Widget : access Mini_Map_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event_Expose)
+     return Boolean;
+
+   function On_Button_Press_Event
+     (Widget : access Mini_Map_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event_Button)
+     return Boolean;
+
+   procedure On_Logical_Area_Changed
+     (Graph_Widget : access Graph_Widgets.Graph_Widget_Record'Class;
+      Area         : in     Vis.Logic.Rectangle_2d;
+      Mini         : in     Mini_Map);
+
+   procedure On_Visible_Area_Changed
+     (Graph_Widget : access Graph_Widgets.Graph_Widget_Record'Class;
+      Area         : in     Vis.Logic.Rectangle_2d;
+      Mini         : in     Mini_Map);
+
+
+   ---------------------
+   -- Signal Handling --
+   ---------------------
+
+   package Mini_Map_Callback is new Gtk.Handlers.Callback
+     (Widget_Type => Mini_Map_Record);
+   package Mini_Map_Boolean_Callback is new Gtk.Handlers.Return_Callback
+     (Widget_Type => Mini_Map_Record,
+      Return_Type => Boolean);
+
+   package Realize_Cbs renames Mini_Map_Callback;
+
+   package Unrealize_Cbs renames Mini_Map_Callback;
+
+   package Size_Request_Cbs renames Mini_Map_Callback;
+   package Requisition_Marshallers is new
+     Size_Request_Cbs.Marshallers.Generic_Marshaller
+       (Base_Type  => Gtk.Widget.Gtk_Requisition_Access,
+        Conversion => Gtk.Arguments.To_Requisition);
+
+   package Size_Allocate_Cbs renames Size_Request_Cbs;
+   package Allocation_Marshallers is new
+     Size_Allocate_Cbs.Marshallers.Generic_Marshaller
+       (Base_Type  => Gtk.Widget.Gtk_Allocation_Access,
+        Conversion => Gtk.Arguments.To_Allocation);
+
+   package Expose_Event_Cbs renames Mini_Map_Boolean_Callback;
+
+   package Destroy_Cbs renames Mini_Map_Callback;
+
+   package Button_Press_Event_Cbs renames Mini_Map_Boolean_Callback;
+
+
+   package Realize_Handling is new Gtk.Widget.Realize_Handling
+     (Widget_Type  => Mini_Map_Record,
+      Realize_Proc => On_Realize);
+
+
+   package Logical_Area_Cbs is new Gtk.Handlers.User_Callback
+     (Widget_Type => Graph_Widgets.Graph_Widget_Record,
+      User_Type   => Mini_Map);
+
+   package Logical_Area_Marshs is new
+     Logical_Area_Cbs.Marshallers.Generic_Marshaller
+     (Base_Type   => Vis.Logic.Rectangle_2d,
+      Conversion  => Graph_Widgets.Handlers.To_Rectangle_2d);
+
+   package Visible_Area_Cbs is new Gtk.Handlers.User_Callback
+     (Widget_Type => Graph_Widgets.Graph_Widget_Record,
+      User_Type   => Mini_Map);
+
+   package Visible_Area_Marshs is new
+     Visible_Area_Cbs.Marshallers.Generic_Marshaller
+     (Base_Type   => Vis.Logic.Rectangle_2d,
+      Conversion  => Graph_Widgets.Handlers.To_Rectangle_2d);
 
 
    -------------------------
@@ -140,6 +243,61 @@ package body Giant.Mini_Maps is
    -- Implementation --
    --------------------
 
+   Class_Record : System.Address := System.Null_Address;
+
+   procedure Initialize
+     (Widget  : access Mini_Map_Record;
+      Watched : in     Graph_Widgets.Graph_Widget) is
+   begin
+      Gtk.Widget.Initialize_Widget (Widget);
+      Widget.Watched := null;
+      Widget.Buffer := Gdk.Pixmap.Null_Pixmap;
+      Widget.Polluted := True;
+      Set_Graph_Widget (Widget, Watched);
+      Gtk.Object.Initialize_Class_Record
+        (Object       => Widget,
+         Signals      => Gtkada.Types.Null_Array,
+         Class_Record => Class_Record);
+      Set_Events
+        (Widget,
+         Gdk.Types."or" (Get_Events (Widget), Gdk.Types.Button_Press_Mask));
+
+      Realize_Cbs.Connect
+        (Widget => Widget,
+         Name   => "realize",
+         Marsh  => Realize_Cbs.To_Marshaller (After_Realize'Access),
+         After  => True);
+      Unrealize_Cbs.Connect
+        (Widget => Widget,
+         Name   => "unrealize",
+         Marsh  => Unrealize_Cbs.To_Marshaller (On_Unrealize'Access));
+      Destroy_Cbs.Connect
+        (Widget => Widget,
+         Name   => "destroy",
+         Marsh  => Destroy_Cbs.To_Marshaller (On_Destroy'Access));
+      Size_Request_Cbs.Connect
+        (Widget => Widget,
+         Name   => "size_request",
+         Marsh  => Requisition_Marshallers.To_Marshaller
+                     (On_Size_Request'Access));
+      Size_Allocate_Cbs.Connect
+        (Widget => Widget,
+         Name   => "size_allocate",
+         Marsh  => Allocation_Marshallers.To_Marshaller
+                     (On_Size_Allocate'Access));
+      Expose_Event_Cbs.Connect
+        (Widget => Widget,
+         Name   => "expose_event",
+         Marsh  => Expose_Event_Cbs.To_Marshaller (On_Expose_Event'Access));
+      Button_Press_Event_Cbs.Connect
+        (Widget => Widget,
+         Name   => "button_press_event",
+         Marsh  => Button_Press_Event_Cbs.To_Marshaller
+                     (On_Button_Press_Event'Access));
+
+      Realize_Handling.Set_Realize (Widget);
+   end Initialize;
+
    procedure Create
      (Widget  :    out Mini_Map;
       Watched : in     Graph_Widgets.Graph_Widget := null) is
@@ -153,10 +311,10 @@ package body Giant.Mini_Maps is
       Watched : in     Graph_Widgets.Graph_Widget) is
    begin
       if Graph_Widgets."/=" (Widget.Watched, null) then
---           Gtk.Handlers.Disconnect
---             (Object => Widget.Watched, Id => Widget.Logical_Area_Handler);
---           Gtk.Handlers.Disconnect
---             (Object => Widget.Watched, Id => Widget.Visible_Area_Handler);
+         Gtk.Handlers.Disconnect
+           (Object => Widget.Watched, Id => Widget.Logical_Area_Handler);
+         Gtk.Handlers.Disconnect
+           (Object => Widget.Watched, Id => Widget.Visible_Area_Handler);
          Graph_Widgets.Unref (Widget.Watched);
       end if;
       Widget.Watched := Watched;
@@ -164,20 +322,19 @@ package body Giant.Mini_Maps is
       if Graph_Widgets."/=" (Widget.Watched, null) then
          Graph_Widgets.Ref (Widget.Watched);
          --  Remove next statement after Graph_Widget integrated.
-         Graph_Widgets.Set_User_Data (Widget.all'Access);
---         Graph_Widgets.Sink (Widget.Watched);
---           Widget.Logical_Area_Handler :=
---             Graph_Widgets.Handlers.Logical_Area_Cbs.Connect
---             (Widget => Widget.Watched,
---              Name   => Graph_Widgets.Handlers.Logical_Area_Changed_Signal,
---              Marsh  => Graph_Widgets.Handlers.Logical_Area_Marshs
---                          .To_Marshaller (On_Logical_Area_Changed'Access));
---           Widget.Visible_Area_Handler :=
---             Graph_Widgets.Handlers.Visible_Area_Cbs.Connect
---             (Widget => Widget.Watched,
---              Name   => Graph_Widgets.Handlers.Visible_Area_Changed_Signal,
---              Marsh  => Graph_Widgets.Handlers.Visible_Area_Marshs
---                          .To_Marshaller (On_Visible_Area_Changed'Access));
+--         Graph_Widgets.Set_User_Data (Widget.all'Access);
+         Widget.Logical_Area_Handler := Logical_Area_Cbs.Connect
+           (Widget    => Widget.Watched,
+            Name      => Graph_Widgets.Handlers.Logical_Area_Changed_Signal,
+            Marsh     => Logical_Area_Marshs.To_Marshaller
+                           (On_Logical_Area_Changed'Access),
+            User_Data => Mini_Map (Widget));
+         Widget.Visible_Area_Handler := Visible_Area_Cbs.Connect
+           (Widget    => Widget.Watched,
+            Name      => Graph_Widgets.Handlers.Visible_Area_Changed_Signal,
+            Marsh     => Visible_Area_Marshs.To_Marshaller
+                           (On_Visible_Area_Changed'Access),
+            User_Data => Mini_Map (Widget));
       end if;
       if Gtk.Widget.Realized_Is_Set (Widget) then
          Update (Widget);
@@ -295,145 +452,6 @@ package body Giant.Mini_Maps is
       end if;
 
    end Draw_Mini_Map;
-
-
-   ---------------
-   -- Callbacks --
-   ---------------
-
-   procedure On_Realize
-     (Widget : access Mini_Map_Record'Class);
-
-   procedure After_Realize
-     (Widget : access Mini_Map_Record'Class);
-
-   procedure On_Unrealize
-     (Widget : access Mini_Map_Record'Class);
-
-   procedure On_Destroy
-     (Widget : access Mini_Map_Record'Class);
-
-   procedure On_Size_Request
-     (Widget      : access Mini_Map_Record'Class;
-      Requisition : in     Gtk.Widget.Gtk_Requisition_Access);
-
-   procedure On_Size_Allocate
-     (Widget     : access Mini_Map_Record'Class;
-      Allocation : in     Gtk.Widget.Gtk_Allocation_Access);
-
-   function On_Expose_Event
-     (Widget : access Mini_Map_Record'Class;
-      Event  : in     Gdk.Event.Gdk_Event_Expose)
-     return Boolean;
-
-   function On_Button_Press_Event
-     (Widget : access Mini_Map_Record'Class;
-      Event  : in     Gdk.Event.Gdk_Event_Button)
-     return Boolean;
-
-   procedure On_Logical_Area_Changed
-     (Graph_Widget : access Graph_Widgets.Graph_Widget_Record'Class;
-      Area         : in     Vis.Logic.Rectangle_2d;
-      Mini         : in     Mini_Map);
-
-   procedure On_Visible_Area_Changed
-     (Graph_Widget : access Graph_Widgets.Graph_Widget_Record'Class;
-      Area         : in     Vis.Logic.Rectangle_2d;
-      Mini         : in     Mini_Map);
-
-
-   --------------------
-   -- Initialization --
-   --------------------
-
-   package Mini_Map_Callback is new Gtk.Handlers.Callback
-     (Widget_Type => Mini_Map_Record);
-   package Mini_Map_Boolean_Callback is new Gtk.Handlers.Return_Callback
-     (Widget_Type => Mini_Map_Record,
-      Return_Type => Boolean);
-
-   package Realize_Cbs renames Mini_Map_Callback;
-
-   package Unrealize_Cbs renames Mini_Map_Callback;
-
-   package Size_Request_Cbs renames Mini_Map_Callback;
-   package Requisition_Marshallers is new
-     Size_Request_Cbs.Marshallers.Generic_Marshaller
-       (Base_Type  => Gtk.Widget.Gtk_Requisition_Access,
-        Conversion => Gtk.Arguments.To_Requisition);
-
-   package Size_Allocate_Cbs renames Size_Request_Cbs;
-   package Allocation_Marshallers is new
-     Size_Allocate_Cbs.Marshallers.Generic_Marshaller
-       (Base_Type  => Gtk.Widget.Gtk_Allocation_Access,
-        Conversion => Gtk.Arguments.To_Allocation);
-
-   package Expose_Event_Cbs renames Mini_Map_Boolean_Callback;
-
-   package Destroy_Cbs renames Mini_Map_Callback;
-
-   package Button_Press_Event_Cbs renames Mini_Map_Boolean_Callback;
-
-
-   package Realize_Handling is new Gtk.Widget.Realize_Handling
-     (Widget_Type  => Mini_Map_Record,
-      Realize_Proc => On_Realize);
-
-
-   Class_Record : System.Address := System.Null_Address;
-
-   procedure Initialize
-     (Widget  : access Mini_Map_Record;
-      Watched : in     Graph_Widgets.Graph_Widget) is
-   begin
-      Gtk.Widget.Initialize_Widget (Widget);
-      Widget.Watched := null;
-      Widget.Buffer := Gdk.Pixmap.Null_Pixmap;
-      Widget.Polluted := True;
-      Set_Graph_Widget (Widget, Watched);
-      Gtk.Object.Initialize_Class_Record
-        (Object       => Widget,
-         Signals      => Gtkada.Types.Null_Array,
-         Class_Record => Class_Record);
-      Set_Events
-        (Widget,
-         Gdk.Types."or" (Get_Events (Widget), Gdk.Types.Button_Press_Mask));
-
-      Realize_Cbs.Connect
-        (Widget => Widget,
-         Name   => "realize",
-         Marsh  => Realize_Cbs.To_Marshaller (After_Realize'Access),
-         After  => True);
-      Unrealize_Cbs.Connect
-        (Widget => Widget,
-         Name   => "unrealize",
-         Marsh  => Unrealize_Cbs.To_Marshaller (On_Unrealize'Access));
-      Destroy_Cbs.Connect
-        (Widget => Widget,
-         Name   => "destroy",
-         Marsh  => Destroy_Cbs.To_Marshaller (On_Destroy'Access));
-      Size_Request_Cbs.Connect
-        (Widget => Widget,
-         Name   => "size_request",
-         Marsh  => Requisition_Marshallers.To_Marshaller
-                     (On_Size_Request'Access));
-      Size_Allocate_Cbs.Connect
-        (Widget => Widget,
-         Name   => "size_allocate",
-         Marsh  => Allocation_Marshallers.To_Marshaller
-                     (On_Size_Allocate'Access));
-      Expose_Event_Cbs.Connect
-        (Widget => Widget,
-         Name   => "expose_event",
-         Marsh  => Expose_Event_Cbs.To_Marshaller (On_Expose_Event'Access));
-      Button_Press_Event_Cbs.Connect
-        (Widget => Widget,
-         Name   => "button_press_event",
-         Marsh  => Button_Press_Event_Cbs.To_Marshaller
-                     (On_Button_Press_Event'Access));
-
-      Realize_Handling.Set_Realize (Widget);
-   end Initialize;
 
 
    -----------------------------
@@ -676,66 +694,66 @@ package body Giant.Mini_Maps is
 
 
 
-   --  ugly test code
-   package body Graph_Widgets is
-      Instance     : Graph_Widget := new Graph_Widget_Record;
-      Logical_Area : Vis.Logic.Rectangle_2d :=
-        Vis.Logic.Combine_Rectangle (100.0, -400.0, 1500.0, 600.0);
-      Visible_Area : Vis.Logic.Rectangle_2d :=
-        Vis.Logic.Combine_Rectangle (170.0, -300.0, 1000.0, 400.0);
+--     --  ugly test code
+--     package body Graph_Widgets is
+--        Instance     : Graph_Widget := new Graph_Widget_Record;
+--        Logical_Area : Vis.Logic.Rectangle_2d :=
+--          Vis.Logic.Combine_Rectangle (100.0, -400.0, 1500.0, 600.0);
+--        Visible_Area : Vis.Logic.Rectangle_2d :=
+--          Vis.Logic.Combine_Rectangle (170.0, -300.0, 1000.0, 400.0);
 
-      function Create return Graph_Widget is
-      begin
-         return Instance;
-      end Create;
+--        function Create return Graph_Widget is
+--        begin
+--           return Instance;
+--        end Create;
 
-      function Get_Logical_Area
-        (Widget : access Graph_Widget_Record'Class)
-        return Vis.Logic.Rectangle_2d is
-      begin
-         return Logical_Area;
-      end Get_Logical_Area;
+--        function Get_Logical_Area
+--          (Widget : access Graph_Widget_Record'Class)
+--          return Vis.Logic.Rectangle_2d is
+--        begin
+--           return Logical_Area;
+--        end Get_Logical_Area;
 
-      function Get_Visible_Area
-        (Widget : access Graph_Widget_Record'Class)
-        return Vis.Logic.Rectangle_2d is
-      begin
-         return Visible_Area;
-      end Get_Visible_Area;
+--        function Get_Visible_Area
+--          (Widget : access Graph_Widget_Record'Class)
+--          return Vis.Logic.Rectangle_2d is
+--        begin
+--           return Visible_Area;
+--        end Get_Visible_Area;
 
-      User_Data : Mini_Map := null;
+--        User_Data : Mini_Map := null;
 
-      procedure Set_User_Data
-        (Data : in     Mini_Map) is
-      begin
-         User_Data := Data;
-      end Set_User_Data;
+--        procedure Set_User_Data
+--          (Data : in     Mini_Map) is
+--        begin
+--           User_Data := Data;
+--        end Set_User_Data;
 
-      procedure Set_Logical_Area
-        (Widget : access Graph_Widget_Record'Class;
-         Area   : in     Vis.Logic.Rectangle_2d) is
-      begin
-         Logical_Area := Area;
-         On_Logical_Area_Changed (Widget, Logical_Area, User_Data);
-      end Set_Logical_Area;
+--        procedure Set_Logical_Area
+--          (Widget : access Graph_Widget_Record'Class;
+--           Area   : in     Vis.Logic.Rectangle_2d) is
+--        begin
+--           Logical_Area := Area;
+--           On_Logical_Area_Changed (Widget, Logical_Area, User_Data);
+--        end Set_Logical_Area;
 
-      procedure Set_Visible_Area
-        (Widget : access Graph_Widget_Record'Class;
-         Area   : in     Vis.Logic.Rectangle_2d) is
-      begin
-         Visible_Area := Area;
-         On_Visible_Area_Changed (Widget, Visible_Area, User_Data);
-      end Set_Visible_Area;
+--        procedure Set_Visible_Area
+--          (Widget : access Graph_Widget_Record'Class;
+--           Area   : in     Vis.Logic.Rectangle_2d) is
+--        begin
+--           Visible_Area := Area;
+--           On_Visible_Area_Changed (Widget, Visible_Area, User_Data);
+--        end Set_Visible_Area;
 
-      procedure Set_Location
-        (Widget     : access Graph_Widget_Record'Class;
-         Location   : in     Vis.Logic.Vector_2d) is
-      begin
-         Set_Center (Visible_Area, Location);
-         On_Visible_Area_Changed (Widget, Visible_Area, User_Data);
-      end Set_Location;
+--        procedure Set_Location
+--          (Widget     : access Graph_Widget_Record'Class;
+--           Location   : in     Vis.Logic.Vector_2d) is
+--        begin
+--           Set_Center (Visible_Area, Location);
+--           On_Visible_Area_Changed (Widget, Visible_Area, User_Data);
+--        end Set_Location;
 
-   end Graph_Widgets;
+--     end Graph_Widgets;
 
 end Giant.Mini_Maps;
 

@@ -1,6 +1,3 @@
-test :
-	make -C ../../ MAIN=src/vis/test EXEC=src/vis/test all
-
 settings :
 	make -C ../../ MAIN=src/vis/giant-graph_widgets-settings all
 

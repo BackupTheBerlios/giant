@@ -20,19 +20,20 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-graph_widgets-callbacks.ads,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/06/23 23:37:17 $
+--  $Date: 2003/07/02 16:49:15 $
 --
 ------------------------------------------------------------------------------
 
 
 with Gdk.Event;
+with Gtk.Adjustment;
 
 package Giant.Graph_Widgets.Callbacks is
 
    ----------------------------------------------------------------------------
-   --  Connects all Callbacks 'Widgets' needs
+   --  Connects all Callbacks 'Widget' needs
    procedure Connect_All_Callbacks
      (Widget : access Graph_Widget_Record'Class);
 
@@ -49,6 +50,11 @@ private
 
    procedure On_Destroy
      (Widget : access Graph_Widget_Record'Class);
+
+   procedure On_Set_Scroll_Adjustments
+     (Widget     : access Graph_Widget_Record'Class;
+      Horizontal : in     Gtk.Adjustment.Gtk_Adjustment;
+      Vertical   : in     Gtk.Adjustment.Gtk_Adjustment);
 
    procedure On_Size_Request
      (Widget      : access Graph_Widget_Record'Class;
