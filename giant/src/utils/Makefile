@@ -1,3 +1,6 @@
+merging_iterators :
+	make -C ../../ MAIN=src/utils/giant-merging_iterators all
+
 simple_priority_queues :
 	make -C ../../ MAIN=src/utils/giant-simple_priority_queues all
 
