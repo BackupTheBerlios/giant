@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-matrix_layouts.ads,v $, $Revision: 1.10 $
+--  $RCSfile: giant-matrix_layouts.ads,v $, $Revision: 1.11 $
 --  $Author: koppor $
---  $Date: 2003/07/11 00:46:15 $
+--  $Date: 2003/07/13 00:41:03 $
 --
 ------------------------------------------------------------------------------
 --
@@ -74,7 +74,11 @@ package Giant.Matrix_Layouts is
    --      Graph_Widet where the nodes to layout reside
    --
    --    Widget_Lock:
-   --      Lock of the widget, released at the end of the layout
+   --      Lock of the widget
+   --
+   --    Release_Widget_Lock
+   --      true  = release lock at the end of the layout
+   --      false = don't release
    --
    --    Target_Position:
    --      Position on window, where the upper-left corner of the matrix has to
@@ -86,6 +90,7 @@ package Giant.Matrix_Layouts is
    function Initialize
      (Widget              : in Giant.Graph_Widgets.Graph_Widget;
       Widget_Lock         : in Giant.Graph_Widgets.Lock_Type;
+      Release_Widget_Lock : in Boolean;
       Selection_To_Layout : in Giant.Graph_Lib.Selections.Selection;
       Target_Position     : in Giant.Vis.Logic.Vector_2d)
      return Matrix_Layout;
@@ -110,11 +115,12 @@ private
    type Matrix_Layout_Record is
      new Evolutions.Iterative_Evolution with record
         --  Init by Initialize
-        Widget          : Graph_Widgets.Graph_Widget;
-        Widget_Lock     : Graph_Widgets.Lock_Type;
-        Nodes_To_Layout : Graph_Lib.Node_Id_Set;
-        Target_Position : Vis.Logic.Vector_2d;
-        State           : Layout_State;
+        Widget              : Graph_Widgets.Graph_Widget;
+        Widget_Lock         : Graph_Widgets.Lock_Type;
+        Release_Widget_Lock : Boolean;
+        Nodes_To_Layout     : Graph_Lib.Node_Id_Set;
+        Target_Position     : Vis.Logic.Vector_2d;
+        State               : Layout_State;
 
         --  Init by Step.Init_Calculation
 
