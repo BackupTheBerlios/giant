@@ -22,10 +22,12 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/30 16:03:29 $
+-- $Date: 2003/07/01 10:25:23 $
 --
 -- This package implements the datatypes used in GSL.
 --
+
+with Text_IO;
 
 with Ada.Tags;
 use  Ada.Tags;
@@ -106,11 +108,12 @@ package body Giant.Gsl.Interpreters is
         (Individual.Gsl_Compiler, Name);
       -- initialize the result stack
       Individual.Result_Stack := Result_Stacks.Create;
+      -- initialize the stack for all activation records
+      Individual.Activation_Records := Activation_Record_Stacks.Create;
       -- create the main activation record and set it acitve
       Individual.Main_Activation_Record := Create_Activation_Record (null);
       Individual.Current_Activation_Record := 
         Individual.Main_Activation_Record;
-     
       -- register runtime functions
       Default_Logger.Debug
         ("Interpreter: Register runtime functions.", "Giant.Gsl");
@@ -233,8 +236,13 @@ package body Giant.Gsl.Interpreters is
                Script_Exec_Cmd;
 
             when AR_Destroy =>
-               Current_Interpreter.Current_Activation_Record :=
-                 Current_Interpreter.Current_Activation_Record.Parent;
+               Default_Logger.Debug
+                 ("Interpreter: DESTROY Activation_Record.", "Giant.Gsl");
+               Destroy_Activation_Record
+                 (Current_Interpreter.Current_Activation_Record);
+               Activation_Record_Stacks.Pop
+                 (Current_Interpreter.Activation_Records,
+                  Current_Interpreter.Current_Activation_Record);
 
             when others =>
                null;
@@ -274,9 +282,11 @@ package body Giant.Gsl.Interpreters is
                when Gsl_Script =>
                   Default_Logger.Debug
                     ("Interpreter: --- GSL Script ---", "Giant.Gsl");
-                  -- set the new Activation Record 
-                  --Current_Interpreter.Current_Activation_Record :=
-                  --  Get_Activation_Record (Gsl_Script_Reference (Script));
+                  -- set the new activation record and push the old one
+                  -- to the activation record stack
+                  Activation_Record_Stacks.Push
+                    (Current_Interpreter.Activation_Records,
+                     Current_Interpreter.Current_Activation_Record);
                   Current_Interpreter.Current_Activation_Record :=
                     Create_Activation_Record
                       (Get_Activation_Record (Gsl_Script_Reference (Script)));
@@ -365,7 +375,7 @@ package body Giant.Gsl.Interpreters is
      (Individual : access Interpreter_Record;
       Canceled   : in     Boolean) is
    begin
-      null;
+      Destroy_Activation_Record (Individual.Main_Activation_Record);
    end Finish;
 
    ---------------------------------------------------------------------------
@@ -420,8 +430,16 @@ package body Giant.Gsl.Interpreters is
    --
    procedure Destroy_Activation_Record
      (AR : Activation_Record) is
+
+      Iter : Gsl_Var_Hashed_Mappings.Values_Iter;
+      Var  : Gsl_Type;
    begin
-      null;
+      Iter := Gsl_Var_Hashed_Mappings.Make_Values_Iter (AR.Vars);
+      while Gsl_Var_Hashed_Mappings.More (Iter) loop
+         Gsl_Var_Hashed_Mappings.Next (Iter, Var);
+         Destroy_Gsl_Type (Var);
+      end loop;
+      Gsl_Var_Hashed_Mappings.Destroy (AR.Vars);
    end Destroy_Activation_Record;
 
    --------------------------------------------------------------------------

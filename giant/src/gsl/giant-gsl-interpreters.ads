@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/30 16:03:29 $
+-- $Date: 2003/07/01 10:25:23 $
 --
 -- This package implements the Gsl interpreter.
 --
@@ -143,6 +143,7 @@ private
          Result_Stack              : Result_Stacks.Stack;
          Main_Activation_Record    : Activation_Record;
          Current_Activation_Record : Activation_Record;
+         Activation_Records        : Activation_Record_Stacks.Stack;
          Gsl_Compiler              : Giant.Gsl.Compilers.Compiler;
       end record;
 
