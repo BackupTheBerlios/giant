@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.11 $
+--  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.12 $
 --  $Author: keulsn $
---  $Date: 2003/07/20 23:20:04 $
+--  $Date: 2003/07/21 19:01:06 $
 --
 ------------------------------------------------------------------------------
 
@@ -119,6 +119,9 @@ package body Giant.Graph_Widgets.Callbacks is
    procedure Begin_Mouse_Move_Action
      (Widget : access Graph_Widget_Record'Class;
       Mode   : in     Selection_Modify_Type) is
+
+      Iterator : Vis_Node_Sets.Iterator;
+      Node     : Vis_Data.Vis_Node_Id;
    begin
       Process_Mouse_Click
         (Widget          => Widget,
@@ -129,6 +132,12 @@ package body Giant.Graph_Widgets.Callbacks is
          --  Drag
          States.Begin_Drag (Widget);
          States.Changed_Temporary (Widget);
+--           Iterator := Vis_Node_Sets.Make_Iterator (Get_Floating_Nodes (Widget));
+--           while Vis_Node_Sets.More (Iterator) loop
+--              Vis_Node_Sets.Next (Iterator, Node);
+--              Vis_Data.Drop_Node (Widget.Manager, Node);
+--           end loop;
+--           Vis_Node_Sets.Destroy (Iterator);
          Redraw (Widget);
       elsif Vis_Data."/=" (States.Get_Click_Edge (Widget), null) then
          --  Drag on edge --> ignore

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.28 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.29 $
 --  $Author: keulsn $
---  $Date: 2003/07/20 23:20:04 $
+--  $Date: 2003/07/21 19:01:06 $
 --
 ------------------------------------------------------------------------------
 
@@ -898,10 +898,7 @@ package body Giant.Vis_Data is
          Iterator := Vis_Edge_Sets.Make_Iterator (Region.Edges);
       else
          --  Make empty Iterator
-         Iterator := Vis_Edge_Sets.Make_Reverse_Iterator (Region.Edges);
-         if Vis_Edge_Sets.More (Iterator) then
-            Vis_Edge_Sets.Next (Iterator);
-         end if;
+         Iterator := Vis_Edge_Sets.Make_Iterator (Vis_Edge_Sets.Empty_Set);
       end if;
       return Iterator;
    end Get_Polluted_Edges;
@@ -922,10 +919,7 @@ package body Giant.Vis_Data is
          Iterator := Vis_Node_Sets.Make_Iterator (Region.Nodes);
       else
          --  Make empty iterator
-         Iterator := Vis_Node_Sets.Make_Reverse_Iterator (Region.Nodes);
-         if Vis_Node_Sets.More (Iterator) then
-            Vis_Node_Sets.Next (Iterator);
-         end if;
+         Iterator := Vis_Node_Sets.Make_Iterator (Vis_Node_Sets.Empty_Set);
       end if;
       return Iterator;
    end Get_Polluted_Nodes;

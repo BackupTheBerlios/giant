@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.55 $
---  $Author: koppor $
---  $Date: 2003/07/17 16:14:32 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.56 $
+--  $Author: keulsn $
+--  $Date: 2003/07/21 19:01:06 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -1649,13 +1649,15 @@ package body Giant.Graph_Lib is
                   (IML_Node_ID_Mapping,
                    Storables.Get_Node_Id (Target) );
              else
-                Logger.Debug ("Edge_Field with non-IML_Root-target");
+                --  FIX: sk 20030721
+                --  Logger.Debug ("Edge_Field with non-IML_Root-target");
                 return Invalid_Node_Id;
              end if;
           else
              --  TBD: why is this reached only at a certain visstyle?
              --  see Martins Mail of 20030717
-             Logger.Debug ("Edge_Field with null target");
+             --  FIX: sk 20030721
+             --  Logger.Debug ("Edge_Field with null target");
              return Invalid_Node_Id;
           end if;
       end;

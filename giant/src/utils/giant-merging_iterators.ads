@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-merging_iterators.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-merging_iterators.ads,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/06/18 20:37:46 $
+--  $Date: 2003/07/21 19:01:06 $
 --
 ------------------------------------------------------------------------------
 --
@@ -288,7 +288,7 @@ package Giant.Merging_Iterators is
    --  Postcondition:
    --    Merger = null
    --  Complexity:
-   --    O (n * Complexits of Sets.Destroy)
+   --    O (n * Complexity of Sets.Destroy)
    --    if n = number of iterators 'Merger' is based on
    procedure Destroy
      (Merger   : in out Merger_Type);

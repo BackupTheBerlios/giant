@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-fixed_priority_queues.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-fixed_priority_queues.adb,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/06/30 02:55:17 $
+--  $Date: 2003/07/21 19:01:06 $
 --
 ------------------------------------------------------------------------------
 
@@ -121,6 +121,7 @@ package body Giant.Fixed_Priority_Queues is
       Position : in     Array_Bounds)
      return Item_Type is
    begin
+      pragma Assert (Get_Position (Queue.Field (Position)) = Position);
       return Queue.Field (Position);
    end Get_Item;
    pragma Inline (Get_Item);
@@ -161,35 +162,58 @@ package body Giant.Fixed_Priority_Queues is
      (Queue : in out Queue_Type;
       Index : in     Array_Bounds) is
 
+      Child_Index          : Array_Bounds;
       Parent_Index         : Array_Bounds;
+      Parent_Item          : Item_Type;
       Greater_Child_Index  : Array_Bounds;
+      Greater_Child_Item   : Item_Type;
       Largest_Parent_Index : Array_Bounds;
+      Update_Item          : Item_Type;
    begin
+      Update_Item := Get_Item (Queue, Get_Last_Index (Queue));
+
       --  mark the item as removed
       Set_Position (Get_Item (Queue, Index), 0);
 
-      if Get_Size (Queue) > 1 then
-         --  if is necessary because otherwise Get_Parent_Index
-         --  would be illegal
-         Parent_Index := Index;
-         Largest_Parent_Index := Get_Parent_Index (Get_Last_Index (Queue));
-
-         while Parent_Index <= Largest_Parent_Index loop
-            Greater_Child_Index := Get_Greater_Child_Index
-              (Queue, Parent_Index);
-            Set_Item
-              (Queue, Parent_Index, Get_Item (Queue, Greater_Child_Index));
-            Parent_Index := Greater_Child_Index;
+      Queue.Size := Queue.Size - 1;
+      if Get_Size (Queue) < 1 then
+         null;
+      elsif Get_Size (Queue) = 1 and then Index <= Get_Last_Index (Queue) then
+         Set_Item (Queue, Get_First_Index (Queue), Update_Item);
+      elsif Index <= Get_Last_Index (Queue) then
+         --  Propagate upwards if possible
+         Child_Index := Index;
+         loop
+            exit when Child_Index = Get_First_Index (Queue);
+            Parent_Index := Get_Parent_Index (Child_Index);
+            Parent_Item := Get_Item (Queue, Parent_Index);
+            exit when not Has_Higher_Priority (Update_Item, Parent_Item);
+            Set_Item (Queue, Child_Index, Parent_Item);
+            Child_Index := Parent_Index;
          end loop;
-         if Parent_Index < Get_Last_Index (Queue) then
-            --  if is necessary because otherwise 'Set_Item' would damage the
-            --  Position in Get_Item (Queue, Parent_Index)
-            Set_Item
-              (Queue, Parent_Index, Get_Item (Queue, Get_Last_Index (Queue)));
+
+         if Child_Index /= Index then
+            --  Upwards successful
+            Set_Item (Queue, Child_Index, Update_Item);
+         else
+            --  Upwards not successful, try downwards
+            Parent_Index := Index;
+            Largest_Parent_Index := Get_Parent_Index (Get_Last_Index (Queue));
+
+            loop
+               exit when Parent_Index > Largest_Parent_Index;
+               Greater_Child_Index := Get_Greater_Child_Index
+                 (Queue, Parent_Index);
+               Greater_Child_Item := Get_Item (Queue, Greater_Child_Index);
+               exit when not Has_Higher_Priority
+                 (Greater_Child_Item, Update_Item);
+               Set_Item
+                 (Queue, Parent_Index, Greater_Child_Item);
+               Parent_Index := Greater_Child_Index;
+            end loop;
+            Set_Item (Queue, Parent_Index, Update_Item);
          end if;
       end if;
-
-      Queue.Size := Queue.Size - 1;
    end Remove_At_Index;
 
 

@@ -20,12 +20,14 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.21 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.22 $
 --  $Author: keulsn $
---  $Date: 2003/07/20 23:20:04 $
+--  $Date: 2003/07/21 19:01:06 $
 --
 ------------------------------------------------------------------------------
 
+
+with Ada.Unchecked_Conversion;
 
 with Gdk.Types;
 with Gdk.Drawable;
@@ -931,6 +933,9 @@ package body Giant.Graph_Widgets.Drawing is
 
       package Clipping_Queues renames Vis_Data.Clipping_Queues;
       package Iterators renames Vis_Data.Node_Update_Iterators;
+
+      function To_Natural is new Ada.Unchecked_Conversion
+        (Source => Vis_Data.Layer_Type, Target => Natural);
 
       Current_Clipping : Vis_Data.Layer_Clipping_Access;
       Current_Node     : Vis_Data.Vis_Node_Id;
