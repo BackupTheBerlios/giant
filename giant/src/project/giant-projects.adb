@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.15 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.16 $
 --  $Author: schwiemn $
---  $Date: 2003/06/18 10:40:08 $
+--  $Date: 2003/06/18 13:44:59 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -71,7 +71,7 @@ package body Giant.Projects is
    ---------------------------------------------------------------------------
 
    ---------------------------------------------------------------------------
-   --  Does not read all parts of.3 the record !!!
+   --  Does not read all parts of the record !!!
    procedure Subgraph_Data_Element_Read
      (Stream  : in     Bauhaus_IO.In_Stream_Type;
       Element :    out Subgraph_Data_Elemet) is
@@ -717,6 +717,22 @@ package body Giant.Projects is
    end Get_Bauhaus_IML_Graph_Data;
 
    ---------------------------------------------------------------------------
+   function Load_Project_File
+     (Project_File_Name : in String)
+     return Project_Access is
+   begin
+
+
+
+      return null;
+   end Load_Project_File;
+
+
+
+
+
+
+   ---------------------------------------------------------------------------
    function Load_Project
      (Project_Name      : in String;
       Project_Directory : in String)
@@ -725,9 +741,14 @@ package body Giant.Projects is
 
    begin
 
-   --  TODO
-   --  BEIM LADEN CHECKEN OB ZWEIMAL DER GLEICHE NAME VORKOMMT; FALLS JA
-   --  EXCEPTION (bei Anzeigefenstern oder Subgraphen)
+
+
+
+
+      --  TODO
+      --  BEIM LADEN CHECKEN OB ZWEIMAL DER GLEICHE NAME VORKOMMT; FALLS JA
+      --  EXCEPTION (bei Anzeigefenstern oder Subgraphen).
+      
 
 
 
@@ -824,6 +845,18 @@ package body Giant.Projects is
 
       return New_Project_Access;
    end Create_Empty_Project;
+   
+   ----------------------------------------------------------------------------
+   function Create_Empty_Project_For_File
+     (Project_File_Name               : in String;
+      Bauhaus_IML_Graph_File          : in String;
+      Bauhaus_IML_Graph_File_Checksum : in Integer)
+     return Project_Access is
+   begin
+     
+     -- TODO
+      return null;
+   end Create_Empty_Project_For_File;
 
    ----------------------------------------------------------------------------
    procedure Free_Project_Access is new Ada.Unchecked_Deallocation
@@ -1569,13 +1602,14 @@ package body Giant.Projects is
       if A_Vis_Window_Data_Element.Is_File_Linked then
       
          File_Management.Delete_File (Ada.Strings.Unbounded.To_String
-           (A_Vis_Window_Data_Element.Existing_Vis_Window_File);
+           (A_Vis_Window_Data_Element.Existing_Vis_Window_File));
       end if;
       
       -- remove vis window from project (no deallocation)
       --------------------------------------------------- 
       Known_Vis_Windows_Hashs.Unbind 
-        (A_Vis_Window_Data_Element.Vis_Window_Name);
+        (Project.All_Vis_Windows, 
+         A_Vis_Window_Data_Element.Vis_Window_Name);
    end Remove_Visualisation_Window;
 
 
@@ -1590,9 +1624,15 @@ package body Giant.Projects is
      return Boolean is
 
    begin
-
-      -- DUMMY
-      return True;
+   
+      if (Project = null) then
+         raise Project_Access_Not_Initialized_Exception;
+      end if;
+      
+      return Subgraph_Data_Hashs.Is_Bound 
+        (Project.All_Subgraphs, 
+         Ada.Strings.Unbounded.To_Unbounded_String
+           (Subgraph_Name));    
    end Does_Subgraph_Exist;
 
    ---------------------------------------------------------------------------
@@ -1602,29 +1642,82 @@ package body Giant.Projects is
      return Graph_Lib.Subgraphs.Subgraph is
 
    begin
+   
+      if (Project = null) then
+         raise Project_Access_Not_Initialized_Exception;
+      end if;
 
-      -- DUMMY
-      return Graph_Lib.Subgraphs.Create(Subgraph_Name);
+      if not Does_Subgraph_Exist (Project, Subgraph_Name) then
+         raise Subgraph_Is_Not_Part_Of_Project_Exception;
+      end if;
+      
+      return Subgraph_Data_Hashs.Fetch
+        (Project.All_Subgraphs, 
+         Ada.Strings.Unbounded.To_Unbounded_String
+           (Subgraph_Name)).Subgraph;  
    end Get_Subgraph;
-
 
    ---------------------------------------------------------------------------
    function Get_All_Subgraphs
      (Project : in Project_Access)
      return String_Lists.List is
+     
+     Names_List             : String_Lists.List;
+     Subgraph_Iter          : Subgraph_Data_Hashs.Values_Iter;
+     A_Subgraph_Data_Elemet : Subgraph_Data_Elemet;
    begin
+   
+      if (Project = null) then
+         raise Project_Access_Not_Initialized_Exception;
+      end if;   
+            
+      Names_List := String_Lists.Create;
+      Subgraph_Iter := Subgraph_Data_Hashs.Make_Values_Iter
+        (Project.All_Subgraphs);
 
-       -- DUMMY
-      return String_Lists.Create;
+      while Subgraph_Data_Hashs.More (Subgraph_Iter) loop
+
+         Subgraph_Data_Hashs.Next 
+           (Subgraph_Iter, A_Subgraph_Data_Elemet);     
+         String_Lists.Attach
+           (Names_List, 
+            Ada.Strings.Unbounded.To_Unbounded_String
+              (Graph_Lib.Subgraphs.Get_Name 
+                (A_Subgraph_Data_Elemet.Subgraph)));
+      end loop;
+       
+      return Names_List;
    end Get_All_Subgraphs;
 
    ---------------------------------------------------------------------------
    procedure Add_Subgraph
-     (Project      : in Project_Access;
+     (Project  : in Project_Access;
       Subgraph : in Graph_Lib.Subgraphs.Subgraph) is
-
+      
+      New_Subgraph_Data_Elemet : Subgraph_Data_Elemet;
    begin
-      null;
+     
+      if (Project = null) then
+         raise Project_Access_Not_Initialized_Exception;
+      end if;  
+
+      if Does_Subgraph_Exist 
+        (Project, 
+         Graph_Lib.Subgraphs.Get_Name (Subgraph)) then
+         raise Subgraph_Is_Already_Part_Of_Project_Exception;
+      end if;   
+         
+     New_Subgraph_Data_Elemet.Subgraph               := Subgraph;
+     New_Subgraph_Data_Elemet.Highlight_Status       := None; 
+     New_Subgraph_Data_Elemet.Is_File_Linked         := False;
+     New_Subgraph_Data_Elemet.Existing_Subgraph_File :=
+       Ada.Strings.Unbounded.Null_Unbounded_String;
+     
+     Subgraph_Data_Hashs.Bind 
+       (Project.All_Subgraphs,
+        Ada.Strings.Unbounded.To_Unbounded_String
+          (Graph_Lib.Subgraphs.Get_Name (Subgraph)),
+        New_Subgraph_Data_Elemet);               
    end Add_Subgraph;
 
    ---------------------------------------------------------------------------
@@ -1633,7 +1726,9 @@ package body Giant.Projects is
        Subgraph_Name : in String) is
 
    begin
+   
 
+            
 
      null;
    end Remove_Subgraph;

@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.16 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.17 $
 -- $Author: schwiemn $
--- $Date: 2003/06/18 10:40:08 $
+-- $Date: 2003/06/18 13:44:59 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -193,6 +193,16 @@ package Giant.Projects is
      (Project_Name : in String;
       Project_Directory : in String)
      return Project_Access;
+          
+   ---------------------------------------------------------------------------
+   -- Same functionality as "Load_Project" -> just a wrapper.
+   --
+   -- Parameters:
+   --   Project_File_Name - The full name (incl. absolute path) of a
+   --   Project File.
+   function Load_Project_File
+     (Project_File_Name : in String)
+     return Project_Access;
 
    ---------------------------------------------------------------------------
    -- Initializes a project.
@@ -220,6 +230,18 @@ package Giant.Projects is
    function Create_Empty_Project
      (Project_Name                    : in String;
       Project_Directory               : in String;
+      Bauhaus_IML_Graph_File          : in String;
+      Bauhaus_IML_Graph_File_Checksum : in Integer)
+     return Project_Access;
+
+   ---------------------------------------------------------------------------
+   -- Same functionality as "Create_Empty_Project" -> just a wrapper.
+   --
+   -- Parameters:
+   --   Project_File_Name - The full name (incl. absolute path) of a
+   --   Project File.
+   function Create_Empty_Project_For_File
+     (Project_File_Name               : in String;
       Bauhaus_IML_Graph_File          : in String;
       Bauhaus_IML_Graph_File_Checksum : in Integer)
      return Project_Access;
