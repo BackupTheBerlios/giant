@@ -20,10 +20,12 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-node_info_dialog.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-node_info_dialog.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/20 16:47:35 $
+--  $Date: 2003/06/20 18:03:14 $
 --
+
+with Interfaces.C.Strings;
 
 with Glib;
 with Gtk.Box;
@@ -31,6 +33,7 @@ with Gtk.Button;
 with Gtk.Table;
 with Gtk.Widget;
 with Gtk.Enums; use Gtk.Enums;
+with Gtkada.Types;
 
 with Giant.Gui_Utils; use Giant.Gui_Utils;
 
@@ -57,7 +60,7 @@ package body Giant.Node_Info_Dialog is
    begin
       Dialog := Node_Info_Dialog_Access (Gtk.Widget.Get_Toplevel
                                    (Gtk.Widget.Gtk_Widget (Source)));
-      -- FIX: delete info
+      Set_Node (Dialog, Dialog.Node);
    end On_Update_Button_Clicked;
 
    ---------------------------------------------------------------------------
@@ -75,57 +78,96 @@ package body Giant.Node_Info_Dialog is
    procedure Initialize
      (Dialog : access Node_Info_Dialog_Record'class)
    is
-	  Center_Box : Gtk.Box.Gtk_Vbox;
-	  Table : Gtk.Table.Gtk_Table;
-	  Row : Glib.Guint := 0;
+      Center_Box : Gtk.Box.Gtk_Vbox;
+      Table : Gtk.Table.Gtk_Table;
+      Row : Glib.Guint := 0;
    begin
       Default_Dialog.Initialize (Dialog, -"Node Info",
                                  Default_Dialog.Button_Close);
-	  
-	  --  vbox
-	  Center_Box := Default_Dialog.Get_Center_Box (Dialog);
-	  
-	  --  node
-	  Gtk.Table.Gtk_New (Table, Rows => 2, Columns => 2, Homogeneous => False);
+
+      --  vbox
+      Center_Box := Default_Dialog.Get_Center_Box (Dialog);
+
+      --  node
+      Gtk.Table.Gtk_New (Table, Rows => 2, Columns => 2, Homogeneous => False);
       Gtk.Table.Set_Row_Spacings (Table, Glib.Guint (DEFAULT_SPACING));
-      Gtk.Table.Set_Col_Spacings (Table, Glib.Guint (DEFAULT_SPACING));
-	  Gtk.Box.Pack_Start (Center_Box, Table, expand => True, Fill => True,
+      Gtk.Table.Set_Col_Spacings (Table, Glib.Guint
+                                  (DEFAULT_SPACING));
+      Gtk.Table.Set_Border_Width (Table, DEFAULT_SPACING);
+      Gtk.Box.Pack_Start (Center_Box, Add_Frame (Table, -"Node"),
+                          expand => False, Fill => False,
                           Padding => DEFAULT_SPACING);
-	  
-	  Dialog.ID_Label := New_Label ("");
-	  Add_Row (Table, Row, New_Label (-"ID"), Dialog.ID_Label);
-	  
-	  Dialog.Type_Label := New_Label ("");
-	  Add_Row (Table, Row, New_Label (-"ID"), Dialog.Type_Label);
-	  
+
+      Dialog.ID_Label := New_Label ("");
+      Add_Row_Labels (Table, Row, New_Label (-"ID"), Dialog.ID_Label);
+
+      Dialog.Type_Label := New_Label ("");
+      Add_Row_Labels (Table, Row, New_Label (-"Type"), Dialog.Type_Label);
+
+      --  attributes
+      Clists.Create (Dialog.Attribute_List, 2);
+      Clists.Set_Column_Title (Dialog.Attribute_List, 0, -"Name");
+      Clists.Set_Column_Title (Dialog.Attribute_List, 1, -"Value");
+      Gtk.Box.Pack_Start (Center_Box,
+                          Add_Scrollbar_And_Frame (Dialog.Attribute_List,
+                                                   -"Attributes"),
+                          expand => True, Fill => True,
+                          Padding => DEFAULT_SPACING);
+
       --  buttons
       Default_Dialog.Add (Dialog, New_Button (-"Update",
-											  On_Update_Button_Clicked'Access));
-	  Default_Dialog.Add (Dialog, New_Button (-"Pick",
-											  On_Pick_Button_Clicked'Access));
+                                              On_Update_Button_Clicked'Access));
+      Default_Dialog.Add (Dialog, New_Button (-"Pick",
+                                              On_Pick_Button_Clicked'Access));
 
    end;
-   
+
    ---------------------------------------------------------------------------
    --  Other Methods
    ---------------------------------------------------------------------------
-   
+
    function Can_Hide
      (Dialog : access Node_Info_Dialog_Record)
      return Boolean
    is
    begin
-	  -- FIX: abort a possible pick action
-	  return True;
+      -- FIX: abort a possible pick action
+      return True;
    end Can_Hide;
-     
+
    procedure Set_Node
-	 (Dialog : access Node_Info_Dialog_Record'Class;
-	  Node	 : in     Graph_Lib.Node_Id)
+     (Dialog : access Node_Info_Dialog_Record'Class;
+      Node   : in     Graph_Lib.Node_Id)
    is
+      Row : Glib.Gint;
+      Row_Data : Gtkada.Types.Chars_Ptr_Array (0 .. 1);
+      Iterator : Graph_Lib.Node_Attribute_Iterator;
+      Attribute : Graph_Lib.Node_Attribute_Id;
    begin
-	  Gtk.Label.Set_Text (Dialog.ID_Label, Graph_Lib.Node_Id_Image (Node));
---  	  Gtk.Label.Set_Text (Dialog.Type_Label, 
---  						  Graph_Lib.Get_Node_Class_Id (Node)
+      Dialog.Node := Node;
+
+      Gtk.Label.Set_Text (Dialog.ID_Label, Graph_Lib.Node_Id_Image (Node));
+--        Gtk.Label.Set_Text (Dialog.Type_Label,
+--                            Graph_Lib.Get_Node_Class_Id (Node)
+
+      --  set attributes
+      Clists.Clear (Dialog.Attribute_List);
+      Iterator := Graph_Lib.Make_Attribute_Iterator (Node);
+      while (Graph_Lib.More (Iterator)) loop
+         Graph_Lib.Next (Iterator, Attribute);
+         Row_Data (0) := Interfaces.C.Strings.New_String
+           (Graph_Lib.Convert_Node_Attribute_Id_To_Name (Attribute));
+         declare
+         begin
+            Row_Data (1) := Interfaces.C.Strings.New_String
+              (Graph_Lib.Get_Node_Attribute_Value_As_String (Node,
+                                                             Attribute));
+         exception
+           when Giant.Graph_Lib.Node_Does_Not_Exist =>
+              Row_Data (1) := Interfaces.C.Strings.New_String (-"*Not Found*");
+         end;
+         Row := Clists.Append (Dialog.Attribute_List, Row_Data);
+         Gtkada.Types.Free (Row_Data);
+      end loop;
    end Set_Node;
 end Giant.Node_Info_Dialog;

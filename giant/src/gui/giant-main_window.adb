@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.18 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.19 $
 --  $Author: squig $
---  $Date: 2003/06/20 16:47:35 $
+--  $Date: 2003/06/20 18:03:14 $
 --
 
 with Ada.Strings.Unbounded;
@@ -52,6 +52,7 @@ with Giant.Clists;
 with Giant.Controller;
 with Giant.Default_Dialog;
 with Giant.Default_Logger;
+with Giant.Graph_Lib;
 with Giant.Graph_Lib.Subgraphs;
 with Giant.Gsl_Dialog;
 with Giant.Gui_Manager;
@@ -66,12 +67,12 @@ package body Giant.Main_Window is
    package Logger is new Giant.Logger("giant.main_window");
 
    procedure Update_Subgraph
-     (List : access String_Clists.Giant_Clist_Record;
+     (List : access String_Clists.Giant_Data_Clist_Record;
       Row  : in     Glib.Gint;
       Name : in     String);
 
    procedure Update_Window
-     (List : access String_Clists.Giant_Clist_Record;
+     (List : access String_Clists.Giant_Data_Clist_Record;
       Row  : in     Glib.Gint;
       Name : in     String);
 
@@ -86,10 +87,10 @@ package body Giant.Main_Window is
    Project_Quit_Menu_Item : Gtk.Menu_Item.Gtk_Menu_Item;
 
    Window_List_Menu : Gtk.Menu.Gtk_Menu;
-   Window_List : String_Clists.Giant_Clist;
+   Window_List : String_Clists.Giant_Data_Clist;
 
    Subgraph_List_Menu : Gtk.Menu.Gtk_Menu;
-   Subgraph_List : String_Clists.Giant_Clist;
+   Subgraph_List : String_Clists.Giant_Data_Clist;
 
    Status_Bar : Gtk.Status_Bar.Gtk_Status_Bar;
 
@@ -470,7 +471,7 @@ package body Giant.Main_Window is
 
       --  window list
       String_Clists.Create (Window_List, 2, Update_Window'Access);
-      Connect_Popup_Menu (Window_List, Window_List_Menu);
+      String_Clists.Connect_Popup_Menu (Window_List, Window_List_Menu);
 
       String_Clists.Set_Column_Title (Window_List, 0, -"Name");
       String_Clists.Set_Column_Title (Window_List, 1, -"Status");
@@ -495,7 +496,7 @@ package body Giant.Main_Window is
       --  sub graph list
       String_Clists.Create (Subgraph_List, 4, Update_Subgraph'Access);
       String_Clists.Set_Show_Titles (Subgraph_List, True);
-      Connect_Popup_Menu (Subgraph_List, Subgraph_List_Menu);
+      String_Clists.Connect_Popup_Menu (Subgraph_List, Subgraph_List_Menu);
 
       String_Clists.Set_Column_Title (Subgraph_List, 0, -"Name");
       String_Clists.Set_Column_Title (Subgraph_List, 1, -"Nodes");
@@ -520,7 +521,7 @@ package body Giant.Main_Window is
    ---------------------------------------------------------------------------
 
    procedure Update_Window
-     (List : access String_Clists.Giant_Clist_Record;
+     (List : access String_Clists.Giant_Data_Clist_Record;
       Row  : in     Glib.Gint;
       Name : in     String)
    is
@@ -562,7 +563,7 @@ package body Giant.Main_Window is
    ---------------------------------------------------------------------------
 
    procedure Update_Subgraph
-     (List : access String_Clists.Giant_Clist_Record;
+     (List : access String_Clists.Giant_Data_Clist_Record;
       Row  : in     Glib.Gint;
       Name : in     String)
    is

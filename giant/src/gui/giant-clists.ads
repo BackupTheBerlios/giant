@@ -20,12 +20,11 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-clists.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-clists.ads,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/19 16:38:06 $
+--  $Date: 2003/06/20 18:03:14 $
 --
---  Provides an convenince Gtk.Clist that has a single row data type 
---  associated.
+--  Provides an enhanced Gtk.Clist.
 --
 --  Pattern:
 --    ADT
@@ -33,65 +32,33 @@
 
 with Glib;
 with Gtk.Clist;
-
-generic
-
-   type Data_Type (<>) is private;
+with Gtk.Menu;
 
 package Giant.Clists is
-
-   pragma Elaborate_Body;
 
    type Giant_Clist_Record is new Gtk.Clist.Gtk_Clist_Record with private;
 
    type Giant_Clist is access all Giant_Clist_Record'Class;
 
-   type Update_Procedure_Type is access procedure
-	 (List : access Giant_Clist_Record;
-	  Row  : in     Glib.Gint;
-	  Item : in     Data_Type);
-
    procedure Create
-	 (List			   :    out Giant_Clist;
-	  Columns		   : in     Glib.Gint;
-	  Update_Procedure : in     Update_Procedure_Type);
+     (List    :    out Giant_Clist;
+      Columns : in     Glib.Gint);
 
    procedure Initialize
-	 (List			   : access Giant_Clist_Record'Class;
-	  Columns		   : in     Glib.Gint;
-	  Update_Procedure : in     Update_Procedure_Type);
+     (List    : access Giant_Clist_Record'Class;
+      Columns : in     Glib.Gint);
 
-   procedure Add 
-	 (List : access Giant_Clist_Record;
-	  Item : in     Data_Type);
-
-   function Get_Row
-	 (List : access Giant_Clist_Record;
-	  Item : in Data_Type)
-	  return Glib.Gint;
-
-   function Get_Selected_Item
-	 (List : access Giant_Clist_Record)
-	  return Data_Type;
+   procedure Connect_Popup_Menu
+     (List : access Giant_Clist_Record;
+      Menu : access Gtk.Menu.Gtk_Menu_Record'Class);
 
    function Get_Selected_Row
-     (List : access Giant_Clist_Record'Class)
+     (List : access Giant_Clist_Record)
      return Glib.Gint;
-
-   procedure Update
-	 (List : access Giant_Clist_Record;
-	  Item : in Data_Type);
-
-   procedure Remove
-	 (List : access Giant_Clist_Record;
-	  Item : in Data_Type);
 
 private
 
-   package Data is new Gtk.Clist.Row_Data (Data_Type);
-
-   type Giant_Clist_Record is new Gtk.Clist.Gtk_Clist_Record with record
-	  Update_Procedure : Update_Procedure_Type;
-   end record;
+   type Giant_Clist_Record is new Gtk.Clist.Gtk_Clist_Record with null
+      record;
 
 end Giant.Clists;

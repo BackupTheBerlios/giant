@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.7 $
 --  $Author: squig $
---  $Date: 2003/06/19 19:37:05 $
+--  $Date: 2003/06/20 18:03:14 $
 --
 
 with Glib;
@@ -32,6 +32,7 @@ with Gtk.Enums; use Gtk.Enums;
 with Gtk.Menu_Item;
 with Gtk.Widget;
 
+with Giant.Clists;
 with Giant.Controller;
 with Giant.Default_Dialog;
 with Giant.Gui_Utils; use Giant.Gui_Utils;
@@ -39,12 +40,12 @@ with Giant.Gui_Utils; use Giant.Gui_Utils;
 package body Giant.Graph_Window is
 
    procedure Update_Pin
-     (List : access String_Clists.Giant_Clist_Record;
+     (List : access String_Clists.Giant_Data_Clist_Record;
       Row  : in     Glib.Gint;
       Name : in     String);
 
    procedure Update_Selection
-     (List : access String_Clists.Giant_Clist_Record;
+     (List : access String_Clists.Giant_Data_Clist_Record;
       Row  : in     Glib.Gint;
       Name : in     String);
 
@@ -173,7 +174,7 @@ package body Giant.Graph_Window is
 
       --  pins
       String_Clists.Create (Window.Pin_List, 1, Update_Pin'Access);
-      Connect_Popup_Menu (Window.Pin_List, Window.Pin_List_Menu);
+      String_Clists.Connect_Popup_Menu (Window.Pin_List, Window.Pin_List_Menu);
 
       String_Clists.Set_Column_Title (Window.Pin_List, 0, -"Name");
 
@@ -188,7 +189,8 @@ package body Giant.Graph_Window is
       --  selections
       String_Clists.Create (Window.Selection_List, 2, Update_Selection'Access);
       String_Clists.Set_Show_Titles (Window.Selection_List, True);
-      Connect_Popup_Menu (Window.Selection_List, Window.Selection_List_Menu);
+      String_Clists.Connect_Popup_Menu
+        (Window.Selection_List, Window.Selection_List_Menu);
 
       String_Clists.Set_Column_Title (Window.Selection_List, 0, -"Name");
       String_Clists.Set_Column_Title (Window.Selection_List, 1, -"Color");
@@ -313,7 +315,7 @@ package body Giant.Graph_Window is
    ---------------------------------------------------------------------------
 
    procedure Update_Pin
-     (List : access String_Clists.Giant_Clist_Record;
+     (List : access String_Clists.Giant_Data_Clist_Record;
       Row  : in     Glib.Gint;
       Name : in     String)
    is
@@ -350,7 +352,7 @@ package body Giant.Graph_Window is
    ---------------------------------------------------------------------------
 
    procedure Update_Selection
-     (List : access String_Clists.Giant_Clist_Record;
+     (List : access String_Clists.Giant_Data_Clist_Record;
       Row  : in     Glib.Gint;
       Name : in     String)
    is

@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.11 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.12 $
 -- $Author: squig $
--- $Date: 2003/06/20 16:47:35 $
+-- $Date: 2003/06/20 18:03:14 $
 --
 
 with Glib;
@@ -32,122 +32,23 @@ with Gtk.Tearoff_Menu_Item;
 
 package body Giant.Gui_Utils is
 
-   package Clist_Menu_Return_Callback is new
-     Gtk.Handlers.User_Return_Callback (Gtk.Clist.Gtk_Clist_Record, Boolean,
-                                        Gtk.Menu.Gtk_Menu);
-
-   package Clist_Menu_Callback is new
-     Gtk.Handlers.User_Callback (Gtk.Clist.Gtk_Clist_Record,
-                                 Gtk.Menu.Gtk_Menu);
-
-   Sensitive: Boolean;
-
-   procedure Set_Children_Sensitive
-     (Widget : access Gtk.Widget.Gtk_Widget_Record'Class)
+   procedure Add_Row_Widgets
+     (Table : in     Gtk.Table.Gtk_Table;
+      Row   : in out Glib.Guint;
+      Left : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Right : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
+      use type Glib.Guint;
    begin
-      --  do not disable tear off items
-      if (Widget.all
-          in Gtk.TearOff_Menu_Item.Gtk_Tearoff_Menu_Item_Record) then
-         return;
-      end if;
-
-      Gtk.Widget.Set_Sensitive (Widget, Sensitive);
-   end;
-
-   function On_Clist_Button_Press
-     (Source : access Gtk.Clist.Gtk_Clist_Record'Class;
-      Event  : in     Gdk.Event.Gdk_Event;
-      Menu   : in     Gtk.Menu.Gtk_Menu)
-     return Boolean
-   is
-      use Glib;
-      use Gdk.Types;
-
-      Row : Gint;
-      Column : Gint;
-      Is_Valid : Boolean;
-   begin
-      if Gdk.Event.Get_Button (Event) = 3
-        and then Gdk.Event.Get_Event_Type (Event) = Gdk.Types.Button_Press
-      then
-         Gtk.Clist.Get_Selection_Info (Source,
-                                       Gint (Gdk.Event.Get_X (Event)),
-                                       Gint (Gdk.Event.Get_Y (Event)),
-                                       Row, Column, Is_Valid);
-         if (Is_Valid) then
-            Gtk.Clist.Select_Row (Source, Row, Column);
-            Gtk.Menu.Show_All (Menu);
-            Gtk.Menu.Popup (Menu,
-                            Button => Gdk.Event.Get_Button (Event),
-                            Activate_Time => Gdk.Event.Get_Time (Event));
-            return True;
-         end if;
-      end if;
-      return False;
-   end On_Clist_Button_Press;
-
-   procedure On_Clist_Click_Column
-     (List   : access Gtk.Clist.Gtk_Clist_Record'Class;
-      Args   : in     Gtk.Arguments.Gtk_Args)
-   is
-      Column : constant Glib.Gint := Gtk.Arguments.To_Gint (Args, 1);
-
-      use type Glib.Gint;
-      use type Gtk.Clist.Gtk_Sort_Type;
-   begin
-      if (Column = Gtk.Clist.Get_Sort_Column (List)
-          and then Gtk.Clist.Get_Sort_Type (List)
-          = Gtk.Clist.Ascending) then
-         Gtk.Clist.Set_Sort_Type (List, Gtk.Clist.Descending);
-      else
-         Gtk.Clist.Set_Sort_Type (List, Gtk.Clist.Ascending);
-      end if;
-
-      Gtk.Clist.Set_Sort_Column (List, Column);
-      Gtk.Clist.Sort (List);
-   end On_Clist_Click_Column;
-
-   procedure On_Clist_Select_Row
-     (List : access Gtk.Clist.Gtk_Clist_Record'Class;
-      Args : in     Gtk.Arguments.Gtk_Args;
-      Menu : in     Gtk.Menu.Gtk_Menu)
-   is
-   begin
-      Sensitive := True;
-      Gtk.Menu.Forall (Menu, Set_Children_Sensitive'Access);
-   end On_Clist_Select_Row;
-
-   procedure On_Clist_Unselect_Row
-     (List : access Gtk.Clist.Gtk_Clist_Record'Class;
-      Args : in     Gtk.Arguments.Gtk_Args;
-      Menu : in     Gtk.Menu.Gtk_Menu)
-   is
-   begin
-      Sensitive := False;
-      Gtk.Menu.Forall (Menu, Set_Children_Sensitive'Access);
-   end On_Clist_Unselect_Row;
-
-   procedure Connect_Popup_Menu
-     (List : access Gtk.Clist.Gtk_Clist_Record'Class;
-      Menu : access Gtk.Menu.Gtk_Menu_Record'Class)
-   is
-   begin
-      Clist_Menu_Return_Callback.Connect
-        (List, "button_press_event",
-         Clist_Menu_Return_Callback.To_Marshaller
-         (On_Clist_Button_Press'Access), Gtk.Menu.Gtk_Menu (Menu));
-
-      Clist_Menu_Callback.Connect
-        (List, "select_row",
-         On_Clist_Select_Row'Access, Gtk.Menu.Gtk_Menu (Menu));
-      Clist_Menu_Callback.Connect
-        (List, "unselect_row",
-         On_Clist_Unselect_Row'Access, Gtk.Menu.Gtk_Menu (Menu));
-
-      Clist_Callback.Connect
-        (List, "click_column", On_Clist_Click_Column'Access);
-   end Connect_Popup_Menu;
+      Gtk.Table.Attach (Table, Left,
+                        Left_Attach => 0, Right_Attach => 1,
+                        Top_Attach => Row, Bottom_Attach => Row + 1,
+                        Xoptions => Gtk.Enums.Fill);
+      Gtk.Table.Attach (Table, Right,
+                        Left_Attach => 1, Right_Attach => 2,
+                        Top_Attach => Row, Bottom_Attach => Row + 1);
+      Row := Row + 1;
+   end Add_Row_Widgets;
 
    procedure Add_Row
      (Table : in     Gtk.Table.Gtk_Table;
@@ -159,15 +60,22 @@ package body Giant.Gui_Utils is
    begin
       --  right align
       Gtk.Misc.Set_Alignment (Left, 1.0, 0.5);
-
-      Gtk.Table.Attach (Table, Left,
-                        Left_Attach => 0, Right_Attach => 1,
-                        Top_Attach => Row, Bottom_Attach => Row + 1);
-      Gtk.Table.Attach (Table, Right,
-                        Left_Attach => 1, Right_Attach => 2,
-                        Top_Attach => Row, Bottom_Attach => Row + 1);
-      Row := Row + 1;
+      Add_Row_Widgets (Table, Row, Left, Right);
    end;
+
+   procedure Add_Row_Labels
+     (Table : in     Gtk.Table.Gtk_Table;
+      Row   : in out Glib.Guint;
+      Left  : access Gtk.Misc.Gtk_Misc_Record'Class;
+      Right : access Gtk.Misc.Gtk_Misc_Record'Class)
+   is
+      use type Glib.Guint;
+   begin
+      --  left align
+      Gtk.Misc.Set_Alignment (Left, 0.0, 0.5);
+      Gtk.Misc.Set_Alignment (Right, 0.0, 0.5);
+      Add_Row_Widgets (Table, Row, Left, Right);
+   end Add_Row_Labels;
 
    function Get_Icon
      (Filename : in String)
@@ -300,7 +208,7 @@ package body Giant.Gui_Utils is
    begin
       Gtk.Scrolled_Window.Gtk_New (Scrolled_Window);
       Gtk.Scrolled_Window.Set_Policy (Scrolled_Window, Policy_Automatic,
-                                      Policy_Always);
+                                      Policy_Automatic);
       Gtk.Scrolled_Window.Add (Scrolled_Window, Widget);
 
       Gtk.Frame.Gtk_New (Frame, Title);

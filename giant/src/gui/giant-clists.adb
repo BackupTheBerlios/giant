@@ -20,127 +20,198 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-clists.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-clists.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/19 16:38:06 $
+--  $Date: 2003/06/20 18:03:14 $
 --
 
 with Ada.Strings.Unbounded;
 with Interfaces.C.Strings;
 
 with Glib; use type Glib.Gint;
-with Gtk.Enums; 
+with Gdk.Event;
+with Gdk.Types;
+with Gtk.Arguments;
+with Gtk.Enums;
+with Gtk.Handlers;
+with Gtk.TearOff_Menu_Item;
+with Gtk.Widget;
 with Gtkada.Types;
 
 package body Giant.Clists is
 
-   procedure Create
-	 (List			   :    out Giant_Clist;
-	  Columns		   : in     Glib.Gint;
-	  Update_Procedure : in     Update_Procedure_Type)
+   package Clist_Callback is new
+     Gtk.Handlers.Callback (Gtk.Clist.Gtk_Clist_Record);
+
+   package Clist_Menu_Return_Callback is new
+     Gtk.Handlers.User_Return_Callback (Gtk.Clist.Gtk_Clist_Record, Boolean,
+                                        Gtk.Menu.Gtk_Menu);
+
+   package Clist_Menu_Callback is new
+     Gtk.Handlers.User_Callback (Gtk.Clist.Gtk_Clist_Record,
+                                 Gtk.Menu.Gtk_Menu);
+
+   Sensitive: Boolean;
+
+   ---------------------------------------------------------------------------
+   --  Helpers
+   ---------------------------------------------------------------------------
+
+   procedure Set_Children_Sensitive
+     (Widget : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
    begin
-	  List := new Giant_Clist_Record;
-	  Initialize (List, Columns, Update_Procedure);
+      --  do not disable tear off items
+      if (Widget.all
+          in Gtk.TearOff_Menu_Item.Gtk_Tearoff_Menu_Item_Record) then
+         return;
+      end if;
+
+      Gtk.Widget.Set_Sensitive (Widget, Sensitive);
+   end;
+
+   ---------------------------------------------------------------------------
+   --  Callbacks
+   ---------------------------------------------------------------------------
+
+   function On_Clist_Button_Press
+     (Source : access Gtk.Clist.Gtk_Clist_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event;
+      Menu   : in     Gtk.Menu.Gtk_Menu)
+     return Boolean
+   is
+      use Glib;
+      use Gdk.Types;
+
+      Row : Gint;
+      Column : Gint;
+      Is_Valid : Boolean;
+   begin
+      if Gdk.Event.Get_Button (Event) = 3
+        and then Gdk.Event.Get_Event_Type (Event) = Gdk.Types.Button_Press
+      then
+         Gtk.Clist.Get_Selection_Info (Source,
+                                       Gint (Gdk.Event.Get_X (Event)),
+                                       Gint (Gdk.Event.Get_Y (Event)),
+                                       Row, Column, Is_Valid);
+         if (Is_Valid) then
+            Gtk.Clist.Select_Row (Source, Row, Column);
+            Gtk.Menu.Show_All (Menu);
+            Gtk.Menu.Popup (Menu,
+                            Button => Gdk.Event.Get_Button (Event),
+                            Activate_Time => Gdk.Event.Get_Time (Event));
+            return True;
+         end if;
+      end if;
+      return False;
+   end On_Clist_Button_Press;
+
+   procedure On_Clist_Click_Column
+     (List   : access Gtk.Clist.Gtk_Clist_Record'Class;
+      Args   : in     Gtk.Arguments.Gtk_Args)
+   is
+      Column : constant Glib.Gint := Gtk.Arguments.To_Gint (Args, 1);
+
+      use type Glib.Gint;
+      use type Gtk.Clist.Gtk_Sort_Type;
+   begin
+      if (Column = Gtk.Clist.Get_Sort_Column (List)
+          and then Gtk.Clist.Get_Sort_Type (List)
+          = Gtk.Clist.Ascending) then
+         Gtk.Clist.Set_Sort_Type (List, Gtk.Clist.Descending);
+      else
+         Gtk.Clist.Set_Sort_Type (List, Gtk.Clist.Ascending);
+      end if;
+
+      Gtk.Clist.Set_Sort_Column (List, Column);
+      Gtk.Clist.Sort (List);
+   end On_Clist_Click_Column;
+
+   procedure On_Clist_Select_Row
+     (List : access Gtk.Clist.Gtk_Clist_Record'Class;
+      Args : in     Gtk.Arguments.Gtk_Args;
+      Menu : in     Gtk.Menu.Gtk_Menu)
+   is
+   begin
+      Sensitive := True;
+      Gtk.Menu.Forall (Menu, Set_Children_Sensitive'Access);
+   end On_Clist_Select_Row;
+
+   procedure On_Clist_Unselect_Row
+     (List : access Gtk.Clist.Gtk_Clist_Record'Class;
+      Args : in     Gtk.Arguments.Gtk_Args;
+      Menu : in     Gtk.Menu.Gtk_Menu)
+   is
+   begin
+      Sensitive := False;
+      Gtk.Menu.Forall (Menu, Set_Children_Sensitive'Access);
+   end On_Clist_Unselect_Row;
+
+   ---------------------------------------------------------------------------
+   --  Initializers
+   ---------------------------------------------------------------------------
+
+   procedure Create
+     (List    :    out Giant_Clist;
+      Columns : in     Glib.Gint)
+   is
+   begin
+      List := new Giant_Clist_Record;
+      Initialize (List, Columns);
    end Create;
 
    procedure Initialize
-	 (List			   : access Giant_Clist_Record'Class;
-	  Columns		   : in     Glib.Gint;
-	  Update_Procedure : in     Update_Procedure_Type)
+     (List    : access Giant_Clist_Record'Class;
+      Columns : in     Glib.Gint)
    is
    begin
-	  Gtk.Clist.Initialize (List, Columns);
+      Gtk.Clist.Initialize (List, Columns);
 
-	  List.Update_Procedure := Update_Procedure;
-
-	  Set_Selection_Mode (List, Gtk.Enums.Selection_Single);
+      Set_Selection_Mode (List, Gtk.Enums.Selection_Single);
       Set_Show_Titles (List, True);
-	  Column_Titles_Active (List);
+      Column_Titles_Active (List);
+
+      --  sort rows on column header click
+      Clist_Callback.Connect
+        (List, "click_column", On_Clist_Click_Column'Access);
    end;
 
-   procedure Add
-	 (List : access Giant_Clist_Record;
-	  Item : in     Data_Type)
-   is
-      use Gtkada.Types;
- 
-      Row_Data : Gtkada.Types.Chars_Ptr_Array
-		(0 .. Interfaces.C.Size_t (Get_Columns (List)));
-      Row : Glib.Gint;
-   begin
-	  --  append row with dummy data
-      for I in Row_Data'Range loop
-         Row_Data (I) := Interfaces.C.Strings.New_String ("");
-	  end loop;
-      Row := Append (List, Row_Data);
-      Free (Row_Data);
-
-	  --  set custom data
-      Data.Set (List, Row, Item);
-
-	  --  update row
-      List.Update_Procedure (List, Row, Item);
-   end Add;
-
-   function Get_Row
-	 (List : access Giant_Clist_Record;
-	  Item : in Data_Type)
-	  return Glib.Gint
-   is
-   begin
-	  for I in 0 .. Get_Rows (List) - 1 loop
-		 if (Data.Get (List, I) = Item) then
-			return I;
-		 end if;
-	  end loop;
-	  
-	  return -1;
-   end Get_Row;
-
-   function Get_Selected_Item
-	 (List : access Giant_Clist_Record)
-	  return Data_Type
-   is
-   begin
-	  return Data.Get (List, Get_Selected_Row (List));
-   end Get_Selected_Item;
+   ---------------------------------------------------------------------------
+   --  Public Methods
+   ---------------------------------------------------------------------------
 
    function Get_Selected_Row
-     (List : access Giant_Clist_Record'Class)
+     (List : access Giant_Clist_Record)
      return Glib.Gint
    is
       use type Gtk.Enums.Gint_List.Glist;
       Selection : constant Gtk.Enums.Gint_List.Glist := Get_Selection (List);
    begin
       if Selection /= Gtk.Enums.Gint_List.Null_List then
-         return Gtk.Enums.Gint_List.Get_Data 
-		   (Gtk.Enums.Gint_List.First (Selection));
+         return Gtk.Enums.Gint_List.Get_Data
+           (Gtk.Enums.Gint_List.First (Selection));
       end if;
 
       return -1;
    end Get_Selected_Row;
 
-   procedure Update
-	 (List : access Giant_Clist_Record;
-	  Item : in Data_Type)
-   is
-      Row : Glib.Gint := Get_Row (List, Item);
-   begin
-      if (Row /= -1) then
-         List.Update_Procedure (List, Row, Item);
-      end if;
-   end Update;
 
-   procedure Remove
-	 (List : access Giant_Clist_Record;
-	  Item : in Data_Type)
+   procedure Connect_Popup_Menu
+     (List : access Giant_Clist_Record;
+      Menu : access Gtk.Menu.Gtk_Menu_Record'Class)
    is
-      Row : Glib.Gint := Get_Row (List, Item);
    begin
-      if (Row /= -1) then
-		 Remove (List, Row);
-      end if;
-   end Remove;
+      Clist_Menu_Return_Callback.Connect
+        (List, "button_press_event",
+         Clist_Menu_Return_Callback.To_Marshaller
+         (On_Clist_Button_Press'Access), Gtk.Menu.Gtk_Menu (Menu));
+
+      Clist_Menu_Callback.Connect
+        (List, "select_row",
+         On_Clist_Select_Row'Access, Gtk.Menu.Gtk_Menu (Menu));
+      Clist_Menu_Callback.Connect
+        (List, "unselect_row",
+         On_Clist_Unselect_Row'Access, Gtk.Menu.Gtk_Menu (Menu));
+   end Connect_Popup_Menu;
 
 end Giant.Clists;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.8 $
+--  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.9 $
 --  $Author: squig $
---  $Date: 2003/06/20 16:47:35 $
+--  $Date: 2003/06/20 18:03:14 $
 --
 ------------------------------------------------------------------------------
 --
@@ -47,7 +47,7 @@ with Gtk.Table;
 with Gtk.Widget;
 with Gtk.Window;
 
-with Giant.Clists;
+with Giant.Data_Clists;
 
 package Giant.Gui_Utils is
 
@@ -87,7 +87,7 @@ package Giant.Gui_Utils is
    ---------------------------------------------------------------------------
 
    package String_Clists is new
-     Giant.Clists (String);
+     Giant.Data_Clists (String);
 
    ---------------
    --  Methods  --
@@ -98,20 +98,45 @@ package Giant.Gui_Utils is
       Title  : in     String)
      return Gtk.Frame.Gtk_Frame;
 
+   ---------------------------------------------------------------------------
+   --  Adds a label and widget to a table. The label is right aligned.
+   --
+   --  The table must have at least two columns.
+   --
+   --  Parameters:
+   --    Table - The table
+   --    Left - The label
+   --    Right - The widget
+   --    Row - The row, is increased by 1
+   --
    procedure Add_Row
      (Table : in     Gtk.Table.Gtk_Table;
       Row   : in out Glib.Guint;
       Left  : access Gtk.Misc.Gtk_Misc_Record'Class;
       Right : access Gtk.Widget.Gtk_Widget_Record'Class);
 
+   ---------------------------------------------------------------------------
+   --  Adds two labels to a table. Both labels are left aligned.
+   --
+   --  The table must have at least two columns.
+   --
+   --  Parameters:
+   --    Table - The table
+   --    Left - The left label
+   --    Right - The right label
+   --    Row - The row, is increased by 1
+   --  See:
+   --    Add_Row
+   procedure Add_Row_Labels
+     (Table : in     Gtk.Table.Gtk_Table;
+      Row   : in out Glib.Guint;
+      Left  : access Gtk.Misc.Gtk_Misc_Record'Class;
+      Right : access Gtk.Misc.Gtk_Misc_Record'Class);
+
    function Add_Scrollbar_And_Frame
      (Widget : access Gtk.Widget.Gtk_Widget_Record'class;
       Title  : in String)
      return Gtk.Frame.Gtk_Frame;
-
-   procedure Connect_Popup_Menu
-     (List : access Gtk.Clist.Gtk_Clist_Record'Class;
-      Menu : access Gtk.Menu.Gtk_Menu_Record'Class);
 
    ---------------------------------------------------------------------------
    --  Returns an absolute path to the passed icon.

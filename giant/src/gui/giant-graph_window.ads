@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.8 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.9 $
 --  $Author: squig $
---  $Date: 2003/06/20 16:47:35 $
+--  $Date: 2003/06/20 18:03:14 $
 --
 ------------------------------------------------------------------------------
 --
@@ -106,9 +106,9 @@ private
    type Graph_Window_Record is
      new Gtk.Window.Gtk_Window_Record with record
         Split_Pane : Gtk.Paned.Gtk_Hpaned;
-        Pin_List : Gui_Utils.String_Clists.Giant_Clist;
+        Pin_List : Gui_Utils.String_Clists.Giant_Data_Clist;
         Pin_List_Menu : Gtk.Menu.Gtk_Menu;
-        Selection_List : Gui_Utils.String_Clists.Giant_Clist;
+        Selection_List : Gui_Utils.String_Clists.Giant_Data_Clist;
         Selection_List_Menu : Gtk.Menu.Gtk_Menu;
         Vis_Style_Menu : Gtk.Option_Menu.Gtk_Option_Menu;
         Zoom_Combo : Gtk.Combo.Gtk_Combo;
