@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.11 $
+--  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.12 $
 --  $Author: squig $
---  $Date: 2003/07/03 18:41:20 $
+--  $Date: 2003/07/03 18:42:21 $
 --
 
 with Ada.IO_Exceptions;
@@ -65,7 +65,7 @@ package body Giant.Gsl_Dialog is
       Last : Integer;
       Position : Glib.Gint := 0;
    begin
-      Ada.Text_IO.Open (In_File, Ada.Text_IO.In_File, "foo");--Filename);
+      Ada.Text_IO.Open (In_File, Ada.Text_IO.In_File, Filename);
 
       -- Fix: Clear
       --Gtk.Text.Set_Position (Dialog.Text_Area, Glib.Gint (-1));
