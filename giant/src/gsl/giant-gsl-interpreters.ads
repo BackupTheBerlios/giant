@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/02 20:43:09 $
+-- $Date: 2003/08/12 09:33:56 $
 --
 -- This package implements the Gsl interpreter.
 --
@@ -32,6 +32,7 @@ use  Ada.Strings.Unbounded;
 with Ada.Real_Time;
 
 with Giant.Evolutions;
+with Giant.Graph_Lib;
 with Giant.Gsl.Compilers;
 with Giant.Gsl.Types;
 use  Giant.Gsl.Types;
@@ -92,10 +93,25 @@ package Giant.Gsl.Interpreters is
 
    ---------------------------------------------------------------------------
    --
+   procedure Initialize_Interpreter
+     (Individual : Interpreter;
+      Name       : String;
+      Context    : String);
+
+   ---------------------------------------------------------------------------
+   --
    procedure Execute_Script
      (Individual : Interpreter;
       Name       : String;
       Context    : String);
+
+   ---------------------------------------------------------------------------
+   --
+   procedure Execute_Script
+     (Individual : Interpreter;
+      Name       : String;
+      Context    : String;
+      Param      : Gsl_Type);
 
    ---------------------------------------------------------------------------
    --

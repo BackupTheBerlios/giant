@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/04 15:19:04 $
+-- $Date: 2003/08/12 09:33:56 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -128,7 +128,7 @@ package body Giant.Gsl.Interpreters is
 
    ---------------------------------------------------------------------------
    -- initilizes the gsl interpreter for evolution
-   procedure Execute_Script
+   procedure Initialize_Interpreter
      (Individual : Interpreter;
       Name       : String;
       Context    : String) is
@@ -139,9 +139,6 @@ package body Giant.Gsl.Interpreters is
       Current_Interpreter := Individual;
       Individual.Script   := To_Unbounded_String (Name);
       Individual.Context  := To_Unbounded_String (Context);
-      -- initialize the execution stack with the
-      Individual.Execution_Stack := Giant.Gsl.Compilers.Get_Execution_Stack
-        (Individual.Gsl_Compiler, Name);
       -- initialize the result stack
       Individual.Result_Stack := Result_Stacks.Create;
       -- initialize the stack for all activation records
@@ -217,6 +214,22 @@ package body Giant.Gsl.Interpreters is
                         "insert_into_window");
       Register_Runtime (Runtime_Remove_From_Window'Access,
                         "remove_from_window");
+   end Initialize_Interpreter;
+
+   ---------------------------------------------------------------------------
+   -- initilizes the gsl interpreter for evolution
+   procedure Execute_Script
+     (Individual : Interpreter;
+      Name       : String;
+      Context    : String) is
+
+   begin
+      -- initialize the basics
+      Initialize_Interpreter (Individual, Name, Context);
+
+      -- initialize the execution stack
+      Individual.Execution_Stack := Gsl.Compilers.Get_Execution_Stack
+        (Individual.Gsl_Compiler, Name);
 
       -- set gsl time (used for performance measurement)
       Individual.Gsl_Time := Ada.Real_Time.Clock;
@@ -231,6 +244,55 @@ package body Giant.Gsl.Interpreters is
          when Syntax_Error : Gsl_Syntax_Error =>
             Controller.Show_Error
               (Ada.Exceptions.Exception_Message (Syntax_Error));
+   end Execute_Script;
+
+   ---------------------------------------------------------------------------
+   -- initilizes the gsl interpreter for evolution
+   procedure Execute_Script
+     (Individual : Interpreter;
+      Name       : String;
+      Context    : String;
+      Param      : Gsl_Type) is
+
+      use Gsl.Compilers;
+      use Gsl.Syntax_Tree;
+      Script : Gsl_Type;
+      Params : Gsl_List;
+   begin
+      -- initialize the basics
+      Initialize_Interpreter (Individual, Name, Context);
+
+      -- initialize the execution and the result stack with 
+      -- the following layout
+      --
+      -- |                                                       |
+      -- | Script_Activation   ->   Gsl_List (Name)              |
+      -- |                          Gsl_Script_Reference ("run") |
+      -- |                                                       |
+      -- | Script_Activation   ->   Gsl_List (Param)             |
+      -- |                          Gsl_Script_Reference (Name)  |
+      -- |                                                       |
+      --
+      -- execution stack
+      Individual.Execution_Stack := Execution_Stacks.Create;
+      Execution_Stacks.Push (Individual.Execution_Stack, Get_Execution_Stack
+        (Individual.Gsl_Compiler, Create_Node
+          (Script_Activation, Null_Node, Null_Node)));
+      Execution_Stacks.Push (Individual.Execution_Stack, Get_Execution_Stack
+        (Individual.Gsl_Compiler, Create_Node
+          (Script_Activation, Null_Node, Null_Node)));
+
+      -- result stack
+      Result_Stacks.Push (Script);
+      Result_Stacks.Push (Gsl_Type (Params));
+
+      -- set gsl time (used for performance measurement)
+      Individual.Gsl_Time := Ada.Real_Time.Clock;
+
+      -- initilze the evolution object, comlexity is 0
+      Default_Logger.Debug
+        ("Interpreter: Initilize evolution.", "Giant.Gsl.Interpreter");
+      Initialize (Individual, 0);
    end Execute_Script;
 
    ---------------------------------------------------------------------------

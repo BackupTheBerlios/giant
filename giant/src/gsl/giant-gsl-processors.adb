@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-processors.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/02 20:43:59 $
+-- $Date: 2003/08/12 09:33:56 $
 --
 
 with Ada.Exceptions;
@@ -314,18 +314,20 @@ package body Giant.Gsl.Processors is
      (Name : String)
       return Gsl_Type is
 
-      use Giant.Controller;
-      use Giant.Graph_Lib.Subgraphs;
-      Sub      : Giant.Graph_Lib.Subgraphs.Subgraph;
+      use Controller;
+      use Graph_Lib.Subgraphs;
+      Sub      : Graph_Lib.Subgraphs.Subgraph;
       Res_List : Gsl_List;
    begin
       if Exists_Subgraph (Name) then
          Sub := Get_Subgraph (Name);
          Res_List := Create_Gsl_List (2);
          Set_Value_At (Res_List, 1, Gsl_Type
-           (Create_Gsl_Node_Set (Get_All_Nodes (Sub))));
+           (Create_Gsl_Node_Set (Graph_Lib.Node_Id_Sets.Copy
+             (Get_All_Nodes (Sub)))));
          Set_Value_At (Res_List, 2, Gsl_Type
-           (Create_Gsl_Edge_Set (Get_All_Edges (Sub))));
+           (Create_Gsl_Edge_Set (Graph_Lib.Edge_Id_Sets.Copy
+             (Get_All_Edges (Sub)))));
          return Gsl_Type (Res_List);
       else
          return Gsl_Null;
@@ -338,7 +340,7 @@ package body Giant.Gsl.Processors is
      (Ref : Gsl_Var_Reference)
       return Gsl_Type is
 
-      use Giant.Controller;
+      use Controller;
    begin
       if not Exists_Subgraph (Get_Ref_Name (Ref)) then
          Create_Subgraph (Get_Ref_Name (Ref));
@@ -366,9 +368,11 @@ package body Giant.Gsl.Processors is
          Sel := Get_Selection (Get_Current_Context, Name);
          Res_List := Create_Gsl_List (2);
          Set_Value_At (Res_List, 1, Gsl_Type
-           (Create_Gsl_Node_Set (Get_All_Nodes (Sel))));
+           (Create_Gsl_Node_Set (Graph_Lib.Node_Id_Sets.Copy
+             (Get_All_Nodes (Sel)))));
          Set_Value_At (Res_List, 2, Gsl_Type
-           (Create_Gsl_Edge_Set (Get_All_Edges (Sel))));
+           (Create_Gsl_Edge_Set (Graph_Lib.Edge_Id_Sets.Copy 
+             (Get_All_Edges (Sel)))));
          return Gsl_Type (Res_List);
       else
          return Gsl_Null;

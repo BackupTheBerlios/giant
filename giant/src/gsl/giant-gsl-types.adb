@@ -20,9 +20,9 @@
 --
 -- First Author: Gerrit Schulz
 --
--- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.15 $
+-- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.16 $
 -- $Author: schulzgt $
--- $Date: 2003/08/02 20:41:02 $
+-- $Date: 2003/08/12 09:33:56 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Tags;
@@ -298,6 +298,7 @@ package body Giant.Gsl.Types is
    begin
       Var := new Gsl_Node_Set_Record;
       Var.all := Object.all;
+      Var.Value :=  Giant.Graph_Lib.Node_Id_Sets.Copy (Object.Value); 
       return Gsl_Type (Var);
    end Copy;
 
@@ -310,6 +311,7 @@ package body Giant.Gsl.Types is
         (Gsl_Node_Set_Record, Gsl_Node_Set);
 
    begin
+      Giant.Graph_Lib.Node_Id_Sets.Destroy (Object.Value);
       Free (Object);
    end Destroy;
  
@@ -372,6 +374,7 @@ package body Giant.Gsl.Types is
    begin
       Var := new Gsl_Edge_Set_Record;
       Var.all := Object.all;
+      Var.Value :=  Giant.Graph_Lib.Edge_Id_Sets.Copy (Object.Value); 
       return Gsl_Type (Var);
    end Copy;
 
@@ -384,6 +387,7 @@ package body Giant.Gsl.Types is
         (Gsl_Edge_Set_Record, Gsl_Edge_Set);
 
    begin
+      Giant.Graph_Lib.Edge_Id_Sets.Destroy (Object.Value);
       Free (Object);
    end Destroy;
 

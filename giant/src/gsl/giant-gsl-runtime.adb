@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/04 15:19:04 $
+-- $Date: 2003/08/12 09:34:42 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -141,8 +141,8 @@ package body Giant.Gsl.Runtime is
             if Is_Gsl_Script_Reference (True_Branch) then
                -- Script_Activation to Execution Stack
                Execution_Stacks.Push (Execution_Stack, Get_Execution_Stack
-                 (Gsl_Compiler, Create_Node (Script_Activation,
-                                             Null_Node, Null_Node)));
+                 (Gsl_Compiler, Create_Node
+                   (Script_Activation, Null_Node, Null_Node)));
 
                Result_Stacks.Push (Result_Stack, True_Branch);
                Param := Create_Gsl_List (0);
@@ -154,8 +154,8 @@ package body Giant.Gsl.Runtime is
             if Is_Gsl_Script_Reference (False_Branch) then
                -- Script_Activation to Execution Stack
                Execution_Stacks.Push (Execution_Stack, Get_Execution_Stack
-                 (Gsl_Compiler, Create_Node (Script_Activation, 
-                                             Null_Node, Null_Node)));
+                 (Gsl_Compiler, Create_Node
+                   (Script_Activation, Null_Node, Null_Node)));
 
                Result_Stacks.Push (Result_Stack, False_Branch);
                Param := Create_Gsl_List (0);
@@ -324,12 +324,12 @@ package body Giant.Gsl.Runtime is
             if Is_Gsl_Edge_Id (B) then
                Graph_Lib.Edge_Id_Sets.Insert
                  (Edge_Set, Get_Value (Gsl_Edge_Id (B)));
-            elsif Is_Gsl_Node_Set (B) then
+            elsif Is_Gsl_Edge_Set (B) then
                Graph_Lib.Edge_Id_Sets.Union
                  (Edge_Set, Get_Value (Gsl_Edge_Set (B)));
             else
                Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
-                 "Script 'add': Gsl_Edge_Set expected.");
+                 "Script 'add': Gsl_Edge_Id or Gsl_Edge_Set expected.");
             end if;
             Set_Value (Gsl_Edge_Set (Var), Edge_Set);
             return Gsl_Null;
@@ -391,12 +391,12 @@ package body Giant.Gsl.Runtime is
             if Is_Gsl_Edge_Id (B) then
                Graph_Lib.Edge_Id_Sets.Remove_If_Exists
                  (Edge_Set, Get_Value (Gsl_Edge_Id (B)));
-            elsif Is_Gsl_Node_Set (B) then
+            elsif Is_Gsl_Edge_Set (B) then
                Graph_Lib.Edge_Id_Sets.Diff
                  (Edge_Set, Get_Value (Gsl_Edge_Set (B)));
             else
                Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
-                 "Script 'sub': Gsl_Edge_Set expected.");
+                 "Script 'sub': Gsl_Edge_Id or Gsl_Edge_Set expected.");
             end if;
             Set_Value (Gsl_Edge_Set (Var), Edge_Set);
             return Gsl_Null;
