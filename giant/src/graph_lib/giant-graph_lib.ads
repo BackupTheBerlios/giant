@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.20 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.21 $
 --  $Author: koppor $
---  $Date: 2003/06/26 14:05:28 $
+--  $Date: 2003/06/26 14:06:42 $
 --
 
 with Giant.Constant_Ptr_Hashs;
@@ -746,6 +746,8 @@ package Giant.Graph_Lib is
    ---------------------------------------------------------------------------
    function Hash_Edge_Class_Id (Key : in Edge_Class_Id) return Integer;
 
+private
+
    --------------------------------------------
    --  Edge_Id_Locator                       --
    --    Hashed mapping to speed up reading  --
@@ -780,8 +782,6 @@ package Giant.Graph_Lib is
       No_Edge_Found  : exception;
 
    end Edge_Id_Locator;
-
-private
 
    ---------------------------------------------------------------------------
    --  Represents a single node of the IML_Graph
