@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.11 $
 --  $Author: squig $
---  $Date: 2003/06/30 16:18:18 $
+--  $Date: 2003/07/03 18:41:20 $
 --
 
 with Ada.IO_Exceptions;
@@ -41,9 +41,12 @@ with Gtk.Widget;
 with Giant.Controller;
 with Giant.Dialogs;
 with Giant.Gui_Utils;
+with Giant.Logger;
 with Giant.Main_Window;
 
 package body Giant.Gsl_Dialog is
+
+   package Logger is new Giant.Logger("giant.gsl_dialog");
 
    ---------------------------------------------------------------------------
    --  File Operations
@@ -62,7 +65,7 @@ package body Giant.Gsl_Dialog is
       Last : Integer;
       Position : Glib.Gint := 0;
    begin
-      Ada.Text_IO.Open (In_File, Ada.Text_IO.In_File, Filename);
+      Ada.Text_IO.Open (In_File, Ada.Text_IO.In_File, "foo");--Filename);
 
       -- Fix: Clear
       --Gtk.Text.Set_Position (Dialog.Text_Area, Glib.Gint (-1));
@@ -79,9 +82,12 @@ package body Giant.Gsl_Dialog is
       Dialog.Text_Has_Changed := False;
       return True;
    exception
-      when others =>
-         Dialogs.Show_Error_Dialog(-"Could not read file: " & Filename);
-         return False;
+     when E: others =>
+        Logger.Warn ("error reading file: " & Filename);
+        Logger.Error (E);
+
+        Gui_Utils.Handle_IO_Exception (E, Filename);
+        return False;
    end Read;
 
    ---------------------------------------------------------------------------
@@ -109,9 +115,12 @@ package body Giant.Gsl_Dialog is
       Dialog.Text_Has_Changed := False;
       return True;
    exception
-      when others =>
-         Dialogs.Show_Error_Dialog(-"Could not write file: " & Filename);
-         return False;
+     when E : others =>
+        Logger.Warn ("error writing file: " & Filename);
+        Logger.Error (E);
+
+        Gui_Utils.Handle_IO_Exception (E, Filename);
+        return False;
    end Write;
 
    ---------------------------------------------------------------------------
@@ -248,14 +257,19 @@ package body Giant.Gsl_Dialog is
           and then Dialog.Filename
           /= Ada.Strings.Unbounded.Null_Unbounded_String) then
          -- the okay button was pressed
+         declare
+            Filename : String
+              := Ada.Strings.Unbounded.To_String (Dialog.Filename);
          begin
-            Controller.Execute_GSL
-              (Ada.Strings.Unbounded.To_String (Dialog.Filename));
+            Controller.Execute_GSL (Filename);
 
             --  the script was executed successfully
             --return True;
          exception
-           when others =>
+           when E : others =>
+              Logger.Warn ("error executing gsl script: " & Filename);
+              Logger.Error (E);
+
               Dialogs.Show_Error_Dialog ("Error while executing the script.");
          end;
 

@@ -20,12 +20,11 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window-actions.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-main_window-actions.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/30 12:08:09 $
+--  $Date: 2003/07/03 18:41:20 $
 --
 
-with Ada.Exceptions;
 with Ada.Strings.Unbounded;
 with Interfaces.C.Strings;
 with System;
@@ -78,18 +77,18 @@ package body Giant.Main_Window.Actions is
    ---------------------------------------------------------------------------
    --  Create Selection From Subgraph
    ---------------------------------------------------------------------------
-   
-   function Create 
-	 (Subgraph_Name : in String)
-	 return Create_Selection_Action_Access
+
+   function Create
+     (Subgraph_Name : in String)
+     return Create_Selection_Action_Access
    is
-	  Action : Create_Selection_Action_Access;
+      Action : Create_Selection_Action_Access;
    begin
-	  Action := new Create_Selection_Action_Type (Subgraph_Name'Length);
+      Action := new Create_Selection_Action_Type (Subgraph_Name'Length);
       Action.Subgraph_Name := Subgraph_Name;
-	  return Action;
+      return Action;
    end Create;
-   
+
    procedure Cancel
      (Action : access Create_Selection_Action_Type)
    is

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.43 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.44 $
 --  $Author: squig $
---  $Date: 2003/07/02 19:03:42 $
+--  $Date: 2003/07/03 18:41:20 $
 --
 
 with Ada.Exceptions;
@@ -122,7 +122,7 @@ package body Giant.Main_Window is
    Status_Bar : Gtk.Status_Bar.Gtk_Status_Bar;
 
    Styles : array (Projects.Subgraph_Highlight_Status) of Gtk.Style.Gtk_Style
- := (others => null);
+     := (others => null);
 
    --  ugly workaround, see Close_Project
    Can_Close_Project : Boolean;
@@ -148,7 +148,8 @@ package body Giant.Main_Window is
    Loaded: Boolean;
 
    procedure Handle_Project_Exception
-     (Error : in Ada.Exceptions.Exception_Occurrence)
+     (Error    : in Ada.Exceptions.Exception_Occurrence;
+      Filename : in String)
    is
    begin
       Ada.Exceptions.Reraise_Occurrence (Error);
@@ -163,8 +164,9 @@ package body Giant.Main_Window is
         Dialogs.Show_Error_Dialog (-"The project could not be created. The directory already contains a project.");
      when E : others =>
         Logger.Error ("An exceptions has occured while processing projects.");
-          Logger.Error (E);
-        Dialogs.Show_Error_Dialog (-"An IO error has occured.");
+        Logger.Error (E);
+
+        Gui_Utils.Handle_IO_Exception (E, Filename);
    end Handle_Project_Exception;
 
    procedure Update_Children
@@ -250,14 +252,17 @@ package body Giant.Main_Window is
                   Dir_Only => False, Must_Exist => False);
             begin
                if (Graph_Filename /= "") then
-                  Controller.Create_Project (Project_Filename, Graph_Filename);
+                  begin
+                     Controller.Create_Project
+                       (Project_Filename, Graph_Filename);
+                  exception
+                    when E: others =>
+                       Handle_Project_Exception (E, Graph_Filename);
+                  end;
                end if;
             end;
          end if;
       end;
-   exception
-     when E: others =>
-        Handle_Project_Exception (E);
    end On_Project_New;
 
    procedure On_Project_Open
@@ -271,12 +276,14 @@ package body Giant.Main_Window is
             Dir_Only => False, Must_Exist => True);
       begin
          if (Filename /= "") then
-            Controller.Open_Project (Filename);
+            begin
+               Controller.Open_Project (Filename);
+            exception
+              when E: others =>
+                 Handle_Project_Exception (E, Filename);
+            end;
          end if;
       end;
-   exception
-     when E: others =>
-        Handle_Project_Exception (E);
    end On_Project_Open;
 
    procedure On_Project_Close
@@ -305,12 +312,14 @@ package body Giant.Main_Window is
             Dir_Only => False, Must_Exist => False);
       begin
          if (Filename /= "") then
-            Controller.Save_Project (Filename);
+            begin
+               Controller.Save_Project (Filename);
+            exception
+              when E: others =>
+                 Handle_Project_Exception (E, Filename);
+            end;
          end if;
       end;
-   exception
-     when E: others =>
-        Handle_Project_Exception (E);
    end On_Project_Save_As;
 
    procedure On_Project_Info
