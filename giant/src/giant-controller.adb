@@ -1,3 +1,4 @@
+
 ------------------------------------------------------------------------------
 --  GIANT - Graphical IML Analysis and Navigation Tool
 --
@@ -20,57 +21,58 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/14 16:40:23 $
+--  $Date: 2003/06/16 16:08:42 $
 --
 
+with Giant.Graph_Lib;
 with Giant.Gui_Manager;
 with Giant.Vis_Windows;
 
 package body Giant.Controller is
 
---     ---------------------------------------------------------------------------
---     --  Creates a new project.
---     --
---     --  See:
---     --    Project_Management.Create_New_Empty_Project
---     function Create_Project
---       (Name							  : in String;
---  	  Project_Directory				  : in String;
---  	  Bauhaus_IML_Graph_File		  : in String;
---  	  Bauhaus_IML_Graph_File_Checksum : in Integer)
---  	 return Project_Access
---     is
---     begin
---  	  Current_Project := Project_Management.Create_New_Empty_Project
---  		(Valid_Names.To_Standard_Name (Name),
---  		 Project_Directory,
---  		 Bauhaus_IML_Graph_File,
---  		 Bauhaus_IML_Graph_File_Checksum);
---  	  return Current_Project;
---     end New_Project;
+   ---------------------------------------------------------------------------
+   --  Creates a new project.
+   --
+   --  See:
+   --    Project_Management.Create_New_Empty_Project
+   procedure Create_Project
+     (Name              : in String;
+      Project_Directory : in String;
+      IML_Graph_File    : in String)
+   is
+      Checksum : Integer := 0;
+   begin
+      -- create graph
+      Giant.Graph_Lib.Create (IML_Graph_File);
 
---     function Get_Project
---  	 return Project_Access
---     is
---     begin
---       return Current_Project;
---     end;
+      -- create project
+      Current_Project := Projects.Create_Empty_Project
+        (Valid_Names.To_Standard_Name (Name), Project_Directory,
+         IML_Graph_File, Checksum);
+   end Create_Project;
+
+   function Get_Project
+     return Projects.Project_Access
+   is
+   begin
+      return Current_Project;
+   end;
 
    procedure Create_Window
      (Name : in Valid_Names.Standard_Name)
-   is 
-	  Window : Vis_Windows.Visual_Window_Access;
+   is
+      Window : Vis_Windows.Visual_Window_Access;
    begin
-	  Window := Vis_Windows.Create_New (Name);
-	  Gui_Manager.Add (Window);
+      Window := Vis_Windows.Create_New (Name);
+      Gui_Manager.Add (Window);
    end Create_Window;
 
-   procedure Show 
+   procedure Show
    is
-   begin 
-	  Gui_Manager.Show;
+   begin
+      Gui_Manager.Show;
    end Show;
 
 end Giant.Controller;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/14 16:40:23 $
+--  $Date: 2003/06/16 16:08:42 $
 --
 ------------------------------------------------------------------------------
 --
@@ -31,28 +31,26 @@
 --  included in this package.
 --
 
---with Giant.Projects;
+with Giant.Projects;
 with Giant.Valid_Names;
 
 package Giant.Controller is
 
---     ---------------------------------------------------------------------------
---     --  Creates a new project.
---     --
---     --  See:
---     --    Project_Management.Create_New_Empty_Project
---     function New_Project
---       (Name                            : in String;
---        Project_Directory               : in String;
---        Bauhaus_IML_Graph_File          : in String;
---        Bauhaus_IML_Graph_File_Checksum : in Integer)
---       return Project_Access;
+   ---------------------------------------------------------------------------
+   --  Creates a new project.
+   --
+   --  See:
+   --    Project_Management.Create_New_Empty_Project
+   procedure Create_Project
+     (Name              : in String;
+      Project_Directory : in String;
+      IML_Graph_File    : in String);
 
---     ---------------------------------------------------------------------------
---     --  Returns the currently open project.
---     --
---     function Get_Project
---       return Project_Access;
+   ---------------------------------------------------------------------------
+   --  Returns the currently open project.
+   --
+   function Get_Project
+     return Projects.Project_Access;
 
    procedure Create_Window
      (Name : in Valid_Names.Standard_Name);
@@ -61,6 +59,6 @@ package Giant.Controller is
 
 private
 
---     Current_Project : Project_Access;
+   Current_Project : Projects.Project_Access;
 
 end Giant.Controller;

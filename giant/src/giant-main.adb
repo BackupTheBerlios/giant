@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.6 $
 --  $Author: squig $
---  $Date: 2003/06/15 12:45:42 $
+--  $Date: 2003/06/16 16:08:42 $
 --
 --
 ------------------------------------------------------------------------------
@@ -43,9 +43,8 @@ begin
 
    Logger.Debug ("initializing gtk");
 
---     Current_Project := Projects.Create_Empty_Project
---       (Valid_Names.To_Standard_Name ("GiantTest"), "testdata",
---        "../src/vis_test/rfg_examp.iml", 0);
+   Controller.Create_Project
+     ("GiantTest", "test/resources", "test/resources/rfg_examp.iml");
 
    Controller.Show;
 
