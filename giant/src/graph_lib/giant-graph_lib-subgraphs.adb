@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.7 $
 --  $Author: koppor $
---  $Date: 2003/06/23 18:14:18 $
+--  $Date: 2003/06/24 18:26:51 $
 
 package body Giant.Graph_Lib.Subgraphs is
 
@@ -31,7 +31,8 @@ package body Giant.Graph_Lib.Subgraphs is
       return Boolean
    is
    begin
-      return Selections."<" (Left.Sel, Right.Sel);
+      return Selections."<" ( Selections.Selection (Left),
+                              Selections.Selection (Right));
    end "<";
 
    ---------------------------------------------------------------------------
@@ -41,7 +42,7 @@ package body Giant.Graph_Lib.Subgraphs is
    is
    begin
       Selections.Add_Edge
-        (Subgraph_To_Modify.Sel,
+        (Selections.Selection (Subgraph_To_Modify),
          Edge);
 
       -- TBD: This could go faster, if we'd only check the added edge
@@ -55,7 +56,7 @@ package body Giant.Graph_Lib.Subgraphs is
    is
    begin
       Selections.Add_Edge_Set
-        (Subgraph_To_Modify.Sel,
+        (Selections.Selection (Subgraph_To_Modify),
          Edge_Set);
 
       -- TBD: This could go faster, if we'd only check the added edges
@@ -69,7 +70,7 @@ package body Giant.Graph_Lib.Subgraphs is
    is
    begin
       Selections.Add_Node
-        (Subgraph_To_Modify.Sel,
+        (Selections.Selection (Subgraph_To_Modify),
          Node);
    end Add_Node;
 
@@ -80,7 +81,7 @@ package body Giant.Graph_Lib.Subgraphs is
    is
    begin
       Selections.Add_Node_Set
-        (Subgraph_To_Modify.Sel,
+        (Selections.Selection (Subgraph_To_Modify),
          Node_Set);
    end Add_Node_Set;
 
@@ -90,10 +91,10 @@ package body Giant.Graph_Lib.Subgraphs is
       Name_Of_Result    : in String)
       return Subgraph
    is
-      Res : Subgraph := new Subgraph_Record;
    begin
-      Res.Sel := Selections.Clone (SubGraph_To_Clone.Sel, Name_Of_Result);
-      return Res;
+      return Subgraph (Selections.Clone
+                       (Selections.Selection (SubGraph_To_Clone),
+                        Name_Of_Result));
    end Clone;
 
    ---------------------------------------------------------------------------
@@ -101,10 +102,8 @@ package body Giant.Graph_Lib.Subgraphs is
      (Name : in    String)
       return Subgraph
    is
-      Res : Subgraph := new Subgraph_Record;
    begin
-      Res.Sel := Selections.Create (Name);
-      return Res;
+      return Subgraph (Selections.Create (Name));
    end Create;
 
    ---------------------------------------------------------------------------
@@ -113,9 +112,9 @@ package body Giant.Graph_Lib.Subgraphs is
       Selection_To_Convert : in Graph_Lib.Selections.Selection)
       return Subgraph
    is
-      Res : Subgraph := new Subgraph_Record;
+      Res : Subgraph;
    begin
-      Res.Sel := Selections.Clone (Selection_To_Convert, Name);
+      Res := Subgraph (Selections.Clone (Selection_To_Convert, Name));
       Ensure_Graph_Edge_Properties (Res);
       return Res;
    end Create;
@@ -128,16 +127,25 @@ package body Giant.Graph_Lib.Subgraphs is
       return Graph_Lib.Selections.Selection
    is
    begin
-      return Selections.Clone (Source.Sel, New_Name);
+      return Selections.Clone (Selections.Selection (Source), New_Name);
    end Create_Selection;
+
+   ---------------------------------------------------------------------------
+   function Convert_To_Selection
+     (Source : in Subgraph)
+     return Graph_Lib.Selections.Selection
+   is
+   begin
+      return Selections.Selection (Source);
+   end Convert_To_Selection;
 
    ---------------------------------------------------------------------------
    procedure Destroy
      (SubGraph_To_Destroy : in out Subgraph)
    is
    begin
-      Selections.Destroy (SubGraph_To_Destroy.Sel);
-      --  TBD: unchecked_dealloc
+      Selections.Destroy
+        (Selections.Selection (SubGraph_To_Destroy));
    end Destroy;
 
    ---------------------------------------------------------------------------
@@ -146,7 +154,8 @@ package body Giant.Graph_Lib.Subgraphs is
      return Natural
    is
    begin
-      return Selections.Get_Edge_Count (Graph.Sel);
+      return Selections.Get_Edge_Count
+        (Selections.Selection (Graph));
    end Get_Edge_Count;
 
    ---------------------------------------------------------------------------
@@ -155,7 +164,8 @@ package body Giant.Graph_Lib.Subgraphs is
       return String
    is
    begin
-      return Selections.Get_Name (Subgraph_To_Read.Sel);
+      return Selections.Get_Name
+        (Selections.Selection (Subgraph_To_Read));
    end Get_Name;
 
    ---------------------------------------------------------------------------
@@ -164,7 +174,8 @@ package body Giant.Graph_Lib.Subgraphs is
      return Natural
    is
    begin
-      return Selections.Get_Node_Count (Graph.Sel);
+      return Selections.Get_Node_Count
+        (Selections.Selection (Graph));
    end Get_Node_Count;
 
    ---------------------------------------------------------------------------
@@ -174,9 +185,12 @@ package body Giant.Graph_Lib.Subgraphs is
       Name_Of_Result : in String)
       return Subgraph
    is
-      Res : Subgraph := new Subgraph_Record;
+      Res : Subgraph;
    begin
-      Res.Sel := Selections.Intersection (Left.Sel, Right.Sel, Name_Of_Result);
+      Res := Subgraph (Selections.Intersection
+                       (Selections.Selection (Left),
+                        Selections.Selection (Right),
+                        Name_Of_Result));
       Ensure_Graph_Edge_Properties (Res);
       return Res;
    end Intersection;
@@ -187,7 +201,9 @@ package body Giant.Graph_Lib.Subgraphs is
       Edge               : in     Edge_Id)
    is
    begin
-      Selections.Remove_Edge (Subgraph_To_Modify.Sel, Edge);
+      Selections.Remove_Edge
+        (Selections.Selection (Subgraph_To_Modify),
+         Edge);
    end Remove_Edge;
 
    ---------------------------------------------------------------------------
@@ -196,7 +212,9 @@ package body Giant.Graph_Lib.Subgraphs is
       Edge_Set           : in     Edge_Id_Set)
    is
    begin
-      Selections.Remove_Edge_Set (Subgraph_To_Modify.Sel, Edge_Set);
+      Selections.Remove_Edge_Set
+        (Selections.Selection (Subgraph_To_Modify),
+         Edge_Set);
    end Remove_Edge_Set;
 
    ---------------------------------------------------------------------------
@@ -205,7 +223,9 @@ package body Giant.Graph_Lib.Subgraphs is
       Node                : in     Node_Id)
    is
    begin
-      Selections.Remove_Node (Subgraph_To_Modify.Sel, Node);
+      Selections.Remove_Node
+        (Selections.Selection (Subgraph_To_Modify),
+         Node);
    end Remove_Node;
 
    ---------------------------------------------------------------------------
@@ -214,7 +234,9 @@ package body Giant.Graph_Lib.Subgraphs is
       Node_Set           : in     Node_Id_Set)
    is
    begin
-      Selections.Remove_Node_Set (Subgraph_To_Modify.Sel, Node_Set);
+      Selections.Remove_Node_Set
+        (Selections.Selection (Subgraph_To_Modify),
+         Node_Set);
    end Remove_Node_Set;
 
    ---------------------------------------------------------------------------
@@ -223,7 +245,9 @@ package body Giant.Graph_Lib.Subgraphs is
       New_Name           : in     String)
    is
    begin
-      Selections.Rename (Subgraph_To_Rename.Sel, New_Name);
+      Selections.Rename
+        (Selections.Selection (Subgraph_To_Rename),
+         New_Name);
    end Rename;
 
    ---------------------------------------------------------------------------
@@ -231,9 +255,10 @@ package body Giant.Graph_Lib.Subgraphs is
      (Stream            : in     Bauhaus_Io.In_Stream_Type;
       Subgraph_To_Read  :    out Subgraph)
    is
-      Res : Subgraph := new Subgraph_Record;
    begin
-      Selections.Selection_Read (Stream, Subgraph_To_Read.Sel);
+      Selections.Selection_Read
+        (Stream,
+         Selections.Selection (Subgraph_To_Read));
    end Subgraph_Read;
 
    ---------------------------------------------------------------------------
@@ -242,7 +267,9 @@ package body Giant.Graph_Lib.Subgraphs is
       Subgraph_To_Write : in Subgraph)
    is
    begin
-      Selections.Selection_Write (Stream, Subgraph_To_Write.Sel);
+      Selections.Selection_Write
+        (Stream,
+         Selections.Selection (Subgraph_To_Write));
    end Subgraph_Write;
 
    ---------------------------------------------------------------------------
@@ -252,10 +279,12 @@ package body Giant.Graph_Lib.Subgraphs is
       Name_Of_Result : in String)
       return Subgraph
    is
-      Res : Subgraph := new Subgraph_Record;
+      Res : Subgraph;
    begin
-      Res.Sel := Selections.Symetric_Difference
-        (Left.Sel, Right.Sel, Name_Of_Result);
+      Res := Subgraph (Selections.Symetric_Difference
+                       (Selections.Selection (Left),
+                        Selections.Selection (Right),
+                        Name_Of_Result));
       Ensure_Graph_Edge_Properties (Res);
       return Res;
    end Symetric_Difference;
@@ -267,9 +296,12 @@ package body Giant.Graph_Lib.Subgraphs is
       Name_Of_Result : in String)
       return Subgraph
    is
-      Res : Subgraph := new Subgraph_Record;
+      Res : Subgraph;
    begin
-      Res.Sel := Selections.Union (Left.Sel, Right.Sel, Name_Of_Result);
+      Res := Subgraph (Selections.Union
+                       (Selections.Selection (Left),
+                        Selections.Selection (Right),
+                        Name_Of_Result));
       Ensure_Graph_Edge_Properties (Res);
       return Res;
    end Union;
