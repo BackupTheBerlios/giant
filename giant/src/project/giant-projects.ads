@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.8 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.9 $
 -- $Author: schwiemn $
--- $Date: 2003/06/13 17:12:55 $
+-- $Date: 2003/06/16 07:34:08 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -420,7 +420,28 @@ package Giant.Projects is
    --   Project_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Project_Access" is passed as
    --     parameter.
-   function Does_Visualisation_Window_Exist
+   function Does_Vis_Window_Exist
+     (Project         : in Project_Access;
+      Vis_Window_Name : in Valid_Names.Standard_Name)
+     return Boolean;
+     
+   ---------------------------------------------------------------------------
+   -- Determines whether a Visualisation Window is loaded
+   -- into the main memory.
+   --
+   -- Parameters:
+   --   Project - The instance of the ADT holding a project.
+   --   Vis_Window_Name - The name (unique inside a project) of a
+   --     visualisation window.
+   -- Returns:
+   --   True, if the visualisation window "Vis_Window_Name" is
+   --   loaded into the main memory; False, otherwise 
+   --   (e.g. if the window is not part of the project at all).
+   -- Raises:
+   --   Project_Access_Not_Initialized_Exception - Raised if a not
+   --     initialized instance of "Project_Access" is passed as
+   --     parameter.
+   function Is_Vis_Window_Memory_Loaded
      (Project         : in Project_Access;
       Vis_Window_Name : in Valid_Names.Standard_Name)
      return Boolean;
@@ -479,7 +500,7 @@ package Giant.Projects is
    function Get_Visualisation_Window
      (Project         : in Project_Access;
       Vis_Window_Name : in Valid_Names.Standard_Name)
-     return Vis_Window_Management.Visual_Window_Access;
+     return Vis_Windows.Visual_Window_Access;
 
    ---------------------------------------------------------------------------
    -- Adds a visualisation window to the project.

@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.9 $
+--  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.10 $
 --  $Author: schwiemn $
---  $Date: 2003/06/10 15:00:22 $
+--  $Date: 2003/06/16 07:34:09 $
 --
 --  ----------------
 --  This package realizes a container that administrates the components
@@ -68,7 +68,7 @@ package Giant.Vis_Windows is
    --  selections except the current selection.
    type Selection_Highlight_Status is (None, Color_1, Color_2, Color_3);
 
-  ----------------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    --  This exception is raised if a not initialized instance of the
    --  ADT "Visual_Window_Access" is passed as parameter to one
    --  of the subprograms in this package.
@@ -116,8 +116,8 @@ package Giant.Vis_Windows is
    --    Stream - the stream where the data is read.
    --    Item - the new Instance of the ADT.
    procedure Visual_Window_Access_Read
-     (Stream : in  Bauhaus_IO.In_Stream_Type;
-      Item   : out Visual_Window_Access);
+     (Stream     : in  Bauhaus_IO.In_Stream_Type;
+      Vis_Window : out Visual_Window_Access);
       
    ---------------------------------------------------------------------------
    --  This subprogram writes the Container including all its components
@@ -134,8 +134,8 @@ package Giant.Vis_Windows is
    --      initialized instance of "Vis_Window_Data_Access" is passed
    --      as parameter.
    procedure Visual_Window_Access_Write
-     (Stream : in Bauhaus_IO.In_Stream_Type;
-      Item   : in Visual_Window_Access);
+     (Stream     : in Bauhaus_IO.Out_Stream_Type;
+      Vis_Window : in Visual_Window_Access);
       
    ---------------------------------------------------------------------------
    --  Deallocates the ADT.

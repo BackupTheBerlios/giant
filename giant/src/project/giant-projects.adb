@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.5 $
 --  $Author: schwiemn $
---  $Date: 2003/06/13 17:12:55 $
+--  $Date: 2003/06/16 07:34:08 $
 --
 with Bauhaus_IO; -- from Bauhaus IML "Reuse.src"
 
@@ -39,7 +39,8 @@ package body Giant.Projects is
    --  Streaming functionality for platform independent streams.
    ---------------------------------------------------------------------------
  
-   --------------------------------------------------------------------------- 
+   ---------------------------------------------------------------------------
+   --  Does not read all parts of.3 the record !!! 
    procedure Subgraph_Data_Element_Read
      (Stream  : in     Bauhaus_IO.In_Stream_Type;
       Element :    out Subgraph_Data_Elemet) is 
@@ -56,6 +57,7 @@ package body Giant.Projects is
    end Subgraph_Data_Elemet_Read;
  
    ---------------------------------------------------------------------------
+   --  Does not write all parts of the record !!!
    procedure Subgraph_Data_Element_Write
      (Stream  : in Bauhaus_IO.In_Stream_Type;
       Element : in Subgraph_Data_Elemet) is 
@@ -120,6 +122,33 @@ package body Giant.Projects is
         & ".xml";)
    end Calculate_Abs_Project_File_Name;
 
+   ---------------------------------------------------------------------------
+   function Load_Vis_Window_Into_Main_Memory (File_Path : String)
+     return Vis_Windows.Visual_Window_Access is
+     
+      Stream_File       : Ada.Streams.Stream_IO.File_Type;  
+      Ada_Stream        : Ada.Streams.Stream_IO.Stream_Access;
+      Bauhaus_In_Stream : Bauhaus_IO.In_Stream_Type;
+      New_Vis_Window    : Vis_Windows.Visual_Window_Access;
+   begin
+      
+      Ada.Streams.Stream_IO.Open
+        (Stream_File,
+         Ada.Streams.Stream_IO.In_File,
+         File_Path);
+         
+      Ada_Stream := Ada.Streams.Stream_IO.Stream (Stream_File);    
+      Bauhaus_In_Stream := Bauhaus_IO.Make_Internal (Ada_Stream);
+               
+      Vis_Windows.Visual_Window_Access_Read;
+        (Bauhaus_In_Stream, A_Subgraph_Data_Elemet.Subgraph);
+                                     
+      -- close resources
+      Bauhaus_IO.Release (Bauhaus_In_Stream);      
+      Ada.Streams.Stream_IO.Close (Stream_File);
+      
+      return Vis_Windows.Visual_Window_Access;
+   end Load_Vis_Window_Into_Main_Memory;
 
    ---------------------------------------------------------------------------
    --  0.3
@@ -524,7 +553,13 @@ package body Giant.Projects is
 
    begin
      
-     TODO
+--     TODO
+
+-- BEIM LADEN CHECKEN OB ZWEIMAL DER GLEICHE NAME VORKOMMT; FALLS JA
+--EXCEPTION
+
+
+
      null;
    end Load_Project;
       
@@ -740,6 +775,9 @@ package body Giant.Projects is
               (Subgraph_Stream_File,
                Ada.Streams.Stream_IO.Out_File,
                Subgraph_File_Name);
+
+
+-- TODO SUbgraphs loeschen !!!
                
             -- close resources   
             Ada.Streams.Stream_IO.Close (Subgraph_Stream_File);
@@ -878,8 +916,7 @@ package body Giant.Projects is
                  (Ada.Strings.Unbounded.To_String
                    (A_Vis_Window_Data_Element.Vis_Window_Name))); 
                               
-         else  
-            
+         else              
             --  window is already memory loaded  
             A_Vis_Window := Get_Visualisation_Window 
               (Project, 
@@ -963,6 +1000,145 @@ package body Giant.Projects is
    -- Visualisation Windows
    ---------------------------------------------------------------------------
    
+   ---------------------------------------------------------------------------
+   function Does_Vis_Window_Exist
+     (Project         : in Project_Access;
+      Vis_Window_Name : in Valid_Names.Standard_Name)
+     return Boolean is      
+   begin
+         
+      if (Project = null) then 
+         raise Project_Access_Not_Initialized_Exception;
+      end if;   
+   
+      return Known_Vis_Windows_Hashs.Is_Bound 
+        (Project.All_Project_Vis_Windows, 
+         Ada.Strings.Unbounded.To_Unbounded_String     
+           (Valid_Names.To_String (Vis_Window_Name));
+   end Does_Visualisation_Window_Exist;
+   
+   ---------------------------------------------------------------------------
+   function Is_Vis_Window_Memory_Loaded
+     (Project         : in Project_Access;
+      Vis_Window_Name : in Valid_Names.Standard_Name)
+     return Boolean is
+   begin  
+   
+      if (Project = null) then 
+         raise Project_Access_Not_Initialized_Exception;
+      end if;   
+   
+      return Memory_Loaded_Vis_Window_Hashs.Is_Bound   
+        (Project.All_Memory_Loaded_Vis_Windows, 
+         Ada.Strings.Unbounded.To_Unbounded_String     
+           (Valid_Names.To_String (Vis_Window_Name));        
+   end Is_Vis_Window_Memory_Loaded;
+                           
+   ---------------------------------------------------------------------------
+   function Get_Visualisation_Window
+     (Project         : in Project_Access;
+      Vis_Window_Name : in Valid_Names.Standard_Name)
+     return Vis_Window_Management.Visual_Window_Access is
+     
+     Vis_Window_Data     : Vis_Window_Data_Element;
+     New_Vis_Window_Inst : Vis_Windows.Visual_Window_Access;
+               
+   begin
+     
+      if (Project = null) then 
+         raise Project_Access_Not_Initialized_Exception;
+      end if;  
+      
+      if (Does_Vis_Window_Exist (Project, Vis_Window_Name) = False)
+         raise Visualisation_Window_Is_Not_Part_Of_Project_Exception;
+      end if;
+      
+   
+      --  Check if already loaded and return the instance if that is the case
+      if Is_Vis_Window_Memory_Loaded (Project, Vis_Window_Name) = True) then
+      
+         return Memory_Loaded_Vis_Window_Hashs.Fetch         
+           (Project.All_Memory_Loaded_Vis_Windows, 
+            Ada.Strings.Unbounded.To_Unbounded_String     
+             (Valid_Names.To_String (Vis_Window_Name));  
+      --  load vis window into main memory
+      else
+         
+         Vis_Window_Data := Known_Vis_Windows_Hashs.Fetch
+           (Project.All_Project_Vis_Windows, 
+            Ada.Strings.Unbounded.To_Unbounded_String     
+              (Valid_Names.To_String (Vis_Window_Name));
+         
+         -- change data entry                  
+         New_Vis_Window_Inst := 
+           Load_Vis_Window_Into_Main_Memory 
+             (Project,
+              Ada.Strings.Unbounded.To_String
+               (Vis_Window_Data.Existing_Vis_Window_File));
+          
+         -- insert into hash map
+         Memory_Loaded_Vis_Window_Hashs.Bind 
+           (Project.All_Memory_Loaded_Vis_Windows,
+            Vis_Window_Data.Vis_Window_Name,
+            New_Vis_Window_Inst);
+                                                           
+         -- update data entry
+         Known_Vis_Windows_Hashs.Unbind 
+           (Project.All_Project_Vis_Windows, 
+            Ada.Strings.Unbounded.To_Unbounded_String     
+              (Valid_Names.To_String (Vis_Window_Name));
+                                           
+         Vis_Window_Data.Is_Memory_Loaded := True
+
+         Known_Vis_Windows_Hashs.Bind
+           (Project.All_Project_Vis_Windows, 
+            Ada.Strings.Unbounded.To_Unbounded_String     
+              (Valid_Names.To_String (Vis_Window_Name)),
+            Vis_Window_Data);
+      
+         retrun New_Vis_Window_Inst;
+      end if;               
+   end Get_Visualisation_Window;
+
+   ---------------------------------------------------------------------------
+   procedure Add_Visualisation_Window
+    (Project    : in Project_Access;
+     Vis_Window : in Vis_Window_Management.Visual_Window_Access) is
+     
+     Vis_Window_Name : Ada.Strings.Unbounded.Unbounded_String;
+     
+   begin
+   
+      if (Project = null) then 
+         raise Project_Access_Not_Initialized_Exception;
+      end if;  
+      
+      if (Does_Vis_Window_Exist (Project, Vis_Window_Name) = True)
+         raise Visualisation_Window_Is_Not_Part_Of_Project_Exception;
+      end if;
+   
+  end Add_Visualisation_Window;
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
    
    
    
@@ -970,9 +1146,10 @@ package body Giant.Projects is
    
    
   
-     -- !!!! Save a single visualisation window should write this window
-     -- into the project file without changing the entries for the other
-     -- windows
+  
+   -- !!!! Save a single visualisation window should write this window
+   -- into the project file without changing the entries for the other
+   -- windows
  
  
    

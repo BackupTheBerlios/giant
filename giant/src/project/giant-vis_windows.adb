@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.10 $
 --  $Author: schwiemn $
---  $Date: 2003/06/10 16:21:53 $
+--  $Date: 2003/06/16 07:34:09 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -204,7 +204,7 @@ package body Giant.Vis_Windows is
       Vis_Window : out Visual_Window_Access) is                
    begin
     
-      Item := new Visual_Window_Element;
+      Vis_Window := new Visual_Window_Element;
     
       --  Read Vis_Window_Name
       Bauhaus_IO.Read_Unbounded_String (Stream, Vis_Window.Vis_Window_Name);
@@ -243,7 +243,7 @@ package body Giant.Vis_Windows is
        
    ---------------------------------------------------------------------------
    procedure Visual_Window_Access_Write
-     (Stream     : in Bauhaus_IO.In_Stream_Type;
+     (Stream     : in Bauhaus_IO.Out_Stream_Type;
       Vis_Window : in Visual_Window_Access) is   
    begin
       
