@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts-test.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-tree_layouts-test.adb,v $, $Revision: 1.3 $
 --  $Author: koppor $
---  $Date: 2003/07/14 17:59:22 $
+--  $Date: 2003/07/14 19:49:03 $
 --
 
 with Ada.Text_IO;
@@ -30,9 +30,15 @@ with Ada.Text_IO;
 with AUnit.Assertions; use AUnit.Assertions;
 with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
 
+with Giant.Config;
+with Giant.Config.Class_Sets;
+with Giant.Config.Vis_Styles;
 with Giant.Graph_Widgets;
 with Giant.Graph_Lib; use Giant.Graph_Lib;
+with Giant.Graph_Lib.Selections;
 with Giant.Logger;
+
+with Gtk.Main;
 
 package body Giant.Tree_Layouts.Test is
 
@@ -71,11 +77,53 @@ package body Giant.Tree_Layouts.Test is
    procedure Init (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
    begin
+      Gtk.Main.Init;
+
       Giant.Graph_Lib.Initialize;
       Giant.Graph_Lib.Load (Graphs (Test_Graph_Number).FileName);
 
+      Giant.Config.Vis_Styles.Initialize_Config_Vis_Styles
+        ("",
+         "",
+         "",
+         "resources/vis_styles/vis_styles_test_set_1/"
+         & "test_vis_style_2.xml");
+
       Graph_Widgets.Create (Widget);
    end Init;
+
+   procedure Small_Tree (R : in out AUnit.Test_Cases.Test_Case'Class)
+   is
+      Sel    : Graph_Lib.Selections.Selection;
+      Lock   : Graph_Widgets.Lock_Type;
+      Layout : Tree_Layouts.Tree_Layout;
+   begin
+      --  Generate Selection
+      Sel := Graph_Lib.Selections.Create ("");
+      Graph_Lib.Selections.Add_Node (Sel, Graph_Lib.Node_Id_Value ("3"));
+      Graph_Lib.Selections.Add_Node (Sel, Graph_Lib.Node_Id_Value ("10"));
+      Graph_Lib.Selections.Add_Node (Sel, Graph_Lib.Node_Id_Value ("68"));
+      Graph_Lib.Selections.Add_Node (Sel, Graph_Lib.Node_Id_Value ("70"));
+      Graph_Lib.Selections.Add_Node (Sel, Graph_Lib.Node_Id_Value ("123"));
+
+      Graph_Widgets.Insert_Selection (Widget, Sel, Lock);
+
+      Layout := Tree_Layouts.Initialize
+        (Widget              => Widget,
+         Widget_Lock         => Lock,
+         Selection_To_Layout => Sel,
+         Target_Position     => Vis.Logic.Combine_Vector (0.0, 0.0),
+         Root_Node           => Graph_Lib.Node_Id_Value ("3"),
+         --  q&d -- a destroy of this empty class_set should be called
+         Meta_Class_Set_To_Layout =>
+           Config.Class_Sets.Build
+         (Config.Class_Sets.Class_Sets_Lists.Create));
+
+      Evolutions.Start_Calculation_Blocked (Layout);
+
+      -- Finish test
+      Graph_Lib.Selections.Destroy (Sel);
+   end Small_Tree;
 
    procedure Done (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
@@ -98,6 +146,7 @@ package body Giant.Tree_Layouts.Test is
    procedure Register_Tests (T : in out Test_Case) is
    begin
       Register_Routine (T, Init'Access, "Init");
+      Register_Routine (T, Small_Tree'Access, "Small Tree");
       Register_Routine (T, Done'Access, "Done");
    end Register_Tests;
 
