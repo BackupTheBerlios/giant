@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis.adb,v $, $Revision: 1.15 $
+--  $RCSfile: giant-vis.adb,v $, $Revision: 1.16 $
 --  $Author: keulsn $
---  $Date: 2003/08/07 20:01:59 $
+--  $Date: 2003/08/12 14:30:31 $
 --
 ------------------------------------------------------------------------------
 
@@ -114,6 +114,21 @@ package body Giant.Vis is
    begin
       Bauhaus_IO.Write_Integer (Stream, Coordinate);
    end Write_Absolute_Int;
+
+
+   procedure Write_Zoom_Level
+     (Stream : in     Bauhaus_IO.Out_Stream_Type;
+      Level  : in     Zoom_Level) is
+   begin
+      Bauhaus_IO.Write_Float (Stream, Level);
+   end Write_Zoom_Level;
+
+   procedure Read_Zoom_Level
+     (Stream : in     Bauhaus_IO.In_Stream_Type;
+      Level  :    out Zoom_Level) is
+   begin
+      Bauhaus_IO.Read_Float (Stream, Level);
+   end Read_Zoom_Level;
 
 
    function To_Absolute

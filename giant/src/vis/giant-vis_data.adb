@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.36 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.37 $
 --  $Author: keulsn $
---  $Date: 2003/08/07 20:01:59 $
+--  $Date: 2003/08/12 14:30:31 $
 --
 ------------------------------------------------------------------------------
 
@@ -210,6 +210,45 @@ package body Giant.Vis_Data is
          Free_Queue (Queue);
       end if;
    end Destroy_Clipping_Queue;
+
+
+   -----------
+   -- Flags --
+   -----------
+
+   procedure Write_Highlight_Array
+     (Stream       : in     Bauhaus_IO.Out_Stream_Type;
+      Highlighting : in     Highlight_Array) is
+
+      Streamed_Value : Natural := 0;
+   begin
+      for I in Highlighting'Range loop
+         if Highlighting (I) then
+            Streamed_Value := Streamed_Value + 2**(Highlight_Type'Pos (I));
+         end if;
+      end loop;
+      Bauhaus_IO.Write_Natural (Stream, Streamed_Value);
+   end Write_Highlight_Array;
+
+   procedure Read_Highlight_Array
+     (Stream       : in     Bauhaus_IO.In_Stream_Type;
+      Highlighting :    out Highlight_Array) is
+
+      Streamed_Value : Natural;
+      Current_Pos    : Natural;
+   begin
+      pragma Assert (Highlight_Type'Size <= Natural'Size);
+      Bauhaus_IO.Read_Natural (Stream, Streamed_Value);
+      Highlighting := (others => False);
+      Current_Pos := 0;
+      while Streamed_Value /= 0 loop
+         if Streamed_Value mod 2 /= 0 then
+            Highlighting (Highlight_Type'Val (Current_Pos)) := True;
+            Streamed_Value := Streamed_Value / 2;
+         end if;
+         Current_Pos := Current_Pos + 1;
+      end loop;
+   end Read_Highlight_Array;
 
 
    -----------
@@ -568,6 +607,13 @@ package body Giant.Vis_Data is
       Edge.Right_Arrow_Point := Point;
    end Set_Right_Arrow_Point;
 
+   procedure Set_Hidden
+     (Edge  : in     Vis_Edge_Id;
+      State : in     Boolean) is
+   begin
+      Edge.Flags (Hidden) := State;
+   end Set_Hidden;
+
    procedure Set_Layer
      (Edge  : in     Vis_Edge_Id;
       Layer : in     Layer_Type) is
@@ -812,6 +858,13 @@ package body Giant.Vis_Data is
    begin
       Node.Flags (Sized) := State;
    end Set_Sized;
+
+   procedure Set_Hidden
+     (Node   : in     Vis_Node_Id;
+      State  : in     Boolean) is
+   begin
+      Node.Flags (Hidden) := State;
+   end Set_Hidden;
 
    procedure Set_Locked
      (Node   : in     Vis_Node_Id;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.26 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.27 $
 --  $Author: keulsn $
---  $Date: 2003/08/04 03:40:02 $
+--  $Date: 2003/08/12 14:30:31 $
 --
 ------------------------------------------------------------------------------
 --
@@ -34,6 +34,7 @@
 with Ada.Finalization;
 with Ada.Unchecked_Deallocation;
 
+with Bauhaus_IO;
 with Hashed_Mappings;
 pragma Elaborate_All (Hashed_Mappings);
 with Ordered_Sets;
@@ -200,6 +201,14 @@ package Giant.Vis_Data is
      (Node_Flags_Enumeration_Type'Range);
    subtype Highlight_Array is All_Flags_Type
      (Highlight_Type'Range);
+
+   procedure Write_Highlight_Array
+     (Stream       : in     Bauhaus_IO.Out_Stream_Type;
+      Highlighting : in     Highlight_Array);
+
+   procedure Read_Highlight_Array
+     (Stream       : in     Bauhaus_IO.In_Stream_Type;
+      Highlighting :    out Highlight_Array);
 
 
    --------------------
@@ -417,6 +426,10 @@ package Giant.Vis_Data is
      (Edge      : in     Vis_Edge_Id;
       Layer     : in     Layer_Type);
 
+   procedure Set_Hidden
+     (Edge      : in     Vis_Edge_Id;
+      State     : in     Boolean);
+
    ----------------------------------------------------------------------------
    --  Total ordering on Vis_Edge_Id
    --  Returns:
@@ -553,6 +566,10 @@ package Giant.Vis_Data is
    procedure Set_Layer
      (Node   : in     Vis_Node_Id;
       Layer  : in     Layer_Type);
+
+   procedure Set_Hidden
+     (Node   : in     Vis_Node_Id;
+      State  : in     Boolean);
 
    procedure Set_Annotated
      (Node   : in     Vis_Node_Id;

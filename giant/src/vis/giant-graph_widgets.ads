@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.39 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.40 $
 --  $Author: keulsn $
---  $Date: 2003/08/07 20:01:59 $
+--  $Date: 2003/08/12 14:30:31 $
 --
 ------------------------------------------------------------------------------
 --
@@ -974,6 +974,7 @@ package Giant.Graph_Widgets is
 private                    -- private part --
                            ------------------
 
+   Current_Version_Number : constant := 1;
 
    package Vis_Edge_Sets renames Vis_Data.Vis_Edge_Sets;
    package Vis_Edge_Lists renames Vis_Data.Vis_Edge_Lists;

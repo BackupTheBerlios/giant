@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis.ads,v $, $Revision: 1.15 $
+--  $RCSfile: giant-vis.ads,v $, $Revision: 1.16 $
 --  $Author: keulsn $
---  $Date: 2003/08/07 20:01:59 $
+--  $Date: 2003/08/12 14:30:31 $
 --
 ------------------------------------------------------------------------------
 
@@ -76,6 +76,14 @@ package Giant.Vis is
       Write_Coordinate  => Write_Logic_Float);
 
    subtype Zoom_Level is Float;
+
+   procedure Write_Zoom_Level
+     (Stream : in     Bauhaus_IO.Out_Stream_Type;
+      Level  : in     Zoom_Level);
+
+   procedure Read_Zoom_Level
+     (Stream : in     Bauhaus_IO.In_Stream_Type;
+      Level  :    out Zoom_Level);
 
    subtype Absolute_Int is Integer range
      Integer (Glib.Gint'First) .. Integer (Glib.Gint'Last);

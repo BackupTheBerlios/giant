@@ -20,13 +20,14 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.42 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.43 $
 --  $Author: keulsn $
---  $Date: 2003/08/07 20:01:59 $
+--  $Date: 2003/08/12 14:30:31 $
 --
 ------------------------------------------------------------------------------
 
 
+with Ada.Unchecked_Deallocation;
 with System;
 
 with Gtk.Object;
@@ -39,6 +40,7 @@ with Giant.Graph_Widgets.Positioning;
 with Giant.Graph_Widgets.Settings;
 with Giant.Graph_Widgets.States;
 with Giant.Logger;
+with Giant.Simple_Priority_Queues;
 
 package body Giant.Graph_Widgets is
 
@@ -312,15 +314,200 @@ package body Giant.Graph_Widgets is
       Widget      :    out Graph_Widget;
       Style       : in     Config.Vis_Styles.Visualisation_Style_Access;
       Annotations : in     Node_Annotations.Node_Annotation_Access) is
+
+      Lock           : Lock_Type;
+
+      procedure Read_Node is
+         Graph_Node   : Graph_Lib.Node_Id;
+         Node         : Vis_Data.Vis_Node_Id;
+         Hidden       : Boolean;
+         Highlighting : Vis_Data.Highlight_Array;
+         Position     : Vis.Logic.Vector_2d;
+      begin
+         Graph_Lib.Read_Node_Id (Stream, Graph_Node);
+         Find_Or_Create (Widget, Graph_Node, Node);
+         Bauhaus_IO.Read_Boolean (Stream, Hidden);
+         Vis_Data.Set_Hidden (Node, Hidden);
+         Vis_Data.Read_Highlight_Array (Stream, Highlighting);
+         for Color in Highlighting'Range loop
+            if Highlighting (Color) then
+               Add_Node_Highlighting (Widget, Node, Color);
+               if Vis_Data."=" (Color, Vis_Data.Current_Local) then
+                  Add_Node_To_Selection (Widget, Node);
+               end if;
+            end if;
+         end loop;
+         Vis.Logic.Read_Vector (Stream, Position);
+         Set_Top_Middle (Widget, Graph_Node, Position, Lock);
+      end Read_Node;
+
+      procedure Read_Edge is
+         Graph_Edge : Graph_Lib.Edge_Id;
+         Edge       : Vis_Data.Vis_Edge_Id;
+         Hidden     : Boolean;
+         Highlighting : Vis_Data.Highlight_Array;
+      begin
+         Graph_Lib.Read_Edge_Id (Stream, Graph_Edge);
+         Find_Or_Create (Widget, Graph_Edge, Edge);
+         Bauhaus_IO.Read_Boolean (Stream, Hidden);
+         Vis_Data.Set_Hidden (Edge, Hidden);
+         Vis_Data.Read_Highlight_Array (Stream, Highlighting);
+         for Color in Highlighting'Range loop
+            if Highlighting (Color) then
+               Add_Edge_Highlighting (Widget, Edge, Color);
+               if Vis_Data."=" (Color, Vis_Data.Current_Local) then
+                  Add_Edge_To_Selection (Widget, Edge);
+               end if;
+            end if;
+         end loop;
+      end Read_Edge;
+
+      Version_Number : Integer;
+      Location       : Vis.Logic.Vector_2d;
+      Level          : Vis.Zoom_Level;
+      Edge_Count     : Natural;
+      Node_Count     : Natural;
    begin
       Create (Widget, Style, Annotations);
+      Bauhaus_IO.Read_Integer (Stream, Version_Number);
+
+      --  FIX remove
+      pragma Assert (Version_Number = Current_Version_Number);
+      return;
+      --  FIX end
+
+      Lock_All_Content (Widget, Lock);
+      case Version_Number is
+         when Current_Version_Number =>
+            Vis.Logic.Read_Vector (Stream, Location);
+            Vis.Read_Zoom_Level (Stream, Level);
+            Bauhaus_IO.Read_Natural (Stream, Node_Count);
+            for I in 1 .. Node_Count loop
+               Read_Node;
+            end loop;
+            Bauhaus_IO.Read_Natural (Stream, Edge_Count);
+            for I in 1 .. Edge_Count loop
+               Read_Edge;
+            end loop;
+            Set_Location_And_Zoom_Level (Widget, Location, Level);
+
+         when others =>
+            Graph_Widget_Logger.Fatal
+              ("Cannot read Graph Widget. Version number incorrect, expected" &
+               Natural'Image (Current_Version_Number) & ", found " &
+               Natural'Image (Version_Number) & ". Create empty Graph Widget"
+               & " instead.");
+      end case;
+      Release_Lock (Widget, Lock);
    end Read_Graph_Widget;
 
    procedure Write_Graph_Widget
      (Stream : in     Bauhaus_IO.Out_Stream_Type;
       Widget : access Graph_Widget_Record) is
+
+      package Vis_Edge_Priority_Queues is new Simple_Priority_Queues
+        (Item_Type           => Vis_Data.Vis_Edge_Id,
+         Has_Higher_Priority => Vis_Data.Is_Edge_Below);
+
+      type Vis_Edge_Priority_Queue_Access is
+        access Vis_Edge_Priority_Queues.Queue_Type;
+
+      procedure Free is new Ada.Unchecked_Deallocation
+        (Name   => Vis_Edge_Priority_Queue_Access,
+         Object => Vis_Edge_Priority_Queues.Queue_Type);
+
+      package Vis_Node_Priority_Queues is new Simple_Priority_Queues
+        (Item_Type           => Vis_Data.Vis_Node_Id,
+         Has_Higher_Priority => Vis_Data.Is_Node_Below);
+
+      type Vis_Node_Priority_Queue_Access is
+        access Vis_Node_Priority_Queues.Queue_Type;
+
+      procedure Free is new Ada.Unchecked_Deallocation
+        (Name   => Vis_Node_Priority_Queue_Access,
+         Object => Vis_Node_Priority_Queues.Queue_Type);
+
+      procedure Write_Node
+        (Node : in     Vis_Data.Vis_Node_Id) is
+      begin
+         Graph_Lib.Write_Node_Id
+           (Stream, Vis_Data.Get_Graph_Node (Node));
+         Bauhaus_IO.Write_Boolean
+           (Stream, Vis_Data.Is_Hidden (Node));
+         Vis_Data.Write_Highlight_Array
+           (Stream, Vis_Data.Get_Highlighting (Node));
+         Vis.Logic.Write_Vector (Stream, Vis_Data.Get_Position (Node));
+      end Write_Node;
+
+      procedure Write_Edge
+        (Edge : in     Vis_Data.Vis_Edge_Id) is
+      begin
+         Graph_Lib.Write_Edge_Id
+           (Stream, Vis_Data.Get_Graph_Edge (Edge));
+         Bauhaus_IO.Write_Boolean
+           (Stream, Vis_Data.Is_Hidden (Edge));
+         Vis_Data.Write_Highlight_Array
+           (Stream, Vis_Data.Get_Highlighting (Edge));
+      end Write_Edge;
+
    begin
-      null;
+      Bauhaus_IO.Write_Integer (Stream, Current_Version_Number);
+
+      --  FIX remove
+      return;
+      --  FIX end
+
+      Vis.Logic.Write_Vector (Stream, Get_Location (Widget));
+      Vis.Write_Zoom_Level (Stream, Get_Zoom_Level (Widget));
+
+      declare
+         Node          : Vis_Data.Vis_Node_Id;
+         Node_Iterator : Node_Id_Mappings.Values_Iter;
+         Node_Queue    : Vis_Node_Priority_Queue_Access :=
+           new Vis_Node_Priority_Queues.Queue_Type
+           (Node_Id_Mappings.Size (Widget.Node_Map));
+      begin
+         Node_Iterator := Node_Id_Mappings.Make_Values_Iter (Widget.Node_Map);
+         while Node_Id_Mappings.More (Node_Iterator) loop
+            Node_Id_Mappings.Next (Node_Iterator, Node);
+            Vis_Node_Priority_Queues.Insert (Node_Queue.all, Node);
+         end loop;
+
+         Bauhaus_IO.Write_Natural
+           (Stream, Vis_Node_Priority_Queues.Get_Size (Node_Queue.all));
+         while not Vis_Node_Priority_Queues.Is_Empty (Node_Queue.all) loop
+            Node := Vis_Node_Priority_Queues.Get_Head (Node_Queue.all);
+            Vis_Node_Priority_Queues.Remove_Head (Node_Queue.all);
+            Write_Node (Node);
+         end loop;
+
+         Free (Node_Queue);
+      end;
+
+      declare
+         Edge          : Vis_Data.Vis_Edge_Id;
+         Edge_Iterator : Edge_Id_Mappings.Values_Iter;
+         Edge_Queue    : Vis_Edge_Priority_Queue_Access :=
+           new Vis_Edge_Priority_Queues.Queue_Type
+           (Edge_Id_Mappings.Size (Widget.Edge_Map));
+      begin
+         Edge_Iterator := Edge_Id_Mappings.Make_Values_Iter (Widget.Edge_Map);
+         while Edge_Id_Mappings.More (Edge_Iterator) loop
+            Edge_Id_Mappings.Next (Edge_Iterator, Edge);
+            Vis_Edge_Priority_Queues.Insert (Edge_Queue.all, Edge);
+         end loop;
+
+         Bauhaus_IO.Write_Natural
+           (Stream, Vis_Edge_Priority_Queues.Get_Size (Edge_Queue.all));
+         while not Vis_Edge_Priority_Queues.Is_Empty (Edge_Queue.all) loop
+            Edge := Vis_Edge_Priority_Queues.Get_Head (Edge_Queue.all);
+            Vis_Edge_Priority_Queues.Remove_Head (Edge_Queue.all);
+
+            Write_Edge (Edge);
+         end loop;
+
+         Free (Edge_Queue);
+      end;
    end Write_Graph_Widget;
 
 
@@ -2306,53 +2493,6 @@ package body Giant.Graph_Widgets is
       when Node_Id_Mappings.Not_Bound =>
          return null;
    end Look_Up;
-
-
---     procedure Update_Node_Positions is new For_All
---       (Object_Type => Vis_Data.Vis_Node_Id,
---        "<"         => Vis_Data.Is_Node_Below,
---        "="         => Vis_Data."=",
---        Object_Sets => Vis_Node_Sets,
---        Action      => Positioning.Update_Node_Position);
-
---     procedure Update_Edge_Positions is new For_All
---       (Object_Type => Vis_Data.Vis_Edge_Id,
---        "<"         => Vis_Data.Is_Edge_Below,
---        "="         => Vis_Data."=",
---        Object_Sets => Vis_Edge_Sets,
---        Action      => Positioning.Update_Edge_Position);
-
---     procedure Adjust_Nodes_Ports is new For_All
---       (Object_Type => Vis_Data.Vis_Node_Id,
---        "<"         => Vis_Data.Is_Node_Below,
---        "="         => Vis_Data."=",
---        Object_Sets => Vis_Node_Sets,
---        Action      => Positioning.Adjust_Ports);
-
---     procedure Adjust_Arrows is new For_All
---       (Object_Type => Vis_Data.Vis_Edge_Id,
---        "<"         => Vis_Data.Is_Edge_Below,
---        "="         => Vis_Data."=",
---        Object_Sets => Vis_Edge_Sets,
---        Action      => Positioning.Adjust_Arrow);
-
---     procedure Update_Positioning
---       (Widget : access Graph_Widget_Record'Class;
---        Edges  : in     Vis_Edge_Sets.Set;
---        Nodes  : in     Vis_Node_Sets.Set) is
---     begin
---        Update_Node_Positions (Widget, Nodes);
---        Update_Edge_Positions (Widget, Edges);
---        Adjust_Nodes_Ports (Widget, Nodes);
---        Adjust_Arrows (Widget, Edges);
---     end Update_Positioning;
-
---     procedure Update_Node_Positioning
---       (Widget : access Graph_Widget_Record'Class;
---        Nodes  : in     Vis_Node_Lists.List) is
---     begin
---        Update_Node_Positions (Widget, Nodes);
---     end Update_Node_Positioning;
 
    procedure Redraw
      (Widget : access Graph_Widget_Record'Class) is

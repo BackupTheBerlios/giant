@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.33 $
---  $Author: schwiemn $
---  $Date: 2003/07/15 20:31:30 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.34 $
+--  $Author: keulsn $
+--  $Date: 2003/08/12 14:30:31 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -251,14 +251,14 @@ package body Giant.Vis_Windows is
       Bauhaus_IO.Read_Unbounded_String
         (Stream, Vis_Window.The_Visualisation_Style);
 
---FIX:  Graph_Widgets.Read_Graph_Widget
---        (Stream, Vis_Window.The_Graph_Widget, Annotations);
+      Graph_Widgets.Read_Graph_Widget
+        (Stream, Vis_Window.The_Graph_Widget, Config.Vis_Styles.Get_Default_Vis_Style, Annotations);
 -- FIX: vvv remove vvv
       --  Initialize new Graph_Widget
-      Graph_Widgets.Create
-        (Vis_Window.The_Graph_Widget,
-         Config.Vis_Styles.Get_Default_Vis_Style,
-         Annotations);
+--        Graph_Widgets.Create
+--          (Vis_Window.The_Graph_Widget,
+--           Config.Vis_Styles.Get_Default_Vis_Style,
+--           Annotations);
 
       --  Increases the GTK Reference Counter - needed to keep the graph
       --  widget persistent in this data structure
@@ -304,7 +304,8 @@ package body Giant.Vis_Windows is
         (Stream, Vis_Window.The_Visualisation_Style);
 
       --  Write the_Graph_Widget
---FIX:       Graph_Widgets.Write_Graph_Widget (Stream, Vis_Window.The_Graph_Widget);
+      --FIX:
+      Graph_Widgets.Write_Graph_Widget (Stream, Vis_Window.The_Graph_Widget);
 
       --  Write the Set of all Pins
       Pin_Sets_Write (Stream, Vis_Window.Set_Of_All_Pins);
@@ -665,9 +666,9 @@ package body Giant.Vis_Windows is
 
       Dummy_Selection := Graph_Lib.Selections.Create (Selection_Name);
       Dummy_Data_Element.The_Selection := Dummy_Selection;
-     
-      --  Must happen before removal. 
-      --      
+
+      --  Must happen before removal.
+      --
       --  On removal of current selection the standard selection becomes
       --  the current selection.
       if Ada.Strings.Unbounded."="
@@ -677,15 +678,15 @@ package body Giant.Vis_Windows is
             Ada.Strings.Unbounded.To_String
              (Vis_Window.Standard_Selection));
       end if;
-      
+
       Selection_Data_Sets.Remove
         (Vis_Window.All_Managed_Selections, Dummy_Data_Element);
 
       Graph_Lib.Selections.Destroy (Dummy_Selection);
-      
-      Logger.Debug 
+
+      Logger.Debug
         ("Rem Selectio - Stand Sel: "
-         & Ada.Strings.Unbounded.To_String (Vis_Window.Standard_Selection));     
+         & Ada.Strings.Unbounded.To_String (Vis_Window.Standard_Selection));
    end Remove_Selection;
 
    ---------------------------------------------------------------------------
