@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-mini_maps.adb,v $, $Revision: 1.5 $
---  $Author: squig $
---  $Date: 2003/07/15 17:18:42 $
+--  $RCSfile: giant-mini_maps.adb,v $, $Revision: 1.6 $
+--  $Author: keulsn $
+--  $Date: 2003/07/15 18:35:12 $
 --
 ------------------------------------------------------------------------------
 
@@ -170,6 +170,8 @@ package body Giant.Mini_Maps is
 
    package Button_Press_Event_Cbs renames Mini_Map_Boolean_Callback;
 
+   package Motion_Notify_Event_Cbs renames Mini_Map_Boolean_Callback;
+
 
    package Realize_Handling is new Gtk.Widget.Realize_Handling
      (Widget_Type  => Mini_Map_Record,
@@ -299,7 +301,7 @@ package body Giant.Mini_Maps is
          Name   => "button_press_event",
          Marsh  => Button_Press_Event_Cbs.To_Marshaller
                     (On_Button_Press_Event'Access));
-      Mini_Map_Boolean_Callback.Connect
+      Motion_Notify_Event_Cbs.Connect
         (Widget => Widget,
          Name   => "motion_notify_event",
          Marsh  => Mini_Map_Boolean_Callback.To_Marshaller
@@ -332,8 +334,6 @@ package body Giant.Mini_Maps is
       Widget.Polluted := True;
       if Graph_Widgets."/=" (Widget.Watched, null) then
          Graph_Widgets.Ref (Widget.Watched);
-         --  Remove next statement after Graph_Widget integrated.
---         Graph_Widgets.Set_User_Data (Widget.all'Access);
          Widget.Logical_Area_Handler := Logical_Area_Cbs.Connect
            (Widget    => Widget.Watched,
             Name      => Graph_Widgets.Handlers.Logical_Area_Changed_Signal,
@@ -664,8 +664,8 @@ package body Giant.Mini_Maps is
    function On_Motion_Notify_Event
      (Widget : access Mini_Map_Record'Class;
       Event  : in     Gdk.Event.Gdk_Event_Motion)
-     return Boolean
-   is
+     return Boolean is
+
       Point : Vis.Absolute.Vector_2d := Combine_Vector
         (X => Vis.Absolute_Int (Gdk.Event.Get_X (Event)),
          Y => Vis.Absolute_Int (Gdk.Event.Get_Y (Event)));
@@ -716,70 +716,6 @@ package body Giant.Mini_Maps is
          Update (Mini);
       end if;
    end On_Visible_Area_Changed;
-
-
-
-
---     --  ugly test code
---     package body Graph_Widgets is
---        Instance     : Graph_Widget := new Graph_Widget_Record;
---        Logical_Area : Vis.Logic.Rectangle_2d :=
---          Vis.Logic.Combine_Rectangle (100.0, -400.0, 1500.0, 600.0);
---        Visible_Area : Vis.Logic.Rectangle_2d :=
---          Vis.Logic.Combine_Rectangle (170.0, -300.0, 1000.0, 400.0);
-
---        function Create return Graph_Widget is
---        begin
---           return Instance;
---        end Create;
-
---        function Get_Logical_Area
---          (Widget : access Graph_Widget_Record'Class)
---          return Vis.Logic.Rectangle_2d is
---        begin
---           return Logical_Area;
---        end Get_Logical_Area;
-
---        function Get_Visible_Area
---          (Widget : access Graph_Widget_Record'Class)
---          return Vis.Logic.Rectangle_2d is
---        begin
---           return Visible_Area;
---        end Get_Visible_Area;
-
---        User_Data : Mini_Map := null;
-
---        procedure Set_User_Data
---          (Data : in     Mini_Map) is
---        begin
---           User_Data := Data;
---        end Set_User_Data;
-
---        procedure Set_Logical_Area
---          (Widget : access Graph_Widget_Record'Class;
---           Area   : in     Vis.Logic.Rectangle_2d) is
---        begin
---           Logical_Area := Area;
---           On_Logical_Area_Changed (Widget, Logical_Area, User_Data);
---        end Set_Logical_Area;
-
---        procedure Set_Visible_Area
---          (Widget : access Graph_Widget_Record'Class;
---           Area   : in     Vis.Logic.Rectangle_2d) is
---        begin
---           Visible_Area := Area;
---           On_Visible_Area_Changed (Widget, Visible_Area, User_Data);
---        end Set_Visible_Area;
-
---        procedure Set_Location
---          (Widget     : access Graph_Widget_Record'Class;
---           Location   : in     Vis.Logic.Vector_2d) is
---        begin
---           Set_Center (Visible_Area, Location);
---           On_Visible_Area_Changed (Widget, Visible_Area, User_Data);
---        end Set_Location;
-
---     end Graph_Widgets;
 
 end Giant.Mini_Maps;
 
