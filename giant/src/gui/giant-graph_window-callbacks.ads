@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.ads,v $, $Revision: 1.8 $
---  $Author: squig $
---  $Date: 2003/07/18 15:40:31 $
+--  $RCSfile: giant-graph_window-callbacks.ads,v $, $Revision: 1.9 $
+--  $Author: keulsn $
+--  $Date: 2003/07/20 23:20:04 $
 --
 ------------------------------------------------------------------------------
 --
@@ -81,9 +81,8 @@ package Giant.Graph_Window.Callbacks is
       Event  : in     Graph_Widgets.Handlers.Node_Popup_Action);
 
    procedure On_Selection_Changed
-     (Source     : access Gtk.Widget.Gtk_Widget_Record'Class;
-      Action     : in     Graph_Widgets.Notifications.Selection_Change_Type;
-      Difference : in     Graph_Lib.Selections.Selection);
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event  : in     Graph_Widgets.Handlers.Selection_Change_Action);
 
    ---------------------------------------------------------------------------
    --  Node Menu Callbacks

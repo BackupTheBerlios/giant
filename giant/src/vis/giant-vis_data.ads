@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.22 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.23 $
 --  $Author: keulsn $
---  $Date: 2003/07/15 20:09:52 $
+--  $Date: 2003/07/20 23:20:04 $
 --
 ------------------------------------------------------------------------------
 --
@@ -289,6 +289,11 @@ package Giant.Vis_Data is
      (Edge : in     Vis_Edge_Id)
      return Vis.Absolute.Rectangle_2d;
 
+   function Hits
+     (Edge  : in     Vis_Edge_Id;
+      Point : in     Vis.Absolute.Vector_2d)
+     return Boolean;
+
    function Is_Hidden
      (Edge : in     Vis_Edge_Id)
      return Boolean;
@@ -444,6 +449,11 @@ package Giant.Vis_Data is
    function Get_Extent
      (Node : in     Vis_Node_Id)
      return Vis.Absolute.Rectangle_2d;
+
+   function Hits
+     (Node  : in     Vis_Node_Id;
+      Point : in     Vis.Absolute.Vector_2d)
+     return Boolean;
 
    ----------------------------------------------------------------------------
    --  Gets the layer 'Node' is inside. No other node must be in the same
@@ -612,6 +622,14 @@ package Giant.Vis_Data is
       Edge    : in     Vis_Edge_Id);
 
    ----------------------------------------------------------------------------
+   --  Returns the top-most edge at 'Point' or null if such an edge does
+   --  not exist in 'Manager'
+   function Get_Edge_At
+     (Manager : in     Region_Manager;
+      Point   : in     Vis.Absolute.Vector_2d)
+     return Vis_Edge_Id;
+
+   ----------------------------------------------------------------------------
    --  Returns True if 'Edge' is contained in a region manager,
    --  False otherwise.
    --  Note:
@@ -634,6 +652,14 @@ package Giant.Vis_Data is
    procedure Drop_Node
      (Manager : in out Region_Manager;
       Node    : in     Vis_Node_Id);
+
+   ----------------------------------------------------------------------------
+   --  Returns the top-most node at 'Point' or null if such a node does not
+   --  exist in 'Manager'
+   function Get_Node_At
+     (Manager : in     Region_Manager;
+      Point   : in     Vis.Absolute.Vector_2d)
+     return Vis_Node_Id;
 
    ----------------------------------------------------------------------------
    --  Returns True if 'Node' is contained in a region manager,

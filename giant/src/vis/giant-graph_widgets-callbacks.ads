@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_widgets-callbacks.ads,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/07/02 16:49:15 $
+--  $Date: 2003/07/20 23:20:04 $
 --
 ------------------------------------------------------------------------------
 
@@ -73,5 +73,21 @@ private
      (Widget : access Graph_Widget_Record'Class;
       Event  : in     Gdk.Event.Gdk_Event_Button)
      return Boolean;
+
+   function On_Button_Release_Event
+     (Widget : access Graph_Widget_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event_Button)
+     return Boolean;
+
+   function On_Motion_Notify_Event
+     (Widget : access Graph_Widget_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event_Motion)
+     return Boolean;
+
+   Left_Button   : constant := 1;
+   Middle_Button : constant := 2;
+   Right_Button  : constant := 3;
+
+   Default_Click_Distance_Tolerance : constant := 3;
 
 end Giant.Graph_Widgets.Callbacks;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.ads,v $, $Revision: 1.10 $
+--  $RCSfile: giant-vectors.ads,v $, $Revision: 1.11 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 03:35:59 $
+--  $Date: 2003/07/20 23:20:04 $
 --
 ------------------------------------------------------------------------------
 
@@ -284,6 +284,10 @@ package Giant.Vectors is
      return Vector_2d;
 
    procedure Shrink
+     (Rectangle : in out Rectangle_2d;
+      Thickness : in     Coordinate_Type);
+
+   procedure Enlarge
      (Rectangle : in out Rectangle_2d;
       Thickness : in     Coordinate_Type);
 

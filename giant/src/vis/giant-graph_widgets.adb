@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.36 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.37 $
 --  $Author: keulsn $
---  $Date: 2003/07/18 13:19:45 $
+--  $Date: 2003/07/20 23:20:04 $
 --
 ------------------------------------------------------------------------------
 
@@ -240,6 +240,9 @@ package body Giant.Graph_Widgets is
         (Top_Left     => Vis.Logic.Zero_2d,
          Bottom_Right => Vis.Logic.Zero_2d);
 
+      Widget.Selected_Edges := Vis_Edge_Sets.Empty_Set;
+      Widget.Selected_Nodes := Vis_Node_Sets.Empty_Set;
+
       Widget.Locked_Edges := Vis_Edge_Sets.Empty_Set;
       Widget.Unsized_Edges := Vis_Edge_Sets.Empty_Set;
       Widget.Locked_Nodes := Vis_Node_Sets.Empty_Set;
@@ -299,6 +302,9 @@ package body Giant.Graph_Widgets is
       Vis_Node_Sets.Destroy (Widget.Unsized_Nodes);
       Vis_Edge_Sets.Destroy (Widget.Locked_Edges);
       Vis_Edge_Sets.Destroy (Widget.Unsized_Edges);
+
+      Vis_Node_Sets.Destroy (Widget.Selected_Nodes);
+      Vis_Edge_Sets.Destroy (Widget.Selected_Edges);
    end Shut_Down_Graph_Widget;
 
    procedure Read_Graph_Widget
@@ -600,10 +606,10 @@ package body Giant.Graph_Widgets is
          Vis.Logic.Get_Y (Location) <= Vis.Logic_Float'Safe_Last);
 
       if States.Is_Locked (Widget) then
-         Graph_Widget_Logger.Debug
-           ("Set_Top_Middle: Node =" &
-            Graph_Lib.Node_Id_Image (Node) &
-            ", Location = " & Vis.Logic.Image (Location));
+         --  Graph_Widget_Logger.Debug
+         --    ("Set_Top_Middle: Node =" &
+         --     Graph_Lib.Node_Id_Image (Node) &
+         --     ", Location = " & Vis.Logic.Image (Location));
          pragma Assert (States.Is_Valid_Lock (Widget, Lock));
          Vis_Node := Look_Up (Widget, Node);
          if Vis_Node /= null then
@@ -775,6 +781,49 @@ package body Giant.Graph_Widgets is
    -- Layout manipulations without lock --
    ---------------------------------------
 
+   --  'Node' must be locked
+   procedure Move_Node
+     (Widget : access Graph_Widget_Record'Class;
+      Node   : in     Vis_Data.Vis_Node_Id;
+      Offset : in     Vis.Logic.Vector_2d) is
+
+      Old_Position : Vis.Logic.Vector_2d := Vis_Data.Get_Position (Node);
+      New_Position : Vis.Logic.Vector_2d :=
+        Vis.Logic."+" (Old_Position, Offset);
+   begin
+      Add_Node_To_Locked (Widget, Node);
+      Vis_Data.Set_Position (Node, New_Position);
+      Add_Logic_Position (Widget, New_Position);
+   end Move_Node;
+
+   procedure Move_Nodes
+     (Widget : access Graph_Widget_Record'Class;
+      Nodes  : in     Vis_Node_Sets.Set;
+      Offset : in     Vis.Logic.Vector_2d) is
+
+      procedure Move_One
+        (Widget : access Graph_Widget_Record'Class;
+         Node   : in     Vis_Data.Vis_Node_Id) is
+      begin
+         Move_Node (Widget, Node, Offset);
+      end Move_One;
+
+      procedure Move_All is new For_All
+        (Object_Type => Vis_Data.Vis_Node_Id,
+         "<"         => Vis_Data.Is_Node_Below,
+         "="         => Vis_Data."=",
+         Object_Sets => Vis_Node_Sets,
+         Action      => Move_One);
+
+      Lock : Lock_Type;
+   begin
+      Lock_All_Content (Widget, Lock);
+      Move_All
+        (Widget => Widget,
+         Set    => Nodes);
+      Release_Lock (Widget, Lock);
+   end Move_Nodes;
+
    procedure Make_Room
      (Widget    : access Graph_Widget_Record'Class;
       Center    : in     Vis.Logic.Vector_2d;
@@ -786,10 +835,25 @@ package body Giant.Graph_Widgets is
 
    procedure Move_Selection
      (Widget    : access Graph_Widget_Record'Class;
-      Selection : access Graph_Lib.Selections.Selection;
+      Selection : in     Graph_Lib.Selections.Selection;
       Move      : in     Vis.Logic.Vector_2d) is
+
+      procedure Move_One
+        (Widget : access Graph_Widget_Record'Class;
+         Node   : in     Vis_Data.Vis_Node_Id) is
+      begin
+         Move_Node (Widget, Node, Move);
+      end Move_One;
+
+      procedure Move_All is new For_All_Graph_Nodes (Action => Move_One);
+
+      Lock : Lock_Type;
    begin
-      null;  ----------------------------  raise Unimplemented;
+      Lock_All_Content (Widget, Lock);
+      Move_All
+        (Widget => Widget,
+         Nodes  => Graph_Lib.Selections.Get_All_Nodes (Selection));
+      Release_Lock (Widget, Lock);
    end Move_Selection;
 
 
@@ -852,6 +916,84 @@ package body Giant.Graph_Widgets is
       end case;
    end To_Global_Highlight_Type;
 
+   --  Precondition:
+   --    'Edge' must be locked
+   procedure Add_Edge_Highlighting
+     (Widget    : access Graph_Widget_Record'Class;
+      Edge      : in     Vis_Data.Vis_Edge_Id;
+      Highlight : in     Vis_Data.Highlight_Type) is
+
+      Current : Vis_Data.Flags_Type;
+   begin
+      pragma Assert (States.Is_Locked (Widget));
+      Current := Vis_Data.Get_Highlighting (Edge);
+      if not Current (Highlight) then
+         Move_Edge_To_Unsized (Widget, Edge);
+         Vis_Data.Add_Highlight_Color (Edge, Highlight);
+      end if;
+   end Add_Edge_Highlighting;
+
+   --  Precondition:
+   --    'Node' must be locked
+   procedure Add_Node_Highlighting
+     (Widget    : access Graph_Widget_Record'Class;
+      Node      : in     Vis_Data.Vis_Node_Id;
+      Highlight : in     Vis_Data.Highlight_Type) is
+
+      Current : Vis_Data.Flags_Type;
+   begin
+      pragma Assert (States.Is_Locked (Widget));
+      Current := Vis_Data.Get_Highlighting (Node);
+      if not Current (Highlight) then
+         if Highlight in Vis_Data.Global_Highlight_Type then
+            Move_Node_To_Unsized (Widget, Node);
+            Vis_Data.Add_Highlight_Color (Node, Highlight);
+         else
+            Vis_Data.Add_Highlight_Color (Node, Highlight);
+            Vis_Data.Pollute_Node (Widget.Manager, Node);
+         end if;
+      end if;
+   end Add_Node_Highlighting;
+
+   --  Precondition:
+   --    'Edge' must be locked
+   procedure Remove_Edge_Highlighting
+     (Widget    : access Graph_Widget_Record'Class;
+      Edge      : in     Vis_Data.Vis_Edge_Id;
+      Highlight : in     Vis_Data.Highlight_Type) is
+
+      Current : Vis_Data.Flags_Type;
+   begin
+      pragma Assert (States.Is_Locked (Widget));
+      Current := Vis_Data.Get_Highlighting (Edge);
+      if Current (Highlight) then
+         Move_Edge_To_Unsized (Widget, Edge);
+         Vis_Data.Remove_Highlight_Color (Edge, Highlight);
+      end if;
+   end Remove_Edge_Highlighting;
+
+   --  Precondition:
+   --    'Node' must be locked
+   procedure Remove_Node_Highlighting
+     (Widget    : access Graph_Widget_Record'Class;
+      Node      : in     Vis_Data.Vis_Node_Id;
+      Highlight : in     Vis_Data.Highlight_Type) is
+
+      Current : Vis_Data.Flags_Type;
+   begin
+      pragma Assert (States.Is_Locked (Widget));
+      Current := Vis_Data.Get_Highlighting (Node);
+      if Current (Highlight) then
+         if Highlight in Vis_Data.Local_Highlight_Type then
+            Vis_Data.Remove_Highlight_Color (Node, Highlight);
+            Vis_Data.Pollute_Node (Widget.Manager, Node);
+         else
+            Move_Node_To_Unsized (Widget, Node);
+            Vis_Data.Remove_Highlight_Color (Node, Highlight);
+         end if;
+      end if;
+   end Remove_Node_Highlighting;
+
    procedure Add_Local_Highlighting
      (Widget    : access Graph_Widget_Record'Class;
       Selection : in     Graph_Lib.Selections.Selection;
@@ -863,15 +1005,9 @@ package body Giant.Graph_Widgets is
       procedure Add_Local_Edge_Highlighting
         (Widget : access Graph_Widget_Record'Class;
          Edge   : in     Vis_Data.Vis_Edge_Id) is
-
-         Current : Vis_Data.Flags_Type;
       begin
          if Edge /= null then
-            Current := Vis_Data.Get_Highlighting (Edge);
-            if not Current (Highlight) then
-               Move_Edge_To_Unsized (Widget, Edge);
-               Vis_Data.Add_Highlight_Color (Edge, Highlight);
-            end if;
+            Add_Edge_Highlighting (Widget, Edge, Highlight);
          else
             raise Unknown_Edge_Id;
          end if;
@@ -880,15 +1016,9 @@ package body Giant.Graph_Widgets is
       procedure Add_Local_Node_Highlighting
         (Widget : access Graph_Widget_Record'Class;
          Node   : in     Vis_Data.Vis_Node_Id) is
-
-         Current : Vis_Data.Flags_Type;
       begin
          if Node /= null then
-            Current := Vis_Data.Get_Highlighting (Node);
-            if not Current (Highlight) then
-               Vis_Data.Add_Highlight_Color (Node, Highlight);
-               Vis_Data.Pollute_Node (Widget.Manager, Node);
-            end if;
+            Add_Node_Highlighting (Widget, Node, Highlight);
          else
             raise Unknown_Node_Id;
          end if;
@@ -899,6 +1029,11 @@ package body Giant.Graph_Widgets is
       procedure Local_Highlight_Nodes is new For_All_Graph_Nodes
         (Action => Add_Local_Node_Highlighting);
 
+      procedure Register_Selected_Edges is new For_All_Graph_Edges
+        (Action => Add_Edge_To_Selection);
+      procedure Register_Selected_Nodes is new For_All_Graph_Nodes
+        (Action => Add_Node_To_Selection);
+
       Lock : Lock_Type;
    begin
       Lock_All_Content (Widget, Lock);
@@ -908,6 +1043,18 @@ package body Giant.Graph_Widgets is
       Local_Highlight_Edges
         (Widget => Widget,
          Edges  => Graph_Lib.Selections.Get_All_Edges (Selection));
+      --  Here it is assured that neither Unknown_Edge_Id nor Unknown_Node_Id
+      --  need to be raised --> Add_Edge_To_Selection and
+      --  Add_Node_To_Selection may be called safely.
+      if Vis_Data."=" (Highlight, Vis_Data.Current_Local) then
+         --  Update selection if correct color set.
+         Register_Selected_Edges
+           (Widget => Widget,
+            Edges  => Graph_Lib.Selections.Get_All_Edges (Selection));
+         Register_Selected_Nodes
+           (Widget => Widget,
+            Nodes  => Graph_Lib.Selections.Get_All_Nodes (Selection));
+      end if;
       Release_Lock (Widget, Lock);
    end Add_Local_Highlighting;
 
@@ -922,15 +1069,9 @@ package body Giant.Graph_Widgets is
       procedure Remove_Local_Edge_Highlighting
         (Widget : access Graph_Widget_Record'Class;
          Edge   : in     Vis_Data.Vis_Edge_Id) is
-
-         Current : Vis_Data.Flags_Type;
       begin
          if Edge /= null then
-            Current := Vis_Data.Get_Highlighting (Edge);
-            if Current (Highlight) then
-               Move_Edge_To_Unsized (Widget, Edge);
-               Vis_Data.Remove_Highlight_Color (Edge, Highlight);
-            end if;
+            Remove_Edge_Highlighting (Widget, Edge, Highlight);
          else
             raise Unknown_Edge_Id;
          end if;
@@ -939,15 +1080,9 @@ package body Giant.Graph_Widgets is
       procedure Remove_Local_Node_Highlighting
         (Widget : access Graph_Widget_Record'Class;
          Node   : in     Vis_Data.Vis_Node_Id) is
-
-         Current : Vis_Data.Flags_Type;
       begin
          if Node /= null then
-            Current := Vis_Data.Get_Highlighting (Node);
-            if Current (Highlight) then
-               Vis_Data.Remove_Highlight_Color (Node, Highlight);
-               Vis_Data.Pollute_Node (Widget.Manager, Node);
-            end if;
+            Remove_Node_Highlighting (Widget, Node, Highlight);
          else
             raise Unknown_Node_Id;
          end if;
@@ -958,6 +1093,11 @@ package body Giant.Graph_Widgets is
       procedure Local_Unhighlight_Nodes is new For_All_Graph_Nodes
         (Action => Remove_Local_Node_Highlighting);
 
+      procedure Unregister_Selected_Edges is new For_All_Graph_Edges
+        (Action => Remove_Edge_From_Selection);
+      procedure Unregister_Selected_Nodes is new For_All_Graph_Nodes
+        (Action => Remove_Node_From_Selection);
+
       Lock : Lock_Type;
    begin
       Lock_All_Content (Widget, Lock);
@@ -967,6 +1107,18 @@ package body Giant.Graph_Widgets is
       Local_Unhighlight_Edges
         (Widget => Widget,
          Edges  => Graph_Lib.Selections.Get_All_Edges (Selection));
+      --  Here it is assured that neither Unknown_Edge_Id nor Unknown_Node_Id
+      --  need to be raised --> Remove_Edge_From_Selection and
+      --  Remove_Node_From_Selection may be called safely.
+      if Vis_Data."=" (Highlight, Vis_Data.Current_Local) then
+         --  Update selection if correct color set.
+         Unregister_Selected_Edges
+           (Widget => Widget,
+            Edges  => Graph_Lib.Selections.Get_All_Edges (Selection));
+         Unregister_Selected_Nodes
+           (Widget => Widget,
+            Nodes  => Graph_Lib.Selections.Get_All_Nodes (Selection));
+      end if;
       Release_Lock (Widget, Lock);
    end Remove_Local_Highlighting;
 
@@ -981,15 +1133,9 @@ package body Giant.Graph_Widgets is
       procedure Add_Global_Edge_Highlighting
         (Widget : access Graph_Widget_Record'Class;
          Edge   : in     Vis_Data.Vis_Edge_Id) is
-
-         Current : Vis_Data.Flags_Type;
       begin
          if Edge /= null then
-            Current := Vis_Data.Get_Highlighting (Edge);
-            if not Current (Highlight) then
-               Move_Edge_To_Unsized (Widget, Edge);
-               Vis_Data.Add_Highlight_Color (Edge, Highlight);
-            end if;
+            Add_Edge_Highlighting (Widget, Edge, Highlight);
          else
             raise Unknown_Edge_Id;
          end if;
@@ -998,15 +1144,9 @@ package body Giant.Graph_Widgets is
       procedure Add_Global_Node_Highlighting
         (Widget : access Graph_Widget_Record'Class;
          Node   : in     Vis_Data.Vis_Node_Id) is
-
-         Current : Vis_Data.Flags_Type;
       begin
          if Node /= null then
-            Current := Vis_Data.Get_Highlighting (Node);
-            if not Current (Highlight) then
-               Move_Node_To_Unsized (Widget, Node);
-               Vis_Data.Add_Highlight_Color (Node, Highlight);
-            end if;
+            Add_Node_Highlighting (Widget, Node, Highlight);
          else
             raise Unknown_Node_Id;
          end if;
@@ -1040,15 +1180,9 @@ package body Giant.Graph_Widgets is
       procedure Remove_Global_Edge_Highlighting
         (Widget : access Graph_Widget_Record'Class;
          Edge   : in     Vis_Data.Vis_Edge_Id) is
-
-         Current : Vis_Data.Flags_Type;
       begin
          if Edge /= null then
-            Current := Vis_Data.Get_Highlighting (Edge);
-            if Current (Highlight) then
-               Move_Edge_To_Unsized (Widget, Edge);
-               Vis_Data.Remove_Highlight_Color (Edge, Highlight);
-            end if;
+            Remove_Edge_Highlighting (Widget, Edge, Highlight);
          else
             raise Unknown_Edge_Id;
          end if;
@@ -1057,15 +1191,9 @@ package body Giant.Graph_Widgets is
       procedure Remove_Global_Node_Highlighting
         (Widget : access Graph_Widget_Record'Class;
          Node   : in     Vis_Data.Vis_Node_Id) is
-
-         Current : Vis_Data.Flags_Type;
       begin
          if Node /= null then
-            Current := Vis_Data.Get_Highlighting (Node);
-            if Current (Highlight) then
-               Move_Node_To_Unsized (Widget, Node);
-               Vis_Data.Remove_Highlight_Color (Node, Highlight);
-            end if;
+            Remove_Node_Highlighting (Widget, Node, Highlight);
          else
             raise Unknown_Node_Id;
          end if;
@@ -1127,7 +1255,7 @@ package body Giant.Graph_Widgets is
 
    procedure Set_Hidden
      (Widget     : access Graph_Widget_Record'Class;
-      Selection  : access Graph_Lib.Selections.Selection;
+      Selection  : in     Graph_Lib.Selections.Selection;
       Hidden     : in     Boolean) is
    begin
       null;  -----------------------  raise Unimplemented;
@@ -1197,7 +1325,7 @@ package body Giant.Graph_Widgets is
 
    procedure Zoom_To_Selection
      (Widget     : access Graph_Widget_Record'Class;
-      Selection  : access Graph_Lib.Selections.Selection) is
+      Selection  : in     Graph_Lib.Selections.Selection) is
    begin
       null;  --------------------------  raise Unimplemented;
    end Zoom_To_Selection;
@@ -1263,9 +1391,261 @@ package body Giant.Graph_Widgets is
    end Set_Location_And_Zoom_Level;
 
 
+   ---------------
+   -- Selection --
+   ---------------
+
+   function Is_Edge_In_Selection
+     (Widget : access Graph_Widget_Record'Class;
+      Edge   : in     Vis_Data.Vis_Edge_Id)
+     return Boolean is
+   begin
+      return Vis_Edge_Sets.Is_Member (Widget.Selected_Edges, Edge);
+   end Is_Edge_In_Selection;
+
+   function Is_Node_In_Selection
+     (Widget : access Graph_Widget_Record'Class;
+      Node   : in     Vis_Data.Vis_Node_Id)
+     return Boolean is
+   begin
+      return Vis_Node_Sets.Is_Member (Widget.Selected_Nodes, Node);
+   end Is_Node_In_Selection;
+
+   procedure Add_Edge_To_Selection
+     (Widget : access Graph_Widget_Record'Class;
+      Edge   : in     Vis_Data.Vis_Edge_Id) is
+   begin
+      Vis_Edge_Sets.Insert (Widget.Selected_Edges, Edge);
+   end Add_Edge_To_Selection;
+
+   procedure Add_Node_To_Selection
+     (Widget : access Graph_Widget_Record'Class;
+      Node   : in     Vis_Data.Vis_Node_Id) is
+   begin
+      Vis_Node_Sets.Insert (Widget.Selected_Nodes, Node);
+   end Add_Node_To_Selection;
+
+   procedure Remove_Edge_From_Selection
+     (Widget : access Graph_Widget_Record'Class;
+      Edge   : in     Vis_Data.Vis_Edge_Id) is
+   begin
+      Vis_Edge_Sets.Remove_If_Exists (Widget.Selected_Edges, Edge);
+   end Remove_Edge_From_Selection;
+
+   procedure Remove_Node_From_Selection
+     (Widget : access Graph_Widget_Record'Class;
+      Node   : in     Vis_Data.Vis_Node_Id) is
+   begin
+      Vis_Node_Sets.Remove_If_Exists (Widget.Selected_Nodes, Node);
+   end Remove_Node_From_Selection;
+
+   procedure Modify_Selection
+     (Widget : access Graph_Widget_Record'Class;
+      Edges  : in     Vis_Edge_Sets.Set;
+      Nodes  : in     Vis_Node_Sets.Set;
+      Mode   : in     Selection_Modify_Type) is
+
+      Actual_Mode   : Selection_Modify_Type := Mode;
+      Lock          : Lock_Type;
+      Edge_Iterator : Vis_Edge_Sets.Iterator;
+      Node_Iterator : Vis_Node_Sets.Iterator;
+      Current_Edge  : Vis_Data.Vis_Edge_Id;
+      Current_Node  : Vis_Data.Vis_Node_Id;
+   begin
+      Lock_All_Content (Widget, Lock);
+      if Actual_Mode = Change then
+         Clear_Selection (Widget);
+         Actual_Mode := Add;
+      end if;
+
+      Edge_Iterator := Vis_Edge_Sets.Make_Iterator (Edges);
+      while Vis_Edge_Sets.More (Edge_Iterator) loop
+         Vis_Edge_Sets.Next (Edge_Iterator, Current_Edge);
+         if Actual_Mode = Toggle and then
+           Is_Edge_In_Selection (Widget, Current_Edge) then
+
+            Remove_Edge_From_Selection (Widget, Current_Edge);
+            Remove_Edge_Highlighting
+              (Widget    => Widget,
+               Edge      => Current_Edge,
+               Highlight => Vis_Data.Current_Local);
+         else
+            Add_Edge_To_Selection (Widget, Current_Edge);
+            Add_Edge_Highlighting
+              (Widget    => Widget,
+               Edge      => Current_Edge,
+               Highlight => Vis_Data.Current_Local);
+         end if;
+      end loop;
+      Vis_Edge_Sets.Destroy (Edge_Iterator);
+
+      Node_Iterator := Vis_Node_Sets.Make_Iterator (Nodes);
+      while Vis_Node_Sets.More (Node_Iterator) loop
+         Vis_Node_Sets.Next (Node_Iterator, Current_Node);
+         if Actual_Mode = Toggle and then
+           Is_Node_In_Selection (Widget, Current_Node) then
+
+            Remove_Node_From_Selection (Widget, Current_Node);
+            Remove_Node_Highlighting
+              (Widget    => Widget,
+               Node      => Current_Node,
+               Highlight => Vis_Data.Current_Local);
+         else
+            Add_Node_To_Selection (Widget, Current_Node);
+            Add_Node_Highlighting
+              (Widget    => Widget,
+               Node      => Current_Node,
+               Highlight => Vis_Data.Current_Local);
+         end if;
+      end loop;
+      Vis_Node_Sets.Destroy (Node_Iterator);
+
+      Release_Lock (Widget, Lock);
+   end Modify_Selection;
+
+   procedure Clear_Selection
+     (Widget : access Graph_Widget_Record'Class) is
+
+      Lock          : Lock_Type;
+      Edge_Iterator : Vis_Edge_Sets.Iterator;
+      Current_Edge  : Vis_Data.Vis_Edge_Id;
+      Node_Iterator : Vis_Node_Sets.Iterator;
+      Current_Node  : Vis_Data.Vis_Node_Id;
+   begin
+      Lock_All_Content (Widget, Lock);
+
+      Edge_Iterator := Vis_Edge_Sets.Make_Iterator (Widget.Selected_Edges);
+      while Vis_Edge_Sets.More (Edge_Iterator) loop
+         Vis_Edge_Sets.Next (Edge_Iterator, Current_Edge);
+         Remove_Edge_Highlighting
+           (Widget    => Widget,
+            Edge      => Current_Edge,
+            Highlight => Vis_Data.Current_Local);
+      end loop;
+      Vis_Edge_Sets.Destroy (Edge_Iterator);
+      Vis_Edge_Sets.Remove_All (Widget.Selected_Edges);
+
+      Node_Iterator := Vis_Node_Sets.Make_Iterator (Widget.Selected_Nodes);
+      while Vis_Node_Sets.More (Node_Iterator) loop
+         Vis_Node_Sets.Next (Node_Iterator, Current_Node);
+         Remove_Node_Highlighting
+           (Widget    => Widget,
+            Node      => Current_Node,
+            Highlight => Vis_Data.Current_Local);
+      end loop;
+      Vis_Node_Sets.Destroy (Node_Iterator);
+      Vis_Node_Sets.Remove_All (Widget.Selected_Nodes);
+
+      Release_Lock (Widget, Lock);
+   end Clear_Selection;
+
+   procedure Modify_Selection_With_Edge_And_Notify
+     (Widget : access Graph_Widget_Record'Class;
+      Edge   : in     Vis_Data.Vis_Edge_Id;
+      Mode   : in     Selection_Modify_Type) is
+
+      Action   : Selection_Change_Type;
+      Edge_Set : Vis_Edge_Sets.Set := Vis_Edge_Sets.Empty_Set;
+      Selection : Graph_Lib.Selections.Selection :=
+        Graph_Lib.Selections.Create ("");
+   begin
+      Vis_Edge_Sets.Insert (Edge_Set, Edge);
+      Graph_Lib.Selections.Add_Edge
+        (Selection, Vis_Data.Get_Graph_Edge (Edge));
+      case Mode is
+         when Add =>
+            Action := Insert;
+         when Toggle =>
+            if Is_Edge_In_Selection (Widget, Edge) then
+               Action := Remove;
+            else
+               Action := Insert;
+            end if;
+         when Change =>
+            Action := Change;
+      end case;
+
+      Modify_Selection
+        (Widget => Widget,
+         Edges  => Edge_Set,
+         Nodes  => Vis_Node_Sets.Empty_Set,
+         Mode   => Mode);
+      Notifications.Selection_Changed
+        (Widget     => Widget,
+         Action     => Action,
+         Difference => Selection);
+      Graph_Lib.Selections.Destroy (Selection);
+      Vis_Edge_Sets.Destroy (Edge_Set);
+   end Modify_Selection_With_Edge_And_Notify;
+
+   procedure Modify_Selection_With_Node_And_Notify
+     (Widget : access Graph_Widget_Record'Class;
+      Node   : in     Vis_Data.Vis_Node_Id;
+      Mode   : in     Selection_Modify_Type) is
+
+      Action    : Selection_Change_Type;
+      Node_Set  : Vis_Node_Sets.Set := Vis_Node_Sets.Empty_Set;
+      Selection : Graph_Lib.Selections.Selection :=
+        Graph_Lib.Selections.Create ("");
+   begin
+      Vis_Node_Sets.Insert (Node_Set, Node);
+      Graph_Lib.Selections.Add_Node
+        (Selection, Vis_Data.Get_Graph_Node (Node));
+      case Mode is
+         when Add =>
+            Action := Insert;
+         when Toggle =>
+            if Is_Node_In_Selection (Widget, Node) then
+               Action := Remove;
+            else
+               Action := Insert;
+            end if;
+         when Change =>
+            Action := Change;
+      end case;
+
+      Modify_Selection
+        (Widget => Widget,
+         Edges  => Vis_Edge_Sets.Empty_Set,
+         Nodes  => Node_Set,
+         Mode   => Mode);
+      Notifications.Selection_Changed
+        (Widget     => Widget,
+         Action     => Action,
+         Difference => Selection);
+      Graph_Lib.Selections.Destroy (Selection);
+      Vis_Node_Sets.Destroy (Node_Set);
+   end Modify_Selection_With_Node_And_Notify;
+
+   procedure Clear_Selection_And_Notify
+     (Widget : access Graph_Widget_Record'Class) is
+
+      Empty_Selection : Graph_Lib.Selections.Selection :=
+        Graph_Lib.Selections.Create ("");
+   begin
+      Clear_Selection (Widget);
+      Notifications.Selection_Changed
+        (Widget     => Widget,
+         Action     => Clear,
+         Difference => Empty_Selection);
+      Graph_Lib.Selections.Destroy (Empty_Selection);
+   end Clear_Selection_And_Notify;
+
+
    -------------
    -- Helpers --
    -------------
+
+   function Get_Floating_Nodes
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis_Node_Sets.Set is
+   begin
+      if States.Is_Drag_Current (Widget) then
+         return Widget.Selected_Nodes;
+      else
+         return Vis_Node_Sets.Empty_Set;
+      end if;
+   end Get_Floating_Nodes;
 
    procedure Add_Edge_To_Locked
      (Widget : access Graph_Widget_Record'Class;
@@ -1570,7 +1950,7 @@ package body Giant.Graph_Widgets is
    procedure Redraw
      (Widget : access Graph_Widget_Record'Class) is
    begin
-      if States.Has_Display_Changed (Widget) then
+      if States.Must_Queue_Draw (Widget) then
          Queue_Draw (Widget);
       end if;
    end Redraw;

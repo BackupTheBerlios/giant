@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-positioning.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-graph_widgets-positioning.adb,v $, $Revision: 1.8 $
 --  $Author: keulsn $
---  $Date: 2003/07/14 12:43:59 $
+--  $Date: 2003/07/20 23:20:04 $
 --
 ------------------------------------------------------------------------------
 
@@ -123,7 +123,7 @@ package body Giant.Graph_Widgets.Positioning is
       Angle_Increment  : Float := Angle_Range / Float (Number_Of_Points - 1);
    begin
       Angle := -0.5 * Ada.Numerics.Pi + Spacing_Angle;
-      for Num in 1 .. Number_Of_Points loop
+      for Num in reverse 1 .. Number_Of_Points loop
          Point := Center + Vis.Absolute.Combine_Vector
            (X => Vis.Absolute_Int (Radius * Trigonometry.Sin (Angle)),
             Y => Vis.Absolute_Int (Radius * Trigonometry.Cos (Angle)));

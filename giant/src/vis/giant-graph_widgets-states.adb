@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.9 $
 --  $Author: keulsn $
---  $Date: 2003/07/14 23:12:18 $
+--  $Date: 2003/07/20 23:20:04 $
 --
 ------------------------------------------------------------------------------
 
@@ -217,6 +217,7 @@ package body Giant.Graph_Widgets.States is
      (Widget : access Graph_Widget_Record'Class) is
    begin
       Widget.States.Visual_Polluted := True;
+      Widget.States.Temporary_Changed := True;
    end Changed_Visual;
 
    procedure Updated_Visual
@@ -224,6 +225,18 @@ package body Giant.Graph_Widgets.States is
    begin
       Widget.States.Visual_Polluted := False;
    end Updated_Visual;
+
+   procedure Changed_Temporary
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Widget.States.Temporary_Changed := True;
+   end Changed_Temporary;
+
+   procedure Updated_Temporary
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Widget.States.Temporary_Changed := False;
+   end Updated_Temporary;
 
 
    -------------
@@ -265,13 +278,13 @@ package body Giant.Graph_Widgets.States is
       if Gtk.Widget.Realized_Is_Set (Widget) then
          if Widget.States.Action_Mode then
             New_State := Action;
-         elsif not Lock_Sets.Is_Empty (Widget.States.Locks) then
+         elsif Is_Locked (Widget) then
             New_State := Waiting;
          else
             New_State := Default;
          end if;
 
-         if Force_Set or else New_State /= Widget.States.Current_Cursor then
+         if Force_Set or New_State /= Widget.States.Current_Cursor then
             Widget.States.Current_Cursor := New_State;
             Gdk.Window.Set_Cursor
               (Get_Window (Widget),
@@ -281,9 +294,155 @@ package body Giant.Graph_Widgets.States is
    end Update_Cursor;
 
 
+   --------------------
+   -- Mouse Handling --
+   --------------------
+
+   procedure Begin_Click_On_Background
+     (Widget : access Graph_Widget_Record'Class;
+      Point  : in     Vis.Absolute.Vector_2d) is
+   begin
+      Widget.States.Mouse_Clicking := True;
+      Widget.States.Mouse_Origin := Point;
+      Widget.States.Mouse_On_Edge := null;
+      Widget.States.Mouse_On_Node := null;
+      Widget.States.Mouse_Dragging := False;
+      Widget.States.Mouse_Rectangle := False;
+   end Begin_Click_On_Background;
+
+   procedure Begin_Click_On_Edge
+     (Widget : access Graph_Widget_Record'Class;
+      Point  : in     Vis.Absolute.Vector_2d;
+      Edge   : in     Vis_Data.Vis_Edge_Id) is
+   begin
+      Widget.States.Mouse_Clicking := True;
+      Widget.States.Mouse_Origin := Point;
+      Widget.States.Mouse_On_Edge := Edge;
+      Widget.States.Mouse_On_Node := null;
+      Widget.States.Mouse_Dragging := False;
+      Widget.States.Mouse_Rectangle := False;
+   end Begin_Click_On_Edge;
+
+   procedure Begin_Click_On_Node
+     (Widget : access Graph_Widget_Record'Class;
+      Point  : in     Vis.Absolute.Vector_2d;
+      Node   : in     Vis_Data.Vis_Node_Id) is
+   begin
+      Widget.States.Mouse_Clicking := True;
+      Widget.States.Mouse_Origin := Point;
+      Widget.States.Mouse_On_Edge := null;
+      Widget.States.Mouse_On_Node := Node;
+      Widget.States.Mouse_Dragging := False;
+      Widget.States.Mouse_Rectangle := False;
+   end Begin_Click_On_Node;
+
+   procedure End_Click
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Widget.States.Mouse_Clicking := False;
+      Widget.States.Mouse_On_Edge := null;
+      Widget.States.Mouse_On_Node := null;
+   end End_Click;
+
+   function Get_Click_Edge
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis_Data.Vis_Edge_Id is
+   begin
+      return Widget.States.Mouse_On_Edge;
+   end Get_Click_Edge;
+
+   function Get_Click_Node
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis_Data.Vis_Node_Id is
+   begin
+      return Widget.States.Mouse_On_Node;
+   end Get_Click_Node;
+
+   function Get_Click_Point
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis.Absolute.Vector_2d is
+   begin
+      return Widget.States.Mouse_Origin;
+   end Get_Click_Point;
+
+   function Is_Click_Current
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean is
+   begin
+      return Widget.States.Mouse_Clicking;
+   end Is_Click_Current;
+
+   function Get_Mouse_Move_Distance
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis.Absolute.Vector_2d is
+   begin
+      return Vis.Absolute."-"
+        (Widget.States.Mouse_Position, Widget.States.Mouse_Origin);
+   end Get_Mouse_Move_Distance;
+
+   procedure Set_Mouse_Position
+     (Widget : access Graph_Widget_Record'Class;
+      Point  : in     Vis.Absolute.Vector_2d) is
+   begin
+      Widget.States.Mouse_Position := Point;
+   end Set_Mouse_Position;
+
+
+   procedure Begin_Rectangle
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Widget.States.Mouse_Clicking := False;
+      Widget.States.Mouse_Dragging := False;
+      Widget.States.Mouse_Rectangle := True;
+   end Begin_Rectangle;
+
+   procedure End_Rectangle
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Widget.States.Mouse_Rectangle := False;
+   end End_Rectangle;
+
+   function Is_Rectangle_Current
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean is
+   begin
+      return Widget.States.Mouse_Rectangle;
+   end Is_Rectangle_Current;
+
+
+   procedure Begin_Drag
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Widget.States.Mouse_Clicking := False;
+      Widget.States.Mouse_Rectangle := False;
+      Widget.States.Mouse_Dragging := True;
+   end Begin_Drag;
+
+   procedure End_Drag
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Widget.States.Mouse_Dragging := False;
+   end End_Drag;
+
+   function Is_Drag_Current
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean is
+   begin
+      return Widget.States.Mouse_Dragging;
+   end Is_Drag_Current;
+
+
    ---------------------
    -- State Inquiries --
    ---------------------
+
+   function Must_Queue_Draw
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean is
+   begin
+      return Has_Temporary_Changed (Widget) or else
+        Has_Display_Changed (Widget);
+   end Must_Queue_Draw;
 
    function Has_Display_Changed
      (Widget : access Graph_Widget_Record'Class)
@@ -291,6 +450,13 @@ package body Giant.Graph_Widgets.States is
    begin
       return Widget.States.Visual_Polluted;
    end Has_Display_Changed;
+
+   function Has_Temporary_Changed
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean is
+   begin
+      return Widget.States.Temporary_Changed;
+   end Has_Temporary_Changed;
 
    function Can_Resize
      (Widget : access Graph_Widget_Record'Class)

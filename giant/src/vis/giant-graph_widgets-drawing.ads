@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.ads,v $, $Revision: 1.8 $
+--  $RCSfile: giant-graph_widgets-drawing.ads,v $, $Revision: 1.9 $
 --  $Author: keulsn $
---  $Date: 2003/07/12 16:19:27 $
+--  $Date: 2003/07/20 23:20:04 $
 --
 ------------------------------------------------------------------------------
 --
@@ -47,6 +47,13 @@ package Giant.Graph_Widgets.Drawing is
    --  Ensures that the display buffer is up to date. Clearing the window
    --  results in correct display of the graph widget.
    procedure Update_Display
+     (Widget : access Graph_Widget_Record'Class;
+      Area   : in     Vis.Absolute.Rectangle_2d);
+
+   ----------------------------------------------------------------------------
+   --  Ensures that all floating objects are drawn onto the display buffer.
+   --  MUST be called after Update_Display if there are floating objects.
+   procedure Update_Temporary
      (Widget : access Graph_Widget_Record'Class;
       Area   : in     Vis.Absolute.Rectangle_2d);
 

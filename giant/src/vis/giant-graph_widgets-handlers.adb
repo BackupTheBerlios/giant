@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-handlers.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-graph_widgets-handlers.adb,v $, $Revision: 1.5 $
 --  $Author: keulsn $
---  $Date: 2003/07/10 16:05:51 $
+--  $Date: 2003/07/20 23:20:04 $
 --
 ------------------------------------------------------------------------------
 
@@ -35,6 +35,9 @@ package body Giant.Graph_Widgets.Handlers is
    type Edge_Popup_Action_Access is access constant Edge_Popup_Action;
    type Node_Popup_Action_Access is access constant Node_Popup_Action;
    type Button_Press_Action_Access is access constant Button_Press_Action;
+
+   type Selection_Change_Action_Access is access constant
+     Selection_Change_Action;
 
    type Rectangle_Access is access constant Vis.Logic.Rectangle_2d;
 
@@ -121,6 +124,20 @@ package body Giant.Graph_Widgets.Handlers is
       return Action.all;
    end To_Button_Press_Action;
 
+   function To_Selection_Change_Action
+     (Args : in Gtk.Arguments.Gtk_Args;
+      Num  : in Natural)
+     return Selection_Change_Action is
+
+      function Convert is new Ada.Unchecked_Conversion
+        (Source => System.Address, Target => Selection_Change_Action_Access);
+
+      Action : Selection_Change_Action_Access;
+   begin
+      Action := Convert (Gtk.Arguments.Get_Nth (Args, Num));
+      return Action.all;
+   end To_Selection_Change_Action;
+
 
    procedure Emit_Background_Popup_Event
      (Widget   : access Graph_Widget_Record'Class;
@@ -166,6 +183,22 @@ package body Giant.Graph_Widgets.Handlers is
          Name   => Node_Popup_Event,
          Param  => To_Address (User_Action'Unchecked_Access));
    end Emit_Node_Popup_Event;
+
+   procedure Emit_Selection_Change_Signal
+     (Widget     : access Graph_Widget_Record'Class;
+      Action     : in     Selection_Change_Type;
+      Difference : in     Graph_Lib.Selections.Selection) is
+
+      function To_Address is new Ada.Unchecked_Conversion
+        (Source => Selection_Change_Action_Access, Target => System.Address);
+      User_Action : aliased constant Selection_Change_Action :=
+        (Action, Difference);
+   begin
+      Action_Mode_Marshallers.Emit_By_Name
+        (Object => Widget,
+         Name   => Selection_Change_Signal,
+         Param  => To_Address (User_Action'Unchecked_Access));
+   end Emit_Selection_Change_Signal;
 
    procedure Emit_Action_Mode_Button_Press_Event
      (Widget   : access Graph_Widget_Record'Class;
@@ -232,6 +265,7 @@ package body Giant.Graph_Widgets.Handlers is
      Background_Popup_Event +
      Edge_Popup_Event +
      Node_Popup_Event +
+     Selection_Change_Signal +
      Action_Mode_Button_Press_Event +
      Logical_Area_Changed_Signal +
      Visible_Area_Changed_Signal;
@@ -245,12 +279,14 @@ package body Giant.Graph_Widgets.Handlers is
       3 => (1 => Gtk.Gtk_Type_Pointer, 2 => Gtk.Gtk_Type_None),
       --  Node_Popup_Event
       4 => (1 => Gtk.Gtk_Type_Pointer, 2 => Gtk.Gtk_Type_None),
-      --  Action_Mode_Button_Press_Event
+      --  Selection_Chage_Siganl
       5 => (1 => Gtk.Gtk_Type_Pointer, 2 => Gtk.Gtk_Type_None),
-      --  Logical_Area_Changed_Signal
+      --  Action_Mode_Button_Press_Event
       6 => (1 => Gtk.Gtk_Type_Pointer, 2 => Gtk.Gtk_Type_None),
+      --  Logical_Area_Changed_Signal
+      7 => (1 => Gtk.Gtk_Type_Pointer, 2 => Gtk.Gtk_Type_None),
       --  Visible_Area_Changed_Signal
-      7 => (1 => Gtk.Gtk_Type_Pointer, 2 => Gtk.Gtk_Type_None));
+      8 => (1 => Gtk.Gtk_Type_Pointer, 2 => Gtk.Gtk_Type_None));
 
    function Get_Signal_Array
      return Gtkada.Types.Chars_Ptr_Array is

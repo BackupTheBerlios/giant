@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-handlers.ads,v $, $Revision: 1.7 $
+--  $RCSfile: giant-graph_widgets-handlers.ads,v $, $Revision: 1.8 $
 --  $Author: keulsn $
---  $Date: 2003/07/09 20:07:54 $
+--  $Date: 2003/07/20 23:20:04 $
 --
 ------------------------------------------------------------------------------
 --
@@ -86,6 +86,16 @@ package Giant.Graph_Widgets.Handlers is
          Location : Vis.Logic.Vector_2d;
       end record;
 
+   ----------------------------------------------------------------------------
+   --  "selection_changed_signal on the graph widget"
+   type Selection_Change_Action is
+      record
+         --  Way in which the current selection has changed
+         Action     : Selection_Change_Type;
+         --  New selection or difference between old and modified selection
+         Difference : Graph_Lib.Selections.Selection;
+      end record;
+
 
    -----------------
    -- Conversions --
@@ -142,6 +152,19 @@ package Giant.Graph_Widgets.Handlers is
      (Args : in Gtk.Arguments.Gtk_Args;
       Num  : in Natural)
      return Button_Press_Action;
+
+   ----------------------------------------------------------------------------
+   --  Conversion function for Marshallers
+   --
+   --  Parameters
+   --    Args - The GtkAda argument array
+   --    Num  - The Index of an argument in 'Args'
+   --  Returns:
+   --    The 'Selection_Change_Action' at index 'Num' in 'Args'
+   function To_Selection_Change_Action
+     (Args : in Gtk.Arguments.Gtk_Args;
+      Num  : in Natural)
+     return Selection_Change_Action;
 
 
    ------------------------------
@@ -230,6 +253,35 @@ package Giant.Graph_Widgets.Handlers is
      (Widget : access Graph_Widget_Record'Class;
       Event  : in     Gdk.Event.Gdk_Event_Button;
       Node   : in     Graph_Lib.Node_Id);
+
+
+   -----------------------
+   -- Selection Changes --
+   -----------------------
+
+   ----------------------------------------------------------------------------
+   --  Emitted whenever the current selection has changed in a graph widget
+   Selection_Change_Signal : constant String :=
+     "selection_change_signal";
+
+   ----------------------------------------------------------------------------
+   --  Type of handlers for signal Node_Popup_Event
+   --  Parameters:
+   --    Widget - The graph widget
+   --    Action - The user action inside 'Widget'
+   type Selection_Change_Signal_Cb is access procedure
+     (Widget : access Graph_Widget_Record'Class;
+      Action : in     Selection_Change_Action);
+
+   --  Package providing the 'Connect' subprograms, if no user data is needed.
+   package Selection_Change_Cbs renames Graph_Widget_Callbacks;
+
+   ----------------------------------------------------------------------------
+   --  Emits the signal.
+   procedure Emit_Selection_Change_Signal
+     (Widget     : access Graph_Widget_Record'Class;
+      Action     : in     Selection_Change_Type;
+      Difference : in     Graph_Lib.Selections.Selection);
 
 
    --------------------------------------

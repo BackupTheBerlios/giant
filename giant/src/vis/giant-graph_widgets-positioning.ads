@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-positioning.ads,v $, $Revision: 1.5 $
+--  $RCSfile: giant-graph_widgets-positioning.ads,v $, $Revision: 1.6 $
 --  $Author: keulsn $
---  $Date: 2003/07/14 12:43:59 $
+--  $Date: 2003/07/20 23:20:04 $
 --
 ------------------------------------------------------------------------------
 --
@@ -141,7 +141,7 @@ package Giant.Graph_Widgets.Positioning is
 private
 
    Default_Dock_Spacing        : constant := 2;
-   Default_Loop_Radius         : constant := 15.0;
+   Default_Loop_Radius         : constant := 20.0;
    Default_Loop_Separation     : constant := 2.0;
 
    Default_Edge_Label_Distance : constant := 50.0;

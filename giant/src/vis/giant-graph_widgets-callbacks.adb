@@ -20,15 +20,16 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.11 $
 --  $Author: keulsn $
---  $Date: 2003/07/12 03:33:56 $
+--  $Date: 2003/07/20 23:20:04 $
 --
 ------------------------------------------------------------------------------
 
 
 with System;
 
+with Gdk.Main;
 with Gdk.Rectangle;
 with Gdk.Types;
 with Gdk.Window;
@@ -36,12 +37,13 @@ with Gdk.Window_Attr;
 with Gtk.Arguments;
 with Gtk.Enums;
 with Gtk.Handlers;
+--with Gtk.Main;
 with Gtk.Style;
-with Glib;
 
 with Giant.Graph_Widgets.Drawing;
 with Giant.Graph_Widgets.Handlers;
 with Giant.Graph_Widgets.Notifications;
+with Giant.Graph_Widgets.Positioning;
 with Giant.Graph_Widgets.Settings;
 with Giant.Graph_Widgets.States;
 with Giant.Logger;
@@ -51,6 +53,91 @@ package body Giant.Graph_Widgets.Callbacks is
 
    package Callbacks_Logger is new Logger
      (Name => "Giant.Graph_Widgets.Callbacks");
+
+   function "or"
+     (Left  : in Gdk.Types.Gdk_Event_Mask;
+      Right : in Gdk.Types.Gdk_Event_Mask)
+     return Gdk.Types.Gdk_Event_Mask
+     renames Gdk.Types."or";
+
+   Handled_Event_Mask : constant Gdk.Types.Gdk_Event_Mask  :=
+     Gdk.Types.Button_Press_Mask or
+     Gdk.Types.Button_Release_Mask or
+     Gdk.Types.Button1_Motion_Mask;
+
+
+   --------------------
+   -- Mouse handling --
+   --------------------
+
+   function Interpret_Modifiers
+     (Modifiers : in     Gdk.Types.Gdk_Modifier_Type)
+     return Selection_Modify_Type is
+
+      use type Gdk.Types.Gdk_Modifier_Type;
+   begin
+      if (Modifiers and Gdk.Types.Shift_Mask) /= 0 then
+         return Toggle;
+      elsif (Modifiers and Gdk.Types.Control_Mask) /= 0 then
+         return Add;
+      else
+         return Change;
+      end if;
+   end Interpret_Modifiers;
+
+   --  Parameters:
+   --    Restrict_Change - If set to True then 'Mode = Change' will be ignored
+   --                      if performed on an edge or a node that is
+   --                      already selected.
+   procedure Process_Mouse_Click
+     (Widget          : access Graph_Widget_Record'Class;
+      Mode            : in     Selection_Modify_Type;
+      Restrict_Change : in     Boolean := False) is
+
+      Edge : Vis_Data.Vis_Edge_Id := States.Get_Click_Edge (Widget);
+      Node : Vis_Data.Vis_Node_Id := States.Get_Click_Node (Widget);
+   begin
+      if Vis_Data."/=" (Node, null) then
+         if Mode /= Change or else
+          (not Restrict_Change or else not Is_Node_In_Selection (Widget, Node))
+         then
+            Modify_Selection_With_Node_And_Notify (Widget, Node, Mode);
+         end if;
+      elsif Vis_Data."/=" (Edge, null) then
+         if Mode /= Change or else
+          (not Restrict_Change or else not Is_Edge_In_Selection (Widget, Edge))
+         then
+            Modify_Selection_With_Edge_And_Notify (Widget, Edge, Mode);
+         end if;
+      else
+         if Mode = Change then
+            Clear_Selection_And_Notify (Widget);
+         end if;
+      end if;
+   end Process_Mouse_Click;
+
+   procedure Begin_Mouse_Move_Action
+     (Widget : access Graph_Widget_Record'Class;
+      Mode   : in     Selection_Modify_Type) is
+   begin
+      Process_Mouse_Click
+        (Widget          => Widget,
+         Mode            => Mode,
+         Restrict_Change => True);
+
+      if Vis_Data."/=" (States.Get_Click_Node (Widget), null) then
+         --  Drag
+         States.Begin_Drag (Widget);
+         States.Changed_Temporary (Widget);
+         Redraw (Widget);
+      elsif Vis_Data."/=" (States.Get_Click_Edge (Widget), null) then
+         --  Drag on edge --> ignore
+         States.End_Click (Widget);
+      else
+         --  Rectangle
+         States.Begin_Rectangle (Widget);
+      end if;
+   end Begin_Mouse_Move_Action;
 
 
    --------------------------
@@ -115,6 +202,10 @@ package body Giant.Graph_Widgets.Callbacks is
 
    package Button_Press_Event_Cbs renames Graph_Widget_Boolean_Callback;
 
+   package Button_Release_Event_Cbs renames Graph_Widget_Boolean_Callback;
+
+   package Motion_Notify_Event_Cbs renames Graph_Widget_Boolean_Callback;
+
 
    package Realize_Handling is new Gtk.Widget.Realize_Handling
      (Widget_Type  => Graph_Widget_Record,
@@ -123,12 +214,10 @@ package body Giant.Graph_Widgets.Callbacks is
 
    procedure Connect_All_Callbacks
      (Widget : access Graph_Widget_Record'Class) is
-
-      use Gdk.Types;
    begin
       Set_Events
         (Widget,
-         Get_Events (Widget) or Gdk.Types.Button_Press_Mask);
+         Get_Events (Widget) or Handled_Event_Mask);
 
       Realize_Cbs.Connect
         (Widget => Widget,
@@ -166,6 +255,16 @@ package body Giant.Graph_Widgets.Callbacks is
          Name   => "button_press_event",
          Marsh  => Button_Press_Event_Cbs.To_Marshaller
                      (On_Button_Press_Event'Access));
+      Button_Release_Event_Cbs.Connect
+        (Widget => Widget,
+         Name   => "button_release_event",
+         Marsh  => Button_Release_Event_Cbs.To_Marshaller
+                     (On_Button_Release_Event'Access));
+      Motion_Notify_Event_Cbs.Connect
+        (Widget => Widget,
+         Name   => "motion_notify_event",
+         Marsh  => Motion_Notify_Event_Cbs.To_Marshaller
+                     (On_Motion_Notify_Event'Access));
 
       Realize_Handling.Set_Realize (Widget);
    end Connect_All_Callbacks;
@@ -236,7 +335,6 @@ package body Giant.Graph_Widgets.Callbacks is
       end if;
       Grab_Default (Widget);
       States.Realized (Widget);
-      -----------------------------------raise Unimplemented;
    end After_Realize;
 
    procedure On_Unrealize
@@ -310,8 +408,9 @@ package body Giant.Graph_Widgets.Callbacks is
          return True;
       end if;
 
-      if States.Has_Display_Changed (Widget) then
-         Callbacks_Logger.Debug ("Updating Display");
+      if States.Has_Display_Changed (Widget) or else
+        States.Has_Temporary_Changed (Widget) then
+
          Gdk_Area := Gdk.Event.Get_Area (Event);
          Area := Vis.Absolute.Combine_Rectangle
            (X_1 => Vis.Absolute_Int (Gdk_Area.X),
@@ -320,7 +419,12 @@ package body Giant.Graph_Widgets.Callbacks is
                      Vis.Absolute_Int (Gdk_Area.Width) - 1,
             Y_2 => Vis.Absolute_Int (Gdk_Area.Y) +
                      Vis.Absolute_Int (Gdk_Area.Height) - 1);
+
          Drawing.Update_Display (Widget, Area);
+
+         if States.Has_Temporary_Changed (Widget) then
+            Drawing.Update_Temporary (Widget, Area);
+         end if;
          Gdk.Window.Clear_Area
            (Window => Get_Window (Widget),
             X      => Glib.Gint (Vis.Absolute.Get_Left (Area)),
@@ -328,6 +432,7 @@ package body Giant.Graph_Widgets.Callbacks is
             Width  => Glib.Gint (Vis.Absolute.Get_Width (Area)),
             Height => Glib.Gint (Vis.Absolute.Get_Height (Area)));
          States.Updated_Visual (Widget);
+         States.Updated_Temporary (Widget);
       end if;
 
       return True;
@@ -337,22 +442,175 @@ package body Giant.Graph_Widgets.Callbacks is
      (Widget : access Graph_Widget_Record'Class;
       Event  : in     Gdk.Event.Gdk_Event_Button)
      return Boolean is
-      use type Glib.Guint;
+
+      Edge                    : Vis_Data.Vis_Edge_Id;
+      Node                    : Vis_Data.Vis_Node_Id;
+      Relative_Click_Position : Vis.Absolute.Vector_2d;
+      Click_Position          : Vis.Absolute.Vector_2d;
+      Window_Origin           : Vis.Absolute.Vector_2d :=
+        Vis.Absolute.Get_Top_Left (Drawing.Get_Visible_Area (Widget));
+      Value                   : Boolean;
    begin
-      --  FIX: dummy implementation
-      if (Gdk.Event.Get_Button (Event) = 1) then
-         Notifications.Action_Mode_Button_Press_Event
-           (Widget, Event, Vis.Logic.Zero_2d);
+      Relative_Click_Position := Vis.Absolute.Combine_Vector
+        (X => Vis.Absolute_Int (Gdk.Event.Get_X (Event)),
+         Y => Vis.Absolute_Int (Gdk.Event.Get_Y (Event)));
+      Click_Position := Vis.Absolute."+"
+        (Window_Origin, Relative_Click_Position);
+
+      if (Glib."=" (Gdk.Event.Get_Button (Event), Left_Button)) then
+         --  left button
+         if States.Is_Action_Mode_Current (Widget) then
+            --  action mode, signal event
+            Notifications.Action_Mode_Button_Press_Event
+              (Widget   => Widget,
+               Event    => Event,
+               Location => Positioning.Get_Logic (Widget, Click_Position));
+         else
+            --  must handle click
+            Value := Gdk.Main.Pointer_Grab
+              (Window       => Get_Window (Widget),
+               Owner_Events => False,
+               Event_Mask   => Handled_Event_Mask,
+               Confine_To   => Gdk.Window.Null_Window,  --  do not capture
+               Cursor       => Gdk.Cursor.Null_Cursor,
+               Time         => Gdk.Event.Get_Time (Event));
+            --  Meaning of 'Value' is not documented in GtkAda! Therefore
+            --  we ignore it here.
+
+            Node := Vis_Data.Get_Node_At (Widget.Manager, Click_Position);
+            if Vis_Data."/=" (Node, null) then
+               --  pressed on node
+               States.Begin_Click_On_Node
+                 (Widget => Widget,
+                  Point  => Click_Position,
+                  Node   => Node);
+            else
+               Edge := Vis_Data.Get_Edge_At (Widget.Manager, Click_Position);
+               if Vis_Data."/=" (Edge, null) then
+                  --  pressed on edge
+                  States.Begin_Click_On_Edge
+                    (Widget => Widget,
+                     Point  => Click_Position,
+                     Edge   => Edge);
+               else
+                  --  pressed on background
+                  States.Begin_Click_On_Background
+                    (Widget => Widget,
+                     Point  => Click_Position);
+               end if;
+            end if;
+         end if;
          return True;
-      elsif (Gdk.Event.Get_Button (Event) = 2) then
-         Notifications.Node_Popup
-           (Widget, Event, Look_Up (Widget, Graph_Lib.Get_Root_Node));
+      elsif (Glib."=" (Gdk.Event.Get_Button (Event), Right_Button)) then
+         --  right button
+         Node := Vis_Data.Get_Node_At (Widget.Manager, Click_Position);
+         if Vis_Data."/=" (Node, null) then
+            Notifications.Node_Popup (Widget, Event, Node);
+         else
+            Edge := Vis_Data.Get_Edge_At (Widget.Manager, Click_Position);
+            if Vis_Data."/=" (Edge, null) then
+               Notifications.Edge_Popup (Widget, Event, Edge);
+            else
+               Notifications.Background_Popup
+                 (Widget   => Widget,
+                  Event    => Event,
+                  Location => Positioning.Get_Logic (Widget, Click_Position));
+            end if;
+         end if;
          return True;
-      elsif (Gdk.Event.Get_Button (Event) = 3) then
-         Notifications.Background_Popup (Widget, Event, Vis.Logic.Zero_2d);
+      elsif (Glib."=" (Gdk.Event.Get_Button (Event), Middle_Button)) then
+         --  middle button
          return True;
+      else
+         return False;
       end if;
-      return False;
    end On_Button_Press_Event;
+
+   function On_Button_Release_Event
+     (Widget : access Graph_Widget_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event_Button)
+     return Boolean is
+
+      Modifiers : Gdk.Types.Gdk_Modifier_Type := Gdk.Event.Get_State (Event);
+      Mode      : Selection_Modify_Type;
+      Lock      : Lock_Type;
+   begin
+      if (Glib."=" (Gdk.Event.Get_Button (Event), Left_Button)) then
+         Gdk.Main.Pointer_Ungrab (Gdk.Event.Get_Time (Event));
+
+         if States.Is_Click_Current (Widget) then
+            --  simple click
+            Mode := Interpret_Modifiers (Modifiers);
+
+            Process_Mouse_Click (Widget, Mode);
+
+            States.End_Click (Widget);
+         elsif States.Is_Rectangle_Current (Widget) then
+            --  user has finished opening a rectangle
+            States.End_Rectangle (Widget);
+            States.Changed_Temporary (Widget);
+            Redraw (Widget);
+         elsif States.Is_Drag_Current (Widget) then
+            --  user has dropped some nodes
+            Lock_All_Content (Widget, Lock);
+            Move_Nodes
+              (Widget => Widget,
+               Nodes  => Get_Floating_Nodes (Widget),
+               Offset => Positioning.Get_Logic
+                           (Widget, States.Get_Mouse_Move_Distance (Widget)));
+            States.End_Drag (Widget);
+            States.Changed_Temporary (Widget);
+            Release_Lock (Widget, Lock);
+         end if;
+
+         return True;
+      else
+         return False;
+      end if;
+   end On_Button_Release_Event;
+
+   function On_Motion_Notify_Event
+     (Widget : access Graph_Widget_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event_Motion)
+     return Boolean is
+
+      use Vis.Absolute;
+      Distance                 : Vis.Absolute.Vector_2d;
+      Relative_Motion_Position : Vis.Absolute.Vector_2d;
+      Motion_Position          : Vis.Absolute.Vector_2d;
+      Window_Origin            : Vis.Absolute.Vector_2d :=
+        Vis.Absolute.Get_Top_Left (Drawing.Get_Visible_Area (Widget));
+   begin
+      Relative_Motion_Position := Vis.Absolute.Combine_Vector
+        (X => Vis.Absolute_Int (Gdk.Event.Get_X (Event)),
+         Y => Vis.Absolute_Int (Gdk.Event.Get_Y (Event)));
+      Motion_Position := Vis.Absolute."+"
+        (Window_Origin, Relative_Motion_Position);
+
+      States.Set_Mouse_Position
+        (Widget => Widget,
+         Point  => Motion_Position);
+
+      if States.Is_Click_Current (Widget) then
+         Distance := States.Get_Mouse_Move_Distance (Widget);
+         if Distance * Distance > Default_Click_Distance_Tolerance**2 then
+            Begin_Mouse_Move_Action
+              (Widget          => Widget,
+               Mode            => Interpret_Modifiers
+                                    (Gdk.Event.Get_State (Event)));
+         end if;
+
+         return True;
+      elsif States.Is_Rectangle_Current (Widget) then
+         States.Changed_Temporary (Widget);
+         return True;
+      elsif States.Is_Drag_Current (Widget) then
+         States.Changed_Temporary (Widget);
+         Redraw (Widget);
+         return True;
+      else
+         return False;
+      end if;
+   end On_Motion_Notify_Event;
 
 end Giant.Graph_Widgets.Callbacks;

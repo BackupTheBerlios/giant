@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis.ads,v $, $Revision: 1.12 $
+--  $RCSfile: giant-vis.ads,v $, $Revision: 1.13 $
 --  $Author: keulsn $
---  $Date: 2003/07/14 12:43:59 $
+--  $Date: 2003/07/20 23:20:04 $
 --
 ------------------------------------------------------------------------------
 
@@ -145,6 +145,13 @@ package Giant.Vis is
      (Origin         : in     Logic.Vector_2d;
       Direction      : in     Logic.Vector_2d;
       Horizontal     : in     Logic_Float)
+     return Logic_Float;
+
+   --  raises Constraint_Error if Get_X (Direction) = 0
+   function Intersects_Line_Vertical_Line_Y
+     (Origin         : in     Logic.Vector_2d;
+      Direction      : in     Logic.Vector_2d;
+      Vertical       : in     Logic_Float)
      return Logic_Float;
 
    function Transform

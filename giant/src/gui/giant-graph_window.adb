@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.41 $
---  $Author: squig $
---  $Date: 2003/07/19 00:14:45 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.42 $
+--  $Author: keulsn $
+--  $Date: 2003/07/20 23:20:04 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -91,6 +91,12 @@ package body Giant.Graph_Window is
      Gui_Utils.Widget_Callback.Marshallers.Generic_Marshaller
      (Base_Type   => Graph_Widgets.Handlers.Node_Popup_Action,
       Conversion  => Graph_Widgets.Handlers.To_Node_Popup_Action);
+
+   package Selection_Change_Marshallers is new
+     Gui_Utils.Widget_Callback.Marshallers.Generic_Marshaller
+     (Base_Type   => Graph_Widgets.Handlers.Selection_Change_Action,
+      Conversion  => Graph_Widgets.Handlers.To_Selection_Change_Action);
+
 
    ---------------------------------------------------------------------------
    --  Package: Actions
@@ -744,6 +750,10 @@ package body Giant.Graph_Window is
         (Window.Graph, "node_popup_event",
          Node_Popup_Marshallers.To_Marshaller
          (On_Node_Popup'Access), Window);
+      Widget_Callback.Object_Connect
+        (Window.Graph, "selection_change_signal",
+         Selection_Change_Marshallers.To_Marshaller
+         (On_Selection_Changed'Access), Window);
 
       Initialize_Background_Menu (Window);
       Initialize_Edge_Menu (Window);

@@ -28,6 +28,9 @@ drawing :
 positioning :
 	make -C ../../ MAIN=src/vis/giant-graph_widgets-positioning all
 
+states :
+	make -C ../../ MAIN=src/vis/giant-graph_widgets-states all
+
 all : 
 	make -C ../../ all
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-notifications.adb,v $, $Revision: 1.2 $
---  $Author: squig $
---  $Date: 2003/07/10 20:17:45 $
+--  $RCSfile: giant-graph_widgets-notifications.adb,v $, $Revision: 1.3 $
+--  $Author: keulsn $
+--  $Date: 2003/07/20 23:20:04 $
 --
 ------------------------------------------------------------------------------
 
@@ -41,7 +41,7 @@ package body Giant.Graph_Widgets.Notifications is
       Location : in     Vis.Logic.Vector_2d) is
    begin
       Notification_Logger.Debug
-        ("User requested PopUp on background - Unimplemented.");
+        ("Background_Popup at Location " & Vis.Logic.Image (Location));
       Handlers.Emit_Background_Popup_Event (Widget, Event, Location);
    end Background_Popup;
 
@@ -53,7 +53,9 @@ package body Giant.Graph_Widgets.Notifications is
       Graph_Edge : Graph_Lib.Edge_Id := Vis_Data.Get_Graph_Edge (Edge);
    begin
       Notification_Logger.Debug
-        ("User requested PopUp on edge - Unimplemented.");
+        ("Edge_Popup node " &
+         Graph_Lib.Node_Id_Image (Graph_Lib.Get_Source_Node (Graph_Edge))  &
+         "'s edge " & Graph_Lib.Get_Edge_Tag (Graph_Edge));
       Handlers.Emit_Edge_Popup_Event (Widget, Event, Graph_Edge);
    end Edge_Popup;
 
@@ -65,8 +67,7 @@ package body Giant.Graph_Widgets.Notifications is
       Graph_Node : Graph_Lib.Node_Id := Vis_Data.Get_Graph_Node (Node);
    begin
       Notification_Logger.Debug
-        ("User requested PopUp on node "
-         & Graph_Lib.Node_Id_Image (Graph_Node) & " - Unimplemented.");
+        ("Node_Popup on " & Graph_Lib.Node_Id_Image (Graph_Node));
       Handlers.Emit_Node_Popup_Event (Widget, Event, Graph_Node);
    end Node_Popup;
 
@@ -76,9 +77,13 @@ package body Giant.Graph_Widgets.Notifications is
       Difference : in     Graph_Lib.Selections.Selection) is
    begin
       Notification_Logger.Debug
-        ("User has performed the command "
-         & Selection_Change_Type'Image (Action) & " on the current selection."
-         & " - Unimplemented.");
+        ("User has performed the command " &
+         Selection_Change_Type'Image (Action) & " on the current selection." &
+         " emitting ");
+      Handlers.Emit_Selection_Change_Signal
+        (Widget     => Widget,
+         Action     => Action,
+         Difference => Difference);
    end Selection_Changed;
 
    procedure Action_Mode_Button_Press_Event
@@ -87,8 +92,8 @@ package body Giant.Graph_Widgets.Notifications is
       Location : in     Vis.Logic.Vector_2d) is
    begin
       Notification_Logger.Debug
-        ("User has pressed a mouse button during action mode."
-         & " - Unimplemented.");
+        ("User has pressed a mouse button during action mode. Location ="
+         & Vis.Logic.Image (Location));
       Handlers.Emit_Action_Mode_Button_Press_Event (Widget, Event, Location);
    end Action_Mode_Button_Press_Event;
 

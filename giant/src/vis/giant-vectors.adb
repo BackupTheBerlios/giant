@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.adb,v $, $Revision: 1.13 $
+--  $RCSfile: giant-vectors.adb,v $, $Revision: 1.14 $
 --  $Author: keulsn $
---  $Date: 2003/07/10 23:36:39 $
+--  $Date: 2003/07/20 23:20:04 $
 --
 ------------------------------------------------------------------------------
 
@@ -387,6 +387,25 @@ package body Giant.Vectors is
          Coord_Add (Get_Right (Rectangle), Coord_Negate (Thickness)));
    end Shrink;
    pragma Inline (Shrink);
+
+   procedure Enlarge
+     (Rectangle : in out Rectangle_2d;
+      Thickness : in     Coordinate_Type) is
+   begin
+      Set_Top
+        (Rectangle,
+         Coord_Sub (Get_Top (Rectangle), Thickness));
+      Set_Bottom
+        (Rectangle,
+         Coord_Add (Get_Bottom (Rectangle), Thickness));
+      Set_Left
+        (Rectangle,
+         Coord_Sub (Get_Left (Rectangle), Thickness));
+      Set_Right
+        (Rectangle,
+         Coord_Add (Get_Right (Rectangle), Thickness));
+   end Enlarge;
+   pragma Inline (Enlarge);
 
    procedure Set_Top
      (Rectangle : in out Rectangle_2d;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.34 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.35 $
 --  $Author: keulsn $
---  $Date: 2003/07/18 12:38:48 $
+--  $Date: 2003/07/20 23:20:04 $
 --
 ------------------------------------------------------------------------------
 --
@@ -67,6 +67,7 @@ with Gdk.Cursor;
 with Gdk.Font;
 with Gdk.GC;
 with Gdk.Pixmap;
+with Glib;
 with Gtk.Widget;
 pragma Elaborate_All (Gtk.Widget);
 
@@ -460,9 +461,8 @@ package Giant.Graph_Widgets is
    --    'Contains (Widget, Node)' and 'Lock' locks 'Node'
    --  Postcondition:
    --    'Get_Top_Middle (Widget, Node)' = 'Location'
-   --  Raises:
-   --    * Unknown_Node_Id if not 'Contains (Widget, Node)'
-   --    * Illegal_Lock_State if 'Node' is not locked by 'Lock'
+   --  Note:
+   --    Request will be ignored if Precondition not satisfied.
    procedure Set_Top_Middle
      (Widget    : access Graph_Widget_Record'Class;
       Node      : in     Graph_Lib.Node_Id;
@@ -579,7 +579,7 @@ package Giant.Graph_Widgets is
    --    Move      - Direction and length to be moved
    procedure Move_Selection
      (Widget    : access Graph_Widget_Record'Class;
-      Selection : access Graph_Lib.Selections.Selection;
+      Selection : in     Graph_Lib.Selections.Selection;
       Move      : in     Vis.Logic.Vector_2d);
 
 
@@ -744,7 +744,7 @@ package Giant.Graph_Widgets is
    --    * Unknown_Node_Id if Precondition is not satisfied
    procedure Set_Hidden
      (Widget     : access Graph_Widget_Record'Class;
-      Selection  : access Graph_Lib.Selections.Selection;
+      Selection  : in     Graph_Lib.Selections.Selection;
       Hidden     : in     Boolean);
 
    ----------------------------------------------------------------------------
@@ -862,7 +862,7 @@ package Giant.Graph_Widgets is
    --    * Unknown_Node_Id if Precondition is not satisfied
    procedure Zoom_To_Selection
      (Widget     : access Graph_Widget_Record'Class;
-      Selection  : access Graph_Lib.Selections.Selection);
+      Selection  : in     Graph_Lib.Selections.Selection);
 
    ----------------------------------------------------------------------------
    --  Changes zoom level and location so that all content fills 'Widget'
@@ -939,6 +939,17 @@ package Giant.Graph_Widgets is
       Zoom       : in     Vis.Zoom_Level);
 
 
+   ----------------------------------------------------------------------------
+   --  Actions the user can perform on the current selection
+   --
+   --  Enumeration Literals:
+   --    Insert - Request to insert certain edges and/or nodes from the
+   --             current selection
+   --    Remove - Request to remove certain edges and/or nodes from the
+   --             current selection
+   --    Change - Request to change the contents of the current selection
+   --    Clear  - Request to clear the current selection
+   type Selection_Change_Type is (Insert, Remove, Change, Clear);
 
    ----------------------------------------------------------------------------
    --  Style for drawing of edges
@@ -979,6 +990,146 @@ private                    -- private part --
    procedure Resize_Graph_Widget
      (Widget : access Graph_Widget_Record'Class;
       Size   : in     Vis.Absolute.Vector_2d);
+
+
+   ---------------------
+   -- Private: Moving --
+   ---------------------
+
+   procedure Move_Nodes
+     (Widget : access Graph_Widget_Record'Class;
+      Nodes  : in     Vis_Node_Sets.Set;
+      Offset : in     Vis.Logic.Vector_2d);
+
+
+   ---------------------------
+   -- Private: Highlighting --
+   ---------------------------
+
+   --  Precondition:
+   --    'Edge' must be locked
+   procedure Add_Edge_Highlighting
+     (Widget    : access Graph_Widget_Record'Class;
+      Edge      : in     Vis_Data.Vis_Edge_Id;
+      Highlight : in     Vis_Data.Highlight_Type);
+
+   --  Precondition:
+   --    'Node' must be locked
+   procedure Add_Node_Highlighting
+     (Widget    : access Graph_Widget_Record'Class;
+      Node      : in     Vis_Data.Vis_Node_Id;
+      Highlight : in     Vis_Data.Highlight_Type);
+
+   --  Precondition:
+   --    'Edge' must be locked
+   procedure Remove_Edge_Highlighting
+     (Widget    : access Graph_Widget_Record'Class;
+      Edge      : in     Vis_Data.Vis_Edge_Id;
+      Highlight : in     Vis_Data.Highlight_Type);
+
+   --  Precondition:
+   --    'Node' must be locked
+   procedure Remove_Node_Highlighting
+     (Widget    : access Graph_Widget_Record'Class;
+      Node      : in     Vis_Data.Vis_Node_Id;
+      Highlight : in     Vis_Data.Highlight_Type);
+
+
+   ------------------------
+   -- Private: Selection --
+   ------------------------
+
+   function Is_Edge_In_Selection
+     (Widget : access Graph_Widget_Record'Class;
+      Edge   : in     Vis_Data.Vis_Edge_Id)
+     return Boolean;
+
+   function Is_Node_In_Selection
+     (Widget : access Graph_Widget_Record'Class;
+      Node   : in     Vis_Data.Vis_Node_Id)
+     return Boolean;
+
+   --  Note:
+   --    Highlighting must be adjustet manually
+   --    Notification must be done manually
+   procedure Add_Edge_To_Selection
+     (Widget : access Graph_Widget_Record'Class;
+      Edge   : in     Vis_Data.Vis_Edge_Id);
+
+   --  Note:
+   --    Highlighting must be adjustet manually
+   --    Notification must be done manually
+   procedure Add_Node_To_Selection
+     (Widget : access Graph_Widget_Record'Class;
+      Node   : in     Vis_Data.Vis_Node_Id);
+
+   --  Note:
+   --    Highlighting must be adjustet manually
+   --    Notification must be done manually
+   procedure Remove_Edge_From_Selection
+     (Widget : access Graph_Widget_Record'Class;
+      Edge   : in     Vis_Data.Vis_Edge_Id);
+
+   --  Note:
+   --    Highlighting must be adjustet manually
+   --    Notification must be done manually
+   procedure Remove_Node_From_Selection
+     (Widget : access Graph_Widget_Record'Class;
+      Node   : in     Vis_Data.Vis_Node_Id);
+
+   ----------------------------------------------------------------------------
+   --  Selection modifications can be: add items, toggle selection state of
+   --  an item or change the selection to contain only specified items
+   type Selection_Modify_Type is (Add, Toggle, Change);
+
+   --  Note:
+   --    Adjusts highlighting
+   --    Notification must be done manually
+   procedure Modify_Selection
+     (Widget : access Graph_Widget_Record'Class;
+      Edges  : in     Vis_Edge_Sets.Set;
+      Nodes  : in     Vis_Node_Sets.Set;
+      Mode   : in     Selection_Modify_Type);
+
+   --  Note:
+   --    Adjusts highlighting
+   --    Notification must be done manually
+   procedure Clear_Selection
+     (Widget : access Graph_Widget_Record'Class);
+
+   --  Note:
+   --    Adjusts highlighting
+   --    Notifies listeners
+   procedure Modify_Selection_With_Edge_And_Notify
+     (Widget : access Graph_Widget_Record'Class;
+      Edge   : in     Vis_Data.Vis_Edge_Id;
+      Mode   : in     Selection_Modify_Type);
+
+   --  Note:
+   --    Adjusts highlighting
+   --    Notifies listeners
+   procedure Modify_Selection_With_Node_And_Notify
+     (Widget : access Graph_Widget_Record'Class;
+      Node   : in     Vis_Data.Vis_Node_Id;
+      Mode   : in     Selection_Modify_Type);
+
+   --  Note:
+   --    Adjusts highlighting
+   --    Notifies listeners
+   procedure Clear_Selection_And_Notify
+     (Widget : access Graph_Widget_Record'Class);
+
+
+   -----------------------
+   -- Private: Updating --
+   -----------------------
+
+   ----------------------------------------------------------------------------
+   --  Returns the a reference to the set of all floating nodes. The Set must
+   --  not be modified.
+   function Get_Floating_Nodes
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis_Node_Sets.Set;
 
    ----------------------------------------------------------------------------
    --  Drops 'Edge' from region manager and adds 'Edge' to the set of
@@ -1024,6 +1175,25 @@ private                    -- private part --
    procedure Move_All_Nodes_To_Unsized
      (Widget : access Graph_Widget_Record'Class);
 
+   --  flushes the locking-sets into the region manager
+   procedure Flush_Locked
+     (Widget : access Graph_Widget_Record'Class);
+
+   --  updates the positioning
+   procedure Update_Positioning
+     (Widget : access Graph_Widget_Record'Class;
+      Edges  : in     Vis_Edge_Sets.Set;
+      Nodes  : in     Vis_Node_Sets.Set);
+
+   --  enqueus a redraw event if necessary.
+   procedure Redraw
+     (Widget : access Graph_Widget_Record'Class);
+
+
+   -------------------------------------------------
+   -- Private: Mapping Graph_Lib --> Graph_Widget --
+   -------------------------------------------------
+
    --  looks up an existing edge or creates a new one if necessary.
    --  if the nodes incident cannot be looked up, then sets 'Edge' to null.
    procedure Find_Or_Create
@@ -1048,20 +1218,6 @@ private                    -- private part --
      (Widget     : access Graph_Widget_Record'Class;
       Graph_Node : in     Graph_Lib.Node_Id)
      return Vis_Data.Vis_Node_Id;
-
-   --  flushes the locking-sets into the region manager
-   procedure Flush_Locked
-     (Widget : access Graph_Widget_Record'Class);
-
-   --  updates the positioning
-   procedure Update_Positioning
-     (Widget : access Graph_Widget_Record'Class;
-      Edges  : in     Vis_Edge_Sets.Set;
-      Nodes  : in     Vis_Node_Sets.Set);
-
-   --  enqueus a redraw event, if necessary.
-   procedure Redraw
-     (Widget : access Graph_Widget_Record'Class);
 
 
    ----------------------------------------------------------------------------
@@ -1104,22 +1260,31 @@ private                    -- private part --
 
    type States_Type is
       record
-         Logic_Area_Changed  : Boolean            := False;
-         Visual_Area_Changed : Boolean            := False;
+         Logic_Area_Changed  : Boolean                := False;
+         Visual_Area_Changed : Boolean                := False;
 
-         Drawing_Ready       : Boolean            := False;
+         Drawing_Ready       : Boolean                := False;
 
-         Visual_Polluted     : Boolean            := True;
+         Visual_Polluted     : Boolean                := True;
+         Temporary_Changed   : Boolean                := True;
 
-         Action_Mode         : Boolean            := False;
+         Action_Mode         : Boolean                := False;
 
-         Highest_Lock        : Lock_Type          := 0;
-         Locks               : Lock_Sets.Set      := Lock_Sets.Empty_Set;
-         Lock_Flush_Pending  : Boolean            := False;
+         Highest_Lock        : Lock_Type              := 0;
+         Locks               : Lock_Sets.Set          := Lock_Sets.Empty_Set;
+         Lock_Flush_Pending  : Boolean                := False;
 
-         Cursors             : Cursor_State_Array :=
+         Cursors             : Cursor_State_Array     :=
            (others => Gdk.Cursor.Null_Cursor);
-         Current_Cursor      : Cursor_State_Type  := Default;
+         Current_Cursor      : Cursor_State_Type      := Default;
+
+         Mouse_Clicking      : Boolean                := False;
+         Mouse_Dragging      : Boolean                := False;
+         Mouse_Rectangle     : Boolean                := False;
+         Mouse_Origin        : Vis.Absolute.Vector_2d := Vis.Absolute.Zero_2d;
+         Mouse_Position      : Vis.Absolute.Vector_2d := Vis.Absolute.Zero_2d;
+         Mouse_On_Node       : Vis_Data.Vis_Node_Id   := null;
+         Mouse_On_Edge       : Vis_Data.Vis_Edge_Id   := null;
       end record;
 
 
@@ -1203,29 +1368,32 @@ private                    -- private part --
       record
          --  Region manager for the graph widget. May be accessed
          --  by subpackages.
-         Manager       : Vis_Data.Region_Manager;
+         Manager        : Vis_Data.Region_Manager;
 
          --  Must only be used by subpackage Drawing
-         Drawing       : Drawing_Type;
+         Drawing        : Drawing_Type;
          --  Must only be used by subpackage Positioning
-         Positioning   : Positioning_Type;
+         Positioning    : Positioning_Type;
          --  Must only be used by subpackage Settings
-         Settings      : Settings_Type;
+         Settings       : Settings_Type;
          --  Must only be used by subpackage States
-         States        : States_Type;
+         States         : States_Type;
 
          --  The following fields must not be used by any subpackage
-         Logic_Area    : Vis.Logic.Rectangle_2d;
+         Logic_Area     : Vis.Logic.Rectangle_2d;
 
-         Edge_Map      : Edge_Id_Mappings.Mapping;
-         Edge_Layers   : Vis_Data.Layer_Pool;
-         Node_Map      : Node_Id_Mappings.Mapping;
-         Node_Layers   : Vis_Data.Layer_Pool;
+         Edge_Map       : Edge_Id_Mappings.Mapping;
+         Edge_Layers    : Vis_Data.Layer_Pool;
+         Node_Map       : Node_Id_Mappings.Mapping;
+         Node_Layers    : Vis_Data.Layer_Pool;
 
-         Locked_Edges  : Vis_Edge_Sets.Set;
-         Unsized_Edges : Vis_Edge_Sets.Set;
-         Locked_Nodes  : Vis_Node_Sets.Set;
-         Unsized_Nodes : Vis_Node_Sets.Set;
+         Locked_Edges   : Vis_Edge_Sets.Set;
+         Unsized_Edges  : Vis_Edge_Sets.Set;
+         Locked_Nodes   : Vis_Node_Sets.Set;
+         Unsized_Nodes  : Vis_Node_Sets.Set;
+
+         Selected_Edges : Vis_Edge_Sets.Set;
+         Selected_Nodes : Vis_Node_Sets.Set;
       end record;
 
 end Giant.Graph_Widgets;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.20 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.21 $
 --  $Author: keulsn $
---  $Date: 2003/07/18 16:00:46 $
+--  $Date: 2003/07/20 23:20:04 $
 --
 ------------------------------------------------------------------------------
 
@@ -974,33 +974,33 @@ package body Giant.Graph_Widgets.Drawing is
       Buffer_Origin : Vis.Absolute.Vector_2d :=
         Get_Top_Left (Widget.Drawing.Buffer_Area);
    begin
-      Drawing_Logger.Debug ("Update_Buffer_Background");
+      --  Drawing_Logger.Debug ("Update_Buffer_Background");
 
       Iterator := Rect_Lists.MakeListIter (Rectangles);
       while Rect_Lists.More (Iterator) loop
          Rect_Lists.Next (Iterator, Area);
-         Drawing_Logger.Debug
-           ("... Background rectangle: " & Vis.Absolute.Image (Area));
+         --  Drawing_Logger.Debug
+         --    ("... Background rectangle: " & Vis.Absolute.Image (Area));
          Draw_Filled
            (Drawable  => Widget.Drawing.Buffer,
             Gc        => Widget.Drawing.Background,
             Rectangle => Area,
             Origin    => Buffer_Origin);
---           Draw_Border
---             (Drawable  => Widget.Drawing.Buffer,
---              Gc        => Widget.Drawing.Debug_Gc,
---              Rectangle => Area,
---              Origin    => Buffer_Origin);
---           Draw_Text
---             (Buffer => Widget.Drawing.Buffer,
---              Font   => Settings.Get_Node_Font (Widget),
---              Gc     => Widget.Drawing.Debug_Gc,
---              Area   => Area,
---              Origin => Buffer_Origin,
---              Text   => Vis.Absolute.Image (Area));
+         Draw_Border
+           (Drawable  => Widget.Drawing.Buffer,
+            Gc        => Widget.Drawing.Debug_Gc,
+            Rectangle => Area,
+            Origin    => Buffer_Origin);
+         Draw_Text
+           (Buffer => Widget.Drawing.Buffer,
+            Font   => Settings.Get_Node_Font (Widget),
+            Gc     => Widget.Drawing.Debug_Gc,
+            Area   => Area,
+            Origin => Buffer_Origin,
+            Text   => Vis.Absolute.Image (Area));
       end loop;
 
-      Drawing_Logger.Debug ("... Background done.");
+      --  Drawing_Logger.Debug ("... Background done.");
    end Update_Buffer_Background;
 
    procedure Update_Buffer_Unchanged
@@ -1013,20 +1013,20 @@ package body Giant.Graph_Widgets.Drawing is
       Buffer_Origin : Vis.Absolute.Vector_2d :=
         Get_Top_Left (Widget.Drawing.Buffer_Area);
    begin
-      Drawing_Logger.Debug ("Update_Buffer_Unchanged");
+      --  Drawing_Logger.Debug ("Update_Buffer_Unchanged");
 
       Iterator := Rect_Lists.MakeListIter (Rectangles);
       while Rect_Lists.More (Iterator) loop
          Rect_Lists.Next (Iterator, Area);
-         Drawing_Logger.Debug
-           ("... Unchanged rectangle: " & Vis.Absolute.Image (Area));
+         --  Drawing_Logger.Debug
+         --    ("... Unchanged rectangle: " & Vis.Absolute.Image (Area));
          Copy_Ready_Into_Normal_Buffer
            (Widget => Widget,
             Area   => Area,
             Origin => Buffer_Origin);
       end loop;
 
-      Drawing_Logger.Debug ("... Unchanged done.");
+      --  Drawing_Logger.Debug ("... Unchanged done.");
    end Update_Buffer_Unchanged;
 
 
@@ -1061,7 +1061,8 @@ package body Giant.Graph_Widgets.Drawing is
      (Widget : access Graph_Widget_Record'Class;
       Area   : in     Vis.Absolute.Rectangle_2d) is
    begin
-      Drawing_Logger.Debug ("Update_Display: " & Vis.Absolute.Image (Area));
+      --  Drawing_Logger.Debug
+      --    ("Update_Display: " & Vis.Absolute.Image (Area));
       Update_Buffer (Widget);
 
       Gdk.Drawable.Copy_Area
@@ -1078,8 +1079,32 @@ package body Giant.Graph_Widgets.Drawing is
                       (Vis.Absolute.Get_Width (Widget.Drawing.Visible_Area)),
          Height   => Glib.Gint
                       (Vis.Absolute.Get_Height (Widget.Drawing.Visible_Area)));
-      --  Update_Temporary (Widget);
    end Update_Display;
+
+
+   procedure Update_Temporary
+     (Widget : access Graph_Widget_Record'Class;
+      Area   : in     Vis.Absolute.Rectangle_2d) is
+
+      Floating : Vis_Node_Sets.Iterator;
+      Node     : Vis_Data.Vis_Node_Id;
+      Origin   : Vis.Absolute.Vector_2d;
+   begin
+      if States.Is_Drag_Current (Widget) then
+         Origin := Get_Top_Left (Widget.Drawing.Visible_Area) -
+           States.Get_Mouse_Move_Distance (Widget);
+         Floating := Vis_Node_Sets.Make_Iterator (Get_Floating_Nodes (Widget));
+         while Vis_Node_Sets.More (Floating) loop
+            Vis_Node_Sets.Next (Floating, Node);
+            Draw_Node
+              (Widget => Widget,
+               Buffer => Widget.Drawing.Display,
+               Node   => Node,
+               Origin => Origin);
+         end loop;
+         Vis_Node_Sets.Destroy (Floating);
+      end if;
+   end Update_Temporary;
 
 
    function Get_Visible_Area

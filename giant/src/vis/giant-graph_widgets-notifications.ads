@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-notifications.ads,v $, $Revision: 1.6 $
---  $Author: squig $
---  $Date: 2003/07/10 20:17:45 $
+--  $RCSfile: giant-graph_widgets-notifications.ads,v $, $Revision: 1.7 $
+--  $Author: keulsn $
+--  $Date: 2003/07/20 23:20:04 $
 --
 ------------------------------------------------------------------------------
 --
@@ -85,18 +85,6 @@ package Giant.Graph_Widgets.Notifications is
    -----------------------
    -- Selection Changes --
    -----------------------
-
-   ----------------------------------------------------------------------------
-   --  Actions the user can perform on the current selection
-   --
-   --  Enumeration Literals:
-   --    Insert - Request to insert certain edges and/or nodes from the
-   --             current selection
-   --    Remove - Request to remove certain edges and/or nodes from the
-   --             current selection
-   --    Change - Request to change the contents of the current selection
-   --    Clear  - Request to clear the current selection
-   type Selection_Change_Type is (Insert, Remove, Change, Clear);
 
    ----------------------------------------------------------------------------
    --  Informs the controller that the user has given the command to modify

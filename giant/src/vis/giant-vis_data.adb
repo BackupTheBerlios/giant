@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.27 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.28 $
 --  $Author: keulsn $
---  $Date: 2003/07/18 15:46:44 $
+--  $Date: 2003/07/20 23:20:04 $
 --
 ------------------------------------------------------------------------------
 
@@ -36,6 +36,10 @@ package body Giant.Vis_Data is
 
    package Vis_Data_Logger is new Logger
      (Name => "Giant.Vis_Data");
+
+   package Numerics is new Ada.Numerics.Generic_Elementary_Functions
+     (Float_Type => Vis.Logic_Float);
+
 
    procedure Set_Min_Max
      (Value_1 : in     Vis.Absolute_Int;
@@ -51,6 +55,69 @@ package body Giant.Vis_Data is
          Min := Value_2;
       end if;
    end Set_Min_Max;
+
+   function Hits_Line
+     (From      : in     Vis.Absolute.Vector_2d;
+      To        : in     Vis.Absolute.Vector_2d;
+      Thickness : in     Vis.Absolute_Natural;
+      Point     : in     Vis.Absolute.Vector_2d;
+      Tolerance : in     Vis.Absolute_Natural := 0)
+     return Boolean is
+
+      use Vis.Absolute;
+      use Vis.Logic;
+      Line           : Vis.Absolute.Vector_2d := To - From;
+      Difference     : Vis.Logic.Vector_2d;
+      Distance       : Vis.Absolute.Vector_2d;
+      Spacing        : Vis.Absolute_Natural := (Thickness + 3) / 2 + Tolerance;
+      Alpha          : Vis.Logic_Float;
+      Profile        : Vis.Logic_Float;
+      X              : Vis.Logic_Float;
+      Y              : Vis.Logic_Float;
+      Line_Rectangle : Vis.Absolute.Rectangle_2d;
+   begin
+      if Get_X (Line) = 0 and then Get_Y (Line) = 0 then
+         Distance := Point - From;
+         return Distance * Distance <= Spacing**2;
+      else
+         Difference := Vis.To_Logic (Line);
+
+         Alpha := Numerics.Arctan (Get_Y (Difference), Get_X (Difference));
+
+         --  Quick check if hit is possible
+         Line_Rectangle := Vis.Absolute.Combine_Rectangle
+           (X_1 => Get_X (From),
+            Y_1 => Get_Y (From),
+            X_2 => Get_X (To),
+            Y_2 => Get_Y (To));
+         Vis.Absolute.Enlarge (Line_Rectangle, Spacing);
+         if not Vis.Absolute.Is_Inside (Line_Rectangle, Point) then
+            return False;
+         elsif abs Get_X (Line) > abs Get_Y (Line) then
+            --  Vertical profile
+            Profile := Vis.To_Logic_Float (Spacing) /
+              Numerics.Cos (Alpha);
+            Y := Vis.Intersects_Line_Vertical_Line_Y
+              (Origin     => Vis.To_Logic (From),
+               Direction  => Difference,
+               Vertical   => Vis.Logic_Float (Get_X (Point)));
+
+            return Vis.Logic_Float (Get_Y (Point) - Spacing) <= Y and then
+              Vis.Logic_Float (Get_Y (Point) + Spacing) >= Y;
+         else
+            --  Horizontal profile
+            Profile := Vis.To_Logic_Float (Spacing) /
+              abs Numerics.Sin (Alpha);
+            X := Vis.Intersects_Line_Horizontal_Line_X
+              (Origin     => Vis.To_Logic (From),
+               Direction  => Difference,
+               Horizontal => Vis.Logic_Float (Get_Y (Point)));
+
+            return Vis.Logic_Float (Get_X (Point) - Spacing) <= X and then
+              Vis.Logic_Float (Get_X (Point) + Spacing) >= X;
+         end if;
+      end if;
+   end Hits_Line;
 
 
    ------------
@@ -276,6 +343,39 @@ package body Giant.Vis_Data is
    begin
       return Edge.Text_Area;
    end Get_Text_Area;
+
+   function Hits
+     (Edge  : in     Vis_Edge_Id;
+      Point : in     Vis.Absolute.Vector_2d)
+     return Boolean is
+
+      I   : Integer;
+      Hit : Boolean := False;
+   begin
+      I := Edge.Points'First;
+      while not Hit and I < Edge.Points'Last loop
+         Hit := Hits_Line
+           (From      => Edge.Points (I),
+            To        => Edge.Points (I + 1),
+            Thickness => Edge.Thickness,
+            Point     => Point,
+            Tolerance => 1);
+         I := I + 1;
+      end loop;
+      Hit := Hit or else Hits_Line
+        (From      => Edge.Left_Arrow_Point,
+         To        => Edge.Points (Edge.Points'Last),
+         Thickness => Edge.Thickness,
+         Point     => Point,
+         Tolerance => 1);
+      Hit := Hit or else Hits_Line
+        (From      => Edge.Right_Arrow_Point,
+         To        => Edge.Points (Edge.Points'Last),
+         Thickness => Edge.Thickness,
+         Point     => Point,
+         Tolerance => 1);
+      return Hit;
+   end Hits;
 
    function Is_Hidden
      (Edge : in     Vis_Edge_Id)
@@ -514,6 +614,16 @@ package body Giant.Vis_Data is
    begin
       return Node.Extent;
    end Get_Extent;
+
+   function Hits
+     (Node  : in     Vis_Node_Id;
+      Point : in     Vis.Absolute.Vector_2d)
+     return Boolean is
+   begin
+      return Vis.Absolute.Is_Inside
+        (Rectangle => Get_Extent (Node),
+         Point     => Point);
+   end Hits;
 
    procedure Make_Incoming_Iterator
      (Node           : in     Vis_Node_Id;
@@ -1115,9 +1225,6 @@ package body Giant.Vis_Data is
             return Get_Position_X_At_X (Manager, X);
          end Get_Inner_Position_X;
 
-         package Numerics is new Ada.Numerics.Generic_Elementary_Functions
-           (Float_Type => Vis.Logic_Float);
-
          Line_Start            : Vis.Logic.Vector_2d;
          Difference            : Vis.Logic.Vector_2d;
          Alpha                 : Vis.Logic_Float;
@@ -1352,6 +1459,31 @@ package body Giant.Vis_Data is
       end loop;
    end Drop_Edge;
 
+   function Get_Edge_At
+     (Manager : in     Region_Manager;
+      Point   : in     Vis.Absolute.Vector_2d)
+     return Vis_Edge_Id is
+
+      Region     : Region_Id;
+      Found_Edge : Vis_Edge_Id := null;
+      Edges      : Vis_Edge_Sets.Iterator;
+   begin
+      Region := Get_Region_If_Exists
+        (Manager, Get_Region_Position (Manager, Point));
+      if Region /= null then
+         Edges := Vis_Edge_Sets.Make_Reverse_Iterator (Region.Edges);
+         while Found_Edge = null and then Vis_Edge_Sets.More (Edges) loop
+            Found_Edge := Vis_Edge_Sets.Current (Edges);
+            if not Hits (Found_Edge, Point) then
+               Found_Edge := null;
+            end if;
+            Vis_Edge_Sets.Previous (Edges);
+         end loop;
+         Vis_Edge_Sets.Destroy (Edges);
+      end if;
+      return Found_Edge;
+   end Get_Edge_At;
+
    procedure Insert_Node
      (Manager : in out Region_Manager;
       Node    : in     Vis_Node_Id) is
@@ -1394,6 +1526,31 @@ package body Giant.Vis_Data is
          Region_Lists.DeleteHead (Node.Regions);
       end loop;
    end Drop_Node;
+
+   function Get_Node_At
+     (Manager : in     Region_Manager;
+      Point   : in     Vis.Absolute.Vector_2d)
+     return Vis_Node_Id is
+
+      Region     : Region_Id;
+      Found_Node : Vis_Node_Id := null;
+      Nodes      : Vis_Node_Sets.Iterator;
+   begin
+      Region := Get_Region_If_Exists
+        (Manager, Get_Region_Position (Manager, Point));
+      if Region /= null then
+         Nodes := Vis_Node_Sets.Make_Reverse_Iterator (Region.Nodes);
+         while Found_Node = null and then Vis_Node_Sets.More (Nodes) loop
+            Found_Node := Vis_Node_Sets.Current (Nodes);
+            if not Hits (Found_Node, Point) then
+               Found_Node := null;
+            end if;
+            Vis_Node_Sets.Previous (Nodes);
+         end loop;
+         Vis_Node_Sets.Destroy (Nodes);
+      end if;
+      return Found_Node;
+   end Get_Node_At;
 
    procedure Pollute_Edge
      (Manager : in out Region_Manager;

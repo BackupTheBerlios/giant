@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.9 $
---  $Author: squig $
---  $Date: 2003/07/18 15:40:31 $
+--  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.10 $
+--  $Author: keulsn $
+--  $Date: 2003/07/20 23:20:03 $
 --
 
 with Ada.Unchecked_Conversion;
@@ -140,32 +140,33 @@ package body Giant.Graph_Window.Callbacks is
    end On_Node_Popup;
 
    procedure On_Selection_Changed
-     (Source     : access Gtk.Widget.Gtk_Widget_Record'Class;
-      Action     : in     Graph_Widgets.Notifications.Selection_Change_Type;
-      Difference : in     Graph_Lib.Selections.Selection)
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event  : in     Graph_Widgets.Handlers.Selection_Change_Action)
    is
+      Action : Graph_Widgets.Selection_Change_Type := Event.Action;
+      Difference : Graph_Lib.Selections.Selection := Event.Difference;
       Window : Graph_Window_Access := Graph_Window_Access (Source);
       Selection : Graph_Lib.Selections.Selection
         := Controller.Get_Current_Selection (Get_Window_Name (Window));
    begin
       case (Action) is
-         when Graph_Widgets.Notifications.Insert =>
+         when Graph_Widgets.Insert =>
             Graph_Lib.Selections.Add_Node_Set
               (Selection, Graph_Lib.Selections.Get_All_Nodes (Difference));
             Graph_Lib.Selections.Add_Edge_Set
               (Selection, Graph_Lib.Selections.Get_All_Edges (Difference));
-         when Giant.Graph_Widgets.Notifications.Remove =>
+         when Giant.Graph_Widgets.Remove =>
             Graph_Lib.Selections.Remove_Node_Set
               (Selection, Graph_Lib.Selections.Get_All_Nodes (Difference));
             Graph_Lib.Selections.Remove_Edge_Set
               (Selection, Graph_Lib.Selections.Get_All_Edges (Difference));
-         when Giant.Graph_Widgets.Notifications.Change =>
+         when Giant.Graph_Widgets.Change =>
             Graph_Lib.Selections.Clear (Selection);
             Graph_Lib.Selections.Add_Node_Set
               (Selection, Graph_Lib.Selections.Get_All_Nodes (Difference));
             Graph_Lib.Selections.Add_Edge_Set
               (Selection, Graph_Lib.Selections.Get_All_Edges (Difference));
-         when Giant.Graph_Widgets.Notifications.Clear =>
+         when Giant.Graph_Widgets.Clear =>
             Graph_Lib.Selections.Clear (Selection);
       end case;
    end On_Selection_Changed;
