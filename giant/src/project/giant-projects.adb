@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.38 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.39 $
 --  $Author: schwiemn $
---  $Date: 2003/06/26 17:18:46 $
+--  $Date: 2003/06/26 19:33:50 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -1212,6 +1212,8 @@ package body Giant.Projects is
         (Project.All_Subgraphs);
 
       while Subgraph_Data_Hashs.More (Subgraphs_Iter) loop
+      
+         Logger.Debug ("Killed Subgraph");
 
          Subgraph_Data_Hashs.Next (Subgraphs_Iter, A_Subgraph_Data_Element);
          Graph_Lib.Subgraphs.Destroy (A_Subgraph_Data_Element.Subgraph);
@@ -1258,6 +1260,8 @@ package body Giant.Projects is
 
          P_Vis_Window_File_Name : Ada.Strings.Unbounded.Unbounded_String;
       begin
+
+          
 
          -- calculate new file name
          P_Vis_Window_File_Name :=
@@ -1354,7 +1358,7 @@ package body Giant.Projects is
                  (Project,
                   Ada.Strings.Unbounded.To_String
                   (A_Vis_Window_Data_Element.Vis_Window_Name));
-            else
+            elsif A_Vis_Window_Data_Element.Is_Memory_Loaded then
 
                --  window is already memory loaded
                A_Vis_Window := Get_Visualisation_Window
@@ -1424,7 +1428,9 @@ package body Giant.Projects is
          -- (as for migratation the project dir is already changed
          -- there are no differences between saving to a new project
          -- directory or to the old one).
-         if not A_Subgraph_Data_Element.Is_File_Linked then
+         if (A_Subgraph_Data_Element.Is_File_Linked 
+           and Change_Project_Files) 
+           or not A_Subgraph_Data_Element.Is_File_Linked then
 
             A_Subgraph_File_Name :=
               Create_Name_For_File
@@ -1442,6 +1448,13 @@ package body Giant.Projects is
             A_Subgraph_File_Name :=
               A_Subgraph_Data_Element.Existing_Subgraph_File;
          end if;
+         
+         
+         
+         
+         Logger.Debug ("1450: Store Project: "
+           & Ada.Strings.Unbounded.To_String (A_Subgraph_File_Name));
+         
 
          Write_Sub_Graph_Data_To_File
            (Ada.Strings.Unbounded.To_String
@@ -1458,6 +1471,8 @@ package body Giant.Projects is
             A_Subgraph_Key,
             A_Subgraph_Data_Element);
       end loop;
+      
+      Logger.Debug ("1450: Store Project: Finished ");
 
       -- write dtd (overwritten if already exists)
       Write_DTD_To_Directory
@@ -1708,8 +1723,8 @@ package body Giant.Projects is
       if (Does_Vis_Window_Exist (Project, Vis_Window_Name) = False) then
          raise Visualisation_Window_Is_Not_Part_Of_Project_Exception;
       end if;
-
-
+      
+      
       --  Check if already loaded and return the instance if that is the case
       if (Is_Vis_Window_Memory_Loaded (Project, Vis_Window_Name)) then
 
@@ -1724,7 +1739,6 @@ package body Giant.Projects is
            (Project.All_Vis_Windows,
             Ada.Strings.Unbounded.To_Unbounded_String
             (Vis_Window_Name));
-
 
          Logger.Debug ("Load file" & Ada.Strings.Unbounded.To_String
             (Vis_Window_Data.Existing_Vis_Window_File));
@@ -1986,18 +2000,24 @@ package body Giant.Projects is
       --  change vis window status
       ----------------------------
       A_Vis_Window_Data_Element.Is_Memory_Loaded := False;
-
-      Known_Vis_Windows_Hashs.Update_Value
-        (Project.All_Vis_Windows,
-         A_Vis_Window_Data_Element.Vis_Window_Name,
-         A_Vis_Window_Data_Element);
-         
-         
+      
       Logger.Debug ("File nach Free : " & Ada.Strings.Unbounded.To_String 
         (Known_Vis_Windows_Hashs.Fetch
         (Project.All_Vis_Windows,
          Ada.Strings.Unbounded.To_Unbounded_String (Vis_Window_Name)).
          Existing_Vis_Window_File));
+
+      if A_Vis_Window_Data_Element.Is_File_Linked then
+         Known_Vis_Windows_Hashs.Update_Value
+           (Project.All_Vis_Windows,
+            A_Vis_Window_Data_Element.Vis_Window_Name,
+            A_Vis_Window_Data_Element);            
+      else
+         Known_Vis_Windows_Hashs.Unbind
+           (Project.All_Vis_Windows,
+            A_Vis_Window_Data_Element.Vis_Window_Name);        
+      end if;
+         
    end Free_Memory_For_Vis_Window;
 
    ---------------------------------------------------------------------------
