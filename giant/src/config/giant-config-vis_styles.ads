@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.ads,v $, $Revision: 1.7 $
+-- $RCSfile: giant-config-vis_styles.ads,v $, $Revision: 1.8 $
 -- $Author: schwiemn $
--- $Date: 2003/06/30 11:53:49 $
+-- $Date: 2003/07/10 21:59:50 $
 --
 -- ----------------
 -- This package provides the functionality needed to manage
@@ -441,6 +441,7 @@ package Giant.Config.Vis_Styles is
    --   Node_Class - An ID of an existing node class of the iml graph.
    -- Returns:
    --   An Integer Value that represents an Icon.
+   --   May return "0" if no icon for this node is defined.
    -- Raises:
    --   Config_Vis_Styles_Not_Initialized_Exception - raised if this
    --     subprogram is called before "Initialize_Config_Vis_Styles"
