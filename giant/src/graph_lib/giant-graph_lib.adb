@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.49 $
---  $Author: squig $
---  $Date: 2003/07/09 16:22:34 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.50 $
+--  $Author: koppor $
+--  $Date: 2003/07/09 16:39:42 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -860,7 +860,7 @@ package body Giant.Graph_Lib is
 
             Node_Iter : Load_Nodes.Node_Queues.ListIter;
             Cur_Node  : Load_Nodes.Node_Access; --  of the temporary structure
-            New_Node  : Node_Id; --  of the internal structure
+            New_Node  : Node_Id; --  of the graph_lib-internal structure
 
          begin
             All_Edges_Set := Edge_Id_Sets.Empty_Set;
@@ -872,8 +872,8 @@ package body Giant.Graph_Lib is
                New_Node := Cur_Node.Internal_Node;
 
                Convert_Outgoing_Edges_Of_A_Node
-                 (Cur_Node.Edges_In,
-                  New_Node.Incoming_Edges);
+                 (Cur_Node.Edges_Out,
+                  New_Node.Outgoing_Edges);
             end loop;
          end Convert_Outgoing_Edges;
 
@@ -935,6 +935,8 @@ package body Giant.Graph_Lib is
          --  Parameters:
          --     First_Index - specifies the index to be used as first
          --                   in the resulting array
+         --                   Is needed, because we need this "magic" index
+         --                   for the "Edge_Id_Sets.array-routines"
          function Convert_Edge_Set_To_Edge_Array
            (Edges_Set   : in Edge_Id_Sets.Set;
             First_Index : in Integer)
@@ -954,8 +956,8 @@ package body Giant.Graph_Lib is
             procedure Apply is new Edge_Id_Sets.Apply
               (Execute => Execute);
 
-            Last_Index : Integer
-              := First_Index + Edge_Id_Sets.Size (Edges_Set) - 1;
+            Last_Index : Integer :=
+              First_Index + Edge_Id_Sets.Size (Edges_Set) - 1;
           begin
              Edge_Array := new Edge_Id_Array (First_Index .. Last_Index);
              Apply (Edges_Set);
