@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-progress_dialog.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-progress_dialog.ads,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/06/03 14:45:52 $
+--  $Date: 2003/06/14 16:40:24 $
 --
 ------------------------------------------------------------------------------
 --
@@ -90,6 +90,10 @@ package Giant.Progress_Dialog is
    procedure Set_Upper (Dialog : access Progress_Dialog_Record;
                         Upper  : in     Float);
 
+
+   -------------------------------------------------------------------------
+   --  Sets the current value. If value is higher than upper_bound,
+   --  value mod upper_bound is set.
    procedure Set_Value (Dialog : access Progress_Dialog_Record;
                         Value  : in     Float);
 

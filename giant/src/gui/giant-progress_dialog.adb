@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-progress_dialog.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-progress_dialog.adb,v $, $Revision: 1.5 $
 --  $Author: squig $
---  $Date: 2003/06/03 19:20:59 $
+--  $Date: 2003/06/14 16:40:23 $
 --
 
 with Glib;
@@ -166,9 +166,18 @@ package body Giant.Progress_Dialog is
    procedure Set_Value (Dialog : access Progress_Dialog_Record;
                         Value  : in     Float)
    is
+      Upper_Bound : Float;
+      Mod_Value : Float := Value;
    begin
+      --  adjust value
+      Upper_Bound := Float (Gtk.Adjustment.Get_Upper
+                            (Dialog.Progress_Bar_Adjustment));
+      while (Mod_Value > Upper_Bound) loop
+         Mod_Value := Mod_Value - Upper_Bound;
+      end loop;
+
       Gtk.Adjustment.Set_Value (Dialog.Progress_Bar_Adjustment,
-                                Glib.Gfloat (Value));
+                                Glib.Gfloat (Mod_Value));
    end Set_Value;
 
 end Giant.Progress_Dialog;
