@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.40 $
-%  $Date: 2003/03/19 21:14:41 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.41 $
+%  $Date: 2003/03/20 07:39:32 $
 %  $Author: stupro $
 %
 %  Description: Bis zu Revision 1.6 sind UseCase-artige Beschreibungen enthalten,
@@ -156,7 +156,15 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
   
   Ein Anzeigefenster besteht aus folgenden Elementen:
 
-  \subsection {Minimap}
+  In Anzeigefenstern (DISPLAY\_WINDOW) werden Graphen visualisiert,
+  sie erscheinen im grossen quadratischen rechten Teil (VIS\_PANE) des Fensters.
+  Im linken Viertel des Fensters, der Toolbar (DISPLAY\_WINDOW\_TOOLBAR)
+  befinden sich untereinander die MiniMap (MINIMAP), Pinliste (PIN\_LIST)
+  mit darunterliegenden Buttons, und Selektionsliste (SELECTION\_LIST),
+  die Zoom-Kontrolle, die Stilauswahl-Combobox (STYLE\_COMBO) und
+  ein Button zum Ausblenden der Toolbar (TOOLBAR\_HIDE).
+
+ \subsection {Minimap}
 
     In der MiniMap wird der gesamte IML-Teilgraph, der im Fenster
     visualisiert ist, durch einen grauen Kasten repr‰sentiert.
@@ -168,16 +176,6 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     Durch Klicks in die Minimap kann die linke obere Ecke des
     sichtbaren Bereiches versetzt werden, der in VIS\_PANE angezeigte
     Bereich wird dann entsprechend angepaﬂt.
-
-\section{Anzeigefenster}
-
-  In Anzeigefenstern (DISPLAY\_WINDOW) werden Graphen visualisiert,
-  sie erscheinen im grossen quadratischen rechten Teil (VIS\_PANE) des Fensters.
-  Im linken Viertel des Fensters, der Toolbar (DISPLAY\_WINDOW\_TOOLBAR)
-  befinden sich untereinander die MiniMap (MINIMAP), Pinliste (PIN\_LIST)
-  mit darunterliegenden Buttons, und Selektionsliste (SELECTION\_LIST),
-  die Zoom-Kontrolle, die Stilauswahl-Combobox (STYLE\_COMBO) und
-  ein Button zum Ausblenden der Toolbar (TOOLBAR\_HIDE).
 
   \subsection{Visualisierung der Knoten}
 
