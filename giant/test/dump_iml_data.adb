@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: dump_iml_data.adb,v $, $Revision: 1.5 $
+--  $RCSfile: dump_iml_data.adb,v $, $Revision: 1.6 $
 --  $Author: koppor $
---  $Date: 2003/07/22 09:48:52 $
+--  $Date: 2003/07/24 15:36:13 $
 --
 -- -----
 -- Used to Dump the Content (Node Classes and attributes of an iml Graph)
@@ -34,6 +34,8 @@ with Giant.Graph_Lib.Subgraphs;
 with Giant.Logger;
 with Giant.Default_Logger;
 
+-- with Ada.Strings.Unbounded;
+
 procedure dump_iml_data is
 
    package Logger is new Giant.Logger("dump_iml_data");
@@ -42,12 +44,32 @@ procedure dump_iml_data is
    procedure Output_All_Nodes
    is
 
+      procedure Output_All_Attributes (Node : in Graph_Lib.Node_Id)
+      is
+         Iter   : Graph_Lib.Node_Attribute_Iterator;
+         Attrib : Graph_Lib.Node_Attribute_Id;
+         Class  : Graph_Lib.Node_Attribute_Class_Id;
+      begin
+         Logger.Info ("Attributes");
+         Iter := Graph_Lib.Make_Attribute_Iterator (Node);
+         while Graph_Lib.More (Iter) loop
+            Graph_Lib.Next (Iter, Attrib);
+            Class := Graph_Lib.Get_Node_Attribute_Class_Id (Attrib);
+            Logger.Info
+              (Graph_Lib.Convert_Node_Attribute_Id_To_Name (Attrib) & " (" &
+               Graph_Lib.Convert_Node_Attribute_Class_Id_To_Name (Class) &
+               "): " &
+               Graph_Lib.Get_Node_Attribute_Value_As_String (Node, Attrib));
+         end loop;
+      end Output_All_Attributes;
+
       procedure Execute (Node : in Graph_Lib.Node_Id)
       is
          Edges_In  : constant Graph_Lib.Edge_Id_Array :=
            Graph_Lib.Get_Incoming_Edges (Node);
          Edges_Out : constant Graph_Lib.Edge_Id_Array :=
            Graph_Lib.Get_Outgoing_Edges (Node);
+
       begin
          Logger.Info ("Node " & Graph_Lib.Node_Id_Image (Node));
 
@@ -62,6 +84,8 @@ procedure dump_iml_data is
             Logger.Info (Graph_Lib.Node_Id_Image
                          (Graph_Lib.Get_Target_Node (Edges_Out (I))));
          end loop;
+
+         Output_All_Attributes (Node);
       end Execute;
 
       procedure Apply is new Graph_Lib.Node_Id_Sets.Apply
@@ -80,6 +104,7 @@ procedure dump_iml_data is
    is
    begin
       Graph_Lib.Load ("resources/rfg_examp.iml");
+      -- Graph_Lib.Load ("resources/graphs/concept_analysis.iml");
       Output_All_Nodes;
       Graph_Lib.Unload;
    end Load_And_Dump_Graph;
