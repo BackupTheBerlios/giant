@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: framework_test.adb,v $, $Revision: 1.12 $
+--  $RCSfile: framework_test.adb,v $, $Revision: 1.13 $
 --  $Author: koppor $
---  $Date: 2003/07/13 00:29:31 $
+--  $Date: 2003/09/21 00:14:31 $
 --
 with AUnit.Test_Suites; use AUnit.Test_Suites;
 with AUnit.Test_Runner;
@@ -38,6 +38,7 @@ with Giant.Graph_Lib.Test;
 with Giant.Graph_Lib.Node_Attribute_Filters.Test;
 with Giant.Graph_Lib.Subgraphs.Atomic_Tests;
 with Giant.Graph_Lib.Subgraphs.Test;
+with Giant.Gsl.Test;
 with Giant.Gsl_Support.Test;
 with Giant.Layout_Factory.Test;
 with Giant.Matrix_Layouts.Test;
@@ -64,6 +65,7 @@ procedure Framework_Test is
         (Result, new Giant.Graph_Lib.Node_Attribute_Filters.Test.Test_Case);
       Add_Test (Result, new Giant.Graph_Lib.Subgraphs.Test.Test_Case);
       Add_Test (Result, new Giant.Graph_Lib.Subgraphs.Atomic_Tests.Test_Case);
+      Add_Test (Result, new Giant.Gsl.Test.Test_Case);
       Add_Test (Result, new Giant.Gsl_Support.Test.Test_Case);
       Add_Test (Result, new Giant.Layout_Factory.Test.Test_Case);
       Add_Test (Result, new Giant.Matrix_Layouts.Test.Test_Case);
