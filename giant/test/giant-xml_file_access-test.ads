@@ -20,42 +20,33 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: martin_test.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-xml_file_access-test.ads,v $, $Revision: 1.1 $
 --  $Author: schwiemn $
 --  $Date: 2003/06/25 15:46:45 $
---  
-with AUnit.Test_Suites; use AUnit.Test_Suites;
-with AUnit.Test_Runner;
+--
+------------------------------------------------------------------------------
+--
+--  Provides an aunit test.
+--
 
-with Giant.Config.Vis_Styles.Test; 
-with Giant.Projects.Test;
-with Giant.XML_File_Access.Test;
+with Ada.Strings.Unbounded;
 
-with Giant.Default_Logger;
+with AUnit.Test_Cases;
 
-procedure Martin_Test is
+package Giant.XML_File_Access.Test is
 
-   function Suite return Access_Test_Suite is
-      Result : Access_Test_Suite := new Test_Suite;
-   begin
+   type Test_Case is new AUnit.Test_Cases.Test_Case with null record;
    
-     Add_Test (Result, new Giant.Projects.Test.Test_Case);
-       
-  --  Add_Test (Result, new Giant.Config.Vis_Styles.Test.Test_Case);
+   --  Register routines to be run:
+   procedure Register_Tests (T : in out Test_Case);
    
-  --  Add_Test (Result, new Giant.XML_File_Access.Test.Test_Case);
-  
-            
-      return Result;
-   end Suite;
-
-   procedure Run is new AUnit.Test_Runner (Suite);
-
-begin
-   Giant.Default_Logger.Init;
-   Giant.Default_Logger.Debug ("Starting Test...");
-
-   Run;
-
-   Giant.Default_Logger.Close;
-end Martin_Test;
+   --  Provide name identifying the test case:
+   function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access;
+   
+   --  Preparation performed before each routine:
+   procedure Set_Up (T : in out Test_Case);
+   
+   --  Cleanup performed after each routine:
+   procedure Tear_Down (T :  in out Test_Case);
+   
+end Giant.XML_File_Access.Test;

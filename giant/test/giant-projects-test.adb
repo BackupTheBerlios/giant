@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-projects-test.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-projects-test.adb,v $, $Revision: 1.5 $
 --  $Author: schwiemn $
---  $Date: 2003/06/24 20:21:05 $
+--  $Date: 2003/06/25 15:46:45 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -31,6 +31,8 @@ with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
 with Giant.Logger;
 with Giant.Projects;
 with Giant.Graph_Lib;
+with Giant.Graph_Lib.Subgraphs;
+with Giant.Vis_Windows;
 
 package body Giant.Projects.Test is
 
@@ -39,19 +41,44 @@ package body Giant.Projects.Test is
    procedure Test_Initialize (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
    
-     New_Project : Giant.Projects.Project_Access;
+      New_Project : Giant.Projects.Project_Access;
+      
+      Subgraph_Donald : Giant.Graph_Lib.Subgraphs.Subgraph;
+      Subgraph_Daisy  : Giant.Graph_Lib.Subgraphs.Subgraph;
+      
+      Vis_Window_Durchsicht : Giant.Vis_Windows.Visual_Window_Access;      
+      
+      
    begin
       
       New_Project := Giant.Projects.Create_Empty_Project 
         ("My_Test_Project",
-         "/home/schwiemn/giant/schwiemn/CVS_Hpro/giant/test/resources/"
-         & "test_project_directory",
-         "/home/schwiemn/giant/schwiemn/CVS_Hpro/giant/test/resources/"
-         & "rfg_examp.iml",
+         "resources/test_project_directory/",
+         "resources/rfg_examp.iml",
          Giant.Graph_Lib.Get_Graph_Hash);
    
-     --  Assert (Projects.Does_Project_Exist ("Test", "."),
-     --         "Does_Project_Exist");
+      Assert (Projects.Does_Project_Exist_File
+        ("/resources/test_project_directory/My_Test_Project.xml"),
+         "Does_Project_Exist");
+                          
+      Subgraph_Donald := Giant.Graph_Lib.Subgraphs.Create ("Donald");
+      Subgraph_Daisy  := Giant.Graph_Lib.Subgraphs.Create ("Daisy");
+         
+      Vis_Window_Durchsicht := Giant.Vis_Windows.Create_New ("Durchsicht");
+         
+      Giant.Projects.Add_Subgraph (New_Project, Subgraph_Donald);
+      Giant.Projects.Add_Subgraph (New_Project, Subgraph_Daisy);
+      
+      Giant.Projects.Add_Visualisation_Window 
+        (New_Project, Vis_Window_Durchsicht);
+      
+      Projects.Store_Whole_Project_As
+         (New_Project,
+          "Copy_Of_My_Test_Project",
+          "resources/test_project_copy_dir");
+          
+      Projects.Deallocate_Project_Deep (New_Project);
+   
    end;
 
    function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is
