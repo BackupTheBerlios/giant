@@ -1,5 +1,11 @@
 2003-10-02  Oliver Kopp  <koppor@studi.informatik.uni-stuttgart.de>
 
+	* src/vis/giant-tree_layouts.adb: 
+	  - Matrix (containing unreachable nodes) placed in double
+	  distance
+	  - Fixed interpretation of Class_Sets (Nodes are NOT tested
+	  now) - still untested
+
         * test/*: compile-fix (Elaborate_All (Giant.Logger))
 	
 	* test/framework_test.adb: added missing tests
