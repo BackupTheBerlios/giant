@@ -19,7 +19,7 @@ set (+all_routines,
       [
         v1;
         v2;
-        set ('n, get_first (v2));
+        set ('n, get_first ('v2));
         if (equal (get_type (n), "Routine"), add_node, null);
         sub ('v2, n);
         v1;

@@ -19,7 +19,7 @@ set (+nodes_with_attrib_value,
     {
       ()
       [
-        set ('n, get_first (v2));
+        set ('n, get_first ('v2));
         if (in_regexp (get_attribute (n, attrib_name), attrib_value), 
             add_node,
             null);

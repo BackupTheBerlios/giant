@@ -4,7 +4,7 @@ This file contains short descriptions of what has changed between
 GIANT releases. Only major changes are included here, see ChangeLog
 in the source directory for details.
 
-Version 1.1.1 (2003-09-23)
+Version 1.1.1 (2003-09-24)
 
  * Enhanced GSL editor
  * Fixed standard.gsl 

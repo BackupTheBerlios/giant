@@ -1,3 +1,8 @@
+2003-09-24  Steffen Pingel  <squig@users.sourceforge.net>
+
+	* Makefile.dist: Updated to new iml_browser. Removed -g from
+	compiler flags.
+
 2003-09-23  Steffen Pingel  <squig@users.sourceforge.net>
 
 	* src/giant-controller.adb: Only highlight subgraphs in loaded

@@ -1,6 +1,6 @@
 // ===========================================================================
-//  $RCSfile: standard.gsl,v $ $Revision: 1.9 $
-//  $Date: 2003/09/21 22:12:55 $
+//  $RCSfile: standard.gsl,v $ $Revision: 1.10 $
+//  $Date: 2003/09/24 10:47:26 $
 //  $Author: squig $
 //
 //  File:         GSL-Library standard.gsl
@@ -224,7 +224,7 @@
                loop
                 ({ ()
                    [
-                     set ('item, get_first (copy));
+                     set ('item, get_first ('copy));
                      action (item);
                      sub ('copy, item);
                      set ('count, sub (count, 1));
