@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.39 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.40 $
 --  $Author: squig $
---  $Date: 2003/06/29 21:23:23 $
+--  $Date: 2003/06/30 12:08:09 $
 --
 
 with Ada.Exceptions;
@@ -69,6 +69,7 @@ with Giant.Gui_Manager;
 with Giant.Gui_Manager.Actions;
 with Giant.Gui_Utils;
 with Giant.Logger;
+with Giant.Main_Window.Actions;
 with Giant.Node_Info_Dialog;
 with Giant.Projects;
 with Giant.Set_Operation_Dialog;
@@ -485,11 +486,9 @@ package body Giant.Main_Window is
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
       Subgraph_Name : String := Get_Selected_Subgraph;
-      Action : Create_Selection_Action_Access;
+      Action : Actions.Create_Selection_Action_Access;
    begin
-      Action := new
-        Create_Selection_Action_Type(Subgraph_Name'Length);
-      Action.Subgraph_Name := Subgraph_Name;
+      Action := Actions.Create (Get_Selected_Subgraph);
       Gui_Manager.Actions.Set_Global_Action (Action);
    end On_Subgraph_List_Create_Selection;
 
@@ -1005,29 +1004,5 @@ package body Giant.Main_Window is
    begin
       Id := Gtk.Status_Bar.Push (Status_Bar, 1, Text);
    end Set_Status;
-
-   ---------------------------------------------------------------------------
-   --  Subgraph Crosshair
-   ---------------------------------------------------------------------------
-
-   procedure Cancel
-     (Action : access Create_Selection_Action_Type)
-   is
-   begin
-      Destroy (Action);
-   end;
-
-   procedure Execute
-     (Action   : access Create_Selection_Action_Type;
-      Window   : access Graph_Window.Graph_Window_Record'Class;
-      Event    : in     Gdk.Event.Gdk_Event_Button;
-      Location : in     Vis.Logic.Vector_2d)
-   is
-   begin
-      Controller.Create_Selection_From_Subgraph
-        (Action.Subgraph_Name,
-         Vis_Windows.Get_Name (Graph_Window.Get_Vis_Window (Window)),
-         Action.Subgraph_Name);
-   end;
 
 end Giant.Main_Window;

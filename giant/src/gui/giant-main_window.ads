@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.ads,v $, $Revision: 1.12 $
+--  $RCSfile: giant-main_window.ads,v $, $Revision: 1.13 $
 --  $Author: squig $
---  $Date: 2003/06/27 14:34:55 $
+--  $Date: 2003/06/30 12:08:09 $
 --
 --  Provides the main window. The main window is only instanciated once.
 --
@@ -116,22 +116,5 @@ private
 
    type Main_Window_Record is new Gtk.Window.Gtk_Window_Record
      with null record;
-
-   type Create_Selection_Action_Type (Name_Length : Positive) is
-     new Graph_Window.Actions.Graph_Window_Action_Type with record
-        Subgraph_Name : String(1 .. Name_Length);
-     end record;
-
-   type Create_Selection_Action_Access is
-     access all Create_Selection_Action_Type'Class;
-
-   procedure Cancel
-     (Action : access Create_Selection_Action_Type);
-
-   procedure Execute
-     (Action   : access Create_Selection_Action_Type;
-      Window   : access Graph_Window.Graph_Window_Record'Class;
-      Event    : in     Gdk.Event.Gdk_Event_Button;
-      Location : in     Vis.Logic.Vector_2d);
 
 end Giant.Main_Window;
