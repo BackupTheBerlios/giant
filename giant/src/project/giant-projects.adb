@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.30 $
---  $Author: squig $
---  $Date: 2003/06/24 22:11:24 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.31 $
+--  $Author: schwiemn $
+--  $Date: 2003/06/25 08:43:56 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -637,6 +637,19 @@ package body Giant.Projects is
    end Does_Project_Exist;
 
    ---------------------------------------------------------------------------
+   function Does_Project_Exist_File
+     (Project_File_Name : in String)
+      return Boolean is
+   begin
+
+      return Does_Project_Exist 
+        (Project_Name =>
+           File_Management.Calculate_Name_For_File (Project_File_Name),
+         Project_Directory =>
+           File_Management.Return_Dir_Path_For_File_Path (Project_File_Name));   
+   end Does_Project_Exist_File;
+
+   ---------------------------------------------------------------------------
    function Is_Already_A_Project_File_In_Directory
      (Project_Directory : in String)
      return Boolean is
@@ -752,6 +765,22 @@ package body Giant.Projects is
       DOM.Core.Free (XML_Nodes_List);
       Tree_Readers.Free(Project_Tree_Reader);
    end Get_Bauhaus_IML_Graph_Data;
+   
+   ---------------------------------------------------------------------------
+   procedure Get_Bauhaus_IML_Graph_Data_File
+     (Project_File_Name      : in     String;
+      Bauhaus_IML_Graph_File :    out Ada.Strings.Unbounded.Unbounded_String;
+      Bauhaus_IML_Graph_File_Checksum : out Integer) is
+   begin
+      
+      Get_Bauhaus_IML_Graph_Data 
+        (Project_Name =>
+           File_Management.Calculate_Name_For_File (Project_File_Name),
+         Project_Directory =>
+           File_Management.Return_Dir_Path_For_File_Path (Project_File_Name),
+         Bauhaus_IML_Graph_File => Bauhaus_IML_Graph_File,
+         Bauhaus_IML_Graph_File_Checksum => Bauhaus_IML_Graph_File_Checksum);         
+   end Get_Bauhaus_IML_Graph_Data_File;
 
    ---------------------------------------------------------------------------
    function Load_Project_File
