@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-vis.adb,v $, $Revision: 1.8 $
 --  $Author: keulsn $
---  $Date: 2003/06/30 14:37:49 $
+--  $Date: 2003/07/07 03:35:59 $
 --
 ------------------------------------------------------------------------------
 
@@ -122,6 +122,15 @@ package body Giant.Vis is
          Absolute_Int (Logic.Get_Y (Vector)));
    end To_Absolute;
 
+   function To_Absolute
+     (Rectangle : in     Logic.Rectangle_2d)
+     return Absolute.Rectangle_2d is
+   begin
+      return Absolute.Combine_Rectangle
+        (Top_Left     => To_Absolute (Logic.Get_Top_Left (Rectangle)),
+         Bottom_Right => To_Absolute (Logic.Get_Bottom_Right (Rectangle)));
+   end To_Absolute;
+
    function To_Logic
      (Vector : in     Absolute.Vector_2d)
      return Logic.Vector_2d is
@@ -129,6 +138,15 @@ package body Giant.Vis is
       return Logic.Combine_Vector
         (Logic_Float (Absolute.Get_X (Vector)),
          Logic_Float (Absolute.Get_Y (Vector)));
+   end To_Logic;
+
+   function To_Logic
+     (Rectangle : in     Absolute.Rectangle_2d)
+     return Logic.Rectangle_2d is
+   begin
+      return Logic.Combine_Rectangle
+        (Top_Left     => To_Logic (Absolute.Get_Top_Left (Rectangle)),
+         Bottom_Right => To_Logic (Absolute.Get_Top_Left (Rectangle)));
    end To_Logic;
 
    procedure To_Gdk
@@ -213,6 +231,14 @@ package body Giant.Vis is
       X := Glib.Gint (Absolute.Get_X (Result_Point));
       Y := Glib.Gint (Absolute.Get_Y (Result_Point));
    end Transform_To_Gdk;
+
+   function Get_Transformation
+     (Origin         : in     Logic.Vector_2d;
+      Zoom           : in     Zoom_Level)
+     return Transformation_Type is
+   begin
+      return (Origin, Zoom);
+   end Get_Transformation;
 
    function Get_Transformation_Rect_Into_Rect_Centered
      (Source         : in     Logic.Rectangle_2d;

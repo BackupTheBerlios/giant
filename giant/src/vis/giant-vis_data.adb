@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.12 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.13 $
 --  $Author: keulsn $
---  $Date: 2003/06/30 16:22:49 $
+--  $Date: 2003/07/07 03:35:59 $
 --
 ------------------------------------------------------------------------------
 
@@ -149,12 +149,40 @@ package body Giant.Vis_Data is
    -- Edges --
    -----------
 
-   function Get_Layer
-     (Edge  : in     Vis_Edge_Id)
-     return Layer_Type is
+   function Create_Edge
+     (Graph_Edge  : in     Graph_Lib.Edge_Id;
+      Source      : in     Vis_Node_Id;
+      Target      : in     Vis_Node_Id;
+      Layer       : in     Layer_Type;
+      Inflections : in     Natural := 0)
+     return Vis_Edge_Id is
    begin
-      return Edge.Layer;
-   end Get_Layer;
+      return new Vis_Edge_Record'
+        (Number_Of_Points  => Inflections + 2,
+         Edge              => Graph_Edge,
+         Source            => Source,
+         Target            => Target,
+         Thickness         => 0,
+         Text_Area         => Vis.Absolute.Combine_Rectangle
+                                (X_1 => 0, X_2 => 0,
+                                 Y_1 => 1, Y_2 => Vis.Absolute_Int'Last),
+         Layer             => Layer,
+         Points            => (1 .. Inflections => Vis.Absolute.Zero_2d),
+         Left_Arrow_Point  => Vis.Absolute.Zero_2d,
+         Right_Arrow_Point => Vis.Absolute.Zero_2d,
+         Regions           => Region_Lists.Create,
+         Flags             => (Hidden => False, Highlight_Type => False));
+   end Create_Edge;
+
+   procedure Destroy
+     (Edge : in out Vis_Edge_Id) is
+
+      procedure Free is new Ada.Unchecked_Deallocation
+        (Object => Vis_Edge_Record, Name => Vis_Edge_Id);
+   begin
+      Region_Lists.Destroy (Edge.Regions);
+      Free (Edge);
+   end Destroy;
 
    function Get_Graph_Edge
      (Edge : in     Vis_Edge_Id)
@@ -176,6 +204,20 @@ package body Giant.Vis_Data is
    begin
       return Edge.Target;
    end Get_Target;
+
+   function Is_Loop
+     (Edge : in     Vis_Edge_Id)
+     return Boolean is
+   begin
+      return Edge.Source = Edge.Target;
+   end Is_Loop;
+
+   function Get_Layer
+     (Edge  : in     Vis_Edge_Id)
+     return Layer_Type is
+   begin
+      return Edge.Layer;
+   end Get_Layer;
 
    function Get_Thickness
      (Edge : in     Vis_Edge_Id)
@@ -244,6 +286,75 @@ package body Giant.Vis_Data is
       return Edge.Flags and Only_Highlighting;
    end Get_Highlighting;
 
+   procedure Set_Thickness
+     (Edge      : in     Vis_Edge_Id;
+      Thickness : in     Vis.Absolute_Natural) is
+   begin
+      pragma Assert (Region_Lists.IsEmpty (Edge.Regions));
+      Edge.Thickness := Thickness;
+   end Set_Thickness;
+
+   procedure Set_Text_Area_Size
+     (Edge      : in     Vis_Edge_Id;
+      Size      : in     Vis.Absolute.Vector_2d) is
+   begin
+      pragma Assert (Region_Lists.IsEmpty (Edge.Regions));
+      Vis.Absolute.Set_Size (Edge.Text_Area, Size);
+   end Set_Text_Area_Size;
+
+   procedure Move_Text_Area_Top_Left_To
+     (Edge      : in     Vis_Edge_Id;
+      Top_Left  : in     Vis.Absolute.Vector_2d) is
+
+      procedure Move_Top_Left_To is new Vis.Absolute.Move_To
+        (Get_Source_Point => Vis.Absolute.Get_Top_Left);
+   begin
+      Move_Top_Left_To
+        (Rectangle => Edge.Text_Area,
+         Target    => Top_Left);
+   end Move_Text_Area_Top_Left_To;
+
+   procedure Move_Text_Area_Bottom_Left_To
+     (Edge        : in     Vis_Edge_Id;
+      Bottom_Left : in     Vis.Absolute.Vector_2d) is
+
+      procedure Move_Bottom_Left_To is new Vis.Absolute.Move_To
+        (Get_Source_Point => Vis.Absolute.Get_Bottom_Left);
+   begin
+      Move_Bottom_Left_To
+        (Rectangle => Edge.Text_Area,
+         Target    => Bottom_Left);
+   end Move_Text_Area_Bottom_Left_To;
+
+   procedure Remove_Text_Area
+     (Edge      : in     Vis_Edge_Id) is
+   begin
+      Vis.Absolute.Set_Top (Edge.Text_Area, 1);
+      Vis.Absolute.Set_Bottom (Edge.Text_Area, Vis.Absolute_Int'Last);
+   end Remove_Text_Area;
+
+   procedure Set_Point
+     (Edge      : in     Vis_Edge_Id;
+      Num       : in     Positive;
+      Point     : in     Vis.Absolute.Vector_2d) is
+   begin
+      Edge.Points (Num) := Point;
+   end Set_Point;
+
+   procedure Set_Left_Arrow_Point
+     (Edge      : in     Vis_Edge_Id;
+      Point     : in     Vis.Absolute.Vector_2d) is
+   begin
+      Edge.Left_Arrow_Point := Point;
+   end Set_Left_Arrow_Point;
+
+   procedure Set_Right_Arrow_Point
+     (Edge      : in     Vis_Edge_Id;
+      Point     : in     Vis.Absolute.Vector_2d) is
+   begin
+      Edge.Right_Arrow_Point := Point;
+   end Set_Right_Arrow_Point;
+
    function Is_Edge_Below
      (Left  : in     Vis_Edge_Id;
       Right : in     Vis_Edge_Id)
@@ -256,6 +367,34 @@ package body Giant.Vis_Data is
    -----------
    -- Nodes --
    -----------
+
+   function Create_Node
+     (Graph_Node : in     Graph_Lib.Node_Id;
+      Layer      : in     Layer_Type)
+     return Vis_Node_Id is
+   begin
+      return new Vis_Node_Record'
+        (Position       => Vis.Logic.Zero_2d,
+         Node           => Graph_Node,
+         Extent         => Vis.Absolute.Combine_Rectangle (0, 0, 0, 0),
+         Layer          => Layer,
+         Incoming_Edges => Vis_Edge_Lists.Create,
+         Outgoing_Edges => Vis_Edge_Lists.Create,
+         Regions        => Region_Lists.Create,
+         Flags          => (Hidden => False, Highlight_Type => False));
+   end Create_Node;
+
+   procedure Destroy
+     (Node  : in out Vis_Node_Id) is
+
+      procedure Free is new Ada.Unchecked_Deallocation
+        (Object => Vis_Node_Record, Name => Vis_Node_Id);
+   begin
+      Vis_Edge_Lists.Destroy (Node.Incoming_Edges);
+      Vis_Edge_Lists.Destroy (Node.Outgoing_Edges);
+      Region_Lists.Destroy (Node.Regions);
+      Free (Node);
+   end Destroy;
 
    function Get_Layer
      (Node  : in     Vis_Node_Id)
@@ -271,12 +410,26 @@ package body Giant.Vis_Data is
       return Node.Node;
    end Get_Graph_Node;
 
+   function Get_Position
+     (Node : in     Vis_Node_Id)
+     return Vis.Logic.Vector_2d is
+   begin
+      return Node.Position;
+   end Get_Position;
+
    function Get_Top_Center
      (Node : in     Vis_Node_Id)
      return Vis.Absolute.Vector_2d is
    begin
       return Vis.Absolute.Get_Top_Center (Node.Extent);
    end Get_Top_Center;
+
+   function Get_Center
+     (Node : in     Vis_Node_Id)
+     return Vis.Absolute.Vector_2d is
+   begin
+      return Vis.Absolute.Get_Center (Node.Extent);
+   end Get_Center;
 
    function Get_Extent
      (Node : in     Vis_Node_Id)
@@ -287,16 +440,16 @@ package body Giant.Vis_Data is
 
    procedure Make_Incoming_Iterator
      (Node           : in     Vis_Node_Id;
-      Incoming_Edges :    out Vis_Edge_Sets.Iterator) is
+      Incoming_Edges :    out Vis_Edge_Lists.ListIter) is
    begin
-      Incoming_Edges := Vis_Edge_Sets.Make_Iterator (Node.Incoming_Edges);
+      Incoming_Edges := Vis_Edge_Lists.MakeListIter (Node.Incoming_Edges);
    end Make_Incoming_Iterator;
 
    procedure Make_Outgoing_Iterator
      (Node           : in     Vis_Node_Id;
-      Outgoing_Edges :    out Vis_Edge_Sets.Iterator) is
+      Outgoing_Edges :    out Vis_Edge_Lists.ListIter) is
    begin
-      Outgoing_Edges := Vis_Edge_Sets.Make_Iterator (Node.Outgoing_Edges);
+      Outgoing_Edges := Vis_Edge_Lists.MakeListIter (Node.Outgoing_Edges);
    end Make_Outgoing_Iterator;
 
    function Is_Hidden
@@ -315,6 +468,22 @@ package body Giant.Vis_Data is
    begin
       return Node.Flags and Only_Highlighting;
    end Get_Highlighting;
+
+   procedure Set_Node_Size
+     (Node : in     Vis_Node_Id;
+      Size : in     Vis.Absolute.Vector_2d) is
+   begin
+      pragma Assert (Region_Lists.IsEmpty (Node.Regions));
+      Vis.Absolute.Set_Size (Node.Extent, Size);
+   end Set_Node_Size;
+
+   procedure Move_Node
+     (Node   : in     Vis_Node_Id;
+      Offset : in     Vis.Absolute.Vector_2d) is
+   begin
+      pragma Assert (Region_Lists.IsEmpty (Node.Regions));
+      Vis.Absolute.Move (Node.Extent, Offset);
+   end Move_Node;
 
    function Is_Node_Below
      (Left  : in     Vis_Node_Id;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.20 $
---  $Author: squig $
---  $Date: 2003/07/04 22:45:46 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.21 $
+--  $Author: keulsn $
+--  $Date: 2003/07/07 03:35:59 $
 --
 ------------------------------------------------------------------------------
 --
@@ -73,6 +73,8 @@ pragma Elaborate_All (Gtk.Widget);
 with Bauhaus_IO;
 with Hashed_Mappings;
 pragma Elaborate_All (Hashed_Mappings);
+with Ordered_Sets;
+pragma Elaborate_All (Ordered_Sets);
 
 with Giant.Config;
 with Giant.Config.Global_Data;
@@ -84,11 +86,6 @@ with Giant.Vis;
 with Giant.Vis_Data;
 
 package Giant.Graph_Widgets is
-
-
-   --  To be removed when implementation is done.
-   Unimplemented : exception;
-
 
    -------------------
    -- Graph Widgets --
@@ -104,6 +101,11 @@ package Giant.Graph_Widgets is
    ------------------------
    -- General Exceptions --
    ------------------------
+
+   ----------------------------------------------------------------------------
+   --  Raised whenever a feature is activated that is not supported by the
+   --  current version of Graph_Widgets.
+   Unimplemented : exception;
 
    ----------------------------------------------------------------------------
    --  Raised whenever an Edge_Id is provided as an argument, but this
@@ -265,7 +267,7 @@ package Giant.Graph_Widgets is
    --      'Selection' union {N: Node_Id | 'Contains (Widget, N)'}
    procedure Insert_Selection
      (Widget    : access Graph_Widget_Record'Class;
-      Selection : access Graph_Lib.Selections.Selection;
+      Selection : in     Graph_Lib.Selections.Selection;
       Lock      :    out Lock_Type);
 
    ----------------------------------------------------------------------------
@@ -288,19 +290,9 @@ package Giant.Graph_Widgets is
    --    Widget    - The graph widget
    --    Selection - Set of edges and nodes that should be inserted into
    --                'Widget', also used as out-Parameter
-   --  Postcondition:
-   --    * 'Widget' contains all edges and nodes that it contained before the
-   --      call.
-   --    * 'Widget' contains all edges and nodes that 'Selection' contained
-   --      before the call.
-   --    * 'Selection' intersection
-   --        ( {E: Edge_Id | Contains (Widget, E)}
-   --           union  {N: Node_Id | Contains (Widget, N)})
-   --      = {Set of all edges and nodes that were
-   --          inserted into 'Widget' during the call}
    procedure Insert_Selection_Difference
      (Widget    : access Graph_Widget_Record'Class;
-      Selection : access Graph_Lib.Selections.Selection;
+      Selection : in out Graph_Lib.Selections.Selection;
       Lock      :    out Lock_Type);
 
    ----------------------------------------------------------------------------
@@ -475,11 +467,12 @@ package Giant.Graph_Widgets is
    --    It may only be used as a general clue.
    --  Parameters:
    --    Widget - The graph widget
+   --    Node   - The node to be measured
    --  Returns:
    --    An estimate of the width that will be assigned to 'Node' in 'Widget'
    function Get_Current_Node_Width
      (Widget    : access Graph_Widget_Record'Class;
-      Node       : in     Graph_Lib.Node_Id)
+      Node      : in     Graph_Lib.Node_Id)
      return Vis.Logic_Float;
 
    ----------------------------------------------------------------------------
@@ -491,6 +484,7 @@ package Giant.Graph_Widgets is
    --    It may only be used as a general clue.
    --  Parameters:
    --    Widget - The graph widget
+   --    Node   - The node to be measured
    --  Returns:
    --    An estimate of the height that will be assigned to 'Node' in 'Widget'
    function Get_Current_Node_Height
@@ -908,10 +902,40 @@ package Giant.Graph_Widgets is
 private                    -- private part --
                            ------------------
 
+   -------------------------
+   -- Private subprograms --
+   -------------------------
+
+   ----------------------------------------------------------------------------
+   --  Prepares 'Widget' for deallocation
+   procedure Shut_Down_Graph_Widget
+     (Widget : access Graph_Widget_Record'Class);
+
+   ----------------------------------------------------------------------------
+   --  Changes the size of 'Widget' and makes buffers grow when necessary
+   procedure Resize_Graph_Widget
+     (Widget : access Graph_Widget_Record'Class;
+      Size   : in     Vis.Absolute.Vector_2d);
+
+   --  returns null if 'not Contains (Widget, Graph_Edge)'
+   function Look_Up
+     (Widget     : access Graph_Widget_Record'Class;
+      Graph_Edge : in     Graph_Lib.Edge_Id)
+     return Vis_Data.Vis_Edge_Id;
+
+   --  returns null if 'not Contains (Widget, Graph_Node)'
+   function Look_Up
+     (Widget     : access Graph_Widget_Record'Class;
+      Graph_Node : in     Graph_Lib.Node_Id)
+     return Vis_Data.Vis_Node_Id;
+
+
    ----------------------------------------------------------------------------
    --  Default size of a graph widget
-   Default_Width  : constant := 300;
-   Default_Height : constant := 200;
+   Default_Width      : constant := 300;
+   Default_Height     : constant := 200;
+   --  Default zoom level
+   Default_Zoom_Level : constant := 1.0;
 
    ----------------------------------------------------------------------------
    --  Hashmap that maps Graph_Lib.Edge_Id to Vis_Data.Vis_Edge_Id
@@ -928,8 +952,38 @@ private                    -- private part --
       Value_Type => Vis_Data.Vis_Node_Id);
 
    ----------------------------------------------------------------------------
-   --  not yet implemented
-   type Lock_Type is null record;
+   --  A Lock that can be obtained to lock content of the graph widget
+   type Lock_Type is new Natural;
+
+
+   ------------
+   -- States --
+   ------------
+
+   package Lock_Sets is new Ordered_Sets
+     (Item_Type => Lock_Type);
+
+   type States_Type is
+      record
+         Drawing_Ready   : Boolean       := False;
+
+         Visual_Polluted : Boolean       := True;
+
+         Action_Mode     : Boolean       := False;
+
+         Highest_Lock    : Lock_Type     := 0;
+         Locks           : Lock_Sets.Set := Lock_Sets.Empty_Set;
+      end record;
+
+
+   -----------------
+   -- Positioning --
+   -----------------
+
+   type Positioning_Type is
+      record
+         Transformation : Vis.Transformation_Type;
+      end record;
 
 
    -------------
@@ -982,6 +1036,9 @@ private                    -- private part --
          Highlight_Index_Offset : Integer;
          --  Font for drawing text on the graph widget.
          Font                   : Gdk.Font.Gdk_Font := Gdk.Font.Null_Font;
+         --  Height of 'Font' cached for not accessing the Xserver everytime
+         --  needed
+         Font_Height            : Vis.Absolute_Natural;
       end record;
 
 
@@ -993,9 +1050,16 @@ private                    -- private part --
    --  The one and only graph widget tagged type
    type Graph_Widget_Record is new Gtk.Widget.Gtk_Widget_Record with
       record
+         --  Must only be used by subpackage Drawing
          Drawing     : Drawing_Type;
+         --  Must only be used by subpackage Positioning
+         Positioning : Positioning_Type;
+         --  Must only be used by subpackage Settings
          Settings    : Settings_Type;
+         --  Must only be used by subpackage States
+         States      : States_Type;
 
+         --  The following must not be used by any subpackage
          Node_Map    : Node_Id_Mappings.Mapping;
          Node_Layers : Vis_Data.Layer_Pool;
          Edge_Map    : Edge_Id_Mappings.Mapping;

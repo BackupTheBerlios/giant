@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-states.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-graph_widgets-states.ads,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/06/30 02:55:18 $
+--  $Date: 2003/07/07 03:35:59 $
 --
 ------------------------------------------------------------------------------
 --
@@ -30,9 +30,22 @@
 --  states a graph widget can be in. Queries to the functions in this
 --  package allow to decide if an action can be performed on a graph widget.
 --
+--  This package also updates the mouse cursor shown on a graph widget.
+--
 
 
 package Giant.Graph_Widgets.States is
+
+   procedure Set_Up
+     (Widget : access Graph_Widget_Record'Class);
+
+   procedure Shut_Down
+     (Widget : access Graph_Widget_Record'Class);
+
+
+   ---------------------
+   -- Drawing Ability --
+   ---------------------
 
    procedure Enable_Drawing
      (Widget : access Graph_Widget_Record'Class);
@@ -40,7 +53,59 @@ package Giant.Graph_Widgets.States is
    procedure Disable_Drawing
      (Widget : access Graph_Widget_Record'Class);
 
-   function Is_Visible
+
+   -----------------
+   -- Action Mode --
+   -----------------
+
+   procedure Enable_Action_Mode
+     (Widget : access Graph_Widget_Record'Class);
+
+   procedure Disable_Action_Mode
+     (Widget : access Graph_Widget_Record'Class);
+
+
+   -----------
+   -- Locks --
+   -----------
+
+   procedure Create_New_Lock
+     (Widget : access Graph_Widget_Record'Class;
+      Lock   :    out Lock_Type);
+
+   procedure Destroy_Lock
+     (Widget : access Graph_Widget_Record'Class;
+      Lock   : in     Lock_Type);
+
+
+   ------------------------
+   -- Pollution tracking --
+   ------------------------
+
+   procedure Changed_Visual
+     (Widget : access Graph_Widget_Record'Class);
+
+   procedure Updated_Visual
+     (Widget : access Graph_Widget_Record'Class);
+
+
+   ---------------------
+   -- State Inquiries --
+   ---------------------
+
+   function Is_Valid_Lock
+     (Widget : access Graph_Widget_Record'Class;
+      Lock   : in     Lock_Type)
+     return Boolean;
+
+   --  Returns True if any visible content on the graph widget might have
+   --  changed and the visual buffer must be updated.
+   function Has_Display_Changed
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean;
+
+   --  Returns True if and only if 'Widget' is in action mode
+   function Is_Action_Mode_Current
      (Widget : access Graph_Widget_Record'Class)
      return Boolean;
 

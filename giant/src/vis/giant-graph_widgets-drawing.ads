@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.ads,v $, $Revision: 1.4 $
+--  $RCSfile: giant-graph_widgets-drawing.ads,v $, $Revision: 1.5 $
 --  $Author: keulsn $
---  $Date: 2003/06/30 16:22:49 $
+--  $Date: 2003/07/07 03:35:59 $
 --
 ------------------------------------------------------------------------------
 --
@@ -40,11 +40,15 @@ package Giant.Graph_Widgets.Drawing is
    procedure Set_Up
      (Widget : access Graph_Widget_Record'Class);
 
+   procedure Shut_Down
+     (Widget : access Graph_Widget_Record'Class);
+
    ----------------------------------------------------------------------------
    --  Ensures that the display buffer is up to date. Clearing the window
    --  results in correct display of the graph widget.
    procedure Update_Display
-     (Widget : access Graph_Widget_Record'Class);
+     (Widget : access Graph_Widget_Record'Class;
+      Area   : in     Vis.Absolute.Rectangle_2d);
 
    ----------------------------------------------------------------------------
    --  Updates the size of an edge and sets the values. Uses the 'Settings'
@@ -72,6 +76,16 @@ package Giant.Graph_Widgets.Drawing is
      (Widget : access Graph_Widget_Record'Class;
       Node   : in     Vis_Data.Vis_Node_Id);
 
+   ----------------------------------------------------------------------------
+   --  Returns the top center point of the actual border of 'Node'. This
+   --  might not be equal to the extent of 'Node' (obtained by calling
+   --  Vis_Data.Get_Extent), because 'Node's highlighting might be drawn
+   --  around the node rectangle.
+   function Get_Node_Border_Top_Center
+     (Widget : access Graph_Widget_Record'Class;
+      Node   : in     Vis_Data.Vis_Node_Id)
+     return Vis.Absolute.Vector_2d;
+
 private
 
    Default_Dash_Length          : constant := 5;
@@ -80,6 +94,7 @@ private
    Default_Dot_Separation       : constant := 2;
 
    Default_Edge_Line_Thickness  : constant := 0;
+   Default_Edge_Light_Thickness : constant := 4;
 
    Default_Node_Light_Thickness : constant := 6;
 

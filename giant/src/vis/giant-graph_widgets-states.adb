@@ -20,35 +20,131 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/07/02 16:49:15 $
+--  $Date: 2003/07/07 03:35:59 $
 --
 ------------------------------------------------------------------------------
 
 
 package body Giant.Graph_Widgets.States is
 
+   procedure Set_Up
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      null;
+   end Set_Up;
+
+   procedure Shut_Down
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Lock_Sets.Destroy (Widget.States.Locks);
+   end Shut_Down;
+
+
+   ---------------------
+   -- Drawing Ability --
+   ---------------------
+
    procedure Enable_Drawing
      (Widget : access Graph_Widget_Record'Class) is
    begin
-      ----------------------------raise Unimplemented;
-      null;
+      Widget.States.Drawing_Ready := True;
    end Enable_Drawing;
 
    procedure Disable_Drawing
      (Widget : access Graph_Widget_Record'Class) is
    begin
-      ----------------------------raise Unimplemented;
-      null;
+      Widget.States.Drawing_Ready := False;
    end Disable_Drawing;
 
-   function Is_Visible
+
+   -----------------
+   -- Action Mode --
+   -----------------
+
+   procedure Enable_Action_Mode
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Widget.States.Action_Mode := True;
+   end Enable_Action_Mode;
+
+   procedure Disable_Action_Mode
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Widget.States.Action_Mode := False;
+   end Disable_Action_Mode;
+
+
+   -----------
+   -- Locks --
+   -----------
+
+   procedure Create_New_Lock
+     (Widget : access Graph_Widget_Record'Class;
+      Lock   :    out Lock_Type) is
+   begin
+      Widget.States.Highest_Lock := Widget.States.Highest_Lock + 1;
+      Lock := Widget.States.Highest_Lock;
+      Lock_Sets.Insert
+        (A_Set   => Widget.States.Locks,
+         Element => Lock);
+   end Create_New_Lock;
+
+   procedure Destroy_Lock
+     (Widget : access Graph_Widget_Record'Class;
+      Lock   : in     Lock_Type) is
+   begin
+      Lock_Sets.Remove_If_Exists
+        (A_Set   => Widget.States.Locks,
+         Element => Lock);
+      if Lock_Sets.Is_Empty (Widget.States.Locks) then
+         Widget.States.Highest_Lock := 0;
+      end if;
+   end Destroy_Lock;
+
+
+   -------------------------
+   --  Pollution tracking --
+   -------------------------
+
+   procedure Changed_Visual
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Widget.States.Visual_Polluted := True;
+   end Changed_Visual;
+
+   procedure Updated_Visual
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Widget.States.Visual_Polluted := False;
+   end Updated_Visual;
+
+
+   ---------------------
+   -- State Inquiries --
+   ---------------------
+
+   function Is_Valid_Lock
+     (Widget : access Graph_Widget_Record'Class;
+      Lock   : in     Lock_Type)
+     return Boolean is
+   begin
+      return Lock_Sets.Is_Member (Widget.States.Locks, Lock);
+   end Is_Valid_Lock;
+
+   function Has_Display_Changed
      (Widget : access Graph_Widget_Record'Class)
      return Boolean is
    begin
-      ----------------------------raise Unimplemented;
-      return False;
-   end Is_Visible;
+      return Widget.States.Visual_Polluted;
+   end Has_Display_Changed;
+
+   function Is_Action_Mode_Current
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean is
+   begin
+      return Widget.States.Action_Mode;
+   end Is_Action_Mode_Current;
 
 end Giant.Graph_Widgets.States;

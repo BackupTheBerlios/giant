@@ -41,11 +41,20 @@ ALL_LFLAGS      = $(LFLAGS) $(TARGET_LFLAGS) $(LIBS)
 MAIN = src/giant-main.adb
 EXEC = giant
 
+# may be -d (do not follow pre-compiled libraries) or -D
+HTML_DEPTH      = -d
+# relative to OUT_PATH
+SNAPSHOT_PATH   = snapshot/
+# relative to SNAPSHOT_PATH
+HTML_PATH       = ../../html
+# filename of MAIN only
+HTML_MAIN       = $(shell namei $(MAIN) | xargs | sed s/.*\ -\ //)
+
 ifeq ($(shell test -r Makefile.local && echo "true"),true)
   include Makefile.local
 endif
 
-.PHONY : all static style
+.PHONY : all html static style
 
 all: 
 	test -x $(OUT_PATH) || mkdir $(OUT_PATH)
@@ -84,3 +93,10 @@ po-skeleton:
 	  | sort -u \
 	  | perl -n -e 'chop; print "msgid  \"$$_\"\nmsgstr \"$$_\"\n\n";' \
 	  > po/skeleton.po.new
+
+html : all
+	test -x $(OUT_PATH)$(SNAPSHOT_PATH) || mkdir $(OUT_PATH)$(SNAPSHOT_PATH)
+	cd $(OUT_PATH) && cp *.ali $(SNAPSHOT_PATH)
+	find $(OUT_PATH)$(GIANT_PATH)src/ -name '*.ad?' -exec cp {} $(OUT_PATH)$(SNAPSHOT_PATH) \;
+	cd $(OUT_PATH)$(SNAPSHOT_PATH) && \
+	gnathtml $(HTML_DEPTH) -f -l1 -o$(HTML_PATH) $(HTML_MAIN)

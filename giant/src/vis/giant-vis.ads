@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis.ads,v $, $Revision: 1.7 $
+--  $RCSfile: giant-vis.ads,v $, $Revision: 1.8 $
 --  $Author: keulsn $
---  $Date: 2003/07/02 12:44:50 $
+--  $Date: 2003/07/07 03:35:59 $
 --
 ------------------------------------------------------------------------------
 
@@ -120,17 +120,25 @@ package Giant.Vis is
    type Transformation_Type is private;
 
    function To_Absolute
-     (Vector : in     Logic.Vector_2d)
+     (Vector    : in     Logic.Vector_2d)
      return Absolute.Vector_2d;
 
+   function To_Absolute
+     (Rectangle : in     Logic.Rectangle_2d)
+     return Absolute.Rectangle_2d;
+
    function To_Logic
-     (Vector : in     Absolute.Vector_2d)
+     (Vector    : in     Absolute.Vector_2d)
      return Logic.Vector_2d;
 
+   function To_Logic
+     (Rectangle : in     Absolute.Rectangle_2d)
+     return Logic.Rectangle_2d;
+
    procedure To_Gdk
-     (Vector : in     Absolute.Vector_2d;
-      X      :    out Glib.Gint;
-      Y      :    out Glib.Gint);
+     (Vector    : in     Absolute.Vector_2d;
+      X         :    out Glib.Gint;
+      Y         :    out Glib.Gint);
 
    --  raises Constraint_Error if Get_Y (Direction) = 0
    function Intersects_Line_Horizontal_Line_X
@@ -166,11 +174,16 @@ package Giant.Vis is
       Source_Rect    : in     Logic.Rectangle_2d)
      return Absolute.Rectangle_2d;
 
-   procedure Transform_To_Gdk
-     (Point          : in     Logic.Vector_2d;
-      Transformation : in     Transformation_Type;
-      X              :    out Glib.Gint;
-      Y              :    out Glib.Gint);
+--     procedure Transform_To_Gdk
+--       (Point          : in     Logic.Vector_2d;
+--        Transformation : in     Transformation_Type;
+--        X              :    out Glib.Gint;
+--        Y              :    out Glib.Gint);
+
+   function Get_Transformation
+     (Origin         : in     Logic.Vector_2d;
+      Zoom           : in     Zoom_Level)
+     return Transformation_Type;
 
    function Get_Transformation_Rect_Into_Rect_Centered
      (Source         : in     Logic.Rectangle_2d;
@@ -181,7 +194,7 @@ private
 
    type Transformation_Type is
       record
-         Origin : Logic.Vector_2d := Logic.Combine_Vector (0.0, 0.0);
+         Origin : Logic.Vector_2d := Logic.Zero_2d;
          Zoom   : Zoom_Level      := 1.0;
       end record;
 

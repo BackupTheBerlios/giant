@@ -20,10 +20,13 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window-actions.adb,v $, $Revision: 1.3 $
---  $Author: squig $
---  $Date: 2003/07/05 20:13:42 $
+--  $RCSfile: giant-main_window-actions.adb,v $, $Revision: 1.4 $
+--  $Author: keulsn $
+--  $Date: 2003/07/07 03:35:59 $
 --
+
+
+with Giant.Controller;
 
 package body Giant.Main_Window.Actions is
 

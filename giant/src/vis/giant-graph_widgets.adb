@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.11 $
---  $Author: squig $
---  $Date: 2003/07/04 22:45:46 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.12 $
+--  $Author: keulsn $
+--  $Date: 2003/07/07 03:35:59 $
 --
 ------------------------------------------------------------------------------
 
@@ -35,9 +35,23 @@ with Giant.Graph_Widgets.Callbacks;
 with Giant.Graph_Widgets.Drawing;
 with Giant.Graph_Widgets.Handlers;
 with Giant.Graph_Widgets.Notifications;
+with Giant.Graph_Widgets.Positioning;
 with Giant.Graph_Widgets.Settings;
+with Giant.Graph_Widgets.States;
 
 package body Giant.Graph_Widgets is
+
+
+   function "="
+     (Left  : Vis_Data.Vis_Edge_Id;
+      Right : Vis_Data.Vis_Edge_Id)
+     return Boolean renames Vis_Data."=";
+
+   function "="
+     (Left  : Vis_Data.Vis_Node_Id;
+      Right : Vis_Data.Vis_Node_Id)
+     return Boolean renames Vis_Data."=";
+
 
    -------------------------------
    -- Construction, Destruction --
@@ -62,6 +76,13 @@ package body Giant.Graph_Widgets is
 
       Callbacks.Connect_All_Callbacks (Widget);
 
+      Widget.Edge_Map := Edge_Id_Mappings.Create;
+      Vis_Data.Reset_Pool (Widget.Edge_Layers);
+      Widget.Node_Map := Node_Id_Mappings.Create;
+      Vis_Data.Reset_Pool (Widget.Node_Layers);
+
+      States.Set_Up (Widget);
+      Positioning.Set_Up (Widget, Default_Zoom_Level);
       --  Cannot set up yet, but must set visualization style.
       Settings.Set_Style (Widget, Style);
    end Initialize;
@@ -74,6 +95,30 @@ package body Giant.Graph_Widgets is
       Widget := new Graph_Widget_Record;
       Initialize (Widget, Style);
    end Create;
+
+   procedure Shut_Down_Graph_Widget
+     (Widget : access Graph_Widget_Record'Class) is
+
+      Edges : Edge_Id_Mappings.Values_Iter;
+      Edge  : Vis_Data.Vis_Edge_Id;
+      Nodes : Node_Id_Mappings.Values_Iter;
+      Node  : Vis_Data.Vis_Node_Id;
+   begin
+      Positioning.Shut_Down (Widget);
+      States.Shut_Down (Widget);
+
+      Edges := Edge_Id_Mappings.Make_Values_Iter (Widget.Edge_Map);
+      while Edge_Id_Mappings.More (Edges) loop
+         Edge_Id_Mappings.Next (Edges, Edge);
+         Vis_Data.Destroy (Edge);
+      end loop;
+
+      Nodes := Node_Id_Mappings.Make_Values_Iter (Widget.Node_Map);
+      while Node_Id_Mappings.More (Nodes) loop
+         Node_Id_Mappings.Next (Nodes, Node);
+         Vis_Data.Destroy (Node);
+      end loop;
+   end Shut_Down_Graph_Widget;
 
    procedure Read_Graph_Widget
      (Stream : in     Bauhaus_IO.In_Stream_Type;
@@ -118,8 +163,7 @@ package body Giant.Graph_Widgets is
       Edge     : in     Graph_Lib.Edge_Id)
      return Boolean is
    begin
-      raise Unimplemented;
-      return False;
+      return Edge_Id_Mappings.Is_Bound (Widget.Edge_Map, Edge);
    end Contains;
 
    function Contains
@@ -127,24 +171,90 @@ package body Giant.Graph_Widgets is
       Node      : in     Graph_Lib.Node_Id)
      return Boolean is
    begin
-      raise Unimplemented;
-      return False;
+      return Node_Id_Mappings.Is_Bound (Widget.Node_Map, Node);
    end Contains;
 
    procedure Insert_Selection
      (Widget    : access Graph_Widget_Record'Class;
-      Selection : access Graph_Lib.Selections.Selection;
+      Selection : in     Graph_Lib.Selections.Selection;
       Lock      :    out Lock_Type) is
    begin
-      raise Unimplemented;
+      States.Create_New_Lock (Widget, Lock);
+      States.Changed_Visual (Widget);
+
    end Insert_Selection;
 
    procedure Insert_Selection_Difference
      (Widget    : access Graph_Widget_Record'Class;
-      Selection : access Graph_Lib.Selections.Selection;
+      Selection : in out Graph_Lib.Selections.Selection;
       Lock      :    out Lock_Type) is
+
+      generic
+         type Object_Type is private;
+         with function "<"
+           (Left  : in Object_Type;
+            Right : in Object_Type)
+           return Boolean;
+         with function "="
+           (Left  : in Object_Type;
+            Right : in Object_Type)
+           return Boolean;
+         with package Object_Sets is new Ordered_Sets
+           (Item_Type => Object_Type,
+            "<"       => "<",
+            "="       => "=");
+         with function Is_Known
+           (Widget : access Graph_Widget_Record'Class;
+            Object : Object_Type)
+           return Boolean;
+         with procedure Remove_Set
+           (Selection : in out Graph_Lib.Selections.Selection;
+            Set       : in     Object_Sets.Set);
+      procedure Remove_Known
+        (Selection : in out Graph_Lib.Selections.Selection;
+         Set       : in     Object_Sets.Set);
+
+      procedure Remove_Known
+        (Selection : in out Graph_Lib.Selections.Selection;
+         Set       : in     Object_Sets.Set) is
+
+         Known    : Object_Sets.Set      := Object_Sets.Empty_Set;
+         Iterator : Object_Sets.Iterator := Object_Sets.Make_Iterator (Set);
+         Current  : Object_Type;
+      begin
+         while Object_Sets.More (Iterator) loop
+            Object_Sets.Next (Iterator, Current);
+            if Is_Known (Widget, Current) then
+               Object_Sets.Insert
+                 (A_Set   => Known,
+                  Element => Current);
+            end if;
+         end loop;
+         Object_Sets.Destroy (Iterator);
+         Remove_Set (Selection, Set);
+
+         Object_Sets.Destroy (Known);
+      end Remove_Known;
+
+      procedure Remove_Edges is new Remove_Known
+        (Object_Type  => Graph_Lib.Edge_Id,
+         "="          => Graph_Lib."=",
+         "<"          => Graph_Lib."<",
+         Object_Sets  => Graph_Lib.Edge_Id_Sets,
+         Is_Known     => Contains,
+         Remove_Set   => Graph_Lib.Selections.Remove_Edge_Set);
+      procedure Remove_Nodes is new Remove_Known
+        (Object_Type  => Graph_Lib.Node_Id,
+         "="          => Graph_Lib."=",
+         "<"          => Graph_Lib."<",
+         Object_Sets  => Graph_Lib.Node_Id_Sets,
+         Is_Known     => Contains,
+         Remove_Set   => Graph_Lib.Selections.Remove_Node_Set);
+
    begin
-      raise Unimplemented;
+      Remove_Edges (Selection, Graph_Lib.Selections.Get_All_Edges (Selection));
+      Remove_Nodes (Selection, Graph_Lib.Selections.Get_All_Nodes (Selection));
+      Insert_Selection (Widget, Selection, Lock);
    end Insert_Selection_Difference;
 
    procedure Remove_Selection
@@ -169,21 +279,20 @@ package body Giant.Graph_Widgets is
      (Widget : access Graph_Widget_Record'Class;
       Cursor : in     Gdk.Cursor.Gdk_Cursor) is
    begin
-      raise Unimplemented;
+      States.Enable_Action_Mode (Widget);
    end Start_Action_Mode;
 
    procedure Cancel_Action_Mode
      (Widget : access Graph_Widget_Record'Class) is
    begin
-      raise Unimplemented;
+      States.Disable_Action_Mode (Widget);
    end Cancel_Action_Mode;
 
    function Is_Action_Mode_Active
      (Widget : access Graph_Widget_Record'Class)
      return Boolean is
    begin
-      raise Unimplemented;
-      return False;
+      return States.Is_Action_Mode_Current (Widget);
    end Is_Action_Mode_Active;
 
 
@@ -195,16 +304,16 @@ package body Giant.Graph_Widgets is
      (Widget    : access Graph_Widget_Record'Class;
       Lock      :    out Lock_Type) is
    begin
-      raise Unimplemented;
+      States.Create_New_Lock (Widget, Lock);
    end Lock_All_Content;
 
    procedure Lock_Selection
      (Widget    : access Graph_Widget_Record'Class;
       Selection : in     Graph_Lib.Selections.Selection;
-      Lock      :    out Lock_Type)
-   is
+      Lock      :    out Lock_Type) is
    begin
-      raise Unimplemented;
+      --  Locking only one special set of edges and nodes is not yet possible.
+      States.Create_New_Lock (Widget, Lock);
    end Lock_Selection;
 
    procedure Set_Top_Middle
@@ -257,7 +366,9 @@ package body Giant.Graph_Widgets is
      (Widget    : access Graph_Widget_Record'Class;
       Lock      : in     Lock_Type) is
    begin
-      raise Unimplemented;
+      States.Destroy_Lock (Widget, Lock);
+--        if ... then
+--        end if;
    end Release_Lock;
 
 
@@ -291,15 +402,16 @@ package body Giant.Graph_Widgets is
      (Widget     : access Graph_Widget_Record'Class)
       return Config.Vis_Styles.Visualisation_Style_Access is
    begin
-      raise Unimplemented;
-      return Config.Vis_Styles.Get_Default_Vis_Style;
+      return Settings.Get_Style (Widget);
    end Get_Vis_Style;
 
    procedure Set_Vis_Style
      (Widget     : access Graph_Widget_Record'Class;
       Style      : in     Config.Vis_Styles.Visualisation_Style_Access) is
    begin
+      Settings.Set_Style (Widget, Style);
       raise Unimplemented;
+      --  General redraw
    end Set_Vis_Style;
 
 
@@ -354,18 +466,26 @@ package body Giant.Graph_Widgets is
      (Widget     : access Graph_Widget_Record'Class;
       Edge       : in     Graph_Lib.Edge_Id)
      return Boolean is
+
+      Vis_Edge : Vis_Data.Vis_Edge_Id := Look_Up (Widget, Edge);
    begin
-      raise Unimplemented;
-      return False;
+      if Vis_Edge = null then
+         raise Unknown_Edge_Id;
+      end if;
+      return Vis_Data.Is_Hidden (Vis_Edge);
    end Is_Hidden;
 
    function Is_Hidden
      (Widget     : access Graph_Widget_Record'Class;
       Node       : in     Graph_Lib.Node_Id)
      return Boolean is
+
+      Vis_Node : Vis_Data.Vis_Node_Id := Look_Up (Widget, Node);
    begin
-      raise Unimplemented;
-      return False;
+      if Vis_Node = null then
+         raise Unknown_Node_Id;
+      end if;
+      return Vis_Data.Is_Hidden (Vis_Node);
    end Is_Hidden;
 
    procedure Set_Hidden
@@ -473,5 +593,40 @@ package body Giant.Graph_Widgets is
    begin
       raise Unimplemented;
    end Set_Location_And_Zoom_Level;
+
+
+   -------------
+   -- Helpers --
+   -------------
+
+   procedure Resize_Graph_Widget
+     (Widget : access Graph_Widget_Record'Class;
+      Size   : in     Vis.Absolute.Vector_2d) is
+   begin
+      ---------------------------------------------raise Unimplemented;
+      null;
+   end Resize_Graph_Widget;
+
+   function Look_Up
+     (Widget     : access Graph_Widget_Record'Class;
+      Graph_Edge : in     Graph_Lib.Edge_Id)
+     return Vis_Data.Vis_Edge_Id is
+   begin
+      return Edge_Id_Mappings.Fetch (Widget.Edge_Map, Graph_Edge);
+   exception
+      when Edge_Id_Mappings.Not_Bound =>
+         return null;
+   end Look_Up;
+
+   function Look_Up
+     (Widget     : access Graph_Widget_Record'Class;
+      Graph_Node : in     Graph_Lib.Node_Id)
+     return Vis_Data.Vis_Node_Id is
+   begin
+      return Node_Id_Mappings.Fetch (Widget.Node_Map, Graph_Node);
+   exception
+      when Node_Id_Mappings.Not_Bound =>
+         return null;
+   end Look_Up;
 
 end Giant.Graph_Widgets;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.ads,v $, $Revision: 1.4 $
+--  $RCSfile: giant-graph_widgets-settings.ads,v $, $Revision: 1.5 $
 --  $Author: keulsn $
---  $Date: 2003/07/04 14:37:50 $
+--  $Date: 2003/07/07 03:35:59 $
 --
 ------------------------------------------------------------------------------
 
@@ -49,6 +49,12 @@ package Giant.Graph_Widgets.Settings is
       Style  : in     Config.Vis_Styles.Visualisation_Style_Access);
 
    ---------------------------------------------------------------------------
+   --  Returns the style set in 'Widget'
+   function Get_Style
+     (Widget : access Graph_Widget_Record'Class)
+     return Config.Vis_Styles.Visualisation_Style_Access;
+
+   ---------------------------------------------------------------------------
    --  Sets up all configuration-dependent settings:
    --  * highlight colors
    --  * node colors
@@ -64,9 +70,9 @@ package Giant.Graph_Widgets.Settings is
      (Widget : access Graph_Widget_Record'Class);
 
 
-   ------------
-   -- Colors --
-   ------------
+   -----------------------
+   -- Color inspections --
+   -----------------------
 
    function Get_Highlight_Color
      (Widget       : access Graph_Widget_Record'Class;
@@ -76,6 +82,11 @@ package Giant.Graph_Widgets.Settings is
    function Get_Background_Color
      (Widget       : access Graph_Widget_Record'Class)
      return Gdk.Color.Gdk_Color;
+
+
+   -----------
+   -- Edges --
+   -----------
 
    function Get_Edge_Style
      (Widget       : access Graph_Widget_Record'Class;
@@ -97,6 +108,19 @@ package Giant.Graph_Widgets.Settings is
       Edge         : in     Vis_Data.Vis_Edge_Id)
      return Gdk.Color.Gdk_Color;
 
+   function Get_Edge_Font
+     (Widget : access Graph_Widget_Record'Class)
+     return Gdk.Font.Gdk_Font;
+
+   function Get_Edge_Font_Height
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis.Absolute_Natural;
+
+
+   -----------
+   -- Nodes --
+   -----------
+
    function Get_Node_Border_Color
      (Widget       : access Graph_Widget_Record'Class;
       Node         : in     Vis_Data.Vis_Node_Id)
@@ -112,11 +136,6 @@ package Giant.Graph_Widgets.Settings is
       Node         : in     Vis_Data.Vis_Node_Id)
      return Gdk.Color.Gdk_Color;
 
-
-   -----------
-   -- Icons --
-   -----------
-
    ---------------------------------------------------------------------------
    --  Gets the icon to be shown inside annotated nodes or 'Null_Pixmap'
    procedure Get_Annotation_Icon
@@ -124,6 +143,10 @@ package Giant.Graph_Widgets.Settings is
       Icon         :    out Gdk.Pixmap.Gdk_Pixmap;
       Width        :    out Glib.Gint;
       Height       :    out Glib.Gint);
+
+   function Get_Annotation_Icon_Size
+     (Widget       : access Graph_Widget_Record'Class)
+     return Vis.Absolute.Vector_2d;
 
    ---------------------------------------------------------------------------
    --  The icon to be shown for 'Node' or 'Null_Pixmap'
@@ -134,10 +157,10 @@ package Giant.Graph_Widgets.Settings is
       Width        :    out Glib.Gint;
       Height       :    out Glib.Gint);
 
-
-   ----------------
-   -- Attributes --
-   ----------------
+   function Get_Node_Icon_Size
+     (Widget       : access Graph_Widget_Record'Class;
+      Node         : in     Vis_Data.Vis_Node_Id)
+     return Vis.Absolute.Vector_2d;
 
    function Show_Node_Class_Name
      (Widget       : access Graph_Widget_Record'Class;
@@ -154,17 +177,20 @@ package Giant.Graph_Widgets.Settings is
       Node         : in     Vis_Data.Vis_Node_Id)
      return Graph_Lib.Node_Attribute_Filters.Filtered_Iterator;
 
-
-   -----------
-   -- Fonts --
-   -----------
-
-   function Get_Edge_Font
-     (Widget : access Graph_Widget_Record'Class)
-     return Gdk.Font.Gdk_Font;
-
    function Get_Node_Font
      (Widget : access Graph_Widget_Record'Class)
      return Gdk.Font.Gdk_Font;
+
+   function Get_Node_Font_Height
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis.Absolute_Natural;
+
+   ----------------------------------------------------------------------------
+   --  Returns the width for a node to be used in 'Widget'. This width
+   --  is dependant on the detail and zoom level in 'Widget'. It does not
+   --  include highlighting drawn outside of the node rectangle.
+   function Get_Node_Width
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis.Absolute_Natural;
 
 end Giant.Graph_Widgets.Settings;

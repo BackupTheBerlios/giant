@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.9 $
---  $Author: schwiemn $
---  $Date: 2003/07/03 13:15:39 $
+--  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.10 $
+--  $Author: keulsn $
+--  $Date: 2003/07/07 03:35:59 $
 --
 ------------------------------------------------------------------------------
 
@@ -35,7 +35,6 @@ with Gdk.Pixmap;
 with Gdk.Window;
 with Glib;
 
---with Giant.Controller;
 with Giant.Logger;
 
 package body Giant.Graph_Widgets.Settings is
@@ -49,7 +48,7 @@ package body Giant.Graph_Widgets.Settings is
 
 
    ---------------------------------------------------------------------------
-   --
+   --  Manages colors for a graph widget
    package Colors is
 
       procedure Set_Up_Color_Array
@@ -182,8 +181,18 @@ package body Giant.Graph_Widgets.Settings is
    end Icons;
 
 
+
+   ----------------
+   -- Life cycle --
+   ----------------
+
    procedure Set_Up
      (Widget : access Graph_Widget_Record'Class) is
+
+      function "+"
+        (Left  : in Glib.Gint;
+         Right : in Glib.Gint)
+        return Glib.Gint renames Glib."+";
    begin
       Icons.Set_Up_Icon_Array (Widget);
       Colors.Set_Up_Color_Array (Widget);
@@ -196,6 +205,13 @@ package body Giant.Graph_Widgets.Settings is
             Settings_Logger.Error
               ("Could not load font """ & Default_Font_Name & """. Use "
                & "Null_Font instead.");
+            Widget.Settings.Font_Height := 0;
+         else
+            --  above base line + base line + below base line
+            Widget.Settings.Font_Height := Vis.Absolute_Natural
+              (Gdk.Font.Get_Ascent (Widget.Settings.Font) +
+               1 +
+               Gdk.Font.Get_Descent (Widget.Settings.Font));
          end if;
       end if;
    end Set_Up;
@@ -217,6 +233,18 @@ package body Giant.Graph_Widgets.Settings is
       Widget.Settings.Vis_Style := Style;
    end Set_Style;
 
+   function Get_Style
+     (Widget : access Graph_Widget_Record'Class)
+     return Config.Vis_Styles.Visualisation_Style_Access is
+   begin
+      return Widget.Settings.Vis_Style;
+   end Get_Style;
+
+
+   -----------------------
+   -- Color inspections --
+   -----------------------
+
    function Get_Highlight_Color
      (Widget       : access Graph_Widget_Record'Class;
       Highlighting : in     Vis_Data.Highlight_Type)
@@ -234,6 +262,11 @@ package body Giant.Graph_Widgets.Settings is
          Config.Vis_Styles.Get_Vis_Window_Background_Color
            (Widget.Settings.Vis_Style));
    end Get_Background_Color;
+
+
+   -----------
+   -- Edges --
+   -----------
 
    function Get_Edge_Style
      (Widget       : access Graph_Widget_Record'Class;
@@ -283,6 +316,25 @@ package body Giant.Graph_Widgets.Settings is
       return Find (Widget, Edge);
    end Get_Edge_Label_Color;
 
+   function Get_Edge_Font
+     (Widget : access Graph_Widget_Record'Class)
+     return Gdk.Font.Gdk_Font is
+   begin
+      return Widget.Settings.Font;
+   end Get_Edge_Font;
+
+   function Get_Edge_Font_Height
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis.Absolute_Natural is
+   begin
+      return Widget.Settings.Font_Height;
+   end Get_Edge_Font_Height;
+
+
+   -----------
+   -- Nodes --
+   -----------
+
    function Get_Node_Border_Color
      (Widget       : access Graph_Widget_Record'Class;
       Node         : in     Vis_Data.Vis_Node_Id)
@@ -320,14 +372,18 @@ package body Giant.Graph_Widgets.Settings is
    end Get_Node_Text_Color;
 
 
-   function Is_Annotated
+   ------------------
+   -- Nodes: Icons --
+   ------------------
+
+   function Can_Find_Annotation
      (Widget       : access Graph_Widget_Record'Class;
       Node         : in     Vis_Data.Vis_Node_Id)
      return Boolean is
    begin
       return False;
       --Controller.Is_Node_Annotated (Vis_Data.Get_Graph_Node (Node));
-   end Is_Annotated;
+   end Can_Find_Annotation;
 
    procedure Get_Annotation_Icon
      (Widget       : access Graph_Widget_Record'Class;
@@ -337,6 +393,19 @@ package body Giant.Graph_Widgets.Settings is
    begin
       Icons.Get_Annotation_Icon (Widget, Icon, Width, Height);
    end Get_Annotation_Icon;
+
+   function Get_Annotation_Icon_Size
+     (Widget       : access Graph_Widget_Record'Class)
+     return Vis.Absolute.Vector_2d is
+
+      Icon   : Gdk.Pixmap.Gdk_Pixmap;
+      Width  : Glib.Gint;
+      Height : Glib.Gint;
+   begin
+      Get_Annotation_Icon (Widget, Icon, Width, Height);
+      return Vis.Absolute.Combine_Vector
+        (Vis.Absolute_Int (Width), Vis.Absolute_Int (Height));
+   end Get_Annotation_Icon_Size;
 
    procedure Get_Node_Icon
      (Widget       : access Graph_Widget_Record'Class;
@@ -356,13 +425,31 @@ package body Giant.Graph_Widgets.Settings is
       Icons.Get_Icon (Widget, Index, Icon, Width, Height);
    end Get_Node_Icon;
 
+   function Get_Node_Icon_Size
+     (Widget       : access Graph_Widget_Record'Class;
+      Node         : in     Vis_Data.Vis_Node_Id)
+     return Vis.Absolute.Vector_2d is
 
-   function Get_Edge_Font
-     (Widget : access Graph_Widget_Record'Class)
-     return Gdk.Font.Gdk_Font is
+      Icon       : Gdk.Pixmap.Gdk_Pixmap;
+      Width      : Glib.Gint;
+      Height     : Glib.Gint;
    begin
-      return Widget.Settings.Font;
-   end Get_Edge_Font;
+      Get_Node_Icon (Widget, Node, Icon, Width, Height);
+      return Vis.Absolute.Combine_Vector
+        (Vis.Absolute_Int (Width), Vis.Absolute_Int (Height));
+   end Get_Node_Icon_Size;
+
+   function Get_Node_Width
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis.Absolute_Natural is
+   begin
+      return 100;
+   end Get_Node_Width;
+
+
+   ------------------
+   -- Nodes: Fonts --
+   ------------------
 
    function Get_Node_Font
      (Widget : access Graph_Widget_Record'Class)
@@ -371,10 +458,17 @@ package body Giant.Graph_Widgets.Settings is
       return Widget.Settings.Font;
    end Get_Node_Font;
 
+   function Get_Node_Font_Height
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis.Absolute_Natural is
+   begin
+      return Widget.Settings.Font_Height;
+   end Get_Node_Font_Height;
 
-   ----------------
-   -- Attributes --
-   ----------------
+
+   -----------------------
+   -- Nodes: Attributes --
+   -----------------------
 
    function Show_Node_Class_Name
      (Widget       : access Graph_Widget_Record'Class;

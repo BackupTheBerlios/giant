@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.6 $
 --  $Author: keulsn $
---  $Date: 2003/07/04 14:37:50 $
+--  $Date: 2003/07/07 03:35:59 $
 --
 ------------------------------------------------------------------------------
 
@@ -53,6 +53,22 @@ package body Giant.Graph_Widgets.Drawing is
       return Vis.Absolute_Int (Gdk.Font.Get_Ascent (Font)) +
         Vis.Absolute_Int (Gdk.Font.Get_Descent (Font));
    end Get_Height;
+
+   function Get_Number_Of_Global_Lights
+     (Node : Vis_Data.Vis_Node_Id)
+     return Natural is
+
+      Number_Of_Lights : Natural;
+      Highlighting : Vis_Data.Flags_Type := Vis_Data.Get_Highlighting (Node);
+   begin
+      Number_Of_Lights := 0;
+      for I in Vis_Data.Global_Highlight_Type loop
+         if Highlighting (I) then
+            Number_Of_Lights := Number_Of_Lights + 1;
+         end if;
+      end loop;
+      return Number_Of_Lights;
+   end Get_Number_Of_Global_Lights;
 
    ----------------------------------------------------------------------------
    --  Clears a drawable using Gc
@@ -260,12 +276,40 @@ package body Giant.Graph_Widgets.Drawing is
    procedure Update_Edge_Size
      (Widget : access Graph_Widget_Record'Class;
       Edge   : in     Vis_Data.Vis_Edge_Id) is
+
+      Number_Of_Lights : Natural;
+      Highlighting     : Vis_Data.Flags_Type :=
+        Vis_Data.Get_Highlighting (Edge);
+      Width            : Vis.Absolute_Natural;
+      Height           : Vis.Absolute_Natural;
+      Font             : Gdk.Font.Gdk_Font;
+      Graph_Edge       : Graph_Lib.Edge_Id := Vis_Data.Get_Graph_Edge (Edge);
    begin
-      raise Unimplemented;
+      Number_Of_Lights := 0;
+      for I in Vis_Data.Highlight_Type loop
+         if Highlighting (I) then
+            Number_Of_Lights := Number_Of_Lights + 1;
+         end if;
+      end loop;
+      Vis_Data.Set_Thickness
+        (Edge,
+         Default_Edge_Line_Thickness +
+           Number_Of_Lights * Default_Edge_Light_Thickness);
+
+      if Settings.Show_Edge_Label (Widget, Edge) then
+         Font := Settings.Get_Edge_Font (Widget);
+         Height := Settings.Get_Edge_Font_Height (Widget);
+         Width := Vis.Absolute_Natural
+           (Gdk.Font.Text_Measure (Font,
+                                   Graph_Lib.Get_Edge_Tag (Graph_Edge))) + 1;
+         Vis_Data.Set_Text_Area_Size (Edge, Combine_Vector (Width, Height));
+      else
+         Vis_Data.Remove_Text_Area (Edge);
+      end if;
    end Update_Edge_Size;
 
    ----------------------------------------------------------------------------
-   --  Draws a node onto 'Buffer'
+   --  Draws an edge onto 'Buffer'
    --  NOTE: Must be synced with 'Update_Edge_Size'
    procedure Draw_Edge
      (Widget : access Graph_Widget_Record'Class;
@@ -402,28 +446,60 @@ package body Giant.Graph_Widgets.Drawing is
    procedure Update_Node_Size
      (Widget : access Graph_Widget_Record'Class;
       Node   : in     Vis_Data.Vis_Node_Id) is
-   begin
-      raise Unimplemented;
---        Settings.Get_Node_Icon
---      (Icon, Icon_Width, Icon_Height);
---        Settings.Get_Annotation_Icon
---      (Annotation_Icon, Annotation_Width, Annotation_Height);
 
---        Height :=
---      Number_Of_Lights * Default_Node_Light_Thickness +
---      1 +  --  Border
---          Max (Height (Icon), Height (Annotation_Icon), Get_Height (Font)) +
---      Default_Text_Spacing +
---      Get_Height (Font) +  --  Class name
---      Number_Of_Attributes * (Get_Height (Font) + Default_Text_Spacing) + -- attributes
---      Default_Text_Spacing +
---      1 +  --  Border
---      Number_Of_Lights * Default_Node_Light_Thickness
+      Height               : Vis.Absolute_Natural;
+      Width                : Vis.Absolute_Natural;
+      Number_Of_Lights     : Natural := Get_Number_Of_Global_Lights (Node);
+      Border_Thickness     : Vis.Absolute_Natural;
+      Attributes_Height    : Vis.Absolute_Natural;
+      Number_Of_Attributes : Natural :=
+        Settings.Get_Node_Attribute_Count (Widget, Node);
+      Font_Height          : Vis.Absolute_Natural :=
+        Settings.Get_Node_Font_Height (Widget);
+      Icon_Size            : Vis.Absolute.Vector_2d :=
+        Settings.Get_Node_Icon_Size (Widget, Node);
+      Annotation_Size      : Vis.Absolute.Vector_2d :=
+        Settings.Get_Annotation_Icon_Size (Widget);
+      Highlighting         : Vis_Data.Flags_Type :=
+        Vis_Data.Get_Highlighting (Node);
+   begin
+      Border_Thickness := Number_Of_Lights * Default_Node_Light_Thickness + 1;
+
+      Attributes_Height := Number_Of_Attributes *
+        (Default_Text_Spacing + Font_Height);
+
+      Height :=
+        Border_Thickness +
+        Vis.Absolute_Int'Max
+          (Vis.Absolute_Int'Max (Get_Y (Icon_Size), Get_Y (Annotation_Size)),
+           Default_Text_Spacing + Font_Height);
+      if Settings.Show_Node_Class_Name (Widget, Node) then
+         Height := Height + Default_Text_Spacing + Font_Height;
+      end if;
+      Height := Height +
+        Attributes_Height +
+        Default_Text_Spacing +
+        Border_Thickness;
+
+      Width := 2 * Border_Thickness + Settings.Get_Node_Width (Widget);
+
+      Vis_Data.Set_Node_Size (Node, Combine_Vector (Width, Height));
    end Update_Node_Size;
+
+   --  NOTE: Must be synced with 'Draw_Node'
+   function Get_Node_Border_Top_Center
+     (Widget : access Graph_Widget_Record'Class;
+      Node   : in     Vis_Data.Vis_Node_Id)
+     return Vis.Absolute.Vector_2d is
+   begin
+      return Vis_Data.Get_Top_Center (Node) + Combine_Vector
+        (0, Get_Number_Of_Global_Lights (Node) * Default_Node_Light_Thickness);
+   end Get_Node_Border_Top_Center;
 
    ----------------------------------------------------------------------------
    --  Draws a node onto 'Buffer'
-   --  NOTE: Must be synced with 'Update_Node_Size'
+   --  NOTE: Must be synced with 'Update_Node_Size' and
+   --        'Get_Node_Border_Top_Center
    procedure Draw_Node
      (Widget : access Graph_Widget_Record'Class;
       Buffer : in     Gdk.Pixmap.Gdk_Pixmap;
@@ -913,7 +989,8 @@ package body Giant.Graph_Widgets.Drawing is
 
 
    procedure Update_Display
-     (Widget : access Graph_Widget_Record'Class) is
+     (Widget : access Graph_Widget_Record'Class;
+      Area   : in     Vis.Absolute.Rectangle_2d) is
    begin
       Update_Buffer (Widget);
       Gdk.Drawable.Copy_Area
@@ -1135,8 +1212,37 @@ package body Giant.Graph_Widgets.Drawing is
          Pixmap          => Widget.Drawing.Display,
          Parent_Relative => False);
       --  Enqueue refresh
-      Queue_Draw (Widget);
       States.Enable_Drawing (Widget);
+      Queue_Draw (Widget);
    end Set_Up;
+
+   procedure Shut_Down
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      States.Disable_Drawing (Widget);
+
+      Gdk.GC.Destroy (Widget.Drawing.Background);
+      Gdk.GC.Destroy (Widget.Drawing.Clip_Open);
+      Gdk.GC.Destroy (Widget.Drawing.Clip_Close);
+
+      Gdk.GC.Destroy (Widget.Drawing.Node_Border);
+      Gdk.GC.Destroy (Widget.Drawing.Node_Fill);
+      Gdk.GC.Destroy (Widget.Drawing.Node_Text);
+      for I in Vis_Data.Highlight_Type loop
+         Gdk.GC.Destroy (Widget.Drawing.Node_Light (I));
+      end loop;
+
+      for I in Edge_Style_Type loop
+         Gdk.GC.Destroy (Widget.Drawing.Edge_Line (I));
+      end loop;
+      Gdk.GC.Destroy (Widget.Drawing.Edge_Label);
+      for I in Vis_Data.Highlight_Type loop
+         Gdk.GC.Destroy (Widget.Drawing.Edge_Light (I));
+      end loop;
+
+      Gdk.Bitmap.Unref (Widget.Drawing.Clip_Mask);
+      Gdk.Pixmap.Unref (Widget.Drawing.Buffer);
+      Gdk.Pixmap.Unref (Widget.Drawing.Display);
+   end Shut_Down;
 
 end Giant.Graph_Widgets.Drawing;

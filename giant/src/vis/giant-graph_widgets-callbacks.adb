@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.5 $
 --  $Author: keulsn $
---  $Date: 2003/07/02 16:49:15 $
+--  $Date: 2003/07/07 03:35:59 $
 --
 ------------------------------------------------------------------------------
 
@@ -42,6 +42,7 @@ with Glib;
 with Giant.Graph_Widgets.Drawing;
 with Giant.Graph_Widgets.Handlers;
 with Giant.Graph_Widgets.Settings;
+with Giant.Graph_Widgets.States;
 
 package body Giant.Graph_Widgets.Callbacks is
 
@@ -162,6 +163,7 @@ package body Giant.Graph_Widgets.Callbacks is
       Realize_Handling.Set_Realize (Widget);
    end Connect_All_Callbacks;
 
+
    ---------------
    -- Callbacks --
    ---------------
@@ -228,17 +230,14 @@ package body Giant.Graph_Widgets.Callbacks is
    procedure On_Unrealize
      (Widget : access Graph_Widget_Record'Class) is
    begin
-      --  Drawing.Shut_Down (Widget);
-      --  Settings.Shut_Down (Widget);
-      null;
-      ----------------------------------raise Unimplemented;
+      Drawing.Shut_Down (Widget);
+      Settings.Shut_Down (Widget);
    end On_Unrealize;
 
    procedure On_Destroy
      (Widget : access Graph_Widget_Record'Class) is
    begin
-      null;
-      ----------------------------------raise Unimplemented;
+      Shut_Down_Graph_Widget (Widget);
    end On_Destroy;
 
    procedure On_Set_Scroll_Adjustments
@@ -272,7 +271,11 @@ package body Giant.Graph_Widgets.Callbacks is
             Glib.Gint (Allocation.Height));
       end if;
       Gtk.Handlers.Emit_Stop_By_Name (Widget, "size_allocate");
-      -----------------------------------raise Unimplemented;
+      Resize_Graph_Widget
+        (Widget,
+         Vis.Absolute.Combine_Vector
+           (X => Vis.Absolute_Int (Allocation.Width),
+            Y => Vis.Absolute_Int (Allocation.Height)));
    end On_Size_Allocate;
 
    function On_Expose_Event
@@ -280,7 +283,8 @@ package body Giant.Graph_Widgets.Callbacks is
       Event  : in     Gdk.Event.Gdk_Event_Expose)
      return Boolean is
 
-      --  Area : Gdk.Rectangle.Gdk_Rectangle;
+      Gdk_Area   : Gdk.Rectangle.Gdk_Rectangle;
+      Area       : Vis.Absolute.Rectangle_2d;
    begin
       --  Clear has happened before this is called.
       --  Correct Buffer is set as background pixmap therefore
@@ -294,7 +298,24 @@ package body Giant.Graph_Widgets.Callbacks is
          return True;
       end if;
 
-      -->  Add buffer refresh here if necessary
+      if States.Has_Display_Changed (Widget) then
+         Gdk_Area := Gdk.Event.Get_Area (Event);
+         Area := Vis.Absolute.Combine_Rectangle
+           (X_1 => Vis.Absolute_Int (Gdk_Area.X),
+            Y_1 => Vis.Absolute_Int (Gdk_Area.Y),
+            X_2 => Vis.Absolute_Int (Gdk_Area.X) +
+                     Vis.Absolute_Int (Gdk_Area.Width) - 1,
+            Y_2 => Vis.Absolute_Int (Gdk_Area.Y) +
+                     Vis.Absolute_Int (Gdk_Area.Height) - 1);
+         Drawing.Update_Display (Widget, Area);
+         Gdk.Window.Clear_Area
+           (Window => Get_Window (Widget),
+            X      => Glib.Gint (Vis.Absolute.Get_Left (Area)),
+            Y      => Glib.Gint (Vis.Absolute.Get_Top (Area)),
+            Width  => Glib.Gint (Vis.Absolute.Get_Width (Area)),
+            Height => Glib.Gint (Vis.Absolute.Get_Height (Area)));
+         States.Updated_Visual (Widget);
+      end if;
 
       return True;
    end On_Expose_Event;

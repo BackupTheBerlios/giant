@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.ads,v $, $Revision: 1.9 $
+--  $RCSfile: giant-vectors.ads,v $, $Revision: 1.10 $
 --  $Author: keulsn $
---  $Date: 2003/07/02 12:44:50 $
+--  $Date: 2003/07/07 03:35:59 $
 --
 ------------------------------------------------------------------------------
 
@@ -279,6 +279,10 @@ package Giant.Vectors is
      (Rectangle : in     Rectangle_2d)
      return Coordinate_Type;
 
+   function Get_Size
+     (Rectangle : in     Rectangle_2d)
+     return Vector_2d;
+
    procedure Shrink
      (Rectangle : in out Rectangle_2d;
       Thickness : in     Coordinate_Type);
@@ -319,9 +323,38 @@ package Giant.Vectors is
      (Rectangle : in out Rectangle_2d;
       Center    : in     Vector_2d);
 
+   --  Precondition:
+   --    Get_X (Size) >= Point_Size and Get_Y (Size) >= Point_Size
+   procedure Set_Size
+     (Rectangle : in out Rectangle_2d;
+      Size      : in     Vector_2d);
+
    procedure Move
      (Rectangle : in out Rectangle_2d;
       Offset    : in     Vector_2d);
+
+   ----------------------------------------------------------------------------
+   --  Generic procedure to move a rectangle to a specific point. The point
+   --  in 'Rectangle' given through 'Get_Source_Point' will be moved onto
+   --  'Target'
+   --
+   --  Note:
+   --    One might want to create an instance like
+   --    procedure Move_Center_To is new
+   --      Move_To (Get_Source_Point => Get_Center)
+   --  Precondition:
+   --    # R := Rectangle;
+   --    True
+   --  Postcondition:
+   --    # R' := Rectangle;
+   --    Get_Size (R) = Get_Size (R') and Get_Source_Point (R) = Target
+   generic
+      with function Get_Source_Point
+        (Rectangle : in Rectangle_2d)
+        return Vector_2d;
+   procedure Move_To
+     (Rectangle : in out Rectangle_2d;
+      Target    : in     Vector_2d);
 
    function Image
      (Rectangle : in     Rectangle_2d)

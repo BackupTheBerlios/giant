@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.15 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.16 $
 --  $Author: keulsn $
---  $Date: 2003/06/30 16:22:49 $
+--  $Date: 2003/07/07 03:35:59 $
 --
 ------------------------------------------------------------------------------
 --
@@ -217,6 +217,20 @@ package Giant.Vis_Data is
    -- Edges --
    -----------
 
+   function Create_Edge
+     (Graph_Edge  : in     Graph_Lib.Edge_Id;
+      Source      : in     Vis_Node_Id;
+      Target      : in     Vis_Node_Id;
+      Layer       : in     Layer_Type;
+      Inflections : in     Natural := 0)
+     return Vis_Edge_Id;
+
+   --  Note: Must be manually
+   --    * Removed from region manager
+   --    * Removed from incident nodes
+   procedure Destroy
+     (Edge        : in out Vis_Edge_Id);
+
    ----------------------------------------------------------------------------
    --  Gets the edge for the visual representation
    function Get_Graph_Edge
@@ -230,6 +244,10 @@ package Giant.Vis_Data is
    function Get_Target
      (Edge : in     Vis_Edge_Id)
      return Vis_Node_Id;
+
+   function Is_Loop
+     (Edge : in     Vis_Edge_Id)
+     return Boolean;
 
    ----------------------------------------------------------------------------
    --  Gets the layer 'Edge' is inside. No other edge must be in the same
@@ -284,6 +302,72 @@ package Giant.Vis_Data is
      (Edge : in     Vis_Edge_Id)
      return Flags_Type;
 
+   --  Precondition:
+   --    for all Rm : Region_Manager : not Contains (Rm, Edge)
+   --  Postcontition:
+   --    Get_Thickness (Edge) = Thickness
+   procedure Set_Thickness
+     (Edge      : in     Vis_Edge_Id;
+      Thickness : in     Vis.Absolute_Natural);
+
+   --  Precondition:
+   --    for all Rm : Region_Manager : not Contains (Rm, Edge)
+   --  Postcondition:
+   --    Has_Text_Area (Edge) and Get_Size (Get_Text_Area (Edge))) = Size
+   procedure Set_Text_Area_Size
+     (Edge      : in     Vis_Edge_Id;
+      Size      : in     Vis.Absolute.Vector_2d);
+
+   --  Precondition:
+   --    Has_Text_Area (Edge) and
+   --      for all Rm : Region_Manager : not Contains (Rm, Edge)
+   --  Postcondition:
+   --    Get_Top_Left (Get_Text_Area (Edge)) = Top_Left
+   procedure Move_Text_Area_Top_Left_To
+     (Edge      : in     Vis_Edge_Id;
+      Top_Left  : in     Vis.Absolute.Vector_2d);
+
+   --  Precondition:
+   --    Has_Text_Area (Edge) and
+   --      for all Rm : Region_Manager : not Contains (Rm, Edge)
+   --  Postcondition:
+   --    Get_Bottom_Left (Get_Text_Area (Edge)) = Bottom_Left
+   procedure Move_Text_Area_Bottom_Left_To
+     (Edge        : in     Vis_Edge_Id;
+      Bottom_Left : in     Vis.Absolute.Vector_2d);
+
+   --  Precondition:
+   --    for all Rm : Region_Manager : not Contains (Rm, Edge)
+   --  Postcondition:
+   --    not Has_Text_Area (Edge)
+   procedure Remove_Text_Area
+     (Edge      : in     Vis_Edge_Id);
+
+   --  Precondition:
+   --    for all Rm : Region_Manager : not Contains (Rm, Edge)
+   --  Postcondition:
+   --    Get_Point (Edge, Num) = Point
+   procedure Set_Point
+     (Edge      : in     Vis_Edge_Id;
+      Num       : in     Positive;
+      Point     : in     Vis.Absolute.Vector_2d);
+
+   --  Precondition:
+   --    for all Rm : Region_Manager : not Contains (Rm, Edge)
+   --  Postcondition:
+   --    Get_Left_Arrow_Point (Edge) = Point
+   procedure Set_Left_Arrow_Point
+     (Edge      : in     Vis_Edge_Id;
+      Point     : in     Vis.Absolute.Vector_2d);
+
+   --  Precondition:
+   --    for all Rm : Region_Manager : not Contains (Rm, Edge)
+   --  Postcondition:
+   --    Get_Right_Arrow_Point (Edge) = Point
+   procedure Set_Right_Arrow_Point
+     (Edge      : in     Vis_Edge_Id;
+      Point     : in     Vis.Absolute.Vector_2d);
+
    ----------------------------------------------------------------------------
    --  Total ordering on Vis_Edge_Id
    --  Returns:
@@ -292,6 +376,11 @@ package Giant.Vis_Data is
      (Left  : in     Vis_Edge_Id;
       Right : in     Vis_Edge_Id)
      return Boolean;
+
+   ----------------------------------------------------------------------------
+   --  Linear list of 'Vis_Edge_Id's
+   package Vis_Edge_Lists is new Lists
+     (ItemType   => Vis_Edge_Id);
 
    ----------------------------------------------------------------------------
    --  Set of 'Vis_Edge_Id's
@@ -314,13 +403,32 @@ package Giant.Vis_Data is
    -- Nodes --
    -----------
 
+   function Create_Node
+     (Graph_Node : in     Graph_Lib.Node_Id;
+      Layer      : in     Layer_Type)
+     return Vis_Node_Id;
+
+   --  Note: Must be manually
+   --    * Removed from region manager
+   --    * Removed from incident edges
+   procedure Destroy
+     (Node       : in out Vis_Node_Id);
+
    ----------------------------------------------------------------------------
    --  Gets the node for the visual representation
    function Get_Graph_Node
      (Node : in     Vis_Node_Id)
      return Graph_Lib.Node_Id;
 
+   function Get_Position
+     (Node : in     Vis_Node_Id)
+     return Vis.Logic.Vector_2d;
+
    function Get_Top_Center
+     (Node : in     Vis_Node_Id)
+     return Vis.Absolute.Vector_2d;
+
+   function Get_Center
      (Node : in     Vis_Node_Id)
      return Vis.Absolute.Vector_2d;
 
@@ -335,20 +443,13 @@ package Giant.Vis_Data is
      (Node : in     Vis_Node_Id)
      return Layer_Type;
 
-   --  Parameters:
-   --    Node
-   --    Incoming_Edges - The iterator, must be destroyed using
-   --                     'Vis_Edge_Sets.Destroy'
    procedure Make_Incoming_Iterator
      (Node           : in     Vis_Node_Id;
-      Incoming_Edges :    out Vis_Edge_Sets.Iterator);
+      Incoming_Edges :    out Vis_Edge_Lists.ListIter);
 
-   --  Parameters:
-   --    Outgoing_Edges - The iterator, must be destroyed using
-   --                     'Vis_Edge_Sets.Destroy'
    procedure Make_Outgoing_Iterator
      (Node           : in     Vis_Node_Id;
-      Outgoing_Edges :    out Vis_Edge_Sets.Iterator);
+      Outgoing_Edges :    out Vis_Edge_Lists.ListIter);
 
    function Is_Hidden
      (Node : in     Vis_Node_Id)
@@ -357,6 +458,18 @@ package Giant.Vis_Data is
    function Get_Highlighting
      (Node : in     Vis_Node_Id)
      return Flags_Type;
+
+   --  Precondition:
+   --    for all Rm : Region_Manager : not Contains (Rm, Node)
+   procedure Set_Node_Size
+     (Node : in     Vis_Node_Id;
+      Size : in     Vis.Absolute.Vector_2d);
+
+   --  Precondition:
+   --    for all Rm : Region_Manager : not Contains (Rm, Node)
+   procedure Move_Node
+     (Node   : in     Vis_Node_Id;
+      Offset : in     Vis.Absolute.Vector_2d);
 
    ----------------------------------------------------------------------------
    --  Total ordering on Vis_Node_Id
@@ -786,6 +899,8 @@ private
 
    type Vis_Node_Record is
       record
+         --  Position of this node in logical space
+         Position       : Vis.Logic.Vector_2d;
          --  Represented node
          Node           : Graph_Lib.Node_Id;
          --  Rectangle of this node
@@ -793,9 +908,9 @@ private
          --  Hight level of this node
          Layer          : Layer_Type;
          --  Edges with this node as target
-         Incoming_Edges : Vis_Edge_Sets.Set;
+         Incoming_Edges : Vis_Edge_Lists.List;
          --  Edges with this node as source
-         Outgoing_Edges : Vis_Edge_Sets.Set;
+         Outgoing_Edges : Vis_Edge_Lists.List;
          --  (Over-)Estimate of regions this node is contained in
          Regions        : Region_Lists.List;
          --  Visual attributes of this node

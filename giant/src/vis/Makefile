@@ -25,6 +25,9 @@ notifications :
 drawing :
 	make -C ../../ MAIN=src/vis/giant-graph_widgets-drawing all
 
+positioning :
+	make -C ../../ MAIN=src/vis/giant-graph_widgets-positioning all
+
 all : 
 	make -C ../../ all
 

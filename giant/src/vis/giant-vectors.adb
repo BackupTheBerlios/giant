@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-vectors.adb,v $, $Revision: 1.10 $
 --  $Author: keulsn $
---  $Date: 2003/07/02 12:44:50 $
+--  $Date: 2003/07/07 03:35:59 $
 --
 ------------------------------------------------------------------------------
 
@@ -361,6 +361,14 @@ package body Giant.Vectors is
    end Get_Height;
    pragma Inline (Get_Height);
 
+   function Get_Size
+     (Rectangle : in     Rectangle_2d)
+     return Vector_2d is
+   begin
+      return Combine_Vector (Get_Width (Rectangle), Get_Height (Rectangle));
+   end Get_Size;
+   pragma Inline (Get_Size);
+
    procedure Shrink
      (Rectangle : in out Rectangle_2d;
       Thickness : in     Coordinate_Type) is
@@ -460,6 +468,20 @@ package body Giant.Vectors is
    end Set_Center;
    pragma Inline (Set_Center);
 
+   procedure Set_Size
+     (Rectangle : in out Rectangle_2d;
+      Size      : in     Vector_2d) is
+   begin
+      Set_Right
+        (Rectangle,
+         Coord_Sub (Coord_Add (Get_Left (Rectangle), Get_X (Size)),
+                    Point_Size));
+      Set_Bottom
+        (Rectangle,
+         Coord_Sub (Coord_Add (Get_Top (Rectangle), Get_Y (Size)),
+                    Point_Size));
+   end Set_Size;
+
    procedure Move
      (Rectangle : in out Rectangle_2d;
       Offset    : in     Vector_2d) is
@@ -471,6 +493,16 @@ package body Giant.Vectors is
         (Top_Left + Offset, Bottom_Right + Offset);
    end Move;
    pragma Inline (Move);
+
+   procedure Move_To
+     (Rectangle : in out Rectangle_2d;
+      Target    : in     Vector_2d) is
+
+      Offset : Vector_2d := Get_Source_Point (Rectangle) - Target;
+   begin
+      Move (Rectangle, Offset);
+   end Move_To;
+   pragma Inline (Move_To);
 
    function Is_Inside
      (Rectangle : in     Rectangle_2d;
