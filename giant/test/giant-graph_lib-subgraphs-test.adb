@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_lib-subgraphs-test.adb,v $, $Revision: 1.2 $
---  $Author: koppor $
---  $Date: 2003/06/25 16:40:01 $
+--  $RCSfile: giant-graph_lib-subgraphs-test.adb,v $, $Revision: 1.3 $
+--  $Author: squig $
+--  $Date: 2003/06/27 15:26:16 $
 --
 
 with Ada.Text_IO;
@@ -54,6 +54,24 @@ package body Giant.Graph_Lib.Subgraphs.Test is
       Giant.Graph_Lib.Load ("resources/rfg_examp.iml");
    end Init;
 
+   procedure Test_Rename_Duplicate
+     (R : in out AUnit.Test_Cases.Test_Case'Class)
+   is
+      My_Subgraph : Subgraph;
+      Cloned_Subgraph : Subgraph;
+   begin
+      My_Subgraph := Create ("Test Graph");
+
+      Graph_Lib.Subgraphs.Add_Edge_Set (My_Subgraph, Graph_Lib.Get_All_Edges);
+      Graph_Lib.Subgraphs.Add_Node_Set (My_Subgraph, Graph_Lib.Get_All_Nodes);
+
+      Rename (My_Subgraph, "Renamed Graph");
+      Cloned_Subgraph := Clone (My_Subgraph, "Cloned Renamed Graph");
+
+      Destroy (My_Subgraph);
+      Destroy (Cloned_Subgraph);
+   end Test_Rename_Duplicate;
+
    procedure Done (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
    begin
@@ -73,6 +91,7 @@ package body Giant.Graph_Lib.Subgraphs.Test is
    procedure Register_Tests (T : in out Test_Case) is
    begin
       Register_Routine (T, Init'Access, "Init");
+      Register_Routine (T, Test_Rename_Duplicate'Access, "Rename_Duplicate");
       Register_Routine (T, Done'Access, "Done");
    end Register_Tests;
 

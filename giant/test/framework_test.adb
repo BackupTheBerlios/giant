@@ -20,34 +20,43 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: framework_test.adb,v $, $Revision: 1.8 $
---  $Author: schwiemn $
---  $Date: 2003/06/24 19:10:32 $
---  
+--  $RCSfile: framework_test.adb,v $, $Revision: 1.9 $
+--  $Author: squig $
+--  $Date: 2003/06/27 15:26:16 $
+--
 with AUnit.Test_Suites; use AUnit.Test_Suites;
 with AUnit.Test_Runner;
 
 with Giant.Config.Test;
+with Giant.Config.Vis_Styles.Test;
 with Giant.Default_Logger;
 with Giant.Default_Logger.Test;
 with Giant.File_Management.Test;
 with Giant.Graph_Lib.Test;
+with Giant.Graph_Lib.Node_Attribute_Filters.Test;
+with Giant.Graph_Lib.Subgraphs.Test;
 with Giant.Projects.Test;
 with Giant.Valid_Names.Test;
 with Giant.Vis_Windows.Test;
+with Giant.XML_File_Access.Test;
 
 procedure Framework_Test is
 
    function Suite return Access_Test_Suite is
       Result : Access_Test_Suite := new Test_Suite;
    begin
-      Add_Test (Result, new Giant.Config.Test.Test_Case);
-      Add_Test (Result, new Giant.Default_Logger.Test.Test_Case);
-      Add_Test (Result, new Giant.File_Management.Test.Test_Case);
+--        Add_Test (Result, new Giant.Config.Test.Test_Case);
+--        Add_Test (Result, new Giant.Config.Vis_Styles.Test.Test_Case);
+--        Add_Test (Result, new Giant.Default_Logger.Test.Test_Case);
+--        Add_Test (Result, new Giant.File_Management.Test.Test_Case);
       Add_Test (Result, new Giant.Graph_Lib.Test.Test_Case);
-      Add_Test (Result, new Giant.Projects.Test.Test_Case);
-      Add_Test (Result, new Giant.Valid_Names.Test.Test_Case);
-      Add_Test (Result, new Giant.Vis_Windows.Test.Test_Case);
+      Add_Test (Result, new Giant.Graph_Lib.Node_Attribute_Filters.Test.Test_Case);
+      Add_Test (Result, new Giant.Graph_Lib.Subgraphs.Test.Test_Case);
+--        Add_Test (Result, new Giant.Projects.Test.Test_Case);
+--        Add_Test (Result, new Giant.Valid_Names.Test.Test_Case);
+--        Add_Test (Result, new Giant.Vis_Windows.Test.Test_Case);
+--        Add_Test (Result, new Giant.XML_File_Access.Test.Test_Case);
+
       return Result;
    end Suite;
 
