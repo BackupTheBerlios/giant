@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.26 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.27 $
 -- $Author: schwiemn $
--- $Date: 2003/06/25 08:43:56 $
+-- $Date: 2003/06/30 11:53:49 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -174,10 +174,31 @@ package Giant.Projects is
    -- Parameters:
    --   Project_File_Name - The full name (incl. absolute path) of a
    --     Project File.
-   procedure Get_Bauhaus_IML_Graph_Data_File
+   procedure Get_Bauhaus_IML_Graph_Data_For_File
      (Project_File_Name      : in     String;
       Bauhaus_IML_Graph_File :    out Ada.Strings.Unbounded.Unbounded_String;
       Bauhaus_IML_Graph_File_Checksum : out Integer);  
+            
+   ---------------------------------------------------------------------------
+   -- Same functionality as "Get_Bauhaus_IML_Graph_Data_For_File" - just
+   -- irgnores the checksum.
+   --
+   -- It is recommend to use the procedure "Get_Bauhaus_IML_Graph_Data".
+   -- As you will need the checksum in order to verify that the ADO
+   -- Giant.Graph_Lib holds an appropriate IML Graph.
+   -- 
+   -- You should only use this function if you are able to garantee that
+   -- the IML-Graph actually loaded by the Graph_Lib holds has the same
+   -- checksum as the one that belongs to the project.
+   -- 
+   -- Parameters:
+   --   Project_File_Name - The full name (incl. absolute path) of a
+   --     Project File.
+   -- Returns:
+   --   An absolute path to the file holding the iml graph.
+   function Get_Bauhaus_IML_Graph_File
+     (Project_File_Name : in String)
+     return String; 
 
    ---------------------------------------------------------------------------
    -- Before executing this subprogram

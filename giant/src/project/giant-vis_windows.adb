@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.22 $
---  $Author: squig $
---  $Date: 2003/06/30 10:44:53 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.23 $
+--  $Author: schwiemn $
+--  $Date: 2003/06/30 11:53:49 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -385,7 +385,21 @@ package body Giant.Vis_Windows is
       return Unbounded_String_Hash (Vis_Window.Vis_Window_Name);
    end Get_Hash_Value;
 
-
+   ---------------------------------------------------------------------------
+   function Get_Graph_Widget      
+     (Vis_Window : in Visual_Window_Access)
+     return Graph_Widgets.Graph_Widget is
+     
+   begin
+   
+      if Vis_Window = null then
+         raise Visual_Window_Access_Not_Initialized_Exception;
+      end if;   
+      
+      return Vis_Window.The_Graph_Widget;     
+   end Get_Graph_Widget;
+   
+   
    ---------------------------------------------------------------------------
    -- C
    -- Management of the Selections that belong to a visualisation window
@@ -918,12 +932,8 @@ package body Giant.Vis_Windows is
       Dummy_Pin.Pin_Name := Ada.Strings.Unbounded.To_Unbounded_String
         (Pin_Name);
 
-      if Pin_Sets.Is_Member
-        (Vis_Window.Set_Of_All_Pins, Dummy_Pin) then
-         return True;
-      end if;
-
-      return False;
+      return Pin_Sets.Is_Member
+        (Vis_Window.Set_Of_All_Pins, Dummy_Pin);
    end Does_Pin_Exist;
 
    --------------------------------------------------------------------------

@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.13 $
--- $Author: squig $
--- $Date: 2003/06/30 10:44:52 $
+-- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.14 $
+-- $Author: schwiemn $
+-- $Date: 2003/06/30 11:53:49 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -152,7 +152,6 @@ package body Giant.Config.Vis_Styles is
 
    end Build_Encoded_Icons_Array;
 
-
    ---------------------------------------------------------------------------
    -- Registers an Icon file -
    -- Ensures that each icon is only once registered.
@@ -187,7 +186,6 @@ package body Giant.Config.Vis_Styles is
             Encoded_Icon_Index);
       end if;
    end Register_Icon_File_Encoding;
-
 
    ---------------------------------------------------------------------------
    procedure Build_Encoded_Colors_Array is

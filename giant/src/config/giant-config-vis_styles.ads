@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.ads,v $, $Revision: 1.6 $
--- $Author: squig $
--- $Date: 2003/06/30 10:44:53 $
+-- $RCSfile: giant-config-vis_styles.ads,v $, $Revision: 1.7 $
+-- $Author: schwiemn $
+-- $Date: 2003/06/30 11:53:49 $
 --
 -- ----------------
 -- This package provides the functionality needed to manage
@@ -339,7 +339,8 @@ package Giant.Config.Vis_Styles is
 
    ---------------------------------------------------------------------------
    -- holds all colors
-   type Color_Access_Array is array (integer range <>)
+
+   type Color_Access_Array is array (Positive range <>) 
      of Color_Access;
 
    type Color_Access_Array_Access is access Color_Access_Array;
@@ -401,7 +402,7 @@ package Giant.Config.Vis_Styles is
 
    ---------------------------------------------------------------------------
    -- holds absolute paths for all icon files
-   type Node_Icons_Array is array (integer range <>)
+   type Node_Icons_Array is array (Positive range <>) 
      of Ada.Strings.Unbounded.Unbounded_String;
 
    type Node_Icons_Array_Access is access Node_Icons_Array;

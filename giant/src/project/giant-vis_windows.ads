@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.21 $
---  $Author: squig $
---  $Date: 2003/06/30 10:44:53 $
+--  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.22 $
+--  $Author: schwiemn $
+--  $Date: 2003/06/30 11:53:49 $
 --
 --  ----------------
 --  This package realizes a container that administrates the components
@@ -238,8 +238,24 @@ package Giant.Vis_Windows is
    --      initialized instance of "Vis_Window_Data_Access" is passed
    --      as parameter.
    function Get_Hash_Value
-     (Vis_Window  : in Visual_Window_Access)
+     (Vis_Window : in Visual_Window_Access)
      return Integer;
+     
+     
+   ---------------------------------------------------------------------------
+   --  Returns the Graph Widget associatet to this visualisation window.
+   --
+   --  Note:
+   --    You are not allowed to deallocate the returned Graph Widget.
+   --  Returns:
+   --    A pointer to a graph_widget.
+   --  Raises:
+   --    Visual_Window_Access_Not_Initialized_Exception - Raised if a not
+   --      initialized instance of "Vis_Window_Data_Access" is passed
+   --      as parameter.
+   function Get_Graph_Widget      
+     (Vis_Window : in Visual_Window_Access)
+     return Graph_Widgets.Graph_Widget;
 
 
    ---------------------------------------------------------------------------

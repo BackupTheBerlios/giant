@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.41 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.42 $
 --  $Author: schwiemn $
---  $Date: 2003/06/27 11:31:27 $
+--  $Date: 2003/06/30 11:53:49 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -790,7 +790,7 @@ package body Giant.Projects is
       --  the list holds only one node
       Data_XML_Node := DOM.Core.Nodes.Item (XML_Nodes_List, 0);
 
-
+      -- expand path relative to the project directory.
       Bauhaus_IML_Graph_File  :=
         Ada.Strings.Unbounded.To_Unbounded_String
          (File_Management.Get_Absolute_Path_To_File_From_Relative
@@ -809,7 +809,7 @@ package body Giant.Projects is
    end Get_Bauhaus_IML_Graph_Data;
    
    ---------------------------------------------------------------------------
-   procedure Get_Bauhaus_IML_Graph_Data_File
+   procedure Get_Bauhaus_IML_Graph_Data_For_File
      (Project_File_Name      : in     String;
       Bauhaus_IML_Graph_File :    out Ada.Strings.Unbounded.Unbounded_String;
       Bauhaus_IML_Graph_File_Checksum : out Integer) is
@@ -822,7 +822,27 @@ package body Giant.Projects is
            File_Management.Return_Dir_Path_For_File_Path (Project_File_Name),
          Bauhaus_IML_Graph_File => Bauhaus_IML_Graph_File,
          Bauhaus_IML_Graph_File_Checksum => Bauhaus_IML_Graph_File_Checksum);         
-   end Get_Bauhaus_IML_Graph_Data_File;
+   end Get_Bauhaus_IML_Graph_Data_For_File;
+   
+   ---------------------------------------------------------------------------
+   function Get_Bauhaus_IML_Graph_File
+     (Project_File_Name : in String)
+     return String is 
+     
+      Checksum : Integer;
+      File     : Ada.Strings.Unbounded.Unbounded_String;
+   begin      
+   
+      Get_Bauhaus_IML_Graph_Data 
+        (Project_Name =>
+           File_Management.Calculate_Name_For_File (Project_File_Name),
+         Project_Directory =>
+           File_Management.Return_Dir_Path_For_File_Path (Project_File_Name),
+         Bauhaus_IML_Graph_File => File,
+         Bauhaus_IML_Graph_File_Checksum => Checksum);  
+         
+      return Ada.Strings.Unbounded.To_String (File);      
+   end Get_Bauhaus_IML_Graph_File;
 
    ---------------------------------------------------------------------------
    function Load_Project_File
