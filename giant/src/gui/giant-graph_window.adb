@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.36 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.37 $
 --  $Author: squig $
---  $Date: 2003/07/17 11:16:52 $
+--  $Date: 2003/07/18 12:59:04 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -831,15 +831,15 @@ package body Giant.Graph_Window is
                           Expand => False, Fill => False, Padding => 0);
 
       --  pick edge
-      Gtk.Box.Gtk_New_Hbox (Hbox, Homogeneous => False,
-                            Spacing => DEFAULT_SPACING);
-      Gtk.Box.Pack_Start (Vbox, Hbox,
-                          Expand => False, Fill => False, Padding => 0);
+--        Gtk.Box.Gtk_New_Hbox (Hbox, Homogeneous => False,
+--                              Spacing => DEFAULT_SPACING);
+--        Gtk.Box.Pack_Start (Vbox, Hbox,
+--                            Expand => False, Fill => False, Padding => 0);
 
-      Gtk.Box.Pack_Start (Hbox,
-                          New_Button (-"Pick Edge",
-                                      On_Pick_Edge_Clicked'Access, Window),
-                          Expand => False, Fill => False, Padding => 0);
+--        Gtk.Box.Pack_Start (Hbox,
+--                            New_Button (-"Pick Edge",
+--                                        On_Pick_Edge_Clicked'Access, Window),
+--                            Expand => False, Fill => False, Padding => 0);
 
       --  listen for the close button
       Widget_Boolean_Callback.Connect

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.37 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.38 $
 --  $Author: squig $
---  $Date: 2003/07/15 17:18:42 $
+--  $Date: 2003/07/18 12:59:04 $
 --
 ------------------------------------------------------------------------------
 --
@@ -338,7 +338,7 @@ package Giant.Controller is
    ---------------------------------------------------------------------------
    --  Unhighlights all selections that are hightlighted with
    --  Highlight_Status.
-   procedure Unhighlight_Selections
+   procedure Unhighlight_Selections_By_Color
      (Window_Name      : in String;
       Highlight_Status : in Vis_Windows.Selection_Highlight_Status);
 
@@ -375,9 +375,10 @@ package Giant.Controller is
      (Old_Name : in String;
       New_Name : in String);
 
-   procedure Set_Subgraph_Highlight_Status
-     (Name   : in String;
-      Status : in Projects.Subgraph_Highlight_Status);
+   procedure Highlight_Subgraph
+     (Name              : in String;
+      Highlight_Status  : in Projects.Subgraph_Highlight_Status;
+      Unhighligt_Others : in Boolean                            := True);
 
    procedure Subgraph_Difference
      (Left_Name   : in String;
@@ -393,6 +394,12 @@ package Giant.Controller is
      (Left_Name   : in String;
       Right_Name  : in String;
       Target_Name : in String);
+
+   procedure Unhighlight_Subgraph
+     (Name : in String);
+
+   procedure Unhighlight_Subgraphs_By_Color
+     (Highlight_Status : in Projects.Subgraph_Highlight_Status);
 
    ---------------------------------------------------------------------------
    --  Vis Styles

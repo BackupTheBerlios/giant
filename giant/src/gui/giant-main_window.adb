@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.48 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.49 $
 --  $Author: squig $
---  $Date: 2003/07/10 21:54:53 $
+--  $Date: 2003/07/18 12:59:04 $
 --
 
 with Ada.Exceptions;
@@ -495,8 +495,7 @@ package body Giant.Main_Window is
       Status : in Projects.Subgraph_Highlight_Status)
    is
    begin
-      Controller.Set_Subgraph_Highlight_Status
-        (Get_Selected_Subgraph, Status);
+      Controller.Highlight_Subgraph (Get_Selected_Subgraph, Status);
    end On_Subgraph_List_Highlight;
 
    procedure On_Subgraph_List_Create_Selection

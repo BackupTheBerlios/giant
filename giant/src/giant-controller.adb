@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.58 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.59 $
 --  $Author: squig $
---  $Date: 2003/07/17 11:16:52 $
+--  $Date: 2003/07/18 12:59:04 $
 --
 
 with Ada.Strings.Unbounded;
@@ -561,7 +561,7 @@ package body Giant.Controller is
       return Vis_Windows.Get_Selection (Window, Name);
    end Get_Selection;
 
-   function Get_Selection_Hightlight_ID
+   function To_Selection_Hightlight_ID
      (Highlight_Status : in Vis_Windows.Selection_Highlight_Status)
      return Config.Global_Data.Selection_High_Light_ID
    is
@@ -578,7 +578,7 @@ package body Giant.Controller is
         when others =>
            raise Constraint_Error;
       end case;
-   end Get_Selection_Hightlight_ID;
+   end To_Selection_Hightlight_ID;
 
    procedure Hide_Selection
      (Window_Name : in String;
@@ -610,23 +610,23 @@ package body Giant.Controller is
       if (Old_Highlight_Status /= Highlight_Status) then
          if (Unhighligt_Others) then
             --  unhighlight other selections with the same color
-            Unhighlight_Selections (Window_Name, Highlight_Status);
+            Unhighlight_Selections_By_Color (Window_Name, Highlight_Status);
          end if;
 
          Vis_Windows.Set_Highlight_Status (Window, Name, Highlight_Status);
          if (Highlight_Status = Vis_Windows.None) then
             Graph_Widgets.Remove_Local_Highlighting
               (Vis_Windows.Get_Graph_Widget (Window), Selection,
-               Get_Selection_Hightlight_ID (Old_Highlight_Status));
+               To_Selection_Hightlight_ID (Old_Highlight_Status));
          else
             if (Old_Highlight_Status /= Vis_Windows.None) then
                Graph_Widgets.Remove_Local_Highlighting
                  (Vis_Windows.Get_Graph_Widget (Window), Selection,
-                  Get_Selection_Hightlight_ID (Old_Highlight_Status));
+                  To_Selection_Hightlight_ID (Old_Highlight_Status));
             end if;
             Graph_Widgets.Add_Local_Highlighting
               (Vis_Windows.Get_Graph_Widget (Window), Selection,
-               Get_Selection_Hightlight_ID (Highlight_Status));
+               To_Selection_Hightlight_ID (Highlight_Status));
          end if;
       end if;
       Gui_Manager.Update_Selection (Window_Name, Name);
@@ -764,7 +764,7 @@ package body Giant.Controller is
       Highlight_Selection (Window_Name, Name, Vis_Windows.None);
    end Unhighlight_Selection;
 
-   procedure Unhighlight_Selections
+   procedure Unhighlight_Selections_By_Color
      (Window_Name      : in String;
       Highlight_Status : in Vis_Windows.Selection_Highlight_Status)
    is
@@ -789,7 +789,7 @@ package body Giant.Controller is
          end if;
       end loop;
       String_Lists.Destroy (List);
-   end Unhighlight_Selections;
+   end Unhighlight_Selections_By_Color;
 
    ---------------------------------------------------------------------------
    --  Subgraphs
@@ -854,6 +854,82 @@ package body Giant.Controller is
       return Projects.Get_Subgraph (Current_Project, Name);
    end Get_Subgraph;
 
+   function To_Subgraph_Hightlight_ID
+     (Highlight_Status : in Projects.Subgraph_Highlight_Status)
+     return Config.Global_Data.Subgraph_High_Light_ID
+   is
+   begin
+      case (Highlight_Status) is
+        when Projects.Color_1 =>
+           return Config.Global_Data.Color_1;
+        when Projects.Color_2 =>
+           return Config.Global_Data.Color_2;
+        when Projects.Color_3 =>
+           return Config.Global_Data.Color_3;
+        when others =>
+           raise Constraint_Error;
+      end case;
+   end To_Subgraph_Hightlight_ID;
+
+   procedure Highlight_Subgraph
+     (Name              : in String;
+      Highlight_Status  : in Projects.Subgraph_Highlight_Status;
+      Unhighligt_Others : in Boolean                            := True)
+   is
+     use type Projects.Subgraph_Highlight_Status;
+     use Ada.Strings.Unbounded;
+
+     Subgraph : Graph_Lib.Subgraphs.Subgraph
+       := Get_Subgraph (Name);
+     Old_Highlight_Status : Projects.Subgraph_Highlight_Status
+       := Projects.Get_Highlight_Status (Current_Project, Name);
+
+     procedure Highlight_Subgraph
+       (Window_Name : in String)
+     is
+        Window : Vis_Windows.Visual_Window_Access
+          := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+     begin
+        if (Highlight_Status = Projects.None) then
+           Graph_Widgets.Remove_Global_Highlighting
+             (Vis_Windows.Get_Graph_Widget (Window), Subgraph,
+              To_Subgraph_Hightlight_ID (Old_Highlight_Status));
+        else
+           if (Old_Highlight_Status /= Projects.None) then
+              Graph_Widgets.Remove_Global_Highlighting
+                (Vis_Windows.Get_Graph_Widget (Window), Subgraph,
+                 To_Subgraph_Hightlight_ID (Old_Highlight_Status));
+           end if;
+           Graph_Widgets.Add_Global_Highlighting
+             (Vis_Windows.Get_Graph_Widget (Window), Subgraph,
+              To_Subgraph_Hightlight_ID (Highlight_Status));
+        end if;
+     end Highlight_Subgraph;
+
+     List : String_Lists.List;
+     Iterator : String_Lists.ListIter;
+     Window_Name : Ada.Strings.Unbounded.Unbounded_String;
+   begin
+      if (Old_Highlight_Status /= Highlight_Status) then
+         if (Unhighligt_Others) then
+            --  unhighlight other subgraphs with the same color
+            Unhighlight_Subgraphs_By_Color (Highlight_Status);
+         end if;
+
+         Projects.Change_Highlight_Status (Current_Project, Name,
+                                           Highlight_Status);
+
+         List := Projects.Get_All_Visualisation_Window_Names (Current_Project);
+         Iterator := String_Lists.MakeListIter (List);
+         while String_Lists.More (Iterator) loop
+            String_Lists.Next (Iterator, Window_Name);
+            Highlight_Subgraph (To_String (Window_Name));
+         end loop;
+         String_Lists.Destroy (List);
+         Gui_Manager.Update_Subgraph (Name);
+      end if;
+   end Highlight_Subgraph;
+
    function Remove_Subgraph
      (Name                 : in String;
       Ask_For_Confirmation : in Boolean := True)
@@ -861,11 +937,11 @@ package body Giant.Controller is
    is
    begin
       if (Gui_Manager.Remove_Subgraph (Name)) then
+         Unhighlight_Subgraph (Name);
          Projects.Remove_Subgraph (Current_Project, Name);
          return True;
-      else
-         return False;
       end if;
+      return False;
    end Remove_Subgraph;
 
    procedure Rename_Subgraph
@@ -879,16 +955,6 @@ package body Giant.Controller is
          Gui_Manager.Rename_Subgraph (Old_Name, New_Name);
       end if;
    end Rename_Subgraph;
-
-   procedure Set_Subgraph_Highlight_Status
-     (Name   : in String;
-      Status : in Projects.Subgraph_Highlight_Status)
-   is
-   begin
-      Projects.Change_Highlight_Status (Current_Project, Name,
-                                        Status);
-      Gui_Manager.Update_Subgraph (Name);
-   end Set_Subgraph_Highlight_Status;
 
    procedure Subgraph_Operation
      (Left_Name   : in String;
@@ -940,6 +1006,37 @@ package body Giant.Controller is
       Subgraph_Operation (Left_Name, Right_Name, Target_Name,
                           Graph_Lib.Subgraphs.Union'Access);
    end;
+
+   procedure Unhighlight_Subgraph
+     (Name : in String)
+   is
+   begin
+      Highlight_Subgraph (Name, Projects.None);
+   end Unhighlight_Subgraph;
+
+   procedure Unhighlight_Subgraphs_By_Color
+     (Highlight_Status : in Projects.Subgraph_Highlight_Status)
+   is
+      use type Projects.Subgraph_Highlight_Status;
+      use Ada.Strings.Unbounded;
+
+      List : String_Lists.List;
+      Iterator : String_Lists.ListIter;
+      Name : Ada.Strings.Unbounded.Unbounded_String;
+   begin
+      List := Projects.Get_All_Subgraphs (Current_Project);
+      Iterator := String_Lists.MakeListIter (List);
+      while String_Lists.More (Iterator) loop
+         String_Lists.Next (Iterator, Name);
+         if (Projects.Get_Highlight_Status (Current_Project, To_String (Name))
+             = Highlight_Status) then
+            --  unhighlight
+            Highlight_Subgraph (To_String (Name), Projects.None,
+                                Unhighligt_Others => False);
+         end if;
+      end loop;
+      String_Lists.Destroy (List);
+   end Unhighlight_Subgraphs_By_Color;
 
    ---------------------------------------------------------------------------
    --  Vis Styles
