@@ -21,7 +21,7 @@ set (+nodes_with_type,
         set ('n, get_first (v2));
         if (equal (get_type (n), node_type), add_node, null);
         sub ('v2, n);
-        if (less (size_of (v2), 1), false, true);
+        if (less (size_of ('v2), 1), false, true);
       ]
     });
 
