@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-parser.y,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/22 22:58:34 $
+-- $Date: 2003/06/30 15:47:58 $
 --
 -- GSL Parser rules
 -- Use ayacc to generate code, needs scanner scanner.aflex
@@ -35,6 +35,8 @@
 
 {
   subtype YYSType is Syntax_Node;
+
+  Error_Message   : Unbounded_String;
 
   Root_Node       : Syntax_Node;
   Literal_Boolean : Gsl_Boolean;
@@ -68,10 +70,10 @@ expression         : literal
                      { $$ := $1; }
                    | sequence
                      { $$ := $1; }
-                   | '{' list ','  expression '}'
+                   | '{' list expression '}'
                      { 
-                        $$ := Create_Node (Script_Decl, $2, $4);
-                        Script_Ref := Create_Gsl_Script_Reference ($2, $4);
+                        $$ := Create_Node (Script_Decl, $2, $3);
+                        Script_Ref := Create_Gsl_Script_Reference ($2, $3);
                         Set_Literal ($$, Gsl_Type (Script_Ref));
                      }
                    | expression list
@@ -188,11 +190,16 @@ var_creation       : '+' IDENTIFIER_T
 with Giant.Gsl, Giant.Gsl.Syntax_Tree, Giant.Gsl.Types;
 use  Giant.Gsl, Giant.Gsl.Syntax_Tree, Giant.Gsl.Types;
 
+with Ada.Strings.Unbounded;
+use  Ada.Strings.Unbounded;
+
 ## -- next section will go after package statement in SPEC file  
 
    procedure YYParse;
 
    function Get_Syntax_Tree return Syntax_Node;
+
+   function Get_Error_Message return Unbounded_String;
 
 ## -- next section will go before package statement in BODY file
 
@@ -213,10 +220,16 @@ package scanner_io renames scanner.io;
 
    procedure YYError (Message : in String) is
    begin
-      Put_Line (Message);
+      Error_Message := To_Unbounded_String
+        (Yy_Line_Number'Img & " :" & Yy_Begin_Column'Img);
    end YYError;
 
    function Get_Syntax_Tree return Syntax_Node is
    begin
       return Root_Node; 
    end Get_Syntax_Tree;
+
+   function Get_Error_Message return Unbounded_String is
+   begin
+      return Error_Message;
+   end Get_Error_Message;
