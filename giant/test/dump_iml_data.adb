@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: dump_iml_data.adb,v $, $Revision: 1.11 $
+--  $RCSfile: dump_iml_data.adb,v $, $Revision: 1.12 $
 --  $Author: schwiemn $
---  $Date: 2003/10/09 10:02:29 $
+--  $Date: 2003/10/09 10:57:34 $
 --
 -- -----
 -- Used to dump content (node classes, attributes, nodes and edges of an
@@ -165,7 +165,7 @@ procedure dump_iml_data is
 begin
    Giant.Graph_Lib.Initialize;
 
-   Giant.Default_Logger.Init ("/tmp/an_iml_dump.log");
+   Giant.Default_Logger.Init ("an_iml_dump.log");
    Logger.Info ("Starting Data Dump ...");
 
    Node_Classes := Giant.Graph_Lib.Get_All_Node_Class_Ids;
