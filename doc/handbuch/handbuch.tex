@@ -1,0 +1,218 @@
+% ==============================================================================
+%  $RCSfile: handbuch.tex,v $, $Revision: 1.1 $
+%  $Date: 2003/06/30 15:22:06 $
+%  $Author: birdy $
+%
+%  Description: Master Datei des Handbuchs
+%
+%  Last-Ispelled-Revision:
+%
+% ==============================================================================
+
+\documentclass[a4paper,titlepage,11pt,german,twoside]{scrbook}
+
+
+\makeatletter
+
+%koma uses \chapter*, but we want to use \chapter
+%  changed srcbook.cls-commands
+\renewcommand\idx@heading{%
+  \twocolumn
+  \chapter{\indexname}\@mkboth{\indexname}{\indexname}
+}
+
+%Nummerierung soll net so eng aneinanderhaengen
+\renewcommand*\l@section{\@dottedtocline{1}{1.5em}{3em}}
+
+\makeatother
+
+
+\usepackage{../styles/common}
+
+\usepackage{handbuch}
+
+\usepackage{makeidx}
+\makeindex
+
+% subsubsections nummerieren
+\setcounter{secnumdepth}{3}
+
+\newcommand\version{Version 1.1\xspace}
+%\newcommand\version{\today\xspace}
+
+%\graphicspath{{gui-pictures/}} %OK: it MAY work with graphics. With graphicx, it surely doesn't
+
+% header
+\fancyhead{}
+\fancyhead[LE,RO]{\slshape \company}
+\fancyhead[LO,RE]{\slshape \leftmark}
+\fancyfoot[LE,RO]{\thepage{}}
+\fancyfoot[LO,RE]{\version}
+
+\begin{document}
+
+% title page
+\thispagestyle{empty}
+\hfill
+\parbox{5.5cm}
+{Universität Stuttgart\\
+Studienprojekt A -- IML Browser\\
+\company}
+
+\vspace{3cm}
+
+\begin{center}
+  \Huge
+  \textsf{Handbuch}\\
+  \vspace{.5cm}
+  {\Large\version}\\
+  \vspace{3cm}
+  \includegraphics[scale=.78]{../logo}
+\end{center}
+\newpage
+
+%**\input{history}
+
+%===============================================================================
+%
+% ToDo - Aus fertigem Dokument entferenen
+%
+% \chapter*{ToDo -- nicht in fertiger Spez.}
+
+% Hier Sachen beschreiben, die irgendwie beim Erstellen der Spez.\ 
+% beachtet werden sollen.
+
+% \input{todo_spec}
+
+%===============================================================================
+%
+% Inhaltsverzeichnis
+%
+\setcounter{tocdepth}{1}
+\tableofcontents
+
+%===============================================================================
+%
+% Einleitung
+%
+\chapter{Einleitung}
+\input{intro}
+
+%===============================================================================
+%
+% Produktübersicht
+%
+\chapter{Produktübersicht}
+
+In diesem Kapitel werden einige grundlegende Konzepte und
+Möglichkeiten von GIANT vorgestellt und kurz beschrieben.
+
+%**\input{product}
+
+%===============================================================================
+% 
+% Technische Produktumgebung
+%
+\chapter{Technische Produktumgebung}
+
+Hier wird die zum Betrieb von GIANT nötige Hardware 
+und die nötige Software beschrieben.
+
+%**\input{technical}
+
+
+%===============================================================================
+%
+% Konzepte und Begriffe
+%
+\chapter{Konzepte und Begriffe}
+
+Dieses Kapitel beschreibt wichtige Begriffe, die für das Arbeiten mit
+GIANT und das Verständnis dieser Anleitung wichtig sind.
+
+\input{konzepteundbegriffe}
+
+%===============================================================================
+% 
+% Tutorial
+%
+\chapter{Tutorial}
+\label{Tutorial}
+
+Dieses Kapitel beschreibt einige häufig vorkommende Analysen mit GIANT
+und wie sie vom Benutzer ausgeführt werden können.
+
+%**\input{fa}
+
+
+%===============================================================================
+% 
+% Beschreibung der Funktionen
+%
+\chapter{Beschreibung der Funktionen}
+\label{Beschreibung der Funktionen}
+
+Dieses Kapitel beschreibt, geordnet nach den in GIANT auftretenden Fenstertypen,
+alle Buttons, Menüs und Funktionen. Dies ist als Nachschlagewerk gedacht.
+
+\input{functions}
+
+
+%===============================================================================
+% 
+% Anfragesprache
+%
+\chapter{GIANT Scripting Language}
+\label {GIANT Scripting Language}
+
+In diesem Kapitel werden die Fähigkeiten der GIANT Scripting Language (GSL)
+beschrieben.
+
+%**\input{language}
+
+
+%===============================================================================
+% 
+% Projektverwaltung
+%
+\chapter{GIANT Projektverwaltung}
+\label{GIANT Projektverwaltung}
+
+In diesem Kapitel wird beschrieben, wie persistente Arbeitsergebnisse
+von GIANT strukturiert und gespeichert werden.
+Arbeitsergebnisse sind z.B. vom Benutzer erzeugte Anzeigefenster
+mit als Fenster-Knoten visualisierten IML-Knoten eines IML-Graphen.
+Soweit für das Verständnis von GIANT nötig, sind auch Interna des
+Programms festgehalten.
+
+\input{project}
+
+%===============================================================================
+% 
+% Beschreibung aller Konfigurationsdateien
+%
+\chapter{Konfiguration von GIANT}
+\label{Konfiguration von GIANT}
+
+Hier wird beschrieben, wie benutzerdefinierbare Einstellungen von
+GIANT gespeichert und verwaltet werden. In diesem Kapitel wird 
+insbesondere beschrieben, welche Einstellungen der Benutzer
+in welchen Konfigurationsdateien vornehmen kann.
+
+\input{config}
+
+
+%==============================================================================
+%
+%  Index
+%
+\printindex
+
+%==============================================================================
+% 
+% Anhang
+%
+\newpage
+\appendix
+
+\end{document}
