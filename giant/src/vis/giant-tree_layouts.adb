@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.27 $
+--  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.28 $
 --  $Author: koppor $
---  $Date: 2003/10/02 10:21:58 $
+--  $Date: 2003/10/06 17:41:44 $
 --
 ------------------------------------------------------------------------------
 --  Variables are named according to the paper
@@ -49,7 +49,8 @@ package body Giant.Tree_Layouts is
       Selection_To_Layout      : in Graph_Lib.Selections.Selection;
       Target_Position          : in Vis.Logic.Vector_2d;
       Root_Node                : in Graph_Lib.Node_Id;
-      Meta_Class_Set_To_Layout : in Config.Class_Sets.Meta_Class_Set_Access)
+      Meta_Class_Set_To_Layout : in Config.Class_Sets.Meta_Class_Set_Access;
+      Process_Edges_Reverse    : in Boolean := True)
      return Tree_Layout
    is
       Res : Tree_Layout;
@@ -67,6 +68,7 @@ package body Giant.Tree_Layouts is
       Res.Target_Position := Target_Position;
       Res.Root_Node       := Root_Node;
       Res.Meta_Class_Set  := Meta_Class_Set_To_Layout;
+      Res.Process_Edges_Reverse := Process_Edges_Reverse;
       Res.State           := Init_Start;
 
       --  Evolutions.Initialize
@@ -328,6 +330,7 @@ package body Giant.Tree_Layouts is
          W                     : Node_Layout_Data;
 
          New_Relative_Position : Vis.Logic.Vector_2d;
+         New_Position          : Vis.Logic.Vector_2d;
 
          X                     : Vis.Logic_Float;
          Y                     : Vis.Logic_Float;
@@ -339,10 +342,6 @@ package body Giant.Tree_Layouts is
               (Layout.SecondWalk_Stack, SecondWalk_Data);
 
             X := SecondWalk_Data.V.Prelim + SecondWalk_Data.M;
-            --  Adjust Max_X, used for matrix_layout later
-            if Layout.Max_X < X then
-               Layout.Max_X := X;
-            end if;
 
             --  After a call to Init_Calculation_Part_Two, in
             --    Layout.Level_Heights the position meassured from 0.0
@@ -356,39 +355,44 @@ package body Giant.Tree_Layouts is
                                           SecondWalk_Data.V.Level - 1);
             end if;
 
-            --  Logger.Debug ("Self:  " & Graph_Lib.Node_Id_Image
-            --                (SecondWalk_Data.V.Node));
---              if SecondWalk_Data.V.Parent /= null then
---             Logger.Debug ("Parent:  " & Graph_Lib.Node_Id_Image
---                           (SecondWalk_Data.V.Parent.Node));
---              end if;
-
-            --  Logger.Debug ("HasRightSilbling: " & Boolean'Image
-            --                (SecondWalk_Data.V.Right_Silbling /= null));
-            --  Logger.Debug ("HasChildren: " & Boolean'Image
-            --                (SecondWalk_Data.V.Leftmost_Child /= null));
-            --  Logger.Debug ("Prelim:" & Float'Image (SecondWalk_Data.V.Prelim));
-            --  Logger.Debug ("M:     " & Float'Image (SecondWalk_Data.M));
-
-            --  Logger.Debug ("X:     " & Float'Image (X));
-            --  Logger.Debug ("Level: " & Natural'Image (SecondWalk_Data.V.Level));
-            --  Logger.Debug ("Y:     " & Float'Image (Y));
-
             New_Relative_Position := Vis.Logic.Combine_Vector
               (X => X,
                Y => Y);
 
+            New_Position :=
+               Vis.Logic."+" (New_Relative_Position,
+                              Layout.Target_Position);
+
+--              Logger.Debug ("Self:  " & Graph_Lib.Node_Id_Image
+--                             (SecondWalk_Data.V.Node));
+--              if SecondWalk_Data.V.Parent /= null then
+--                 Logger.Debug ("Parent:  " & Graph_Lib.Node_Id_Image
+--                               (SecondWalk_Data.V.Parent.Node));
+--              end if;
+
+--              Logger.Debug ("HasRightSilbling: " & Boolean'Image
+--                            (SecondWalk_Data.V.Right_Silbling /= null));
+--              Logger.Debug ("HasChildren: " & Boolean'Image
+--                            (SecondWalk_Data.V.Leftmost_Child /= null));
+--              Logger.Debug ("Prelim:" & Float'Image (SecondWalk_Data.V.Prelim));
+--              Logger.Debug ("M:     " & Float'Image (SecondWalk_Data.M));
+
+--              Logger.Debug ("X:     " & Float'Image (X));
+--              Logger.Debug ("Level: " & Natural'Image (SecondWalk_Data.V.Level));
+--              Logger.Debug ("Y:     " & Float'Image (Y));
+
 --              Logger.Debug ("RelPos " & Vis.Logic.Image (New_Relative_Position));
---              Logger.Debug ("  TPos " & Vis.Logic.Image
---                            (Vis.Logic."+" (New_Relative_Position,
---                                            Layout.Target_Position)));
+--              Logger.Debug ("  TPos " & Vis.Logic.Image (New_Position));
 
             Graph_Widgets.Set_Top_Middle
               (Layout.Widget,
                SecondWalk_Data.V.Node,
-               Vis.Logic."+" (New_Relative_Position,
-                              Layout.Target_Position),
+               New_Position,
                Layout.Widget_Lock);
+
+           if Layout.Max_X < Vis.Logic.Get_X (New_Position) then
+              Layout.Max_X := Vis.Logic.Get_X (New_Position);
+           end if;
 
             W := SecondWalk_Data.V.Leftmost_Child;
             while W /= null loop
@@ -652,9 +656,6 @@ package body Giant.Tree_Layouts is
             --  Stores the current amount of Silblings
             Silbling_Count     : Natural;
 
-            Outgoing_Edges     : Graph_Lib.Edge_Id_Array :=
-              Graph_Lib.Get_Outgoing_Edges (Parent_Data.Node);
-
             --  indicates, if node was member in Layout.Nodes_To_Layout
             Found              : Boolean;
 
@@ -669,22 +670,9 @@ package body Giant.Tree_Layouts is
             ----------------------------------------
             Node               : Graph_Lib.Node_Id;
 
-         begin
-            Silbling_Count    := 0;
-            Last_Silbling     := null;
-            Leftmost_Silbling := null;
-            Data              := null;
-
-            for I in Outgoing_Edges'Range loop
-               if Config.Class_Sets.Is_Empty
-                 (Layout.Meta_Class_Set) or else
-                 Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
-                 (Layout.Meta_Class_Set,
-                  Graph_Lib.Get_Edge_Class_Id (Outgoing_Edges (I))) then
-                  Node := Graph_Lib.Get_Target_Node (Outgoing_Edges (I));
-                  Graph_Lib.Node_Id_Sets.Remove_If_Exists
-                    (Layout.Nodes_To_Layout, Node, Found);
-                  if Found then
+            procedure Process_Current_Child is
+            begin
+               if Found then
                      --  node is reachable, via a valid edge
                      --  is member of the class sets and is to be layouted
 
@@ -715,10 +703,52 @@ package body Giant.Tree_Layouts is
                      --  the children of Data have to be created, too
                      --  --> append Data to queue
                      Append_To_Queue (Data);
-
-                  end if;
                end if;
-            end loop;
+            end Process_Current_Child;
+
+         begin
+            Silbling_Count    := 0;
+            Last_Silbling     := null;
+            Leftmost_Silbling := null;
+            Data              := null;
+
+            if Layout.Process_Edges_Reverse then
+               declare
+                  Incoming_Edges     : Graph_Lib.Edge_Id_Array :=
+                    Graph_Lib.Get_Incoming_Edges (Parent_Data.Node);
+               begin
+                  for I in Incoming_Edges'Range loop
+                     if Config.Class_Sets.Is_Empty
+                       (Layout.Meta_Class_Set) or else
+                       Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
+                       (Layout.Meta_Class_Set,
+                        Graph_Lib.Get_Edge_Class_Id (Incoming_Edges (I))) then
+                        Node := Graph_Lib.Get_Source_Node (Incoming_Edges (I));
+                        Graph_Lib.Node_Id_Sets.Remove_If_Exists
+                          (Layout.Nodes_To_Layout, Node, Found);
+                        Process_Current_Child;
+                     end if;
+                  end loop;
+               end;
+            else
+               declare
+                  Outgoing_Edges     : Graph_Lib.Edge_Id_Array :=
+                    Graph_Lib.Get_Outgoing_Edges (Parent_Data.Node);
+               begin
+                  for I in Outgoing_Edges'Range loop
+                     if Config.Class_Sets.Is_Empty
+                       (Layout.Meta_Class_Set) or else
+                       Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
+                       (Layout.Meta_Class_Set,
+                        Graph_Lib.Get_Edge_Class_Id (Outgoing_Edges (I))) then
+                        Node := Graph_Lib.Get_Target_Node (Outgoing_Edges (I));
+                        Graph_Lib.Node_Id_Sets.Remove_If_Exists
+                          (Layout.Nodes_To_Layout, Node, Found);
+                        Process_Current_Child;
+                     end if;
+                  end loop;
+               end;
+            end if;
 
             --  there is no Data.Rightmost_Silbing, therefore
             --    there's no need to adjust Data, which
