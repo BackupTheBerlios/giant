@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.14 $
+-- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.15 $
 -- $Author: schwiemn $
--- $Date: 2003/06/30 11:53:49 $
+-- $Date: 2003/07/03 13:15:38 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -1196,10 +1196,6 @@ package body Giant.Config.Vis_Styles is
       -- add default vis style to hash map
       All_Vis_Styles_Hashed_Mappings.Bind
         (All_Vis_Styles_Map, Global_Default_Vis_Style_Name, New_Vis_Style);
-
-    -- FIX
-     Logger.Debug (Ada.Strings.Unbounded.To_String
-        (Global_Default_Vis_Style_Name));
 
       -- deallocate DOM Tree for default visualisation style
       Tree_Readers.Free (Default_Vis_Style_Tree_Reader);

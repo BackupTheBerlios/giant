@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.27 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.28 $
 --  $Author: schwiemn $
---  $Date: 2003/07/01 17:09:52 $
+--  $Date: 2003/07/03 13:15:39 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -191,13 +191,13 @@ package body Giant.Vis_Windows is
       New_Window_Ac.All_Managed_Selections := Selection_Data_Sets.Empty_Set;
 
       --  Initialize new Graph_Widget
-      Graph_Widgets.Create (New_Graph_Widget);
+   -- FIX  Graph_Widgets.Create (New_Graph_Widget);
 
       --  Increases the GTK Reference Counter - needed to keep the graph
       --  widget persistent in this data structure
-      Graph_Widgets.Ref (New_Graph_Widget);
+   -- FIX   Graph_Widgets.Ref (New_Graph_Widget);
 
-      New_Window_Ac.The_Graph_Widget := New_Graph_Widget;
+   -- FIX   New_Window_Ac.The_Graph_Widget := New_Graph_Widget;
 
       --  Create empty standard selection and make it to the current selection
       --  -> this behaviour is demanded by the Specification

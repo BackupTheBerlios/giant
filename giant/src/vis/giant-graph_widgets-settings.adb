@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.8 $
---  $Author: keulsn $
---  $Date: 2003/07/02 16:49:15 $
+--  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.9 $
+--  $Author: schwiemn $
+--  $Date: 2003/07/03 13:15:39 $
 --
 ------------------------------------------------------------------------------
 
@@ -454,7 +454,7 @@ package body Giant.Graph_Widgets.Settings is
       begin
          Widget.Settings.All_Colors
            (Highlight_Index (Widget, Vis_Data.Current_Local)) :=
-           Create (C.Get_Current_Selection_Highlight_Color);
+           Create (C.Get_Selection_Highlight_Color (C.Current_Selection));
          Widget.Settings.All_Colors
            (Highlight_Index (Widget, Vis_Data.First_Local)) :=
            Create (C.Get_Selection_Highlight_Color (C.Color_1));

@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-global_data.adb,v $, $Revision: 1.3 $
+-- $RCSfile: giant-config-global_data.adb,v $, $Revision: 1.4 $
 -- $Author: schwiemn $
--- $Date: 2003/06/24 19:02:04 $
+-- $Date: 2003/07/03 13:15:38 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -48,7 +48,6 @@ package body Giant.Config.Global_Data is
    type Processed_Config_Settings_Element is record   
    
       Resources_Directory   : Ada.Strings.Unbounded.Unbounded_String;            
-      Actual_Selection_Highlight_Color : Color_Access;
       Selection_Highlight   : Selection_Highlight_Array;
       Subgraph_Highlight    : Subgraphs_Highlight_Array;
                              
@@ -88,11 +87,11 @@ package body Giant.Config.Global_Data is
           (Config_Settings.Get_Setting_With_Path_Expanded
             ("Resources_Directory"));
                              
-      Proc_Settings.Actual_Selection_Highlight_Color := 
+      Proc_Settings.Selection_Highlight (Current_Selection) :=
         new Ada.Strings.Unbounded.Unbounded_String'
           (Ada.Strings.Unbounded.To_Unbounded_String
             (Config_Settings.Get_Setting_As_String
-              ("Actual_Selection_Highlight_Color"))); 
+              ("Current_Selection_Highlight_Color"))); 
                                 
       Proc_Settings.Selection_Highlight (Color_1) :=
         new Ada.Strings.Unbounded.Unbounded_String'
@@ -168,10 +167,7 @@ package body Giant.Config.Global_Data is
          Config.Free_Color_Access 
            (Proc_Settings.Subgraph_Highlight (I));
       end loop;      
-
-      Config.Free_Color_Access
-        (Proc_Settings.Actual_Selection_Highlight_Color);
-      
+     
    end Clear_Config_Data;
 
 
@@ -201,17 +197,6 @@ package body Giant.Config.Global_Data is
    -- C
    -- Access to the configuration data about colors.
    ---------------------------------------------------------------------------
-
-   ---------------------------------------------------------------------------
-   function Get_Current_Selection_Highlight_Color
-     return Color_Access is
-   begin
-      if (Is_Config_ADO_Initialized = False) then
-         raise Config_ADO_Not_Initialized_Exception;
-      end if;
-
-      return Proc_Settings.Actual_Selection_Highlight_Color;
-   end Get_Current_Selection_Highlight_Color;
 
    ---------------------------------------------------------------------------
    function Get_Selection_Highlight_Color

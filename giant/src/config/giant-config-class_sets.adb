@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.6 $
+-- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.7 $
 -- $Author: schwiemn $
--- $Date: 2003/07/02 15:45:18 $
+-- $Date: 2003/07/03 13:15:38 $
 --
 with Giant.File_Management;  -- from GIANT
 with Giant.XML_File_Access;  -- from GIANT
@@ -559,9 +559,9 @@ package body Giant.Config.Class_Sets is
                      A_Edge_Class);                 
                end if;                                                  
             end loop;  
-                                                 
-         end if; -- end if (Elements (I) /= null)
-                            
+                                                             
+         end if; -- end if (Elements (I) /= null)  
+                                   
       end loop;       
        
       return New_Meta;           

@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-global_data.ads,v $, $Revision: 1.4 $
+-- $RCSfile: giant-config-global_data.ads,v $, $Revision: 1.5 $
 -- $Author: schwiemn $
--- $Date: 2003/07/02 09:07:45 $
+-- $Date: 2003/07/03 13:15:38 $
 --
 -- -----
 -- This package holds the functionality needed to access the
@@ -47,7 +47,8 @@ package Giant.Config.Global_Data is
    -- According to the specification, there are three different
    -- userdefined colors used to higlight Selections
    -- (see GIANT Specification "13.2.2 Farbe von Hervorhebungen").
-   type Selection_High_Light_ID is (Color_1, Color_2, Color_3);
+   type Selection_High_Light_ID is 
+     (Current_Selection, Color_1, Color_2, Color_3);
 
    ---------------------------------------------------------------------------
    -- There are also three different colors used to highlight
@@ -114,23 +115,6 @@ package Giant.Config.Global_Data is
    function Get_Resources_Directory return String;
    
    ---------------------------------------------------------------------------
-   -- Searches all known directories there
-   -- "include gsl script files" are located and tries to find the file
-   -- File_Name. If it exists 
-   --
-   -- Returns:
-   --   An absolute path to a file
-   -- Raises:
-   --   Raises
-   --   Skript_File 
-   --
-   --   Config_ADO_Not_Initialized_Exception - raised if this subprogram
-   --     is called before "Initialize_Config_Data"
- --  Locate_GSL_Skript_File 
- --    (File_Name : String)   
- --    return String;
-
-   ---------------------------------------------------------------------------
    -- C
    -- Access to the configuration data about colors.
    --
@@ -147,26 +131,6 @@ package Giant.Config.Global_Data is
    -- This does not apply to the functions of the subpackage
    -- Config.Vis_Styles (see internal documentation of this package).
    ---------------------------------------------------------------------------
-
-   ---------------------------------------------------------------------------
-   -- Used to initialize the ADT "Color_Access".
-   --
-   -- Returns the String describing the highlight color for the
-   -- current selection.
-   -- As this function is not supposed to be used frequently, the
-   -- implementation is not very performant.
-   --
-   -- Note
-   --   The returned value is a pointer. After the finalisation of
-   --   this ADO, you will have a dangling pointer.
-   --
-   -- Returns:
-   --   A pointer to a String which describes a color.
-   -- Raises:
-   --   Config_ADO_Not_Initialized_Exception - raised if this subprogram
-   --   is called before "Initialize_Config_Data".
-   function Get_Current_Selection_Highlight_Color
-     return Color_Access;
 
    ---------------------------------------------------------------------------
    -- This function returns the color used to highlight selections.

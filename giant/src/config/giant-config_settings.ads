@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.15 $
+-- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.16 $
 -- $Author: schwiemn $
--- $Date: 2003/07/02 11:31:19 $
+-- $Date: 2003/07/03 13:15:38 $
 --
 -- -----
 -- This package holds the functionality needed to access and handle
@@ -101,7 +101,7 @@ package Giant.Config_Settings is
        (To_UStr ("Icon_For_Node_Annotations"),
         To_UStr ("my_icon.xpm"), null),
 
-       (To_UStr ("Actual_Selection_Highlight_Color"),
+       (To_UStr ("Current_Selection_Highlight_Color"),
         To_UStr ("RGB:AA/AA/AA"), null),
 
        (To_UStr ("Selection_Highlight_Color_1"),

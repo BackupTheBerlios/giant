@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-gsl_support-test.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-gsl_support-test.adb,v $, $Revision: 1.2 $
 --  $Author: schwiemn $
---  $Date: 2003/07/02 11:11:52 $
+--  $Date: 2003/07/03 13:15:39 $
 --
 with AUnit.Assertions; use AUnit.Assertions;
 with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
@@ -94,22 +94,22 @@ package body Giant.GSL_Support.Test is
             
       Logger.Debug 
         ("GSL_Include_File: """
-         & GSL_Support.Locate_GSL_Include_File ("dummy_skript_2_1.gsl")
+         & GSL_Support.Get_GSL_Include ("dummy_skript_2_1.gsl")
          & """");
          
       Logger.Debug 
         ("GSL_Include_File: """
-         & GSL_Support.Locate_GSL_Include_File ("dummy_skript_1_1.gsl")
+         & GSL_Support.Get_GSL_Include ("dummy_skript_1_1.gsl")
          & """");
          
       Logger.Debug 
         ("GSL_Include_File: """
-         & GSL_Support.Locate_GSL_Include_File ("dummy_skript_1_1.gsl")
+         & GSL_Support.Get_GSL_Include ("dummy_skript_1_1.gsl")
          & """");
 
       -- test files
       Assert
-        (GSL_Support.Locate_GSL_Include_File ("dummy_skript_2_1.gsl")
+        (GSL_Support.Get_GSL_Include ("dummy_skript_2_1.gsl")
          = File_Management.Get_Absolute_Path_To_File_From_Relative
            (".", 
             "resources/gsl_support_test_data/gsl_include_dir_2"
@@ -117,7 +117,7 @@ package body Giant.GSL_Support.Test is
          "Test GSL include file found ""dummy_skript_2_1.gsl"".");
 
       Assert
-        (GSL_Support.Locate_GSL_Include_File ("dummy_skript_1_1.gsl")
+        (GSL_Support.Get_GSL_Include ("dummy_skript_1_1.gsl")
          = File_Management.Get_Absolute_Path_To_File_From_Relative
            (".", 
             "resources/gsl_support_test_data/gsl_include_dir_1"
@@ -125,7 +125,7 @@ package body Giant.GSL_Support.Test is
          "Test GSL include file found ""dummy_skript_1_1.gsl"".");
                
       Assert
-        (GSL_Support.Locate_GSL_Include_File ("dummy_skript_1_2.gsl")
+        (GSL_Support.Get_GSL_Include ("dummy_skript_1_2.gsl")
          = File_Management.Get_Absolute_Path_To_File_From_Relative
            (".", 
             "resources/gsl_support_test_data/gsl_include_dir_1"
@@ -135,13 +135,13 @@ package body Giant.GSL_Support.Test is
       -- test exception
       begin   
          Dummy_String := 
-           GSL_Support.Locate_GSL_Include_File ("not_existing_file.gsl");
+           GSL_Support.Get_GSL_Include ("not_existing_file.gsl");
  
          Assert (False, 
             "Test Locate_GSL_Include_File"
             & "GSL_Skript_File_Does_Not_Exist_Exception");
       exception
-         when GSL_Support.GSL_Skript_File_Does_Not_Exist_Exception =>
+         when GSL_Support.GSL_Script_Not_Found_Exception =>
           
          Assert (True, 
             "Test Locate_GSL_Include_File"
