@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.43 $
---  $Author: keulsn $
---  $Date: 2003/08/04 10:07:06 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.44 $
+--  $Author: schulzgt $
+--  $Date: 2003/08/04 15:04:02 $
 --
 ------------------------------------------------------------------------------
 --
@@ -116,6 +116,10 @@ package Giant.Controller is
 
    procedure Execute_GSL
      (Filename : in String);
+
+   function Gsl_Input
+     (Input_Name : String)
+      return String;
 
    ---------------------------------------------------------------------------
    --  Layout

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.76 $
---  $Author: keulsn $
---  $Date: 2003/08/04 11:01:49 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.77 $
+--  $Author: schulzgt $
+--  $Date: 2003/08/04 15:04:02 $
 --
 
 with Ada.Strings.Unbounded;
@@ -164,6 +164,13 @@ package body Giant.Controller is
          (-"Executing GSL Script", -"Script is running..."));
       Logger.Info ("Script finished:");
    end Execute_GSL;
+
+   function Gsl_Input
+     (Input_Name : String)
+      return String is
+   begin
+      return Dialogs.Show_Input_Dialog (Input_Name);
+   end Gsl_Input;
 
    ---------------------------------------------------------------------------
    --  Layout
