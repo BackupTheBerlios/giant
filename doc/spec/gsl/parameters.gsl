@@ -1,9 +1,9 @@
 [ // Beginn einer Sequence
 
-  assign       // neues Script
+  set          // neues Script
    (+my_script,
-    { (+a, +b, +c),
-      assign (a, add (b, c))
+    { (+a, +b, +c)
+      set (a, add (b, c))
     });        // An den Parameter a muss ein Zugriffspfad
                // auf ein Objekt übergeben werden!
                // An das durch a referenzierte Objekt wird
@@ -11,7 +11,7 @@
                // zugewiesen. add berechnet auf Natural-Werten
                // die Summe.
 
-  assign
+  set
    (+x, 17);
 
   my_script    // Aktivierung

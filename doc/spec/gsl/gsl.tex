@@ -1,7 +1,7 @@
 % =============================================================================
-%  $RCSfile: gsl.tex,v $ $Revision: 1.9 $
-%  $Date: 2003/04/30 15:58:44 $
-%  $Author: koppor $
+%  $RCSfile: gsl.tex,v $ $Revision: 1.10 $
+%  $Date: 2003/05/03 16:24:18 $
+%  $Author: keulsn $
 %
 %  Description: Spezifikation der GIANT Scripting Language
 %
@@ -42,7 +42,7 @@
 % subsubsections nummerieren
 \setcounter{secnumdepth}{3}
 
-\newcommand\version{Version 1.0\xspace}
+\newcommand\version{Version 1.1\xspace}
 %\newcommand\version{\today\xspace}
 
 % header
@@ -148,14 +148,14 @@ Studienprojekt A -- IML Browser\\
 
 
 
-In diesem Dokument wird die GIANT Scripting Language (GSL) sowie
+In diesem Dokument wird die GIANT Scripting Language (GSL) sowie der
 Interpreter zur Ausführung von GSL Scripts spezifiziert.
 GSL ist eine Skriptsprache für das Software-System GIANT. Mit Hilfe von
 GSL können Anfragen an die IML-Bibliothek gestellt werden und auf den
 Resultaten Aktionen ausgeführt werden.
 
 Hier wird zunächst die Struktur von IML-Graphen aus der Sicht
-von GIANT beschrieben und danach Syntax und Sematik von GSL definiert.
+von GIANT beschrieben und danach die Syntax und Sematik von GSL definiert.
 Schließlich folgt die vollständige Beschreibung der angebotenen
 Sprachumgebung.
 
@@ -196,10 +196,9 @@ zwei verschiedene Attribute, die einen gleichen Namen besitzen.
 Einige Attribute sind Verweise. Sie verweisen auf höchstens einen
 IML-Knoten. Es werden unterschieden:
 \begin{description}
-\item[genutzte Verweise] Verweise, die auf genau einen
-           IML-Knoten verweisen.
-\item[ungenutzte Verweise] Verweise, die auf einen besonderen Wert verweisen,
-           der kein IML-Knoten ist.
+\item[Verweise] Verweise, die auf genau einen IML-Knoten verweisen.
+\item[Nullverweise] Verweise, die auf einen besonderen Wert verweisen,
+           der kein IML-Knoten ist. Ein Nullverweis ist kein Verweis.
 \end{description}
 
 Jedes Attribut eines IML-Knoten gehört genau einer der folgenden Klassen an:
@@ -219,12 +218,11 @@ Jedes Attribut eines IML-Knoten gehört genau einer der folgenden Klassen an:
            \item String
            \item Folge von Strings
            \end{enumerate}
-\item[Genutztes Verweis-Attribut] Ein genutzter Verweis
-\item[Ungenutztes Verweis-Attribut] Ein ungenutzter Verweis
-\item[Verweisfolgen-Attribut] Eine endliche Folge von
-           genutzten Verweisen
-\item[Verweismengen-Attribut] Eine endliche Menge
-           von genutzten Verweisen
+\item[Verweis-Attribut] Ein Verweis
+\item[Nullverweis-Attribut] Ein Nullverweis. Ein Nullverweis-Attribut ist
+kein Verweis-Attribut.
+\item[Verweisfolgen-Attribut] Eine endliche Folge von Verweisen
+\item[Verweismengen-Attribut] Eine endliche Menge von Verweisen
 \end{description}
 
 
@@ -251,25 +249,25 @@ Eine Kante im IML-Graph heißt IML-Kante. Eine IML-Kante $e$ von einem
 IML-Knoten $v$ zu einem IML-Knoten $w$ des selben IML-Graph existiert
 genau dann, wenn eine der folgenden Bedingungen erfüllt ist:
    \begin{enumerate}
-   \item $v$ besitzt ein Genutztes Verweis-Attribut, das auf $w$ verweist.
+   \item $v$ besitzt ein Verweis-Attribut, das auf $w$ verweist.
          \begin{enumerate}
          \item Dann besitzt $e$ als Annotation den Attribut-Namen $s$ des
-         Genutzten Verweis-Attributs.
-         \item Das Paar $(v, s)$ heißt Typ der IML-Kante $e$
+         Verweis-Attributs.
+         \item Das Paar $(type (v), s)$ heißt Typ der IML-Kante $e$
          \end{enumerate}
-   \item $v$ besitzt ein Verweisfolgen-Attribut $f$. Ein genutzter Verweis
+   \item $v$ besitzt ein Verweisfolgen-Attribut $f$. Ein Verweis
          aus $f$ verweist auf $w$.
          \begin{enumerate}
          \item dann besitzt $e$ als Annotation den Attribut-Namen $s$ von
          $f$ sowie
-         die Nummer innerhalb der Folge $f$ des genutzten Verweises auf $w$.
-         \item Das Paar $(v, s)$ heißt Typ der IML-Kante $e$.
+         die Nummer innerhalb der Folge $f$ des Verweises auf $w$.
+         \item Das Paar $(type (v), s)$ heißt Typ der IML-Kante $e$.
          \end{enumerate}
-   \item $v$ besitzt ein Verweismengen-Attribut $m$. Ein genutzter Verweis
+   \item $v$ besitzt ein Verweismengen-Attribut $m$. Ein Verweis
          aus $m$ verweist auf $w$.
          \begin{enumerate}
          \item dann besitzt $e$ als Annotation den Attribut-Namen $s$ von $m$.
-         \item Das Paar $(v, s)$ heißt Typ der IML-Kante $e$.
+         \item Das Paar $(type (v), s)$ heißt Typ der IML-Kante $e$.
          \end{enumerate}
    \end{enumerate}
 \item Falls eine IML-Kante $e$ existiert, so hat $e$ keine Annotationen,
@@ -341,8 +339,7 @@ Der GSL Interpreter zeigt dem Benutzer eine Fehlermeldung an.
 Der GSL Interpreter muss nach einem Fehler entweder alle seit Beginn
 der Ausführung bereits ausgeführten Aktionen rückgängig machen, oder er
 muss dem Benutzer anzeigen, welche Aktionen bereits ausgeführt wurden,
-bevor der Fehler passierte. Anhand dieser Information soll es dem Benutzer
-möglich sein, die Aktionen manuell rückgängig zu machen.
+bevor der Fehler passierte.
 
 \section{Konzepte}
 
@@ -361,6 +358,7 @@ Ziel wurden Aspekte wie eine intuitiv erfassbare Syntax untergeordnet.
 \typename{\tnodeset}{Node\_Set}
 \typename{\tedgeset}{Edge\_Set}
 \typename{\tobjectset}{Object\_Set}
+\typename{\tsloc}{Source\_Location}
 \typename{\tstring}{String}
 \typename{\tboolean}{Boolean}
 \typename{\tnatural}{Natural}
@@ -394,6 +392,10 @@ eines beliebigen Typs aus dieser Aufzählung oder \toknull.
 Zusätzlich gibt es noch einen besonderen Typ, der keinen Namen besitzt.
 Dieser anonyme Typ umfasst genau einen Wert, nämlich den Wert \toknull.
 
+Alle diese Typen decken alle Typen der IML-Reflection ab. Falls
+zur IML-Reflection neue Typen hinzugefügt werden, so werden diese
+ebenfalls in der GSL eingeführt.
+
 \subsubsection{Zusammengesetzte Typen}
 
 Werte zusammengesetzter Typen sind zusammengesetzt aus mehreren Werten
@@ -404,6 +406,14 @@ mehr zwischen vordefinierten und zusammengesetzten Typen unterschieden.
 \item[\tobjectset] Wert des vordefinierten Typs \tlist mit genau zwei
 Einträgen $N$ und $E$. Dabei muss $N$ ein Wert des Typs \tnodeset und $E$
 ein Wert des Typs \tedgeset sein.
+\item[\tsloc] Wert des vordefinierten Typs \tlist mit genau vier Einträgen
+$L$, $S$, $F$, $P$. Dabei muss gelten:
+ \begin{enumerate}
+ \item $L$ ist vom Typ \tnatural (\gq{Zeilennummer}).
+ \item $S$ ist vom Typ \tnatural (\gq{Spaltennummer}).
+ \item $F$ ist vom Typ \tstring (\gq{Filename}).
+ \item $P$ ist vom Typ \tstring (\gq{Pfadname}).
+ \end{enumerate}
 \end{description}
 
 \subsection{Ausdrücke}
@@ -413,7 +423,7 @@ Ausdrücken. Die Auswertung eines Ausdrucks hat als Ergebnis stets genau
 einen bestimmten Wert und kann Nebeneffekte haben. Nebeneffekte sind
 Veränderungen an den Werten von Objekten oder die Durchführung von Aktionen.
 
-Der Typ eines Ergebnis steht im Allgemeinen erst fest, nachdem ein Ausdruck
+Der Typ eines Ergebnisses steht im Allgemeinen erst fest, nachdem ein Ausdruck
 ausgewertet wurde. Die Auswertung eines Ausdrucks kann fehlschlagen, falls
 ein Laufzeitfehler auftritt. In diesem Fall stoppt die Auswertung sofort.
 
@@ -422,7 +432,7 @@ ein Laufzeitfehler auftritt. In diesem Fall stoppt die Auswertung sofort.
 
 Um während der Auswertung von Ausdrücken bestimmte Werte zur späteren
 Wiederverwendung zu speichern werden \emph{Objekte} verwendet. Der Zugriff
-auf ein Objekt erfolgt durch eine Variable.
+auf ein Objekt erfolgt durch eine Variable oder einen Zugriffspfad.
 
 In \emph{Aktivierungsumgebungen} werden Variablen an Objekte gebunden.
 
@@ -500,7 +510,7 @@ bestimmt wird (siehe \ref{script_activation}). \newenv wird aktuell.
 Nachdem die Auswertung des Script beendet ist wird \newenv zerstört und \oldenv
 wird wieder aktuell.
 
-Während ein Script ausgewertet wird können weitere Scripts aktiviert werden.
+Während ein Script ausgewertet wird, können weitere Scripts aktiviert werden.
 Deshalb können mehrere Aktivierungsumgebungen gleichzeitig existieren. Auf
 diesen Aktivierungsumgebungen existiert eine Vererbungsbeziehung die durch
 eine partielle Ordnung beschrieben $\le$ werden kann:
@@ -572,7 +582,7 @@ deren Ergebnis Zugriffspfade auf Objekte sein müssen.
 
 \verbatiminput{scriptdecl.gsl}
 
-\subsubsection{Ablauf}
+\subsubsection{Ablauf der Aktivierung}
 \label{activation_process}
 
 Ein Script $S$ kann \emph{aktiviert} werden. Wenn $S$ aktiviert wird, dann
@@ -586,7 +596,7 @@ Auswertung des Rumpfs von $S$. Für die genaue Beschreibung siehe
 \label{activation_preconds}
 
 Ein Script $S$ wird aktiviert durch Auswertung eines Ausdrucks, der als
-Ergebnisaus einen
+Ergebnis einen
 Wert des Typs \tscriptreference hat. Dieser Wert wird als
 Aktivierungsinformation bezeichet.
 
@@ -594,8 +604,8 @@ Die Aktivierungsinformation bestimmt
 \begin{enumerate}
 \item Welches Script ausgeführt wird (Quelltext-Position von $S$ oder eine
 gleichwertige Darstellung).
-\item Welche Aktivierungsumgebung von der neuen Aktivierungsumgebung dieser
-Aktivierung beerbt wird. \label{allowed_environments}
+\item Welche Aktivierungsumgebung beerbt wird, wenn die Aktivierung
+stattfindet. \label{allowed_environments}
 \end{enumerate}
 
 Vor der Aktivierung des Scripts $S$ wird eine neue Aktivierungsumgebung
@@ -606,10 +616,10 @@ Es soll sichergestellt werden, dass die neue Aktivierungsumgebung \newenv nur
 solche Aktivierungsumgebungen \oldenv beerben kann, so dass die Variable $v$
 in \oldenv genau die Bedeutung hat, die der Autor von $S$ erwartet.
 Dies stellt Punkt \ref{allowed_environments} der vorangehenden Aufzählung
-sicher. \oldenv ist \emph{nicht} zwangsläuftig die vor der Aktivierung von
+sicher. \oldenv ist \emph{nicht} zwangsläufig die vor der Aktivierung von
 $S$ aktuelle Aktivierungsumgebung. \oldenv ist diejenige Aktivierungsumgebung,
 die zum Zeitpunkt der Auswertung der Script-Deklaration von $S$
-\ref{script_decl} aktuell war.
+(siehe \ref{script_decl}) aktuell war.
 
 \paragraph{Beispiel zur Scriptaktivierung}
 
@@ -621,19 +631,19 @@ die zum Zeitpunkt der Auswertung der Script-Deklaration von $S$
 In dem Ausdruck dessen Auswertung die Aktivierung eines Scripts veranlasst
 wird eine Liste von Argumenten $L_e = (e_1, ..., e_n)$ angegeben mit
 $n \in {0, 1, 2, ...}$ und $\forall 1 \le i \le n: (e_i$ ist ein Ausdruck$)$.
-Bevor die Aktivierung beginnt wird
+Bevor die Aktivierung beginnt, wird
 $L_e$ ausgewertet und hat als Ergebnis den Wert $L_a = (a_1, ..., a_n)$.
 
 Nachdem die Aktivierung begonnen hat, wird
 die Parameterliste ausgewertet (siehe Abschnitt \ref{script_activation}).
 Das Ergebnis dieser Auswertung muss ein Wert $L_p$ vom Typ
-Liste sein. Es muss gelten $L_p = (p_1, ..., p_n)$ mit
+\tlist sein. Es muss gelten $L_p = (p_1, ..., p_n)$ mit
 $\forall 1 \le i \le n: ( p_i$ ist ein Zugriffspfad auf ein Objekt$)$.
 Andernfalls führt die Auswertung zu einem Laufzeitfehler.
 
-Dann wird für alle $i$ jedem Objekt das durch den Zugriffspfad $p_i$ erreicht
-wird der Wert $a_i$ zugewiesen. In GSL formuliert wird der Ausdruck
-°(assign (°$p_1$°, °$a_1$°), ..., assign (°$p_n$°, °$a_n$°))°
+Dann wird für alle $i$ jedem Objekt, das durch den Zugriffspfad $p_i$ erreicht
+wird, der Wert $a_i$ zugewiesen. In GSL formuliert wird der Ausdruck
+°(set (°$p_1$°, °$a_1$°), ..., set (°$p_n$°, °$a_n$°))°
 ausgewertet und sein Ergebnis verworfen (Hinweis: Dieser Ausdruck ist kein
 korrekter GSL-Ausdruck, sondern dient nur der intuitiven Erläuterung).
 
@@ -714,6 +724,9 @@ Zeichen und \nidentifier dürfen beliebig viele Trennzeichen geschrieben werden.
 \item[\nidentifier] \nchar $\langle$ \nchar | \ndigit | \tokunderscore
  $\rangle$*
 \end{EBNF}
+
+Dabei steht \nchar für eines der Zeichen a-z, A-Z. \ndigit steht für eine
+der Ziffern 0-9.
 
 \begin{enumerate}
 \item Der Text eines \nidentifier darf nicht gleich sein wie ein
@@ -973,7 +986,7 @@ Andernfalls ist die Auswertung erfolgreich.
 \label{script_decl}
 
 \begin{EBNF}
-\item[\nscriptdecl] \tokcurlyopen \nlist \tokcomma \nexpression \tokcurlyclose
+\item[\nscriptdecl] \tokcurlyopen \nlist \nexpression \tokcurlyclose
 \end{EBNF}
 
 \begin{enumerate}
@@ -981,7 +994,7 @@ Andernfalls ist die Auswertung erfolgreich.
 \item Ergebnis ist eine Aktivierungsinformation $I$ vom Typ
 \tscriptreference für $S$.
 \item Die zulässige Aktivierungsumgebung in $I$ ist die (zum Zeitpunkt der
-Auswertung der \nscriptdecl) aktuelle Aktivierungsumgebung
+Auswertung der \nscriptdecl) aktuelle Aktivierungsumgebung.
 \item Die \nlist heißt Parameterliste von $S$ (vgl. \ref{script_activation}).
 \item Die \nexpression heißt Rumpf von $S$ (vgl. \ref{script_activation}).
 \end{enumerate}
@@ -1045,7 +1058,8 @@ Andernfalls führt die Auswertung zu einem Laufzeitfehler. $I$ enthält einen
 Zugriffspfad auf das Skript $S$.
   \item Die \nlist wird ausgewertet.
   \item Es wird eine neue Aktivierungsumgebung $A$ erzeugt. $A$ beerbt die
-  in der Aktivierungsinformation angegebene zulässige Aktivierungsumgebung.
+  in $I$ angegebene zulässige Aktivierungsumgebung
+  (siehe \ref{script_decl}, \ref{activation_preconds}). \label{new_activation}
   \item $A$ wird aktuelle Aktivierungsumgebung.
   \item Die Parameterliste $P$ von $S$ wird ausgewertet. Falls einer der Werte
   in $P$ nicht vom Typ \tvarreference ist, so ist dies ein Laufzeitfehler.
@@ -1055,16 +1069,36 @@ Zugriffspfad auf das Skript $S$.
   \nlist zugewiesen
   (genaue Beschreibung siehe \ref{parameter_passing}).
   \item Die \nexpression wird ausgewertet und hat den Wert $R$ als Ergebnis.
+  $R$ darf ein Wert eines beliebigen Typs sein mit den Einschränkungen:
+    \begin{enumerate}
+    \item Ist $R$ vom Typ \tvarreference, dann ist $R$ ein Zugriffspfad
+    auf ein Objekt, das in einer Aktivierungsumgebung \oldenv an eine
+    Variable gebunden ist. Es muss gelten: \oldenv $< A$. Andernfalls liegt
+    ein Laufzeitfehler vor.\\
+    \textbf{Hinweis}
+    Diese Einschränkung erzwingt, dass $R$ nicht ein Zugriffspfad auf
+    ein Objekt sein kann, das an eine lokale Variable gebunden ist.
+    \item Ist $R$ vom Typ \tscriptreference, dann ist $R$ eine
+    Aktivierungsinformation. Die zulässige Aktivierungsumgebung dieser
+    Aktivierungsinformation sei \oldenv. Es muss gelten: \oldenv $< A$. 
+    Andernfalls liegt ein Laufzeitfehler vor.\\
+    \textbf{Hinweis}
+    Diese Einschränkung erzwingt, dass die Aktivierung von $R$ nicht
+    die Existenz der (während der Auswertung von $S$) aktuellen
+    Aktivierungsumgebung $A$ erfordert.
+    \end{enumerate}
   \label{script_result}
   \item $A$ wird zerstört. Alle Objekte, die von lokalen Variablen in $A$
   gebunden wurden dürfen zerstört werden.
-  \item Die Aktivierungsumgebung, die zuvor aktuell war wird wieder aktuell.
+  \item Die Aktivierungsumgebung, die zuvor (bis zum Schritt
+   \ref{new_activation}) aktuell war, wird wieder aktuell.
   \item Falls kein Laufzeitfehler aufgetreten ist, so ist das Ergebnis der
   Auswertung der Wert $R$ (siehe Punkt \ref{script_result}).
 \end{enumerate}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\raggedbottom
 \section{Vordefinierte Sprachumgebung}
 \label{predef_env}
 
@@ -1114,8 +1148,8 @@ Variablen.
 
 \subsubsection{Zuweisung}
 
-%%% assign
-\begin{scriptdef}{assign}
+%%% set
+\begin{scriptdef}{set}
 \sparam{lhs}{\tvarreference}{Zugriffspfad auf eine sichtbare Variable}
 \sparam{rhs}{jeder Typ}{Zuzuweisender Wert eines beliebigen Typs. Es gibt
 jedoch gewisse Einschränkungen (siehe Beschreibung)}
@@ -1202,7 +1236,10 @@ in der aktuellen Aktivierungsumgebung aus. Mit Hilfe dieses Scripts können
 Bibliotheken von benutzerdefinierten Scripts geladen werden. Eine Bibliothek
 sollte eine \nsequence sein und in den \nexpression der \nsequence sollten
 neue Variablen erzeugt werden, die die Aktivierungsinformation von den
-Scripts der Bibliothek enthalten.}
+Scripts der Bibliothek enthalten. \textbf{Hinweis} run ist das einzige
+Script, zu dessen Aktivierung keine neue Aktivierungsumgebung erzeugt werden
+muss. Der Ausdruck aus der geladenen Datei wird direkt in der aktuellen
+Aktivierungsumgebung ausgeführt.}
 \end{scriptdef}
 
 
@@ -1560,6 +1597,20 @@ Enumerator dargestellt werden, werden hier als \tlist dargestellt.}
 dieser Text identisch mit dem Typname. Für eine IML-Kante setzt sich dieser
 Text zusammen aus Name des Typs des Startknoten . Name des Attributs dieser
 IML-Kante.}
+\end{scriptdef}
+
+%%% get_incoming
+\begin{scriptdef}{get\_incoming}
+\sparam{n}{\tnodeid}{Ein IML-Knoten}
+\sresult{\tedgeset}{Vorbereich von n}
+\saction{Ermittelt alle IML-Kanten, die als Target n haben.}
+\end{scriptdef}
+
+%%% get_outgoing
+\begin{scriptdef}{get\_outgoing}
+\sparam{e}{\tnodeid}{Ein IML-Knoten}
+\sresult{\tedgeid}{Nachbereich von n}
+\saction{Ermittelt alle IML-Kanten, die n als Source haben.}
 \end{scriptdef}
 
 %%% get_source

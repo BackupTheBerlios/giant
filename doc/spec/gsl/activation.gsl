@@ -2,7 +2,7 @@
 
 [ // Beginn einer Sequence
 
-  assign           // action ist eine Variable, die an ein
+  set              // action ist eine Variable, die an ein
    (+result,       // Objekt gebunden ist, dessen Wert eine
     action ());    // Aktivierungsinformation ist.
                    // Die Aktivierung wird durch () ausgelöst.
@@ -10,15 +10,15 @@
                    // zugewiesen, das an die neue Variable
                    // result gebunden ist.
 
-  assign           // Die neue lokale Variable var_name
+  set              // Die neue lokale Variable var_name
    (+var_name,     // wird an ein neues Objekt gebunden.
-    {(), null});   // Das neue Objekt erhält als Wert eine
+    {() null});    // Das neue Objekt erhält als Wert eine
                    // Aktivierungsinformation für das
-                   // Script {(), null}.
+                   // Script {() null}.
   var_name ();     // Inspektion von var_name und Aktivierung
                    // des referenzierten Scripts
 
-  { (),            // Deklaration eines Scripts...
+  { ()             // Deklaration eines Scripts...
     null
   } ();            // ...und sofortige Aktivierung.
 

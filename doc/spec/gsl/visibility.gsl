@@ -8,7 +8,7 @@
   +a; // neue lokale Variable
   +b; // neue lokale Variable
 
-  { (), // neues Script
+  { ()  // neues Script
     [
       // a ist hier global
       // b ist hier global
