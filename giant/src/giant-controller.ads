@@ -20,15 +20,32 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.19 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.20 $
 --  $Author: squig $
---  $Date: 2003/06/25 17:28:05 $
+--  $Date: 2003/06/25 17:47:57 $
 --
 ------------------------------------------------------------------------------
 --
 --  Contains the controller. The controller is responsible for maintaing
---  data consistency. All operations that modify global data must be
---  included in this package.
+--  data consistency. All operations that modify global data i.e. data
+--  that is stored in the project must be included in this package.
+--
+--  Think of the controller as a facade for the framework of the
+--  application. Sadly the facade is incomplete and only contains
+--  methods that modify global data the inspectors are missing and
+--  need to be called directly.
+--
+--  The controller also stores the currently loaded project. The
+--  controller can only handle a singe project.
+--
+--  Frequently used parameters:
+--    Ask_For_Confirmation -
+--      If True, the content was modified and the gui is visible, the
+--      user is prompted for confirmation. Usually the dialog contains a
+--      Yes, No and Cancel button. If the user selects cancel the called
+--      function usually returns False.
+--      Otherwise, the requested operation is executed and True is
+--      returned.
 --
 
 with Giant.Graph_Lib;
@@ -70,6 +87,8 @@ package Giant.Controller is
    --  Node Annotations
    ---------------------------------------------------------------------------
 
+   ---------------------------------------------------------------------------
+   --  Closes the currently open project.
    function Get_Node_Annotation
      (Node : in Graph_Lib.Node_Id)
      return String;
@@ -247,12 +266,36 @@ package Giant.Controller is
       Ask_For_Confirmation : in Boolean := True)
      return Boolean;
 
+   ---------------------------------------------------------------------------
+   --  Creates a new named Name window. The window is opened if the
+   --  gui is shown.
+   --
+   --  See:
+   --    Giant.Vis_Windows.Create_New
+   --    Giant.Projects.Add_Visualisation_Window
+   --    Open_Window
    procedure Create_Window
      (Name : in String := "Unknown");
 
+   ---------------------------------------------------------------------------
+   --  Opens a window, if gui is shown.
+   --
+   --  Parameters:
+   --    Name - The name of the window
+   --  See:
+   --    Giant.Projects.Get_Visualisation_Window
+   --    Giant.Gui_Manager.Open
    procedure Open_Window
      (Name : in String);
 
+   ---------------------------------------------------------------------------
+   --  Removes a window.
+   --
+   --  Parameters:
+   --    Name - The name of the window
+   --  See:
+   --    Giant.Projects.Get_Visualisation_Window
+   --    Giant.Gui_Manager.Remove_Window
    function Remove_Window
      (Name                 : in String;
       Ask_For_Confirmation : in Boolean := True)

@@ -20,15 +20,17 @@
 --
 --  First Author: <unkown>
 --
---  $RCSfile: template.adb,v $, $Revision: 1.2 $
+--  $RCSfile: template.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/06/03 22:05:21 $
+--  $Date: 2003/06/25 17:47:57 $
 --
 
 with Giant.Controller;
 with Giant.Logger;
 
 package body Giant.Template is
+
+   package Logger is new Giant.Logger("giant.main");
 
    Window_Count : Integer;
    MAX_WINDOW   : constant Integer := 5;
