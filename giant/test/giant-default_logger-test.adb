@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger-test.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-default_logger-test.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/06/15 12:45:42 $
+--  $Date: 2003/06/18 17:24:07 $
 --
 
 with Ada.Text_IO;
@@ -50,12 +50,13 @@ package body Giant.Default_Logger.Test is
 
    procedure Set_Up (T : in out Test_Case) is
    begin
-      Default_Logger.Init;
+      --  the logger is already initialized, see framework_test.adb
+      null;
    end Set_Up;
 
    procedure Tear_Down (T : in out Test_Case) is
    begin
-      Default_Logger.Close;
+      null;
    end Tear_Down;
 
 end Giant.Default_Logger.Test;

@@ -20,16 +20,15 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-valid_names-test.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-valid_names-test.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/16 15:41:09 $
+--  $Date: 2003/06/18 17:24:07 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
 with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
 
 with Giant.Valid_Names;
-with Giant.Default_Logger;
 
 package body Giant.Valid_Names.Test is
 
@@ -53,12 +52,12 @@ package body Giant.Valid_Names.Test is
 
    procedure Set_Up (T : in out Test_Case) is
    begin
-      Default_Logger.Init;
+      null;
    end Set_Up;
 
    procedure Tear_Down (T : in out Test_Case) is
    begin
-      Default_Logger.Close;
+      null;
    end Tear_Down;
 
 end Giant.Valid_Names.Test;

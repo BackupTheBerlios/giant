@@ -20,15 +20,16 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: framework_test.adb,v $, $Revision: 1.5 $
+--  $RCSfile: framework_test.adb,v $, $Revision: 1.6 $
 --  $Author: squig $
---  $Date: 2003/06/16 15:55:36 $
+--  $Date: 2003/06/18 17:24:07 $
 --
 
 with AUnit.Test_Suites; use AUnit.Test_Suites;
 with AUnit.Test_Runner;
 
 with Giant.Config.Test;
+with Giant.Default_Logger;
 with Giant.Default_Logger.Test;
 with Giant.File_Management.Test;
 with Giant.Graph_Lib.Test;
@@ -54,5 +55,9 @@ procedure Framework_Test is
    procedure Run is new AUnit.Test_Runner (Suite);
 
 begin
+   Giant.Default_Logger.Init;
+
    Run;
+
+   Giant.Default_Logger.Close;
 end Framework_Test;

@@ -20,16 +20,15 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-projects-test.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-projects-test.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/06/17 15:05:37 $
+--  $Date: 2003/06/18 17:24:07 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
 with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
 
 with Giant.Projects;
-with Giant.Default_Logger;
 
 package body Giant.Projects.Test is
 
@@ -52,12 +51,12 @@ package body Giant.Projects.Test is
 
    procedure Set_Up (T : in out Test_Case) is
    begin
-      Default_Logger.Init;
+      null;
    end Set_Up;
 
    procedure Tear_Down (T : in out Test_Case) is
    begin
-      Default_Logger.Close;
+      null;
    end Tear_Down;
 
 end Giant.Projects.Test;
