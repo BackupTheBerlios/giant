@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: afa.tex,v $, $Revision: 1.8 $
-%  $Date: 2003/03/28 18:37:17 $
+%  $RCSfile: afa.tex,v $, $Revision: 1.9 $
+%  $Date: 2003/03/28 21:57:12 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung allgemeiner funktionaler Anforderungen - UseCase
@@ -88,6 +88,7 @@ wann immer möglich die folgenden Konventionen eingehalten.
 
 
   \subsection {Einlesen unzulässiger Daten aus Dateien}
+  \index{Einlesen von Daten}
 
   \begin {enumerate}
   
@@ -120,7 +121,7 @@ den aktuellen Systemzustand informiert.
      Anzeige eines Dialoges mit einem sich ständig leicht ändernden
      Inhalt, so dass erkennbar ist, dass das System noch läuft.
      
-     \item
+     \item \index{Progressbar}
      Anzeige eines Progressbars, der über den aktuellen Fortschritt
      einer Berechnung informiert, ohne dabei den Gesamtaufwand zu 
      kennen.     
@@ -166,33 +167,40 @@ Unzulässige Namen werden generell abgelehnt und führen zu einer Fehlermeldung.
   \begin {enumerate}
   
     \item Name eines Projektes: STANDARD NAME
+          \index{Projekte!zulässige Namen}
     
     \item Name eines IML-Teilgraphen: STANDARD NAME\\
           Dieser Name muss für jeden IML-Teilgraphen innerhalb eines
 	  Projektes eindeutig sein.
+          \index{IML-Teilgraphen!zulässige Namen}
     
     \item Name eines Anzeigefensters: STANDARD NAME\\
           Dieser Name muss für jedes Anzeigefenster innerhalb des Projektes
-	  eindeutig sein.
+	  eindeutig sein.         
+          \index{Anzeigefenster!zulässige Namen}
     
     \item Name einer Selektion: STANDARD NAME \\
           Dieser Name muss für jede Selektionn 
 	  innerhalb eines Anzeigefensters eindeutig sein.
+          \index{Selektionen!zulässige Namen}
     
     \item Name eines Pins: STANDARD NAME \\
           Dieser Name muss für jeden Pin
 	  innerhalb eines Anzeigfensters eindeutig sein.
+          \index{Pins!zulässige Namen}
  
   \end {enumerate}
  
   
-\section {Allgemeine Bedienkonzepte} \index{Allgemeine Bedienkonzepte}
+\section {Allgemeine Bedienkonzepte} \index{Bedienkonzepte}
 Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
 
   \subsection {Selektieren von Fenster-Knoten und Fenster-Kanten in 
                Anzeigefenstern} \index{selektieren}
   \label {Selektieren von Fenster-Knoten und Fenster-Kanten in 
                Anzeigefenstern} 
+
+  \index{Selektieren}
 
   Hier werden die Konventionen und die nötigen Bedienhandlungen
   zur Selektion und Deselektion einzelner
@@ -236,7 +244,7 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
   \subsection {Aktuelle Selektion vs.\ Selektionen} 
                \label{Aktuelle Selektion vs Selektionen}
 
-  \index{Selektionen!Aktuelle Selektion}
+  \index{Selektionen!aktuelle Selektion}
 	       
   Abgesehen von den hier beschriebenen Punkten, verhält sich die aktuelle
   Selektion wie jede andere Selektion. Falls nicht expilzit anders 
@@ -277,6 +285,9 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
 in Anzeigefenster}
   \label{Verhalten beim Einfügen von IML-Teilgraphen und Selektionen
          in Anzeigefenster}
+
+  \index{IML-Teilgraphen!Einfügen in Anzeigefenster}
+  \index{Selektionen!Einfügen in Anzeigefenster}
 
    Dieser Abschnitt spezifiziert die Konventionen für
    das Einfügen von IML-Teilgraphen und Selektionen in Anzeigefenster.
@@ -319,6 +330,7 @@ in Anzeigefenster}
    
    \subsection{Einfügen von Selektionen in Anzeigefenster}
       \label{Einfügen von Selektionen in Anzeigefenster}
+
    \index{Selektionen!Einfügen in Anzeigefenster}
 
    Hier wird das grundlegende Verhalten beim Einfügen von Selektionen

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.22 $
-%  $Date: 2003/03/28 18:37:17 $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.23 $
+%  $Date: 2003/03/28 21:57:12 $
 %  $Author: schwiemn $
 %
 %  Description: Use-Cases für die Fensterfunktionalität der GUI
@@ -65,7 +65,7 @@ Projektes anlegen.
 
 % ==============================================================================
 \begin{uc}[Anzeigefenster löschen]{UC: Anzeigefenster löschen}
-\index {Anzeigefenster!löschen}
+\index{Anzeigefenster!löschen}
 Mit diesem UseCase werden bestehende Anzeigefenster aus dem Projekt 
 entfernt und gelöscht. Alle Informationen zu dem Anzeigefenster
 gehen hierbei unwiederbringlich verloren.
@@ -119,7 +119,7 @@ gehen hierbei unwiederbringlich verloren.
 
 % ==============================================================================
 \begin{uc}[Anzeigefenster öffnen]{UC: Anzeigefenster öffnen}
-\index {Anzeigefenster!öffnen}
+\index{Anzeigefenster!öffnen}
 Dient zum Öffnen eines Anzeigefensters des Projektes.
 
 
@@ -488,7 +488,7 @@ Fenster-Kanten}).
 % ==============================================================================
 \begin{uc}[Den Visualisierungsstil eines Anzeigefensters ändern]
 {UC: Den Visualisierungsstil eines Anzeigefensters ändern}
-\index{Visualisierungsstil!ändern}
+\index{Visualisierungsstile!innerhalb eines Anzeigefensters}
 
 Mittels dieses UseCase kann der Benutzer die Visualisierung
 von Fenster-Knoten und Fenster-Kanten innerhalb eines Anzeigefensters
@@ -631,7 +631,7 @@ Verändert den Maßstab der Darstellung von Knoten und Kanten (relativ).
 \begin{uc}[Label]{UC: Zoomen auf eine gesamte Selektion}
 \index{zoomen auf Selektion}
 
-Wählt die Zoomstufe und scrollt so, daß eine gesamte Selektion im Fenster 
+Wählt die Zoomstufe \index{Zoomstufe} und scrollt so, daß eine gesamte Selektion im Fenster 
 sichtbar ist.
 
   \begin{precond}
@@ -863,7 +863,6 @@ Anzeigeinhalt verschoben werden. Dieses Verschieben geschieht mittels
 \begin{uc}[Label]{UC: Verschieben einzelner Fenster-Knoten mittels 
                       Drag and Drop}
 \index{verschieben!einzelne Knoten}
-\index{verschieben!ganze Selektionen}
 
 Mit diesem UseCase können einzelne Fenster-Knoten mittels Drag and
 Drop auf dem sichtbaren Anzeigeinhalt verschoben werden.
@@ -879,66 +878,38 @@ Drop auf dem sichtbaren Anzeigeinhalt verschoben werden.
   \begin{postsuccess}
     
     \cond
-    Der einzelne Fensterknoten wurden im Anzeigeinhalt verschoben.  
+    Der einzelne Fensterknoten wurde auf dem Anzeigeinhalt entsprechend 
+    verschoben.  
+
   \end{postsuccess}
 
   \begin{proc}    
   
     \step[1]
-    Der Benutzer wählt die zu verschiebende Selektion oder den
-    zu verschiebenden Fenster-Knoten aus (\gq{Cut}), indem er:
-   
-    \begin{enumerate}
-      \item
-      Einen Rechtsklick auf eine Selektion in der Selektionsauswahliste
-      durchführt (siehe \ref{Selektionsauswahlliste}) und im
-      Popup-Menü den Eintrag \gq{Move Selection} auswählt,
-
-      \item
-      oder einen Rechtsklick auf einen Fenster-Knoten durchführt
-      und im PopupMenü (siehe \ref{Node-Popup-Menü}) den Eintrag
-      \gq{Move Node} auswählt.
-
-    \end{enumerate}
-
-    \step[2]
-    GIANT geht in den den \gq{Paste Modus} über und zeigt dies in 
-    der Statusleiste (siehe \ref{Statuszeile}) des Hauptfensters an.
-    Der Cursor wird, falls er über den Anzeigeinhalt eines Anzeigefensters
-    bewegt wird, zum Fadenkreuz (siehe \ref{Fadenkreuzcursor}).
-    Die Funktionalität zum Zoomen und Scrollen des Anzeigefensters mittels
-    der beiden UseCases \ref{Anzeigefenster scrollen} und
-    \ref{Anzeigefenster zoomen} bleibt weiterhin verfügbar, alle
-    andere Funktionalität von GIANT wird gesperrt. 
-    Der Benutzer kann insbesondere das aktuelle Anzeigefenster 
-    (in welchem er den UseCase gestartet -- also \gq{Cut} ausgeführt hat --
-    nicht verlassen).
-
-    \step[3]
-    Der Benutzer klickt mit dem Fadenkreuzkursor (linke Maustaste)
-    an eine bliebige Stelle innerhalb des sichtbaren Anzeigeinhaltes
-    des Anzeigefensters.
-
-    \step[4]
-    GIANT verschiebt die betroffenen Fenster-Knoten an die gewünschte
-    stelle.
-      
+    Der Benutzer bewegt den Mauscursor über den zu verschiebenden
+    Fenster-Knoten und drückt die linke Maustaste (\gq{Drag}), dann bewegt
+    er den Fenster-Knoten an eine beliebige andere Stelle innerhalb des
+    Anzeigeinhaltes und lässt die linke Maustatste los (\gq{Drop}.\\
+    Während ein Knoten sich im Zustand \gq{Dragged} befindet kann
+    der sichtbare Anzeigeinhalt ausschließlich mit den Cursortasten 
+    analog zu UseCase \ref{Anzeigefenster scrollen} gescrollt werden.
+    Jede andere Funktionalität (auch Zoomen) ist während des \gq{Drag and
+    Drop} vorganges gesperrt.
+         
   \end{proc}
 
 \end{uc}
 
 
 
-
-
-
 % ==============================================================================
 \begin{uc}[Label]{UC: Platz schaffen}
+\index{Fenster-Knoten!auseinanderschieben}
 
 Dieser UseCase wird benötigt, um Fenster-Knoten auseinander schieben zu 
 können. So kann der Benutzer an einer beliebigen Stelle des Anzeigefensters
 genügend Platz zum Einfügen neuer Fenster-Knoten und Fenster-Kanten schaffen.
-Siehe hierzu auch \ref{Auseinanderschieben von Fenster-Knoten}.
+Siehe hierzu auch Abschnitt \ref{Auseinanderschieben von Fenster-Knoten}.
 
 
   \begin{precond}
@@ -954,35 +925,42 @@ Siehe hierzu auch \ref{Auseinanderschieben von Fenster-Knoten}.
     um den entsprechenden Betrag vom vorgegebenen Punkt innerhalb
     des Anzeigeigeihaltes weggeschoben worden.
     An der entsprechenden Stelle im Anzeigeinhalt ist eine freie Fläche
-    ohne Knoten und Kanten geschaffen worden.
+    ohne Fenster-Knoten geschaffen worden. Diese Fläche kann aber von 
+    Fenster-Kanten gekreuzt werden.
     
     \cond
-    Das Layout der betroffenen Fenster-Knoten und Fenster-Kanten bleibt
+    Das Layout aller Fenster-Knoten des Anzeigeinhaltes bleibt ansonsten
     weitgehend unverändert.
- 
    
   \end{postsuccess}
 
  
+  \begin{postfail}
+    \cond Hat der Benutzer den UseCase abgebrochen,
+          so wird der Anzeigeinhalt nicht verändert.
+  \end{postfail}  
+  
   \begin{proc}    
     \step[1]
-    Der Benutzer startet den UseCase über das PopUp Menü
-    \ref{Empty Vis Pane Right click} beim Klick auf eine leere
-    Fläche in der VIS\_PANE und Auswahl von Make Room.
+    Der Benutzer führt einen Linksklick auf eine bliebige Stelle
+    des sichtbaren Anzeigeinhaltes durch und wählt im
+    daraufhin erscheinenden Popup-Menü (siehe \ref{Empty Vis Pane Right click})
+    dem Eintrag \gq{Make Room} aus.
     
     \step[2]
     GIANT zeigt in der Statuszeile im Hauptfenster 
     \gq{Select Position in Display Window
-    for Making of Room}
+    for Making of Room}.
     Der Benutzer gibt den Punkt um den herum die Fenster-Knoten (und damit
     automatisch auch die Fenster-Kanten) auseinander geschoben werden
-    sollen über das Fadenkreuz vor. \ref{Fadenkreuzcursor}
-    Die Statuszeile im Hauptfenster schaltet auf Normalmodus zurück.
+    sollen über das Fadenkreuz vor (siehe \ref{Fadenkreuzcursor}).
+    Hierbei kann er mit dem Fadenkreuz den aktuellen sichtbaren Anzeigeinhalt
+    auf dem Anzeigefenster nicht verlassen.
      
     \step[3] 
     GIANT zeigt einen Dialog an, in dem der Benutzer auswählt, um welchen 
-    Betrag die Fenster-Knoten auseinander geschoben werden sollen.
-     \ref{Platz Schaffen-Dialog}
+    Betrag die Fenster-Knoten auseinander geschoben werden sollen (siehe
+    \ref{Platz Schaffen-Dialog}).
    
     \step[4]
     Der Benutzer wählt einen geeigneten Betrag aus und bestätigt mit OK.
@@ -992,6 +970,16 @@ Siehe hierzu auch \ref{Auseinanderschieben von Fenster-Knoten}.
     (siehe \ref{Auseinanderschieben von Fenster-Knoten}).
     
   \end{proc}
+  \begin{aproc}
+
+    \astep{2} Der Benutzer kann den UseCase abbrechen, indem er mit der
+              Maus einen Rechtsklick auf eine beliebige Stelle 
+              durchführt.
+
+    \astep{3} Der Benutzer kann den UseCase durch Betätigen des \gq{Cancel}
+              Buttons abbrechen.
+
+  \end{aproc}
 
 
 \end{uc}
@@ -999,8 +987,10 @@ Siehe hierzu auch \ref{Auseinanderschieben von Fenster-Knoten}.
 
 % ==============================================================================
 \begin{uc}[Label]{UC: Pin anlegen}
+\index{Pins!anlegen}
 
-Mit diesem UseCase kann ein neuer Pin erzeugt werden.
+Mit diesem UseCase kann ein neuer Pin 
+(siehe auch \index{Pins}) erzeugt werden.
 
  \begin{precond}
     \cond Es gibt ein geöffnetes Anzeigefenster.
@@ -1009,7 +999,8 @@ Mit diesem UseCase kann ein neuer Pin erzeugt werden.
   \begin{postsuccess}
     \cond 
     In der Liste über die Pins des Anzeigefensters
-     \ref{VIS-PANE-Pins} befindet sich ein neuer Pin mit dem entsprechenden Namen.
+    (siehe \ref{VIS-PANE-Pins}) befindet sich ein neuer Pin mit 
+    dem vom Benutzer definierten Namen.
 
   \end{postsuccess}
 
@@ -1020,27 +1011,26 @@ Mit diesem UseCase kann ein neuer Pin erzeugt werden.
   \begin{proc}    
     \step[1]
     
-    Zur Durchführung gibt es zwei Möglichkeiten:
-    
-    \begin{enumerate}
-     \item
-      Der Benutzer führt einen Rechtklick auf den Anziegeinhalt des
-      entsprechenden Anzeigefensters durch und wählt aus dem PopUp
-      Menü \ref{Empty Vis Pane Right click} den Eintrag \gq{New Pin} aus.
-     \item   
-      Der Benutzer wählt in der PIN\_LIST (\ref{VIS-PANE-Pins}) nach
-      Rechtsklick auf der Liste im Kontextmenü \gq{New Pin} aus.
-    \end{enumerate}
+    Der Benutzer führt einen Rechtklick auf den Anzeigeinhalt eines
+    Anzeigefensters durch und wählt aus dem PopUp-Menü 
+    (siehe \ref{Empty Vis Pane Right click}) den Eintrag \gq{New Pin} aus.
+    Der später erstellte Pin verweist dann auf die Stelle im Anzeigeinhalt
+    auf die der Rechtklick durchgeführt wurde.
+ 
+
     \step[2] 
-    GIANT öffnet den allgemeinen Texteingabedialog \ref{DIALOG-WINDOW},
-    \gq{Please enter name for new pin}
+    GIANT öffnet den allgemeinen Texteingabedialog (siehe 
+    \ref{DIALOG-WINDOW}).
+    
       
     \step[3] 
     Der Benutzer gibt dort einen zulässigen Namen für den neuen Pin
-    ein und bestätigt mit OK.\\
+    ein und bestätigt mit OK (zulässige Namen für sind in Abschnitt 
+    \ref{afa Zulaessige Namen} spezifiziert).
       
     \step[4]
-    GIANT erzeugt den Pin.
+    GIANT speichert die aktuelle Zoomstufe und die Position des sichtbaren
+    Anzeigeinhaltes in einem neuen Pin.
   
   \end{proc}
 
@@ -1053,8 +1043,10 @@ Mit diesem UseCase kann ein neuer Pin erzeugt werden.
 
 % ==============================================================================
 \begin{uc}[Label]{UC: Pin anspringen}
-Stellt eine über den Pin gespeicherte Position des Anzeigefokus
-wieder her.
+\index{Pins!anspringen}
+
+Stellt die im Pin (siehe auch \index{Pins}) gespeicherte 
+Position des sichtbaren Anzeigeinhaltes wieder her.
 
  \begin{precond}
     \cond Es gibt ein geöffnetes Anzeigefenster mit mindestens 
@@ -1071,24 +1063,27 @@ wieder her.
   
   \begin{proc}    
     \step[1]
-    Zur Durchführung gibt es zwei Möglichkeiten:
+   
+    Das \gq{Anspringen} des Pins kann über die folgenden beiden
+    Möglichkeiten geschehen:
     \begin{enumerate}
     
       \item
       Der Benutzer führt einen Doppelklick auf den entsprechenden Pin
-      in der Liste \ref{VIS-PANE-Pins} aus.
-      
-      
+      in der Pinliste (siehe \ref{VIS-PANE-Pins}) aus.
+         
       \item
-      Der Benutzer öffnet das entsprechende PopUp Menü durch
-      rechtsklick auf den Pin bei \ref{VIS-PANE-Pins}und wählt den Eintrag
+      Der Benutzer öffnet ein PopUp-Menü durch
+      Rechtsklick auf den anzuspringenden Pin 
+      in der Pinliste (siehe \ref{VIS-PANE-Pins}) und wählt den Eintrag
       \gq{Focus Pin} aus.
         
     \end {enumerate}
     
           
     \step[2]
-    GIANT setzt den sichtbaren Anzeigeinhalt gemäß den im Pin gespeicherten
+    GIANT \gq{springt den Pin an} und setzt den sichtbaren 
+    Anzeigeinhalt gemäß den im Pin gespeicherten
     Informationen.
   
   \end{proc}
@@ -1100,7 +1095,9 @@ wieder her.
 
 % ==============================================================================
 \begin{uc}[Label]{UC: Pin löschen}
-Löscht einen Pin.
+\index{Pins!löschen}
+
+Löscht einen Pin (siehe auch \index{Pins}).
 
  \begin{precond}
     \cond Es gibt ein geöffnetes Anzeigefenster mit mindestens 
@@ -1109,20 +1106,19 @@ Löscht einen Pin.
 
   \begin{postsuccess}
     \cond 
-    Der Pin ist gelöscht und nicht mehr in der Liste \ref{VIS-PANE-Pins} des entsprechenden
-    Anzeigefensters auswählbar.
-
+    Der Pin ist gelöscht und nicht mehr in der Pinliste (siehe \ref{VIS-PANE-Pins}) 
+    des entsprechenden Anzeigefensters auswählbar.
     
   \end{postsuccess}
   
   \begin{proc}    
     \step[1]
-    Der Benutzer öffnet das entsprechende PopUp Menü durch Rechtsklick
-    auf den Pin in \ref{VIS-PANE-Pins} und wählt den Eintrag \gq{Delete Pin} aus.
+    Der Benutzer öffnet das  PopUp-Menü der Pinliste (siehe \ref{VIS-PANE-Pins}  
+    durch Rechtsklick auf den Pin  und wählt den Eintrag \gq{Delete Pin} aus.
 
      
     \step[2]
-    GIANT löscht den entsprechenden Pin.
+    GIANT löscht den Pin.
   
   \end{proc}
 

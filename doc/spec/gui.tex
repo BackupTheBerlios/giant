@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.46 $
-%  $Date: 2003/03/28 18:37:17 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.47 $
+%  $Date: 2003/03/28 21:57:12 $
 %  $Author: schwiemn $
 %
 %  Description: Bis zu Revision 1.6 sind UseCase-artige Beschreibungen enthalten,
@@ -209,8 +209,11 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
       \item Delete Node Annotation \label{Delete Node Annotation}
     \end{enumerate}
     
-    Wenn in der VIS\_PANE, nicht auf einer Kante oder einem Knoten, die rechte
-    Maustaste geklickt wird, öffnet sich folgendes Kontextmenü:
+    Wenn in der VIS\_PANE mit der rechten
+    Maustaste auf eine Stelle, wo kein Knoten liegt,
+    geklickt wird, öffnet sich das folgend Kontextmenü. Die Einträge dieses Menüs
+    sind auch im Node-Popup-Menü (siehe \ref{Node-Popup-Menü}) sichtbar.
+
     \label{Empty Vis Pane Right click}
     \begin{enumerate}
       \item Make Room % OK
@@ -224,7 +227,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     Auf der Pinliste sind folgende Menüpunkte eines Popup-Menüs aktivierbar:
     
     \begin{enumerate}
-      \item New Pin (PIN\_NEW) % OK
+       %  \item New Pin (PIN\_NEW)  gestichen von Martin
       \item Focus Pin (PIN\_JUMP) % OK
       \item Delete Pin (PIN\_DELETE) % OK
     \end{enumerate}

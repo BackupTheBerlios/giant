@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.16 $
-%  $Date: 2003/03/28 16:09:17 $
+%  $RCSfile: config.tex,v $, $Revision: 1.17 $
+%  $Date: 2003/03/28 21:57:12 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -15,13 +15,13 @@
   Sämtliche konfigurierbaren Einstellungen werden in XML-Dateien vorgenommen.
   
   \item \label{config-allgemeines-punkt2}
-  \index {Konfigurationsdatei}
+  \index{Konfigurationsdatei!globale}
   Es gibt genau eine \gq{globale Konfigurationsdatei}. Zudem kann es beliebig 
   viele weitere XML-Dateien zur Konfiguration der weiter unten beschriebenen 
   Visualisierungsstile geben.\\
   Diese Dateien liegen in einem von GIANT fest vorgegebenen Verzeichnis.
   
-  \item \index{Konfigurationsdatei!benutzerdefiniert}
+  \item \index{Konfigurationsdatei!benutzerdefinierte}
   Die unter \ref{config-allgemeines-punkt2} beschriebenen Dateien zu
   Konfiguration können vom Benutzer auch in einem separaten 
   Unterverzeichnis seines Home-Verzeichnisses abgelegt werden. Findet
@@ -32,7 +32,7 @@
 \end {enumerate}
 
 
-\section {Die globale Konfigurationsdatei} \index {Konfigurationsdatei}
+\section {Die globale Konfigurationsdatei} \index{Konfigurationsdatei}
 Diese Datei ist in XML verfasst. In Ihr können die anschließend beschriebenen
 Einstellungen vorgenommen werden.
 
@@ -48,6 +48,7 @@ Einstellungen vorgenommen werden.
   dann das in der Datei stehende GQSL Skript ausgeführt wird.
 
   \subsection {Farbe von Hervorhebungen}
+  \index{hervorheben!Farben konfigurieren}
   Einstellung der Farben, mittels derer Selektionen oder IML-Teilgraphen 
   hervorgehoben werden.
   \begin {enumerate}
@@ -60,7 +61,7 @@ Einstellungen vorgenommen werden.
 
   \subsection {Editor zur Anzeige des Quellcodes}
   \label{Konfig Editor zur Anzeige des Quellcodes}
-  \index {Editoren!Konfiguration}
+  \index {Editoren!Anzeige des Quellcodes}
 
   Der Benutzer legt in der globalen Konfigurationsdatei fest, 
   mit welchem Editor der zu IML-Knoten korrespondierende
@@ -101,7 +102,8 @@ Für Visualisierungsstile gelten die folgenden Konventionen:
 
   \item
   Wird eine Kanten- oder eine Knotenklasse innerhalb eines
-  Visualisierungsstieles mehreren klassenspezifischen Einstellungen zugeordnet,   führt dies zu keinem Fehler, es bleibt aber unspezifiziert, 
+  Visualisierungsstieles mehreren klassenspezifischen Einstellungen zugeordnet,   
+  führt dies zu keinem Fehler, es bleibt aber unspezifiziert, 
   welche Einstellung tatsächlich genommen wird.
 
   \item
@@ -109,7 +111,7 @@ Für Visualisierungsstile gelten die folgenden Konventionen:
   Knoten- und Kantenklassen genommen wird, für die keine
   extra klassenspezifischen Einstellungen vorgenommen wurden.
 
-  \item \index{Visulisierungsstile!Standard-Visualisierungsstil}
+  \item \index{Visualisierungsstile!Standard-Visualisierungsstil}
   Es gibt immer einen von GIANT fest
   vorgegeben Standard-Visualisierungsstil. Dieser Visualisierungsstiel
   wird für neu erzeugte Anzeigefenster genommen. 
@@ -141,7 +143,7 @@ Für Visualisierungsstile gelten die folgenden Konventionen:
 
 
   \subsection {Klassenspezifische Einstellungen für Knoten}
-  \index{Visulisierungsstile!klassenspezifsche Einstellungen}
+  \index{Visualisierungsstile!klassenspezifische Einstellungen}
 
   Folgende  Einstellungen können für Knotenklassen vorgenommen werden. 
   Es muss eine Standard-Einstellung erstellt werden, die für alle
@@ -173,8 +175,10 @@ Für Visualisierungsstile gelten die folgenden Konventionen:
   \end{enumerate}
 
 
-\section {Anfrage-Dateien} \index{GQSL!Anfragedateien} \index{Anfragedateien}
+\section {Anfrage-Dateien} 
 \label {Config Anfrage-Dateien}
+\index{GQSL!Anfragedateien} \index{Anfragedateien}
+
 Eine Textdatei, die genau eine Anfrage in Form eines GQSL-Skriptes enthält 
 -- also genau ein gemäß der Grammatik für die Anfragesprache zulässiges Wort. 
 Auf diese Art und Weise können komplexe Anfragen gespeichert und 

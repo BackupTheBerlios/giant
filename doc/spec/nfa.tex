@@ -1,6 +1,6 @@
 % ==============================================================================
 %  $RCSfile: nfa.tex,v $ 
-%  $Date: 2003/02/18 17:05:37 $
+%  $Date: 2003/03/28 21:57:12 $
 %  $Author: schwiemn $ 
 %
 %  Description: Nichtfunktionale Anforderungen
@@ -8,6 +8,7 @@
 % ==============================================================================
 
 \section{Plattformunabhängigkeit}
+\index{Plattformunabhängigkeit}
 Das Produkt soll ein hohes Maß an Plattformunabhängigkeit, wie sie sich aus der 
 eingesetzten Entwicklungsumgebung ergibt, verfügen 
 (also alle Systeme auf denen GTK/ADA 1.2.12 lauffähig ist). 
@@ -15,6 +16,7 @@ Explizit während der Entwicklung getestet und damit garantiert werden kann
 dies aber nur für Sun Solaris und Linux.
 
 \section{Wartbarkeit}
+\index{Wartbarkeit des Produktes}
 Das System soll sich durch ein hohes Maß an Wartbarkeit und Erweiterbarkeit 
 auszeichnen. Erreicht werden soll dies durch die folgenden Grundsätze.
 \begin {enumerate}
@@ -40,6 +42,8 @@ auszeichnen. Erreicht werden soll dies durch die folgenden Grundsätze.
 
 
 \section{Portabilität}
+\index{Portabilität}
+
 \begin {enumerate}
 
   \item
@@ -53,6 +57,9 @@ auszeichnen. Erreicht werden soll dies durch die folgenden Grundsätze.
 \end {enumerate}
 
 \section{Mengengerüst}
+\index{Mengengerüst}
+\index{Speicherverhalten}
+
 \begin {enumerate}
 
   \item
@@ -71,6 +78,7 @@ auszeichnen. Erreicht werden soll dies durch die folgenden Grundsätze.
 \end {enumerate}
 
 \section {Robustheit}
+\index{Robustheit}
 \begin {enumerate}
 
   \item
@@ -95,6 +103,7 @@ auszeichnen. Erreicht werden soll dies durch die folgenden Grundsätze.
 
 
 \section{Robustheit gegenüber Änderungen der IML-Graph-Spezifikation}
+\index{IML-Graph-Bibliothek!robuste Anbindung}
 Das System soll so an Bauhaus angebunden werden, dass Änderungen in der 
 Spezifikation des IML-Graphen möglichst keine Wartungsarbeiten erfordern. 
 Besonders soll dies für die verschiedenen Attribute, 
@@ -106,15 +115,9 @@ dass neu hinzukommende Attribute automatisch mit erfasst und damit
 angezeigt werden können.
 
 
-\section{Unterstützung paralleler Rechner}
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> GESTRICHEN 
-Layoutalgorithmen werden zur Unterstützung paralleler Rechner in separaten 
-Threads ausgeführt. Die einzelnen Layoutalgorithmen sind nicht parallel. 
-In einem Anzeigefenster kann immer nur ein es können aber mehrere 
-Layoutalgorithmen in verschiedenen Anzeigefenstern gleichzeitig laufen.
-
 
 \section{Leistungsanforderungen}
+\index{Leistungsanforderungen}
 \begin {enumerate}
 
   \item
@@ -123,24 +126,19 @@ Layoutalgorithmen in verschiedenen Anzeigefenstern gleichzeitig laufen.
   \item
   Die selbe Installation von GIANT darf nicht gleichzeitig mehrfach
   gestartet werden.
-  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> MIT KUNDEN ABKLÄREN, DA GIANT JA
-  AUF EINEM SERVER LIEGT SOLLTE DIES EVENTUELL SCHON GEHEN; 
-  >>>>>>>>>>>>>>>>>><<< Auf die Config-Files wird nur lesend 
-  zugegriffen -> sollte eigentlich unproblematisch sein.
-  
-  
+   
   \item
   Das Systemverhalten für den Fall, dass zwei Benutzer mittels verschiedener
   laufender Instanzen von GIANT (als Prozess im Betriebssystem) 
   gleichzeitig auf denselben Daten (Projekte und entsprechende 
   Verwaltungsdateien) arbeiten, ist undefiniert.
-  >>>>>>>>>>>>>>>>>>>>>>> FALLS DOCH MÜSSEN WIR DIE ENTSPRECHENDEN 
-  VERWALTUNGSDATEIEN HALT LOCKEN.
+
 \end {enumerate}
   
   
    
 \section{Antwortverhalten}
+\index{Antwortverhalten}
 \begin{enumerate}
  
   \item
@@ -156,6 +154,7 @@ Layoutalgorithmen in verschiedenen Anzeigefenstern gleichzeitig laufen.
 
 
 \section{Sicherheit}
+\index{Datensicherheit}
 
 \begin{enumerate}
 
@@ -175,6 +174,7 @@ Layoutalgorithmen in verschiedenen Anzeigefenstern gleichzeitig laufen.
 
 
 \section{Erweiterbarkeit}
+\index{Erweiterbarkeit des Produktes}
 
 Eine spätere Erweiterbarkeit von GIANT ist insbeondere hinsichtlich der im
 Folgenden beschriebenen Funktionalität vorgesehen. Dies wird im Rahmen des
@@ -189,7 +189,7 @@ Entwurfes berücksichtigt.
   Erweiterung im einen Dialog (eher ein ganzes Werkzeug) zur grafisch 
   unterstützten Eingabe von Anfragen.
   
-  \item
+  \item \index{Kantenknickpunkte}
   Erweiterung um Kantenknickpunkte.
 
 

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: product.tex,v $, $Revision: 1.30 $
-%  $Date: 2003/03/28 16:09:17 $
+%  $RCSfile: product.tex,v $, $Revision: 1.31 $
+%  $Date: 2003/03/28 21:57:12 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung des Produktes. Übersicht über die Funktionen
@@ -10,7 +10,7 @@
 
 
 % ==============================================================================
-\section{GIANT Projekte} \index{Projekte}
+\section{GIANT Projekte} \index{Projekte} \index{Persistenz}
 
 Innerhalb eines Projektes fasst GIANT Informationen, 
 wie erzeugte Anzeigefenster und
@@ -28,14 +28,18 @@ Hinsichtlich der logischen Zusammenfassung von Knoten und Kanten unterscheidet
 GIANT IML-Teilgraphen und Selektionen.
 
   \subsection{IML-Teilgraphen} \index{IML-Teilgraphen}
-  Ein IML-Teilgraph beschreibt eine Knoten- und Kantenmenge aus dem IML-Graphen,
-  bei der jede Kante einen Start- und einen Zielknoten hat.
-  Die Knoten und Kanten von IML-Teilgraphen können in Anzeigefenstern
-  hervorgehoben werden. Des weiteren können die Knoten und Kanten von
-  IML-Teilgraphen als Fenster-Knoten und Fenster-Kanten in Anzeigefenster
-  eingefügt und layouted werden.
+  \index{Graph-Knoten} \index{Graph-Kanten} \index{hervorheben}
+  Ein IML-Teilgraph beschreibt eine Knoten- und Kantenmenge aus 
+  dem IML-Graphen  bei der jede Kante einen Start- und einen Zielknoten hat 
+  -- die sogenannten Graph-Knoten und Graph-Kanten. 
+  Die Graph-Knoten und Graph-Kanten von IML-Teilgraphen können 
+  in Anzeigefenstern
+  hervorgehoben werden. Des weiteren können die Graph-Knoten und Graph-
+  Kanten von IML-Teilgraphen als Fenster-Knoten und Fenster-Kanten 
+  in Anzeigefenster eingefügt und layouted werden.
   Die IML-Teilgraphen sind aber völlig unabhängig von den Anzeigefenstern und
-  enthalten insbesondere keine Layoutinformationen für ihre Knoten und Kanten.
+  enthalten insbesondere keine Layoutinformationen für ihre 
+  Graph-Knoten und Graph-Kanten.
 
   \subsection{Selektionen} \index{Selektionen}
   Selektionen stellen die lokale Variante von Knoten- und Kantenmengen dar.
@@ -58,6 +62,7 @@ haben.
   sichtbar dargestellt werden können, kann sich der
   Benutzer zu jedem Anzeigefenster eine Liste von Pins anlegen. In den Pins wird
   jeweils die Position des sichtbaren Anzeigeinhaltes und die Zoomstufe
+  \index{Zoomstufe}
   gespeichert, so dass zu beliebigen Zeitpunkten die Position des sichtbaren
   Anzeigeinhalts rekonstruiert werden kann.
 

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: project.tex,v $, $Revision: 1.23 $
-%  $Date: 2003/03/28 16:09:17 $
+%  $RCSfile: project.tex,v $, $Revision: 1.24 $
+%  $Date: 2003/03/28 21:57:12 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -9,7 +9,7 @@
 
 
 %===================
-\section {Persistenz der Projekte}\index{Persistenz} \index {Projekte}
+\section {Persistenz der Projekte}\index{Persistenz} \index{Projekte}
 \label{Project Persistenz der Projekte}
 
 GIANT speichert persistente Informationen in sogenannten Projekten.
@@ -57,7 +57,7 @@ IML-Teilgraphen, logisch zusammen.
   Während der Arbeit mit GIANT kann jederzeit ein vorhandenes Projekt 
   geladen oder ein neues Projekt angelegt werden. 
 
-  \item
+  \item \index{Projekte!manuelle Modifikation}
   Ein nicht gerade in GIANT geöffnetes Projekt kann vom Benutzer 
   beliebig modifiziert werden.
   GIANT unterstützt dies durch den Einsatz von XML. Insbesondere
@@ -118,7 +118,7 @@ IML-Teilgraphen, logisch zusammen.
     \item
     Der Name der Projektdatei entspricht dem Namen des Projektes.
 
-    \item
+    \item \index{Projektdatei!Referenzen}
     Die Projektdatei enthält Referenzen zu allen Dateien, die Bestandteil
     des Projektes sind (Verwaltungsdateien für IML-Teilgraphen und
     Anzeigefenster, sowie die Verwaltungsdatei für Knoten-Annotationen).
@@ -137,16 +137,16 @@ IML-Teilgraphen, logisch zusammen.
   Beim Laden eines Projektes wird überprüft, 
   ob die in der Projektdatei gespeicherte Prüfsumme
   der Prüfsumme der zu ladenden IML-Graph Datei entspricht. 
-  Das Verhalten von GIANT für den Fall, dass eine IML-Graph Datei geladen wird, 
-  die zwar die passende Prüfsumme hat, aber nicht den IML-Graphen enthält, 
-  der dem Projekt eigentlich zu Grunde liegt, ist undefiniert.
+  Das Verhalten von GIANT für den Fall, dass eine IML-Graph Datei geladen 
+  wird, die zwar die passende Prüfsumme hat, aber nicht den IML-Graphen 
+  enthält, der dem Projekt eigentlich zu Grunde liegt, ist undefiniert.
 
 
   \subsection {Verwaltungsdateien für Anzeigefenster}
   \label {Project Verwaltungsdateien für Anzeigefenster}
 
   \index{Projekte!Verwaltungsdateien für Anzeigefenster}
-  \index{Verwaltungsdateien für Anzeigefenster}
+  \index{Verwaltungsdateien}
 
   \begin {enumerate}
   
@@ -185,7 +185,7 @@ IML-Teilgraphen, logisch zusammen.
   \label {Project Verwaltungsdateien für IML-Teilgraphen}
 
   \index{Projekte!Verwaltungsdateien für IML-Teilgraphen}
-  \index{Verwaltungsdateien für IML-Teilgraphen}
+  \index{Verwaltungsdateien}
 
   \begin {enumerate}
   
@@ -206,7 +206,7 @@ IML-Teilgraphen, logisch zusammen.
   \label {Project Verwaltungsdatei für Knoten-Annotationen}
 
   \index{Projekte!Verwaltungsdateien für Knoten-Annotationen}
-  \index{Verwaltungsdateien für Knoten-Annotationen}
+  \index{Verwaltungsdateien}
   \index{Knoten-Annotationen}
 
   \begin {enumerate}
@@ -341,6 +341,7 @@ IML-Teilgraphen, logisch zusammen.
 \subsection {Persistenz von Knoten-Annotationen}  
 \label{Project Persistenz von Knoten-Annotationen} 
 \index{Persistenz!Knoten-Annotationen}
+\index{Knoten-Annotationen}
 
 Hier wird beschrieben, wie Knoten-Annotationen von GIANT persistent
 verwaltet werden.
