@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.25 $
-%  $Date: 2003/02/24 12:37:39 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.26 $
+%  $Date: 2003/02/24 18:58:10 $
 %  $Author: birdy $
 %
 %  Description: Bis zu Revision 1.6 sind UseCase-artige Beschreibungen enthalten,
@@ -132,14 +132,15 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
 
     
     \subsubsection {PopUp Menü Subgraph List}
-        
+    \label {PopUp Menü Subgraph List}
       Beim Rechtsklick auf SUBGRAPH\_LIST öffnet sich ein Popup-Menü mit folgenden Menüpunkten:
 	\label{SUBGRAPH-LIST-POPUP}
         \begin{enumerate}
           \item highlight (zum Hervorheben eines Teilgraphen in allen Fenstern mit Farbe SUBGRAPH\_COL)
           \item Change highlighting color
           \item unhighlight
-          \item Copy IML Subgraph
+          \item Copy IML Subgraph with existing layout \label{PopUp Menue Subgraph List-Old layout}
+	  \item Copy IML Subgraph with new layout \label{PopUp Menue Subgraph List-New layout}
           \item Rename IML Subgraph
           \item Delete IML Subgraph
           \item IML Subgraph Set Operation (Union/Difference/Intersection)
@@ -376,24 +377,16 @@ Bestandteile des Dialoges sind:
 \end {enumerate}
 
 
-\section {Layoutalgorithmen Dialog}
+\section {Layoutalgorithmen Dialog}\label{Layoutalgorithmen-Dialog}
 
 Der Dialog Layoutalgorithmen bietet folgende Möglichkeiten:
 
 \begin {enumerate}
-
-%>>>>>>>>>>>>>>>> Noch genauer zu beschreiben
-%>>>> AUSFORMULIEREN und ENTSPRECHEND FORMATIEREN
-
-
 \item {Auswahl des Layoutalgorithmus}
-
 \item Eingabe der zu berücksichtigenden Kanten bei semantischen Layouts
-
 \item OK Button
 \item Cancel Button
 \item Textfeld zur Eingabe des Namens für die Selektion (in dem Anzeigefenster wo sie eingefügt wurde)
-
 
 \end {enumerate}
 
@@ -442,3 +435,25 @@ mit \gq{No}.
 	Kante/Position für die jeweilige Funktion ausgewählt. Der Cursor verwandelt
 	sich dann wieder in den Normalcursor.
 
+
+\section{Fortschrittsanzeige}
+
+\label{Progressbar}
+Es gibt in GIANT drei Möglichkeiten zur Fortschrittsanzeige während laufender Berechnungen:
+
+\subsection{Progressbar-1}
+\label{Progressbar-1}
+     Anzeige eines Dialoges mit einem sich stängig leicht ändernden
+     Inhalt, so dass erkennbar ist, dass das System noch arbeitet.
+
+\subsection{Progressbar-2}  
+\label{Progressbar-2}   
+     Anzeige eines Progressbars, der darstellt, welcher Anteil der
+     Gesamtberechnung in Prozent bereits erledigt ist.
+
+\subsection{Progressbar-3}
+\label{Progressbar-3} 
+     Anzeige eines Progressbars, der über den aktuellen Fortschritt
+     einer Berechnung informiert, ohne dabei den Gesamtaufwand zu 
+     kennen. Dabei wird kontinuierlich die Anzahl der schon bearbeiteten
+     Datensätze ausgegeben.

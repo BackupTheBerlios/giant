@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.11 $
-%  $Date: 2003/02/24 11:01:00 $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.12 $
+%  $Date: 2003/02/24 18:58:50 $
 %  $Author: birdy $
 %
 %  Description: Use-Cases für die Fensterfunktionalität der GUI
@@ -235,8 +235,8 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
     Fenster-Knoten und Fenster-Kanten eingefügt werden sollen.
     
     \step[3]
-    GIANT zeigt den Dialog zur Auswahl des entsprechenden Layoutalgorithmus.
-    >>>> VERWEIS ENTSPRECHENDER DIALOG IN GUI
+    GIANT zeigt den Dialog zur Auswahl des entsprechenden Layoutalgorithmus
+    \ref{Layoutalgorithmen-Dialog}.
     
     \step[4]
     Der Benutzer wählt einen der vorgegebenen Layoutalgorithmen aus. Bei 
@@ -254,8 +254,7 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
     \step[7] 
     GIANT berechnet das entsprechende Layout und zeigt derweil einen
     DIALOG an, über den der Benutzer über den Fortschritt der Berechnung
-    informiert wird >>>>>>>>>>>>>>>> VERWEIS AUF ENTSPRECHENDEN PROGRESSBAR
-    IN GUI <<<<<<<<<<<<<<<<<<<<<<<<<<<\\
+    informiert wird \ref{Progressbar}\\
     Während der Berechnung des Layouts kann das System GIANT nicht bedient
     werden (die gesamte GUI ist gesperrt). Zugänglich ist nur der
     Button zum Abbruch des Algorithmus.
@@ -282,7 +281,7 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
           {UC: Selektion in Anzeigefenster einfügen}
 	  
 Mit diesem UseCase kann eine Selektion aus einem Anzeigefenster
-in ein anderes Anziegefenster unter Beibehaltung des Layouts
+in ein anderes Anzeigefenster unter Beibehaltung des Layouts
 der Quell-Selektion kopiert werden. 
 Siehe hierzu  
 \ref{Verhalten beim Einfügen von IML-Teilgraphen und Selektionen 
@@ -292,7 +291,7 @@ insbesondere \ref{Einfügen von Selektionen in Anzeigefenster}.
 
   \begin{precond}
     \cond Ein Projekt mit mindestens zwei geöffneten 
-          Anzeigefenster ist geladen.
+          Anzeigefenstern ist geladen.
     
     \cond Es gibt mindestens eine Selektion.
     
@@ -321,11 +320,11 @@ insbesondere \ref{Einfügen von Selektionen in Anzeigefenster}.
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase über das PopUp Menü
-    >>>>>>>>>>>>>>>VERWEIS PopUp Menüs für IML-Teilgraphen \\
-    ES GIBT ZWEI MENÜEINTÄGE \\
-    - KOPIEREN UNTER BEIBEHLATUNG des Layouts bereits vorhandenen Knoten\\
-    - Kopieren bei voller Übernahme des Layouts
-    <<<<
+    \ref{PopUp Menü Subgraph List}
+    Durch Auswahl einer der Menüeinträge 
+    \ref{PopUp Menue Subgraph List-Old layout} oder \ref{PopUp Menue Subgraph List-New layout},
+    also Copy IML Subgraph with existing layout oder Copy IML Subgraph with new layout.
+
     Hierdurch wird automatisch die Quell-Selektion bestimmt (immer
     die Selektion), auf der der Rechtsklick ausgeführt wurde.
     
@@ -333,7 +332,7 @@ insbesondere \ref{Einfügen von Selektionen in Anzeigefenster}.
     Der Benutzer wählt das entsprechende Ziel-Anzeigefenster aus und
     gibt über das Fadenkreuz die Position vor, an der die neuen
     Fenster-Knoten und Fenster-Kanten eingefügt werden sollen.
-    >>>>>>>>>>>>>>>>> VERWEIS AUF BESCHREIBUNG des FADENKREUZES in GUI
+    \ref{Fadenkreuzcursor}
     
     \step[3]
     GIANT kopiert die Knoten und Kanten der 
