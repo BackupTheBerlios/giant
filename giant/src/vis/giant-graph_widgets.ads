@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.17 $
---  $Author: keulsn $
---  $Date: 2003/07/02 16:49:15 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.18 $
+--  $Author: koppor $
+--  $Date: 2003/07/03 12:02:38 $
 --
 ------------------------------------------------------------------------------
 --
@@ -478,7 +478,8 @@ package Giant.Graph_Widgets is
    --  Returns:
    --    An estimate of the width that will be assigned to 'Node' in 'Widget'
    function Get_Current_Node_Width
-     (Widget    : access Graph_Widget_Record'Class)
+     (Widget    : access Graph_Widget_Record'Class;
+      Node       : in     Graph_Lib.Node_Id)
      return Vis.Logic_Float;
 
    ----------------------------------------------------------------------------
@@ -493,7 +494,8 @@ package Giant.Graph_Widgets is
    --  Returns:
    --    An estimate of the height that will be assigned to 'Node' in 'Widget'
    function Get_Current_Node_Height
-     (Widget    : access Graph_Widget_Record'Class)
+     (Widget    : access Graph_Widget_Record'Class;
+      Node       : in     Graph_Lib.Node_Id)
      return Vis.Logic_Float;
 
    ----------------------------------------------------------------------------
