@@ -8,7 +8,14 @@ TMP_PATH		= /tmp/$(shell id -un)
 # therefore all pathes need to be relative to this directory
 OUT_PATH        = obj/
 
-IMLLIB_PATH     = $(HOME)/GIANT/IML/iml_browser
+# IML - if available, take StuPro's IML-lib
+#GLOBAL_IMLLIB_PATH = /home/stsopra/giant/IML/iml_browser
+#ifeq ($(shell test -d $(GLOBAL_IMLLIB_PATH) && echo "true"),true)
+#  IMLLIB_PATH = $(GLOBAL_IMLLIB_PATH)
+#else
+  IMLLIB_PATH     = $(HOME)/GIANT/IML/iml_browser
+#endif
+
 XMLADA_PATH     = ../../src/xmlada-0.7.1
 GIANT_PATH      = ../
 
@@ -54,5 +61,6 @@ tags :
 
 fetch-iml:
 	mkdir -p $(TMP_PATH)
-	scp droste.informatik.uni-stuttgart.de:/home/bauhaus/imbphase/iml_browser_030203.tar.gz $(TMP_PATH)
-	tar -C $(TMP_PATH) -xzvf $(TMP_PATH)/iml_browser_030203.tar.gz
+	scp droste.informatik.uni-stuttgart.de:/home/bauhaus/imbphase/iml_browser_030606.tar.gz $(TMP_PATH)
+	tar -C $(TMP_PATH) -xzvf $(TMP_PATH)/iml_browser_030606.tar.gz
+
