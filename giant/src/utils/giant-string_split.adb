@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-string_split.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-string_split.adb,v $, $Revision: 1.2 $
 --  $Author: koppor $
---  $Date: 2003/07/01 21:11:11 $
+--  $Date: 2003/07/02 00:23:03 $
 --
 
 with Ada.Strings.Unbounded;
@@ -45,20 +45,37 @@ package body Giant.String_Split is
       begin
          I := Ada.Strings.Fixed.Index (Source, Pattern);
 
-         if I = Source'First then
-            String_Lists.Attach
-              (List,
-               Ada.Strings.Unbounded.Null_Unbounded_String);
-         elsif I > Source'First then
-            String_Lists.Attach
-              (List,
-               Ada.Strings.Unbounded.To_Unbounded_String
-               (Source (Source'First .. I-1)));
+         if I >= Source'First then
+            --  Index has found the pattern
 
-            Split_String
-              (Source (I + Pattern'Length .. Source'Last),
-               Pattern,
-               List);
+            if I = Source'First then
+               --  if there is no string before pattern -> attach a null string
+               --    (i.e. Source looks like ",X")
+               String_Lists.Attach
+                 (List,
+                  Ada.Strings.Unbounded.Null_Unbounded_String);
+            else
+               --  attach the full found string
+               String_Lists.Attach
+                 (List,
+                  Ada.Strings.Unbounded.To_Unbounded_String
+                  (Source (Source'First .. I-1)));
+            end if;
+
+            if I = Source'Last then
+               --  if there is no string at the end, attach a null string
+               --    (i.e. Source looks like "X,")
+               String_Lists.Attach
+                 (List,
+                  Ada.Strings.Unbounded.Null_Unbounded_String);
+            else
+               --  there is more to split
+               --    (i.e. Source looks like "X,Y"
+               Split_String
+                 (Source (I + Pattern'Length .. Source'Last),
+                  Pattern,
+                  List);
+            end if;
          end if;
       end Split_String;
 
