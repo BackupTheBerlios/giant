@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-node_info_dialog.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-node_info_dialog.adb,v $, $Revision: 1.10 $
 --  $Author: squig $
---  $Date: 2003/09/08 15:33:10 $
+--  $Date: 2003/09/08 16:31:24 $
 --
 
 with Interfaces.C.Strings;
@@ -95,6 +95,7 @@ package body Giant.Node_Info_Dialog is
    begin
       Default_Dialog.Initialize (Dialog, -"Node Info",
                                  Default_Dialog.Button_Close);
+      Set_USize (Dialog, Glib.Gint (-1), 400);
 
       --  vbox
       Center_Box := Get_Center_Box (Dialog);

@@ -1,5 +1,9 @@
 2003-09-08  Steffen Pingel  <squig@users.sourceforge.net>
 
+	* src/gui/giant-node_info_dialog.adb: Made dialog taller by default.
+
+	* src/gui/giant-gsl_dialog.adb: Fixed expand of text area.
+
 	* src/gui/giant-graph_window.adb: Added Script submenu to
 	background popup.
 	Added Zoom To Selection.

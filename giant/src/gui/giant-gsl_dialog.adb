@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.17 $
+--  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.18 $
 --  $Author: squig $
---  $Date: 2003/08/26 16:07:16 $
+--  $Date: 2003/09/08 16:31:24 $
 --
 
 with Ada.Exceptions;
@@ -342,7 +342,7 @@ package body Giant.Gsl_Dialog is
       Gtk.Scrolled_Window.Set_Policy (Scrolled_Window, Policy_Automatic,
                                       Policy_Always);
       Gtk.Scrolled_Window.Add (Scrolled_Window, Dialog.Text_Area);
-      Gtk.Box.Pack_Start (Center_Box, Scrolled_Window, Expand => False,
+      Gtk.Box.Pack_Start (Center_Box, Scrolled_Window, Expand => True,
                           Fill => True, Padding => 0);
 
       --  status bars
