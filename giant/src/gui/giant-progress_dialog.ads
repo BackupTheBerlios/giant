@@ -20,45 +20,54 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gsl_dialog.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-progress_dialog.ads,v $, $Revision: 1.1 $
 --  $Author: squig $
 --  $Date: 2003/06/02 01:04:18 $
 --
 ------------------------------------------------------------------------------
 --
--- Provides a dialog that can open save and executes GSL scripts.
+-- Provides a progress dialog;
 --
 
-with Ada.Strings.Unbounded;
-
-with Gtk.Text;
+with Gtk.Label;
+with Gtk.Progress_Bar;
 with Gtk.Window;
 
 with Giant.Default_Dialog;
 
-package Giant.Gsl_Dialog is
-
-   type Gsl_Dialog_Record is
-     new Default_Dialog.Default_Dialog_Record with private;
-
-   type Gsl_Dialog_Access is access all Gsl_Dialog_Record'Class;
-
+package Giant.Progress_Dialog is
+   
+   type Progress_Dialog_Record is 
+	 new Default_Dialog.Default_Dialog_Record with private;
+	 
+   type Progress_Dialog_Access is access all Progress_Dialog_Record'Class;
+   
    function Can_Hide
-     (Dialog : access Gsl_Dialog_Record)
+     (Dialog : access Progress_Dialog_Record)
      return Boolean;
 
-   procedure Create
-     (Dialog : out Gsl_Dialog_Access);
-
+   procedure Create 
+	 (Dialog : out Progress_Dialog_Access;
+	  Title	 : in     String);
+   
    procedure Initialize
-     (Dialog : access Gsl_Dialog_Record'class);
+     (Dialog : access Progress_Dialog_Record'Class;
+	  Title	 : in     String);
+
+--     function Get_Progress_Bar 
+--  	 return Gtk.Progress_Bar.Gtk_Progress_Bar;
+	
+--     function Get_Progress_Label
+--  	 return Gtk.Label.Gtk_Label;
+   
+--      function Get_Cancel_Button
+--  	  return Gtk.Button.Gtk_Button;
 
 private
-   type Gsl_Dialog_Record is
+   type Progress_Dialog_Record is
      new Default_Dialog.Default_Dialog_Record with record
-        Filename : Ada.Strings.Unbounded.Unbounded_String;
-        Text_Area : Gtk.Text.Gtk_Text;
-        Text_Has_Changed : Boolean := False;
+        Progress_Bar : Gtk.Progress_Bar.Gtk_Progress_Bar;
+		Progress_Label : Gtk.Label.Gtk_Label;
      end record;
 
-end Giant.Gsl_Dialog;
+end Giant.Progress_Dialog;

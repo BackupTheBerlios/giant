@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/05/31 19:23:40 $
+--  $Date: 2003/06/02 01:04:18 $
 --
 ------------------------------------------------------------------------------
 --
@@ -32,6 +32,7 @@
 with Glib;
 with Gtk.Button;
 with Gtk.Clist;
+with Gtk.Editable;
 With Gtk.Frame;
 with Gtk.Handlers;
 with Gtk.Label;
@@ -41,6 +42,7 @@ with Gtk.Menu_Item;
 with Gtk.Paned;
 With Gtk.Scrolled_Window;
 with Gtk.Widget;
+with Gtk.Window;
 
 package Giant.Gui_Utils is
 
@@ -64,6 +66,9 @@ package Giant.Gui_Utils is
    package Clist_Return_Callback is new
      Gtk.Handlers.Return_Callback (Gtk.Clist.Gtk_Clist_Record, Boolean);
 
+   package Editable_Callback is new
+     Gtk.Handlers.Callback (Gtk.Editable.Gtk_Editable_Record);
+
    package Menu_Item_Callback is new
      Gtk.Handlers.Callback (Gtk.Menu_Item.Gtk_Menu_Item_Record);
 
@@ -79,8 +84,12 @@ package Giant.Gui_Utils is
    --  Methods  --
    ---------------
 
+   procedure Set_Default
+     (Window : in Gtk.Window.Gtk_Window;
+      Widget : in Gtk.Widget.Gtk_Widget);
+
    function New_Button
-     (label    : in String;
+     (Label    : in String;
       Callback : in Button_Callback.Marshallers.Void_Marshaller.handler)
      return Gtk.Button.Gtk_Button;
 

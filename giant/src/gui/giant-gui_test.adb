@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_test.adb,v $, $Revision: 1.4 $
+-- $RCSfile: giant-gui_test.adb,v $, $Revision: 1.5 $
 -- $Author: squig $
--- $Date: 2003/05/31 19:23:40 $
+-- $Date: 2003/06/02 01:04:18 $
 --
 with Gtk.Main;
 
@@ -30,13 +30,15 @@ with Giant.Default_Dialog;
 with Giant.Default_Logger;
 with Giant.Main_Window;
 with Giant.Gsl_Dialog;
+with Giant.Progress_Dialog;
 with Giant.Main_Window;
 with Giant.Logger;
 --with Config;
 
 procedure Giant.Gui_Test
 is
-   My_Gsl_Dialog : Gsl_Dialog.Gsl_Dialog_Access;
+--     My_Gsl_Dialog : Gsl_Dialog.Gsl_Dialog_Access;
+   My_Progress_Dialog : Progress_Dialog.Progress_Dialog_Access;
 begin
    Default_Logger.Init;
    --Config.Initialize_Config_Data ("/etc/giant/giantrc", ".giantrc");
@@ -44,12 +46,15 @@ begin
    Gtk.Main.Set_Locale;
    Gtk.Main.Init;
 
---     Default_Dialog.Show_Error ("An Error has occured!");
+--     Default_Dialog.Show_Error_Dialog ("An Error has occured!");
 
---     Put_Line("Input:" & Default_Dialog.Show_Input ("Insert Text:"));
+--     Put_Line("Input:" & Default_Dialog.Show_Input_Dialog ("Insert Text:"));
 
-     Gsl_Dialog.Create (My_Gsl_Dialog);
-     Gsl_Dialog.Show_All (My_Gsl_Dialog);
+--       Gsl_Dialog.Create (My_Gsl_Dialog);
+--       Gsl_Dialog.Show_All (My_Gsl_Dialog);
+
+   Progress_Dialog.Create (My_Progress_Dialog, "Progress Test");
+   Progress_Dialog.Show_All (My_Progress_Dialog);
 
 --     Main_Window.Show;
 

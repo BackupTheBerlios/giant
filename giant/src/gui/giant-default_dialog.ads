@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-default_dialog.ads,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/05/31 19:23:40 $
+--  $Date: 2003/06/02 01:04:18 $
 --
 ------------------------------------------------------------------------------
 --
@@ -32,6 +32,7 @@
 with Gtk.Box;
 with Gtk.Button;
 with Gtk.Hbutton_Box;
+with Gtk.Widget;
 with Gtk.Window;
 
 package Giant.Default_Dialog is
@@ -43,7 +44,8 @@ package Giant.Default_Dialog is
        Response_No);
 
    type Button_Type is
-     (Button_None, Button_Close, Button_Okay_Cancel, Button_Yes_No);
+     (Button_None, Button_Cancel, Button_Close, Button_Okay_Cancel,
+      Button_Yes_No, Button_Yes_No_Cancel);
 
    type Default_Dialog_Record is new Gtk.Window.Gtk_Window_Record with private;
 
@@ -88,10 +90,19 @@ package Giant.Default_Dialog is
       Title   : in     String;
       Buttons : in     Button_Type);
 
-   procedure Show_Error
+   procedure Set_Center_Widget
+     (Dialog : access Default_Dialog_Record'Class;
+      Widget : access Gtk.Widget.Gtk_Widget_Record'Class);
+
+   function Show_Confirmation_Dialog
+     (Message : in String;
+      Buttons : in Button_Type := Button_Yes_No)
+      return Response_Type;
+
+   procedure Show_Error_Dialog
      (Message : in String);
 
-   function Show_Input
+   function Show_Input_Dialog
      (Message  : in String)
      return String;
 

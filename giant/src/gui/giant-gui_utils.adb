@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.3 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.4 $
 -- $Author: squig $
--- $Date: 2003/05/31 19:23:40 $
+-- $Date: 2003/06/02 01:04:18 $
 --
 
 with Gtk.Enums; use Gtk.Enums;
@@ -32,6 +32,7 @@ with Gtk.Menu_Item;
 with Gtk.Paned;
 With Gtk.Scrolled_Window;
 with Gtk.Widget;
+with Gtk.Window;
 
 package body Giant.Gui_Utils is
 
@@ -42,7 +43,8 @@ package body Giant.Gui_Utils is
    is
      Button : Gtk.Button.Gtk_Button;
    begin
-      Gtk.Button.Gtk_New (button, Label);
+      Gtk.Button.Gtk_New (Button, Label);
+      Gtk.Button.Set_Flags (Button, Gtk.Widget.Can_Default);
       Button_Callback.Connect
         (Button, "clicked", Button_Callback.To_Marshaller (Callback));
       return Button;
@@ -133,6 +135,17 @@ package body Giant.Gui_Utils is
       Gtk.Label.Set_Line_Wrap (Label, False);
 
       return Label;
+   end;
+
+   procedure Set_Default
+     (Window : in Gtk.Window.Gtk_Window;
+      Widget : in Gtk.Widget.Gtk_Widget)
+   is
+      Result : Boolean;
+   begin
+      Gtk.Widget.Set_Flags (Widget, Gtk.Widget.Can_Default);
+      Gtk.Widget.Grab_Default (Widget);
+      Result := Gtk.Window.Activate_Default (Window);
    end;
 
 end Giant.Gui_Utils;

@@ -20,9 +20,9 @@
 --
 --  First Author: <unkown>
 --
---  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/06/01 11:08:31 $
+--  $Date: 2003/06/02 01:04:18 $
 --
 
 with Ada.Text_Io; use Ada.Text_Io;
@@ -144,6 +144,8 @@ package body Giant.Default_Dialog is
       Title   : in     String;
       Buttons : in     Button_Type)
    is
+      Button : Gtk.Button.Gtk_Button;
+      Result : Boolean;
       Separator : Gtk.Separator.Gtk_HSeparator;
    begin
       Gtk.Window.Initialize (Dialog, Window_Toplevel);
@@ -153,37 +155,56 @@ package body Giant.Default_Dialog is
       Gtk.Box.Set_Border_Width (Dialog.Center_Box, DEFAULT_SPACING);
       Add (Dialog, Dialog.Center_Box);
 
-      -- separator
-      Gtk.Separator.Gtk_New_Hseparator (Separator);
-      Gtk.Box.Pack_Start (Dialog.Center_Box, Separator, Expand => False,
-                          Fill => True, Padding => DEFAULT_SPACING);
-
       -- button box
       Gtk.Hbutton_Box.Gtk_New (Dialog.Button_Box);
       Gtk.Hbutton_Box.Set_Spacing (Dialog.Button_Box, BUTTON_SPACING);
       Gtk.Hbutton_Box.Set_Layout (Dialog.Button_Box, Buttonbox_Spread);
-      Gtk.Box.Pack_Start (Dialog.Center_Box, Dialog.Button_Box,
-                          Expand => False, Fill => True,
-                          Padding => DEFAULT_SPACING);
+      Gtk.Box.Pack_End (Dialog.Center_Box, Dialog.Button_Box,
+                        Expand => False, Fill => True,
+                        Padding => DEFAULT_SPACING);
 
       if (Buttons = Button_Close) then
-         Gtk.Hbutton_Box.Add (Dialog.Button_Box,
-                              New_Button (-"Close",
-                                          On_Close_Button_Clicked'access));
+         Button := New_Button (-"Close", On_Yes_Button_Clicked'access);
+         Gtk.Hbutton_Box.Add (Dialog.Button_Box, Button);
+         Gtk.Button.Grab_Default (Button);
+      elsif (Buttons = Button_Okay_Cancel) then
+         Button := New_Button (-"Okay", On_Yes_Button_Clicked'access);
+         Gtk.Hbutton_Box.Add (Dialog.Button_Box, Button);
+         Gtk.Button.Grab_Default (Button);
       elsif (Buttons = Button_Yes_No) then
-         Gtk.Hbutton_Box.Add (Dialog.Button_Box,
-                              New_Button (-"Yes", On_Yes_Button_Clicked'access));
+         Button := New_Button (-"Yes", On_Yes_Button_Clicked'access);
+         Gtk.Hbutton_Box.Add (Dialog.Button_Box, Button);
+         Gtk.Button.Grab_Default (Button);
          Gtk.Hbutton_Box.Add (Dialog.Button_Box,
                               New_Button (-"No", On_No_Button_Clicked'access));
-      elsif (Buttons = Button_Okay_Cancel) then
+      elsif (Buttons = Button_Yes_No_Cancel) then
+         Button := New_Button (-"Yes", On_Yes_Button_Clicked'access);
+         Gtk.Hbutton_Box.Add (Dialog.Button_Box, Button);
+         Gtk.Button.Grab_Default (Button);
          Gtk.Hbutton_Box.Add (Dialog.Button_Box,
-                              New_Button (-"Okay",
-                                          On_Okay_Button_Clicked'access));
+                              New_Button (-"No", On_No_Button_Clicked'access));
+      end if;
+
+      if (Buttons = Button_Cancel
+          or else Buttons = Button_Okay_Cancel
+          or else Buttons = Button_Yes_No_Cancel) then
          Gtk.Hbutton_Box.Add (Dialog.Button_Box,
                               New_Button (-"Cancel",
                                           On_Cancel_Button_Clicked'access));
       end if;
 
+      -- separator
+      Gtk.Separator.Gtk_New_Hseparator (Separator);
+      Gtk.Box.Pack_End (Dialog.Center_Box, Separator, Expand => False,
+                        Fill => True, Padding => DEFAULT_SPACING);
+
+      -- activate default button
+      Result := Activate_Default (Dialog);
+
+      -- set position
+      Set_Position (Dialog, Win_Pos_Mouse);
+
+      -- listen for the close button
       Widget_Return_Callback.Connect
         (Dialog, "delete_event",
          Widget_Return_Callback.To_Marshaller (On_Delete'Access));
@@ -208,9 +229,7 @@ package body Giant.Default_Dialog is
       Pixmap : Gtk.Pixmap.Gtk_Pixmap;
    begin
       Gtk.Box.Gtk_New_Hbox (Box);
-      Gtk.Box.Pack_Start (Dialog.Center_Box, Box, Expand => True,
-                          Fill => True, Padding => DEFAULT_SPACING);
-      Gtk.Box.Reorder_Child (Dialog.Center_Box, Box, 0);
+      Set_Center_Widget (Dialog, Box);
 
       Pixmap := Gtk.Pixmap.Create_Pixmap (Icon_Filename, Dialog);
       --Gtk.Pixmap.Set_Alignment (Dialog.Confirmation_Msg_Pixmap, 0.5, 0.5);
@@ -227,6 +246,17 @@ package body Giant.Default_Dialog is
       return Box;
    end Add_Icon_Box;
 
+   procedure Set_Center_Widget
+     (Dialog : access Default_Dialog_Record'Class;
+      Widget : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+   begin
+      Gtk.Box.Pack_Start (Dialog.Center_Box, Widget,
+                          Expand => True, Fill => True,
+                          Padding => DEFAULT_SPACING);
+      --Gtk.Box.Reorder_Child (Dialog.Center_Box, Widget, 0);
+   end Set_Center_Widget;
+
    procedure Show_Modal
      (Dialog : access Default_Dialog_Record'Class)
    is
@@ -236,23 +266,24 @@ package body Giant.Default_Dialog is
       Gtk.Main.Main;
    end Show_Modal;
 
-   function Show_Confirmation
-     (Message : in String)
+   function Show_Confirmation_Dialog
+     (Message : in String;
+      Buttons : in Button_Type := Button_Yes_No)
      return Response_Type
    is
       Dialog : Default_Dialog_Access;
       Box : Gtk.Box.Gtk_Hbox;
    begin
-      Create (Dialog, -"Giant Question", Button_Yes_No);
+      Create (Dialog, -"Giant Question", Buttons);
       Box := Add_Icon_Box (Dialog, "gnome-question.xpm", Message);
 
       Show_Modal (Dialog);
       Destroy (Dialog);
 
       return Dialog.Response;
-   end Show_Confirmation;
+   end Show_Confirmation_Dialog;
 
-   procedure Show_Error
+   procedure Show_Error_Dialog
      (Message : in String)
    is
       Dialog : Default_Dialog_Access;
@@ -263,10 +294,10 @@ package body Giant.Default_Dialog is
 
       Show_Modal (Dialog);
       Destroy (Dialog);
-   end Show_Error;
+   end Show_Error_Dialog;
 
 
-   function Show_Input
+   function Show_Input_Dialog
      (Message  : in String)
       return String
    is
@@ -278,6 +309,9 @@ package body Giant.Default_Dialog is
       Box := Add_Icon_Box (Dialog, "gnome-question.xpm", Message);
       Gtk.Gentry.Gtk_New (Input, 20);
       Gtk.Box.Add (Box, Input);
+
+      Gtk.Gentry.Set_Flags (Input, Gtk.Widget.Can_Default);
+      Grab_Default (Dialog);
 
       Show_Modal (Dialog);
 
@@ -292,6 +326,6 @@ package body Giant.Default_Dialog is
          Destroy (Dialog);
          return "";
       end if;
-   end Show_Input;
+   end Show_Input_Dialog;
 
 end Giant.Default_Dialog;
