@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.ads,v $, $Revision: 1.6 $
+-- $RCSfile: giant-file_management.ads,v $, $Revision: 1.7 $
 -- $Author: schwiemn $
--- $Date: 2003/06/20 13:45:48 $
+-- $Date: 2003/06/22 14:28:01 $
 --
 -- -----------------------------------------------
 --
@@ -96,16 +96,16 @@ package Giant.File_Management is
       Filter         : in Boolean;
       Filter_String  : in String)
      return String_Lists.List;
-	 
+
    ---------------------------------------------------------------------------
    -- Raised if a file does not exist
    File_Does_Not_Exist_Exception : exception;
-   
+
    ---------------------------------------------------------------------------
-   -- Raised if a file could not be deleted (not existing, not sufficient 
+   -- Raised if a file could not be deleted (not existing, not sufficient
    -- rights, no regular file ...)
    File_Cannot_Be_Deleted_Exception : exception;
-   
+
    ---------------------------------------------------------------------------
    -- Raised if a directory does not exist
    Directory_Does_Not_Exist_Exception : exception;
@@ -114,16 +114,25 @@ package Giant.File_Management is
    -- Raised if an existing directory path could not be calculated out
    -- of a path to a file name.
    Directory_Could_Not_Be_Calculated_Exception : exception;
-      
+
    ---------------------------------------------------------------------------
    -- Deletes a File.
    --
    -- Parameters:
    --   File_Name - The file (incl. Path) that should be deleted.
-   -- Raises 
+   -- Raises
    --   File_Cannot_Be_Deleted_Exception - Raised if the file could not be
    --   found, accessed or deleted.
    procedure Delete_File (File_Name : in String);
+
+
+   ---------------------------------------------------------------------------
+   -- Copies a file, existing Target files will be overwritten
+   --
+   -- Parameters:
+   --   Source - The name of the source file.
+   --   Target - The name of the target file.
+   procedure Copy_File (Source : in String; Target : in String);
 
    ---------------------------------------------------------------------------
    -- For a given realtive Path to a file and a path to a directory there the
@@ -158,7 +167,7 @@ package Giant.File_Management is
      (Start_Dir             : in String;
       Relative_Path_To_File : in String)
      return String;
-     
+
    ---------------------------------------------------------------------------
    --  Calculates an absolute path from an relative one for a directory.
    --
@@ -174,7 +183,7 @@ package Giant.File_Management is
    --    An absolute Path for the passed relative path.
    --  Raises:
    --    Directory_Does_Not_Exist_Exception - Raised if Start_Dir and
-   --      Rel_Dir_Path do not describe an existing directory. 
+   --      Rel_Dir_Path do not describe an existing directory.
    function Get_Absolute_Path_To_Directory_From_Relative
      (Start_Dir    : in String;
       Rel_Dir_Path : in String)
@@ -185,7 +194,7 @@ package Giant.File_Management is
    -- environment so that it matches the directory there the Executable
    -- file of the program is located.
    procedure Set_Currunt_Working_Dir_To_Exec_Dir;
-   
+
    ---------------------------------------------------------------------------
    -- Returns the "path" out of a string holding a file name including
    -- a path.
@@ -207,9 +216,9 @@ package Giant.File_Management is
    --   Directory_Could_Not_Be_Calculated_Exception - Raised if the
    --   directory that is part of the file name "File_Path" does
    --   not exist.
-   function Return_Dir_Path_For_File_Path (File_Path : in String) 
+   function Return_Dir_Path_For_File_Path (File_Path : in String)
      return String;
-      
+
    ---------------------------------------------------------------------------
    -- Calculates a name out of a file name by neglecting the path and the
    -- ending that may be part of a file name,
@@ -230,7 +239,7 @@ package Giant.File_Management is
      return String;
 
    ---------------------------------------------------------------------------
-   -- Appends a directory separator if 
+   -- Appends a directory separator if
    -- necessary (the passed String should be a path).
    --
    -- Example:
@@ -241,7 +250,7 @@ package Giant.File_Management is
    -- Parameters:
    --   Directory - A String describing a directory.
    -- Returns:
-   --   A path ending with a directory separator. 
+   --   A path ending with a directory separator.
    function Append_Dir_Separator_If_Necessary
      (Directory : in String)
      return String;

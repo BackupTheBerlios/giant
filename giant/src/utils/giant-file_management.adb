@@ -20,10 +20,14 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.7 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.8 $
 -- $Author: schwiemn $
--- $Date: 2003/06/20 13:45:48 $
+-- $Date: 2003/06/22 14:28:01 $
 --
+--
+with Ada.Streams;
+with Ada.Streams.Stream_IO;
+
 package body Giant.File_Management is
    ---------------------------------------------------------------------------
    function Get_Filtered_Files_From_Directory
@@ -136,22 +140,64 @@ package body Giant.File_Management is
       GNAT.Directory_Operations.Close (GNAT_Directory);
       return File_Names_List;
    end Get_Filtered_Files_From_Directory;
-   
+
    ---------------------------------------------------------------------------
    procedure Delete_File (File_Name : in String) is
-   
+
       The_File : Ada.Text_IO.File_Type;
    begin
 
      if not (GNAT.OS_Lib.Is_Writable_File (File_Name))
         or not (GNAT.OS_Lib.Is_Regular_File (File_Name)) then
-        
+
         raise File_Cannot_Be_Deleted_Exception;
      end if;
-   
-     Ada.Text_IO.Open (The_File, Ada.Text_IO.Out_File, File_Name);     
-     Ada.Text_IO.Delete (The_File);         
+
+     Ada.Text_IO.Open (The_File, Ada.Text_IO.Out_File, File_Name);
+     Ada.Text_IO.Delete (The_File);
    end Delete_File;
+
+   ---------------------------------------------------------------------------
+   procedure Copy_File (Source : in String; Target : in String) is
+
+      use Ada.Streams;
+
+      Source_File : Ada.Streams.Stream_IO.File_Type;
+      Target_File :Ada.Streams.Stream_IO.File_Type;
+      Trans_Data : Ada.Streams.Stream_Element_Array (1 .. 1000);
+      Last_Element : Ada.Streams.Stream_Element_Offset;
+   begin
+
+      Ada.Streams.Stream_IO.Open
+        (Source_File,
+         Ada.Streams.Stream_IO.In_File,
+         Source);
+
+      Ada.Streams.Stream_IO.Create
+        (Target_File,
+         Ada.Streams.Stream_IO.Out_File,
+         Target);
+
+      loop
+         Ada.Streams.Stream_IO.Read
+           (Source_File,
+            Trans_Data,
+            Last_Element);
+
+         if Last_Element < Trans_Data'Last then
+            Ada.Streams.Stream_IO.Write
+              (Target_File,
+               Trans_Data (Trans_Data'First .. Last_Element));
+            exit;
+         else
+
+            Ada.Streams.Stream_IO.Write (Target_File, Trans_Data);
+         end if;
+      end loop;
+
+      Ada.Streams.Stream_IO.Close (Source_File);
+      Ada.Streams.Stream_IO.Close (Target_File);
+   end Copy_File;
 
    ---------------------------------------------------------------------------
    function Get_Absolute_Path_To_File_From_Relative
@@ -186,14 +232,14 @@ package body Giant.File_Management is
         (ADA.Text_IO.Name(ADA_Text_IO_File));
 
       ADA.Text_IO.Close(ADA_Text_IO_File);
-                  
+
       -- check for a regular file
-      if (GNAT.OS_Lib.Is_Regular_File 
+      if (GNAT.OS_Lib.Is_Regular_File
         (Ada.Strings.Unbounded.To_String (Abs_Path)) = False) then
-        
+
          raise File_Does_Not_Exist_Exception;
       end if;
-      
+
       -- switch back to old
       -- "working directory for the execution environment"
       GNAT.Directory_Operations.Change_Dir (Old_Exec_Dir);
@@ -205,7 +251,7 @@ package body Giant.File_Management is
          GNAT.Directory_Operations.Change_Dir (Old_Exec_Dir);
          raise File_Does_Not_Exist_Exception;
    end Get_Absolute_Path_To_File_From_Relative;
-      
+
    ---------------------------------------------------------------------------
    function Get_Absolute_Path_To_Directory_From_Relative
      (Start_Dir    : in String;
@@ -215,18 +261,18 @@ package body Giant.File_Management is
       Old_Exec_Dir : String := GNAT.Directory_Operations.Get_Current_Dir;
       Abs_Dir_Path : Ada.Strings.Unbounded.Unbounded_String;
    begin
-  
+
       GNAT.Directory_Operations.Change_Dir (Start_Dir);
-      GNAT.Directory_Operations.Change_Dir (Rel_Dir_Path); 
-            
+      GNAT.Directory_Operations.Change_Dir (Rel_Dir_Path);
+
       -- should return an absolute path
       Abs_Dir_Path := Ada.Strings.Unbounded.To_Unbounded_String
-        (GNAT.Directory_Operations.Get_Current_Dir);    
-               
+        (GNAT.Directory_Operations.Get_Current_Dir);
+
       GNAT.Directory_Operations.Change_Dir (Old_Exec_Dir);
-            
+
       return Ada.Strings.Unbounded.To_String (Abs_Dir_Path);
-   exception      
+   exception
       when GNAT.Directory_Operations.Directory_Error =>
          raise Directory_Does_Not_Exist_Exception;
    end Get_Absolute_Path_To_Directory_From_Relative;
@@ -242,7 +288,7 @@ package body Giant.File_Management is
         (Return_Dir_Path_For_File_Path (Exec_File_Call_String));
 
    end Set_Currunt_Working_Dir_To_Exec_Dir;
-               
+
    ---------------------------------------------------------------------------
    function Return_Dir_Path_For_File_Path (File_Path : String)
                                           return String is
@@ -284,7 +330,7 @@ package body Giant.File_Management is
 
       return File_Path(File_Path'First .. Cut_Index);
    end Return_Dir_Path_For_File_Path;
-   
+
    ---------------------------------------------------------------------------
    function Calculate_Name_For_File (File_Name : in String)
      return String is
@@ -344,7 +390,7 @@ package body Giant.File_Management is
 
       return Ada.Strings.Unbounded.To_String (Name);
    end Calculate_Name_For_File;
-   
+
    ---------------------------------------------------------------------------
    function Append_Dir_Separator_If_Necessary
      (Directory : in String)
