@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.2 $
-%  $Date: 2003/02/13 18:40:27 $
+%  $RCSfile: config.tex,v $, $Revision: 1.3 $
+%  $Date: 2003/02/14 14:34:49 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -54,8 +54,17 @@ unspezifiziert, welche Einstellung tatsächlich genommen wird.
   \subsection {Einstellungen innerhalb des Visualisierungssteils}
     \begin{itemize}
       \item Die Hintergrundfarbe im Anzeigefenster.
-      \item Die Position der Kantenbeschriftung (immer im sichtbaren Anzeigeinhalt,
-            pauschal in der Mitte der Kante, am Startknoten oder am Zielknoten).
+      \item Die Position der Kantenbeschriftung. 
+        \subitem Immer im sichtbaren Anzeigeinhalt.
+        \subitem Pauschal in der Mitte der Kante. 
+        \subitem Am Startknoten.
+        \subitem Am Zielknoten.
+      \item Wann Kanten im sichtbaren Anzeigeinhalt angezeigt werden sollen.
+        ACHTUNG - ES KANN AUCH SCHLEIFEN GEBEN
+        \subitem Nur falls Start- und Zielknoten ebenfalls im sichtbaren Anzeigeinhalt.
+        \subitem Auch anzeigen falls nur Startknoten im sichtbaren Anzeigeinhalt.
+        \subitem Auch anzeigen falls nur Zielknoten im sichtbaren Anzeigeinhalt.
+        \subitem Auch anzeigen falls weder Start- und Zielknoten im sichtbaren Anzeigeinhalt. 
     \end{itemize}
 
 
