@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-config-global_data-test.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-config-global_data-test.adb,v $, $Revision: 1.3 $
 --  $Author: schwiemn $
---  $Date: 2003/09/15 17:27:25 $
+--  $Date: 2003/09/15 17:39:45 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -45,10 +45,22 @@ package body Giant.Config.Global_Data.Test is
       Giant.Config_Settings.Initialize_Config_Settings
         ("./resources/config_glob_test/global_config.xml",
          "");
+      Giant.Config.Global_Data.Initialize_Config_Data;
+      
+      ----------
       Assert 
         (Giant.Config_Settings.Does_Setting_Exist 
           ("Icon_For_Node_Annotations"),
          "Check whether Icon_For_Node_Annotations setting exists");
+         
+      Assert
+        ((Giant.Config_Settings.Get_Setting_As_String
+          ("Icon_For_Node_Annotations") = "./annotation_dir/document.xpm"),
+          "Check correct Icon_For_Node_Annotations path in config file");
+          
+      -----------
+      Logger.Debug ("Annotations_Icon_Path: "
+        & Giant.Config.Global_Data.Get_Node_Annotations_Icon);
 
       --Config.Initialize_Config_Data ("resources/global_config.xml", "");
 --      Assert (Config_Settings.Does_Setting_Exist ("Test_Setting"), "Test_Setting");
@@ -63,7 +75,7 @@ package body Giant.Config.Global_Data.Test is
 
    procedure Register_Tests (T : in out Test_Case) is
    begin
-      Register_Routine (T, Test_Icons'Access, "Init");
+      Register_Routine (T, Test_Icons'Access, "Test_Icons");
    end Register_Tests;
 
    procedure Set_Up (T : in out Test_Case) is

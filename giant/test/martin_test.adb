@@ -20,22 +20,22 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: martin_test.adb,v $, $Revision: 1.21 $
+--  $RCSfile: martin_test.adb,v $, $Revision: 1.22 $
 --  $Author: schwiemn $
---  $Date: 2003/09/15 17:15:19 $
+--  $Date: 2003/09/15 17:39:45 $
 --  
 with AUnit.Test_Suites; use AUnit.Test_Suites;
 with AUnit.Test_Runner;
 
-with Giant.Config.Vis_Styles.Test; 
-with Giant.Projects.Test;
-with Giant.XML_File_Access.Test;
-with Giant.File_Management.Test;
-with Giant.Node_Annotations.Test;
-with Giant.GSL_Support.Test;
-with Giant.Vis_Windows.Test;
-with Giant.Config.Class_Sets.Test;
-with Hashed_Mappings_Lazy_Init_Test;
+--with Giant.Config.Vis_Styles.Test; 
+--with Giant.Projects.Test;
+--with Giant.XML_File_Access.Test;
+--with Giant.File_Management.Test;
+--with Giant.Node_Annotations.Test;
+--with Giant.GSL_Support.Test;
+--with Giant.Vis_Windows.Test;
+--with Giant.Config.Class_Sets.Test;
+--with Hashed_Mappings_Lazy_Init_Test;
 with Giant.Config.Global_Data.Test;
 
 with Giant.Default_Logger;
