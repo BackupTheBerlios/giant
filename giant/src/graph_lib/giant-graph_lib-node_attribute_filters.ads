@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-node_attribute_filters.ads,v $, $Revision: 1.6 $
+--  $RCSfile: giant-graph_lib-node_attribute_filters.ads,v $, $Revision: 1.7 $
 --  $Author: koppor $
---  $Date: 2003/06/25 13:47:15 $
+--  $Date: 2003/06/25 15:22:54 $
 --
 ------------------------------------------------------------------------------
 --
@@ -63,10 +63,6 @@ package Giant.Graph_Lib.Node_Attribute_Filters is
    procedure Destroy
       (Node_Attribute_Filter  : in out Filter);
 
-   ----------------------------------------
-   --  Iterator - analogue to lists.ads  --
-   ----------------------------------------
-
    ---------------------------------------------------------------------------
    --  Sets the Iterator to the first element
    function Make_Filtered_Iter
@@ -74,9 +70,8 @@ package Giant.Graph_Lib.Node_Attribute_Filters is
      return Filtered_Iterator;
 
    ---------------------------------------------------------------------------
-   NoMore    : exception;
-
-   ---------------------------------------------------------------------------
+   --  Pre:
+   --    More (Iter)
    function More
      (Iter   : in     Filtered_Iterator)
      return Boolean;

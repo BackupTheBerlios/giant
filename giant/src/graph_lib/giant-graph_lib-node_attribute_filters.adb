@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-node_attribute_filters.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-graph_lib-node_attribute_filters.adb,v $, $Revision: 1.9 $
 --  $Author: koppor $
---  $Date: 2003/06/25 13:46:30 $
+--  $Date: 2003/06/25 15:23:04 $
 --
 ------------------------------------------------------------------------------
 
@@ -101,11 +101,9 @@ package body Giant.Graph_Lib.Node_Attribute_Filters is
       Attrib :    out Node_Attribute_Id)
    is
    begin
-      if More (Iter) then
-         Attrib := Iter.Used_Filter (Iter.Current_Position);
-      else
-         raise NoMore;
-      end if;
+      pragma Assert (More (Iter));
+      Attrib := Iter.Used_Filter (Iter.Current_Position);
+      Iter.Current_Position := Iter.Current_Position + 1;
    end Next;
 
    ---------------------------------------------------------------------------
