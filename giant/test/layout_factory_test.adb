@@ -21,9 +21,9 @@
 --  Based on framework of: Steffen Pingel
 --  First Author:          Oliver Kopp
 --
---  $RCSfile: layout_factory_test.adb,v $, $Revision: 1.2 $
+--  $RCSfile: layout_factory_test.adb,v $, $Revision: 1.3 $
 --  $Author: koppor $
---  $Date: 2003/07/13 00:27:38 $
+--  $Date: 2003/07/14 19:36:44 $
 --
 
 with Ada.Text_Io;
@@ -50,7 +50,7 @@ procedure Layout_Factory_Test is
    procedure Run is new AUnit.Test_Runner (Suite);
 
 begin
-   Giant.Default_Logger.Init;
+   Giant.Default_Logger.Init ("debug.log");
    Giant.Default_Logger.Debug ("Starting Test...");
 
    Run;
