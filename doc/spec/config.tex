@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.3 $
-%  $Date: 2003/02/14 14:34:49 $
+%  $RCSfile: config.tex,v $, $Revision: 1.4 $
+%  $Date: 2003/02/14 17:20:54 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -11,7 +11,7 @@
 \section {Allgemeines}
 
 Sämtliche konfigurierbaren Einstellungen werden in XML-Dateien vorgenommen.
-Es gibt genau eine\gq{globale Konfigurationsdatei}. Zudem kann es beliebig viele weitere 
+Es gibt genau eine \gq{globale Konfigurationsdatei}. Zudem kann es beliebig viele weitere 
 XML-Dateien zur Konfiguration der weiter unten beschriebenen Visualisierungsstiele
 geben.
 
@@ -24,8 +24,14 @@ die anschließend beschriebenen Einstellungen vorgenommen.
   Jeder Makro wird durch einen eindeutigen Namen und durch einen Verweis
   auf die Datei, welche den Makro enthält, spezifiziert.
 
-  \subsection {Weitere Einstellungen}
-  MÜSSEN WIR UNS NOCH AUSDENKEN.
+  \subsection {Farbe von Hervorhebungen}
+  Einstellung der Farben mittels derer Selektionen oder IML-Teilgraphen hervorgehoben werden.
+  \begin {itemize}
+    \item Eine beliebige Farbe für die aktuelle Selektion.
+    \item Drei beliebige (sinnvoll wären verschiedene) Farben für das Hervorheben weiterer Selektionen.
+    \item Vier beliebige (sinnvoll wären verschiedene) farben für das Hervorheben von IML-Teilgraphen.
+  \end {itemize}
+
 
   \subsection {Verweise auf Visualisierungsstiele}
   EVENTUELL -> KLÄREN OB DIE XML DATEI, DIE EINEN VISUALISIERUNGSTIEL ENTHÄLT HIER REFERENZIERT WERDEN
@@ -50,8 +56,7 @@ unspezifiziert, welche Einstellung tatsächlich genommen wird.
   Der Name muss nicht eindeutig sein oder dem Namen der Datei, 
   in der der Visualisierungssteil gespeichert ist, entsprechen.
 
-
-  \subsection {Einstellungen innerhalb des Visualisierungssteils}
+  \subsection {Einstellungen innerhalb des Visualisierungsstiels}
     \begin{itemize}
       \item Die Hintergrundfarbe im Anzeigefenster.
       \item Die Position der Kantenbeschriftung. 
@@ -60,7 +65,7 @@ unspezifiziert, welche Einstellung tatsächlich genommen wird.
         \subitem Am Startknoten.
         \subitem Am Zielknoten.
       \item Wann Kanten im sichtbaren Anzeigeinhalt angezeigt werden sollen.
-        ACHTUNG - ES KANN AUCH SCHLEIFEN GEBEN
+  >>>>>>>>>>>>>>>>>>>>>>>      ACHTUNG - ES KANN AUCH SCHLEIFEN GEBEN
         \subitem Nur falls Start- und Zielknoten ebenfalls im sichtbaren Anzeigeinhalt.
         \subitem Auch anzeigen falls nur Startknoten im sichtbaren Anzeigeinhalt.
         \subitem Auch anzeigen falls nur Zielknoten im sichtbaren Anzeigeinhalt.
@@ -74,6 +79,7 @@ unspezifiziert, welche Einstellung tatsächlich genommen wird.
   Knotenklassen angewendet wird, für die nichts anderes definiert ist.
   \begin{itemize}  
     \item Ein Icon für die Knotenklasse (Verweis auf eine entsprechende Bilddatei).  
+>>>>>>>>>>>>>>>>>> DATEIFORMAT UND ABMESSUNGEN SPEZIFIZIEREN (z.B.32*32 Pixel)
     \item Eine Liste der Attribute der Knotenklasse, welche dirket innerhalb des
           Anzeigefensters in dem \gq(Viereck) für den Knoten dargestellt werden sollen.
     \item Die Füllfarbe des \gq{Vierecks} in welchem die Attribute zu dem Knoten dargestellt werden.
