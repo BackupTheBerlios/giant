@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.35 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.36 $
 --  $Author: koppor $
---  $Date: 2003/07/14 18:46:27 $
+--  $Date: 2003/07/17 16:13:05 $
 --
 --  TBD:
 --    * Write into comment, when the routine may be used
@@ -614,6 +614,7 @@ package Giant.Graph_Lib is
    --
    --  Returns:
    --    String-representation of given Node_Id
+   --    "n/a" if Node = Invalid_Node_Id
    --
    --  Raises:
    --    Storables.Unknown_Node if something is wrong in the IML-Graph
@@ -676,12 +677,11 @@ package Giant.Graph_Lib is
 
    ---------------------------------------------------------------------------
    --  Returns:
-   --    Invalid_Node_Id if Attribute doesn't show an valid node
+   --    Invalid_Node_Id if Attribute doesn't contain a valid node-id
+   --
    --  Raises:
    --    Wrong_Attribute_Type
    --      if Get_Node_Attribute_Class_Id(Attribute) /= Class_Node_Id
-   --    Node_Does_Not_Exist
-   --      if edge does not point to a valid node-id
    function Get_Node_Attribute_Node_Id_Value
       (Node      : in     Node_Id;
        Attribute : in     Node_Attribute_Id)
@@ -691,6 +691,8 @@ package Giant.Graph_Lib is
    --  Returns:
    --    A newly created Node_Id_List
    --    The caller has to take care for the destroyage that list
+   --    Non-IML-Roots (i.e. empty or upper classes) are ignored
+   --      (i.e. not included)
    --
    --  Raises:
    --    Wrong_Attribute_Type
@@ -704,6 +706,8 @@ package Giant.Graph_Lib is
    --  Returns:
    --    A newly created Node_Id_Set
    --    The caller has to take care for the destroyage that set
+   --    Non-IML-Roots (i.e. empty or upper classes) are ignored
+   --      (i.e. not included)
    --
    --  Raises:
    --    Wrong_Attribute_Type
