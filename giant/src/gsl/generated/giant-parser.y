@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-parser.y,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/06 20:05:07 $
+-- $Date: 2003/06/10 12:00:24 $
 --
 -- GSL Parser rules
 -- Use ayacc to generate code, needs scanner scanner.aflex
@@ -41,6 +41,7 @@
   Literal_Natural : Gsl_Natural;
   Literal_String  : Gsl_String;
   Var_Reference   : Gsl_Var_Reference;
+  Script_Ref      : Gsl_Script_Reference;
 }
 
 %start root 
@@ -68,7 +69,11 @@ expression         : literal
                    | sequence
                      { $$ := $1; }
                    | '{' list  expression '}'
-                     { $$ := Create_Node (Script_Decl, $2, $3); }
+                     { 
+                        $$ := Create_Node (Script_Decl, $2, $3);
+                        Script_Ref := Create_Gsl_Script_Reference ($2, $3);
+                        Set_Literal ($$, Gsl_Type (Script_Ref));
+                     }
                    | expression list
                      { $$ := Create_Node (Script_Activation, $1, $2); };
 
