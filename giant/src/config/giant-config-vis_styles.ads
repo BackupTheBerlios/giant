@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.ads,v $, $Revision: 1.4 $
+-- $RCSfile: giant-config-vis_styles.ads,v $, $Revision: 1.5 $
 -- $Author: schwiemn $
--- $Date: 2003/06/24 18:23:30 $
+-- $Date: 2003/06/27 15:34:02 $
 --
 -- ----------------
 -- This package provides the functionality needed to manage
@@ -361,9 +361,10 @@ package Giant.Config.Vis_Styles is
    --   A Pointer to an array holding all colors.
    --   May return a pointer
    --   to an array with Length=0 if no icons files have been found.
+   --   Bounds of Array: 1 .. Ammount of diffrent Colors
    -- Raises:
    --   Config_Vis_Styles_Not_Initialized_Exception - raised if this
-   --     subprogram is called before "Initialize_Config_Vis_Styles"
+   --     subprogram is called before "Initialize_Config_Vis_Styles.
    function Get_All_Colors return Color_Access_Array_Access;
 
 
@@ -419,6 +420,7 @@ package Giant.Config.Vis_Styles is
    --   An Array holding absolute paths to files. 
    --   May return a pointer
    --   to an array with Length=0 if no icons files have been found.
+   --   Bounds of Array: 1 .. Ammount of diffrent Icons
    -- Raises:
    --   Config_Vis_Styles_Not_Initialized_Exception - raised if this
    --     subprogram is called before "Initialize_Config_Vis_Styles"
