@@ -1,6 +1,6 @@
 2003-09-17  Oliver Kopp  <koppor@gspc54.informatik.uni-stuttgart.de>
 
-	* shared/gsl/standard.gsl: fixed while & repeat
+	* shared/gsl/standard.gsl: fixed while & repeat (Bug #931)
 	
 
 2003-09-17  Steffen Pingel  <squig@users.sourceforge.net>
