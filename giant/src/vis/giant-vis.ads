@@ -20,14 +20,16 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-vis.ads,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/06/09 01:13:39 $
+--  $Date: 2003/06/10 23:52:47 $
 --
 ------------------------------------------------------------------------------
 
 
 with Glib;
+
+with Bauhaus_IO;
 
 with Giant.Vectors;
 
@@ -42,6 +44,16 @@ package Giant.Vis is
    function Logic_Float_Image
      (A : in Logic_Float)
      return String;
+
+   --  Read from Stream
+   procedure Read_Logic_Float
+     (Stream     : in     Bauhaus_IO.In_Stream_Type;
+      Coordinate :    out Logic_Float);
+
+   --  Write to Stream
+   procedure Write_Logic_Float
+     (Stream     : in     Bauhaus_IO.Out_Stream_Type;
+      Coordinate : in     Logic_Float);
 
    package Logic is new Vectors
      (Field_Type        => Logic_Float,
@@ -58,7 +70,9 @@ package Giant.Vis is
       Coord_Sub         => "-",
       Scalar_Mult_Coord => "*",
       Vector_Mult_Coord => "*",
-      Scalar_Div_Coord  => "/");
+      Scalar_Div_Coord  => "/",
+      Read_Coordinate   => Read_Logic_Float,
+      Write_Coordinate  => Write_Logic_Float);
 
    subtype Zoom_Level is Float;
 
@@ -70,6 +84,16 @@ package Giant.Vis is
    function To_Absolute_Int
      (A : in Natural)
      return Absolute_Int;
+
+   --  Read from Stream
+   procedure Read_Absolute_Int
+     (Stream     : in     Bauhaus_IO.In_Stream_Type;
+      Coordinate :    out Absolute_Int);
+
+   --  Write to Stream
+   procedure Write_Absolute_Int
+     (Stream     : in     Bauhaus_IO.Out_Stream_Type;
+      Coordinate : in     Absolute_Int);
 
    package Absolute is new Vectors
      (Field_Type        => Absolute_Int,
@@ -86,7 +110,9 @@ package Giant.Vis is
       Coord_Sub         => "-",
       Scalar_Mult_Coord => "*",
       Vector_Mult_Coord => "*",
-      Scalar_Div_Coord  => "/");
+      Scalar_Div_Coord  => "/",
+      Read_Coordinate   => Read_Absolute_Int,
+      Write_Coordinate  => Write_Absolute_Int);
 
 
    type Transformation_Type is private;

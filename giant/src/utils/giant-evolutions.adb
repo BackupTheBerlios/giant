@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.11 $
+--  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.12 $
 --  $Author: keulsn $
---  $Date: 2003/06/10 13:34:57 $
+--  $Date: 2003/06/10 23:52:47 $
 --
 ------------------------------------------------------------------------------
 
@@ -156,6 +156,7 @@ package body Giant.Evolutions is
       Individual.Child_Progress := 0;
       Individual.Next_Action := Run;
       Individual.Parent := null;
+      Individual.Child := null;
    end Initialize;
 
    procedure Synchronized_Step

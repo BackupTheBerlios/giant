@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-vis.adb,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/06/09 01:13:39 $
+--  $Date: 2003/06/10 23:52:47 $
 --
 ------------------------------------------------------------------------------
 
@@ -76,12 +76,42 @@ package body Giant.Vis is
       end if;
    end Logic_Float_Image;
 
+   procedure Read_Logic_Float
+     (Stream     : in     Bauhaus_IO.In_Stream_Type;
+      Coordinate :    out Logic_Float) is
+   begin
+      Bauhaus_IO.Read_Float (Stream, Coordinate);
+   end Read_Logic_Float;
+
+   procedure Write_Logic_Float
+     (Stream     : in     Bauhaus_IO.Out_Stream_Type;
+      Coordinate : in     Logic_Float) is
+   begin
+      Bauhaus_IO.Write_Float (Stream, Coordinate);
+   end Write_Logic_Float;
+
+
    function To_Absolute_Int
      (A : in Natural)
      return Absolute_Int is
    begin
       return A;
    end To_Absolute_Int;
+
+   procedure Read_Absolute_Int
+     (Stream     : in     Bauhaus_IO.In_Stream_Type;
+      Coordinate :    out Absolute_Int) is
+   begin
+      Bauhaus_IO.Read_Integer (Stream, Coordinate);
+   end Read_Absolute_Int;
+
+   procedure Write_Absolute_Int
+     (Stream     : in     Bauhaus_IO.Out_Stream_Type;
+      Coordinate : in     Absolute_Int) is
+   begin
+      Bauhaus_IO.Write_Integer (Stream, Coordinate);
+   end Write_Absolute_Int;
+
 
    function To_Absolute
      (Vector : in     Logic.Vector_2d)

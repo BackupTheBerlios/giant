@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-vectors.adb,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/06/09 01:13:39 $
+--  $Date: 2003/06/10 23:52:47 $
 --
 ------------------------------------------------------------------------------
 
@@ -125,6 +125,26 @@ package body Giant.Vectors is
       return "(" & Image (Get_X (Vector)) & ", "
         & Image (Get_Y (Vector)) & ")";
    end Image;
+
+   procedure Read_Vector
+     (Stream : in     Bauhaus_IO.In_Stream_Type;
+      Vector :    out Vector_2d) is
+
+      X : Coordinate_Type;
+      Y : Coordinate_Type;
+   begin
+      Read_Coordinate (Stream, X);
+      Read_Coordinate (Stream, Y);
+      Vector := Combine_Vector (X, Y);
+   end Read_Vector;
+
+   procedure Write_Vector
+     (Stream : in     Bauhaus_IO.Out_Stream_Type;
+      Vector : in     Vector_2d) is
+   begin
+      Write_Coordinate (Stream, Get_X (Vector));
+      Write_Coordinate (Stream, Get_Y (Vector));
+   end Write_Vector;
 
 
    ----------------
@@ -362,5 +382,25 @@ package body Giant.Vectors is
       return "(" & Image (Get_Top_Left (Rectangle)) & " - "
         & Image (Get_Bottom_Right (Rectangle)) & ")";
    end Image;
+
+   procedure Read_Rectangle
+     (Stream    : in     Bauhaus_IO.In_Stream_Type;
+      Rectangle :    out Rectangle_2d) is
+
+      Top_Left     : Vector_2d;
+      Bottom_Right : Vector_2d;
+   begin
+      Read_Vector (Stream, Top_Left);
+      Read_Vector (Stream, Bottom_Right);
+      Rectangle := Combine_Rectangle (Top_Left, Bottom_Right);
+   end Read_Rectangle;
+
+   procedure Write_Rectangle
+     (Stream    : in     Bauhaus_IO.Out_Stream_Type;
+      Rectangle : in     Rectangle_2d) is
+   begin
+      Write_Vector (Stream, Get_Top_Left (Rectangle));
+      Write_Vector (Stream, Get_Bottom_Right (Rectangle));
+   end Write_Rectangle;
 
 end Giant.Vectors;

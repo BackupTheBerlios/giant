@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/06/10 15:43:34 $
+--  $Date: 2003/06/10 23:52:47 $
 --
 ------------------------------------------------------------------------------
 --
@@ -63,6 +63,7 @@ with Ada.Streams;
 
 with Gtk.Widget;
 
+with Bauhaus_IO;
 with Hashed_Mappings;
 pragma Elaborate_All (Hashed_Mappings);
 
@@ -767,14 +768,5 @@ private                    -- private part --
          Highest_Edge_Layer : Vis_Data.Layer_Pool;
          Manager            : Vis_Data.Region_Manager;
       end record;
-
-
-   -----------------------
-   -- Stream operations --
-   -----------------------
-
-   for Graph_Widget_Record'Input use Input_Graph_Widget;
-
-   for Graph_Widget_Record'Output use Output_Graph_Widget;
 
 end Giant.Graph_Widgets;

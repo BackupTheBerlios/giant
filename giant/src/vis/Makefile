@@ -4,6 +4,9 @@ vectors :
 vis :
 	make -C ../../ MAIN=src/vis/giant-vis all
 
+vis_data :
+	make -C ../../ MAIN=src/vis/giant-vis_data all
+
 mini_maps :
 	make -C ../../ MAIN=src/vis/giant-mini_maps all
 
