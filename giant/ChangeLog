@@ -1,3 +1,10 @@
+2003-09-16  Martin Schwienbacher  <schwiemn@gspc62.informatik.uni-stuttgart.de>
+
+	* src/utils/giant-file_management.adb: Fixed error in procedure
+	  Get_Relative_Path_From_Absolute - relative paths in the
+	  config fille (eg. to the node annotation icon) will now be
+	  expanded correctly.
+
 2003-09-15  Oliver Kopp  <koppor@schmidt.informatik.uni-stuttgart.de>
 
 	* src/vis/giant-tree_layouts.adb: Removed debug statements.
