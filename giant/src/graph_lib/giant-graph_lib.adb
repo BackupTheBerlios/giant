@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.11 $
 --  $Author: koppor $
---  $Date: 2003/06/12 13:59:43 $
+--  $Date: 2003/06/12 14:42:19 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -1543,10 +1543,13 @@ package body Giant.Graph_Lib is
      (Node     : in     Node_Id)
      return Node_Attribute_Iterator
    is
-      Iter : Node_Attribute_Iterator;
+      Iterator : Node_Attribute_Iterator;
    begin
-      Iter.Dummy := 0;
-      return Iter;
+      Iterator.Class := IML_Roots.Get_Class_ID
+        (IML_Roots.IML_Root (Node.IML_Node));
+
+      Iterator.CurrentIndex := Iterator.Class.Fields'First;
+      return Iterator;
    end Make_Attribute_Iterator;
 
    ---------------------------------------------------------------------------
@@ -1555,7 +1558,7 @@ package body Giant.Graph_Lib is
      return Boolean
    is
    begin
-      return False;
+      return (Iterator.CurrentIndex <= Iterator.Class.Fields'Last);
    end More;
 
    ---------------------------------------------------------------------------
@@ -1564,7 +1567,14 @@ package body Giant.Graph_Lib is
       Info     :    out Node_Attribute_Id)
    is
    begin
-      Info := null;
+      if not More (Iterator) then
+         raise Constraint_Error;
+         --  TBD: s/Contraint_Error/own_/
+      end if;
+
+      Info := Iterator.Class.Fields (Iterator.CurrentIndex);
+
+      Iterator.CurrentIndex := Iterator.CurrentIndex + 1;
    end Next;
 
 end Giant.Graph_Lib;
