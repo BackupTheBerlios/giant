@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.ads,v $, $Revision: 1.8 $
+--  $RCSfile: giant-tree_layouts.ads,v $, $Revision: 1.9 $
 --  $Author: koppor $
---  $Date: 2003/07/07 23:43:04 $
+--  $Date: 2003/07/08 13:54:17 $
 --
 ------------------------------------------------------------------------------
 --
@@ -201,7 +201,7 @@ private
    end record;
 
    ---------------------------------------------------------------------------
-   package FirstWalk_Part_One_Stacks is new
+   package Node_Layout_Data_Stacks is new
      Stacks_Unbounded (Elem_Type => Node_Layout_Data);
 
    ---------------------------------------------------------------------------
@@ -248,6 +248,10 @@ private
         --  Distance between two nodes used at FirstWalk
         Distance         : Vis.Logic_Float;
 
+        --  Maximum X-Coordinate used at tree
+        --  Set at SecondWalk
+        Max_X            : Vis.Logic_Float;
+
         --  Used at conversion of Nodes_To_Layout to Layout_Tree
         --  Queue_Last is for speed optimization
         --    since Node_Id_Lists.Last has O(n) and gets O(1) with this "hack"
@@ -258,7 +262,7 @@ private
 
         Level_Heights              : Level_Mappings.Mapping;
 
-        FirstWalk_Part_One_Stack   : FirstWalk_Part_One_Stacks.Stack;
+        FirstWalk_Part_One_Stack   : Node_Layout_Data_Stacks.Stack;
         FirstWalk_Part_Two_Stack   : FirstWalk_Part_Two_Stacks.Stack;
 
         SecondWalk_Stack           : SecondWalk_Stacks.Stack;
