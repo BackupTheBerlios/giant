@@ -20,18 +20,21 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant_test-graph_lib.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant_test-graph_lib.adb,v $, $Revision: 1.2 $
 --  $Author: koppor $
---  $Date: 2003/06/12 14:14:46 $
+--  $Date: 2003/06/12 14:24:42 $
 --
 ------------------------------------------------------------------------------
+
+with Ada.Text_IO; use Ada.Text_IO;
 
 with Giant.Graph_Lib;
 
 procedure Giant_Test.Graph_Lib is
 begin
-   Graph_Lib.Create ();
-   Graph_Lib.Destroy;
+   Put_Line ("Bad thing - you'll se an exception NOW:");
+   Giant.Graph_Lib.Create ("/home/stsopra/giant/graphs/rfg_examp.iml");
+   Giant.Graph_Lib.Destroy;
 end Giant_Test.Graph_Lib;
 
 
