@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/07 12:06:39 $
+-- $Date: 2003/07/07 16:17:41 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -761,17 +761,13 @@ package body Giant.Gsl.Runtime is
    function Runtime_All_Nodes
      (Parameter : Gsl_List)
       return Gsl_Type is
-
-      Nodes : Gsl_Node_Set;
    begin
       if Get_List_Size (Parameter) /= 0 then
          Ada.Exceptions.Raise_Exception
            (Gsl_Runtime_Error'Identity, "Script 'all_nodes' requires " &
              "no parameters.");
       end if;
-      Nodes := Create_Gsl_Node_Set;
-      Set_Value (Nodes, Graph_Lib.Get_All_Nodes);
-      return Gsl_Type (Nodes);
+      return Gsl_Type (Create_Gsl_Node_Set (Graph_Lib.Get_All_Nodes));
    end Runtime_All_Nodes;
 
 end Giant.Gsl.Runtime;
