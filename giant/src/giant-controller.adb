@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.88 $
---  $Author: koppor $
---  $Date: 2003/09/02 13:57:04 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.89 $
+--  $Author: squig $
+--  $Date: 2003/09/02 15:09:54 $
 --
 
 with Ada.Strings.Unbounded;
@@ -1127,7 +1127,9 @@ package body Giant.Controller is
       if (Replace) then
          Old_Highlight_Status
            := Projects.Get_Highlight_Status (Current_Project, Name);
-         Removed := Remove_Subgraph (Name);
+         Removed := Remove_Subgraph
+           (Name,
+            Ask_For_Confirmation => False);
          pragma Assert (Removed);
       end if;
 
@@ -1276,7 +1278,7 @@ package body Giant.Controller is
      return Boolean
    is
    begin
-      if (Gui_Manager.Remove_Subgraph (Name)) then
+      if (Gui_Manager.Remove_Subgraph (Name, Ask_For_Confirmation)) then
          Unhighlight_Subgraph (Name);
          Projects.Remove_Subgraph (Current_Project, Name);
          return True;
