@@ -1,35 +1,12 @@
 [
-  set_current_window ("Unknown");
-  set (+nodes, get_entry (selection.source_nodes, 1));
-  set (+edges, empty_edge_set ());
-  set (+n, get_first (nodes));
-
-  set (
-    +apply,
-    { (+work_list, +get_work_result)
-      if
-        (less (0, size_of ('work_list)),
-         { ()
-           [
-             set (+e, get_first (work_list));
-             sub ('work_list, e);
-             set (+target, get_work_result (e));
-             add ('edges, e);
-             add ('nodes, target);
-             true;
-           ] },
-         false)
-    });
-
-  apply (get_outgoing (n), get_target);
-  apply (get_incoming (n), get_source);
-
   create_window ("New_Window");
+  set (+nodes, all_nodes ());
+  
+
   insert_into_window
     ("New_Window",
-     "First",
-     (nodes, edges),
+     "All_Nodes",
+     (all_nodes (), empty_edge_set ()),
      "matrix",
      "");
 ]
-
