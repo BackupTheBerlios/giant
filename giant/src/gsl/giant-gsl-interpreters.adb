@@ -21,8 +21,8 @@
 -- First Author: Gerrit Schulz
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
--- $Author: schulzgt $
--- $Date: 2003/07/01 10:25:23 $
+-- $Author: squig $
+-- $Date: 2003/07/01 16:28:35 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -103,7 +103,7 @@ package body Giant.Gsl.Interpreters is
       Current_Interpreter := Individual;
       Individual.Script := To_Unbounded_String (Name);
       Individual.Context := To_Unbounded_String (Context);
-      -- initialize the execution stack with the 
+      -- initialize the execution stack with the
       Individual.Execution_Stack := Giant.Gsl.Compilers.Get_Execution_Stack
         (Individual.Gsl_Compiler, Name);
       -- initialize the result stack
@@ -112,7 +112,7 @@ package body Giant.Gsl.Interpreters is
       Individual.Activation_Records := Activation_Record_Stacks.Create;
       -- create the main activation record and set it acitve
       Individual.Main_Activation_Record := Create_Activation_Record (null);
-      Individual.Current_Activation_Record := 
+      Individual.Current_Activation_Record :=
         Individual.Main_Activation_Record;
       -- register runtime functions
       Default_Logger.Debug
@@ -129,14 +129,14 @@ package body Giant.Gsl.Interpreters is
       -- compare (ref. GIANT Scripting Language Specification 1.5.1.4)
       Register_Runtime (Giant.Gsl.Runtime.Runtime_Less'Access, "less");
       Register_Runtime (Giant.Gsl.Runtime.Runtime_Equal'Access, "equal");
-      Register_Runtime (Giant.Gsl.Runtime.Runtime_In_Regexp'Access, 
+      Register_Runtime (Giant.Gsl.Runtime.Runtime_In_Regexp'Access,
                         "in_regexp");
       Register_Runtime (Giant.Gsl.Runtime.Runtime_Type_In'Access, "type_in");
 
       -- types (ref. GIANT Scripting Language Specification 1.5.1.6)
-      Register_Runtime (Giant.Gsl.Runtime.Runtime_Is_Nodeid'Access, 
+      Register_Runtime (Giant.Gsl.Runtime.Runtime_Is_Nodeid'Access,
                         "is_nodeid");
-      Register_Runtime (Giant.Gsl.Runtime.Runtime_Is_Edgeid'Access, 
+      Register_Runtime (Giant.Gsl.Runtime.Runtime_Is_Edgeid'Access,
                         "is_edgeid");
 
       -- initilze the evolution object, comlexity is 0
@@ -210,7 +210,7 @@ package body Giant.Gsl.Interpreters is
                   Result_Stacks.Pop (Individual.Result_Stack, Res1);
                   Set_Value_At (Res_List, i, Res1);
                end loop;
-               Result_Stacks.Push 
+               Result_Stacks.Push
                  (Individual.Result_Stack, Gsl_Type (Res_List));
 
             when Sequence =>
@@ -227,7 +227,7 @@ package body Giant.Gsl.Interpreters is
                   Result_Stacks.Push
                     (Individual.Result_Stack, Res1);
                end if;
- 
+
             when Script_Activation => Script_Activation_Cmd;
 
             when Script_Exec =>
@@ -249,13 +249,16 @@ package body Giant.Gsl.Interpreters is
 
          end case;
 
+         --  advance
+         Evolutions.Advance_Progress (Individual, 1);
+
          -- destroy the command, free memory
          Giant.Gsl.Syntax_Tree.Destroy_Node (Cmd);
          Next_Action := Giant.Evolutions.Run;
          Log_Result_Stack;
       end if;
 
-      -- handling of exceptions 
+      -- handling of exceptions
       -- leading to runtime errors of Gsl
       exception
          when Var_Already_Exists =>
@@ -294,15 +297,15 @@ package body Giant.Gsl.Interpreters is
                   Execution_Stacks.Push (Current_Interpreter.Execution_Stack,
                     Giant.Gsl.Compilers.Get_Execution_Stack
                       (Current_Interpreter.Gsl_Compiler,
-                       Giant.Gsl.Syntax_Tree.Create_Node (Script_Exec, 
-                         Null_Node, Null_Node))); 
+                       Giant.Gsl.Syntax_Tree.Create_Node (Script_Exec,
+                         Null_Node, Null_Node)));
 
                   -- push the code for the parameter list to the
                   -- Execution Stack
                   -- (get the Syntax_Node from the Gsl_Script_Reference)
                   Execution_Stacks.Push (Current_Interpreter.Execution_Stack,
                     Giant.Gsl.Compilers.Get_Execution_Stack
-                      (Current_Interpreter.Gsl_Compiler, 
+                      (Current_Interpreter.Gsl_Compiler,
                        Get_Parameter_List (Gsl_Script_Reference (Script))));
 
                   Result_Stacks.Push
@@ -327,7 +330,7 @@ package body Giant.Gsl.Interpreters is
 
    --------------------------------------------------------------------------
    -- step 2 of a Gsl Script execution
-   procedure Script_Exec_Cmd is 
+   procedure Script_Exec_Cmd is
 
       Script : Gsl_Type;
       Params : Gsl_Type;
@@ -337,7 +340,7 @@ package body Giant.Gsl.Interpreters is
       Result_Stacks.Pop (Current_Interpreter.Result_Stack, Formal);
       Result_Stacks.Pop (Current_Interpreter.Result_Stack, Params);
       Result_Stacks.Pop (Current_Interpreter.Result_Stack, Script);
-      if Get_List_Size (Gsl_List (Formal)) /= 
+      if Get_List_Size (Gsl_List (Formal)) /=
          Get_List_size (Gsl_List (Params)) then
          Ada.Exceptions.Raise_Exception
            (Gsl_Runtime_Error'Identity, "Wrong number of parameters.");
@@ -350,23 +353,23 @@ package body Giant.Gsl.Interpreters is
              else
                 Ada.Exceptions.Raise_Exception
                   (Gsl_Runtime_Error'Identity, "Gsl_Var_Reference expected.");
-             end if; 
+             end if;
          end loop;
          -- destroy Activation Record when Script completed
          Execution_Stacks.Push (Current_Interpreter.Execution_Stack,
            Giant.Gsl.Compilers.Get_Execution_Stack
              (Current_Interpreter.Gsl_Compiler,
-              Giant.Gsl.Syntax_Tree.Create_Node (AR_Destroy, 
-                Null_Node, Null_Node))); 
+              Giant.Gsl.Syntax_Tree.Create_Node (AR_Destroy,
+                Null_Node, Null_Node)));
 
          -- push the code of the script
          Execution_Stacks.Push (Current_Interpreter.Execution_Stack,
            Giant.Gsl.Compilers.Get_Execution_Stack
-             (Current_Interpreter.Gsl_Compiler, 
+             (Current_Interpreter.Gsl_Compiler,
               Get_Script_Node (Gsl_Script_Reference (Script))));
       end if;
       --Result_Stacks.Push (Current_Interpreter.Result_Stack, Gsl_Null);
-      
+
    end Script_Exec_Cmd;
 
    ---------------------------------------------------------------------------
@@ -403,7 +406,7 @@ package body Giant.Gsl.Interpreters is
       Default_Logger.Debug ("-- Result Stack --", "Giant.Gsl");
       while Result_Stacks.Is_Empty (S) = false loop
          Result_Stacks.Pop (S, E);
-         Default_Logger.Debug 
+         Default_Logger.Debug
            ("Result Stack: " & Log_Gsl_Type (E), "Giant.Gsl");
       end loop;
    end Log_Result_Stack;
@@ -456,7 +459,7 @@ package body Giant.Gsl.Interpreters is
          raise Var_Already_Exists;
       else
          Gsl_Var_Hashed_Mappings.Bind
-           (AR.Vars, Ada.Strings.Unbounded.To_Unbounded_String (Name), 
+           (AR.Vars, Ada.Strings.Unbounded.To_Unbounded_String (Name),
             Gsl_Null);
       end if;
    end Create_Var;
@@ -487,7 +490,7 @@ package body Giant.Gsl.Interpreters is
    ---------------------------------------------------------------------------
    --
    procedure Set_Var
-     (Name            : String; 
+     (Name            : String;
       Value           : Gsl_Type) is
 
       AR : Activation_Record;
@@ -495,12 +498,12 @@ package body Giant.Gsl.Interpreters is
       -- start in the current Activation_Record
       AR := Current_Interpreter.Current_Activation_Record;
       while AR /= null loop
-         if Gsl_Var_Hashed_Mappings.Is_Bound 
+         if Gsl_Var_Hashed_Mappings.Is_Bound
            (AR.Vars, Ada.Strings.Unbounded.To_Unbounded_String (Name)) then
             Gsl_Var_Hashed_Mappings.Unbind
               (AR.Vars, Ada.Strings.Unbounded.To_Unbounded_String (Name));
             Gsl_Var_Hashed_Mappings.Bind
-              (AR.Vars, Ada.Strings.Unbounded.To_Unbounded_String (Name), 
+              (AR.Vars, Ada.Strings.Unbounded.To_Unbounded_String (Name),
                Value);
             -- success, leave procedure here
             return;

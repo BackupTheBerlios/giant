@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.37 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.38 $
 --  $Author: squig $
---  $Date: 2003/06/30 18:54:09 $
+--  $Date: 2003/07/01 16:28:35 $
 --
 
 with Ada.Strings.Unbounded;
@@ -86,7 +86,22 @@ package body Giant.Controller is
         (Individual => Gsl_Interpreter,
          Started    => Started,
          Dialog     => Gui_Manager.Create_Gsl_Progress_Dialog);
+      Logger.Info ("Script finished:");
    end Execute_GSL;
+
+   ---------------------------------------------------------------------------
+   --  Layout
+   ---------------------------------------------------------------------------
+
+   procedure Apply_Layout
+     (Layout_Name           : in String;
+      Window_Name           : in String;
+      Selection_Name        : in String;
+      Additional_Parameters : in String)
+   is
+   begin
+      null;
+   end Apply_Layout;
 
    ---------------------------------------------------------------------------
    --  Node Annotations

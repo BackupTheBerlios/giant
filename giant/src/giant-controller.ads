@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.26 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.27 $
 --  $Author: squig $
---  $Date: 2003/06/30 18:54:09 $
+--  $Date: 2003/07/01 16:28:35 $
 --
 ------------------------------------------------------------------------------
 --
@@ -86,6 +86,16 @@ package Giant.Controller is
 
    procedure Execute_GSL
      (Filename : in String);
+
+   ---------------------------------------------------------------------------
+   --  Layout
+   ---------------------------------------------------------------------------
+
+   procedure Apply_Layout
+     (Layout_Name           : in String;
+      Window_Name           : in String;
+      Selection_Name        : in String;
+      Additional_Parameters : in String);
 
    ---------------------------------------------------------------------------
    --  Node Annotations
