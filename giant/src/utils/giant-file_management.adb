@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.31 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.32 $
 -- $Author: schwiemn $
--- $Date: 2003/09/15 19:10:29 $
+-- $Date: 2003/09/15 20:12:56 $
 --
 --
 
@@ -415,19 +415,8 @@ package body Giant.File_Management is
          raise Abs_Path_Could_Not_Be_Calculated_Exception;
       end if;
 
-      Logger.Debug ("-------------------------------");
-      Logger.Debug ("Start_Dir: "
-        & (Start_Dir));
-      Logger.Debug ("Rel_Path: "
-        & (Rel_Path));
-
       GNAT.Directory_Operations.Change_Dir (Start_Dir);
-
-      Logger.Debug ("New_Exec_Dir: "      
-        & GNAT.Directory_Operations.Get_Current_Dir);
-        
-      
-            
+                       
       begin
          ADA.Text_IO.Open
            (File => ADA_Text_IO_File_or_Dir,
@@ -441,7 +430,6 @@ package body Giant.File_Management is
       exception
          
          when ADA.Text_IO.Name_Error =>
-           Logger.Debug ("Name_Error_Rised_by_File_IO");
            raise Abs_Path_Could_Not_Be_Calculated_Exception;
       end;
 

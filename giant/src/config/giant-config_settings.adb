@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.21 $
+-- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.22 $
 -- $Author: schwiemn $
--- $Date: 2003/09/15 19:34:04 $
+-- $Date: 2003/09/15 20:12:55 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Strings.Fixed;
@@ -498,13 +498,6 @@ package body Giant.Config_Settings is
 
       -- 2. try expansion regarding directory of config file      
       begin
-          Logger.Debug 
-            ("Abs_Config_File_Dir:"
-             & Abs_Config_File_Dir);
-             
-          Logger.Debug 
-            ("Unexpanded_Path:"
-             & Unexpanded_Path);
 
           return File_Management.Get_Absolute_Path_From_Relative
             (Abs_Config_File_Dir,

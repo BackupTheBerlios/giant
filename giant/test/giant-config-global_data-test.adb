@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-config-global_data-test.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-config-global_data-test.adb,v $, $Revision: 1.15 $
 --  $Author: schwiemn $
---  $Date: 2003/09/15 19:50:17 $
+--  $Date: 2003/09/15 20:12:56 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -36,7 +36,7 @@ pragma Elaborate_All (Giant.Logger);
 
 package body Giant.Config.Global_Data.Test is
 
-   package Logger is new Giant.Logger("Giant.Vis_Windows.Test");
+   package Logger is new Giant.Logger("Giant.Config.Global_Data.Test");
 
    procedure Test_Icons (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
@@ -61,21 +61,6 @@ package body Giant.Config.Global_Data.Test is
                     
       -----------
       -- Loactes Annotations Icon using path relative to config file pos
-      
-      Logger.Debug ("Teste auf File");
-      Logger.Debug ("--------------");
-      
-      
-      Logger.Debug ("Expanded_Path:   "
-        & Giant.Config_Settings.Get_Setting_With_Path_Expanded
-           ("Icon_For_Node_Annotations"));
-           
-      Logger.Debug ("Calculated_Path: "
-        & File_Management.Get_Absolute_Path_To_File_From_Relative
-             ("./resources/config_glob_test/",
-              "./annotation_dir/document.xpm"));
-      
-      Logger.Debug ("--------------");
       Assert 
         ((Giant.Config_Settings.Get_Setting_With_Path_Expanded
            ("Icon_For_Node_Annotations")
@@ -95,17 +80,6 @@ package body Giant.Config.Global_Data.Test is
         
       -----------
       -- Loactes Annotations Icon using absolute_path_root setting
-
-      Logger.Debug ("AAAExpanded_Path:   "
-        & Giant.Config_Settings.Get_Setting_With_Path_Expanded
-           ("Icon_relative_to_aps_path_root"));
-           
-      Logger.Debug ("AAACalculated_Path: "
-        & File_Management.Get_Absolute_Path_To_File_From_Relative
-             ("./resources/config_glob_test/annotation_dir/",
-              "./document.xpm"));
-
-
       Assert 
         ((Giant.Config_Settings.Get_Setting_With_Path_Expanded
            ("Icon_relative_to_aps_path_root")
