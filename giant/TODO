@@ -7,3 +7,15 @@ RELEASE
  * Select Nothing
  
  * Catch exceptions when project is loaded via command line
+
+ * Enhance GSL Dialog
+
+ * Add Show Target / Source in edge menu
+
+ * Add script hooks to context menus
+
+ * Create directory on New Project
+
+ * Fix Vis_Style signal
+
+ * Pick button actions

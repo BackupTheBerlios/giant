@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.12 $
+--  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.13 $
 --  $Author: squig $
---  $Date: 2003/07/18 15:59:50 $
+--  $Date: 2003/08/08 12:12:32 $
 --
 
 with Ada.IO_Exceptions;
@@ -94,9 +94,9 @@ package body Giant.Default_Logger is
             Ada.Text_IO.Flush (Ada.Text_Io.Standard_Error);
          end if;
       end;
---     exception
---       when others =>
---          null; -- just ignore it to not clutter stderr
+   exception
+     when others =>
+        null; -- just ignore it to not clutter stderr
    end Put_Line;
 
    ---------------------------------------------------------------------------
@@ -112,9 +112,9 @@ package body Giant.Default_Logger is
          Ada.Text_IO.Put_Line(Out_File, " " & Exception_Message (Error));
          Ada.Text_IO.Flush (Out_File);
       end if;
---     exception
---       when others =>
---          null; -- just ignore it to not clutter stderr
+   exception
+     when others =>
+        null; -- just ignore it to not clutter stderr
    end Put_Exception;
 
    procedure Debug (Message : in String;

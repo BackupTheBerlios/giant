@@ -26,12 +26,14 @@ XMLADA_PATH     = $(GIANT_PATH)/../src/xmlada-0.7.1
 
 AUNIT_INCLUDES  = -I$(AUNIT_PATH)/aunit/framework -I$(AUNIT_PATH)/aunit/text_reporter
 IMLLIB_INCLUDES = -I$(IMLLIB_PATH)/IML.generated -I$(IMLLIB_PATH)/IML.src -I$(IMLLIB_PATH)/Reuse.src -I$(IMLLIB_PATH)/usr.local.reuse
+IMLLIB_LIBS = 
+#-L$(IMLLIB_PATH)/../lib -lReuse -lIML
 GIANT_INCLUDES  = -I$(GIANT_PATH)/src -I$(GIANT_PATH)/src/config -I$(GIANT_PATH)/src/control -I$(GIANT_PATH)/src/graph_lib -I$(GIANT_PATH)/src/gsl -I$(GIANT_PATH)/src/gsl/generated -I$(GIANT_PATH)/src/gui -I$(GIANT_PATH)/src/project -I$(GIANT_PATH)/src/reuse -I$(GIANT_PATH)/src/utils -I$(GIANT_PATH)/src/vis
 XMLADA_INCLUDES = -I$(XMLADA_PATH)/dom -I$(XMLADA_PATH)/input_sources -I$(XMLADA_PATH)/sax -I$(XMLADA_PATH)/unicode
 
-INCLUDES        = $(GIANT_INCLUDES) $(IMLLIB_INCLUDES) $(AUNIT_INCLUDES) $(XMLADA_INCLUDES)
+INCLUDES        = $(GIANT_INCLUDES) $(IMLLIB_INCLUDES) $(AUNIT_INCLUDES) $(XMLADA_INCLUDES) $(shell gtkada-config --cflags)
 
-LIBS            = $(shell gtkada-config)
+LIBS            = -largs $(IMLLIB_LIBS) $(shell gtkada-config --libs) 
 
 CFLAGS          = -g 
 #-O2 -funroll-loops
