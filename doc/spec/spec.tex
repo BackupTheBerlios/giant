@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: spec.tex,v $, $Revision: 1.19 $
-%  $Date: 2003/02/25 13:16:01 $
-%  $Author: schwiemn $
+%  $RCSfile: spec.tex,v $, $Revision: 1.20 $
+%  $Date: 2003/02/25 14:33:50 $
+%  $Author: squig $
 %
 %  Description: Master Datei der Spezifikation
 %
@@ -11,6 +11,16 @@
                
 \usepackage{../styles/common}
 \usepackage{spec}
+
+%\newcommand\version{Version 1.0\xspace}
+\newcommand\version{\today\xspace}
+
+% header
+\fancyhead{}
+\fancyhead[LE,RO]{\slshape \rightmark}
+\fancyhead[LO,RE]{\slshape \leftmark}
+\fancyfoot[LE,RO]{\version}
+\fancyfoot[LO,RE]{\thepage{} / \pageref{LastPage}}
 
 \makeindex
 
