@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.11 $
-%  $Date: 2003/08/05 17:55:13 $
+%  $RCSfile: config.tex,v $, $Revision: 1.12 $
+%  $Date: 2003/08/05 17:57:45 $
 %  $Author: birdy $
 %
 %  Description:
@@ -337,7 +337,9 @@ und könnten GIANT zum Abstürzen bringen.\\
 °    node_annotations_file_name = "node_annotations.xml" />°\\
 
 Für jedes Anzeigefenster in GIANT gibt es eine interne Datei, in der
-GIANT die nötigen Daten wie Positionen der Knoten etc. ablegt.\\
+GIANT die nötigen Daten wie Positionen der Knoten etc. ablegt.
+Dateinamen sind jeweils mit relativem Pfad (relativ zur Projektdatei)
+angegeben.\\
 
 °  <visualisation_windows>°\\
 °    <a_vis_window_file file_path = "./My_Window.viswin" />°\\
@@ -346,6 +348,8 @@ GIANT die nötigen Daten wie Positionen der Knoten etc. ablegt.\\
 
 Auch jeder Subgraph hat eine interne Datei, in der die Daten
 des jeweiligen Subgraphen abgelegt sind.
+Dateinamen sind ebenfalls jeweils mit relativem Pfad (relativ zur Projektdatei)
+angegeben.\\
 
 °  <subgraphs>°\\
 °    <a_subgraph_file file_path = "./Test_1.subgraph" />°\\
