@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.33 $
---  $Author: squig $
---  $Date: 2003/06/30 12:35:54 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.34 $
+--  $Author: schwiemn $
+--  $Date: 2003/06/30 13:03:56 $
 --
 
 with Ada.Strings.Unbounded;
@@ -236,6 +236,7 @@ package body Giant.Controller is
       Graph_Filename : String
         := Projects.Get_Bauhaus_IML_Graph_File (Filename);
    begin
+
       --  create graph
       Logger.Info (-"Loading graph " & Graph_Filename);
       Giant.Graph_Lib.Load (Graph_Filename);
