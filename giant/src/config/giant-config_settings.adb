@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.7 $
+-- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.8 $
 -- $Author: schwiemn $
--- $Date: 2003/06/23 17:09:00 $
+-- $Date: 2003/06/23 17:17:45 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Text_IO;
@@ -278,6 +278,8 @@ package body Giant.Config_Settings is
 
       -- top level node (document node)
       The_XML_Document : Dom.Core.Document;
+      
+      Process_File : Boolean := True;
    begin
 
       -- Load and Parse Config_File
@@ -287,10 +289,10 @@ package body Giant.Config_Settings is
       exception
          when XML_File_Access.XML_File_Access_Error_Exception =>
 
-            Logger.Fatal ("Procedure: Access_Config_File - "
+            Logger.Info ("Procedure: Access_Config_File - "
                           & "Cannot access file: " & Config_File);
 
-            raise Config_File_Could_Not_Be_Accessed_Exception;
+            Process_File := False;
          when XML_File_Access.XML_File_Parse_Fatal_Error_Exception =>
 
             Logger.Fatal ("Procedure: Access_Config_File - "
@@ -299,36 +301,39 @@ package body Giant.Config_Settings is
             raise Config_File_Not_Correct_Exception;
       end;
 
-      -- check for correct type
-      if (XML_File_Access.Does_XML_Document_Belong_To_Type
-          (Config_File_Identifier, The_XML_Document) = False) then
+      if Process_File then 
+         -- check for correct type
+         if (XML_File_Access.Does_XML_Document_Belong_To_Type
+             (Config_File_Identifier, The_XML_Document) = False) then
 
-         Logger.Fatal ("Procedure: Access_Config_File - XML File is not"
-                       & "of correct type: "
-                       & Config_File);
-         raise Config_File_Not_Correct_Exception;
-      end if;
-
-      begin
-         -- set abs path to config file
-         Config_Data.Abs_Config_File_Path :=
-           Ada.Strings.Unbounded.To_Unbounded_String
-           (File_Management.Get_Absolute_Path_To_File_From_Relative
-            (GNAT.Directory_Operations.Get_Current_Dir, Config_File));
-
-         -- read settings into internal data structures
-         Read_Setting_Entries (The_XML_Document, Config_Data);
-         -- deallocate memory
-         Tree_Readers.Free(The_Tree_Reader);
-      exception
-         when others =>
-            Logger.Fatal ("Procedure: Access_Config_File - XML Error while "
-                          & "reading entries of parsed xml file: "
+            Logger.Fatal ("Procedure: Access_Config_File - XML File is not"
+                          & "of correct type: "
                           & Config_File);
-
-            Tree_Readers.Free(The_Tree_Reader);
             raise Config_File_Not_Correct_Exception;
-      end;
+         end if;
+
+         begin
+            -- set abs path to config file
+            Config_Data.Abs_Config_File_Path :=
+              Ada.Strings.Unbounded.To_Unbounded_String
+              (File_Management.Get_Absolute_Path_To_File_From_Relative
+               (GNAT.Directory_Operations.Get_Current_Dir, Config_File));
+
+            -- read settings into internal data structures
+            Read_Setting_Entries (The_XML_Document, Config_Data);
+            -- deallocate memory
+            Tree_Readers.Free(The_Tree_Reader);
+         exception
+            when others =>
+               Logger.Fatal 
+                 ("Procedure: Access_Config_File - XML Error while "
+                  & "reading entries of parsed xml file: "
+                  & Config_File);
+
+               Tree_Readers.Free(The_Tree_Reader);
+               raise Config_File_Not_Correct_Exception;
+         end;
+      end if; --end if Process_File
    end Access_Config_File;
 
    ---------------------------------------------------------------------------

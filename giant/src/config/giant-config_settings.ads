@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.7 $
--- $Author: squig $
--- $Date: 2003/06/23 16:15:41 $
+-- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.8 $
+-- $Author: schwiemn $
+-- $Date: 2003/06/23 17:17:45 $
 --
 -- -----
 -- This package holds the functionality needed to access and handle
@@ -128,9 +128,9 @@ package Giant.Config_Settings is
         To_UStr ("200"),
         Validate_Integer'Access),
 
-      (To_UStr ("Main_Window.Separator"),
-       To_UStr ("230"),
-       Validate_Integer'Access)
+       (To_UStr ("Main_Window.Separator"),
+        To_UStr ("230"),
+        Validate_Integer'Access)
       );
 
    ---------------------------------------------------------------------------
@@ -142,11 +142,6 @@ package Giant.Config_Settings is
    -- Raised if a passed config file could not be parsed as a
    -- valid xml file.
    Config_File_Not_Correct_Exception : exception;
-
-   ---------------------------------------------------------------------------
-   -- Raised if a passed config file could not be opened for any reasons
-   -- (e.g. it is not being found).
-   Config_File_Could_Not_Be_Accessed_Exception : exception;
 
    ---------------------------------------------------------------------------
    -- Raised if subprograms are called before the ADO that holds the config
@@ -186,9 +181,6 @@ package Giant.Config_Settings is
    --   Config_File_Not_Correct_Exception - Raised when the file passed
    --     (parameter "GIANT_Config_File" and "User_Config_File") is
    --     not a correct (valid) config file.
-   --   Config_File_Could_Not_Be_Accessed_Exception - Raised if
-   --     if the passed config file could not be accessed by a file
-   --     reader.
    procedure Initialize_Config_Settings
      (GIANT_Config_File : in String;
       User_Config_File  : in String);
