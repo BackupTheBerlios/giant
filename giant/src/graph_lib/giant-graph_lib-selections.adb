@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.16 $
---  $Author: squig $
---  $Date: 2003/07/14 22:28:11 $
+--  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.17 $
+--  $Author: koppor $
+--  $Date: 2003/07/15 09:50:38 $
 
 with Untagged_Ptr_Ops;
 
@@ -44,25 +44,22 @@ package body Giant.Graph_Lib.Selections is
 
    ---------------------------------------------------------------------------
    procedure Add_Edge
-     (Selection_To_Modify : in out Selection;
-      Edge                : in     Edge_Id)
+     (The_Selection : in Selection;
+      Edge          : in Edge_Id)
    is
    begin
-      Edge_Id_Sets.Insert
-        (Selection_To_Modify.Edges,
-         Edge);
+      Edge_Id_Sets.Insert (The_Selection.Edges, Edge);
    end Add_Edge;
 
    ---------------------------------------------------------------------------
    procedure Add_Edge_Set
-     (Selection_To_Modify : in out Selection;
-      Edge_Set            : in     Edge_Id_Set)
+     (The_Selection : in Selection;
+      Edge_Set      : in Edge_Id_Set)
    is
 
       procedure Execute (Edge : in Edge_Id) is
       begin
-         Add_Edge (Selection_To_Modify,
-                   Edge);
+         Add_Edge (The_Selection, Edge);
       end Execute;
 
       procedure Apply is new Edge_Id_Sets.Apply (Execute => Execute);
@@ -73,25 +70,24 @@ package body Giant.Graph_Lib.Selections is
 
    ---------------------------------------------------------------------------
    procedure Add_Node
-     (Selection_To_Modify : in out Selection;
-      Node                : in     Node_Id)
+     (The_Selection : in Selection;
+      Node          : in Node_Id)
    is
    begin
       Node_Id_Sets.Insert
-        (Selection_To_Modify.Nodes,
+        (The_Selection.Nodes,
          Node);
    end Add_Node;
 
    ---------------------------------------------------------------------------
    procedure Add_Node_Set
-     (Selection_To_Modify : in out Selection;
-      Node_Set            : in     Node_Id_Set)
+     (The_Selection : in Selection;
+      Node_Set      : in Node_Id_Set)
    is
 
       procedure Execute (Node : in Node_Id) is
       begin
-         Add_Node (Selection_To_Modify,
-                   Node);
+         Add_Node (The_Selection, Node);
       end Execute;
 
       procedure Apply is new Node_Id_Sets.Apply (Execute => Execute);
@@ -102,11 +98,11 @@ package body Giant.Graph_Lib.Selections is
 
    ---------------------------------------------------------------------------
    procedure Clear
-      (Selection_To_Modify : in out Selection)
+      (The_Selection : in Selection)
    is
    begin
-      Node_Id_Sets.Remove_All (Selection_To_Modify.Nodes);
-      Edge_Id_Sets.Remove_All (Selection_To_Modify.Edges);
+      Node_Id_Sets.Remove_All (The_Selection.Nodes);
+      Edge_Id_Sets.Remove_All (The_Selection.Edges);
    end Clear;
 
    ---------------------------------------------------------------------------
@@ -234,13 +230,12 @@ package body Giant.Graph_Lib.Selections is
 
    ----------------------------------------------------------------------------
    procedure Remove_Edge
-     (Selection_To_Modify : in out Selection;
-      Edge                : in     Edge_Id)
+     (The_Selection : in Selection;
+      Edge          : in Edge_Id)
    is
    begin
       begin
-         Edge_Id_Sets.Remove (Selection_To_Modify.Edges,
-                              Edge);
+         Edge_Id_Sets.Remove (The_Selection.Edges, Edge);
       exception
          when Edge_Id_Sets.No_Member =>
             raise Edge_Does_Not_Exist;
@@ -249,14 +244,13 @@ package body Giant.Graph_Lib.Selections is
 
    ----------------------------------------------------------------------------
    procedure Remove_Edge_Set
-     (Selection_To_Modify : in out Selection;
-      Edge_Set            : in     Edge_Id_Set)
+     (The_Selection : in Selection;
+      Edge_Set      : in Edge_Id_Set)
    is
 
       procedure Execute (Edge : in Edge_Id) is
       begin
-         Remove_Edge (Selection_To_Modify,
-                      Edge);
+         Remove_Edge (The_Selection, Edge);
       end Execute;
 
       procedure Apply is new Edge_Id_Sets.Apply (Execute => Execute);
@@ -267,13 +261,12 @@ package body Giant.Graph_Lib.Selections is
 
    ----------------------------------------------------------------------------
    procedure Remove_Node
-     (Selection_To_Modify : in out Selection;
-      Node                : in     Node_Id)
+     (The_Selection : in Selection;
+      Node          : in Node_Id)
    is
    begin
       begin
-         Node_Id_Sets.Remove (Selection_To_Modify.Nodes,
-                              Node);
+         Node_Id_Sets.Remove (The_Selection.Nodes, Node);
       exception
          when Node_Id_Sets.No_Member =>
             raise Node_Does_Not_Exist;
@@ -282,14 +275,13 @@ package body Giant.Graph_Lib.Selections is
 
    ----------------------------------------------------------------------------
    procedure Remove_Node_Set
-     (Selection_To_Modify : in out Selection;
-      Node_Set            : in     Node_Id_Set)
+     (The_Selection : in Selection;
+      Node_Set      : in Node_Id_Set)
    is
 
       procedure Execute (Node : in Node_Id) is
       begin
-         Remove_Node (Selection_To_Modify,
-                      Node);
+         Remove_Node (The_Selection, Node);
       end Execute;
 
       procedure Apply is new Node_Id_Sets.Apply (Execute => Execute);
@@ -300,24 +292,24 @@ package body Giant.Graph_Lib.Selections is
 
    ----------------------------------------------------------------------------
    procedure Rename
-     (Selection_To_Rename : in out Selection;
-      New_Name            : in     String)
+     (The_Selection : in out Selection;
+      New_Name      : in     String)
    is
       Res  : Selection;
    begin
       Res       := new Selection_Record (Name_Length => New_Name'Length);
       Res.Name  := New_Name;
-      Res.Edges := Selection_To_Rename.Edges;
-      Res.Nodes := Selection_To_Rename.Nodes;
+      Res.Edges := The_Selection.Edges;
+      Res.Nodes := The_Selection.Nodes;
 
-      Free_Selection (Selection_To_Rename);
-      Selection_To_Rename := Res;
+      Free_Selection (The_Selection);
+      The_Selection := Res;
    end Rename;
 
    ----------------------------------------------------------------------------
    procedure Selection_Read
-     (Stream : in      Bauhaus_Io.In_Stream_Type;
-      Sel    :     out Selection)
+     (Stream        : in      Bauhaus_Io.In_Stream_Type;
+      The_Selection :     out Selection)
    is
       Len    : Natural;
 
@@ -370,18 +362,18 @@ package body Giant.Graph_Lib.Selections is
    begin
       --  read name
       Bauhaus_Io.Read_Natural (Stream, Len);
-      Sel := new Selection_Record (Name_Length => Len);
-      Bauhaus_Io.Read_String (Stream, Sel.Name);
+      The_Selection := new Selection_Record (Name_Length => Len);
+      Bauhaus_Io.Read_String (Stream, The_Selection.Name);
 
       --  read contained edges and nodes
-      Read_Edge_Id_Set (Stream, Sel.Edges);
-      Read_Node_Id_Set (Stream, Sel.Nodes);
+      Read_Edge_Id_Set (Stream, The_Selection.Edges);
+      Read_Node_Id_Set (Stream, The_Selection.Nodes);
    end Selection_Read;
 
    ----------------------------------------------------------------------------
    procedure Selection_Write
-     (Stream : in Bauhaus_Io.Out_Stream_Type;
-      Sel    : in Selection)
+     (Stream        : in Bauhaus_Io.Out_Stream_Type;
+      The_Selection : in Selection)
    is
 
       ----------------------------------------------------------------------
@@ -422,12 +414,12 @@ package body Giant.Graph_Lib.Selections is
 
    begin
       --  write name
-      Bauhaus_Io.Write_Natural (Stream, Sel.Name'Length);
-      Bauhaus_Io.Write_String  (Stream, Sel.Name);
+      Bauhaus_Io.Write_Natural (Stream, The_Selection.Name'Length);
+      Bauhaus_Io.Write_String  (Stream, The_Selection.Name);
 
       --  write contained edges and nodes
-      Write_Edge_Id_Set (Stream, Sel.Edges);
-      Write_Node_Id_Set (Stream, Sel.Nodes);
+      Write_Edge_Id_Set (Stream, The_Selection.Edges);
+      Write_Node_Id_Set (Stream, The_Selection.Nodes);
    end Selection_Write;
 
    ----------------------------------------------------------------------------

@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.21 $
---  $Author: squig $
---  $Date: 2003/07/14 22:28:11 $
+--  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.22 $
+--  $Author: koppor $
+--  $Date: 2003/07/15 09:50:52 $
 --
 ------------------------------------------------------------------------------
 --
@@ -38,6 +38,7 @@ package Giant.Graph_Lib.Selections is
 
    ---------------------------------------------------------------------------
    --  It is assured, that a copy makes an alias
+   --  Internally, it is a pointer
    type Selection is private;
 
    ---------------------------------------------------------------------------
@@ -61,9 +62,10 @@ package Giant.Graph_Lib.Selections is
      return Selection;
 
    ---------------------------------------------------------------------------
+   --  The_Selection will be modified
    procedure Rename
-      (Selection_To_Rename : in out Selection;
-       New_Name            : in     String);
+      (The_Selection  : in out Selection;
+       New_Name       : in     String);
 
    ---------------------------------------------------------------------------
    --  Don't know about the semantic
@@ -155,13 +157,13 @@ package Giant.Graph_Lib.Selections is
    --  cp. Barnes p543
    --  Maybe u have to use "for Selection'Write use Selection_Write"
    procedure Selection_Write
-      (Stream : in Bauhaus_Io.Out_Stream_Type;
-       Sel    : in Selection);
+      (Stream        : in Bauhaus_Io.Out_Stream_Type;
+       The_Selection : in Selection);
 
    ---------------------------------------------------------------------------
    procedure Selection_Read
-      (Stream  : in     Bauhaus_Io.In_Stream_Type;
-       Sel     :    out Selection);
+      (Stream        : in     Bauhaus_Io.In_Stream_Type;
+       The_Selection :    out Selection);
 
    -----------------------
    --  Routines to add  --
@@ -170,26 +172,26 @@ package Giant.Graph_Lib.Selections is
    ---------------------------------------------------------------------------
    --  Adds given Node to the given Selection
    procedure Add_Node
-      (Selection_To_Modify : in out Selection;
-       Node                : in     Node_Id);
+      (The_Selection : in Selection;
+       Node          : in Node_Id);
 
    ---------------------------------------------------------------------------
    --  Adds all nodes in given set to the Selection
    procedure Add_Node_Set
-      (Selection_To_Modify : in out Selection;
-       Node_Set            : in     Node_Id_Set);
+      (The_Selection : in Selection;
+       Node_Set      : in Node_Id_Set);
 
    ---------------------------------------------------------------------------
    --  Adds given Edge to the given Selection
    procedure Add_Edge
-      (Selection_To_Modify : in out Selection;
-       Edge                : in     Edge_Id);
+      (The_Selection : in Selection;
+       Edge          : in Edge_Id);
 
    ---------------------------------------------------------------------------
    --  Adds all nodes in given set to the Selection
    procedure Add_Edge_Set
-      (Selection_To_Modify : in out Selection;
-       Edge_Set            : in     Edge_Id_Set);
+      (The_Selection : in Selection;
+       Edge_Set      : in Edge_Id_Set);
 
    --------------------------
    --  Routines to remove  --
@@ -202,8 +204,8 @@ package Giant.Graph_Lib.Selections is
    --    Node_Does_Not_Exist - if given node is not contained in
    --      given selection
    procedure Remove_Node
-      (Selection_To_Modify : in out Selection;
-       Node                : in     Node_Id);
+      (The_Selection : in Selection;
+       Node          : in Node_Id);
 
    ---------------------------------------------------------------------------
    --  Removes all nodes in given set from given selection
@@ -212,8 +214,8 @@ package Giant.Graph_Lib.Selections is
    --    Node_Does_Not_Exist - if a node of the given set is not contained in
    --      given selection
    procedure Remove_Node_Set
-      (Selection_To_Modify : in out Selection;
-       Node_Set            : in     Node_Id_Set);
+      (The_Selection : in Selection;
+       Node_Set      : in Node_Id_Set);
 
    ---------------------------------------------------------------------------
    --  Removes given edge from given selection
@@ -222,8 +224,8 @@ package Giant.Graph_Lib.Selections is
    --    Edge_Does_Not_Exist - if given edge is not contained in
    --      given selection
    procedure Remove_Edge
-      (Selection_To_Modify : in out Selection;
-       Edge                : in     Edge_Id);
+      (The_Selection : in Selection;
+       Edge          : in Edge_Id);
 
    ---------------------------------------------------------------------------
    --  Removes all edges in given set from given selection
@@ -233,13 +235,13 @@ package Giant.Graph_Lib.Selections is
    --    Edge_Does_Not_Exist - if an edge of the given set is not contained in
    --      given selection
    procedure Remove_Edge_Set
-      (Selection_To_Modify : in out Selection;
-       Edge_Set            : in     Edge_Id_Set);
+      (The_Selection : in Selection;
+       Edge_Set      : in Edge_Id_Set);
 
    ---------------------------------------------------------------------------
-   --  Removes all edges and nodes.
+   --  Removes all edges and nodes
    procedure Clear
-      (Selection_To_Modify : in out Selection);
+      (The_Selection : in Selection);
 
    ----------------------
    --  Set-operations  --
