@@ -20,9 +20,9 @@
 --
 -- First Author: Gerrit Schulz
 --
--- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.19 $
--- $Author: keulsn $
--- $Date: 2003/10/05 20:49:11 $
+-- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.20 $
+-- $Author: schulzgt $
+-- $Date: 2003/11/12 21:20:55 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Tags;
@@ -701,6 +701,10 @@ package body Giant.Gsl.Types is
    begin
       Var := new Gsl_List_Record (Object.Size);
       Var.all := Object.all;
+      -- copy all objects
+      for i in 1 .. Object.List_Size loop
+         Var.Value (i) := Copy_Gsl_Type (Object.Value (i));
+      end loop;
       return Gsl_Type (Var);
    end Copy;
 
