@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.28 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.29 $
 --  $Author: squig $
---  $Date: 2003/07/04 20:41:28 $
+--  $Date: 2003/07/07 13:40:28 $
 --
 ------------------------------------------------------------------------------
 --
@@ -49,6 +49,8 @@
 --
 
 with Giant.Graph_Lib;
+with Giant.Graph_Lib.Selections;
+with Giant.Graph_Lib.Subgraphs;
 with Giant.Gsl;
 with Giant.Gsl.Interpreters;
 with Giant.Projects;
@@ -242,6 +244,11 @@ package Giant.Controller is
       Source_Name : in String;
       Target_Name : in String);
 
+   function Get_Selection
+     (Window_Name : in String;
+      Name        : in String)
+     return Graph_Lib.Selections.Selection;
+
    procedure Hide_Selection
      (Window_Name : in String;
       Name        : in String);
@@ -251,9 +258,17 @@ package Giant.Controller is
       Name             : in String;
       Highlight_Status : in Vis_Windows.Selection_Highlight_Status);
 
+   procedure Insert_Selection
+     (Window_Name           : in String;
+      Selection             : in Graph_Lib.Selections.Selection;
+      Layout_Name           : in String;
+      Position              : in Vis.Logic.Vector_2d := Vis.Logic.Zero_2d;
+      Additional_Parameters : in String := "");
+
    function Remove_Selection
      (Window_Name          : in String;
       Name                 : in String;
+      Remove_Content       : in Boolean;
       Ask_For_Confirmation : in Boolean := True)
      return Boolean;
 
@@ -287,6 +302,10 @@ package Giant.Controller is
    procedure Duplicate_Subgraph
      (Source_Name : in String;
       Target_Name : in String);
+
+   function Get_Subgraph
+     (Name : in String)
+     return Graph_Lib.Subgraphs.Subgraph;
 
    function Remove_Subgraph
      (Name : in String;
@@ -344,6 +363,15 @@ package Giant.Controller is
    --    Open_Window
    procedure Create_Window
      (Name : in String := "Unknown");
+
+   ---------------------------------------------------------------------------
+   --  Returns True, if a window with Name exists.
+   --
+   --  See:
+   --    Giant.Projects.Does_Vis_Window_Exist
+   function Exists_Window
+     (Name : in String)
+     return Boolean;
 
    ---------------------------------------------------------------------------
    --  Opens a window, if gui is shown.

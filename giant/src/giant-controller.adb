@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.40 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.41 $
 --  $Author: squig $
---  $Date: 2003/07/04 22:45:46 $
+--  $Date: 2003/07/07 13:40:28 $
 --
 
 with Ada.Strings.Unbounded;
@@ -424,6 +424,17 @@ package body Giant.Controller is
       Gui_Manager.Add_Selection (Window_Name, Target_Name);
    end Duplicate_Selection;
 
+   function Get_Selection
+     (Window_Name : in String;
+      Name        : in String)
+     return Graph_Lib.Selections.Selection
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+   begin
+      return Vis_Windows.Get_Selection (Window, Name);
+   end Get_Selection;
+
    procedure Hide_Selection
      (Window_Name : in String;
       Name        : in String)
@@ -434,7 +445,7 @@ package body Giant.Controller is
       if (not Vis_Windows.Is_Faded_Out (Window, Name)) then
          Vis_Windows.Fade_Out_Selection (Window, Name);
       end if;
-   end;
+   end Hide_Selection;
 
    procedure Highlight_Selection
      (Window_Name      : in String;
@@ -449,9 +460,22 @@ package body Giant.Controller is
       Gui_Manager.Update_Selection (Window_Name, Name);
    end;
 
+   procedure Insert_Selection
+     (Window_Name           : in String;
+      Selection             : in Graph_Lib.Selections.Selection;
+      Layout_Name           : in String;
+      Position              : in Vis.Logic.Vector_2d := Vis.Logic.Zero_2d;
+      Additional_Parameters : in String := "")
+   is
+   begin
+      -- FIX
+      null;
+   end Insert_Selection;
+
    function Remove_Selection
      (Window_Name          : in String;
       Name                 : in String;
+      Remove_Content       : in Boolean;
       Ask_For_Confirmation : in Boolean := True)
      return Boolean
    is
@@ -598,6 +622,14 @@ package body Giant.Controller is
       Gui_Manager.Add_Subgraph (Target_Name);
    end Duplicate_Subgraph;
 
+   function Get_Subgraph
+     (Name        : in String)
+     return Graph_Lib.Subgraphs.Subgraph
+   is
+   begin
+      return Projects.Get_Subgraph (Current_Project, Name);
+   end Get_Subgraph;
+
    function Remove_Subgraph
      (Name                 : in String;
       Ask_For_Confirmation : in Boolean := True)
@@ -740,6 +772,14 @@ package body Giant.Controller is
       Gui_Manager.Add_Window (Unique_Name);
       Open_Window (Unique_Name);
    end Create_Window;
+
+   function Exists_Window
+     (Name : in String)
+     return Boolean
+   is
+   begin
+      return Projects.Does_Vis_Window_Exist (Current_Project, Name);
+   end Exists_Window;
 
    procedure Open_Window
      (Name : in String)
