@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.8 $
 --  $Author: koppor $
---  $Date: 2003/06/24 18:26:51 $
+--  $Date: 2003/06/26 15:55:57 $
 
 package body Giant.Graph_Lib.Subgraphs is
 
@@ -38,15 +38,14 @@ package body Giant.Graph_Lib.Subgraphs is
    ---------------------------------------------------------------------------
    procedure Add_Edge
      (Subgraph_To_Modify : in out Subgraph;
-      Edge                : in     Edge_Id)
+      Edge               : in     Edge_Id)
    is
    begin
       Selections.Add_Edge
         (Selections.Selection (Subgraph_To_Modify),
          Edge);
 
-      -- TBD: This could go faster, if we'd only check the added edge
-      Ensure_Graph_Edge_Properties (Subgraph_To_Modify);
+      Ensure_Graph_Edge_Properties (Subgraph_To_Modify, Edge);
    end Add_Edge;
 
    ---------------------------------------------------------------------------
@@ -54,13 +53,17 @@ package body Giant.Graph_Lib.Subgraphs is
      (Subgraph_To_Modify : in out Subgraph;
       Edge_Set           : in     Edge_Id_Set)
    is
-   begin
-      Selections.Add_Edge_Set
-        (Selections.Selection (Subgraph_To_Modify),
-         Edge_Set);
 
-      -- TBD: This could go faster, if we'd only check the added edges
-      Ensure_Graph_Edge_Properties (Subgraph_To_Modify);
+      procedure Execute (Edge : in Edge_Id) is
+      begin
+         Add_Edge (Subgraph_To_Modify,
+                   Edge);
+      end Execute;
+
+      procedure Apply is new Edge_Id_Sets.Apply (Execute => Execute);
+
+   begin
+      Apply (Edge_Set);
    end Add_Edge_Set;
 
    ---------------------------------------------------------------------------
@@ -220,12 +223,32 @@ package body Giant.Graph_Lib.Subgraphs is
    ---------------------------------------------------------------------------
    procedure Remove_Node
      (Subgraph_To_Modify : in out Subgraph;
-      Node                : in     Node_Id)
+      Node               : in     Node_Id)
    is
+
+      ----------------------------------------------------------------------
+      --  Removes edges in the subgraph, if they were connected with given
+      --    node
+      --
+      --  Destroys given set after checking
+      procedure Check_Edges (Edges_In : in Edge_Id_Set)
+      is
+         Edges : Edge_Id_Set  := Edges_In;
+      begin
+         --  TBD
+         Edge_Id_Sets.Destroy (Edges);
+      end Check_Edges;
+
+      Edges : Edge_Id_Set;
+
    begin
       Selections.Remove_Node
         (Selections.Selection (Subgraph_To_Modify),
          Node);
+
+      --  Check_Edges also destroys the given set
+      Check_Edges (Get_Incoming_Edges (Node));
+      Check_Edges (Get_Outgoing_Edges (Node));
    end Remove_Node;
 
    ---------------------------------------------------------------------------
@@ -233,10 +256,27 @@ package body Giant.Graph_Lib.Subgraphs is
      (Subgraph_To_Modify : in out Subgraph;
       Node_Set           : in     Node_Id_Set)
    is
+
+      procedure Execute (Node : in Node_Id) is
+      begin
+         Remove_Node (Subgraph_To_Modify,
+                      Node);
+      end Execute;
+
+      procedure Apply is new Node_Id_Sets.Apply (Execute => Execute);
+
    begin
-      Selections.Remove_Node_Set
-        (Selections.Selection (Subgraph_To_Modify),
-         Node_Set);
+      if True then
+         --  TBD: true should be replaced by an expression which
+         --       expresses the dence of the graph
+         Apply (Selections.Get_All_Nodes
+                (Selections.Selection (Subgraph_To_Modify)));
+      else
+        Selections.Remove_Node_Set
+          (Selections.Selection (Subgraph_To_Modify),
+           Node_Set);
+        Ensure_Graph_Edge_Properties (Subgraph_To_Modify);
+      end if;
    end Remove_Node_Set;
 
    ---------------------------------------------------------------------------
@@ -305,6 +345,16 @@ package body Giant.Graph_Lib.Subgraphs is
       Ensure_Graph_Edge_Properties (Res);
       return Res;
    end Union;
+
+   ---------------------------------------------------------------------------
+   procedure Ensure_Graph_Edge_Properties
+     (Graph : in out Subgraph;
+      Edge  : in     Edge_Id)
+   is
+   begin
+      --  TBD
+      null;
+   end Ensure_Graph_Edge_Properties;
 
    ---------------------------------------------------------------------------
    procedure Ensure_Graph_Edge_Properties (Graph : in out Subgraph)
