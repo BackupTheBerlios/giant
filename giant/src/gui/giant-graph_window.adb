@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.47 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.48 $
 --  $Author: squig $
---  $Date: 2003/08/12 13:14:05 $
+--  $Date: 2003/08/15 11:42:16 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -713,7 +713,7 @@ package body Giant.Graph_Window is
       Gtk.Menu.Append (Window.Node_Menu,
                        New_Menu_Item (-"Show Info...",
                                       On_Node_Show_Info'Access, Window));
-      Gtk.Menu.Append (Window.Background_Menu, New_Menu_Separator);
+      Gtk.Menu.Append (Window.Node_Menu, New_Menu_Separator);
       Gtk.Menu.Append (Window.Node_Menu,
                        New_Menu_Item (-"Show Source",
                                       On_Node_Show_Source'Access, Window));
@@ -836,6 +836,7 @@ package body Giant.Graph_Window is
 
       --  Causes: Gtk-WARNING **: gtk_scrolled_window_add(): cannot add non scrollable widget use gtk_scrolled_window_add_with_viewport() instead
       Gtk.Combo.Gtk_New (Window.Vis_Style_Combo);
+      Gtk.Combo.Disable_Activate (Window.Vis_Style_Combo);
       Gtk.Box.Pack_Start (Vbox, Window.Vis_Style_Combo,
                           Expand => False, Fill => False, Padding => 0);
 --        Gtk.Box.Pack_Start (Left_Box,

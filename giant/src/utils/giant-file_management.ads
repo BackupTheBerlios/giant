@@ -20,10 +20,10 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.ads,v $, $Revision: 1.17 $
+-- $RCSfile: giant-file_management.ads,v $, $Revision: 1.18 $
 
 -- $Author: squig $
--- $Date: 2003/07/18 16:40:08 $
+-- $Date: 2003/08/15 11:42:17 $
 --
 -- -----------------------------------------------
 --
@@ -399,8 +399,15 @@ package Giant.File_Management is
 
    ---------------------------------------------------------------------------
    --  Returns the directory portion of the Filename. If Filename does
-   --  contain a directory separator the empty is returned.
+   --  contain a directory separator the empty string is returned.
    function Get_Path
+     (Filename : in String)
+     return String;
+
+   ---------------------------------------------------------------------------
+   --  Returns the filename portion of the Filename. If Filename does
+   --  contain a directory separator Filename is returned.
+   function Get_File
      (Filename : in String)
      return String;
 

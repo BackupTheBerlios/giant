@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.13 $
+--  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.14 $
 --  $Author: squig $
---  $Date: 2003/08/12 13:14:05 $
+--  $Date: 2003/08/15 11:42:16 $
 --
 
 with Ada.Unchecked_Conversion;
@@ -31,6 +31,8 @@ with System;
 with Gdk.Types;
 with Glib;
 
+with Giant.Config;
+with Giant.Config.Global_Data;
 with Giant.Controller;
 with Giant.Dialogs;
 with Giant.Layout_Dialog;
@@ -89,6 +91,10 @@ package body Giant.Graph_Window.Callbacks is
       Selection : Graph_Lib.Selections.Selection
         := Controller.Get_Current_Selection (Get_Window_Name (Window));
    begin
+      Graph_Widgets.Remove_Local_Highlighting
+        (Widget    => Window.Graph,
+         Selection => Selection,
+         Color     => Config.Global_Data.Current_Selection);
       Graph_Lib.Selections.Clear (Selection);
       Update_Selection (Window, Graph_Lib.Selections.Get_Name (Selection));
    end;
@@ -109,17 +115,23 @@ package body Giant.Graph_Window.Callbacks is
    procedure On_Edge_Show_Source
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
+      Node : Graph_Lib.Node_Id;
    begin
-      -- FIX: implement
-      null;
+      pragma Assert (Graph_Lib."/=" (Window.Current_Edge, null));
+      Node := Graph_Lib.Get_Source_Node (Window.Current_Edge);
+      Controller.Center_On_Node (Get_Window_Name (Window), Node);
    end;
 
    procedure On_Edge_Show_Target
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
+      Node : Graph_Lib.Node_Id;
    begin
-      -- FIX: implement
-      null;
+      pragma Assert (Graph_Lib."/=" (Window.Current_Edge, null));
+      Node := Graph_Lib.Get_Target_Node (Window.Current_Edge);
+      Controller.Center_On_Node (Get_Window_Name (Window), Node);
    end;
 
    ---------------------------------------------------------------------------

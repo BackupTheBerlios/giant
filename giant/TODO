@@ -1,18 +1,12 @@
 RELEASE
 
- * Pick button actions
-
  * Create directory on New Project
 
- * Enhance GSL Dialog
+ * Enhance GSL Dialog (Ask Gerrit: Run script as string, not from file)
 
  * !Select All
 
- * !Select Nothing
- 
  * Catch exceptions when project is loaded via command line
-
- * !Show Target / Source in edge menu
 
  * Add script hooks to context menus
 

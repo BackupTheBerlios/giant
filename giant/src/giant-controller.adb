@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.80 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.81 $
 --  $Author: squig $
---  $Date: 2003/08/12 13:14:05 $
+--  $Date: 2003/08/15 11:42:16 $
 --
 
 with Ada.Strings.Unbounded;
@@ -157,14 +157,18 @@ package body Giant.Controller is
          Gsl_Interpreter := Gsl.Interpreters.Create_Interpreter;
       end if;
 
+      --  XXX: ?
       Confirm := Config_Settings.Get_Setting_As_Boolean ("Confirm.Delete");
       Config_Settings.Set_Setting ("Confirm.Delete", False);
+
       Gsl.Interpreters.Execute_Script (Gsl_Interpreter, Filename, "");
       Gsl.Interpreters.Start_Calculation
         (Individual => Gsl_Interpreter,
          Started    => Started,
          Dialog     => Gui_Manager.Create_Progress_Dialog
          (-"Executing GSL Script", -"Script is running..."));
+
+      --  XXX: ?
       Config_Settings.Set_Setting ("Confirm.Delete", Confirm);
       Logger.Info ("Script finished:");
    end Execute_GSL;
@@ -761,7 +765,8 @@ package body Giant.Controller is
          raise Vis_Windows.Standard_Selection_May_Not_Be_Removed_Exception;
       end if;
 
-      if (Gui_Manager.Remove_Selection (Window_Name, Name)) then
+      if (Gui_Manager.Remove_Selection (Window_Name, Name,
+                                        Ask_For_Confirmation)) then
          if (Vis_Windows.Get_Current_Selection (Window) = Name) then
             Set_Current_Selection
               (Window_Name, Vis_Windows.Get_Standard_Selection (Window));
@@ -1383,6 +1388,20 @@ package body Giant.Controller is
    ---------------------------------------------------------------------------
    --  Zoom
    ---------------------------------------------------------------------------
+
+   procedure Center_On_Node
+     (Window_Name : in String;
+      Node        : in Graph_Lib.Node_Id)
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+      Widget : Graph_Widgets.Graph_Widget
+        := Vis_Windows.Get_Graph_Widget (Window);
+      Location : Vis.Logic.Vector_2d;
+   begin
+      Location := Graph_Widgets.Get_Top_Middle (Widget, Node);
+      Graph_Widgets.Set_Location (Widget, Location);
+   end Center_On_Node;
 
    procedure Set_Zoom_Level
      (Window_Name : in     String;

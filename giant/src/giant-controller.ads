@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.45 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.46 $
 --  $Author: squig $
---  $Date: 2003/08/12 13:14:05 $
+--  $Date: 2003/08/15 11:42:16 $
 --
 ------------------------------------------------------------------------------
 --
@@ -543,8 +543,12 @@ package Giant.Controller is
      (Name : in String);
 
    ---------------------------------------------------------------------------
-   --  Zoom
+   --  Zoom and Location
    ---------------------------------------------------------------------------
+
+   procedure Center_On_Node
+     (Window_Name : in String;
+      Node        : in Graph_Lib.Node_Id);
 
    procedure Set_Zoom_Level
      (Window_Name : in     String;

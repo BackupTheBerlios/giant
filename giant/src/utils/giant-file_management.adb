@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.23 $
--- $Author: schwiemn $
--- $Date: 2003/08/12 17:04:55 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.24 $
+-- $Author: squig $
+-- $Date: 2003/08/15 11:42:17 $
 --
 --
 
@@ -284,7 +284,7 @@ package body Giant.File_Management is
 
       GNAT.Directory_Operations.Change_Dir (Start_Dir);
 
-      begin 
+      begin
          ADA.Text_IO.Open
            (File => ADA_Text_IO_File,
             Mode => ADA.Text_IO.In_File,
@@ -295,7 +295,7 @@ package body Giant.File_Management is
 
          ADA.Text_IO.Close(ADA_Text_IO_File);
       exception
-      
+
          when ADA.Text_IO.Name_Error =>
            raise File_Does_Not_Exist_Exception;
       end;
@@ -692,5 +692,21 @@ package body Giant.File_Management is
       end loop;
       return "";
    end Get_Path;
+
+   ---------------------------------------------------------------------------
+   function Get_File
+     (Filename : in String)
+     return String
+   is
+      Path : Ada.Strings.Unbounded.Unbounded_String;
+      Dir_Separator : Character := GNAT.OS_Lib.Directory_Separator;
+   begin
+      for I in reverse Filename'Range loop
+         if (Filename (I) = Dir_Separator) then
+            return Filename (I + 1 .. Filename'Last);
+         end if;
+      end loop;
+      return Filename;
+   end Get_File;
 
 end Giant.File_Management;

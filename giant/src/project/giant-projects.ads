@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.29 $
--- $Author: schwiemn $
--- $Date: 2003/07/18 19:18:02 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.30 $
+-- $Author: squig $
+-- $Date: 2003/08/15 11:42:17 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -390,6 +390,21 @@ package Giant.Projects is
    procedure Store_Whole_Project_As_For_File
       (Project               : in Project_Access;
        New_Project_File_Name : in String);
+
+   ---------------------------------------------------------------------------
+   -- Returns the name of a project
+   --
+   -- Parameters:
+   --   Project - A instance of the ADT that describes a project.
+   -- Returns:
+   --   The filename of the graph file.
+   -- Raises
+   --   Project_Access_Not_Initialized_Exception - Raised if a not
+   --     initialized instance of "Project_Access" is passed as
+   --     parameter;
+   function Get_Graph_Filename
+     (Project : in Project_Access)
+     return String;
 
    ---------------------------------------------------------------------------
    -- Returns the name of a project

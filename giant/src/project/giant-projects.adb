@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.47 $
---  $Author: schwiemn $
---  $Date: 2003/08/12 17:04:55 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.48 $
+--  $Author: squig $
+--  $Date: 2003/08/15 11:42:17 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -887,14 +887,14 @@ package body Giant.Projects is
       Vis_Window_XML_Node  : Dom.Core.Node;
       Subgraphs_XML_Node   : Dom.Core.Node;
       A_XML_Node           : DOM.Core.Node;
-      
+
       A_Subgraph_File_Name        : Ada.Strings.Unbounded.Unbounded_String;
       New_Subgraph_Data_Element   : Subgraph_Data_Element;
 
       A_Vis_Window_File_Name      : Ada.Strings.Unbounded.Unbounded_String;
       New_Vis_Window_Data_Element : Vis_Window_Data_Element;
       Test_Window_Acc             : Vis_Windows.Visual_Window_Access;
-      
+
       -- needed for fault tolerance
       Ignore_Subgraph         : Boolean := False;
       Ignore_Vis_Win          : Boolean := False;
@@ -971,28 +971,28 @@ package body Giant.Projects is
 
       -- calculate path relative to project directory if necessary
       Ignore_Node_Annotations := False;
-            
+
       New_Project_Access.Node_Annotations_File :=
         Ada.Strings.Unbounded.To_Unbounded_String
           (DOM.Core.Elements.Get_Attribute
            (Data_XML_Node, "node_annotations_file_name"));
-      
-      begin 
+
+      begin
          Abs_Node_Annotations_File :=
            Ada.Strings.Unbounded.To_Unbounded_String
              (File_Management.Get_Absolute_Path_To_File_From_Relative
                 (Ada.Strings.Unbounded.To_String
                   (New_Project_Access.Abs_Project_Directory),
                  Ada.Strings.Unbounded.To_String
-                  (New_Project_Access.Node_Annotations_File)));                 
+                  (New_Project_Access.Node_Annotations_File)));
       exception
          when File_Management.File_Does_Not_Exist_Exception =>
-            Ignore_Node_Annotations := True;                        
-            Logger.Info 
+            Ignore_Node_Annotations := True;
+            Logger.Info
               ("Node_Annotation_File as defined in the "
                & "project file not found -> new one will be created");
       end;
-     
+
       -- list holding global data node
       DOM.Core.Free (XML_Nodes_List);
 
@@ -1025,9 +1025,9 @@ package body Giant.Projects is
                 (New_Project_Access.Abs_Project_Directory),
                 (DOM.Core.Elements.Get_Attribute
                 (A_XML_Node, "file_path"))));
-                                                    
+
          exception
-            -- ignore subgraphs where management file not exits             
+            -- ignore subgraphs where management file not exits
             when File_Management.File_Does_Not_Exist_Exception =>
               Ignore_Subgraph := True;
          end;
@@ -1045,7 +1045,7 @@ package body Giant.Projects is
                 (New_Subgraph_Data_Element.Subgraph)),
                New_Subgraph_Data_Element);
          end if;
-         
+
       end loop;
 
       DOM.Core.Free (XML_Nodes_List);
@@ -1069,12 +1069,12 @@ package body Giant.Projects is
       for I in 0 .. DOM.Core.Nodes.Length (XML_Nodes_List) - 1 loop
 
          Ignore_Vis_Win := False;
-         
+
          A_XML_Node := DOM.Core.Nodes.Item (XML_Nodes_List, I);
-         
-           
+
+
          begin
-            -- calculate absolute path if necessary          
+            -- calculate absolute path if necessary
             A_Vis_Window_File_Name :=
               Ada.Strings.Unbounded.To_Unbounded_String
               (File_Management.Get_Absolute_Path_To_File_From_Relative
@@ -1082,13 +1082,13 @@ package body Giant.Projects is
                 (New_Project_Access.Abs_Project_Directory),
                 (DOM.Core.Elements.Get_Attribute
                  (A_XML_Node, "file_path"))));
-         exception      
+         exception
             when File_Management.File_Does_Not_Exist_Exception =>
             Ignore_Vis_Win := True;
-         end;     
-            
+         end;
+
          if not Ignore_Vis_Win then
-         
+
             -- build new vis window data element
             New_Vis_Window_Data_Element.Vis_Window_Name :=
               Ada.Strings.Unbounded.To_Unbounded_String
@@ -1102,8 +1102,8 @@ package body Giant.Projects is
 
             New_Vis_Window_Data_Element.Is_Memory_Loaded := False;
             -------------
- 
-            -- FIX Martin - not necessary due first checck 
+
+            -- FIX Martin - not necessary due first checck
             ------------- security check
             --  try opening file - check whether vis window file really exists
             --  Test_Window_Acc := Load_Vis_Window_Into_Main_Memory
@@ -1128,64 +1128,64 @@ package body Giant.Projects is
       -- correct. --> New empty file will be created, a probably
       -- existing old one will be saved as a security file.
       -----------------------------------------------------
-      
+
       if not Ignore_Node_Annotations then
-      
-         begin 
+
+         begin
             New_Project_Access.The_Node_Annotations :=
               Node_Annotations.Load_From_File
               (Ada.Strings.Unbounded.To_String
                (Abs_Node_Annotations_File));
          exception
             when Node_Annotations.Node_Annotations_File_Not_Found_Exception =>
-               Ignore_Node_Annotations := True; 
-               Logger.Info 
+               Ignore_Node_Annotations := True;
+               Logger.Info
                  ("Node_Annotation_File as defined in the "
                   & "project file not found -> new one will be created");
-            
-            when 
+
+            when
               Node_Annotations.Node_Annotations_File_Not_Correct_Exception =>
-              
-               Ignore_Node_Annotations := True;                              
-               Logger.Info 
-                 ("Node_Annotation_File """ 
-                  & Ada.Strings.Unbounded.To_String 
+
+               Ignore_Node_Annotations := True;
+               Logger.Info
+                 ("Node_Annotation_File """
+                  & Ada.Strings.Unbounded.To_String
                     (Abs_Node_Annotations_File)
-                  & """ not correct - file ignored - security file "                 
-                  & """<file_name>&~"" created.");         
-                  
+                  & """ not correct - file ignored - security file "
+                  & """<file_name>&~"" created.");
+
                -- create security file (old incorrect version)
                File_Management.Copy_File
                  (Ada.Strings.Unbounded.To_String
                    (Abs_Node_Annotations_File),
                   Ada.Strings.Unbounded.To_String
-                   (Abs_Node_Annotations_File) & "~"); 
-         end;                   
+                   (Abs_Node_Annotations_File) & "~");
+         end;
       end if;
-       
+
       if Ignore_Node_Annotations then
-      
+
          -- create new empty node annotations file
          Abs_Node_Annotations_File :=
            File_Management.Append_Dir_Separator_If_Necessary
-            (Ada.Strings.Unbounded.To_String 
+            (Ada.Strings.Unbounded.To_String
               (New_Project_Access.Abs_Project_Directory))
            & Ada.Strings.Unbounded.To_Unbounded_String
             (Const_Node_Annotations_File_Name);
-     
+
          New_Project_Access.Node_Annotations_File :=
            Ada.Strings.Unbounded.To_Unbounded_String
             (Const_Node_Annotations_File_Name);
-            
+
          New_Project_Access.The_Node_Annotations :=
            Node_Annotations.Create_Empty;
-         
+
          Node_Annotations.Write_To_File
            (New_Project_Access.The_Node_Annotations,
             Ada.Strings.Unbounded.To_String (Abs_Node_Annotations_File));
-          
-         Logger.Info 
-           ("New empty Node_Annotations_File created in project directory");            
+
+         Logger.Info
+           ("New empty Node_Annotations_File created in project directory");
       end if;
 
       --  deallocate storrage
@@ -1725,6 +1725,20 @@ package body Giant.Projects is
            File_Management.Return_Dir_Path_For_File_Path
          (New_Project_File_Name));
    end Store_Whole_Project_As_For_File;
+
+   ---------------------------------------------------------------------------
+   function Get_Graph_Filename
+     (Project : in Project_Access)
+     return String is
+   begin
+
+      if (Project = null) then
+         raise Project_Access_Not_Initialized_Exception;
+      end if;
+
+      return Ada.Strings.Unbounded.To_String
+        (Project.Abs_Bauhaus_IML_Graph_File);
+   end Get_Graph_Filename;
 
    ---------------------------------------------------------------------------
    function Get_Project_Name

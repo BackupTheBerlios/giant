@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.52 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.53 $
 --  $Author: squig $
---  $Date: 2003/07/18 15:59:50 $
+--  $Date: 2003/08/15 11:42:17 $
 --
 
 with Ada.Exceptions;
@@ -48,6 +48,7 @@ with Gtk.Object;
 with Gtk.Paned;
 with Gtk.Status_Bar;
 with Gtk.Style;
+with Gtk.Tooltips;
 with Gtk.Widget;
 with Gtk.Window;
 with Gtk.Tearoff_Menu_Item;
@@ -62,6 +63,7 @@ with Giant.Controller;
 with Giant.Default_Dialog;
 with Giant.Default_Logger;
 with Giant.Dialogs;
+with Giant.File_Management;
 with Giant.Graph_Lib;
 with Giant.Graph_Lib.Subgraphs;
 with Giant.Gsl_Dialog;
@@ -122,9 +124,12 @@ package body Giant.Main_Window is
    Subgraph_List : Gui_Utils.String_Clists.Giant_Data_Clist;
 
    Status_Bar : Gtk.Status_Bar.Gtk_Status_Bar;
+   Graph_Filename_Bar : Gtk.Status_Bar.Gtk_Status_Bar;
 
    Styles : array (Projects.Subgraph_Highlight_Status) of Gtk.Style.Gtk_Style
      := (others => null);
+
+   Tooltips : Gtk.Tooltips.Gtk_Tooltips;
 
    --  ugly workaround, see Close_Project
    Can_Close_Project : Boolean;
@@ -194,10 +199,13 @@ package body Giant.Main_Window is
 
       if (Loaded) then
          Set_Title (Window, "GIANT - "
-                               & Projects.Get_Project_Name
-                               (Controller.Get_Project));
+                    & Projects.Get_Project_Name (Controller.Get_Project));
+         Set_Graph_Filename
+           (File_Management.Get_File (Projects.Get_Graph_Filename
+                                      (Controller.Get_Project)));
       else
          Set_Title (Window, "GIANT");
+         Set_Graph_Filename ("");
 
          --  clear lists
          Gui_Utils.String_Clists.Clear (Subgraph_List);
@@ -644,7 +652,7 @@ package body Giant.Main_Window is
       --  tools menu
       Menu := New_Sub_Menu (Menu_Bar, -"Tools");
       Gtk.Menu.Add (Menu, New_TearOff_Menu_Item);
-      Gtk.Menu.Add (Menu, New_Menu_Item (-"Execute GSL Script...",
+      Gtk.Menu.Add (Menu, New_Menu_Item (-"GSL Editor...",
                                          On_Tools_Execute_GSL_Script'Access));
 
       --  window menu
@@ -695,12 +703,18 @@ package body Giant.Main_Window is
 
       Box : Gtk.Box.Gtk_Vbox;
       Submenu : Gtk.Menu.Gtk_Menu;
+      --  holds multiple status bars
+      Status_Box : Gtk.Box.Gtk_Hbox;
    begin
       Gtk.Window.Initialize (Window, Window_Toplevel);
       Set_Title (Window, -"GIANT");
 
       --  provide signals
       Gtk.Object.Initialize_Class_Record (Window, Signals, Class_Record);
+
+      --  tooltips
+      Gtk.Tooltips.Gtk_New (Tooltips);
+      Gtk.Tooltips.Enable (Tooltips);
 
       --  center box
       Gtk.Box.Gtk_New_Vbox (Box);
@@ -788,11 +802,20 @@ package body Giant.Main_Window is
       String_Clists.Set_Column_Title (Subgraph_List, 3, -"Highlight Color");
 
       Gtk.Paned.Add (Pane, Add_Scrollbars (Subgraph_List));
+
       --  status bar
-      Gtk.Status_Bar.Gtk_New (Status_Bar);
-      Gtk.Box.Pack_End (Box, Status_Bar, Expand => False, Fill => True,
+      Gtk.Box.Gtk_New_Hbox (Status_Box);
+      Gtk.Box.Pack_End (Box, Status_Box, Expand => False, Fill => True,
                         Padding => 0);
+
+      Gtk.Status_Bar.Gtk_New (Status_Bar);
+      Gtk.Box.Pack_Start (Status_Box, Status_Bar, Expand => True,
+                          Fill => True, Padding => 0);
       Default_Logger.Set_Listener (On_Log_Message'Access);
+
+      Gtk.Status_Bar.Gtk_New (Graph_Filename_Bar);
+      Gtk.Box.Pack_Start (Status_Box, Graph_Filename_Bar,
+                          Expand => False, Fill => True, Padding => 0);
 
       --  connect close button
       Widget_Boolean_Callback.Connect
@@ -1031,5 +1054,13 @@ package body Giant.Main_Window is
    begin
       Id := Gtk.Status_Bar.Push (Status_Bar, 1, Text);
    end Set_Status;
+
+   procedure Set_Graph_Filename
+     (Text : in String)
+   is
+      Id : Gtk.Status_Bar.Message_Id;
+   begin
+      Id := Gtk.Status_Bar.Push (Graph_Filename_Bar, 1, Text);
+   end Set_Graph_Filename;
 
 end Giant.Main_Window;

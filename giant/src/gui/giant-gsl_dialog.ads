@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gsl_dialog.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-gsl_dialog.ads,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/06/02 01:04:18 $
+--  $Date: 2003/08/15 11:42:17 $
 --
 ------------------------------------------------------------------------------
 --
@@ -31,6 +31,7 @@
 
 with Ada.Strings.Unbounded;
 
+with Gtk.Status_Bar;
 with Gtk.Text;
 with Gtk.Window;
 
@@ -53,12 +54,22 @@ package Giant.Gsl_Dialog is
    procedure Initialize
      (Dialog : access Gsl_Dialog_Record'class);
 
+   function Get_Filename
+     (Dialog   : access Gsl_Dialog_Record)
+     return String;
+
+   procedure Set_Filename
+     (Dialog   : access Gsl_Dialog_Record;
+      Filename : in     String);
+
 private
    type Gsl_Dialog_Record is
      new Default_Dialog.Default_Dialog_Record with record
         Filename : Ada.Strings.Unbounded.Unbounded_String;
         Text_Area : Gtk.Text.Gtk_Text;
         Text_Has_Changed : Boolean := False;
+        Filename_Bar : Gtk.Status_Bar.Gtk_Status_Bar;
+        Location_Bar : Gtk.Status_Bar.Gtk_Status_Bar;
      end record;
 
 end Giant.Gsl_Dialog;
