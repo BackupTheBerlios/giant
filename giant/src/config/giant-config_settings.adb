@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.8 $
+-- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.9 $
 -- $Author: schwiemn $
--- $Date: 2003/06/23 17:17:45 $
+-- $Date: 2003/06/23 17:29:53 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Text_IO;
@@ -770,13 +770,11 @@ package body Giant.Config_Settings is
       --  close down resources
       Ada.Text_IO.Set_Output (Ada.Text_IO.Standard_Output);
       Ada.Text_IO.Close (Config_File);
-      
-      
+            
       -- write DTD File into the same directory
       Write_DTD_File 
-        (File_Management.Get_Absolute_Path_To_File_From_Relative
-          (File_Management.Return_Dir_Path_For_File_Path (File_Name),
-           "giant_config_file.dtd"));
+        (File_Management.Return_Dir_Path_For_File_Path (File_Name)
+         & "giant_config_file.dtd");
                           
    end Store_User_Config_File;
 
