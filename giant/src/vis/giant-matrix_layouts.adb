@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-matrix_layouts.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-matrix_layouts.adb,v $, $Revision: 1.2 $
 --  $Author: koppor $
---  $Date: 2003/07/01 21:50:30 $
+--  $Date: 2003/07/01 23:18:47 $
 --
 
 package body Giant.Matrix_Layouts is
@@ -35,9 +35,18 @@ package body Giant.Matrix_Layouts is
       Target_Position     : in Giant.Vis.Logic.Vector_2d)
      return Matrix_Layout
    is
+      Res : Matrix_Layout;
    begin
-      --  TBD: replace dummy
-      return new Matrix_Layout_Record;
+      Res                 := new Matrix_Layout_Record;
+      Res.Widget          := Widget;
+      Res.Widget_Lock     := Widget_Lock;
+      Res.The_Selection   := Selection_To_Layout;
+      Res.Target_Position := Target_Position;
+
+      --  Evolutions.Initialize
+      Initialize (Res);
+
+      return Res;
    end Initialize;
 
    ---------------------------------------------------------------------------
@@ -46,7 +55,7 @@ package body Giant.Matrix_Layouts is
       Canceled : in     Boolean)
    is
    begin
-      null;
+      Graph_Widgets.Release_Lock (Layout.Widget, Layout.Widget_Lock);
    end Finish;
 
    ---------------------------------------------------------------------------
