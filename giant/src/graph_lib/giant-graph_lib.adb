@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.30 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.31 $
 --  $Author: koppor $
---  $Date: 2003/06/27 16:54:55 $
+--  $Date: 2003/06/28 18:16:48 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -392,6 +392,10 @@ package body Giant.Graph_Lib is
             --  like in "outer" Edge_Record
             Attribute                : Node_Attribute_Id;
             Attribute_Element_Number : Natural;
+
+            --  Used at conversion from temporary structure to
+            --  graph_lib-internal structure
+            Internal_Edge : Edge_Id;
          end record;
 
          type Edge_Access is access Edge_Record;
@@ -405,7 +409,7 @@ package body Giant.Graph_Lib is
             IML_Node      : Storables.Storable;
 
             --  Used at conversion from temporary structure to
-            --  internal structure
+            --  graph_lib-internal structure
             Internal_Node : Node_Id;
          end record;
 
@@ -456,12 +460,12 @@ package body Giant.Graph_Lib is
          function Create_Node
            (IMLNode : Storables.Storable)
            return Node_Access is
-            NewNode : Node_Access := new Node_Record;
+            New_Node : Node_Access := new Node_Record;
          begin
-            NewNode.IML_Node  := IMLNode;
-            NewNode.Edges_In  := Edge_Lists.Create;
-            NewNode.Edges_Out := Edge_Lists.Create;
-            return NewNode;
+            New_Node.IML_Node  := IMLNode;
+            New_Node.Edges_In  := Edge_Lists.Create;
+            New_Node.Edges_Out := Edge_Lists.Create;
+            return New_Node;
          end Create_Node;
 
          procedure Destroy_Node (NodeToDestroy : in out Node_Access) is
@@ -700,128 +704,216 @@ package body Giant.Graph_Lib is
       procedure Convert_Temp_Structure_To_Used_Structure
         (Queue : in Load_Nodes.Node_Queue) is
 
-         Last_Internal_Id : Integer            := 0;
-         All_Edges_Set    : Edge_Id_Sets.Set;
+         ---------------------------------------------------------------------
+         --  Converts temporary nodes to internal nodes
+         --
+         --  Parameters:
+         --    IML_Node_ID_Mapping': Contains mapping from IML to
+         --                          internal nodes created in this procedure
+         procedure Convert_Nodes
+           (IML_Node_ID_Mapping : out IML_Node_Id_Hashed_Mappings.Mapping)
+         is
 
-         --  Precondition:
-         --    Size of TargtArray == Length(SourceList)
-         procedure Convert_Edges
-           (SourceList  : in     Load_Nodes.Edge_Lists.List;
-            TargetArray :    out Edge_Id_Array) is
-
-            EdgeIter : Load_Nodes.Edge_Lists.ListIter;
-            CurEdge  : Load_Nodes.Edge_Access;
+            Node_Iter : Load_Nodes.Node_Queues.ListIter;
+            Cur_Node  : Load_Nodes.Node_Access; --  of the temporary structure
+            New_Node  : Node_Id; --  of the internal structure
 
          begin
-            if TargetArray'Length /=
-              Load_Nodes.Edge_Lists.Length (SourceList) then
-               My_Logger.Debug ("Length not equal" &
-                                Integer'Image (TargetArray'Length) &
-                                " " &
-                                Integer'Image
-                                (Load_Nodes.Edge_Lists.Length (SourceList)));
-            end if;
+            IML_Node_ID_Mapping := IML_Node_ID_Hashed_Mappings.Create;
 
-            EdgeIter := Load_Nodes.Edge_Lists.MakeListIter (SourceList);
+            Node_Iter := Load_Nodes.Node_Queues.MakeListIter (Queue);
+            while Load_Nodes.Node_Queues.More (Node_Iter) loop
+               Load_Nodes.Node_Queues.Next (Node_Iter, Cur_Node);
 
-            for I in TargetArray'Range loop
-               Load_Nodes.Edge_Lists.Next (EdgeIter, CurEdge);
+               New_Node := new Node_Record
+                 (Number_Of_Incoming_Edges =>
+                    Load_Nodes.Edge_Lists.Length (Cur_Node.Edges_In),
+                  Number_Of_Outgoing_Edges =>
+                    Load_Nodes.Edge_Lists.Length (Cur_Node.Edges_Out)
+                  );
 
-               --  Every new edge gets a higher id
-               Last_Internal_Id := Last_Internal_Id + 1;
+               New_Node.IML_Node := Cur_Node.IML_Node;
 
-               TargetArray (I) := new Edge_Record;
-               TargetArray (I).Internal_Id := Last_Internal_Id;
-               TargetArray (I).Source_Node := CurEdge.Source.Internal_Node;
-               TargetArray (I).Target_Node := CurEdge.Target.Internal_Node;
-               TargetArray (I).Attribute   := CurEdge.Attribute;
-               TargetArray (I).Attribute_Element_Number :=
-                 CurEdge.Attribute_Element_Number;
+               IML_Node_ID_Hashed_Mappings.Bind
+                 (IML_Node_ID_Mapping,
+                  Storables.Get_Node_ID (New_Node.IML_Node),
+                  New_Node);
 
-               --  add it to procedure-internal set holding all edges
-               --  of the graph
-               Edge_Id_Sets.Insert (All_Edges_Set, TargetArray (I));
+               --  set variable to enable edge-conversion
+               Cur_Node.Internal_Node := New_Node;
             end loop;
-         end Convert_Edges;
+         end Convert_Nodes;
 
          ----------------------------------------------------------------------
-         --  Convert set containing all edges to an array of all edges
-         procedure Convert_Edge_Set_To_Edge_Array is
+         --  In this step, all Edge_Records are created and linked to the
+         --    temporary edges
+         --
+         --  Parameters:
+         --    All_Edges_Set': Contains all created edges
+         procedure Convert_Outgoing_Edges
+           (All_Edges_Set : out Edge_Id_Sets.Set)
+         is
 
-            Current_Edge_Index : Natural := 0;
+            Last_Internal_Id : Integer            := 0;
 
-            procedure Execute (Edge : Edge_Id)
-            is
+            -------------------------------------------------------------------
+            --  Modifies "All_Edges_Set"
+            --    adds created edges to "All_Edges_Set"
+            --  Precondition:
+            --    Size of TargtArray == Length(Source_List)
+            procedure Convert_Outgoing_Edges_Of_A_Node
+              (Source_List  : in     Load_Nodes.Edge_Lists.List;
+               Target_Array :    out Edge_Id_Array) is
+
+               Edge_Iter : Load_Nodes.Edge_Lists.ListIter;
+               Cur_Edge  : Load_Nodes.Edge_Access;
+
             begin
-               Current_Edge_Index := Current_Edge_Index + 1;
-               All_Edges (Current_Edge_Index) := Edge;
-            end Execute;
+               pragma Assert (Target_Array'Length =
+                                Load_Nodes.Edge_Lists.Length (Source_List));
 
-            procedure Apply is new Edge_Id_Sets.Apply
-              (Execute => Execute);
+               Edge_Iter := Load_Nodes.Edge_Lists.MakeListIter (Source_List);
+
+               for I in Target_Array'Range loop
+                  Load_Nodes.Edge_Lists.Next (Edge_Iter, Cur_Edge);
+
+                  --  Every new edge gets a higher id
+                  Last_Internal_Id := Last_Internal_Id + 1;
+
+                  Target_Array (I) :=
+                    new Edge_Record;
+                  Target_Array (I).Internal_Id :=
+                    Last_Internal_Id;
+                  Target_Array (I).Source_Node :=
+                    Cur_Edge.Source.Internal_Node;
+                  Target_Array (I).Target_Node :=
+                    Cur_Edge.Target.Internal_Node;
+                  Target_Array (I).Attribute   :=
+                    Cur_Edge.Attribute;
+                  Target_Array (I).Attribute_Element_Number :=
+                    Cur_Edge.Attribute_Element_Number;
+
+                  --  store in temporary edge, the belonging package-internal
+                  --    one ("backreference")
+                  Cur_Edge.Internal_Edge := Target_Array (I);
+
+                  --  add it to procedure-internal set holding all edges
+                  --  of the graph
+                  Edge_Id_Sets.Insert (All_Edges_Set, Target_Array (I));
+               end loop;
+            end Convert_Outgoing_Edges_Of_A_Node;
+
+            Node_Iter : Load_Nodes.Node_Queues.ListIter;
+            Cur_Node  : Load_Nodes.Node_Access; --  of the temporary structure
+            New_Node  : Node_Id; --  of the internal structure
 
          begin
-            All_Edges := new Edge_Id_Array
-              (1..Edge_Id_Sets.Size (All_Edges_Set));
-            Apply (All_Edges_Set);
+            All_Edges_Set := Edge_Id_Sets.Empty_Set;
+
+            Node_Iter := Load_Nodes.Node_Queues.MakeListIter (Queue);
+            while Load_Nodes.Node_Queues.More (Node_Iter) loop
+               Load_Nodes.Node_Queues.Next (Node_Iter, Cur_Node);
+
+               New_Node := Cur_Node.Internal_Node;
+
+               Convert_Outgoing_Edges_Of_A_Node
+                 (Cur_Node.Edges_In,
+                  New_Node.Incoming_Edges);
+            end loop;
+         end Convert_Outgoing_Edges;
+
+         ----------------------------------------------------------------------
+         --  Convert set containing all edges to "public" array of all edges
+         function Convert_Edge_Set_To_Edge_Array
+           (Edges_Set : Edge_Id_Sets.Set)
+           return Edge_Id_Array_Access
+         is
+
+           Edge_Array         : Edge_Id_Array_Access;
+           Current_Edge_Index : Natural := 0;
+
+           procedure Execute (Edge : Edge_Id)
+           is
+           begin
+              Current_Edge_Index := Current_Edge_Index + 1;
+              Edge_Array (Current_Edge_Index) := Edge;
+           end Execute;
+
+           procedure Apply is new Edge_Id_Sets.Apply
+             (Execute => Execute);
+
+         begin
+            Edge_Array := new Edge_Id_Array
+              (1..Edge_Id_Sets.Size (Edges_Set));
+            Apply (Edges_Set);
+            return Edge_Array;
          end Convert_Edge_Set_To_Edge_Array;
 
-         NodeIter : Load_Nodes.Node_Queues.ListIter;
-         CurNode  : Load_Nodes.Node_Access; --  of the temporary structure
+         ---------------------------------------------------------------------
+         --  The structure of this routine is similar to the one of
+         --    Convert_Outgoing_Edges
+         procedure Convert_Incoming_Edges
+         is
 
-         NewNode  : Node_Id; --  of the internal structure
+            procedure Convert_Incoming_Edges_Of_A_Node
+              (Source_List  : in     Load_Nodes.Edge_Lists.List;
+               Target_Array :    out Edge_Id_Array) is
+
+               Edge_Iter : Load_Nodes.Edge_Lists.ListIter;
+               Cur_Edge  : Load_Nodes.Edge_Access;
+
+            begin
+               pragma Assert (Target_Array'Length =
+                                Load_Nodes.Edge_Lists.Length (Source_List));
+
+               Edge_Iter := Load_Nodes.Edge_Lists.MakeListIter (Source_List);
+
+               for I in Target_Array'Range loop
+                  Load_Nodes.Edge_Lists.Next (Edge_Iter, Cur_Edge);
+
+                  --  In Convert_Outoing_Edges_Of_A_Node
+                  --    Internal_Edge was set to the belonging
+                  --    package-internal edge, so only a copy of this
+                  --    reference is necessary
+                  --  This assumption is valid, since each incoming edge
+                  --    is also an outgoing edge of another node and vice versa
+                  Target_Array (I) := Cur_Edge.Internal_Edge;
+               end loop;
+            end Convert_Incoming_Edges_Of_A_Node;
+
+            Node_Iter : Load_Nodes.Node_Queues.ListIter;
+            Cur_Node  : Load_Nodes.Node_Access; --  of the temporary structure
+            New_Node  : Node_Id; --  of the internal structure
+         begin
+            Node_Iter := Load_Nodes.Node_Queues.MakeListIter (Queue);
+            while Load_Nodes.Node_Queues.More (Node_Iter) loop
+               Load_Nodes.Node_Queues.Next (Node_Iter, Cur_Node);
+
+               New_Node := Cur_Node.Internal_Node;
+
+               Convert_Incoming_Edges_Of_A_Node
+                 (Cur_Node.Edges_In,
+                  New_Node.Incoming_Edges);
+            end loop;
+         end Convert_Incoming_Edges;
 
       begin
-         IML_Node_ID_Mapping := IML_Node_ID_Hashed_Mappings.Create;
+         Convert_Nodes (IML_Node_ID_Mapping);
 
-         --  Convert nodes
-         NodeIter := Load_Nodes.Node_Queues.MakeListIter (Queue);
-         while Load_Nodes.Node_Queues.More (NodeIter) loop
-            Load_Nodes.Node_Queues.Next (NodeIter, CurNode);
+         --  all nodes are existing now
+         --  create edges
+         declare
+            All_Edges_Set : Edge_Id_Sets.Set;
+         begin
+            Convert_Outgoing_Edges (All_Edges_Set);
 
-            NewNode := new Node_Record
-              (Number_Of_Incoming_Edges =>
-                 Load_Nodes.Edge_Lists.Length (CurNode.Edges_In),
-               Number_Of_Outgoing_Edges =>
-                 Load_Nodes.Edge_Lists.Length (CurNode.Edges_Out)
-               );
+            -- All_Edges is the package-wide used array storing all edges
+            All_Edges := Convert_Edge_Set_To_Edge_Array (All_Edges_Set);
 
-            NewNode.IML_Node := CurNode.IML_Node;
+            Edge_Id_Sets.Destroy (All_Edges_Set);
+         end;
 
-            IML_Node_ID_Hashed_Mappings.Bind
-              (IML_Node_ID_Mapping,
-               Storables.Get_Node_ID (NewNode.IML_Node),
-               NewNode);
-
-            --  set variable to enable edge-conversion
-            CurNode.Internal_Node := NewNode;
-         end loop;
-
-         --  Convert edges
-         --  Has to be done in a second loop, because now all nodes exist
-
-         All_Edges_Set := Edge_Id_Sets.Empty_Set;
-
-         NodeIter := Load_Nodes.Node_Queues.MakeListIter (Queue);
-         while Load_Nodes.Node_Queues.More (NodeIter) loop
-            Load_Nodes.Node_Queues.Next (NodeIter, CurNode);
-
-            --  Get NewNode belonging to CurNode
-            NewNode :=
-              IML_Node_ID_Hashed_Mappings.Fetch
-              (IML_Node_ID_Mapping,
-               Storables.Get_Node_ID (CurNode.IML_Node));
-
-            --  FIXME: they are duplicated edges!!
-
-            Convert_Edges( CurNode.Edges_In,  NewNode.Incoming_Edges);
-            Convert_Edges( CurNode.Edges_Out, NewNode.Outgoing_Edges);
-         end loop;
-
-         Convert_Edge_Set_To_Edge_Array;
-
-         Edge_Id_Sets.Destroy (All_Edges_Set);
-
+         Convert_Incoming_Edges;
       end Convert_Temp_Structure_To_Used_Structure;
 
       -------------------------------------------------------------------------
@@ -880,7 +972,7 @@ package body Giant.Graph_Lib is
             Node_Id);
 
          Iter    : IML_Node_ID_Hashed_Mappings.Values_Iter;
-         CurNode : Node_Id;
+         Cur_Node : Node_Id;
       begin
          --  There is no Hashed_Mappings.DestroyDeep, therefore we have to do
          --  this by hand
@@ -889,14 +981,14 @@ package body Giant.Graph_Lib is
            (IML_Node_ID_Mapping);
 
          while IML_Node_ID_Hashed_Mappings.More (Iter) loop
-            IML_Node_ID_Hashed_Mappings.Next (Iter, CurNode);
+            IML_Node_ID_Hashed_Mappings.Next (Iter, Cur_Node);
 
             --  remove all the edges out of the memory
-            for I in CurNode.Outgoing_Edges'Range loop
-               FreeEdgeId (CurNode.Outgoing_Edges (I));
+            for I in Cur_Node.Outgoing_Edges'Range loop
+               FreeEdgeId (Cur_Node.Outgoing_Edges (I));
             end loop;
 
-            FreeNodeId (CurNode);
+            FreeNodeId (Cur_Node);
 
          end loop;
 
@@ -987,7 +1079,7 @@ package body Giant.Graph_Lib is
       --  used for the inner loop
       IterAttrib : Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.
         Values_Iter;
-      CurEdge_Class  : Edge_Class_Id;
+      Cur_Edge_Class  : Edge_Class_Id;
 
    begin
       Set      := Edge_Class_Id_Sets.Empty_Set;
@@ -1004,9 +1096,9 @@ package body Giant.Graph_Lib is
          while Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings
            .More (IterAttrib) loop
             Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.
-              Next (IterAttrib, CurEdge_Class);
+              Next (IterAttrib, Cur_Edge_Class);
 
-            Edge_Class_Id_Sets.Insert (Set, CurEdge_Class);
+            Edge_Class_Id_Sets.Insert (Set, Cur_Edge_Class);
          end loop;
       end loop;
 
@@ -1111,7 +1203,7 @@ package body Giant.Graph_Lib is
       IterAttrib : Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.
         Bindings_Iter;
       CurAttribute   : Node_Attribute_Id;
-      CurEdge_Class  : Edge_Class_Id;
+      Cur_Edge_Class  : Edge_Class_Id;
 
    begin
       Set      := Edge_Class_Id_Sets.Empty_Set;
@@ -1128,10 +1220,10 @@ package body Giant.Graph_Lib is
          while Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings
            .More (IterAttrib) loop
             Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.
-              Next (IterAttrib, CurAttribute, CurEdge_Class);
+              Next (IterAttrib, CurAttribute, Cur_Edge_Class);
 
             if CurAttribute.Name = Node_Attribute_Name then
-               Edge_Class_Id_Sets.Insert (Set, CurEdge_Class);
+               Edge_Class_Id_Sets.Insert (Set, Cur_Edge_Class);
             end if;
          end loop;
       end loop;
@@ -1149,7 +1241,7 @@ package body Giant.Graph_Lib is
 
       IterAttrib : Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.
         Values_Iter;
-      CurEdge_Class  : Edge_Class_Id;
+      Cur_Edge_Class  : Edge_Class_Id;
 
    begin
       Set := Edge_Class_Id_Sets.Empty_Set;
@@ -1163,9 +1255,9 @@ package body Giant.Graph_Lib is
       while Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings
         .More (IterAttrib) loop
          Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.
-           Next (IterAttrib, CurEdge_Class);
+           Next (IterAttrib, Cur_Edge_Class);
 
-         Edge_Class_Id_Sets.Insert (Set, CurEdge_Class);
+         Edge_Class_Id_Sets.Insert (Set, Cur_Edge_Class);
       end loop;
 
       return Set;
@@ -1196,9 +1288,9 @@ package body Giant.Graph_Lib is
    function Get_All_Nodes
       return Node_Id_Set
    is
-      Set     : Node_Id_Set;
-      Iter    : IML_Node_ID_Hashed_Mappings.Values_Iter;
-      CurNode : Node_Id;
+      Set      : Node_Id_Set;
+      Iter     : IML_Node_ID_Hashed_Mappings.Values_Iter;
+      Cur_Node : Node_Id;
 
    begin
       Set := Node_Id_Sets.Empty_Set;
@@ -1207,9 +1299,9 @@ package body Giant.Graph_Lib is
         (IML_Node_ID_Mapping);
 
       while IML_Node_ID_Hashed_Mappings.More (Iter) loop
-         IML_Node_ID_Hashed_Mappings.Next (Iter, CurNode);
+         IML_Node_ID_Hashed_Mappings.Next (Iter, Cur_Node);
 
-         Node_Id_Sets.Insert (Set, CurNode);
+         Node_Id_Sets.Insert (Set, Cur_Node);
       end loop;
 
       return Set;
