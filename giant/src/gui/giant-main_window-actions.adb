@@ -20,57 +20,10 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window-actions.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-main_window-actions.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/07/03 18:41:20 $
+--  $Date: 2003/07/05 20:13:42 $
 --
-
-with Ada.Strings.Unbounded;
-with Interfaces.C.Strings;
-with System;
-
-with Gdk.Color;
-with Gdk.Event;
-with Gdk.Types;
-with Glib; use type Glib.Gint;
-with Gtk.Box;
-with Gtk.Clist;
-pragma Elaborate_All (Gtk.Clist);
-with Gtk.Container;
-with Gtk.Enums; use Gtk.Enums;
-with Gtk.Handlers;
-with Gtk.Main;
-with Gtk.Menu;
-with Gtk.Menu_Bar;
-with Gtk.Menu_Item;
-with Gtk.Object;
-with Gtk.Paned;
-with Gtk.Status_Bar;
-with Gtk.Style;
-with Gtk.Widget;
-with Gtk.Window;
-with Gtk.Tearoff_Menu_Item;
-with Gtkada.File_Selection;
-with Gtkada.Types;
-
-with Giant.About_Dialog;
-with Giant.Clists;
-with Giant.Config.Global_Data;
-with Giant.Config_Settings;
-with Giant.Controller;
-with Giant.Default_Dialog;
-with Giant.Default_Logger;
-with Giant.Dialogs;
-with Giant.Graph_Lib;
-with Giant.Graph_Lib.Subgraphs;
-with Giant.Gsl_Dialog;
-with Giant.Gui_Manager;
-with Giant.Gui_Manager.Actions;
-with Giant.Gui_Utils;
-with Giant.Logger;
-with Giant.Node_Info_Dialog;
-with Giant.Projects;
-with Giant.Set_Operation_Dialog;
 
 package body Giant.Main_Window.Actions is
 
