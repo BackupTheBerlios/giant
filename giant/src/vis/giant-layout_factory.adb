@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.15 $
+--  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.16 $
 --  $Author: koppor $
---  $Date: 2003/09/02 09:40:26 $
+--  $Date: 2003/09/02 11:54:40 $
 --
 
 with Ada.Exceptions;
@@ -240,7 +240,7 @@ package body Giant.Layout_Factory is
                        Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
                        (Meta_Class_Set,
                         Graph_Lib.Get_Edge_Class_Id (Current_Edge)) then
-                        Node := Graph_Lib.Get_Target_Node (Current_Edge);
+                        Node := Graph_Lib.Get_Source_Node (Current_Edge);
                         if Config.Class_Sets.Is_Empty (Meta_Class_Set) or else
                           Config.Class_Sets.Is_Node_Class_Element_Of_Class_Set
                           (Meta_Class_Set,
