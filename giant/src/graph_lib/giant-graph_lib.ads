@@ -20,14 +20,15 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.5 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.6 $
 --  $Author: koppor $
---  $Date: 2003/06/10 00:29:09 $
+--  $Date: 2003/06/10 07:33:57 $
 --
 
 --  Bauhaus / IML
 with IML_Reflection;
 with Storables;
+with SLocs; --  used at private part
 
 --  Bauhaus / Reuse
 --  with String_Lists;
@@ -108,7 +109,7 @@ package Giant.Graph_Lib is
 
    ---------------------------------------------------------------------------
    --  unique Id of one single edge in the duplicated IML-Graph
-   type Edge_Id is access Edge_Record;
+   type Edge_Id is access all Edge_Record;
 
    ---------------------------------------------------------------------------
    --  to be considered private
@@ -119,7 +120,7 @@ package Giant.Graph_Lib is
    --  unique ID of one class to which an edge may belong to
    --
    --    This is to be considered private
-   type Edge_Class_Id is access constant Edge_Class;
+   type Edge_Class_Id is access all Edge_Class;
 
 
    -----------------------------------------------------------------------
@@ -366,17 +367,6 @@ package Giant.Graph_Lib is
    --------------------------------
 
    ---------------------------------------------------------------------------
-   --  Checks if given node class has given attribute
-   --
-   --  Returns:
-   --    True  - if it has
-   --    False - if not or if given Class does not exist
-   function Has_Node_Attribute
-      (Node_Class_Name     : in String;
-       Node_Attribute_Name : in String)
-      return Boolean;
-
-   ---------------------------------------------------------------------------
    --  Returns:
    --    "Type of Node"
    function Get_Class_Of_Node
@@ -576,10 +566,10 @@ package Giant.Graph_Lib is
    --  Raises:
    --    Wrong_Attribute_Type
    --      if Get_Node_Attribute_Class_Id(Attribute) /= Class_String
-   function Get_Node_Attribute_String_Value
-      (Node      : in     Node_Id;
-       Attribute : in     Node_Attribute_Id)
-      return String;
+   --  function Get_Node_Attribute_String_Value
+   --     (Node      : in     Node_Id;
+   --      Attribute : in     Node_Attribute_Id)
+   --     return String;
 
    ---------------------------------------------------------------------------
    --  Raises:
@@ -633,7 +623,7 @@ package Giant.Graph_Lib is
    function Get_Node_Attribute_SLoc_Filename_Value
       (Node      : in     Node_Id;
        Attribute : in     Node_Attribute_Id)
-      return Natural;
+      return String;
 
 
    ---------------------------------------------------------------------------
@@ -653,14 +643,9 @@ package Giant.Graph_Lib is
    ---------------
 
    ---------------------------------------------------------------------------
-   procedure Make_Attribute_Iterator
-      (Node     : in     Node_Id;
-       Iterator :    out Node_Attribute_Iterator);
-
-   ---------------------------------------------------------------------------
-   procedure Destroy_Attribute_Iterator
-      (Node     : in     Node_Id;
-       Iterator : in out Node_Attribute_Iterator);
+   function Make_Attribute_Iterator
+      (Node     : in     Node_Id)
+      return Node_Attribute_Iterator;
 
    ---------------------------------------------------------------------------
    --  missing: nomore, advance, etc.
@@ -726,12 +711,23 @@ private
 
    ---------------------------------------------------------------------------
    --  Dummy
-   type Node_Attribute_Iterator is null record;
+   type Node_Attribute_Iterator is record
+      Dummy : Integer;
+   end record;
 
    ---------------------------------------------------------------------------
    function "<"
       (Left  : Node_Attribute_Id;
        Right : Node_Attribute_Id)
       return Boolean;
+
+   ----------------------------------------------------------------------------
+   --  Raises:
+   --    Wrong_Attribute_Type
+   --      if Get_Node_Attribute_Class_Id(Attribute) /= Class_SLoc
+   function Get_Node_Attribute_SLoc_Value
+     (Node      : in     Node_Id;
+      Attribute : in     Node_Attribute_Id)
+      return SLocs.Sloc;
 
 end Giant.Graph_Lib;
