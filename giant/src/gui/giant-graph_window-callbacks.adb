@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.9 $
 --  $Author: squig $
---  $Date: 2003/07/14 22:28:11 $
+--  $Date: 2003/07/18 15:40:31 $
 --
 
 with Ada.Unchecked_Conversion;
@@ -36,6 +36,7 @@ with Giant.Gui_Manager.Actions;
 with Giant.Make_Room_Dialog;
 with Giant.Node_Annotation_Dialog;
 with Giant.Node_Info_Dialog;
+with Giant.Selection_Operation_Dialog;
 
 package body Giant.Graph_Window.Callbacks is
 
@@ -66,10 +67,7 @@ package body Giant.Graph_Window.Callbacks is
         := Dialogs.Show_Input_Dialog (-"Pin Name");
    begin
       if (Name /= "") then
-         Controller.Create_Pin (Get_Window_Name (Window),
-                                Name,
-                                Window.Current_Position,
-                                Graph_Widgets.Get_Zoom_Level (Window.Graph));
+         Controller.Create_Pin (Get_Window_Name (Window), Name);
       end if;
    end;
 
@@ -215,5 +213,15 @@ package body Giant.Graph_Window.Callbacks is
                           Get_Selected_Selection (Window));
    end On_Apply_Layout;
 
+   procedure On_Selection_List_Set_Operation
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
+      Source_Name : String := Get_Selected_Selection (Window);
+      Dialog : Selection_Operation_Dialog.Selection_Operation_Dialog_Access;
+   begin
+      Selection_Operation_Dialog.Create (Dialog, Get_Window_Name (Window));
+      Selection_Operation_Dialog.Show_All (Dialog);
+   end On_Selection_List_Set_Operation;
 
 end Giant.Graph_Window.Callbacks;

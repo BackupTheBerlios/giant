@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.ads,v $, $Revision: 1.7 $
+--  $RCSfile: giant-graph_window-callbacks.ads,v $, $Revision: 1.8 $
 --  $Author: squig $
---  $Date: 2003/07/14 22:28:11 $
+--  $Date: 2003/07/18 15:40:31 $
 --
 ------------------------------------------------------------------------------
 --
@@ -103,6 +103,9 @@ package Giant.Graph_Window.Callbacks is
    ---------------------------------------------------------------------------
 
    procedure On_Apply_Layout
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
+
+   procedure On_Selection_List_Set_Operation
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class);
 
 end Giant.Graph_Window.Callbacks;

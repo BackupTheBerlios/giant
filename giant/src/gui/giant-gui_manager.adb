@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.30 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.31 $
 --  $Author: squig $
---  $Date: 2003/07/10 20:17:45 $
+--  $Date: 2003/07/18 15:40:31 $
 --
 
 with Ada.Strings.Unbounded;
@@ -594,9 +594,8 @@ package body Giant.Gui_Manager is
       Graph_Window.Create (Window, Visual_Window);
       Graph_Window_Lists.Attach (Open_Windows, Window);
 
-      Initialize_Graph_Window (Window);
-
       Graph_Window.Show_All (Window);
+      Initialize_Graph_Window (Window);
 
       --  update status
       Main_Window.Update_Window (Vis_Windows.Get_Name (Visual_Window));

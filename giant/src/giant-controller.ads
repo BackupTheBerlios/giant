@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.39 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.40 $
 --  $Author: squig $
---  $Date: 2003/07/18 14:27:39 $
+--  $Date: 2003/07/18 15:40:31 $
 --
 ------------------------------------------------------------------------------
 --
@@ -157,6 +157,13 @@ package Giant.Controller is
    ---------------------------------------------------------------------------
    --  Pins
    ---------------------------------------------------------------------------
+
+   ---------------------------------------------------------------------------
+   --  Creates a pin that stores the current center position and zoom
+   --  level of the graph widget.
+   procedure Create_Pin
+     (Window_Name : in String;
+      Name        : in String);
 
    procedure Create_Pin
      (Window_Name : in String;
@@ -320,6 +327,24 @@ package Giant.Controller is
       Old_Name    : in String;
       New_Name    : in String);
 
+   procedure Selection_Difference
+     (Window_Name : in String;
+      Left_Name   : in String;
+      Right_Name  : in String;
+      Target_Name : in String);
+
+   procedure Selection_Intersection
+     (Window_Name : in String;
+      Left_Name   : in String;
+      Right_Name  : in String;
+      Target_Name : in String);
+
+   procedure Selection_Union
+     (Window_Name : in String;
+      Left_Name   : in String;
+      Right_Name  : in String;
+      Target_Name : in String);
+
    procedure Set_Current_Selection
      (Window_Name : in String;
       Name        : in String);
@@ -438,6 +463,10 @@ package Giant.Controller is
    function Exists_Window
      (Name : in String)
      return Boolean;
+
+   function Get_Window
+     (Name : in String)
+     return Vis_Windows.Visual_Window_Access;
 
    procedure Make_Room
      (Window_Name : in String;

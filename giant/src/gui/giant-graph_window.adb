@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.38 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.39 $
 --  $Author: squig $
---  $Date: 2003/07/18 14:27:39 $
+--  $Date: 2003/07/18 15:40:31 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -256,8 +256,9 @@ package body Giant.Graph_Window is
    procedure On_Pin_List_Show
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
+      Window : constant Graph_Window_Access := Graph_Window_Access (Source);
    begin
-      null;
+      Controller.Show_Pin (Get_Window_Name (Window), Get_Selected_Pin (Window));
    end On_Pin_List_Show;
 
    ---------------------------------------------------------------------------
@@ -615,6 +616,11 @@ package body Giant.Graph_Window is
                                       On_Apply_Layout'Access, Window));
       Gtk.Menu.Append (Window.Selection_List_Menu, New_Menu_Separator);
       Gtk.Menu.Append (Window.Selection_List_Menu,
+                       New_Menu_Item (-"Set Operation...",
+                                      On_Selection_List_Set_Operation'Access,
+                                      Window));
+      Gtk.Menu.Append (Window.Selection_List_Menu, New_Menu_Separator);
+      Gtk.Menu.Append (Window.Selection_List_Menu,
                        New_Menu_Item (-"Rename...",
                                       On_Selection_List_Rename'Access,
                                       Window));
@@ -759,7 +765,7 @@ package body Giant.Graph_Window is
       Initialize_Selection_List_Menu (Window);
 
       --  selections
-      Gui_Utils.String_Clists.Create (Window.Selection_List, 3,
+      Gui_Utils.String_Clists.Create (Window.Selection_List, 5,
                                       Update_Selection'Access);
       Gui_Utils.String_Clists.Set_Show_Titles (Window.Selection_List, True);
       Gui_Utils.String_Clists.Connect_Popup_Menu
@@ -768,9 +774,13 @@ package body Giant.Graph_Window is
       Gui_Utils.String_Clists.Set_Column_Title
         (Window.Selection_List, 0, -"Selection");
       Gui_Utils.String_Clists.Set_Column_Title
-        (Window.Selection_List, 1, -"Active");
+        (Window.Selection_List, 1, -"Nodes");
       Gui_Utils.String_Clists.Set_Column_Title
-        (Window.Selection_List, 2, -"Color");
+        (Window.Selection_List, 2, -"Edges");
+      Gui_Utils.String_Clists.Set_Column_Title
+        (Window.Selection_List, 3, -"Active");
+      Gui_Utils.String_Clists.Set_Column_Title
+        (Window.Selection_List, 4, -"Color");
 
       Gtk.Paned.Add2 (Left_Paned, Add_Scrollbars (Window.Selection_List));
 
@@ -982,27 +992,39 @@ package body Giant.Graph_Window is
       use type Vis_Windows.Selection_Highlight_Status;
 
       Window : Graph_Window_Access
-        := Graph_Window_Access (Gui_Utils.String_Clists.Get_Toplevel (List));
+        := Graph_Window_Access (Gui_Utils.String_Clists.Get_Toplevel
+                                (List));
+      Selection : Graph_Lib.Selections.Selection
+        := Controller.Get_Selection (Get_Window_Name (Window), Name);
       Highlighted : Vis_Windows.Selection_Highlight_Status
         := Vis_Windows.Get_Highlight_Status (Window.Visual_Window, Name);
       Is_Active : Boolean
         := (Vis_Windows.Get_Current_Selection (Window.Visual_Window) = Name);
    begin
       if (Window.Styles (Vis_Windows.Color_1) = null) then
+         Logger.Warn ("initializing styles");
          Initialize_Styles (Window);
       end if;
 
       Gui_Utils.String_Clists.Set_Text (List, Row, 0, Name);
+
+      Gui_Utils.String_Clists.Set_Text
+        (List, Row, 1,
+         Natural'Image (Graph_Lib.Selections.Get_Node_Count (Selection)));
+      Gui_Utils.String_Clists.Set_Text
+        (List, Row, 2,
+         Natural'Image (Graph_Lib.Selections.Get_Edge_Count (Selection)));
+
       if (Is_Active) then
-         Gui_Utils.String_Clists.Set_Text (List, Row, 1, -"Yes");
+         Gui_Utils.String_Clists.Set_Text (List, Row, 3, -"Yes");
       else
-         Gui_Utils.String_Clists.Set_Text (List, Row, 1, "");
+         Gui_Utils.String_Clists.Set_Text (List, Row, 3, "");
       end if;
 
       Gui_Utils.String_Clists.Set_Cell_Style
-        (List, Row, 2, Window.Styles (Highlighted));
+        (List, Row, 4, Window.Styles (Highlighted));
       Gui_Utils.String_Clists.Set_Text
-        (List, Row, 2, Gui_Utils.To_Display_Name (Highlighted));
+        (List, Row, 4, Gui_Utils.To_Display_Name (Highlighted));
    end Update_Selection;
 
    procedure Add_Selection

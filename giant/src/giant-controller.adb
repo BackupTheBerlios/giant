@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.60 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.61 $
 --  $Author: squig $
---  $Date: 2003/07/18 14:27:39 $
+--  $Date: 2003/07/18 15:40:31 $
 --
 
 with Ada.Strings.Unbounded;
@@ -49,13 +49,20 @@ with Giant.Vis_Windows;
 
 package body Giant.Controller is
 
-   package Logger is new Giant.Logger("giant.controller");
+   type Selection_Operation_Type is access function
+     (Left        : in Graph_Lib.Selections.Selection;
+      Right       : in Graph_Lib.Selections.Selection;
+      Target_Name : in String)
+     return Graph_Lib.Selections.Selection;
 
    type Subgraph_Operation_Type is access function
      (Left        : in Graph_Lib.Subgraphs.Subgraph;
       Right       : in Graph_Lib.Subgraphs.Subgraph;
       Target_Name : in String)
      return Graph_Lib.Subgraphs.Subgraph;
+
+
+   package Logger is new Giant.Logger("giant.controller");
 
    ---------------------------------------------------------------------------
    --  Application
@@ -419,6 +426,20 @@ package body Giant.Controller is
 
    procedure Create_Pin
      (Window_Name : in String;
+      Name        : in String)
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+      Position : Vis.Logic.Vector_2d
+        := Graph_Widgets.Get_Location (Vis_Windows.Get_Graph_Widget (Window));
+      Zoom_Level : Vis.Zoom_Level
+        := Graph_Widgets.Get_Zoom_Level (Vis_Windows.Get_Graph_Widget (Window));
+   begin
+      Create_Pin (Window_Name, Name, Position, Zoom_Level);
+   end Create_Pin;
+
+   procedure Create_Pin
+     (Window_Name : in String;
       Name        : in String;
       Position    : in Vis.Logic.Vector_2d;
       Zoom_Level  : in Vis.Zoom_Level)
@@ -472,6 +493,7 @@ package body Giant.Controller is
         (Vis_Windows.Get_Graph_Widget (Window),
          Vis_Windows.Get_Position (Window, Name),
          Vis_Windows.Get_Zoom (Window, Name));
+      Gui_Manager.Update_Zoom_Level (Window_Name);
    end Show_Pin;
 
    ---------------------------------------------------------------------------
@@ -768,6 +790,62 @@ package body Giant.Controller is
       if (Vis_Windows.Is_Faded_Out (Window, Name)) then
          Vis_Windows.Fade_In_Selection (Window, Name);
       end if;
+   end;
+
+   procedure Selection_Operation
+     (Window_Name : in String;
+      Left_Name   : in String;
+      Right_Name  : in String;
+      Target_Name : in String;
+      Operation   : in Selection_Operation_Type)
+   is
+      Window : Vis_Windows.Visual_Window_Access := Get_Window (Window_Name);
+      Left : Graph_Lib.Selections.Selection;
+      Right : Graph_Lib.Selections.Selection;
+      Target : Graph_Lib.Selections.Selection;
+   begin
+      Left := Vis_Windows.Get_Selection (Window, Left_Name);
+      Right := Vis_Windows.Get_Selection (Window, Right_Name);
+
+      --  operation
+      Target := Operation (Left, Right, Target_Name);
+
+      --  add to project
+      Vis_Windows.Add_Selection (Window, Target);
+      Gui_Manager.Add_Selection (Window_Name, Target_Name);
+   end;
+
+   procedure Selection_Difference
+     (Window_Name : in String;
+      Left_Name   : in String;
+      Right_Name  : in String;
+      Target_Name : in String)
+   is
+   begin
+      Selection_Operation (Window_Name, Left_Name, Right_Name, Target_Name,
+                           Graph_Lib.Selections.Difference'Access);
+   end;
+
+   procedure Selection_Intersection
+     (Window_Name : in String;
+      Left_Name   : in String;
+      Right_Name  : in String;
+      Target_Name : in String)
+   is
+   begin
+      Selection_Operation (Window_Name, Left_Name, Right_Name, Target_Name,
+                           Graph_Lib.Selections.Intersection'Access);
+   end;
+
+   procedure Selection_Union
+     (Window_Name : in String;
+      Left_Name   : in String;
+      Right_Name  : in String;
+      Target_Name : in String)
+   is
+   begin
+      Selection_Operation (Window_Name, Left_Name, Right_Name, Target_Name,
+                           Graph_Lib.Selections.Union'Access);
    end;
 
    procedure Unhighlight_Selection
@@ -1131,6 +1209,14 @@ package body Giant.Controller is
    begin
       return Projects.Does_Vis_Window_Exist (Current_Project, Name);
    end Exists_Window;
+
+   function Get_Window
+     (Name : in String)
+     return Vis_Windows.Visual_Window_Access
+   is
+   begin
+      return Projects.Get_Visualisation_Window (Current_Project, Name);
+   end Get_Window;
 
    procedure Make_Room
      (Window_Name : in String;

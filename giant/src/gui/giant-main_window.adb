@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.50 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.51 $
 --  $Author: squig $
---  $Date: 2003/07/18 14:27:39 $
+--  $Date: 2003/07/18 15:40:31 $
 --
 
 with Ada.Exceptions;
@@ -854,8 +854,7 @@ package body Giant.Main_Window is
       use type Gtk.Style.Gtk_Style;
       use type Projects.Subgraph_Highlight_Status;
 
-      Subgraph : Graph_Lib.Subgraphs.Subgraph
-        := Projects.Get_Subgraph (Controller.Get_Project, Name);
+      Subgraph : Graph_Lib.Subgraphs.Subgraph := Controller.Get_Subgraph (Name);
       Highlight_Status : Projects.Subgraph_Highlight_Status
         := Projects.Get_Highlight_Status (Controller.Get_Project, Name);
    begin
