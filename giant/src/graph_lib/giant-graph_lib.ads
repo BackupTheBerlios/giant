@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.40 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.41 $
 --  $Author: koppor $
---  $Date: 2003/08/12 09:38:18 $
+--  $Date: 2003/08/26 13:46:17 $
 --
 --  TBD:
 --    * Write into comment, when the routine may be used
@@ -107,6 +107,9 @@ package Giant.Graph_Lib is
       (Class_Node_Id,
        Class_Node_Id_List,
        Class_Node_Id_Set,
+
+       --  used for edge-fields pointing to identifiers
+       Class_Identifier,
 
        --  used for IML-Enumerators
        Class_String,
@@ -693,6 +696,8 @@ package Giant.Graph_Lib is
    ---------------------------
 
    ---------------------------------------------------------------------------
+   --  FIXME:
+   --    Replace exceptions to assertions
    --  Raises:
    --    Wrong_Attribute_Type
    --      if Get_Node_Attribute_Class_Id(Attribute) /= Class_Boolean
@@ -757,6 +762,14 @@ package Giant.Graph_Lib is
    --    Wrong_Attribute_Type
    --      if Get_Node_Attribute_Class_Id(Attribute) /= Class_String
    function Get_Node_Attribute_String_Value
+     (Node      : in     Node_Id;
+      Attribute : in     Node_Attribute_Id)
+     return String;
+
+   ---------------------------------------------------------------------------
+   --  Pre-Condition:
+   --    Get_Node_Attribute_Class_Id(Attribute) = Class_Identifier
+   function Get_Node_Attribute_Identifier_Value
      (Node      : in     Node_Id;
       Attribute : in     Node_Attribute_Id)
      return String;
