@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.21 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.22 $
 --  $Author: koppor $
---  $Date: 2003/06/25 15:01:02 $
+--  $Date: 2003/06/25 15:02:22 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -141,7 +141,6 @@ package body Giant.Graph_Lib is
    end "<";
 
    ---------------------------------------------------------------------------
-   --  Compares using IML_Reflection-Data
    function "<"
      (Left  : Node_Class_Id;
       Right : Node_Class_Id)
