@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/16 14:13:53 $
+-- $Date: 2003/08/17 14:11:13 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -354,7 +354,7 @@ package body Giant.Gsl.Interpreters is
 
       -- result stack for the activation of "run"
       Default_Logger.Debug ("=== Building result stack...");
-      Script := Get_Var ("run");
+      Script := Copy (Get_Var ("run"));
       Param_Run := Create_Gsl_List (1);
       Set_Value_At (Param_Run, 1, Gsl_Type (Create_Gsl_String (Name)));
       Result_Stacks.Push (Individual.Result_Stack, Script);
