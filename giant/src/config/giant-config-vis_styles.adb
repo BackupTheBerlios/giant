@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.16 $
+-- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.17 $
 -- $Author: schwiemn $
--- $Date: 2003/07/08 11:49:38 $
+-- $Date: 2003/07/10 15:03:47 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -997,7 +997,7 @@ package body Giant.Config.Vis_Styles is
             String_Lists.Attach
               (File_List,
                File_Management.Get_Filtered_Files_From_Directory
-               (User_Vis_Directory, True, ".xml"));
+               (User_Vis_Directory, True, ".xml"));                         
          end if;
 
       exception
@@ -1073,7 +1073,7 @@ package body Giant.Config.Vis_Styles is
 
             -- ignore files that do not describe a visualisation style
             if (XML_File_Access.Does_XML_Document_Belong_To_Type
-                ("giant_visualisation_style_file",
+                ("giant_vis_style_file",
                  A_Vis_Style_XML_Document) = False) then
 
                Tree_Readers.Free(A_Vis_Style_Tree_Reader);

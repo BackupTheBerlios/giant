@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-config-vis_styles-test.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-config-vis_styles-test.adb,v $, $Revision: 1.9 $
 --  $Author: schwiemn $
---  $Date: 2003/07/10 14:20:20 $
+--  $Date: 2003/07/10 15:03:47 $
 --
 with Ada.Strings.Unbounded;
 
@@ -33,6 +33,7 @@ with Giant.File_Management;
 with Giant.Config;
 with Giant.Config.Vis_Styles;
 with Giant.Graph_Lib;
+with Giant.Graph_Lib.Node_Attribute_Filters;
 
 with Giant.Logger;
 
@@ -73,7 +74,11 @@ package body Giant.Config.Vis_Styles.Test is
      
      Test_Vis_Style : Giant.Config.Vis_Styles.Visualisation_Style_Access;
      All_Icons : Giant.Config.Vis_Styles.Node_Icons_Array_Access;
+     All_Colors : Giant.Config.Vis_Styles.Color_Access_Array_Access;
      Node_Icon_Id : Positive;
+     Color_Id : Positive;
+     
+     Attr_Filter : Giant.Graph_Lib.Node_Attribute_Filters.Filter;
    begin
 
       for i in 1 .. 1 loop
@@ -85,7 +90,7 @@ package body Giant.Config.Vis_Styles.Test is
            "resources/vis_styles/vis_styles_test_set_default_1/"
            & "test_vis_style_1_default.xml");
       
-         Assert (Giant.Config.Vis_Styles.Get_Number_Of_Known_Vis_Styles = 3,
+         Assert (Giant.Config.Vis_Styles.Get_Number_Of_Known_Vis_Styles = 4,
            "Test whether ammount of loaded vis styles is correct");
             
          Test_Vis_Style := 
@@ -95,11 +100,21 @@ package body Giant.Config.Vis_Styles.Test is
          Assert (Config.Vis_Styles.Get_Default_Vis_Style = Test_Vis_Style,
            "Check whether Default Vis Style Loaded");
              
-         All_Icons := Giant.Config.Vis_Styles.Get_All_Node_Icons;
+         All_Icons  := Giant.Config.Vis_Styles.Get_All_Node_Icons;
+         All_Colors := Giant.Config.Vis_Styles.Get_All_Colors;
          
          -- Check "test_vis_style_1_default"
          -----------------------------------
          
+         -- check global data 
+         --------------------
+         Color_Id := 
+           Config.Vis_Styles.Get_Vis_Window_Background_Color (Test_Vis_Style);
+         
+         Assert 
+           (Giant.Config.Get_Color_Value (All_Colors.all (Color_Id)) = 
+            "RGB:20/20/20", "Test Correct Vis_Window_Background_Color");
+                           
          -- Check Node Class Data
          ------------------------   
                 
@@ -141,11 +156,97 @@ package body Giant.Config.Vis_Styles.Test is
                 "resources/vis_styles/vis_styles_test_set_default_1/"
                 & "test_node_icon_red_1.xpm"), 
                 "Teste_Icon ""TC_Boolean""" );   
-      
-                         
+                
+         -- Node Colors
+         --------------------
+         
+         -- TC_Floating_Point
+         Color_Id := Config.Vis_Styles.Get_Border_Color 
+           (Test_Vis_Style, 
+            Graph_Lib.Convert_Node_Class_Name_To_Id ("TC_Floating_Point"));
+         Assert 
+           (Giant.Config.Get_Color_Value (All_Colors.all (Color_Id)) = 
+            "RGB:AA/AA/A2", 
+            "Test Correct Get_Border_Color ""TC_Floating_Point""");
+                       
+         Color_Id := Config.Vis_Styles.Get_Fill_Color 
+           (Test_Vis_Style, 
+            Graph_Lib.Convert_Node_Class_Name_To_Id ("TC_Floating_Point"));
+         Assert 
+           (Giant.Config.Get_Color_Value (All_Colors.all (Color_Id)) = 
+            "RGB:AA/AA/A3", 
+            "Test Correct Get_Fill_Color ""TC_Floating_Point""");            
+            
+         Color_Id := Config.Vis_Styles.Get_Text_Color 
+           (Test_Vis_Style, 
+            Graph_Lib.Convert_Node_Class_Name_To_Id ("TC_Floating_Point"));
+         Assert 
+           (Giant.Config.Get_Color_Value (All_Colors.all (Color_Id)) = 
+            "RGB:AA/AA/A1", 
+            "Test Correct Get_Text_Color ""TC_Floating_Point""");             
+            
+          
+         -- TC_Boolean
+         Color_Id := Config.Vis_Styles.Get_Border_Color 
+           (Test_Vis_Style, 
+            Graph_Lib.Convert_Node_Class_Name_To_Id ("TC_Boolean"));
+         Assert 
+           (Giant.Config.Get_Color_Value (All_Colors.all (Color_Id)) = 
+            "red", 
+            "Test Correct Get_Border_Color ""TC_Boolean""");
+                       
+         Color_Id := Config.Vis_Styles.Get_Fill_Color 
+           (Test_Vis_Style, 
+            Graph_Lib.Convert_Node_Class_Name_To_Id ("TC_Boolean"));
+         Assert 
+           (Giant.Config.Get_Color_Value (All_Colors.all (Color_Id)) = 
+            "white", 
+            "Test Correct Get_Fill_Color ""TC_Boolean""");            
+            
+         Color_Id := Config.Vis_Styles.Get_Text_Color 
+           (Test_Vis_Style, 
+            Graph_Lib.Convert_Node_Class_Name_To_Id ("TC_Boolean"));
+         Assert 
+           (Giant.Config.Get_Color_Value (All_Colors.all (Color_Id)) = 
+            "red", 
+            "Test Correct Get_Text_Color ""TC_Boolean"""); 
+            
+         -- Test Attribute_Filter
+         ------------------------      
+         
+         -- TC_Boolean         
+         Attr_Filter := Giant.Config.Vis_Styles.Get_Attribute_Filter 
+           (Test_Vis_Style, 
+            Graph_Lib.Convert_Node_Class_Name_To_Id ("TC_Boolean"));
+                   
+         Assert (Graph_Lib.Node_Attribute_Filters.Size (Attr_Filter) = 2,
+                 "Teste Correct Size of Attr_Filter for ""TC_Boolean""");
+                                   
          Giant.Config.Vis_Styles.Clear_Config_Vis_Styles;
       end loop;
    end Test_Init_Test_Set_Default_1;
+   
+   
+   ---------------------------------------------------------------------------
+   -- Test Edge Data
+   procedure Test_Init_Edge_Class_Vis_Data
+     (R : in out AUnit.Test_Cases.Test_Case'Class) is
+     
+     Test_Vis_Style : Giant.Config.Vis_Styles.Visualisation_Style_Access;
+
+   begin
+
+      for i in 1 .. 1 loop
+
+         Giant.Config.Vis_Styles.Initialize_Config_Vis_Styles
+           ("",
+            "resources/vis_styles/vis_styles_test_set_1/",
+            "resources/vis_styles/vis_styles_test_set_2/",
+            "resources/vis_styles/vis_styles_test_set_default_1/"
+            & "test_vis_style_1_default.xml");
+      
+      end loop;
+   end Test_Init_Edge_Class_Vis_Data;
 
    ---------------------------------------------------------------------------
    function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is
@@ -159,6 +260,9 @@ package body Giant.Config.Vis_Styles.Test is
       Register_Routine 
         (T, Test_Init_Test_Set_Default_1'Access, 
          "Test_Init_Test_Set_Default_1");
+      Register_Routine 
+        (T, Test_Init_Edge_Class_Vis_Data'Access, 
+         "Test_Init_Edge_Class_Vis_Data");                           
    end Register_Tests;
 
    procedure Set_Up (T : in out Test_Case) is
