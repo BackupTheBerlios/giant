@@ -20,12 +20,12 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: dump_iml_data.adb,v $, $Revision: 1.2 $
+--  $RCSfile: dump_iml_data.adb,v $, $Revision: 1.3 $
 --  $Author: schwiemn $
---  $Date: 2003/07/07 06:33:55 $
+--  $Date: 2003/07/07 06:42:01 $
 --  
 -- -----
--- Used to Dump the Content (Node Classes and attributes of an iml Graph
+-- Used to Dump the Content (Node Classes and attributes of an iml Graph)
 -- into the logger.
 --
 with Giant.Graph_Lib; 
@@ -36,9 +36,9 @@ procedure dump_iml_data is
 
    package Logger is new Giant.Logger("dump_iml_data");
 
-   Node_Classes : Giant.Graph_Lib.Node_Class_Id_Set;
+   Node_Classes      : Giant.Graph_Lib.Node_Class_Id_Set;
    Node_Classes_Iter : Giant.Graph_Lib.Node_Class_Id_Sets.Iterator;
-   A_Node_Class : Giant.Graph_Lib.Node_Class_Id;
+   A_Node_Class      : Giant.Graph_Lib.Node_Class_Id;
 
    Attributes_Iter : Giant.Graph_Lib.Node_Attribute_Iterator;
    A_Attribute     : Giant.Graph_Lib.Node_Attribute_Id;
@@ -55,7 +55,7 @@ begin
    Giant.Graph_Lib.Initialize;
    
    Giant.Default_Logger.Init;
-   Giant.Default_Logger.Info ("Starting Data Dump ...");
+   Logger.Info ("Starting Data Dump ...");
          
    Node_Classes := Giant.Graph_Lib.Get_All_Node_Class_Ids;   
 
@@ -118,6 +118,7 @@ begin
    Giant.Graph_Lib.Edge_Class_Id_Sets.Destroy (Edge_Attr_Set);
    Giant.Graph_Lib.Edge_Class_Id_Sets.Destroy (Edge_Attr_Iter);   
       
+      
    -- Details for each node class
    ------------------------------   
    Logger.Info ("");
@@ -141,6 +142,7 @@ begin
          & Giant.Graph_Lib.Get_Node_Class_Tag (A_Node_Class)
          & """");
       Logger.Info ("");      
+          
             
       -- 1. Dump all attributes
       -------------------------
@@ -162,6 +164,7 @@ begin
       end loop;
      
       Logger.Info ("");  
+                   
                    
       -- 2. Dump all edge attributes (subset of  1.)
       ----------------------------------------------      
