@@ -20,11 +20,12 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.1 $
---  $Author: koppor $
---  $Date: 2003/07/01 21:50:30 $
+--  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.2 $
+--  $Author: squig $
+--  $Date: 2003/07/02 17:06:58 $
 --
 
+with Ada.Exceptions;
 with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded;
 
@@ -39,20 +40,12 @@ package body Giant.Layout_Factory is
 
    ---------------------------------------------------------------------------
    procedure Create
-     (Algorithm                           :
-        in     String;
-      Selection_To_Layout                 :
-        in     Giant.Graph_Lib.Selections.Selection;
-      Widget                              :
-        in     Giant.Graph_Widgets.Graph_Widget;
-      Widget_Lock                         :
-        in     Giant.Graph_Widgets.Lock_Type;
-      Additional_Parameters               :
-        in     String;
-      Additional_Parameters_Verbose_Error :
-        out    String;
-      Layout_Evolution                    :
-        out Giant.Evolutions.Evolution_Class_Access)
+     (Algorithm             : in     String;
+      Selection_To_Layout   : in     Graph_Lib.Selections.Selection;
+      Widget                : in     Graph_Widgets.Graph_Widget;
+      Widget_Lock           : in     Graph_Widgets.Lock_Type;
+      Additional_Parameters : in     String;
+      Layout_Evolution      :    out Evolutions.Evolution_Class_Access)
    is
 
       Invalid_Format : exception;
@@ -121,12 +114,10 @@ package body Giant.Layout_Factory is
          begin
             Target_Position := Get_Vector_2d (Additional_Parameters);
          exception
-            when Invalid_Format =>
-               Additional_Parameters_Verbose_Error :=
-                 "Wrong format at Target_Position";
+           when Invalid_Format =>
+              Ada.Exceptions.Raise_Exception
+                (Invalid_Format'Identity,"Wrong format at Target_Position");
          end;
-
-         Additional_Parameters_Verbose_Error := "";
 
          Layout_Evolution := Giant.Evolutions.Evolution_Class_Access
            (Matrix_Layouts.Initialize
@@ -159,9 +150,9 @@ package body Giant.Layout_Factory is
          if String_Lists.Length (Parameters) /= 3 then
             --  /= 3 is possible, since the list of classes
             --       is comma-separated and the parameter-list ";"-separated
-            Additional_Parameters_Verbose_Error := "Not enough parameters";
             Layout_Evolution := null;
-            return;
+            Ada.Exceptions.Raise_Exception (Invalid_Format'Identity,
+                                            "Not enough parameters");
          end if;
 
          Iter := String_Lists.MakeListIter (Parameters);
@@ -173,10 +164,9 @@ package body Giant.Layout_Factory is
               (Ada.Strings.Unbounded.To_String (Current_Parameter));
          exception
             when others =>
-               Additional_Parameters_Verbose_Error :=
-                 "Problem with root_node";
                Layout_Evolution := null;
-               return;
+               Ada.Exceptions.Raise_Exception (Invalid_Format'Identity,
+                                               "Invalid root node");
          end;
 
          --  Get Target_Position
@@ -186,11 +176,10 @@ package body Giant.Layout_Factory is
               (Ada.Strings.Unbounded.To_String (Current_Parameter));
          exception
             when Invalid_Format =>
-               Additional_Parameters_Verbose_Error :=
-                 "Wrong format at Target_Position";
+               Ada.Exceptions.Raise_Exception
+                 (Invalid_Format'Identity,
+                  "Wrong format at Target_Position");
          end;
-
-         Additional_Parameters_Verbose_Error := "";
 
          Layout_Evolution := Giant.Evolutions.Evolution_Class_Access
            (Tree_Layouts.Initialize
@@ -211,7 +200,6 @@ package body Giant.Layout_Factory is
          Parse_Tree_Parameters
            (Ada.Strings.Fixed.Trim (Additional_Parameters, Ada.Strings.Both));
       else
-         Additional_Parameters_Verbose_Error := "";
          Layout_Evolution := null;
          raise Unknown_Algorithm;
       end if;

@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.ads,v $, $Revision: 1.3 $
---  $Author: koppor $
---  $Date: 2003/07/02 12:01:19 $
+--  $RCSfile: giant-layout_factory.ads,v $, $Revision: 1.4 $
+--  $Author: squig $
+--  $Date: 2003/07/02 17:06:58 $
 --
 ------------------------------------------------------------------------------
 --
@@ -33,6 +33,7 @@
 
 with Giant.Evolutions;
 with Giant.Graph_Widgets;
+with Giant.Graph_Lib;
 with Giant.Graph_Lib.Selections;
 
 package Giant.Layout_Factory is
@@ -105,21 +106,13 @@ package Giant.Layout_Factory is
    --      Target_Position    : Position on window, where the root-node has to
    --                           be placed
    procedure Create
-     (Algorithm                           :
-        in     String;
-      Selection_To_Layout                 :
-        in     Giant.Graph_Lib.Selections.Selection;
-      Widget                              :
-        in     Giant.Graph_Widgets.Graph_Widget;
-      Widget_Lock                         :
-        in     Giant.Graph_Widgets.Lock_Type;
-      Additional_Parameters               :
-        in     String;
-      Additional_Parameters_Verbose_Error :
-        out    String;
-      Layout_Evolution                    :
-        out Giant.Evolutions.Evolution_Class_Access
-     );
+     (Algorithm             : in     String;
+      Selection_To_Layout   : in     Graph_Lib.Selections.Selection;
+      Widget                : in     Graph_Widgets.Graph_Widget;
+      Widget_Lock           : in     Graph_Widgets.Lock_Type;
+      Additional_Parameters : in     String;
+      Layout_Evolution      :    out Evolutions.Evolution_Class_Access);
+--    Additional_Parameters_Verbose_Error :    out String;
 
 private
 
