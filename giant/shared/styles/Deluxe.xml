@@ -58,6 +58,32 @@
     line_style = "continuous_line"      
     show_label = "no" />  
     
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
     
   <edge_class_specific_setting
     line_color = "#920000"
@@ -67,7 +93,7 @@
            
     <super_edge_class
       super_start_node_class = "Routine"
-      attribute_name         = "Callees" />                
+      attribute_name         = "*" />                
     
   </edge_class_specific_setting> 
 
