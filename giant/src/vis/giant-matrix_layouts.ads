@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-matrix_layouts.ads,v $, $Revision: 1.12 $
+--  $RCSfile: giant-matrix_layouts.ads,v $, $Revision: 1.13 $
 --  $Author: koppor $
---  $Date: 2003/07/14 08:20:05 $
+--  $Date: 2003/07/14 16:14:39 $
 --
 ------------------------------------------------------------------------------
 --
@@ -47,7 +47,7 @@ package Giant.Matrix_Layouts is
 
    ---------------------------------------------------------------------------
    --  Maximum number of nost to be processed in one run
-   Max_Nodes_In_One_Run : constant := 100;
+   Max_Nodes_In_One_Run : constant := 1000;
 
    ---------------------------------------------------------------------------
    --  X-Distance of two neighbours as proportion of
