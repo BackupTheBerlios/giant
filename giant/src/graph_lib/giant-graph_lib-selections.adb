@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.18 $
---  $Author: squig $
---  $Date: 2003/07/15 15:27:31 $
+--  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.19 $
+--  $Author: koppor $
+--  $Date: 2003/08/12 09:39:03 $
 
 with Untagged_Ptr_Ops;
 
@@ -320,42 +320,8 @@ package body Giant.Graph_Lib.Selections is
       ----------------------------------------------------------------------
       --  Is implemented here, since it is used only once
       --    if it will be used more, please put it in giant-graph_lib.ads
-      procedure Read_Node_Id
-        (Stream : in     Bauhaus_Io.In_Stream_Type;
-         Node   :    out Node_Id)
-      is
-         Len : Natural;
-      begin
-         Bauhaus_Io.Read_Natural (Stream, Len);
-
-         declare
-            Image : String (1..Len);
-         begin
-            Bauhaus_Io.Read_String (Stream, Image);
-            Node := Node_Id_Value (Image);
-
-            --  TBD: an exception could be risen here
-         end;
-      end Read_Node_Id;
-
-      ----------------------------------------------------------------------
-      --  Is implemented here, since it is used only once
-      --    if it will be used more, please put it in giant-graph_lib.ads
       procedure Read_Node_Id_Set is new Node_Id_Sets.Read_Set
         (Read_Element => Read_Node_Id);
-
-      ----------------------------------------------------------------------
-      --  Is implemented here, since it is used only once
-      --    if it will be used more, please put it in giant-graph_lib.ads
-      procedure Read_Edge_Id
-        (Stream : in     Bauhaus_Io.In_Stream_Type;
-         Edge   :    out Edge_Id)
-      is
-         Edge_Internal_Id         : Positive;
-      begin
-         Bauhaus_Io.Read_Natural (Stream, Edge_Internal_Id);
-         Edge := All_Edges (Edge_Internal_Id);
-      end Read_Edge_Id;
 
       ----------------------------------------------------------------------
       --  Is implemented here, since it is used only once
@@ -383,32 +349,8 @@ package body Giant.Graph_Lib.Selections is
       ----------------------------------------------------------------------
       --  Is implemented here, since it is used only once
       --    if it will be used more, please put it in giant-graph_lib.ads
-      procedure Write_Node_Id
-        (Stream : in Bauhaus_Io.Out_Stream_Type;
-         Node   : in Node_Id)
-      is
-         Image : String := Node_Id_Image (Node);
-      begin
-         Bauhaus_Io.Write_Natural (Stream, Image'Length);
-         Bauhaus_Io.Write_String  (Stream, Image);
-      end Write_Node_Id;
-
-      ----------------------------------------------------------------------
-      --  Is implemented here, since it is used only once
-      --    if it will be used more, please put it in giant-graph_lib.ads
       procedure Write_Node_Id_Set is new Node_Id_Sets.Write_Set
         (Write_Element => Write_Node_Id);
-
-      ----------------------------------------------------------------------
-      --  Is implemented here, since it is used only once
-      --    if it will be used more, please put it in giant-graph_lib.ads
-      procedure Write_Edge_Id
-        (Stream : in Bauhaus_Io.Out_Stream_Type;
-         Edge   : in Edge_Id)
-      is
-      begin
-         Bauhaus_Io.Write_Natural (Stream, Edge.Internal_Id);
-      end Write_Edge_Id;
 
       ----------------------------------------------------------------------
       --  Is implemented here, since it is used only once
