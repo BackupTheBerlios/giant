@@ -7,6 +7,9 @@ mini_map :
 file_management :
 	make -C ../ MAIN=test/giant_test-file_management EXEC=test/file_management all
 
+testxml_val :
+	make -C ../ MAIN=test/testxml_val EXEC=test/testxml_val all
+
 evolution :
 	make -C ../ MAIN=test/giant_test-evolution EXEC=test/evolution all
 
