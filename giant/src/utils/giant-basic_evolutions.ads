@@ -18,18 +18,25 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  First Author: Steffen Keul
+--  First Author: Steffen Pingel
 --
---  $RCSfile: giant-basic_evolutions.ads,v $, $Revision: 1.4 $
---  $Author: keulsn $
---  $Date: 2003/09/12 20:30:12 $
+--  $RCSfile: giant-basic_evolutions.ads,v $, $Revision: 1.5 $
+--  $Author: squig $
+--  $Date: 2003/09/16 09:51:55 $
 --
 ------------------------------------------------------------------------------
 --
---  This package provides a basic framework for user-cancelable operations.
+--  This package provides a basic framework for user-cancelable
+--  operations. The main difference to the Giant.Evolutions package is
+--  that the control flow remains within the operation.
 --
---  See Giant.Evolutions for more details.
+--  The operation periodically needs to call Step() or Set_Percentage().
 --
+--  All procedures except for Create and Destroy can be called with
+--  Individual = null. In that case no operation is performed.
+--
+--  See:
+--    Giant.Evolutions
 
 with Ada.Real_Time;
 
@@ -52,20 +59,37 @@ package Giant.Basic_Evolutions is
      (Individual : in out Basic_Evolution_Access);
 
    ---------------------------------------------------------------------------
-   --  Advances the
+   --  Advances the operation by Delta_Complexity. If enough time has
+   --  gone by, the progress dialog is updated accordingly.
    --
    --  Parameters:
-   --    Individual  - Subject of the evolution process
-   --    Next_Action - Determines the action to be performed next
+   --    Individual - Subject of the evolution process
+   --    Delta_Complexity - The operation is advanced this much
+   --  Returns:
+   --    True, if the operation was cancelled
+   --  See:
+   --    Set_Total_Complexity
    function Step
      (Individual       : in Basic_Evolution_Access;
       Delta_Complexity : in Natural                := 1)
      return Boolean;
 
+   ---------------------------------------------------------------------------
+   --  Enables or disables the cancel button.
    procedure Set_Cancel_Enabled
      (Individual : in Basic_Evolution_Access;
       Enabled    : in Boolean);
 
+   ---------------------------------------------------------------------------
+   --  Advances the progress to Percentage and updates the progress
+   --  dialog.
+   --
+   --  Parameters:
+   --    Individual - Subject of the evolution process
+   --    Percentage - A value between 0.0 and 1.0.
+   --    Text - The text to display on the progress bar.
+   --  Returns:
+   --    True, if the operation was cancelled
    function Set_Percentage
      (Individual : in Basic_Evolution_Access;
       Percentage : in Float;
@@ -73,45 +97,25 @@ package Giant.Basic_Evolutions is
      return Boolean;
 
    ----------------------------------------------------------------------------
-   --  Sets a format string to be displayed in a Progress_Dialog if the
-   --  complexity of 'Individual' is known. Should be overwritten by
-   --  descendants to show a more meaningful text.
-   --
-   --  MUST be able to be reentrant from different tasks. Usually should
-   --  return a constant String
+   --  Sets a format string to be displayed on the progress bar.
    --
    --  The following Texts can be replaced inside the String:
-   --    %v - Natural'Image (Get_Progress_Count (Individual))
-   --    %u - Natural'Image (Get_Complexity (Individual))
+   --    %v - current complexity
+   --    %u - total complexity
    --    %p - current progress percentage
-   --
-   --  Precondition
-   --    Get_Complexity (Individual) > 0
-   --  Returns:
-   --    "%v " & (-"of") & " %u"
    procedure Set_Text
      (Individual : in Basic_Evolution_Access;
       Text       : in String);
 
    ---------------------------------------------------------------------------
-   --  Sets the complexity of this 'Individuals's evolution to 'Total_Number'
-   --  items. If the complexity is unknown, this procedure should either
-   --  never be called or 0 should be set.
-   --
-   --  If the complexity is set to a value different to 0 then the complexity
-   --  should at any given point of time be greater or equal to the progress
-   --  counter accessed through 'Advance_Progress'.
-   --
-   --  The complexity is interrogated from a multi-tasking environment without
-   --  synchronization. Each Individual must through the order of calls to
-   --  'Set_Complexity' and 'Advance_Progress' ensure that the combination of
-   --  progress counter and complexity is meaningful to the user at any
-   --  point of time.
+   --  Sets the total complexity of the operation. If complexity is
+   --  unknown 0 should be passed to set the progress dialog to
+   --  activity mode.
    --
    --  Parameters
-   --    Individual   - Subject of the evolution process
-   --    Total_Number - Number of items processed when this evolution has
-   --                   finished, or 0 if unknown
+   --    Individual - Subject of the evolution process
+   --    Total_Complexity - Number of items processed when this evolution has
+   --                       finished, or 0 if unknown
    procedure Set_Total_Complexity
      (Individual       : in Basic_Evolution_Access;
       Total_Complexity : in Natural);

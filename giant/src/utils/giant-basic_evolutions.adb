@@ -18,11 +18,11 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  First Author: Steffen Keul
+--  First Author: Steffen Pingel
 --
---  $RCSfile: giant-basic_evolutions.adb,v $, $Revision: 1.5 $
---  $Author: koppor $
---  $Date: 2003/09/15 14:13:59 $
+--  $RCSfile: giant-basic_evolutions.adb,v $, $Revision: 1.6 $
+--  $Author: squig $
+--  $Date: 2003/09/16 09:51:55 $
 --
 ------------------------------------------------------------------------------
 
