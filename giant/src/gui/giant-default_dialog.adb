@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.13 $
+--  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.14 $
 --  $Author: squig $
---  $Date: 2003/06/23 12:40:58 $
+--  $Date: 2003/06/24 10:43:05 $
 --
 
 with Ada.Text_Io; use Ada.Text_Io;
@@ -34,6 +34,7 @@ with Gtk.Label;
 with Gtk.Main;
 with Gtk.Pixmap;
 with Gtk.Separator;
+with Gtkada.Types;
 
 with Giant.Gui_Utils; use Giant.Gui_Utils;
 --with Giant.Utils; use Giant.Utils;
@@ -195,19 +196,16 @@ package body Giant.Default_Dialog is
 
    function Add_Icon_Box
      (Dialog        : access Default_Dialog_Record;
-      Icon_Filename : in     String;
+      Pixmap        : in     Gtk.Pixmap.Gtk_Pixmap;
       Widget        : access Gtk.Widget.Gtk_Widget_Record'Class)
      return Gtk.Box.Gtk_Hbox
    is
       Box : Gtk.Box.Gtk_Hbox;
-      Pixmap : Gtk.Pixmap.Gtk_Pixmap;
    begin
       Gtk.Box.Gtk_New_Hbox (Box);
       Set_Center_Widget (Dialog, Box);
 
       --  icon
-      Pixmap := Gtk.Pixmap.Create_Pixmap
-        (Gui_Utils.Get_Icon (Icon_Filename), Dialog);
       --Gtk.Pixmap.Set_Alignment (Dialog.Confirmation_Msg_Pixmap, 0.5, 0.5);
       Gtk.Box.Pack_Start (Box, pixmap, expand => False, Fill => True,
                           Padding => DEFAULT_SPACING);
@@ -221,8 +219,30 @@ package body Giant.Default_Dialog is
 
    function Add_Icon_Box
      (Dialog        : access Default_Dialog_Record;
-      Icon_Filename : in String;
-      Message       : in String         := "")
+      Icon_Filename : in     String;
+      Widget        : access Gtk.Widget.Gtk_Widget_Record'Class)
+     return Gtk.Box.Gtk_Hbox
+   is
+   begin
+      return Add_Icon_Box (Dialog, Gtk.Pixmap.Create_Pixmap
+                           (Gui_Utils.Get_Icon (Icon_Filename), Dialog), Widget);
+   end Add_Icon_Box;
+
+   function Add_Icon_Box
+     (Dialog : access Default_Dialog_Record;
+      Pixmap : in     Gtkada.Types.Chars_Ptr_Array;
+      Widget : access Gtk.Widget.Gtk_Widget_Record'Class)
+     return Gtk.Box.Gtk_Hbox
+   is
+   begin
+      return Add_Icon_Box (Dialog, Gtk.Pixmap.Create_Pixmap
+                           (Pixmap, Dialog), Widget);
+   end Add_Icon_Box;
+
+   function Add_Icon_Box
+     (Dialog  : access Default_Dialog_Record;
+      Pixmap  : in     Gtkada.Types.Chars_Ptr_Array;
+      Message : in     String                       := "")
      return Gtk.Box.Gtk_Hbox
    is
       Label : Gtk.Label.Gtk_Label;
@@ -232,7 +252,7 @@ package body Giant.Default_Dialog is
       Gtk.Label.Set_Justify (Label, Justify_Center);
       Gtk.Label.Set_Line_Wrap (Label, False);
 
-      return Add_Icon_Box (Dialog, Icon_Filename, Label);
+      return Add_Icon_Box (Dialog, Pixmap, Label);
    end Add_Icon_Box;
 
    function Get_Center_Box

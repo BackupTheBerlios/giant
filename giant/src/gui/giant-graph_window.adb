@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.13 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.14 $
 --  $Author: squig $
---  $Date: 2003/06/23 21:57:04 $
+--  $Date: 2003/06/24 10:43:05 $
 --
 
 with Glib;
@@ -37,6 +37,7 @@ with Giant.Clists;
 with Giant.Controller;
 with Giant.Default_Dialog;
 with Giant.Dialogs;
+with Giant.Gui_Manager;
 with Giant.Gui_Manager.Crosshair;
 with Giant.Gui_Utils;
 with Giant.Input_Dialog;

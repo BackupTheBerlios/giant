@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.ads,v $, $Revision: 1.8 $
+--  $RCSfile: giant-default_dialog.ads,v $, $Revision: 1.9 $
 --  $Author: squig $
---  $Date: 2003/06/23 12:40:58 $
+--  $Date: 2003/06/24 10:43:05 $
 --
 ------------------------------------------------------------------------------
 --
@@ -34,6 +34,7 @@ with Gtk.Button;
 with Gtk.Hbutton_Box;
 with Gtk.Widget;
 with Gtk.Window;
+with Gtkada.Types;
 
 package Giant.Default_Dialog is
 
@@ -74,9 +75,22 @@ package Giant.Default_Dialog is
      return Gtk.Box.Gtk_Hbox;
 
    function Add_Icon_Box
-     (Dialog        : access Default_Dialog_Record;
-      Icon_Filename : in     String;
-      Message       : in     String                      := "")
+     (Dialog : access Default_Dialog_Record;
+      Pixmap : in     Gtkada.Types.Chars_Ptr_Array;
+      Widget : access Gtk.Widget.Gtk_Widget_Record'Class)
+     return Gtk.Box.Gtk_Hbox;
+
+   ---------------------------------------------------------------------------
+   --  Invoked by Giant.Dialogs to create the default dialogs.
+   --
+   --  The message is displayed in a Gtk_Label.
+   --
+   --  Returns:
+   --    The created box.
+   function Add_Icon_Box
+     (Dialog  : access Default_Dialog_Record;
+      Pixmap  : in     Gtkada.Types.Chars_Ptr_Array;
+      Message : in     String                       := "")
      return Gtk.Box.Gtk_Hbox;
 
    ---------------------------------------------------------------------------

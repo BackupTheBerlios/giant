@@ -20,14 +20,15 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-input_dialog.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-input_dialog.adb,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/06/23 21:57:04 $
+--  $Date: 2003/06/24 10:43:05 $
 --
 
 with Gtk.Button;
 with Gtk.Box;
 with Gtk.Widget;
+with Gtkada.Pixmaps;
 
 package body Giant.Input_Dialog is
 
@@ -58,7 +59,7 @@ package body Giant.Input_Dialog is
       Dialog.Input_Validator := Input_Validator;
       Dialog.Custom_Data := Custom_Data;
 
-      Box := Add_Icon_Box (Dialog, "gnome-question.xpm", Message);
+      Box := Add_Icon_Box (Dialog, Pixmaps.Confirmation_Xpm, Message);
 
       Gtk.Gentry.Gtk_New (Dialog.Input);
       Gtk.Box.Add (Box, Dialog.Input);
