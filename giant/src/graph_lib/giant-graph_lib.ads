@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.11 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.12 $
 --  $Author: koppor $
---  $Date: 2003/06/14 11:45:00 $
+--  $Date: 2003/06/22 12:19:57 $
 --
 
 --  Bauhaus / IML
@@ -467,7 +467,7 @@ package Giant.Graph_Lib is
       return Edge_Class_Id_Set;
 
    ----------------------------------------------------
-   --  Routines for an immutable node id             --
+   --  Routines for an immutable ids                 --
    --  Idea is like Integer'Value and Integer'Image  --
    ----------------------------------------------------
 
@@ -506,6 +506,13 @@ package Giant.Graph_Lib is
    function Does_Node_Id_Exist
      (Node : in String)
      return Boolean;
+
+   ---------------------------------------------------------------------------
+   --  Returns unique ID of given Node_Class
+   function Node_Class_Id_Image
+     (Node_Class : in Node_Class_Id)
+     return String;
+
 
    ---------------------------
    -- Inspectors            --

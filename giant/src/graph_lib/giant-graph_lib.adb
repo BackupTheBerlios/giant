@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.15 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.16 $
 --  $Author: koppor $
---  $Date: 2003/06/13 17:58:24 $
+--  $Date: 2003/06/22 12:19:19 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -983,6 +983,16 @@ package body Giant.Graph_Lib is
 
       return Set;
    end Get_All_Edge_Class_Ids;
+
+   ---------------------------------------------------------------------------
+   --  TBD: Check, if given string is really unique
+   function Node_Class_Id_Image
+     (Node_Class : in Node_Class_Id)
+     return String
+   is
+   begin
+      return Node_Class.Name;
+   end Node_Class_Id_Image;
 
    ---------------------------------------------------------------------------
    function Node_Id_Image
