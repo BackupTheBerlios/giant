@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.15 $
 --  $Author: koppor $
---  $Date: 2003/06/28 18:21:25 $
+--  $Date: 2003/06/28 22:18:48 $
 
 with Untagged_Ptr_Ops;
 
@@ -143,6 +143,15 @@ package body Giant.Graph_Lib.Selections is
    end Destroy;
 
    ---------------------------------------------------------------------------
+   function Get_All_Edges
+     (Sel : in Selection)
+     return Edge_Id_Set
+   is
+   begin
+      return Sel.Edges;
+   end Get_All_Edges;
+
+   ---------------------------------------------------------------------------
    function Get_All_Nodes
      (Sel : in Selection)
      return Node_Id_Set
@@ -193,6 +202,26 @@ package body Giant.Graph_Lib.Selections is
       Res.Nodes := Node_Id_Sets."*" (Left.Nodes, Right.Nodes);
       return Res;
    end Intersection;
+
+   ---------------------------------------------------------------------------
+   function Is_Member
+     (Sel  : in Selection;
+      Edge : in Edge_Id)
+     return Boolean
+   is
+   begin
+      return Edge_Id_Sets.Is_Member (Sel.Edges, Edge);
+   end Is_Member;
+
+   ---------------------------------------------------------------------------
+   function Is_Member
+     (Sel  : in Selection;
+      Node : in Node_Id)
+     return Boolean
+   is
+   begin
+      return Node_Id_Sets.Is_Member (Sel.Nodes, Node);
+   end Is_Member;
 
    ----------------------------------------------------------------------------
    procedure Remove_Edge

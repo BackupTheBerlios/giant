@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.15 $
+--  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.16 $
 --  $Author: koppor $
---  $Date: 2003/06/27 15:51:39 $
+--  $Date: 2003/06/28 22:19:10 $
 --
 ------------------------------------------------------------------------------
 --
@@ -100,9 +100,40 @@ package Giant.Graph_Lib.Selections is
    --  RESULT MAY NOT BE MODIFIED
    --  Returns:
    --    All Nodes included in selection
+   --  TBD: refactoring!
    function Get_All_Nodes
      (Sel : in Selection)
      return Node_Id_Set;
+
+   ---------------------------------------------------------------------------
+   --  RESULT MAY NOT BE MODIFIED
+   --  Returns:
+   --    All Nodes included in selection
+   --  TBD: refactoring! - subgraph should be a child of selections
+   --       then this breaking of information hiding is not needed any more,
+   --       since the routines of subgraphs can directly access the internal
+   --       structure
+   function Get_All_Edges
+     (Sel : in Selection)
+     return Edge_Id_Set;
+
+   ---------------------------------------------------------------------------
+   --  Returns:
+   --    true   if given node is member in given selection
+   --    false  otherwise
+   function Is_Member
+     (Sel  : in Selection;
+      Edge : in Edge_Id)
+     return Boolean;
+
+   ---------------------------------------------------------------------------
+   --  Returns:
+   --    true   if given node is member in given selection
+   --    false  otherwise
+   function Is_Member
+     (Sel  : in Selection;
+      Node : in Node_Id)
+     return Boolean;
 
    ---------------
    --  Streams  --
