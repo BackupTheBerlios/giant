@@ -1,24 +1,20 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
-  <!-- internal DTD - external DTD also possible -->
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE giant_node_annotations_file [
-
   <!ELEMENT giant_node_annotations_file (node_annotation)*>
-  
-    -- holds annotation as text node
-    <!ELEMENT node_annotation (PCDAT)>
+
+    <!ELEMENT node_annotation (#PCDATA)>
     <!ATTLIST node_annotation
-        node_id    ID    #REQUIRED   
-        annotation CDATA #REQUIRED  
+      node_id     ID     #REQUIRED   
     >
 ]>
 
 <giant_node_annotations_file>
 
   <node_annotation 
-    node_id = "0815">I am a node.</node_annoation>
+    node_id = "0815">I am a node.</node_annotation>
     
   <node_annotation 
-    node_id = "007">I am a node with the license to kill.</node_annoation> 
+    node_id = "007">I am a node with the license to kill.</node_annotation> 
   
 </giant_node_annotations_file>
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-node_annotations.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-node_annotations.ads,v $, $Revision: 1.2 $
 --  $Author: schwiemn $
---  $Date: 2003/05/27 08:56:23 $
+--  $Date: 2003/05/27 19:04:08 $
 ------------------------------------------------------------------------------
 --  This package overs the functionality needed to handle node annotations.
 --
@@ -49,11 +49,11 @@ package Giant.Node_Annotations is
    ---------------------------------------------------------------------------
    --  Raised if a passed file is not found
    Node_Annotations_File_Not_Found_Exception : exception;
-   
+
    ---------------------------------------------------------------------------
    -- Raised if a passed file is not correct
    Node_Annotations_File_Not_Correct_Exception : exception;
-   
+
    ---------------------------------------------------------------------------
    --  Raised if a not initialized instance is used as parameter
    Node_Annotation_Access_Not_Initialized_Exception : exception;
@@ -66,6 +66,11 @@ package Giant.Node_Annotations is
    ---------------------------------------------------------------------------
    --  Raised if a node that already has an annotation should be annotated
    Node_Is_Already_Annoated_Exception : exception;
+
+   ---------------------------------------------------------------------------
+   --  Raised if a file where node annotations should be stored could
+   --  not be accessed.
+   Node_Annotations_File_Could_Not_Be_Written_Exception : exception;
 
 
    ---------------------------------------------------------------------------
@@ -108,13 +113,16 @@ package Giant.Node_Annotations is
    --  are ovewritten.
    --
    --  Parameters:
+   --    Node_Annotations - The Instance holding the annotations that
+   --      should be written into the file.
    --    Node_Annotations_File - The xml file into that the annotations
-   --      should be writte.
+   --      should be writte. Only ABSOLUTE Paths should be passed.
    --  Raises:
-   --    Node_Annotations_File_Not_Found_Exception - Raised if the
-   --      file "Node_Annotations_File" is not found.
    --    Node_Annotation_Access_Not_Initialized_Exception - Raised
    --      if the parameter "Node_Annotations" was not initialized.
+   --    Node_Annotations_File_Could_Not_Be_Written_Exception - Raised
+   --      if now write access is possible for the the passed
+   --      file.
    procedure Write_To_File
      (Node_Annotations : in Node_Annotation_Access;
       Node_Annotations_File : in String);

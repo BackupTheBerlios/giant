@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-node_annotations.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-node_annotations.adb,v $, $Revision: 1.3 $
 --  $Author: schwiemn $
---  $Date: 2003/05/27 09:57:08 $
+--  $Date: 2003/05/27 19:04:08 $
 --
 package body Giant.Node_Annotations is
 
@@ -31,8 +31,8 @@ package body Giant.Node_Annotations is
    -- 0.1
    -- Internal subprograms
    ---------------------------------------------------------------------------
-     
-      
+
+
    ---------------------------------------------------------------------------
    --  A
    --  Initialisation, persistence and deallocation.
@@ -41,28 +41,30 @@ package body Giant.Node_Annotations is
    ---------------------------------------------------------------------------
    function Load_From_File
      (Node_Annotations_File : in String)
-      return Node_Annotation_Access is
-      
-      New_Node_Annotation_Access : Node_Annotation_Access := null;   
-      
+     return Node_Annotation_Access is
+
+      New_Node_Annotation_Access : Node_Annotation_Access := null;
+
       Annotation_Tree_Reader : ree_Readers.Tree_Reader;
       Annotation_XML_Document : Dom.Core.Document;
-      
-      XML_Annotation_Nodes_List : DOM.Core.Node_List;      
+
+      XML_Annotation_Nodes_List : DOM.Core.Node_List;
       XML_Annotation_Node : DOM.Core.Node;
-      XML_Annotation_Text_Node : DOM.Core.Node; 
-                             
+      XML_Annotation_Text_Node : DOM.Core.Node;
+
+      A_Node_Id : Graph_Lib.Node_Id;
+
    begin
-  
+
       --  access and check the xml file
       --------------------------------
       begin
-   
+
          XML_File_Access.Load_XML_File_Validated
-          (Ada.Strings.Unbounded.To_String (A_File_Name),
-           Annotation_Tree_Reader,
+           (Ada.Strings.Unbounded.To_String (A_File_Name),
+            Annotation_Tree_Reader,
             Annotation_XML_Document);
-               
+
       exception
          when XML_File_Access.XML_File_Access_Error_Exception =>
             raise Node_Annotations_File_Not_Found_Exception;
@@ -70,83 +72,102 @@ package body Giant.Node_Annotations is
          when XML_File_Access.XML_File_Parse_Fatal_Error_Exception =>
             raise Node_Annotations_File_Not_Correct_Exception;
       end;
-         
+
       if ( XML_File_Access.Does_XML_Document_Belong_To_Type
-        ("giant_node_annotations_file", The_XML_Document) = False) ) then
-         Tree_Readers.Free (Annotation_Tree_Reader);         
-         raise Node_Annotations_File_Not_Correct_Exception; 
+           ("giant_node_annotations_file", The_XML_Document) = False) ) then
+         Tree_Readers.Free (Annotation_Tree_Reader);
+         raise Node_Annotations_File_Not_Correct_Exception;
       end if;
-                
+
       --  initialize empty New_Node_Annotation_Access
       -----------------------------------------------
       New_Node_Annotation_Access := Create_Empty;
-      
+
       --  process the xml file
       ------------------------
       XML_Annotation_Nodes_List :=
         DOM.Core.Documents.Get_Elements_By_Tag_Name
         (Annotation_XML_Document, "node_annotation");
-       
-      for I in 0 .. DOM.Core.Nodes.Length 
+
+      for I in 0 .. DOM.Core.Nodes.Length
         (XML_Annotation_Nodes_List) - 1 loop
 
-         XML_Annotation_Node := DOM.Core.Nodes.Item 
+         XML_Annotation_Node := DOM.Core.Nodes.Item
            (XML_Annotation_Nodes_List, I);
-           
+
          -- the text node that holds the annotation
          XML_Annotation_Text_Node := DOM.Core.Nodes.First_Child
-            (XML_Annotation_Node);
-                         
-         
+           (XML_Annotation_Node);
+
          -- check whether the iml node does exist
          -- ignore not existing nodes
-         !!!!!!!!!!!!!!!!!!!!!
-         
-         
-           
-         
-               
-               
-               
-               
-               
-               
-               
+         --         !!!!!!!!!!!!!!!!!!!!!
+         if Graph_Lib.Does_Exist
+           (DOM.Core.Elements.Get_Attribute
+            (XML_Annotation_Node, "node_id")) then
+
+            A_Node_Id := Graph_Lib.Get_Id
+              (DOM.Core.Elements.Get_Attribute
+               (XML_Annotation_Node, "node_id"));
+
+            -- for each node there may be only one annotation
+            Node_Annotation_Hashed_Mappings.Bind
+              (New_Node_Annotation_Access.Annotations,
+               A_Node_Id,
+               Ada.Strings.Unbounded.To_Unbounded_String
+               (DOM.Core.Nodes.Node_Value (XML_Annotation_Text_Node)));
+         end if;
+      end loop;
 
       -- deallocate resources
       DOM.Core.Free (XML_Nodes_List);
       Tree_Readers.Free (Annotation_Tree_Reader);
-          
+
       return New_Node_Annotation_Access;
    end Load_From_File;
 
-
    ---------------------------------------------------------------------------
    function Create_Empty return Node_Annotation_Access is
-       
-      New_Node_Annotation_Access : Node_Annotation_Access := null;       
+
+      New_Node_Annotation_Access : Node_Annotation_Access := null;
    begin
-   
+
       --  initialize empty New_Node_Annotation_Access
       -----------------------------------------------
-      New_Node_Annotation_Access := new Node_Annotation_Element;    
-      New_Node_Annotation_Access.Annotations := 
-        Node_Annotation_Hashed_Mappings.Create;     
-   
-   
+      New_Node_Annotation_Access := new Node_Annotation_Element;
+      New_Node_Annotation_Access.Annotations :=
+        Node_Annotation_Hashed_Mappings.Create;
+
       return New_Node_Annotation_Access;
    end Create_Empty;
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
+
+   ---------------------------------------------------------------------------
+   procedure Write_To_File
+     (Node_Annotations : in Node_Annotation_Access;
+      Node_Annotations_File : in String) is
+
+      The_File : Ada_Text_IO.File_Type;
+
+   begin
+
+      if Node_Annotations = null then
+         raise Node_Annotation_Access_Not_Initialized_Exception;
+      end if;
+
+      -- try to create the file
+      begin
+
+         Ada.Text_IO.Create.
+
+   end Write_To_File;
+
+
+
+
+
+
+
+
 
    ---------------------------------------------------------------------------
    procedure Add_Node_Annotation
@@ -182,7 +203,7 @@ package body Giant.Node_Annotations is
    function Get_Annotation_Text
      (Node_Annotations : in Node_Annotation_Access;
       Node             : in Graph_Lib.Node_Id)
-      return String is
+     return String is
    begin
       return Get_Annotation_Text (Node_Annotations, Node);
    end Get_Annotation_Text;
@@ -191,7 +212,7 @@ package body Giant.Node_Annotations is
    function Is_Annotated
      (Node_Annotations : in Node_Annotation_Access;
       Node             : in Graph_Lib.Node_Id)
-      return Boolean is
+     return Boolean is
    begin
       return Is_Annotated (Node_Annotations, Node);
    end Is_Annotated;
@@ -206,12 +227,7 @@ package body Giant.Node_Annotations is
    end Remove_Node_Annotation;
 
    ---------------------------------------------------------------------------
-   procedure Write_To_File
-     (Node_Annotations : in Node_Annotation_Access;
-      Node_Annotations_File : in String) is
-   begin
-      null;
-   end Write_To_File;
+
 
 end Giant.Node_Annotations;
 
