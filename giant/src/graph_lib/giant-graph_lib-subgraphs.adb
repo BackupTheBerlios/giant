@@ -18,266 +18,245 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.2 $
 --  $Author: koppor $
---  $Date: 2003/06/10 09:20:49 $
+--  $Date: 2003/06/14 11:31:38 $
 
 package body Giant.Graph_Lib.Subgraphs is
 
-   ---------
-   -- "<" --
-   ---------
-
+   ---------------------------------------------------------------------------
    function "<"
      (Left  : in Subgraph;
       Right : in Subgraph)
       return Boolean
    is
    begin
-      return "<" (Left, Right);
+      return Selections."<" (Left.Sel, Right.Sel);
    end "<";
 
-   --------------
-   -- Add_Edge --
-   --------------
-
+   ---------------------------------------------------------------------------
    procedure Add_Edge
      (Subgraph_To_Modify : in out Subgraph;
       Edge                : in     Edge_Id)
    is
    begin
-      null;
+      Selections.Add_Edge
+        (Subgraph_To_Modify.Sel,
+         Edge);
+
+      -- TBD: This could go faster, if we'd only check the added edge
+      Ensure_Graph_Edge_Properties (Subgraph_To_Modify);
    end Add_Edge;
 
-   --------------
-   -- Add_Node --
-   --------------
+   ---------------------------------------------------------------------------
+   procedure Add_Edge_Set
+     (Subgraph_To_Modify : in out Subgraph;
+      Edge_Set           : in     Edge_Id_Set)
+   is
+   begin
+      Selections.Add_Edge_Set
+        (Subgraph_To_Modify.Sel,
+         Edge_Set);
 
+      -- TBD: This could go faster, if we'd only check the added edges
+      Ensure_Graph_Edge_Properties (Subgraph_To_Modify);
+   end Add_Edge_Set;
+
+   ---------------------------------------------------------------------------
    procedure Add_Node
      (Subgraph_To_Modify : in out Subgraph;
-      Node                : in     Node_Id)
+      Node               : in     Node_Id)
    is
    begin
-      null;
+      Selections.Add_Node
+        (Subgraph_To_Modify.Sel,
+         Node);
    end Add_Node;
 
-   ------------------
-   -- Add_Node_Set --
-   ------------------
-
+   ---------------------------------------------------------------------------
    procedure Add_Node_Set
      (Subgraph_To_Modify : in out Subgraph;
-      Node_Set            : in     Node_Id_Set)
+      Node_Set           : in     Node_Id_Set)
    is
    begin
-      null;
+      Selections.Add_Node_Set
+        (Subgraph_To_Modify.Sel,
+         Node_Set);
    end Add_Node_Set;
 
-   ------------------
-   -- Add_Node_Set --
-   ------------------
-
-   procedure Add_Node_Set
-     (Subgraph_To_Modify : in out Subgraph;
-      Edge_Set            : in     Edge_Id_Set)
-   is
-   begin
-      null;
-   end Add_Node_Set;
-
-   -----------
-   -- Clone --
-   -----------
-
+   ---------------------------------------------------------------------------
    function Clone
      (SubGraph_To_Clone : in Subgraph)
       return Subgraph
    is
+      Res : Subgraph := new Subgraph_Record;
    begin
-      return Clone (SubGraph_To_Clone);
+      Res.Sel := Selections.Clone (SubGraph_To_Clone.Sel);
+      return Res;
    end Clone;
 
-   ------------
-   -- Create --
-   ------------
-
+   ---------------------------------------------------------------------------
    function Create
      (Name : in    Valid_Names.Standard_Name)
       return Subgraph
    is
+      Res : Subgraph := new Subgraph_Record;
    begin
-      return Create (Name);
+      Res.Sel := Selections.Create (Name);
+      return Res;
    end Create;
 
-   ------------
-   -- Create --
-   ------------
-
+   ---------------------------------------------------------------------------
    function Create
-     (Name : in Valid_Names.Standard_Name;
+     (Name                 : in Valid_Names.Standard_Name;
       Selection_To_Convert : in Graph_Lib.Selections.Selection)
       return Subgraph
    is
+      Res : Subgraph := new Subgraph_Record;
    begin
-      return Create (Name, Selection_To_Convert);
+      Res.Sel := Selections.Clone (Selection_To_Convert);
+      Ensure_Graph_Edge_Properties (Res);
+      return Res;
    end Create;
 
-   -------------
-   -- Destroy --
-   -------------
-
+   ---------------------------------------------------------------------------
    procedure Destroy
      (SubGraph_To_Destroy : in out Subgraph)
    is
    begin
-      null;
+      Selections.Destroy (SubGraph_To_Destroy.Sel);
+      --  TBD: unchecked_dealloc
    end Destroy;
 
-   --------------
-   -- Get_Name --
-   --------------
-
+   ---------------------------------------------------------------------------
    function Get_Name
      (Subgraph_To_Read : in Subgraph)
       return String
    is
    begin
-      return Get_Name (Subgraph_To_Read);
+      return Selections.Get_Name (Subgraph_To_Read.Sel);
    end Get_Name;
 
-   -------------------
-   -- Get_Selection --
-   -------------------
-
+   ---------------------------------------------------------------------------
+   --  Returns a clone, since the caller may not change our internal data
    function Get_Selection
+     (Subgraph_To_Read : in Subgraph)
       return Graph_Lib.Selections.Selection
    is
    begin
-      return Get_Selection;
+      return Selections.Clone (Subgraph_To_Read.Sel);
    end Get_Selection;
 
-   ------------------
-   -- Intersection --
-   ------------------
-
+   ---------------------------------------------------------------------------
    function Intersection
      (Left  : in Subgraph;
       Right : in Subgraph)
       return Subgraph
    is
+      Res : Subgraph := new Subgraph_Record;
    begin
-      return Intersection (Left, Right);
+      Res.Sel := Selections.Intersection (Left.Sel, Right.Sel);
+      Ensure_Graph_Edge_Properties (Res);
+      return Res;
    end Intersection;
 
-   -----------------
-   -- Remove_Edge --
-   -----------------
-
+   ---------------------------------------------------------------------------
    procedure Remove_Edge
      (Subgraph_To_Modify : in out Subgraph;
-      Edge                : in     Edge_Id)
+      Edge               : in     Edge_Id)
    is
    begin
-      null;
+      Selections.Remove_Edge (Subgraph_To_Modify.Sel, Edge);
    end Remove_Edge;
 
-   ---------------------
-   -- Remove_Edge_Set --
-   ---------------------
-
+   ---------------------------------------------------------------------------
    procedure Remove_Edge_Set
      (Subgraph_To_Modify : in out Subgraph;
-      Edge_Set            : in     Edge_Id_Set)
+      Edge_Set           : in     Edge_Id_Set)
    is
    begin
-      null;
+      Selections.Remove_Edge_Set (Subgraph_To_Modify.Sel, Edge_Set);
    end Remove_Edge_Set;
 
-   -----------------
-   -- Remove_Node --
-   -----------------
-
+   ---------------------------------------------------------------------------
    procedure Remove_Node
      (Subgraph_To_Modify : in out Subgraph;
       Node                : in     Node_Id)
    is
    begin
-      null;
+      Selections.Remove_Node (Subgraph_To_Modify.Sel, Node);
    end Remove_Node;
 
-   ---------------------
-   -- Remove_Node_Set --
-   ---------------------
-
+   ---------------------------------------------------------------------------
    procedure Remove_Node_Set
      (Subgraph_To_Modify : in out Subgraph;
-      Node_Set            : in     Node_Id_Set)
+      Node_Set           : in     Node_Id_Set)
    is
    begin
-      null;
+      Selections.Remove_Node_Set (Subgraph_To_Modify.Sel, Node_Set);
    end Remove_Node_Set;
 
-   ------------
-   -- Rename --
-   ------------
-
+   ---------------------------------------------------------------------------
    procedure Rename
      (SubGraph_To_Rename : in out Subgraph;
       New_Name           : in     Valid_Names.Standard_Name)
    is
    begin
-      null;
+      Selections.Rename (Subgraph_To_Rename.Sel, New_Name);
    end Rename;
 
-   -------------------
-   -- Subgraph_Read --
-   -------------------
-
+   ---------------------------------------------------------------------------
    procedure Subgraph_Read
-     (Stream            : in Bauhaus_Io.In_Stream_Type;
-      Subgraph_To_Read  : in Subgraph)
+     (Stream            : in     Bauhaus_Io.In_Stream_Type;
+      Subgraph_To_Read  :    out Subgraph)
    is
+      Res : Subgraph := new Subgraph_Record;
    begin
-      null;
+      Selections.Selection_Read (Stream, Subgraph_To_Read.Sel);
    end Subgraph_Read;
 
-   --------------------
-   -- Subgraph_Write --
-   --------------------
-
+   ---------------------------------------------------------------------------
    procedure Subgraph_Write
      (Stream            : in Bauhaus_Io.Out_Stream_Type;
       Subgraph_To_Write : in Subgraph)
    is
    begin
-      null;
+      Selections.Selection_Write (Stream, Subgraph_To_Write.Sel);
    end Subgraph_Write;
 
-   -------------------------
-   -- Symetric_Difference --
-   -------------------------
-
+   ---------------------------------------------------------------------------
    function Symetric_Difference
      (Left  : in Subgraph;
       Right : in Subgraph)
       return Subgraph
    is
+      Res : Subgraph := new Subgraph_Record;
    begin
-      return Symetric_Difference (Left, Right);
+      Res.Sel := Selections.Symetric_Difference (Left.Sel, Right.Sel);
+      Ensure_Graph_Edge_Properties (Res);
+      return Res;
    end Symetric_Difference;
 
-   -----------
-   -- Union --
-   -----------
-
+   ---------------------------------------------------------------------------
    function Union
      (Left  : in Subgraph;
       Right : in Subgraph)
       return Subgraph
    is
+      Res : Subgraph := new Subgraph_Record;
    begin
-      return Union (Left, Right);
+      Res.Sel := Selections.Union (Left.Sel, Right.Sel);
+      Ensure_Graph_Edge_Properties (Res);
+      return Res;
    end Union;
+
+   ---------------------------------------------------------------------------
+   procedure Ensure_Graph_Edge_Properties (Graph : in out Subgraph)
+   is
+   begin
+      --  TBD
+      null;
+   end Ensure_Graph_Edge_Properties;
 
 end Giant.Graph_Lib.Subgraphs;
 
