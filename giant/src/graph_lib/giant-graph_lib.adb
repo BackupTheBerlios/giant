@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.42 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.43 $
 --  $Author: koppor $
---  $Date: 2003/07/04 15:11:55 $
+--  $Date: 2003/07/05 16:32:49 $
 
 --  TBD:
 --    s/Program_Error/somethingofmyown
@@ -1837,8 +1837,7 @@ package body Giant.Graph_Lib is
    is
    begin
       return Make_Attribute_Iterator
-        (IML_Roots.Get_Class_ID
-         (IML_Roots.IML_Root (Node.IML_Node)));
+        (Get_Node_Class_Id (Node));
    end Make_Attribute_Iterator;
 
    ---------------------------------------------------------------------------
