@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.28 $
+--  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.29 $
 --  $Author: koppor $
---  $Date: 2003/10/06 17:41:44 $
+--  $Date: 2003/10/06 18:24:04 $
 --
 ------------------------------------------------------------------------------
 --  Variables are named according to the paper
@@ -50,7 +50,7 @@ package body Giant.Tree_Layouts is
       Target_Position          : in Vis.Logic.Vector_2d;
       Root_Node                : in Graph_Lib.Node_Id;
       Meta_Class_Set_To_Layout : in Config.Class_Sets.Meta_Class_Set_Access;
-      Process_Edges_Reverse    : in Boolean := True)
+      Process_Edges_Reverse    : in Boolean)
      return Tree_Layout
    is
       Res : Tree_Layout;
