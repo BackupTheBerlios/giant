@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.49 $
---  $Author: squig $
---  $Date: 2003/08/15 16:37:18 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.50 $
+--  $Author: schulzgt $
+--  $Date: 2003/08/16 20:14:30 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -710,10 +710,11 @@ package body Giant.Graph_Window is
       Gtk.Menu.Append (Window.Edge_Menu, New_Menu_Separator);
       Submenu := New_Sub_Menu (Window.Edge_Menu, -"Scripts");
       Giant.Menu_Factory.Generate
-        (Labels    => Config_Settings.Get_Setting_As_String ("Scripts.Edge"),
+        (Labels    => Config_Settings.Get_Setting_As_String
+          ("GSL.Edge_Id_Param"),
          Separator => File_Management.Path_Separator,
          Menu      => Submenu,
-         Callback  => On_Node_Script'Access,
+         Callback  => On_Edge_Script'Access,
          Widget    => Window);
    end Initialize_Edge_Menu;
 
@@ -739,7 +740,8 @@ package body Giant.Graph_Window is
       Gtk.Menu.Append (Window.Node_Menu, New_Menu_Separator);
       Submenu := New_Sub_Menu (Window.Node_Menu, -"Scripts");
       Giant.Menu_Factory.Generate
-        (Labels    => Config_Settings.Get_Setting_As_String ("Scripts.Node"),
+        (Labels    => Config_Settings.Get_Setting_As_String
+          ("GSL.Node_Id_Param"),
          Separator => File_Management.Path_Separator,
          Menu      => Submenu,
          Callback  => On_Node_Script'Access,
