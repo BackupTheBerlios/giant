@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: subgraph.tex,v $, $Revision: 1.5 $
-%  $Date: 2003/03/19 17:29:06 $
+%  $RCSfile: subgraph.tex,v $, $Revision: 1.6 $
+%  $Date: 2003/03/19 19:54:17 $
 %  $Author: stupro $
 %
 %  Description: Use-Cases für IML-Teilgraphen
@@ -114,23 +114,25 @@ Siehe hierzu \ref{IML-Teilgraphen aus Selektion ableiten}.
   \begin{proc} 
      
     \step[1]
-    Der Benutzer führt einen Rechtsklick auf die Quell-Selektion aus
-    und wählt im PopUp Menü den Eintrag <<<<<<<<<<< VERWEIS GUI >>>>>>
+    Der Benutzer führt einen Rechtsklick auf die Quell-Selektion im
+    der Selektionsauswahlliste \ref{Selektionsauswahlliste} aus
+    und wählt im PopUp Menü den Eintrag New IML Subgraph from Selection
      
     \step[2]
-    GIANT zeigt den allgemeinen Texteingabediolog <<<<<<<<<VERWEIS GUI>>>>>
-      	    
+    GIANT zeigt den allgemeinen Texteingabedialog \gq{Please enter Name for
+    new IML Subgraph from Selection X in Window Y}
+     
     \step[3]
     Der Benutzer gibt einen Namen für den neu zu erstellenden IML-Teilgraphen
     ein und bestätigt mit OK.\\
     Gibt der Benutzer hier keinen Namen ein, so vergibt GIANT automatisch 
     einen Namen.
-       
+     
     \step[4]
-    GIANT erzeugt gemäß der unter
-    \ref{{IML-Teilgraphen aus Selektion ableiten}}
-    beschriebenen Konvention im Ziel-Anzeigefenster eine neue Selektion als 
-    Ableitung aus dem Quell-IML-Teilgraphen.
+    GIANT erzeugt gemäß der unter IML-Teilgraphen aus Selektion ableiten
+    \ref{IML-Teilgraphen aus Selektion ableiten}
+    beschriebenen Konvention eine neuen IML-Teilgraphen aus der Selektion im
+    Anzeigefenster, in welchem der Menüpunkt ausgewählt wurde.
 
   \end{proc}
   
@@ -175,8 +177,9 @@ Siehe hierzu \ref{IML-Teilgraphen aus Selektion ableiten}.
      
     \step[1]
     Der Benutzer führt einen Rechtsklick auf den zu kopierenden 
-    Quell-IML-Teilgraphen aus und wählt im PopUp Menü den Eintrag
-    <<<<<<<<<<< VERWEIS GUI - Eintag: kopieren >>>>>> aus.
+    Quell-IML-Teilgraphen in der SUBGRAPH\_LIST im Hauptfenster aus und
+    wählt im PopUp Menü \ref{SUBGRAPH-LIST-POPUP} den Eintrag
+    Copy IML Subgraph aus.
      
     \step[2]
     GIANT zeigt den allgemeinen Texteingabediolog <<<<<<<<<VERWEIS GUI>>>>>
