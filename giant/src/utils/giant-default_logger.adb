@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.8 $
---  $Author: squig $
---  $Date: 2003/06/18 18:40:37 $
+--  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.9 $
+--  $Author: schwiemn $
+--  $Date: 2003/06/30 18:10:46 $
 --
 
 with Ada.IO_Exceptions;
@@ -69,7 +69,7 @@ package body Giant.Default_Logger is
          -- cut off Level_ and pad to 5 letters
          Ada.Text_IO.Put (Out_File, Get_Level_String (Level));
          Ada.Text_IO.Put (Out_File, " [");
-         Ada.Text_IO.Put (Out_File, Head (Name, 15));
+         Ada.Text_IO.Put (Out_File, Head (Name, 30));
          Ada.Text_IO.Put (Out_File, "] ");
          Ada.Text_IO.Put (Out_File, Message);
          Ada.Text_IO.New_Line (Out_File);

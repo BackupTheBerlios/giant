@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-node_annotations.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-node_annotations.adb,v $, $Revision: 1.10 $
 --  $Author: schwiemn $
---  $Date: 2003/06/30 14:57:37 $
+--  $Date: 2003/06/30 18:10:46 $
 --
 with Ada.Text_IO;
 with Ada.Unchecked_Deallocation;
@@ -71,23 +71,23 @@ package body Giant.Node_Annotations is
          Ada.Text_IO.Out_File, 
          Ada.Strings.Unbounded.To_String (DTD_File_Name));                
 
-      Ada.Text_IO.Set_Output(DTD_File);
       
       -- Write content of dtd file
-      Ada.Text_IO.Put_Line 
-        ("<!ELEMENT giant_node_annotations_file (node_annotation)*>");
-      Ada.Text_IO.Put_Line 
-        ("  <!ELEMENT node_annotation (#PCDATA)>");
-      Ada.Text_IO.Put_Line 
-        ("  <!ATTLIST node_annotation");       
-      Ada.Text_IO.Put_Line  
-        ("    node_id  ID  #REQUIRED");       
-      Ada.Text_IO.Put_Line       
-        ("  >");
-  
-      Ada.Text_IO.Set_Output (Ada.Text_IO.Standard_Output);
-      Ada.Text_IO.Close (DTD_File);
-   
+      Ada.Text_IO.Put_Line (DTD_File, 
+        "<!ELEMENT giant_node_annotations_file (node_annotation)*>");
+      Ada.Text_IO.Put_Line (DTD_File, 
+        "  <!ELEMENT node_annotation EMPTY>");
+      Ada.Text_IO.Put_Line (DTD_File, 
+        "  <!ATTLIST node_annotation");       
+      Ada.Text_IO.Put_Line (DTD_File, 
+        "    node_id     CDATA  #REQUIRED");    
+      Ada.Text_IO.Put_Line (DTD_File,  
+        "    annotation  CDATA  #REQUIRED");           
+      Ada.Text_IO.Put_Line (DTD_File,       
+        "  >");
+
+      Ada.Text_IO.Close (DTD_File);  
+         
    end Write_DTD_To_Directory;
 
 
@@ -107,10 +107,11 @@ package body Giant.Node_Annotations is
       Annotation_XML_Document : Dom.Core.Document;
 
       XML_Annotation_Nodes_List : DOM.Core.Node_List;
+           
       XML_Annotation_Node : DOM.Core.Node;
-      XML_Annotation_Text_Node : DOM.Core.Node;
 
-      A_Node_Id : Graph_Lib.Node_Id;
+      A_Node_Id    : Graph_Lib.Node_Id; 
+      A_Annotation : Ada.Strings.Unbounded.Unbounded_String;
 
    begin
 
@@ -155,10 +156,6 @@ package body Giant.Node_Annotations is
          XML_Annotation_Node := DOM.Core.Nodes.Item
            (XML_Annotation_Nodes_List, I);
 
-         -- the text node that holds the annotation
-         XML_Annotation_Text_Node := DOM.Core.Nodes.First_Child
-           (XML_Annotation_Node);
-
          -- check whether the iml node does exist
          -- ignore not existing nodes
          if Graph_Lib.Does_Node_Id_Exist
@@ -167,26 +164,29 @@ package body Giant.Node_Annotations is
 
             A_Node_Id := Graph_Lib.Node_Id_Value
               (DOM.Core.Elements.Get_Attribute
-               (XML_Annotation_Node, "node_id"));
+               (XML_Annotation_Node, "node_id"));  
+               
+            A_Annotation := Ada.Strings.Unbounded.To_Unbounded_String 
+              (DOM.Core.Elements.Get_Attribute
+                (XML_Annotation_Node, "annotation"));                         
 
             -- for each node there may be only one annotation
             Node_Annotation_Hashed_Mappings.Bind
               (New_Node_Annotation_Access.Annotations,
                A_Node_Id,
-               Ada.Strings.Unbounded.To_Unbounded_String
-                 (DOM.Core.Nodes.Node_Value (XML_Annotation_Text_Node)));
+               A_Annotation);                                
+                                                                        
          else
-         
-           Logger.Warn 
-             ("Node annotations file: """ 
-              & Node_Annotations_File 
-              & """ "
-              & "holds an annoation for Node Id: """
-              & DOM.Core.Elements.Get_Attribute
-                  (XML_Annotation_Node, "node_id")
-              & """ "
-              & "as this node is not known by the loaded iml graph, it "
-              & "will be ignored.");
+            Logger.Warn 
+              ("Node annotations file: """ 
+               & Node_Annotations_File 
+               & """ "
+               & "holds an annotation for Node Id: """
+               & DOM.Core.Elements.Get_Attribute
+                   (XML_Annotation_Node, "node_id")
+               & """ "
+               & "as this node is not known by the loaded iml graph, it "
+               & "will be ignored.");
          
          end if;
       end loop;
@@ -194,7 +194,7 @@ package body Giant.Node_Annotations is
       -- deallocate resources
       DOM.Core.Free (XML_Annotation_Nodes_List);
       Tree_Readers.Free (Annotation_Tree_Reader);
-
+            
       return New_Node_Annotation_Access;
    end Load_From_File;
 
@@ -242,19 +242,18 @@ package body Giant.Node_Annotations is
             raise Node_Annotations_File_Could_Not_Be_Written_Exception;         
       end;
   
-      Ada.Text_IO.Set_Output(The_File);
-
       -- File Header
-      Ada.Text_IO.Put_Line 
-        ("<?xml version=""1.0"" encoding=""ISO-8859-1""?>");    
-      Ada.Text_IO.Put_Line 
-        ("<!DOCTYPE giant_node_annotations_file");
-      Ada.Text_IO.Put_Line 
-        ("  SYSTEM ""giant_node_annotations_file.dtd"">");
+      Ada.Text_IO.Put_Line (The_File, 
+        "<?xml version=""1.0"" encoding=""ISO-8859-1""?>");    
+      Ada.Text_IO.Put_Line (The_File,
+        "<!DOCTYPE giant_node_annotations_file");
+      Ada.Text_IO.Put_Line (The_File,
+        "  SYSTEM ""giant_node_annotations_file.dtd"">");
       Ada.Text_IO.New_Line;
       
-      Ada.Text_IO.Put_Line 
-        ("<giant_node_annotations_file>");
+      Ada.Text_IO.Put_Line (The_File, 
+        "<giant_node_annotations_file>");
+      Ada.Text_IO.New_Line;
         
       -- Write all known node annotations
       Annotations_Iter := Node_Annotation_Hashed_Mappings.Make_Bindings_Iter 
@@ -267,27 +266,24 @@ package body Giant.Node_Annotations is
             Annotation_Text);
             
          -- Write entry for an annotaded node  
-         Ada.Text_IO.Put
-           ("<node_annotation node_id=""");
-         Ada.Text_IO.Put         
-           (Graph_Lib.Node_Id_Image (Annotated_Node_ID));
-         Ada.Text_IO.Put_Line (""">");
-                  
-         Ada.Text_IO.Put_Line
-           (Ada.Strings.Unbounded.To_String (Annotation_Text));
-         
-         Ada.Text_IO.Put_Line 
-           ("</node_annotation>");
+         Ada.Text_IO.Put (The_File,
+           "<node_annotation node_id    = """);
+         Ada.Text_IO.Put_Line (The_File,       
+           Graph_Lib.Node_Id_Image (Annotated_Node_ID) & """");           
+         Ada.Text_IO.Put (The_File,
+           "                 annotation = """);
+         Ada.Text_IO.Put_Line (The_File,      
+           Ada.Strings.Unbounded.To_String (Annotation_Text) & """ />");                        
+
          Ada.Text_IO.New_Line;
       end loop;
   
-      Ada.Text_IO.Put_Line 
-        ("</giant_node_annotations_file>");  
+      Ada.Text_IO.Put_Line (The_File,
+        "</giant_node_annotations_file>");  
   
       -- Put a DTD into the same directory as the xml file just written
       Write_DTD_To_Directory (Node_Annotations_File);
         
-      Ada.Text_IO.Set_Output (Ada.Text_IO.Standard_Output);
       Ada.Text_IO.Close (The_File);      
    end Write_To_File;
 
@@ -327,7 +323,16 @@ package body Giant.Node_Annotations is
       if Node_Annotations = null then
          raise Node_Annotation_Access_Not_Initialized_Exception;
       end if;
-   
+      
+      
+            
+      
+      
+--       Node_Annotation_Hashed_Mappings.Bind
+--        (New_Node_Annotation_Access.Annotations, 
+--         Graph_Lib.Node_Id_Value ("3"),
+--         Ada.Strings.Unbounded.To_Unbounded_String ("Hallo"));    
+              
       return Node_Annotation_Hashed_Mappings.Is_Bound
         (Node_Annotations.Annotations, Node);
    end Is_Annotated;
