@@ -18,9 +18,12 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.41 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.42 $
 --  $Author: koppor $
---  $Date: 2003/07/03 15:10:14 $
+--  $Date: 2003/07/04 15:11:55 $
+
+--  TBD:
+--    s/Program_Error/somethingofmyown
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -1412,13 +1415,27 @@ package body Giant.Graph_Lib is
      (Edge : Edge_Id)
       return String
    is
+      Attribute_Name : String :=
+        Convert_Node_Attribute_Id_To_Name (Edge.Attribute);
    begin
       if Edge.Attribute_Element_Number = 0 then
-         return "0";
+         return Attribute_Name;
       else
-         return Integer'Image (Edge.Attribute_Element_Number);
+         return Attribute_Name & "." &
+           Integer'Image (Edge.Attribute_Element_Number);
       end if;
    end Get_Edge_Tag;
+
+   ---------------------------------------------------------------------------
+   function Get_Edge_Class_Tag
+     (Edge_Class : Edge_Class_Id)
+      return String
+   is
+   begin
+      return
+        Get_Node_Class_Tag (Edge_Class.Source_Node_Class) &
+        Convert_Node_Attribute_Id_To_Name (Edge_Class.Source_Node_Attribute);
+   end Get_Edge_Class_Tag;
 
    ----------------------------------------------------------------------------
    function Get_Incoming_Edges
