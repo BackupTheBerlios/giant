@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.22 $
---  $Author: keulsn $
---  $Date: 2003/09/12 20:30:13 $
+--  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.23 $
+--  $Author: koppor $
+--  $Date: 2003/09/15 13:19:09 $
 --
 ------------------------------------------------------------------------------
 --  Variables are named according to the paper
@@ -233,8 +233,8 @@ package body Giant.Tree_Layouts is
             FirstWalk_Stacks.Pop
               (Layout.FirstWalk_Stack, Data);
 
-            Logger.Debug ("FirstWalk: Seen: " &
-                          Graph_Lib.Node_Id_Image (Data.V.Node));
+            --  Logger.Debug ("FirstWalk: Seen: " &
+            --              Graph_Lib.Node_Id_Image (Data.V.Node));
 
             if Data.V.Leftmost_Child = null then
                --  V is a leaf
@@ -341,33 +341,33 @@ package body Giant.Tree_Layouts is
             Y := Level_Mappings.Fetch (Layout.Level_Heights,
                                        SecondWalk_Data.V.Level);
 
-            Logger.Debug ("Self:  " & Graph_Lib.Node_Id_Image
-                          (SecondWalk_Data.V.Node));
+            --  Logger.Debug ("Self:  " & Graph_Lib.Node_Id_Image
+            --                (SecondWalk_Data.V.Node));
             if SecondWalk_Data.V.Parent /= null then
-               Logger.Debug ("Parent:  " & Graph_Lib.Node_Id_Image
-                             (SecondWalk_Data.V.Parent.Node));
+               --  Logger.Debug ("Parent:  " & Graph_Lib.Node_Id_Image
+               --                (SecondWalk_Data.V.Parent.Node));
             end if;
 
-            Logger.Debug ("HasRightSilbling: " & Boolean'Image
-                          (SecondWalk_Data.V.Right_Silbling /= null));
-            Logger.Debug ("HasChildren: " & Boolean'Image
-                          (SecondWalk_Data.V.Leftmost_Child /= null));
-            Logger.Debug ("Prelim:" & Float'Image (SecondWalk_Data.V.Prelim));
-            Logger.Debug ("M:     " & Float'Image (SecondWalk_Data.M));
+            --  Logger.Debug ("HasRightSilbling: " & Boolean'Image
+            --                (SecondWalk_Data.V.Right_Silbling /= null));
+            --  Logger.Debug ("HasChildren: " & Boolean'Image
+            --                (SecondWalk_Data.V.Leftmost_Child /= null));
+            --  Logger.Debug ("Prelim:" & Float'Image (SecondWalk_Data.V.Prelim));
+            --  Logger.Debug ("M:     " & Float'Image (SecondWalk_Data.M));
 
-            Logger.Debug ("X:     " & Float'Image (X));
-            Logger.Debug ("Level: " & Natural'Image (SecondWalk_Data.V.Level));
-            Logger.Debug ("Y:     " & Float'Image (Y));
+            --  Logger.Debug ("X:     " & Float'Image (X));
+            --  Logger.Debug ("Level: " & Natural'Image (SecondWalk_Data.V.Level));
+            --  Logger.Debug ("Y:     " & Float'Image (Y));
 
 
             New_Relative_Position := Vis.Logic.Combine_Vector
               (X => X,
                Y => Y);
 
-            Logger.Debug ("RelPos " & Vis.Logic.Image (New_Relative_Position));
-            Logger.Debug ("  TPos " & Vis.Logic.Image
-                          (Vis.Logic."+" (New_Relative_Position,
-                                          Layout.Target_Position)));
+--              Logger.Debug ("RelPos " & Vis.Logic.Image (New_Relative_Position));
+--              Logger.Debug ("  TPos " & Vis.Logic.Image
+--                            (Vis.Logic."+" (New_Relative_Position,
+--                                            Layout.Target_Position)));
 
             --  Adjust Max_X, used for matrix_layout later
             if Layout.Max_X < X then
@@ -411,7 +411,7 @@ package body Giant.Tree_Layouts is
    begin
       case Layout.State is
          when Init_Start =>
-            Logger.Debug ("State: Step: Init_Start");
+            --  Logger.Debug ("State: Step: Init_Start");
             --  Depending on the amount of nodes to layout,
             --    we can do it now (0, 1) or we have to a non-trivial layout
             --    (>=2)
@@ -441,19 +441,19 @@ package body Giant.Tree_Layouts is
             end case;
 
          when Init_Run_Part_One =>
-            Logger.Debug ("State: Step: Init_Run_Part_One");
+            --  Logger.Debug ("State: Step: Init_Run_Part_One");
             Logger.Error ("unreachable code executed: Init_Run_Part_One");
             Layout.State := Init_Run_Part_Two;
             Next_Action  := Evolutions.Synchronize;
 
          when Init_Run_Part_Two =>
-            Logger.Debug ("State: Step: Init_Run_Part_Two");
+            --  Logger.Debug ("State: Step: Init_Run_Part_Two");
             Logger.Error ("unreachable code executed: Init_Run_Part_Two");
             Layout.State := FirstWalk_Start;
             Next_Action  := Evolutions.Run;
 
          when FirstWalk_Start =>
-            Logger.Debug ("State: Step: FirstWalk_Start");
+            --  Logger.Debug ("State: Step: FirstWalk_Start");
             FirstWalk_Stack_Initial_Push
               (Layout.FirstWalk_Stack,
                Layout.Tree_Root);
@@ -462,11 +462,11 @@ package body Giant.Tree_Layouts is
             Next_Action  := Evolutions.Run;
 
          when FirstWalk_Run =>
-            Logger.Debug ("State: Step: FirstWalk_Run");
+            --  Logger.Debug ("State: Step: FirstWalk_Run");
             FirstWalk;
 
          when SecondWalk_Start =>
-            Logger.Debug ("State: Step: SecondWalk_Start");
+            --  Logger.Debug ("State: Step: SecondWalk_Start");
 
             SecondWalk_Stacks.Push
               (Layout.SecondWalk_Stack,
@@ -483,11 +483,11 @@ package body Giant.Tree_Layouts is
             Next_Action  := Evolutions.Run;
 
          when SecondWalk_Run =>
-            Logger.Debug ("State: Step: SecondWalk_Run");
+            --  Logger.Debug ("State: Step: SecondWalk_Run");
             SecondWalk;
 
          when Matrix =>
-            Logger.Debug ("State: Step: Matrix");
+            --  Logger.Debug ("State: Step: Matrix");
             Start_Matrix_Layout;
       end case;
    end Step;
@@ -807,16 +807,16 @@ package body Giant.Tree_Layouts is
    begin
       case Layout.State is
          when Init_Start =>
-            Logger.Debug ("State: Sync: Init_Start");
+            --  Logger.Debug ("State: Sync: Init_Start");
             Init_Calculation_Start;
          when Init_Run_Part_One =>
-            Logger.Debug ("State: Sync: Init_Run_Part_One");
+            --  Logger.Debug ("State: Sync: Init_Run_Part_One");
             Init_Calculation_Part_One;
          when Init_Run_Part_Two =>
-            Logger.Debug ("State: Sync: Init_Run_Part_Two");
+            --  Logger.Debug ("State: Sync: Init_Run_Part_Two");
             Init_Calculation_Part_Two;
          when others =>
-            Logger.Debug ("State: Sync: Others");
+            --  Logger.Debug ("State: Sync: Others");
             Next_Action  := Evolutions.Run;
       end case;
    end Synchronized_Step;
@@ -999,8 +999,8 @@ package body Giant.Tree_Layouts is
       MidPoint : Vis.Logic_Float;
       W        : Node_Layout_Data;
    begin
-      Logger.Debug ("FirstWalk_Visist_Self: Seen: " &
-                    Graph_Lib.Node_Id_Image (V.Node));
+      --  Logger.Debug ("FirstWalk_Visist_Self: Seen: " &
+      --                Graph_Lib.Node_Id_Image (V.Node));
 
       ExecuteShifts (V);
       MidPoint :=
