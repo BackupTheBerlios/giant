@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_lib-subgraphs-test.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-graph_lib-subgraphs-test.adb,v $, $Revision: 1.2 $
 --  $Author: koppor $
---  $Date: 2003/06/23 15:25:07 $
+--  $Date: 2003/06/25 16:40:01 $
 --
 
 with Ada.Text_IO;
@@ -50,12 +50,14 @@ package body Giant.Graph_Lib.Subgraphs.Test is
    procedure Init (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
    begin
-      Giant.Graph_Lib.Create ("resources/rfg_examp.iml");
+      Giant.Graph_Lib.Initialize;
+      Giant.Graph_Lib.Load ("resources/rfg_examp.iml");
    end Init;
 
    procedure Done (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
    begin
+      Giant.Graph_Lib.Unload;
       Giant.Graph_Lib.Destroy;
    end Done;
 

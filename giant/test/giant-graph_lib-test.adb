@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.5 $
 --  $Author: koppor $
---  $Date: 2003/06/24 17:57:08 $
+--  $Date: 2003/06/25 16:39:46 $
 --
 
 with Ada.Text_IO;
@@ -80,7 +80,8 @@ package body Giant.Graph_Lib.Test is
    procedure Init (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
    begin
-      Giant.Graph_Lib.Create (IML_FileName);
+      Giant.Graph_Lib.Initialize;
+      Giant.Graph_Lib.Load (IML_FileName);
 
       Root := Get_Root_Node;
    end Init;
@@ -136,6 +137,7 @@ package body Giant.Graph_Lib.Test is
    procedure Done (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
    begin
+      Giant.Graph_Lib.Unload;
       Giant.Graph_Lib.Destroy;
    end Done;
 
