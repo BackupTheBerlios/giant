@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.1 $
+-- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.2 $
 -- $Author: schwiemn $
--- $Date: 2003/06/20 16:56:44 $
+-- $Date: 2003/06/20 17:12:49 $
 --
 -- -----
 -- This package holds the functionality needed to access and handle
@@ -34,9 +34,6 @@
 -- If necessary special interpretation is done by other packages.
 --
 with Ada.Strings.Unbounded;
-with Ada.Unchecked_Deallocation;
-
-with Gtkada.Types; -- from GTK
 
 package Giant.Config_Settings is
 
@@ -71,24 +68,24 @@ package Giant.Config_Settings is
      return Ada.Strings.Unbounded.Unbounded_String
      renames Ada.Strings.Unbounded.To_Unbounded_String;
           
-   type Default_Values_Element is record
+   type Default_Setting_Element is record
      -- the name of a setting
      Name      : Ada.Strings.Unbounded.Unbounded_String;
      -- the default value for that setting
      Def_Value : Ada.Strings.Unbounded.Unbounded_String;
      -- used to check whether a read setting is valid
      -- (may be a null pointer if no validation should be done)     
-     Validator_Function : Valdiator;
+     Validator_Function : Validator;
    end record;
    
    type Default_Settings_Array is array (integer range <>)
-     of Ada.Strings.Unbounded.Unbounded_String;
+     of Default_Setting_Element;
 
    ---------------------------------------------------------------------------
    -- Here you may enter default values for necessary settings.
    -- If a setting is not found in the config files, these default
    -- values will be used.
-   Default_Settings : constant Default_Values_Array :=      
+   Default_Settings : constant Default_Settings_Array :=      
      ( (To_UStr ("Resources_Directory"), 
         To_Ustr ("."), null),
         
@@ -199,7 +196,7 @@ package Giant.Config_Settings is
 
    ---------------------------------------------------------------------------
    -- B
-   -- General Access to configuration data
+   -- Access to configuration data
    ---------------------------------------------------------------------------
 
    ---------------------------------------------------------------------------
@@ -242,7 +239,7 @@ package Giant.Config_Settings is
    --   Config_Setting_Does_Not_Exist_Exception - raised if there is
    --     no config setting with the name "Name";
    function Return_Setting_As_String (Name : in String)
-     return Ada.Strings.Unbounded.Unbounded_String;
+     return String;
 
    ---------------------------------------------------------------------------
    -- This method returns a config setting as a integer value.
@@ -302,6 +299,6 @@ package Giant.Config_Settings is
    -- Parameters:
    --   File_Name - The name of the file into that the settings should be
    --     written.
-   procedure Store_User_Config_File (File_Name : in String)
+   procedure Store_User_Config_File (File_Name : in String);
        
 end Giant.Config_Settings;
