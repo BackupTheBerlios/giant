@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.14 $
-%  $Date: 2003/08/09 20:15:05 $
+%  $RCSfile: config.tex,v $, $Revision: 1.15 $
+%  $Date: 2003/09/05 22:01:08 $
 %  $Author: birdy $
 %
 %  Description:
@@ -15,16 +15,20 @@
 \begin {enumerate}
 
   \item
-  Sämtliche konfigurierbaren Einstellungen werden in XML-Dateien vorgenommen.
-  Für die verschiedenen Dateitypen werden auch
-  Dokumenttyp-Definitionen (DTDs) erstellt.
+  Die Konfiguration von GIANT wird in XML-Dateien vorgenommen.
   
   \item \label{config-allgemeines-punkt2}
   \index{Konfigurationsdatei!globale}
-  Es gibt genau eine \gq{globale Konfigurationsdatei}. Zudem kann es beliebig 
+  Es gibt eine \gq{globale Konfigurationsdatei}, die sich im
+  GIANT-Stamm-Verzeichnis unter etc/global\_config.xml befindet.
+  
+  Zudem kann es beliebig 
   viele weitere XML-Dateien zur Konfiguration der weiter unten beschriebenen 
   Visualisierungsstile geben.\\
-  Diese Dateien liegen in einem von GIANT fest vorgegebenen Verzeichnis.
+  Diese Dateien liegen in einem von GIANT fest vorgegebenen Verzeichnis,
+  shared/styles/.
+  Die Datei des standardmäßig verwendeten Visualisierungsstils
+  muss existieren, sie heisst Default.xml.
   
   \item \index{Konfigurationsdatei!benutzerdefinierte}
   Die unter Punkt \ref{config-allgemeines-punkt2} beschriebenen Dateien zu
@@ -41,14 +45,18 @@
 \section {Die globale Konfigurationsdatei} \index{Konfigurationsdatei}
 Diese Datei ist in XML verfasst. In Ihr können die anschließend beschriebenen
 Einstellungen vorgenommen werden.
-Die Datei heisst global\_config.xml und befindet sich direkt im GIANT Verzeichnis.
+Die Datei heisst global\_config.xml und befindet sich unter etc/ im GIANT
+Verzeichnis.
 
 
 Hier das File giant\_config\_file.dtd:
 
 \verbatiminput{giant_config_file.dtd}
 
-Im Folgenden sind die möglichen Einstellungen, die im Config-File sein können, aufgelistet,
+Generell hat in dieser Datei jede Einstellung einen setting-Knoten mit
+name und value.\\
+Im Folgenden sind die möglichen Einstellungen, die im Config-File sein können,
+aufgelistet,
 jeweils mit ihrem Defaultwert. Wenn die betreffenden Daten im Config-File
 nicht existieren, so wird der im Folgenden als Beispiel angegebene Wert von
 GIANT als default verwendet.
@@ -56,10 +64,11 @@ Farben können entweder im Format RGB:XX/YY/ZZ (wobei XX , YY und ZZ jeweils
 die Rot- Grün- und Blau-Anteile zweistellig Hexadezimal angeben) oder
 mit den GTK bekannten Namen (z.B. red) angegeben werden.\\
 
+\label{Pfad-Expansion1}
 Einstellungsdaten, die einen Pfad darstellen, müssen mit einem Pfadseperator
 (z.B: / bei Linux) enden.
 Bei relativen Pfaden versucht GIANT, den Pfad nacheinander bis zum Erfolg
-wie folgt zu erweitern:
+wie folgt durch Pfad-Erweiterung zu finden:
 \begin{enumerate}
   \item{Erweiterung um das root\_directory Attribut des <absolute\_path\_root> - Knotens
         aus dem Config-File.}
@@ -74,107 +83,89 @@ von GIANT mit allen Unterverzeichnissen befindet.
 Wird dieses weggelassen, wird das Verzeichnis, in dem sich der Nutzer
 in der Shell des Betriebssystemes bei Aufruf von GIANT befindet, verwendet.
 
-°<absolute_path_root root_directory  = "." />°
+°  <absolute_path_root root_directory  = "." />°\\
 
 Das folgende Directory gibt an, in welchem Verzeichnis die Bilder von GIANT
 gesucht werden, wenn andere Pfad-Erweiterungen (Expansionen) fehlschlagen:
 
-°<setting name = "Resources_Directory" value="." />°
+°  <setting name = "Resources_Directory" value="." />°\\
 
 Das folgende Icon wird verwendet, graphisch um anzuzeigen, daß ein Knoten annotiert ist:
 
-°<setting name = "Icon_For_Node_Annotations" value="my_icon.xpm" />°
+°  <setting name = "Icon_For_Node_Annotations" value="my_icon.xpm" />°\\
 
 Die Farbe der aktuellen Selektion:
 
-°<setting name = "Current_Selection_Highlight_Color" value="RGB:AA/AA/AA" />°
+°  <setting name = "Current_Selection_Highlight_Color" value="RGB:AA/AA/AA" />°\\
 
 Die Farbe Nr. 1 für die Hervorhebung von Selektionen:
 
-°<setting name = "Selection\_Highlight_Color_1" value="RGB:AA/AA/AA" />°
+°  <setting name = "Selection\_Highlight_Color_1" value="RGB:AA/AA/AA" />°\\
 
 Die Farbe Nr. 2 für die Hervorhebung von Selektionen:
 
-°<setting name = "Selection_Highlight_Color_2" value="RGB:AA/AA/AA" />°
+°  <setting name = "Selection_Highlight_Color_2" value="RGB:AA/AA/AA" />°\\
 
 Die Farbe Nr. 3 für die Hervorhebung von Selektionen:
 
-°<setting name = "Selection_Highlight_Color_3" value="RGB:AA/AA/AA" />°
+°  <setting name = "Selection_Highlight_Color_3" value="RGB:AA/AA/AA" />°\\
 
 Die Farbe Nr. 1 für die Hervorhebung von IML-Teilgraphen:
 
-°<setting name = "IML_Subgraph_Highlight_Color_1" value="RGB:AA/AA/AA" />°
+°  <setting name = "IML_Subgraph_Highlight_Color_1" value="RGB:AA/AA/AA" />°\\
 
 Die Farbe Nr. 2 für die Hervorhebung von IML-Teilgraphen:
 
-°<setting name = "IML_Subgraph_Highlight_Color_2" value="RGB:AA/AA/AA" />°
+°  <setting name = "IML_Subgraph_Highlight_Color_2" value="RGB:AA/AA/AA" />°\\
 
 Die Farbe Nr. 3 für die Hervorhebung von IML-Teilgraphen:
 
-°<setting name = "IML_Subgraph_Highlight_Color_3" value="RGB:AA/AA/AA" />°
+°  <setting name = "IML_Subgraph_Highlight_Color_3" value="RGB:AA/AA/AA" />°\\
          
+	 
 Hier kann eine Menge von Pfaden, ggf. getrennt durch den Path Seperator des
-Betriebssystems, angegeben werden: (****** Wofür dieser Pfad?)
+Betriebssystems, angegeben werden, diese Pfade geben die Positionen der
+vordefinierten GSL Skripte an, z.B. shared/gsl/:
 
-°<setting name = "GSL.Include_Paths" value="." />°
+°  <setting name = "GSL.Include_Paths" value="." />°\\
                 
 Hier kann die Höhe des Hauptfensters angegeben werden:
 		
-°<setting name = "Main_Window.Height" value="400" />°
+°  <setting name = "Main_Window.Height" value="400" />°\\
 
 Hier kann die Breite des Hauptfensters angegeben werden:
 
-°<setting name = "Main_Window.Width" value="200" />°
+°  <setting name = "Main_Window.Width" value="200" />°\\
 
 Hier kann angegeben werden, nach wieviel Pixeln der
 untere Bereich des Hauptfensters mit der unteren Liste anfängt:
 
-°<setting name = "Main_Window.Separator" value="230" />°
+°  <setting name = "Main_Window.Separator" value="230" />°\\
 
 Hier kann festgelegt werden, ob bei Löschoperationen eine
 Sicherheitsabfrage erfolgen soll:
 
-°<setting name = "Confirm.Delete" value="true" />°
+°  <setting name = "Confirm.Delete" value="true" />°\\
 
 Hier kann der Editor zum Anzeigen der Quelltexte angegeben werden,
-mit seinem Aufruf. \%l wird dabei durch die Zeilennummer ersetzt,
+mit seinem Aufruf. \%l wird dabei von GIANT beim Aufruf der
+Funktion zum Anzeigen des Quelltextes durch die Zeilennummer ersetzt,
 \%c durch die Spaltennummer und \%f durch den Dateinamen der
 betreffenden Datei. So kann bei den meisten Editoren dafür gesorgt
 werden, daß durch den Aufruf die Datei geladen wird und der Editor
 mit dem Cursor an die richtige Stelle in der Datei springt.
 GIANT spawned einen neuen Prozeß, in dem der Editor abläuft.
 
-°<setting name = "Editor.Source" value="/usr/bin/emacs +%l:%c %f" />°\\
+°  <setting name = "Editor.Source" value="/usr/bin/emacs +%l:%c %f" />°\\
 
 
 
-Hier nun ein Beispiel-Configfile (global\_config.xml) :
+Hier nun ein Beispiel-Configfile (global\_config.xml). Wie man sieht,
+müssen nicht alle möglichen Einstellungen zugewiesen werden.
+Wo eine Zuweisung fehlt, werden die oben aufgelisteten Defaultwerte
+eingesetzt.
 
 \verbatiminput{global_config.xml}
-
-
-
-  \subsection {Verweise auf GSL-Skripte} 
-  \index{Makros}
-  \index{GSL!Makros}
-  Es können GSL-Skript-Makros definiert werden. Jeder Makro wird durch 
-  einen eindeutigen Namen und durch einen Verweis
-  auf die Datei, welche das GSL-Skript enthält, spezifiziert.
-  Der Makro kann dann aus einem Popup-Menü heraus aufgerufen werden, wobei
-  dann das in der Datei stehende GSL Skript ausgeführt wird.
-  ****** Hier mehr Info dazu, sobald implementiert.
-
-  \subsection {Farbe von Hervorhebungen}
-  \index{hervorheben!Farben konfigurieren}
-  Einstellung der Farben, mittels derer Selektionen oder IML-Teilgraphen 
-  hervorgehoben werden.
-  \begin {enumerate}
-    \item Eine beliebige Farbe für die aktuelle Selektion.
-    \item Beliebige Farben für das
-          Hervorheben weiterer Selektionen.
-    \item Beliebige Farben für das 
-          Hervorheben von IML-Teilgraphen.
-  \end {enumerate}
 
 \section {Visualisierungsstile} \label{Config Visualisierungsstile}
 \index{Visualisierungsstile!Konfiguration}
@@ -195,12 +186,14 @@ Für die Visualisierungsstile gelten die folgenden Konventionen:
 \begin {enumerate}
 
   \item
-  Für jeden Visualisierungsstil muss es eine entsprechende XML-Datei geben. 
+  Für jeden Visualisierungsstil gibt es eine entsprechende XML-Datei geben,
+  die Visualisierungsstil-XML-Dateien befinden sich im GIANT-Verzeichnis
+  unter shared/styles.
 
   \item
   Ein Visualisierungsstil beschreibt, wie die Knoten und Kanten des 
   IML-Graphen innerhalb eines Anzeigefensters graphisch dargestellt 
-  werden können.
+  werden.
 
   \item
   In einem Visualisierungsstil können klassenspezifische Einstellungen 
@@ -208,7 +201,8 @@ Für die Visualisierungsstile gelten die folgenden Konventionen:
   die zu der entsprechenden Klasse gehören.
   Bei jeder klassenspezifischen Einstellung für Knoten und Kanten kann daher 
   eine Liste der betroffenen Knoten- und Kantenklassen angegeben werden, 
-  für die diese Einstellungen gelten sollen.
+  für die diese Einstellungen gelten sollen. Vererbung im IML-Baum kann
+  zur leichteren Auswahl von Knoten- und Kantenklassen benutzt werden.
 
   \item
   Wird eine Kanten- oder eine Knotenklasse innerhalb eines
@@ -221,22 +215,16 @@ Für die Visualisierungsstile gelten die folgenden Konventionen:
   Knoten- und Kantenklassen genommen wird, für die keine
   extra klassenspezifischen Einstellungen vorgenommen wurden.
 
-  \item \index{Visualisierungsstile!Standard-Visualisierungsstil}
-  Es gibt immer einen von GIANT fest
-  vorgegeben Standard-Visualisierungsstil. Dieser Visualisierungsstil
-  wird für neu erzeugte Anzeigefenster genommen. 
-  Kann GIANT den einem Anzeigefenster zugewiesenen Visualisierungsstil
-  nicht finden (falls die zugehörige XML-Datei fehlt) wird ebenfalls
-  der Standard-Visualisierungsstil genommen. 
-
 \end {enumerate}
 
 
   \subsection {Name des Visualisierungsstils}
   Jeder Visualisierungsstil erhält einen Namen. Unter diesem Namen ist der 
   Visualisierungsstil für jedes Anzeigefenster einzeln auswählbar.
+  Der Name des Visualisierungsstil ist der Dateiname der XML-Datei
+  ohne Endung .XML.
  
-  \subsection {Einstellungen innerhalb des Visualisierungsstils}
+  \subsection {Generelle Einstellungen innerhalb des Visualisierungsstils}
     \begin{enumerate}
       \item Die Hintergrundfarbe im Anzeigefenster.
     \end{enumerate}
@@ -306,63 +294,22 @@ Für die Visualisierungsstile gelten die folgenden Konventionen:
   \end{enumerate}
 
 
-\subsection{GIANT Project File}
-
-Jedes Projekt in GIANT besitzt eine Projektdatei, der
-Dateiname ist der Projektname erweitert durch die
-Endung .XML.\\
-Die Datei ist wie folgt aufgebaut:\\ 
-
-\verbatiminput{giant_project_file.dtd}
-
-Hier ein Beispiel beispiel.xml einer Projektdatei eines Projektes mit
-Namen Beispiel:\\
-
-°<?xml version="1.0" encoding="ISO-8859-1"?>°\\
-°<!DOCTYPE giant_project_file°\\
-°  SYSTEM "giant_project_file.dtd">°\\
-
-°<giant_project_file>°\\
-
-Hier der Name (mit vollständigem, absolutem Pfad) der IML-Datei und
-eine Checksumme, anhand derer GIANT mit recht großer Wahrscheinlichkeit
-erkennt, falls die IML-Datei beschädigt oder in einem angelegten
-Projekt unzulässig verändert wurde.\\
-Es folgt der Dateiname der Knotenannotationsdatei.
-Nach Anlage eines Projektes sind Änderungen der IML-Datei nicht zulässig
-und könnten GIANT zum Abstürzen bringen.\\
-
-°  <global_data°\\
-°    iml_graph_file_path = "/home/giant/test/resources/rfg_examp.iml"°\\
-°    iml_graph_checksum = " 503"°\\
-°    node_annotations_file_name = "node_annotations.xml" />°\\
-
-Für jedes Anzeigefenster in GIANT gibt es eine interne Datei, in der
-GIANT die nötigen Daten wie Positionen der Knoten etc. ablegt.
-Dateinamen sind jeweils mit relativem Pfad (relativ zur Projektdatei)
-angegeben.\\
-
-°  <visualisation_windows>°\\
-°    <a_vis_window_file file_path = "./My_Window.viswin" />°\\
-°    <a_vis_window_file file_path = "./Unknown 1.viswin" />°\\
-°  </visualisation_windows>°\\
-
-Auch jeder Subgraph hat eine interne Datei, in der die Daten
-des jeweiligen Subgraphen abgelegt sind.
-Dateinamen sind ebenfalls jeweils mit relativem Pfad (relativ zur Projektdatei)
-angegeben.\\
-
-°  <subgraphs>°\\
-°    <a_subgraph_file file_path = "./Test_1.subgraph" />°\\
-°    <a_subgraph_file file_path = "./Super_Test_2.subgraph" />°\\
-°  </subgraphs>°\\
-°</giant_project_file>°\\
-
 \subsection{Config-Dateien f"ur Visualisierungsstile}
 
 Jeder Visualisierungsstil wird durch eine XML-Datei beschrieben.
 Der Dateiname sollte dem Namen des Visualisierungsstils
-mit der Endung .xml entsprechen.
+mit der Endung .xml entsprechen.\\
+
+GIANT lädt zuerst die im GIANT\_VIS\_DIRECTORY (dieses
+ist in der globalen Config-Datei definiert) gespeicherten
+Visualisierungsstile, dann die Visualisierungsstile, die
+sich im User\_VIS\_DIRECTORY befinden.\\
+Bei Namensgleichheit zweier solcher XML-Dateien in beiden
+Verzeichnissen wird nur die Datei im User\_VIS\_DIRECTORY
+beachtet, genauer gesagt ersetzen diese Einstellungen die
+zunächst aus GIANT\_VIS\_DIRECTORY geladenen Einstellungen.
+
+
 Der Aufbau der XML-Dateien ist wie folgt durch die Datei
 giant\_vis\_style\_file.dtd spezifiziert:
 
@@ -408,6 +355,10 @@ abweichend festgelegt werden. Dies geht durch folgendes Konstrukt.\\
 °  text_color   = "blue"°\\
 °  border_color = "blue"°\\
 °  fill_color   = "white">°\\ 
+
+Bei der Suche nach in Config-Files mit dem Dateinamen angegebenen
+Dateien gelten die in Abschnitt \ref{Pfad-Expansion1} genannten
+Grundsätze.
 
 Dies sind soweit die schon bekannten Einstellungen zur Darstellung.
 Nun kommt noch optional dazu, welche Attribute darzustellen sind.
@@ -619,6 +570,60 @@ in der IML-Hierarchie darunter ausgewählt.
  
 °</giant_class_set_file>°
 
+
+\subsection{GIANT Project File}
+
+Jedes Projekt in GIANT besitzt eine Projektdatei, der
+Dateiname ist der Projektname erweitert durch die
+Endung .XML.\\
+Die Datei ist wie folgt aufgebaut:\\ 
+
+\verbatiminput{giant_project_file.dtd}
+
+Hier ein Beispiel beispiel.xml einer Projektdatei eines Projektes mit
+Namen Beispiel, Abschnittsweise aufgetrennt mit Erklärungen:\\
+
+°<?xml version="1.0" encoding="ISO-8859-1"?>°\\
+°<!DOCTYPE giant_project_file°\\
+°  SYSTEM "giant_project_file.dtd">°\\
+
+°<giant_project_file>°\\
+
+Hier der Name (mit vollständigem, absolutem Pfad) der IML-Datei und
+eine Checksumme, anhand derer GIANT mit recht großer Wahrscheinlichkeit
+erkennt, falls die IML-Datei beschädigt oder in einem angelegten
+Projekt unzulässig verändert wurde.\\
+Es folgt der Dateiname der Knotenannotationsdatei.
+Nach Anlage eines Projektes sind Änderungen der IML-Datei nicht zulässig
+und könnten GIANT zum Abstürzen bringen.\\
+
+°  <global_data°\\
+°    iml_graph_file_path = "/home/giant/test/resources/rfg_examp.iml"°\\
+°    iml_graph_checksum = " 503"°\\
+°    node_annotations_file_name = "node_annotations.xml" />°\\
+
+Für jedes Anzeigefenster in GIANT gibt es eine interne Datei, in der
+GIANT die nötigen Daten wie Positionen der Knoten etc. ablegt.
+Dateinamen sind jeweils mit relativem Pfad (relativ zur Projektdatei)
+angegeben.\\
+
+°  <visualisation_windows>°\\
+°    <a_vis_window_file file_path = "./My_Window.viswin" />°\\
+°    <a_vis_window_file file_path = "./Unknown 1.viswin" />°\\
+°  </visualisation_windows>°\\
+
+Auch jeder Subgraph hat eine interne Datei, in der die Daten
+des jeweiligen Subgraphen abgelegt sind.
+Dateinamen sind ebenfalls jeweils mit relativem Pfad (relativ zur Projektdatei)
+angegeben.\\
+
+°  <subgraphs>°\\
+°    <a_subgraph_file file_path = "./Test_1.subgraph" />°\\
+°    <a_subgraph_file file_path = "./Super_Test_2.subgraph" />°\\
+°  </subgraphs>°\\
+°</giant_project_file>°\\
+
+
 \subsection{Annotations-Datei}
 
 In der Annotations-Datei von GIANT, welche sich im Projektverzeichnis
@@ -643,7 +648,7 @@ Hier eine Beispieldatei:\\
 °                 annotation = "This is a very important node" />°\\
                  
 °<node_annotation node_id    = "3"°\\
-°                 annotation = "This is a node that does not exist" />°\\
+°                 annotation = "This is the key node of the graph" />°\\
   
 °</giant_node_annotations_file>°\\
 
@@ -657,6 +662,6 @@ wiederverwendet werden.\\
 Geladen werden können solche Dateien beim Kommandozeilenaufruf 
 (siehe \ref{fa Starten von GIANT})
 oder im Dialog zur Eingabe eine Skripts 
-(vgl.\ Funktion \ref{UC Anfrage laden}).
+(vgl.\ Funktion \ref{GUI Anfragedialog}).
 Für eine exakte Spezifikation der GSL siehe Kapitel 
 \ref {GIANT Scripting Language}. 

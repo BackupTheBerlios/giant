@@ -4,11 +4,9 @@
 
 <giant_vis_style_file>
 
-  <!-- ................................................................. -->
   <global_settings
     vis_window_background_color="RGB:20/20/20"/> 
 
-  <!-- ................................................................. -->
   <default_node_setting
     icon         = "test_node_icon_default_1.xpm"
     text_color   = "black"
@@ -36,7 +34,6 @@
   </node_class_specific_setting>
   
                   
-  <!-- ................................................................. -->
   <default_edge_setting
     line_color = "RGB:00/FF/FF"     
     text_color = "RGB:00/FF/FF"     
@@ -58,5 +55,17 @@
       attribute_name   = "*" /> 
                              
   </edge_class_specific_setting>          
-        
+  
+  <edge_class_specific_setting
+    line_color = "blue"
+    text_color = "blue"
+    line_style = "dotted_line"
+    show_label = "yes"> 
+
+  <edge_class
+      super_start_node_class = "*"
+      attribute_name   = "SLOC" /> 
+                             
+  </edge_class_specific_setting>   
+	
 </giant_vis_style_file>
