@@ -20,24 +20,24 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-config-test.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-config-test.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/06/18 17:24:07 $
+--  $Date: 2003/06/23 15:22:54 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
 with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
 
-with Giant.Config;
+with Giant.Config_Settings;
 
 package body Giant.Config.Test is
 
    procedure Test_Init (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
    begin
-      Config.Initialize_Config_Data ("resources/global_config.xml", "");
+      --Config.Initialize_Config_Data ("resources/global_config.xml", "");
 
-      Assert (Config.Does_Setting_Exist ("Test_Setting"), "Test_Setting");
+      Assert (Config_Settings.Does_Setting_Exist ("Test_Setting"), "Test_Setting");
    end;
 
    function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is
