@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-positioning.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-graph_widgets-positioning.adb,v $, $Revision: 1.5 $
 --  $Author: keulsn $
---  $Date: 2003/07/11 17:34:16 $
+--  $Date: 2003/07/12 03:33:56 $
 --
 ------------------------------------------------------------------------------
 
@@ -190,6 +190,35 @@ package body Giant.Graph_Widgets.Positioning is
         (Origin => Vis.Logic.Zero_2d,
          Zoom   => Zoom);
    end Set_Zoom;
+
+
+   ---------------------
+   -- Transformations --
+   ---------------------
+
+   function Get_Absolute
+     (Widget : access Graph_Widget_Record'Class;
+      Point  : in     Vis.Logic.Vector_2d)
+     return Vis.Absolute.Vector_2d is
+   begin
+      return Vis.Transform (Widget.Positioning.Transformation, Point);
+   end Get_Absolute;
+
+   function Get_Logic
+     (Widget : access Graph_Widget_Record'Class;
+      Point  : in     Vis.Absolute.Vector_2d)
+     return Vis.Logic.Vector_2d is
+   begin
+      return Vis.Transform_Backward (Widget.Positioning.Transformation, Point);
+   end Get_Logic;
+
+   function Get_Logic
+     (Widget : access Graph_Widget_Record'Class;
+      Area   : in     Vis.Absolute.Rectangle_2d)
+     return Vis.Logic.Rectangle_2d is
+   begin
+      return Vis.Transform_Backward (Widget.Positioning.Transformation, Area);
+   end Get_Logic;
 
 
    -----------------

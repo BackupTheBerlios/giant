@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-vis.adb,v $, $Revision: 1.10 $
 --  $Author: keulsn $
---  $Date: 2003/07/10 23:36:39 $
+--  $Date: 2003/07/12 03:33:56 $
 --
 ------------------------------------------------------------------------------
 
@@ -219,6 +219,20 @@ package body Giant.Vis is
          Bottom_Right => Transform (Transformation,
                                     Logic.Get_Bottom_Right (Source_Rect)));
    end Transform;
+
+   function Transform_Backward
+     (Transformation : in     Transformation_Type;
+      Source_Rect    : in     Absolute.Rectangle_2d)
+     return Logic.Rectangle_2d is
+   begin
+      return Logic.Combine_Rectangle
+        (Top_Left     => Transform_Backward
+                            (Transformation,
+                             Absolute.Get_Top_Left (Source_Rect)),
+         Bottom_Right => Transform_Backward
+                            (Transformation,
+                             Absolute.Get_Bottom_Right (Source_Rect)));
+   end Transform_Backward;
 
    procedure Transform_To_Gdk
      (Point          : in     Logic.Vector_2d;

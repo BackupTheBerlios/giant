@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.24 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.25 $
 --  $Author: keulsn $
---  $Date: 2003/07/11 19:39:15 $
+--  $Date: 2003/07/12 03:33:56 $
 --
 ------------------------------------------------------------------------------
 
@@ -882,7 +882,6 @@ package body Giant.Vis_Data is
       Manager.Region_Width := Default_Region_Width;
       Manager.Region_Height := Default_Region_Height;
       Manager.Regions := Region_Mappings.Create;
-      Manager.Empty_Background_Polluted := True;
    end Set_Up;
 
    procedure Destroy
@@ -1395,11 +1394,10 @@ package body Giant.Vis_Data is
          Position := Get_Current (Iterator);
          Next (Iterator);
          Region := Get_Region_If_Exists (Manager, Position);
+         --  If region exists then add pollution, else it is polluted by
+         --  default --> do nothing
          if Region /= null then
             Add_Background_Pollution (Region);
-         else
-            --  add pollution to space not covered by regions
-            Manager.Empty_Background_Polluted := True;
          end if;
       end loop;
    end Pollute_Area;
@@ -1508,10 +1506,7 @@ package body Giant.Vis_Data is
                Command.Reset);
          end if;
       end loop;
-      if Refresh_Pending then
-         --  Clear refresh flag for 'Position's without 'Region_Id's
-         Manager.Empty_Background_Polluted := False;
-      end if;
+
       Edge_Update_Iterators.Start_Iteration (Command.Edges.all);
       Node_Update_Iterators.Start_Iteration (Command.Nodes.all);
    end Start_Refresh_Operation;
@@ -1526,175 +1521,6 @@ package body Giant.Vis_Data is
       Node_Update_Iterators.Destroy (Command.Nodes);
       Rectangle_2d_Lists.Destroy (Command.Unchanged);
    end End_Refresh_Operation;
-
-
-   procedure Start_Refresh_Background
-     (Manager         : in out Region_Manager;
-      Display_Area    : in     Vis.Absolute.Rectangle_2d;
-      Refresh_Area    :    out Rectangle_2d_Lists.List;
-      Refresh_Pending : in     Boolean) is
-
-      Pool     : Position_Pool;
-      Iterator : Position_Iterator;
-      Position : Region_Position;
-      Region   : Region_Id;
-   begin
-      Refresh_Area := Rectangle_2d_Lists.Create;
-      Pool := Create_Position_Pool_From_Area (Manager, Display_Area);
-      Make_Position_Iterator (Pool, Iterator);
-      while Has_More (Iterator) loop
-         Position := Get_Current (Iterator);
-         Next (Iterator);
-         Region := Get_Region_If_Exists (Manager, Position);
-         if Region /= null and then Is_Background_Polluted (Region) then
-            Rectangle_2d_Lists.Attach
-              (Get_Region_Extent (Region),
-               Refresh_Area);
-            if Refresh_Pending then
-               Remove_Background_Pollution (Region);
-            end if;
-         elsif Manager.Empty_Background_Polluted then
-            --  'Positions' without 'Region_Id's will be refreshed if
-            --  necessary.
-            Rectangle_2d_Lists.Attach
-              (Get_Region_Extent (Manager, Position),
-               Refresh_Area);
-         end if;
-      end loop;
-      if Refresh_Pending then
-         --  Clear refresh flag for 'Position's without 'Region_Id's
-         Manager.Empty_Background_Polluted := False;
-      end if;
-   end Start_Refresh_Background;
-
-   procedure End_Refresh_Background
-     (Refresh_Area : in out Rectangle_2d_Lists.List) is
-   begin
-      Rectangle_2d_Lists.Destroy (Refresh_Area);
-   end End_Refresh_Background;
-
-
-   procedure Start_Edge_Refresh
-     (Manager         : in out Region_Manager;
-      Display_Area    : in     Vis.Absolute.Rectangle_2d;
-      Clipping        :    out Clipping_Queue_Access;
-      Edges           :    out Edge_Update_Iterators.Merger_Access;
-      Refresh_Pending : in     Boolean) is
-
-      Iterator      : Position_Iterator;
-      Edge_Iterator : Vis_Edge_Sets.Iterator;
-      First_Edge    : Vis_Edge_Id;
-      Position      : Region_Position;
-      Region        : Region_Id;
-      Pool          : Position_Pool := Create_Position_Pool_From_Area
-                                         (Manager, Display_Area);
-      Region_Count  : Natural       := Get_Position_Pool_Size (Pool);
-   begin
-      Clipping := new Clipping_Queues.Queue_Type (Region_Count);
-      Edges := new Edge_Update_Iterators.Merger_Type (Region_Count);
-
-      Make_Position_Iterator (Pool, Iterator);
-      while Has_More (Iterator) loop
-         Position := Get_Current (Iterator);
-         Next (Iterator);
-         Region := Get_Region_If_Exists (Manager, Position);
-         if Region /= null then
-
-            Edge_Iterator := Get_Polluted_Edges (Region);
-
-            if Vis_Edge_Sets.More (Edge_Iterator) then
-               First_Edge := Vis_Edge_Sets.Current (Edge_Iterator);
-
-               Clipping_Queues.Insert
-                 (Queue => Clipping.all,
-                  Item  => new Layer_Clipping_Type'
-                                (Height => Get_Layer (First_Edge),
-                                 Area   => Get_Region_Extent (Region)));
-
-               Edge_Update_Iterators.Add_Iterator
-                 (Merger   => Edges.all,
-                  Iterator => Edge_Iterator);
-            end if;
-
-            Vis_Edge_Sets.Destroy (Edge_Iterator);
-
-            if Refresh_Pending then
-               Remove_Edge_Pollution (Region);
-            end if;
-         end if;
-      end loop;
-      Edge_Update_Iterators.Start_Iteration (Edges.all);
-   end Start_Edge_Refresh;
-
-   procedure End_Edge_Refresh
-     (Clipping        : in out Clipping_Queue_Access;
-      Edges           : in out Edge_Update_Iterators.Merger_Access) is
-   begin
-      Destroy_Clipping_Queue (Clipping);
-      Edge_Update_Iterators.Destroy (Edges);
-   end End_Edge_Refresh;
-
-
-   procedure Start_Node_Refresh
-     (Manager         : in out Region_Manager;
-      Display_Area    : in     Vis.Absolute.Rectangle_2d;
-      Clipping        :    out Clipping_Queue_Access;
-      Nodes           :    out Node_Update_Iterators.Merger_Access;
-      Refresh_Pending : in     Boolean) is
-
-      Iterator      : Position_Iterator;
-      Node_Iterator : Vis_Node_Sets.Iterator;
-      First_Node    : Vis_Node_Id;
-      Position      : Region_Position;
-      Region        : Region_Id;
-      Pool          : Position_Pool := Create_Position_Pool_From_Area
-                                         (Manager, Display_Area);
-      Region_Count  : Natural       := Get_Position_Pool_Size (Pool);
-   begin
-      Clipping := new Clipping_Queues.Queue_Type (Region_Count);
-      Nodes := new Node_Update_Iterators.Merger_Type (Region_Count);
-
-      Make_Position_Iterator (Pool, Iterator);
-      while Has_More (Iterator) loop
-         Position := Get_Current (Iterator);
-         Next (Iterator);
-         Region := Get_Region_If_Exists (Manager, Position);
-         if Region /= null then
-
-            Node_Iterator := Get_Polluted_Nodes (Region);
-
-            if Vis_Node_Sets.More (Node_Iterator) then
-               First_Node := Vis_Node_Sets.Current (Node_Iterator);
-
-               Clipping_Queues.Insert
-                 (Queue => Clipping.all,
-                  Item  => new Layer_Clipping_Type'
-                                (Height => Get_Layer (First_Node),
-                                 Area   => Get_Region_Extent (Region)));
-
-               Node_Update_Iterators.Add_Iterator
-                 (Merger   => Nodes.all,
-                  Iterator => Node_Iterator);
-            end if;
-
-            Vis_Node_Sets.Destroy (Node_Iterator);
-
-            if Refresh_Pending then
-               Remove_Node_Pollution (Region);
-            end if;
-         end if;
-      end loop;
-
-      Node_Update_Iterators.Start_Iteration (Nodes.all);
-   end Start_Node_Refresh;
-
-   procedure End_Node_Refresh
-     (Clipping        : in out Clipping_Queue_Access;
-      Nodes           : in out Node_Update_Iterators.Merger_Access) is
-   begin
-      Destroy_Clipping_Queue (Clipping);
-      Node_Update_Iterators.Destroy (Nodes);
-   end End_Node_Refresh;
 
 
    -----------------------

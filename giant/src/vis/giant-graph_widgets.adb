@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.23 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.24 $
 --  $Author: keulsn $
---  $Date: 2003/07/11 16:09:07 $
+--  $Date: 2003/07/12 03:33:56 $
 --
 ------------------------------------------------------------------------------
 
@@ -78,6 +78,16 @@ package body Giant.Graph_Widgets is
          Class_Record              => Class_Record,
          Parameters                => Handlers.Get_Signal_Parameters,
          Scroll_Adjustments_Signal => Handlers.Get_Scroll_Adjustments_Signal);
+
+      Set_Flags
+        (Object => Widget,
+         Flags  => Gtk.Widget.Can_Default or
+                   Gtk.Widget.Can_Focus or
+                   Gtk.Widget.Receives_Default);
+
+      Widget.Logic_Area := Vis.Logic.Combine_Rectangle
+        (Top_Left     => Vis.Logic.Zero_2d,
+         Bottom_Right => Vis.Logic.Zero_2d);
 
       Widget.Locked_Edges := Vis_Edge_Sets.Empty_Set;
       Widget.Unsized_Edges := Vis_Edge_Sets.Empty_Set;
@@ -146,6 +156,7 @@ package body Giant.Graph_Widgets is
       Style       : in     Config.Vis_Styles.Visualisation_Style_Access;
       Annotations : in     Node_Annotations.Node_Annotation_Access) is
    begin
+      Create (Widget, Style, Annotations);
       raise Unimplemented;
    end Read_Graph_Widget;
 
@@ -164,24 +175,42 @@ package body Giant.Graph_Widgets is
    procedure Set_Node_Annotations
      (Widget : access Graph_Widget_Record'Class;
       Pool   : in     Node_Annotations.Node_Annotation_Access) is
+
+      Node      : Vis_Data.Vis_Node_Id;
+      Old_State : Boolean;
+      New_State : Boolean;
+      Iterator  : Node_Id_Mappings.Values_Iter;
    begin
       Settings.Set_Annotation_Pool (Widget, Pool);
-      --  Update on all nodes!
-      raise Unimplemented;
+      --  Update on all nodes
+      Iterator := Node_Id_Mappings.Make_Values_Iter (Widget.Node_Map);
+      while Node_Id_Mappings.More (Iterator) loop
+         Node_Id_Mappings.Next (Iterator, Node);
+         Old_State := Vis_Data.Is_Annotated (Node);
+         New_State := Settings.Has_Annotation (Widget, Node);
+         if Old_State /= New_State then
+            Vis_Data.Set_Annotated (Node, New_State);
+            Vis_Data.Pollute_Node (Widget.Manager, Node);
+            States.Changed_Visual (Widget);
+         end if;
+      end loop;
+      if States.Has_Display_Changed (Widget) then
+         Queue_Draw (Widget);
+      end if;
    end Set_Node_Annotations;
 
    procedure Set_Default_Cursor
      (Widget : access Graph_Widget_Record'Class;
       Cursor : in     Gdk.Cursor.Gdk_Cursor) is
    begin
-      raise Unimplemented;
+      States.Set_Default_Cursor (Widget, Cursor);
    end Set_Default_Cursor;
 
    procedure Set_Waiting_Cursor
      (Widget : access Graph_Widget_Record'Class;
       Cursor : in     Gdk.Cursor.Gdk_Cursor) is
    begin
-      raise Unimplemented;
+      States.Set_Waiting_Cursor (Widget, Cursor);
    end Set_Waiting_Cursor;
 
 
@@ -352,8 +381,11 @@ package body Giant.Graph_Widgets is
 
    procedure Start_Action_Mode
      (Widget : access Graph_Widget_Record'Class;
-      Cursor : in     Gdk.Cursor.Gdk_Cursor) is
+      Cursor : in     Gdk.Cursor.Gdk_Cursor     := Gdk.Cursor.Null_Cursor) is
    begin
+      if Gdk.Cursor."/=" (Cursor, Gdk.Cursor.Null_Cursor) then
+         States.Set_Action_Cursor (Widget, Cursor);
+      end if;
       States.Enable_Action_Mode (Widget);
    end Start_Action_Mode;
 
@@ -416,6 +448,7 @@ package body Giant.Graph_Widgets is
          if Vis_Node /= null then
             Add_Node_To_Locked (Widget, Vis_Node);
             Vis_Data.Set_Position (Vis_Node, Location);
+            Add_Logic_Position (Widget, Location);
          else
             Graph_Widget_Logger.Fatal
               ("Set_Top_Middle called for unknown node: " &
@@ -553,6 +586,10 @@ package body Giant.Graph_Widgets is
       States.Destroy_Lock (Widget, Lock);
       if States.Must_Flush_Locked_Content (Widget) then
          Flush_Locked (Widget);
+      end if;
+      if States.Must_Update_Logic_Area (Widget) then
+         Notifications.Logical_Area_Changed (Widget, Widget.Logic_Area);
+         States.Logic_Area_Updated (Widget);
       end if;
    end Release_Lock;
 
@@ -746,29 +783,39 @@ package body Giant.Graph_Widgets is
      (Widget     : access Graph_Widget_Record'Class)
      return Vis.Logic.Rectangle_2d is
    begin
-      return Vis.Logic.Combine_Rectangle (0.0, 0.0, 500.0, 200.0);
+      return Widget.Logic_Area;
    end Get_Logical_Area;
 
    function Get_Visible_Area
      (Widget     : access Graph_Widget_Record'Class)
      return Vis.Logic.Rectangle_2d is
    begin
-      return Vis.Logic.Combine_Rectangle (10.0, -3.0, 50.0, 17.0);
+      return Positioning.Get_Logic (Widget, Drawing.Get_Visible_Area (Widget));
    end Get_Visible_Area;
 
    function Get_Location
      (Widget     : access Graph_Widget_Record'Class)
      return Vis.Logic.Vector_2d is
    begin
-      raise Unimplemented;
-      return Vis.Logic.Zero_2d;
+      return Positioning.Get_Logic
+        (Widget, Vis.Absolute.Get_Center (Drawing.Get_Visible_Area (Widget)));
    end Get_Location;
 
    procedure Set_Location
      (Widget     : access Graph_Widget_Record'Class;
       Location   : in     Vis.Logic.Vector_2d) is
    begin
-      raise Unimplemented;
+      Drawing.Move_Visible_Area_To
+        (Widget => Widget,
+         Point  => Positioning.Get_Absolute (Widget, Location));
+
+      if States.Must_Update_Visual_Area (Widget) then
+         Notifications.Visible_Area_Changed
+           (Widget => Widget,
+            Area   => Get_Visible_Area (Widget));
+         States.Visual_Area_Updated (Widget);
+      end if;
+      Queue_Draw (Widget);
    end Set_Location;
 
    procedure Set_Location_And_Zoom_Level
@@ -835,6 +882,58 @@ package body Giant.Graph_Widgets is
          Add_Edges_To_Locked (Widget, Edge_Iterator);
       end if;
    end Add_Node_To_Locked;
+
+   procedure Add_Logic_Position
+     (Widget   : access Graph_Widget_Record'Class;
+      Position : in     Vis.Logic.Vector_2d) is
+
+      Bottom_Right : Vis.Logic.Vector_2d;
+      X            : Vis.Logic_Float;
+      Y            : Vis.Logic_Float;
+      Changed      : Boolean := False;
+   begin
+      if Vis.Logic."=" (Vis.Logic.Get_Top_Left (Widget.Logic_Area),
+                        Vis.Logic.Zero_2d)
+        and then Vis.Logic."=" (Vis.Logic.Get_Bottom_Right (Widget.Logic_Area),
+                                Vis.Logic.Zero_2d) then
+
+         --  No point in the logical area
+         if Vis.Logic."=" (Position, Vis.Logic.Zero_2d) then
+            --  If (0.0, 0.0) is the only point then it must be treated
+            --  differently to the case in which there is no point
+            Bottom_Right := Vis.Logic.Combine_Vector
+              (X => Vis.Logic_Float'Succ (0.0),
+               Y => Vis.Logic_Float'Succ (0.0));
+         else
+            Bottom_Right := Position;
+         end if;
+         Widget.Logic_Area := Vis.Logic.Combine_Rectangle
+           (Top_Left     => Position,
+            Bottom_Right => Bottom_Right);
+         Changed := True;
+      else
+         X := Vis.Logic.Get_X (Position);
+         if X > Vis.Logic.Get_Right (Widget.Logic_Area) then
+            Changed := True;
+            Vis.Logic.Set_Right (Widget.Logic_Area, X);
+         elsif X < Vis.Logic.Get_Left (Widget.Logic_Area) then
+            Changed := True;
+            Vis.Logic.Set_Left (Widget.Logic_Area, X);
+         end if;
+
+         Y := Vis.Logic.Get_Y (Position);
+         if Y > Vis.Logic.Get_Bottom (Widget.Logic_Area) then
+            Changed := True;
+            Vis.Logic.Set_Bottom (Widget.Logic_Area, Y);
+         elsif Y < Vis.Logic.Get_Top (Widget.Logic_Area) then
+            Changed := True;
+            Vis.Logic.Set_Top (Widget.Logic_Area, Y);
+         end if;
+      end if;
+      if Changed then
+         States.Logic_Area_Changed (Widget);
+      end if;
+   end Add_Logic_Position;
 
    procedure Resize_Graph_Widget
      (Widget : access Graph_Widget_Record'Class;

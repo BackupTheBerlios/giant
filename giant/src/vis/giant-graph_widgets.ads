@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.27 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.28 $
 --  $Author: keulsn $
---  $Date: 2003/07/11 17:34:16 $
+--  $Date: 2003/07/12 03:33:56 $
 --
 ------------------------------------------------------------------------------
 --
@@ -344,16 +344,19 @@ package Giant.Graph_Widgets is
 
    ----------------------------------------------------------------------------
    --  Enables action mode and sets cursor. During action mode the user can
-   --  only move the visual area inside the graph widget an click onto the
+   --  only move the visual area inside the graph widget and click onto the
    --  graph widget. After each such click the graph widget emits a signal.
    --  See Giant.Graph_Widgets.Handlers for details.
+   --
+   --  If 'Cursor' = 'Null_Cursor' then a default cursor is used.
    --
    --  Parameters:
    --    Widget - The graph widget
    --    Cursor - The cursor to be displayed during action mode
+   --             or 'Null_Cursor'.
    procedure Start_Action_Mode
      (Widget : access Graph_Widget_Record'Class;
-      Cursor : in     Gdk.Cursor.Gdk_Cursor);
+      Cursor : in     Gdk.Cursor.Gdk_Cursor     := Gdk.Cursor.Null_Cursor);
 
    ----------------------------------------------------------------------------
    --  If the graph widget is in action mode, then cancels action mode and
@@ -936,6 +939,15 @@ private                    -- private part --
      (Widget : access Graph_Widget_Record'Class);
 
    ----------------------------------------------------------------------------
+   --  Enlarges the logic area by 'Position'
+   --  After all calls to 'Add_Logic_Position' are made,
+   --  'States.Has_Logic_Area_Changed' should be checked and, if necessary,
+   --  'Notifications.Logical_Area_Changed' should be called.
+   procedure Add_Logic_Position
+     (Widget   : access Graph_Widget_Record'Class;
+      Position : in     Vis.Logic.Vector_2d);
+
+   ----------------------------------------------------------------------------
    --  Changes the size of 'Widget' and makes buffers grow when necessary
    procedure Resize_Graph_Widget
      (Widget : access Graph_Widget_Record'Class;
@@ -1029,17 +1041,29 @@ private                    -- private part --
    package Lock_Sets is new Ordered_Sets
      (Item_Type => Lock_Type);
 
+   type Cursor_State_Type is (Default, Action, Waiting);
+
+   type Cursor_State_Array is array (Cursor_State_Type) of
+     Gdk.Cursor.Gdk_Cursor;
+
    type States_Type is
       record
-         Drawing_Ready      : Boolean       := False;
+         Logic_Area_Changed  : Boolean            := False;
+         Visual_Area_Changed : Boolean            := False;
 
-         Visual_Polluted    : Boolean       := True;
+         Drawing_Ready       : Boolean            := False;
 
-         Action_Mode        : Boolean       := False;
+         Visual_Polluted     : Boolean            := True;
 
-         Highest_Lock       : Lock_Type     := 0;
-         Locks              : Lock_Sets.Set := Lock_Sets.Empty_Set;
-         Lock_Flush_Pending : Boolean       := False;
+         Action_Mode         : Boolean            := False;
+
+         Highest_Lock        : Lock_Type          := 0;
+         Locks               : Lock_Sets.Set      := Lock_Sets.Empty_Set;
+         Lock_Flush_Pending  : Boolean            := False;
+
+         Cursors             : Cursor_State_Array :=
+           (others => Gdk.Cursor.Null_Cursor);
+         Current_Cursor      : Cursor_State_Type  := Default;
       end record;
 
 
@@ -1067,6 +1091,8 @@ private                    -- private part --
          Buffer_Area  : Vis.Absolute.Rectangle_2d;
          Ready_Buffer : Gdk.Pixmap.Gdk_Pixmap;
          Display      : Gdk.Pixmap.Gdk_Pixmap;
+
+         Visible_Area : Vis.Absolute.Rectangle_2d;
 
          Debug_Gc     : Gdk.GC.Gdk_GC;
 
@@ -1132,7 +1158,9 @@ private                    -- private part --
          --  Must only be used by subpackage States
          States        : States_Type;
 
-         --  The following must not be used by any subpackage
+         --  The following fields must not be used by any subpackage
+         Logic_Area    : Vis.Logic.Rectangle_2d;
+
          Edge_Map      : Edge_Id_Mappings.Mapping;
          Edge_Layers   : Vis_Data.Layer_Pool;
          Node_Map      : Node_Id_Mappings.Mapping;

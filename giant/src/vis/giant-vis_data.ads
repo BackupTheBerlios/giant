@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.20 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.21 $
 --  $Author: keulsn $
---  $Date: 2003/07/10 16:05:51 $
+--  $Date: 2003/07/12 03:33:56 $
 --
 ------------------------------------------------------------------------------
 --
@@ -143,7 +143,6 @@ package Giant.Vis_Data is
    type Layer_Clipping_Type is
       record
          Height : Layer_Type;
---           Action : Layer_Clipping_Change_Type;
          Area   : Vis.Absolute.Rectangle_2d;
       end record;
 
@@ -655,7 +654,6 @@ package Giant.Vis_Data is
      (Manager : in out Region_Manager;
       Area    : in     Vis.Absolute.Rectangle_2d);
 
-
    ----------------------------------------------------------------------------
    --  Command used to organize a buffer refresh for the content af a region
    --  manager. Refresh must be done in the order:
@@ -703,128 +701,6 @@ package Giant.Vis_Data is
 
    procedure End_Refresh_Operation
      (Command         : in out Refresh_Command_Type);
-
-   ----------------------------------------------------------------------------
-   --  Determines how to refresh the visual representation. Receives as input
-   --  an area that will be displayed. If the background within that
-   --  area has been polluted then it needs to be redrawn.
-   --  This procedure produces as output the area that should be refreshed.
-   --  This might be smaller than or equal to the input area.
-   --
-   --  Parameters:
-   --    Manager         - The region manager
-   --    Display_Area    - The area that will be drawn
-   --    Refresh_Area    - The part of 'Display_Area' that needs to be
-   --                      refreshed
-   --    Refresh_Pending - If set to True, then the pollution on the
-   --                      background of 'Display_Area' is cleaned.
-   --  Notes:
-   --    * The Area 'Display_Area' minus 'Refresh_Area' can be non-empty.
-   --    * No point outside of 'Refresh_Area' must be modified.
-   procedure Start_Refresh_Background
-     (Manager         : in out Region_Manager;
-      Display_Area    : in     Vis.Absolute.Rectangle_2d;
-      Refresh_Area    :    out Rectangle_2d_Lists.List;
-      Refresh_Pending : in     Boolean);
-
-   ----------------------------------------------------------------------------
-   --  Deallocates the storage uses by 'Start_Refresh_Background'. This
-   --  procedure should be called to deallocate storage after a refresh
-   --  background operation has finished.
-   --
-   --  Parameters:
-   --    Refresh_Area - Variable obtained by 'Start_Refresh_Background'
-   --  Precondition:
-   --    'Refresh_Area' was obtained through a call to
-   --    'Start_Refresh_Background'
-   --  Postcondition
-   --    'Refresh_Area' is an invalid list.
-   procedure End_Refresh_Background
-     (Refresh_Area : in out Rectangle_2d_Lists.List);
-
-   ----------------------------------------------------------------------------
-   --  Determines which edges to refresh in the visual representation.
-   --  Receives as input an area to be displayed. If the contents in that
-   --  area have been polluted then produces as output an iterator
-   --  over all edges to be redrawn. Also provides a set of clipping
-   --  instructions to be respected during drawing.
-   --
-   --  The data structures returned by this subprogram must be destroyed
-   --  by a call to 'End_Edge_Refresh'.
-   --  If (and only if) Items are removed from 'Clipping' than those items
-   --  must be destroyed by a call to 'Free'.
-   --
-   --  Parameters:
-   --    Manager         - The region manager
-   --    Display_Area    - The area that will be displayed to the user. This
-   --                      subprogram can decide to have an area redrawn that
-   --                      is actually greater than 'Display_Area'. See
-   --                      'Clipping'
-   --    Clipping        - Height-ordered queue of clipping instructions. Each
-   --                      such instruction must be honored when drawing of
-   --                      edges comes to its layer.
-   --    Edges           - Edges to be drawn. Ordered from lower to higher
-   --                      layers
-   --    Refresh_Pending - If set to True then pollution will be removed
-   --                      from 'Edges'
-   procedure Start_Edge_Refresh
-     (Manager         : in out Region_Manager;
-      Display_Area    : in     Vis.Absolute.Rectangle_2d;
-      Clipping        :    out Clipping_Queue_Access;
-      Edges           :    out Edge_Update_Iterators.Merger_Access;
-      Refresh_Pending : in     Boolean);
-
-   ----------------------------------------------------------------------------
-   --  Destroys data structures obtained by a call to 'Start_Edge_Refresh'
-   --
-   --  Parameters:
-   --    Clipping - The out-parameter from 'Start_Edge_Refresh'
-   --    Edges    - The out-parameter from 'Start_Edge_Refresh'
-   procedure End_Edge_Refresh
-     (Clipping        : in out Clipping_Queue_Access;
-      Edges           : in out Edge_Update_Iterators.Merger_Access);
-
-   ----------------------------------------------------------------------------
-   --  Determines which nodes to refresh in the visual representation.
-   --  Receives as input an area to be displayed. If the contents in that
-   --  area have been polluted then produces as output an iterator
-   --  over all nodes to be redrawn. Also provides a set of clipping
-   --  instructions to be respected during drawing.
-   --
-   --  The data structures returned by this subprogram must be destroyed
-   --  by a call to 'End_Node_Refresh'.
-   --  If (and only if) Items are removed from 'Clipping' than those items
-   --  must be destroyed by a call to 'Free'.
-   --
-   --  Parameters:
-   --    Manager         - The region manager
-   --    Display_Area    - The area that will be displayed to the user. This
-   --                      subprogram can decide to have an area redrawn that
-   --                      is actually greater than 'Display_Area'. See
-   --                      'Clipping'
-   --    Clipping        - Height-ordered queue of clipping instructions. Each
-   --                      such instruction must be honored when drawing of
-   --                      nodes comes to its layer.
-   --    Nodes           - Nodes to be drawn. Ordered from lower to higher
-   --                      layers
-   --    Refresh_Pending - If set to True then pollution will be removed
-   --                      from 'Nodes'
-   procedure Start_Node_Refresh
-     (Manager         : in out Region_Manager;
-      Display_Area    : in     Vis.Absolute.Rectangle_2d;
-      Clipping        :    out Clipping_Queue_Access;
-      Nodes           :    out Node_Update_Iterators.Merger_Access;
-      Refresh_Pending : in     Boolean);
-
-   ----------------------------------------------------------------------------
-   --  Destroys data structures obtained by a call to 'Start_Node_Refresh'
-   --
-   --  Parameters:
-   --    Clipping - The out-parameter from 'Start_Node_Refresh'
-   --    Nodes    - The out-parameter from 'Start_Node_Refresh'
-   procedure End_Node_Refresh
-     (Clipping        : in out Clipping_Queue_Access;
-      Nodes           : in out Node_Update_Iterators.Merger_Access);
 
 
 private
@@ -1030,9 +906,6 @@ private
          Region_Width              : Vis.Absolute_Natural;
          Region_Height             : Vis.Absolute_Natural;
          Regions                   : Region_Mappings.Mapping;
-         --  If True then background space not covered by regions must
-         --  be refreshed.
-         Empty_Background_Polluted : Boolean;
       end record;
 
 end Giant.Vis_Data;

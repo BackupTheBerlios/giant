@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.9 $
---  $Author: squig $
---  $Date: 2003/07/10 21:01:40 $
+--  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.10 $
+--  $Author: keulsn $
+--  $Date: 2003/07/12 03:33:56 $
 --
 ------------------------------------------------------------------------------
 
@@ -234,6 +234,8 @@ package body Giant.Graph_Widgets.Callbacks is
       if States.Must_Flush_Locked_Content (Widget) then
          Flush_Locked (Widget);
       end if;
+      Grab_Default (Widget);
+      States.Realized (Widget);
       -----------------------------------raise Unimplemented;
    end After_Realize;
 

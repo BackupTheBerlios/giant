@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.ads,v $, $Revision: 1.6 $
+--  $RCSfile: giant-graph_widgets-drawing.ads,v $, $Revision: 1.7 $
 --  $Author: keulsn $
---  $Date: 2003/07/11 02:26:39 $
+--  $Date: 2003/07/12 03:33:56 $
 --
 ------------------------------------------------------------------------------
 --
@@ -85,6 +85,20 @@ package Giant.Graph_Widgets.Drawing is
      (Widget : access Graph_Widget_Record'Class;
       Node   : in     Vis_Data.Vis_Node_Id)
      return Vis.Absolute.Vector_2d;
+
+   ----------------------------------------------------------------------------
+   --  Returns the rectangle displayed inside the graph widget.
+   function Get_Visible_Area
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis.Absolute.Rectangle_2d;
+
+   ----------------------------------------------------------------------------
+   --  Moves the visible area, so 'Point' is its new center.
+   --  Adds pollution to the region manager, and informs 'States' about
+   --  the changes in the visible area.
+   procedure Move_Visible_Area_To
+     (Widget : access Graph_Widget_Record'Class;
+      Point  : in     Vis.Absolute.Vector_2d);
 
    ----------------------------------------------------------------------------
    --  Resizes the display. Must be called after the size of a graph window

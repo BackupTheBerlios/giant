@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-states.ads,v $, $Revision: 1.5 $
+--  $RCSfile: giant-graph_widgets-states.ads,v $, $Revision: 1.6 $
 --  $Author: keulsn $
---  $Date: 2003/07/11 02:26:39 $
+--  $Date: 2003/07/12 03:33:56 $
 --
 ------------------------------------------------------------------------------
 --
@@ -42,6 +42,9 @@ package Giant.Graph_Widgets.States is
    procedure Shut_Down
      (Widget : access Graph_Widget_Record'Class);
 
+   procedure Realized
+     (Widget : access Graph_Widget_Record'Class);
+
 
    ---------------------
    -- Drawing Ability --
@@ -52,6 +55,31 @@ package Giant.Graph_Widgets.States is
 
    procedure Disable_Drawing
      (Widget : access Graph_Widget_Record'Class);
+
+
+   -----------
+   -- Areas --
+   -----------
+
+   procedure Logic_Area_Changed
+     (Widget : access Graph_Widget_Record'Class);
+
+   procedure Logic_Area_Updated
+     (Widget : access Graph_Widget_Record'Class);
+
+   function Must_Update_Logic_Area
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean;
+
+   procedure Visual_Area_Changed
+     (Widget : access Graph_Widget_Record'Class);
+
+   procedure Visual_Area_Updated
+     (Widget : access Graph_Widget_Record'Class);
+
+   function Must_Update_Visual_Area
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean;
 
 
    -----------------
@@ -114,6 +142,23 @@ package Giant.Graph_Widgets.States is
      (Widget : access Graph_Widget_Record'Class);
 
 
+   -------------
+   -- Cursors --
+   -------------
+
+   procedure Set_Default_Cursor
+     (Widget : access Graph_Widget_Record'Class;
+      Cursor : in     Gdk.Cursor.Gdk_Cursor);
+
+   procedure Set_Waiting_Cursor
+     (Widget : access Graph_Widget_Record'Class;
+      Cursor : in     Gdk.Cursor.Gdk_Cursor);
+
+   procedure Set_Action_Cursor
+     (Widget : access Graph_Widget_Record'Class;
+      Cursor : in     Gdk.Cursor.Gdk_Cursor);
+
+
    ---------------------
    -- State Inquiries --
    ---------------------
@@ -130,5 +175,21 @@ package Giant.Graph_Widgets.States is
    function Can_Resize
      (Widget : access Graph_Widget_Record'Class)
      return Boolean;
+
+
+private
+
+   function Get_Default_Default_Cursor
+     return Gdk.Cursor.Gdk_Cursor;
+
+   function Get_Default_Waiting_Cursor
+     return Gdk.Cursor.Gdk_Cursor;
+
+   function Get_Default_Action_Cursor
+     return Gdk.Cursor.Gdk_Cursor;
+
+   procedure Update_Cursor
+     (Widget    : access Graph_Widget_Record'Class;
+      Force_Set : in     Boolean := False);
 
 end Giant.Graph_Widgets.States;

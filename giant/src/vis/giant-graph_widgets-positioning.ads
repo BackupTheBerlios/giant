@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-positioning.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-graph_widgets-positioning.ads,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/07/10 00:16:54 $
+--  $Date: 2003/07/12 03:33:56 $
 --
 ------------------------------------------------------------------------------
 --
@@ -79,6 +79,26 @@ package Giant.Graph_Widgets.Positioning is
    procedure Set_Zoom
      (Widget : access Graph_Widget_Record'Class;
       Zoom   : in     Vis.Zoom_Level);
+
+
+   ---------------------
+   -- Transformations --
+   ---------------------
+
+   function Get_Absolute
+     (Widget : access Graph_Widget_Record'Class;
+      Point  : in     Vis.Logic.Vector_2d)
+     return Vis.Absolute.Vector_2d;
+
+   function Get_Logic
+     (Widget : access Graph_Widget_Record'Class;
+      Point  : in     Vis.Absolute.Vector_2d)
+     return Vis.Logic.Vector_2d;
+
+   function Get_Logic
+     (Widget : access Graph_Widget_Record'Class;
+      Area   : in     Vis.Absolute.Rectangle_2d)
+     return Vis.Logic.Rectangle_2d;
 
 
    -----------------

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis.ads,v $, $Revision: 1.8 $
+--  $RCSfile: giant-vis.ads,v $, $Revision: 1.9 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 03:35:59 $
+--  $Date: 2003/07/12 03:33:56 $
 --
 ------------------------------------------------------------------------------
 
@@ -173,6 +173,11 @@ package Giant.Vis is
      (Transformation : in     Transformation_Type;
       Source_Rect    : in     Logic.Rectangle_2d)
      return Absolute.Rectangle_2d;
+
+   function Transform_Backward
+     (Transformation : in     Transformation_Type;
+      Source_Rect    : in     Absolute.Rectangle_2d)
+     return Logic.Rectangle_2d;
 
 --     procedure Transform_To_Gdk
 --       (Point          : in     Logic.Vector_2d;

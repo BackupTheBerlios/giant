@@ -20,19 +20,26 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.7 $
 --  $Author: keulsn $
---  $Date: 2003/07/11 02:26:39 $
+--  $Date: 2003/07/12 03:33:56 $
 --
 ------------------------------------------------------------------------------
 
 
+with Gdk.Types;
+with Gdk.Window;
+
 package body Giant.Graph_Widgets.States is
+
 
    procedure Set_Up
      (Widget : access Graph_Widget_Record'Class) is
    begin
-      null;
+      Widget.States.Cursors :=
+        (Default => Get_Default_Default_Cursor,
+         Waiting => Get_Default_Waiting_Cursor,
+         Action  => Get_Default_Action_Cursor);
    end Set_Up;
 
    procedure Shut_Down
@@ -40,6 +47,58 @@ package body Giant.Graph_Widgets.States is
    begin
       Lock_Sets.Destroy (Widget.States.Locks);
    end Shut_Down;
+
+   procedure Realized
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Update_Cursor (Widget => Widget, Force_Set => True);
+   end Realized;
+
+
+   -----------
+   -- Areas --
+   -----------
+
+   procedure Logic_Area_Changed
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Widget.States.Logic_Area_Changed := True;
+   end Logic_Area_Changed;
+
+   procedure Logic_Area_Updated
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Widget.States.Logic_Area_Changed := False;
+   end Logic_Area_Updated;
+
+   function Must_Update_Logic_Area
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean is
+   begin
+      return Widget.States.Logic_Area_Changed and then
+        not Is_Locked (Widget);
+   end Must_Update_Logic_Area;
+
+
+   procedure Visual_Area_Changed
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Widget.States.Visual_Area_Changed := True;
+   end Visual_Area_Changed;
+
+   procedure Visual_Area_Updated
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Widget.States.Visual_Area_Changed := False;
+   end Visual_Area_Updated;
+
+   function Must_Update_Visual_Area
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean is
+   begin
+      return Widget.States.Visual_Area_Changed and then
+        not Is_Locked (Widget);
+   end Must_Update_Visual_Area;
 
 
    ---------------------
@@ -67,12 +126,14 @@ package body Giant.Graph_Widgets.States is
      (Widget : access Graph_Widget_Record'Class) is
    begin
       Widget.States.Action_Mode := True;
+      Update_Cursor (Widget);
    end Enable_Action_Mode;
 
    procedure Disable_Action_Mode
      (Widget : access Graph_Widget_Record'Class) is
    begin
       Widget.States.Action_Mode := False;
+      Update_Cursor (Widget);
    end Disable_Action_Mode;
 
    function Is_Action_Mode_Current
@@ -96,6 +157,7 @@ package body Giant.Graph_Widgets.States is
       Lock_Sets.Insert
         (A_Set   => Widget.States.Locks,
          Element => Lock);
+      Update_Cursor (Widget);
    end Create_New_Lock;
 
    procedure Destroy_Lock
@@ -143,6 +205,7 @@ package body Giant.Graph_Widgets.States is
      (Widget : access Graph_Widget_Record'Class) is
    begin
       Widget.States.Lock_Flush_Pending := False;
+      Update_Cursor (Widget);
    end Flush_Locked_Content;
 
 
@@ -163,6 +226,61 @@ package body Giant.Graph_Widgets.States is
    end Updated_Visual;
 
 
+   -------------
+   -- Cursors --
+   -------------
+
+   procedure Set_Default_Cursor
+     (Widget : access Graph_Widget_Record'Class;
+      Cursor : in     Gdk.Cursor.Gdk_Cursor) is
+   begin
+      Widget.States.Cursors (Default) := Cursor;
+      Update_Cursor (Widget => Widget, Force_Set => True);
+   end Set_Default_Cursor;
+
+   procedure Set_Waiting_Cursor
+     (Widget : access Graph_Widget_Record'Class;
+      Cursor : in     Gdk.Cursor.Gdk_Cursor) is
+   begin
+      Widget.States.Cursors (Waiting) := Cursor;
+      Update_Cursor (Widget => Widget, Force_Set => True);
+   end Set_Waiting_Cursor;
+
+   procedure Set_Action_Cursor
+     (Widget : access Graph_Widget_Record'Class;
+      Cursor : in     Gdk.Cursor.Gdk_Cursor) is
+   begin
+      Widget.States.Cursors (Action) := Cursor;
+      Update_Cursor (Widget => Widget, Force_Set => True);
+   end Set_Action_Cursor;
+
+
+   procedure Update_Cursor
+     (Widget    : access Graph_Widget_Record'Class;
+      Force_Set : in     Boolean := False) is
+
+      New_State : Cursor_State_Type;
+   begin
+      --  can set cursor only if there is a Gdk_Window
+      if Gtk.Widget.Realized_Is_Set (Widget) then
+         if Widget.States.Action_Mode then
+            New_State := Action;
+         elsif not Lock_Sets.Is_Empty (Widget.States.Locks) then
+            New_State := Waiting;
+         else
+            New_State := Default;
+         end if;
+
+         if Force_Set or else New_State /= Widget.States.Current_Cursor then
+            Widget.States.Current_Cursor := New_State;
+            Gdk.Window.Set_Cursor
+              (Get_Window (Widget),
+               Widget.States.Cursors (Widget.States.Current_Cursor));
+         end if;
+      end if;
+   end Update_Cursor;
+
+
    ---------------------
    -- State Inquiries --
    ---------------------
@@ -181,5 +299,43 @@ package body Giant.Graph_Widgets.States is
       return Widget.States.Drawing_Ready and then
         Gtk.Widget.Realized_Is_Set (Widget);
    end Can_Resize;
+
+
+   Default_Default_Cursor : Gdk.Cursor.Gdk_Cursor := Gdk.Cursor.Null_Cursor;
+   Default_Waiting_Cursor : Gdk.Cursor.Gdk_Cursor := Gdk.Cursor.Null_Cursor;
+   Default_Action_Cursor  : Gdk.Cursor.Gdk_Cursor := Gdk.Cursor.Null_Cursor;
+
+   function Get_Default_Default_Cursor
+     return Gdk.Cursor.Gdk_Cursor is
+   begin
+      if Gdk.Cursor."=" (Default_Waiting_Cursor, Gdk.Cursor.Null_Cursor) then
+         Gdk.Cursor.Gdk_New
+           (Widget      => Default_Waiting_Cursor,
+            Cursor_Type => Gdk.Types.Pirate);
+      end if;
+      return Default_Waiting_Cursor;
+   end Get_Default_Default_Cursor;
+
+   function Get_Default_Waiting_Cursor
+     return Gdk.Cursor.Gdk_Cursor is
+   begin
+      if Gdk.Cursor."=" (Default_Action_Cursor, Gdk.Cursor.Null_Cursor) then
+         Gdk.Cursor.Gdk_New
+           (Widget      => Default_Action_Cursor,
+            Cursor_Type => Gdk.Types.Coffee_Mug);
+      end if;
+      return Default_Waiting_Cursor;
+   end Get_Default_Waiting_Cursor;
+
+   function Get_Default_Action_Cursor
+     return Gdk.Cursor.Gdk_Cursor is
+   begin
+      if Gdk.Cursor."=" (Default_Action_Cursor, Gdk.Cursor.Null_Cursor) then
+         Gdk.Cursor.Gdk_New
+           (Widget      => Default_Action_Cursor,
+            Cursor_Type => Gdk.Types.Crosshair);
+      end if;
+      return Default_Action_Cursor;
+   end Get_Default_Action_Cursor;
 
 end Giant.Graph_Widgets.States;
