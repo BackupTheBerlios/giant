@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.24 $
-%  $Date: 2003/03/29 12:59:27 $
-%  $Author: schwiemn $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.25 $
+%  $Date: 2003/03/30 21:03:26 $
+%  $Author: birdy $
 %
 %  Description: Use-Cases für die Fensterfunktionalität der GUI
 %
@@ -305,13 +305,11 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
     \step[6] 
     GIANT berechnet das entsprechende Layout und zeigt derweil einen
     DIALOG an, über den der Benutzer über den Fortschritt der Berechnung
-    informiert wird (siehe \ref{Progressbar}).\\
+    informiert wird (siehe \ref{Progressbar-Modale}).\\
     Während der Berechnung des Layouts kann das System GIANT nicht bedient
     werden (die gesamte GUI ist gesperrt). Zugänglich ist nur der
-    Button zum Abbruch des Algorithmus.
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    VERWEIS GUI
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    Button zum Abbruch des Algorithmus \ref{Progressbar-Modale-Cancel}.
+
     
     \step[7]
     Nach Abschluss der Berechnung fügt GIANT die Fenster-Knoten und 
