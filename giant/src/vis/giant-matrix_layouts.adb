@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-matrix_layouts.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-matrix_layouts.adb,v $, $Revision: 1.7 $
 --  $Author: koppor $
---  $Date: 2003/07/03 15:07:28 $
+--  $Date: 2003/07/03 15:28:59 $
 --
 
 with Ada.Numerics.Generic_Elementary_Functions;
@@ -72,23 +72,6 @@ package body Giant.Matrix_Layouts is
      (Layout      : access Matrix_Layout_Record;
       Next_Action :    out Evolutions.Evolution_Action)
    is
-
-      ----------------------------------------------------------------------
-      --  Removes top node of Layout.Nodes_To_Layout
-      --  and sets its position to given pos
-      procedure Set_Position_Of_Top_Node
-        (Pos : in Vis.Logic.Vector_2d)
-      is
-         Node : Graph_Lib.Node_Id;
-      begin
-         Graph_Lib.Node_Id_Sets.Remove_First
-           (Layout.Nodes_To_Layout, Node);
-         Graph_Widgets.Set_Top_Middle
-           (Layout.Widget,
-            Node,
-            Pos,
-            Layout.Widget_Lock);
-      end Set_Position_Of_Top_Node;
 
       procedure Init_Calculation
       is
@@ -150,8 +133,7 @@ package body Giant.Matrix_Layouts is
             --  TBD: find next node by a breadth-first-search
             --       (according to spec)
 
-            --  Same statements as in Set_Position_Of_Top_Node
-            --    but "Node" is needed for Get_Current_Node_Height
+            --  Set position of first node in queue
             Graph_Lib.Node_Id_Sets.Remove_First
               (Layout.Nodes_To_Layout, Node);
             Graph_Widgets.Set_Top_Middle
@@ -202,7 +184,17 @@ package body Giant.Matrix_Layouts is
                when 0 =>
                   Next_Action := Evolutions.Finish;
                when 1 =>
-                  Set_Position_Of_Top_Node (Layout.Target_Position);
+                  declare
+                     Node : Graph_Lib.Node_Id;
+                  begin
+                     Graph_Lib.Node_Id_Sets.Remove_First
+                       (Layout.Nodes_To_Layout, Node);
+                     Graph_Widgets.Set_Top_Middle
+                       (Layout.Widget,
+                        Node,
+                        Layout.Target_Position,
+                        Layout.Widget_Lock);
+                  end;
                   Next_Action := Evolutions.Finish;
                when others =>
                   Init_Calculation;
