@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-node_attribute_filters.adb,v $, $Revision: 1.11 $
+--  $RCSfile: giant-graph_lib-node_attribute_filters.adb,v $, $Revision: 1.12 $
 --  $Author: koppor $
---  $Date: 2003/07/14 18:49:47 $
+--  $Date: 2003/07/14 19:06:54 $
 --
 ------------------------------------------------------------------------------
 
@@ -38,7 +38,7 @@ package body Giant.Graph_Lib.Node_Attribute_Filters is
    is
       Temp_Filter  : Filter;
       Res          : Filter;
-      I            : Positive;
+      I            : Natural;
       Iter         : String_Lists.ListIter;
       Current_Name : Ada.Strings.Unbounded.Unbounded_String;
    begin
