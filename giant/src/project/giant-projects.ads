@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.19 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.20 $
 -- $Author: schwiemn $
--- $Date: 2003/06/18 14:39:43 $
+-- $Date: 2003/06/18 16:31:07 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -159,7 +159,7 @@ package Giant.Projects is
       Bauhaus_IML_Graph_File_Checksum : out Integer);
 
    ---------------------------------------------------------------------------
-   -- Before executing this subprgram
+   -- Before executing this subprogram
    -- an iml graph must have been loaded by Giant.Graph_lib.
    --
    -- Protocoll:

@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.18 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.19 $
 --  $Author: schwiemn $
---  $Date: 2003/06/18 14:39:43 $
+--  $Date: 2003/06/18 16:31:07 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -211,6 +211,10 @@ package body Giant.Projects is
    end Kill_All_Security_Files;
 
    ---------------------------------------------------------------------------
+   -- Increases fault tolerance:
+   --   Ensures that the Name of the vis window corresponds to the
+   --   file's name from that it is loaded 
+   --   (user may have changed this name).
    function Load_Vis_Window_Into_Main_Memory (File_Path : String)
      return Vis_Windows.Visual_Window_Access is
 
@@ -224,6 +228,8 @@ package body Giant.Projects is
         (Stream_File,
          Ada.Streams.Stream_IO.In_File,
          File_Path);
+
+      -- TODO NAME Consitency check
 
       Ada_Stream := Ada.Streams.Stream_IO.Stream (Stream_File);
       Bauhaus_In_Stream := Bauhaus_IO.Make_Internal (Ada_Stream);
@@ -276,6 +282,10 @@ package body Giant.Projects is
    end Write_Vis_Window_To_File;
 
    ---------------------------------------------------------------------------
+   -- Increases fault tolerance:
+   --   Ensures that the Name of the subgraph corresponds to the
+   --   file's name from that it is loaded 
+   --   (user may have changed this name).
    function Load_Sub_Graph_Data_Into_Main_Memory (File_Path : String)
      return Subgraph_Data_Element is
 
@@ -295,6 +305,8 @@ package body Giant.Projects is
 
       Subgraph_Data_Element_Read
         (Bauhaus_In_Stream, New_Sub_Graph_Data);
+        
+      -- TODO Name Consistency CHECK
 
       --  close resources
       Bauhaus_IO.Release (Bauhaus_In_Stream);
@@ -749,21 +761,211 @@ package body Giant.Projects is
       Project_Directory : in String)
      return Project_Access is
 
+      New_Project_Access : Project_Access;    
+      Absolute_Project_File_Name : Ada.Strings.Unbounded.Unbounded_String;
 
+      Project_Tree_Reader  : Tree_Readers.Tree_Reader;
+      Project_XML_Document : Dom.Core.Document;
+
+      XML_Nodes_List       : DOM.Core.Node_List;
+      Data_XML_Node        : DOM.Core.Node;
+      Vis_Window_XML_Node  : Dom.Core.Node;
+      Subgraphs_XML_Node   : Dom.Core.Node;
+      A_XML_Node           : DOM.Core.Node;
+      
+      A_Subgraph_File_Name        : Ada.Strings.Unbounded.Unbounded_String;
+      New_Subgraph_Data_Element   : Subgraph_Data_Element;
+      
+      A_Vis_Window_File_Name      : Ada.Strings.Unbounded.Unbounded_String;
+      New_Vis_Window_Data_Element : Vis_Window_Data_Element;
+      Test_Window_Acc             : Vis_Windows.Visual_Window_Access;
    begin
 
+      if (GNAT.OS_Lib.Is_Directory (Project_Directory) = False) then
+         raise Invalid_Project_Directory_Excpetion;
+      end if;
 
+      if (Does_Project_Exist (Project_Name, Project_Directory) = False) then
+         raise Project_Does_Not_Exist_Exception;
+      end if;
 
+      Absolute_Project_File_Name := Create_Name_For_File
+        (Project_Directory,
+         Project_Name,
+         ".xml");
 
+      XML_File_Access.Load_XML_File_Validated
+        (Ada.Strings.Unbounded.To_String (Absolute_Project_File_Name),
+         Project_Tree_Reader,
+         Project_XML_Document);
+         
+      --  build new project
+      ---------------------
+      New_Project_Access := new Project_Element;
+         
+      --  read global settings
+      ------------------------
+      XML_Nodes_List :=
+        DOM.Core.Documents.Get_Elements_By_Tag_Name
+          (Project_XML_Document, "global_data");
+      -- list only holds one element
+      Data_XML_Node := DOM.Core.Nodes.Item (XML_Nodes_List, 0);
 
-      --  TODO
-      --  BEIM LADEN CHECKEN OB ZWEIMAL DER GLEICHE NAME VORKOMMT; FALLS JA
-      --  EXCEPTION (bei Anzeigefenstern oder Subgraphen).
+      New_Project_Access.Project_Name :=
+        Ada.Strings.Unbounded.To_Unbounded_String (Project_Name);
+ 
+      New_Project_Access.Abs_Project_Directory :=
+        Ada.Strings.Unbounded.To_Unbounded_String 
+          (File_Management.Return_Dir_Path_For_File_Path
+            (Ada.Strings.Unbounded.To_String
+              (Absolute_Project_File_Name)));
+
+      New_Project_Access.Abs_Bauhaus_IML_Graph_File :=
+        Ada.Strings.Unbounded.To_Unbounded_String
+          (DOM.Core.Elements.Get_Attribute
+            (Data_XML_Node, "iml_graph_file_path"));
+
+  
+      New_Project_Access.Bauhaus_IML_Graph_File_Checksum :=         
+        Integer'Value (
+          (DOM.Core.Elements.Get_Attribute
+            (Data_XML_Node, "iml_graph_checksum")));
+
+      -- calculate path relative to project directory if necessary
+      New_Project_Access.Node_Annotations_File :=
+        Ada.Strings.Unbounded.To_Unbounded_String
+          (File_Management.Get_Absolute_Path_To_File_From_Relative 
+            (Ada.Strings.Unbounded.To_String 
+              (New_Project_Access.Abs_Project_Directory),
+            (DOM.Core.Elements.Get_Attribute
+              (Data_XML_Node, "node_annotations_file_name"))));
+
+      DOM.Core.Free (XML_Nodes_List);
+            
+      -- Load all subgraphs into main memory
+      --------------------------------------      
+      New_Project_Access.All_Subgraphs := Subgraph_Data_Hashs.Create;
       
+      XML_Nodes_List :=
+        DOM.Core.Documents.Get_Elements_By_Tag_Name
+          (Project_XML_Document, "subgraphs");
+      -- list only holds one element
+      Subgraphs_XML_Node := DOM.Core.Nodes.Item (XML_Nodes_List, 0);
+      DOM.Core.Free (XML_Nodes_List);
+      
+      XML_Nodes_List := Dom.Core.Elements.Get_Elements_By_Tag_Name 
+        (Subgraphs_XML_Node, "a_subgraph_file");
+      
+      -- process subgraph entries - the <a_subgraph_file> nodes
+      for I in 0 .. DOM.Core.Nodes.Length (XML_Nodes_List) - 1 loop
+      
+         A_XML_Node := DOM.Core.Nodes.Item (XML_Nodes_List, I);
+      
+         -- calculate absolute path if necessary
+         A_Subgraph_File_Name := 
+           Ada.Strings.Unbounded.To_Unbounded_String
+             (File_Management.Get_Absolute_Path_To_File_From_Relative 
+               (Ada.Strings.Unbounded.To_String 
+                 (New_Project_Access.Abs_Project_Directory),
+               (DOM.Core.Elements.Get_Attribute
+                 (A_XML_Node, "file_path")))); 
+                 
+         New_Subgraph_Data_Element := 
+           Load_Sub_Graph_Data_Into_Main_Memory 
+             (Ada.Strings.Unbounded.To_String 
+               (A_Subgraph_File_Name));
+               
+         Subgraph_Data_Hashs.Bind 
+           (New_Project_Access.All_Subgraphs,
+            Ada.Strings.Unbounded.To_Unbounded_String
+              (Graph_Lib.Subgraphs.Get_Name 
+                (New_Subgraph_Data_Element.Subgraph)),
+            New_Subgraph_Data_Element);                                                                                               
+      end loop;
+      
+      DOM.Core.Free (XML_Nodes_List);
+      
+      -- Load information about all visual windows (not the windows itself)
+      -- in order to check consistency each vis window will be loaded
+      -- into the main memory (only one window at once) and closed afterwards.
+      ---------------------------------------------------------------------   
+      New_Project_Access.All_Vis_Windows := Known_Vis_Windows_Hashs.Create;
+      
+      XML_Nodes_List :=
+        DOM.Core.Documents.Get_Elements_By_Tag_Name
+          (Project_XML_Document, "visualisation_windows");
+      -- list only holds one element
+      Vis_Window_XML_Node := DOM.Core.Nodes.Item (XML_Nodes_List, 0);
+      DOM.Core.Free (XML_Nodes_List);
+      
+      XML_Nodes_List := Dom.Core.Elements.Get_Elements_By_Tag_Name 
+        (Vis_Window_XML_Node, "a_vis_window_file");
+      
+      -- process visulisation window entries - the <a_vis_window_file> nodes
+      for I in 0 .. DOM.Core.Nodes.Length (XML_Nodes_List) - 1 loop
+      
+         A_XML_Node := DOM.Core.Nodes.Item (XML_Nodes_List, I);
+           
+         -- calculate absolute path if necessary
+         A_Vis_Window_File_Name := 
+           Ada.Strings.Unbounded.To_Unbounded_String
+             (File_Management.Get_Absolute_Path_To_File_From_Relative 
+               (Ada.Strings.Unbounded.To_String 
+                 (New_Project_Access.Abs_Project_Directory),
+               (DOM.Core.Elements.Get_Attribute
+                 (A_XML_Node, "file_path")))); 
+                 
+         ----------- build new vis window data element
+         New_Vis_Window_Data_Element.Vis_Window_Name := 
+           Ada.Strings.Unbounded.To_Unbounded_String
+             (File_Management.Calculate_Name_For_File 
+               (Ada.Strings.Unbounded.To_String 
+                 (A_Vis_Window_File_Name)));
+          
+         New_Vis_Window_Data_Element.Is_File_Linked := True;
+                  
+         New_Vis_Window_Data_Element.Existing_Vis_Window_File := 
+           A_Vis_Window_File_Name;
+      
+         New_Vis_Window_Data_Element.Is_Memory_Loaded := False;
+         -------------
+         
+         ------------- security check                      
+         --  try opening file - check whether vis window file really exists   
+         Test_Window_Acc := Load_Vis_Window_Into_Main_Memory 
+           (Ada.Strings.Unbounded.To_String (A_Vis_Window_File_Name));
+           
+         Vis_Windows.Deallocate_Vis_Window_Deep (Test_Window_Acc);
+         -------------
+
+         --  insert window data element
+         Known_Vis_Windows_Hashs.Bind 
+           (New_Project_Access.All_Vis_Windows,
+            New_Vis_Window_Data_Element.Vis_Window_Name,
+            New_Vis_Window_Data_Element);                                                                                               
+      end loop;
+      
+      
+      -- Load node annotations
+      ------------------------
+-- TODO
 
 
-
-      return null;
+      --  deallocate storrage
+      -----------------------
+      Tree_Readers.Free(Project_Tree_Reader);
+      
+      
+      --  check whether correct iml graph is loaded
+      ---------------------------------------------
+      
+      --  deallocate whole project if check failes.
+      
+      
+      
+      
+      
+      return New_Project_Access;
    end Load_Project;
 
    ---------------------------------------------------------------------------
@@ -798,7 +1000,7 @@ package body Giant.Projects is
          raise Wrong_IML_Graph_Loaded_Exception;
       end if;
 
-      --  calculate absloute paths
+      --  calculate absolute paths
       Abs_Project_Directory := Ada.Strings.Unbounded.To_Unbounded_String
         (File_Management.Get_Absolute_Path_To_Directory_From_Relative
           (GNAT.Directory_Operations.Get_Current_Dir, Project_Directory));

@@ -14,9 +14,8 @@
     <a_vis_window_file file_path = "vis_window_file2.xml"/>
   </visualisation_windows>
 
-
   <subgraphs>  
-    <a_subgraph_file file_path = "vis_window_file1.xml"/>
+    <a_subgraph_file file_path = "subgraph_file1.xml"/>
   </subgraphs>
   
 </giant_project_file>
