@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.7 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.8 $
 -- $Author: squig $
--- $Date: 2003/06/17 20:28:40 $
+-- $Date: 2003/06/18 16:55:09 $
 --
 
 with Glib;
@@ -135,7 +135,7 @@ package body Giant.Gui_Utils is
       Menu : Gtk.Menu.Gtk_Menu;
    begin
       Gtk.Menu_item.Gtk_New (Item, label);
-      Gtk.Menu_Bar.Add (Menu_Bar, Item);
+      Gtk.Menu_Bar.Append (Menu_Bar, Item);
 
       Gtk.Menu.Gtk_New (Menu);
       Gtk.Menu_Item.Set_Submenu (Item, Menu);

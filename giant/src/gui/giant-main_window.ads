@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.ads,v $, $Revision: 1.5 $
+--  $RCSfile: giant-main_window.ads,v $, $Revision: 1.6 $
 --  $Author: squig $
---  $Date: 2003/06/18 15:16:26 $
+--  $Date: 2003/06/18 16:55:09 $
 --
 --  Provides the main window. The main window is only instanciated once.
 --
@@ -46,6 +46,10 @@ package Giant.Main_Window is
    procedure Remove_Window (Name : in String);
 
    ---------------------------------------------------------------------------
+   --  Other Methods
+   ---------------------------------------------------------------------------
+
+   ---------------------------------------------------------------------------
    --  Sets windows visible.
    --
    procedure Show;
@@ -58,5 +62,8 @@ package Giant.Main_Window is
    function Hide
      (Ask_For_Confirmation: Boolean)
      return Boolean;
+
+   procedure Set_Project_Loaded
+     (Loaded : in Boolean);
 
 end Giant.Main_Window;

@@ -21,10 +21,14 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.9 $
 --  $Author: squig $
---  $Date: 2003/06/18 15:16:26 $
+--  $Date: 2003/06/18 16:55:08 $
 --
+
+with Ada.Strings.Unbounded;
+
+with String_Lists;
 
 with Giant.Graph_Lib;
 with Giant.Gui_Manager;
@@ -39,21 +43,50 @@ package body Giant.Controller is
    --  Projects
    ---------------------------------------------------------------------------
 
-   procedure Create_Project
-     (Name              : in String;
-      Project_Directory : in String;
-      IML_Graph_File    : in String)
+   procedure Close_Project
    is
-      Checksum : Integer := 0;
    begin
-      -- create graph
-      Giant.Graph_Lib.Create (IML_Graph_File);
+      --FIX: Current_Project := null;
+      null;
+   end;
 
-      Valid_Names.Verify_Standard_Name (Name);
+   procedure Initialize_Project
+   is
+      List : String_Lists.List;
+      Iterator : String_Lists.ListIter;
+      Name : Ada.Strings.Unbounded.Unbounded_String;
+   begin
+      --  initialize main window data
+      List := Projects.Get_All_Visualisation_Window_Names
+        (Current_Project);
+      Iterator := String_Lists.MakeListIter (List);
+      while String_Lists.More (Iterator) loop
+         String_Lists.Next (Iterator, Name);
+         Gui_Manager.Add_Window (Ada.Strings.Unbounded.To_String (Name));
+      end loop;
+      String_Lists.Destroy (List);
 
-      -- create project
-      Current_Project := Projects.Create_Empty_Project
-        (Name, Project_Directory, IML_Graph_File, Checksum);
+      Gui_Manager.Set_Project_Loaded (False);
+      Logger.Info (-"Project initialized");
+   end;
+
+   procedure Create_Project
+     (Filename           : in String;
+      IML_Graph_Filename : in String)
+   is
+      Checksum : Integer;
+   begin
+      Close_Project;
+
+      --  create graph
+      Giant.Graph_Lib.Create (IML_Graph_Filename);
+      Checksum := Graph_Lib.Get_Graph_Hash;
+
+      Logger.Info (-"Creating project " & Filename);
+
+      --  create project
+      Current_Project := Projects.Create_Empty_Project_For_File
+        (Filename, IML_Graph_Filename, Checksum);
    end Create_Project;
 
    function Get_Project
@@ -67,7 +100,10 @@ package body Giant.Controller is
      (Filename : in String)
    is
    begin
-      -- FIX: close Current_Project
+      Logger.Info (-"Closing current project " & Filename);
+      Close_Project;
+
+      Logger.Info (-"Opening project " & Filename);
       Current_Project := Projects.Load_Project (Filename, "");
    end;
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.6 $
 --  $Author: squig $
---  $Date: 2003/06/18 15:16:26 $
+--  $Date: 2003/06/18 16:55:09 $
 --
 
 with Ada.IO_Exceptions;
@@ -63,8 +63,7 @@ package body Giant.Default_Logger is
    begin
       if (Ada.Text_IO.Is_Open (Out_File)) then
          -- cut off Level_ and pad to 5 letters
-         Ada.Text_IO.Put (Out_File,
-                          Head (Tail (Level_Type'Image (Level), 6), 5));
+         Ada.Text_IO.Put (Out_File, Get_Level_String (Level));
          Ada.Text_Io.Put (Out_File, " [");
          Ada.Text_IO.Put (Out_File, Head (Name, 15));
          Ada.Text_Io.Put (Out_File, "] ");
@@ -115,6 +114,15 @@ package body Giant.Default_Logger is
    begin
       Put_Line (Level_Warn, Name, Message);
    end Warn;
+
+   function Get_Level_String
+     (Level : in Level_Type)
+     return String
+   is
+      use Ada.Strings.Fixed;
+   begin
+      return Head (Tail (Level_Type'Image (Level), 6), 5);
+   end;
 
    procedure Set_Listener
      (Listener : in Logger_Listener)

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger.ads,v $, $Revision: 1.4 $
+--  $RCSfile: giant-default_logger.ads,v $, $Revision: 1.5 $
 --  $Author: squig $
---  $Date: 2003/06/18 15:16:26 $
+--  $Date: 2003/06/18 16:55:09 $
 --
 ------------------------------------------------------------------------------
 --
@@ -108,6 +108,15 @@ package Giant.Default_Logger is
      (Message : in String;
       Name    : in String := DEFAULT_NAME);
 
+
+   ---------------------------------------------------------------------------
+   --  Returns a string representation of Level.
+   --
+   --  Parameters:
+   --    Level - The level to convert
+   function Get_Level_String
+     (Level : in Level_Type)
+     return String;
 
    ---------------------------------------------------------------------------
    --  Registers a listener for all log messages.

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.6 $
+--  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.7 $
 --  $Author: squig $
---  $Date: 2003/06/18 15:16:26 $
+--  $Date: 2003/06/18 16:55:08 $
 --
 --  Stores the window records. Handles the controller updates. Provides
 --  a facade for the gui.
@@ -37,6 +37,10 @@ with Giant.Vis_Windows;
 package Giant.Gui_Manager is
 
    ---------------------------------------------------------------------------
+   --  Main Application
+   ---------------------------------------------------------------------------
+
+   ---------------------------------------------------------------------------
    --  Shows the main window.
    --
    procedure Show;
@@ -47,6 +51,13 @@ package Giant.Gui_Manager is
    function Hide
      (Ask_For_Confirmation: Boolean)
      return Boolean;
+
+   procedure Set_Project_Loaded
+     (Loaded : in Boolean);
+
+   ---------------------------------------------------------------------------
+   --  Windows
+   ---------------------------------------------------------------------------
 
    procedure Add_Window
      (Name : in String);

@@ -20,18 +20,15 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.7 $
 --  $Author: squig $
---  $Date: 2003/06/18 15:16:26 $
+--  $Date: 2003/06/18 16:55:08 $
 --
-
-with Ada.Strings.Unbounded;
 
 with Gdk.Threads;
 with Gtk.Main;
 
 with Lists;
-with String_Lists;
 
 with Giant.Controller;
 with Giant.Main_Window;
@@ -44,6 +41,10 @@ package body Giant.Gui_Manager is
 
    package Graph_Window_Lists is new Lists (Graph_Window.Graph_Window_Access);
    Open_Windows : Graph_Window_Lists.List := Graph_Window_Lists.Create;
+
+   ---------------------------------------------------------------------------
+   --  Main Application
+   ---------------------------------------------------------------------------
 
    function Hide
      (Ask_For_Confirmation: Boolean)
@@ -59,9 +60,6 @@ package body Giant.Gui_Manager is
 
    procedure Show
    is
-      List : String_Lists.List;
-      Iterator : String_Lists.ListIter;
-      Name : Ada.Strings.Unbounded.Unbounded_String;
    begin
       Gtk.Main.Set_Locale;
       Gtk.Main.Init;
@@ -70,23 +68,23 @@ package body Giant.Gui_Manager is
       Gdk.Threads.Enter;
 
       Main_Window.Show;
-
-      --  initialize main windwo data
-      List := Projects.Get_All_Visualisation_Window_Names
-        (Controller.Get_Project);
-      Iterator := String_Lists.MakeListIter (List);
-      while String_Lists.More (Iterator) loop
-         String_Lists.Next (Iterator, Name);
-         Main_Window.Add_Window (Ada.Strings.Unbounded.To_String (Name));
-      end loop;
-
-      -- FIX: String_Lists.Destroy (Iterator);
-      String_Lists.Destroy (List);
+      Main_Window.Set_Project_Loaded (False);
 
       Gtk.Main.Main;
 
       Gdk.Threads.Leave;
    end Show;
+
+   procedure Set_Project_Loaded
+     (Loaded : in Boolean)
+   is
+   begin
+      Main_Window.Set_Project_Loaded (Loaded);
+   end Set_Project_Loaded;
+
+   ---------------------------------------------------------------------------
+   --  Windows
+   ---------------------------------------------------------------------------
 
    procedure Add_Window
      (Name : in String)

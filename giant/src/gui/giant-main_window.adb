@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.11 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.12 $
 --  $Author: squig $
---  $Date: 2003/06/18 15:16:26 $
+--  $Date: 2003/06/18 16:55:09 $
 --
 
 with Ada.Strings.Unbounded;
@@ -34,6 +34,7 @@ with Glib; use type Glib.Gint;
 with Gtk.Box;
 with Gtk.Clist;
 pragma Elaborate_All (Gtk.Clist);
+with Gtk.Container;
 with Gtk.Enums; use Gtk.Enums;
 with Gtk.Main;
 with Gtk.Menu;
@@ -48,6 +49,7 @@ with Gtkada.File_Selection;
 with Gtkada.Types;
 
 with Giant.Controller;
+with Giant.Default_Logger;
 with Giant.Gsl_Dialog;
 with Giant.Gui_Manager;
 with Giant.Gui_Utils; use Giant.Gui_Utils;
@@ -58,6 +60,13 @@ package body Giant.Main_Window is
 
    --  main window instance
    Window : Gtk.Window.Gtk_Window;
+
+   Menu_Bar : Gtk.Menu_Bar.Gtk_Menu_Bar;
+   Project_Menu : Gtk.Menu.Gtk_Menu;
+   Project_Menu_Item : Gtk.Menu_Item.Gtk_Menu_Item;
+   Project_New_Menu_Item : Gtk.Menu_Item.Gtk_Menu_Item;
+   Project_Open_Menu_Item : Gtk.Menu_Item.Gtk_Menu_Item;
+   Project_Quit_Menu_Item : Gtk.Menu_Item.Gtk_Menu_Item;
 
    package Window_List_Data is new
      Gui_Utils.Clist_Row_Data (String);
@@ -117,7 +126,7 @@ package body Giant.Main_Window is
    end Update_Window;
 
    ---------------------------------------------------------------------------
-   --  Project Menu
+   --  Project Menu Callbacks
    ---------------------------------------------------------------------------
 
    procedure On_Project_New
@@ -136,9 +145,8 @@ package body Giant.Main_Window is
                  (-"Select IML File", "",
                   Dir_Only => False, Must_Exist => False);
             begin
-               if (Filename /= "") then
-                  Controller.Create_Project
-                    ("", Filename, IML_Filename);
+               if (IML_Filename /= "") then
+                  Controller.Create_Project (Filename, IML_Filename);
                end if;
             end;
          end if;
@@ -191,7 +199,7 @@ package body Giant.Main_Window is
    end On_Project_Quit;
 
    ---------------------------------------------------------------------------
-   --  Tools Menu
+   --  Tools Menu Callbacks
    ---------------------------------------------------------------------------
 
    procedure On_Tools_Execute_GSL_Script
@@ -204,7 +212,7 @@ package body Giant.Main_Window is
    end On_Tools_Execute_GSL_Script;
 
    ---------------------------------------------------------------------------
-   --  Window Menu
+   --  Window Menu Callbacks
    ---------------------------------------------------------------------------
 
    procedure On_Window_New
@@ -215,7 +223,7 @@ package body Giant.Main_Window is
    end On_Window_New;
 
    ---------------------------------------------------------------------------
-   --  Window Context Menu
+   --  Window Context Menu Callbacks
    ---------------------------------------------------------------------------
 
    procedure On_Window_List_Open
@@ -241,7 +249,7 @@ package body Giant.Main_Window is
    end On_Window_List_Delete;
 
    ---------------------------------------------------------------------------
-   --  Subgraph Menu
+   --  Subgraph Menu Callbacks
    ---------------------------------------------------------------------------
 
    procedure On_Subgraph_Set_Operation
@@ -254,7 +262,7 @@ package body Giant.Main_Window is
    end On_Subgraph_Set_Operation;
 
    ---------------------------------------------------------------------------
-   --  Subgraph Context Menu
+   --  Subgraph Context Menu Callbacks
    ---------------------------------------------------------------------------
 
    procedure On_Subgraph_List_Highlight
@@ -274,6 +282,23 @@ package body Giant.Main_Window is
    end On_Subgraph_List_Delete;
 
    ---------------------------------------------------------------------------
+   --  Status Bar Callbacks
+   ---------------------------------------------------------------------------
+
+   procedure On_Log_Message
+     (Level   : in Default_Logger.Level_Type;
+      Name    : in String;
+      Message : in String)
+   is
+      use type Default_Logger.Level_Type;
+      Id : Gtk.Status_Bar.Message_Id;
+   begin
+      if (Level = Default_Logger.Level_Info) then
+         Id := Gtk.Status_Bar.Push (Status_Bar, 1, Message);
+      end if;
+   end;
+
+   ---------------------------------------------------------------------------
    --  Constructors
    ---------------------------------------------------------------------------
 
@@ -281,19 +306,31 @@ package body Giant.Main_Window is
      return Gtk.Menu_Bar.Gtk_Menu_Bar is
       Menu_Bar : Gtk.Menu_Bar.Gtk_Menu_Bar;
       Menu : Gtk.Menu.Gtk_Menu;
+      Item : Gtk.Menu_Item.Gtk_Menu_Item;
    begin
       Gtk.Menu_Bar.Gtk_New (Menu_Bar);
 
-      Menu := New_Sub_Menu (Menu_Bar, -"Projekt");
+      Gtk.Menu_item.Gtk_New (Item, -"Projekt");
+      Gtk.Menu_Bar.Add (Menu_Bar, Item);
+      Project_Menu_Item := Item;
+
+      Gtk.Menu.Gtk_New (Menu);
+      Gtk.Menu_Item.Set_Submenu (Item, Menu);
+      Project_Menu := Menu;
+
       Gtk.Menu.Add (Menu, New_TearOff_Menu_Item);
-      Gtk.Menu.Add (Menu, New_Menu_Item (-"New", On_Project_New'Access));
-      Gtk.Menu.Add (Menu, New_Menu_Item (-"Open...", On_Project_Open'Access));
+      Project_New_Menu_Item := New_Menu_Item (-"New", On_Project_New'Access);
+      Gtk.Menu.Add (Menu, Project_New_Menu_Item);
+      Project_Open_Menu_Item
+        := New_Menu_Item (-"Open...", On_Project_Open'Access);
+      Gtk.Menu.Add (Menu, Project_Open_Menu_Item);
       Gtk.Menu.Add (Menu, New_Menu_Separator);
       Gtk.Menu.Add (Menu, New_Menu_Item (-"Save", On_Project_Save'Access));
       Gtk.Menu.Add (Menu, New_Menu_Item (-"Save As...",
                                          On_Project_Save_As'Access));
       Gtk.Menu.Add (Menu, New_Menu_Separator);
-      Gtk.Menu.Add (Menu, New_Menu_Item (-"Quit", On_Project_Quit'Access));
+      Project_Quit_Menu_Item := New_Menu_Item (-"Quit", On_Project_Quit'Access);
+      Gtk.Menu.Add (Menu, Project_Quit_Menu_Item);
 
       Menu := New_Sub_Menu (Menu_Bar, -"Tools");
       Gtk.Menu.Add (Menu, New_TearOff_Menu_Item);
@@ -323,8 +360,9 @@ package body Giant.Main_Window is
       Gtk.Box.Gtk_New_Vbox (Box);
       Gtk.Window.Add (Window, Box);
 
-      --  menu
-      Gtk.Box.Pack_Start (Box, Initialize_Menu, Expand => False, Fill => True,
+      --  menu bar
+      Menu_Bar := Initialize_Menu;
+      Gtk.Box.Pack_Start (Box, Menu_Bar, Expand => False, Fill => True,
                           Padding => 0);
 
       --  split pane
@@ -379,6 +417,7 @@ package body Giant.Main_Window is
       Gtk.Status_Bar.Gtk_New (Status_Bar);
       Gtk.Box.Pack_End (Box, Status_Bar, Expand => False, Fill => True,
                         Padding => 0);
+      Default_Logger.Set_Listener (On_Log_Message'Access);
 
       --  connect close button
       Widget_Return_Callback.Connect
@@ -456,5 +495,43 @@ package body Giant.Main_Window is
 
       Gtk.Window.Show_All (Window);
    end Show;
+
+   Loaded: Boolean;
+
+   procedure Update_Children
+     (Widget : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+
+   begin
+      Gtk.Widget.Set_Sensitive (Widget, Loaded);
+   end;
+
+   procedure Set_Project_Loaded
+     (Loaded : in Boolean)
+   is
+--        package Menu_Bar_Forall is new Gtk.Container.Forall_Pkg
+--          (Boolean);
+
+   begin
+      --  set menu bar sensitive
+      Main_Window.Loaded := Loaded;
+      Gtk.Menu_Bar.Forall (Menu_Bar, Update_Children'Access);
+      Gtk.Menu.Forall (Project_Menu, Update_Children'Access);
+
+      if (Loaded) then
+         Gtk.Window.Set_Title (Window, "GIANT - "
+                               & Projects.Get_Project_Name
+                               (Controller.Get_Project));
+      else
+         Gtk.Window.Set_Title (Window, "GIANT");
+
+         --  active a few items that can be selected when no project
+         --  is loaded
+         Gtk.Menu_Item.Set_Sensitive (Project_Menu_Item, True);
+         Gtk.Menu_Item.Set_Sensitive (Project_New_Menu_Item, True);
+         Gtk.Menu_Item.Set_Sensitive (Project_Open_Menu_Item, True);
+         Gtk.Menu_Item.Set_Sensitive (Project_Quit_Menu_Item, True);
+      end if;
+   end Set_Project_Loaded;
 
 end Giant.Main_Window;
