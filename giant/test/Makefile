@@ -21,6 +21,8 @@ graphlib :
 matrix_layouts :
 	make -C ../ MAIN=test/matrix_layouts_test EXEC=test/matrix_layouts_test all
 
+layout_factory :
+	make -C ../ MAIN=test/layout_factory_test EXEC=test/layout_factory_test all
 
 all:
 	make -C ../ all
