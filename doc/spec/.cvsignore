@@ -1,12 +1,12 @@
 Makefile.pics
+spec.pdf
+*.*~
 *.aux
 *.dvi
 *.eps
 *.ilg
 *.ind
-*.log
-*.toc
 *.idx
+*.log
 *.ps
-*.*~
-spec.pdf
+*.toc
