@@ -22,6 +22,9 @@ handlers :
 notifications :
 	make -C ../../ MAIN=src/vis/giant-graph_widgets-notifications all
 
+drawing :
+	make -C ../../ MAIN=src/vis/giant-graph_widgets-drawing all
+
 all : 
 	make -C ../../ all
 

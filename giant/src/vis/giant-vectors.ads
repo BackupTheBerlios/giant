@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.ads,v $, $Revision: 1.7 $
+--  $RCSfile: giant-vectors.ads,v $, $Revision: 1.8 $
 --  $Author: keulsn $
---  $Date: 2003/06/23 23:37:17 $
+--  $Date: 2003/06/30 02:55:18 $
 --
 ------------------------------------------------------------------------------
 
@@ -244,6 +244,10 @@ package Giant.Vectors is
      (Rectangle : in     Rectangle_2d)
      return Vector_2d;
 
+   function Get_Bottom_Center
+     (Rectangle : in     Rectangle_2d)
+     return Vector_2d;
+
    function Get_Center
      (Rectangle : in     Rectangle_2d)
      return Vector_2d;
@@ -255,6 +259,10 @@ package Giant.Vectors is
    function Get_Height
      (Rectangle : in     Rectangle_2d)
      return Coordinate_Type;
+
+   procedure Shrink
+     (Rectangle : in out Rectangle_2d;
+      Thickness : in     Coordinate_Type);
 
    procedure Set_Top
      (Rectangle : in out Rectangle_2d;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.7 $
 --  $Author: keulsn $
---  $Date: 2003/06/29 13:56:08 $
+--  $Date: 2003/06/30 02:55:18 $
 --
 ------------------------------------------------------------------------------
 
@@ -32,6 +32,7 @@ with Ada.Unchecked_Deallocation;
 
 with Gdk.Bitmap;
 with Gdk.Pixmap;
+with Gdk.Window;
 with Glib;
 
 with Giant.Controller;
@@ -39,7 +40,9 @@ with Giant.Logger;
 
 package body Giant.Graph_Widgets.Settings is
 
-   Unknown_Color : exception;
+   Default_Font_Name : constant String :=
+     "-*-courier-*-r-*-*-12-*-*-*-*-*-iso8859-*";
+
 
    package Settings_Logger is new Logger
      (Name => "Giant.Graph_Widgets.Settings");
@@ -141,14 +144,18 @@ package body Giant.Graph_Widgets.Settings is
       procedure Set_Up_Icon_Array
         (Widget : access Graph_Widget_Record'Class);
 
-      function Get_Icon
+      procedure Get_Icon
         (Widget : access Graph_Widget_Record'Class;
-         Index  : in     Integer)
-        return Gdk.Pixmap.Gdk_Pixmap;
+         Index  : in     Integer;
+         Icon   :    out Gdk.Pixmap.Gdk_Pixmap;
+         Width  :    out Glib.Gint;
+         Height :    out Glib.Gint);
 
-      function Get_Annotation_Icon
-        (Widget : access Graph_Widget_Record'Class)
-        return Gdk.Pixmap.Gdk_Pixmap;
+      procedure Get_Annotation_Icon
+        (Widget : access Graph_Widget_Record'Class;
+         Icon   :    out Gdk.Pixmap.Gdk_Pixmap;
+         Width  :    out Glib.Gint;
+         Height :    out Glib.Gint);
 
       procedure Shut_Down_Icon_Array
         (Widget : access Graph_Widget_Record'Class);
@@ -156,8 +163,14 @@ package body Giant.Graph_Widgets.Settings is
 
    private
 
-      type Icon_Array_Type is array (Integer range <>) of
-        Gdk.Pixmap.Gdk_Pixmap;
+      type Icon_Record is
+         record
+            Icon   : Gdk.Pixmap.Gdk_Pixmap;
+            Width  : Glib.Gint;
+            Height : Glib.Gint;
+         end record;
+
+      type Icon_Array_Type is array (Integer range <>) of Icon_Record;
 
       type Icon_Array_Access is access Icon_Array_Type;
 
@@ -174,7 +187,28 @@ package body Giant.Graph_Widgets.Settings is
    begin
       Icons.Set_Up_Icon_Array (Widget);
       Colors.Set_Up_Color_Array (Widget);
+
+      if Gdk.Font."=" (Widget.Settings.Font, Gdk.Font.Null_Font) then
+         Gdk.Font.Load
+           (Font      => Widget.Settings.Font,
+            Font_Name => Default_Font_Name);
+         if Gdk.Font."=" (Widget.Settings.Font, Gdk.Font.Null_Font) then
+            Settings_Logger.Error
+              ("Could not load font """ & Default_Font_Name & """. Use "
+               & "Null_Font instead.");
+         end if;
+      end if;
    end Set_Up;
+
+   procedure Shut_Down
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Gdk.Font.Unref (Widget.Settings.Font);
+
+      Colors.Shut_Down_Color_Array (Widget);
+      --  Icons not shut down because shared resource for all widgets
+      --  Icons.Shut_Down_Icon_Array (Widget);
+   end Shut_Down;
 
    procedure Set_Style
      (Widget : access Graph_Widget_Record'Class;
@@ -294,17 +328,21 @@ package body Giant.Graph_Widgets.Settings is
       return Controller.Is_Node_Annotated (Vis_Data.Get_Graph_Node (Node));
    end Is_Annotated;
 
-   function Get_Annotation_Icon
-     (Widget       : access Graph_Widget_Record'Class)
-     return Gdk.Pixmap.Gdk_Pixmap is
+   procedure Get_Annotation_Icon
+     (Widget       : access Graph_Widget_Record'Class;
+      Icon         :    out Gdk.Pixmap.Gdk_Pixmap;
+      Width        :    out Glib.Gint;
+      Height       :    out Glib.Gint) is
    begin
-      return Icons.Get_Annotation_Icon (Widget);
+      Icons.Get_Annotation_Icon (Widget, Icon, Width, Height);
    end Get_Annotation_Icon;
 
-   function Get_Node_Icon
+   procedure Get_Node_Icon
      (Widget       : access Graph_Widget_Record'Class;
-      Node         : in     Vis_Data.Vis_Node_Id)
-     return Gdk.Pixmap.Gdk_Pixmap is
+      Node         : in     Vis_Data.Vis_Node_Id;
+      Icon         :    out Gdk.Pixmap.Gdk_Pixmap;
+      Width        :    out Glib.Gint;
+      Height       :    out Glib.Gint) is
 
       Node_Class : Graph_Lib.Node_Class_Id;
       Index      : Integer;
@@ -314,8 +352,68 @@ package body Giant.Graph_Widgets.Settings is
       Index := Config.Vis_Styles.Get_Node_Icon_Encoding
         (Vis_Style  => Get_Vis_Style (Widget),
          Node_Class => Node_Class);
-      return Icons.Get_Icon (Widget, Index);
+      Icons.Get_Icon (Widget, Index, Icon, Width, Height);
    end Get_Node_Icon;
+
+
+   function Get_Edge_Font
+     (Widget : access Graph_Widget_Record'Class)
+     return Gdk.Font.Gdk_Font is
+   begin
+      return Widget.Settings.Font;
+   end Get_Edge_Font;
+
+   function Get_Node_Font
+     (Widget : access Graph_Widget_Record'Class)
+     return Gdk.Font.Gdk_Font is
+   begin
+      return Widget.Settings.Font;
+   end Get_Node_Font;
+
+
+   ----------------
+   -- Attributes --
+   ----------------
+
+   function Show_Node_Class_Name
+     (Widget       : access Graph_Widget_Record'Class;
+      Node         : in     Vis_Data.Vis_Node_Id)
+     return Boolean is
+   begin
+      return True;
+   end Show_Node_Class_Name;
+
+   function Get_Node_Attribute_Count
+     (Widget       : access Graph_Widget_Record'Class;
+      Node         : in     Vis_Data.Vis_Node_Id)
+     return Natural is
+
+      Node_Class : Graph_Lib.Node_Class_Id;
+      Filter     : Graph_Lib.Node_Attribute_Filters.Filter;
+   begin
+      Node_Class := Graph_Lib.Get_Node_Class_Id
+        (Node       => Vis_Data.Get_Graph_Node (Node));
+      Filter := Config.Vis_Styles.Get_Attribute_Filter
+        (Vis_Style  => Widget.Settings.Vis_Style,
+         Node_Class => Node_Class);
+      return Graph_Lib.Node_Attribute_Filters.Size (Filter);
+   end Get_Node_Attribute_Count;
+
+   function Get_Node_Attributes
+     (Widget       : access Graph_Widget_Record'Class;
+      Node         : in     Vis_Data.Vis_Node_Id)
+     return Graph_Lib.Node_Attribute_Filters.Filtered_Iterator is
+
+      Node_Class : Graph_Lib.Node_Class_Id;
+      Filter     : Graph_Lib.Node_Attribute_Filters.Filter;
+   begin
+      Node_Class := Graph_Lib.Get_Node_Class_Id
+        (Node       => Vis_Data.Get_Graph_Node (Node));
+      Filter := Config.Vis_Styles.Get_Attribute_Filter
+        (Vis_Style  => Widget.Settings.Vis_Style,
+         Node_Class => Node_Class);
+      return Graph_Lib.Node_Attribute_Filters.Make_Filtered_Iter (Filter);
+   end Get_Node_Attributes;
 
 
    ------------
@@ -472,10 +570,12 @@ package body Giant.Graph_Widgets.Settings is
       function Load_Icon
         (Widget    : access Graph_Widget_Record'Class;
          File_Name : in     String)
-        return Gdk.Pixmap.Gdk_Pixmap is
+        return Icon_Record is
 
          Pixmap : Gdk.Pixmap.Gdk_Pixmap;
          Mask   : Gdk.Bitmap.Gdk_Bitmap := Gdk.Bitmap.Null_Bitmap;
+         Width  : Glib.Gint := 0;
+         Height : Glib.Gint := 0;
       begin
          Gdk.Pixmap.Create_From_Xpm
            (Pixmap      => Pixmap,
@@ -486,7 +586,10 @@ package body Giant.Graph_Widgets.Settings is
          if Gdk."/=" (Mask, Gdk.Bitmap.Null_Bitmap) then
             Gdk.Bitmap.Unref (Mask);
          end if;
-         return Pixmap;
+         if Gdk."/=" (Pixmap, Gdk.Pixmap.Null_Pixmap) then
+            Gdk.Window.Get_Size (Pixmap, Width, Height);
+         end if;
+         return (Pixmap, Width, Height);
       end Load_Icon;
 
       function Is_Set_Up
@@ -502,10 +605,12 @@ package body Giant.Graph_Widgets.Settings is
            Config.Vis_Styles.Get_All_Node_Icons;
       begin
          if Icons /= null then
-            Shut_Down_Icon_Array (Widget);
+            return;
+            --  Shut_Down_Icon_Array (Widget);
          end if;
          Icons := new Icon_Array_Type'
-           (Files'First .. Files'Last + 1 => Gdk.Pixmap.Null_Pixmap);
+           (Files'First .. Files'Last + 1 =>
+              (Gdk.Pixmap.Null_Pixmap, 0, 0));
          Icons (Icons'Last) := Load_Icon
            (Widget, Config.Global_Data.Get_Node_Annotations_Icon);
          for I in Files'Range loop
@@ -514,19 +619,27 @@ package body Giant.Graph_Widgets.Settings is
          end loop;
       end Set_Up_Icon_Array;
 
-      function Get_Icon
+      procedure Get_Icon
         (Widget : access Graph_Widget_Record'Class;
-         Index  : in     Integer)
-        return Gdk.Pixmap.Gdk_Pixmap is
+         Index  : in     Integer;
+         Icon   :    out Gdk.Pixmap.Gdk_Pixmap;
+         Width  :    out Glib.Gint;
+         Height :    out Glib.Gint) is
       begin
-         return Icons (Index);
+         Icon := Icons (Index).Icon;
+         Width := Icons (Index).Width;
+         Height := Icons (Index).Height;
       end Get_Icon;
 
-      function Get_Annotation_Icon
-        (Widget : access Graph_Widget_Record'Class)
-        return Gdk.Pixmap.Gdk_Pixmap is
+      procedure Get_Annotation_Icon
+        (Widget : access Graph_Widget_Record'Class;
+         Icon   :    out Gdk.Pixmap.Gdk_Pixmap;
+         Width  :    out Glib.Gint;
+         Height :    out Glib.Gint) is
       begin
-         return Icons (Icons'Last);
+         Icon := Icons (Icons'Last).Icon;
+         Width := Icons (Icons'Last).Width;
+         Height := Icons (Icons'Last).Height;
       end Get_Annotation_Icon;
 
       procedure Shut_Down_Icon_Array
@@ -539,8 +652,8 @@ package body Giant.Graph_Widgets.Settings is
       begin
          if Icons /= null then
             for I in Icons'Range loop
-               if Gdk."/=" (Icons (I), Gdk.Pixmap.Null_Pixmap) then
-                  Gdk.Pixmap.Unref (Icons (I));
+               if Gdk."/=" (Icons (I).Icon, Gdk.Pixmap.Null_Pixmap) then
+                  Gdk.Pixmap.Unref (Icons (I).Icon);
                end if;
             end loop;
             Free (Icons);

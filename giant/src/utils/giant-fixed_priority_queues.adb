@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-fixed_priority_queues.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-fixed_priority_queues.adb,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/06/12 13:26:00 $
+--  $Date: 2003/06/30 02:55:17 $
 --
 ------------------------------------------------------------------------------
 
@@ -356,14 +356,14 @@ package body Giant.Fixed_Priority_Queues is
    end Remove_Item;
 
 
-   procedure Update_Head_Item
+   procedure Update_Head
      (Queue : in out Queue_Type) is
    begin
       if Queue.Size <= 0 then
          raise Not_Enough_Items;
       end if;
       Update_Downward (Queue, Get_First_Index (Queue));
-   end Update_Head_Item;
+   end Update_Head;
 
 
    procedure Update_Item

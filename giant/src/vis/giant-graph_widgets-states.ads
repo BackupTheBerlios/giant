@@ -20,30 +20,28 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_widgets-states.ads,v $, $Revision: 1.1 $
 --  $Author: keulsn $
---  $Date: 2003/06/30 02:55:17 $
+--  $Date: 2003/06/30 02:55:18 $
 --
 ------------------------------------------------------------------------------
 --
---  This package performs the actual drawing work for a graph widget.
---  It updates the buffers according to the modifications on the data
---  managed by the package 'Vis_Data' and then maps the buffers to the
---  'Drawable' provided by GtkAda.
+--  This package implements an finite automaton tracking all the logical
+--  states a graph widget can be in. Queries to the functions in this
+--  package allow to decide if an action can be performed on a graph widget.
 --
 
 
-package Giant.Graph_Widgets.Drawing is
+package Giant.Graph_Widgets.States is
 
-   ----------------------------------------------------------------------------
-   --  Settings must have been 'Set_Up' before.
-   procedure Set_Up
+   procedure Enable_Drawing
      (Widget : access Graph_Widget_Record'Class);
 
-   ----------------------------------------------------------------------------
-   --  Ensures that the display buffer is up to date. Clearing the window
-   --  results in correct display of the graph widget.
-   procedure Update_Display
+   procedure Disable_Drawing
      (Widget : access Graph_Widget_Record'Class);
 
-end Giant.Graph_Widgets.Drawing;
+   function Is_Visible
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean;
+
+end Giant.Graph_Widgets.States;

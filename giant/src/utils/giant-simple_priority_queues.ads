@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-simple_priority_queues.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-simple_priority_queues.ads,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/06/12 13:26:00 $
+--  $Date: 2003/06/30 02:55:17 $
 --
 ------------------------------------------------------------------------------
 --
@@ -47,7 +47,7 @@ generic
    ----------------------------------------------------------------------------
    --  Priority order. This function must either always return the
    --  same value for the same arguments, or the data structure must
-   --  be updated by calls to 'Update_Item' or 'Update_Head_Item'
+   --  be updated by calls 'Update_Head'
    --
    --  Returns:
    --    True if 'Left' has a higher priority than 'Right', False else
@@ -94,7 +94,7 @@ package Giant.Simple_Priority_Queues is
    --    not Is_Empty (Queue)
    --  Raises:
    --    Not_Enough_Items if Precondition not satisfied
-   procedure Update_Head_Item
+   procedure Update_Head
      (Queue : in out Queue_Type);
 
    ----------------------------------------------------------------------------

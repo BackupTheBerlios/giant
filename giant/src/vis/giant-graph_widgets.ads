@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.12 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.13 $
 --  $Author: keulsn $
---  $Date: 2003/06/29 13:56:08 $
+--  $Date: 2003/06/30 02:55:18 $
 --
 ------------------------------------------------------------------------------
 --
@@ -863,10 +863,14 @@ private                    -- private part --
    type Drawing_Type is
       record
          Buffer      : Gdk.Pixmap.Gdk_Pixmap;
+         Buffer_Area : Vis.Absolute.Rectangle_2d;
          Clip_Mask   : Gdk.Bitmap.Gdk_Bitmap;
          Display     : Gdk.Pixmap.Gdk_Pixmap;
 
          Background  : Gdk.GC.Gdk_GC;
+         Clip_Open   : Gdk.GC.Gdk_GC;
+         Clip_Close  : Gdk.GC.Gdk_GC;
+
          Node_Border : Gdk.GC.Gdk_GC;
          Node_Fill   : Gdk.GC.Gdk_GC;
          Node_Text   : Gdk.GC.Gdk_GC;
@@ -875,8 +879,6 @@ private                    -- private part --
          Edge_Line   : Edge_Style_GCs;
          Edge_Label  : Gdk.GC.Gdk_GC;
          Edge_Light  : Highlight_GCs;
-
-         Font        : Gdk.Font.Gdk_Font;
       end record;
 
 
@@ -898,6 +900,8 @@ private                    -- private part --
          --  ...'Pos (Vis_Data'Highlight_Type'First) gives the index of
          --  first highlight color in 'All_Colors'
          Highlight_Index_Offset : Integer;
+         --  Font for drawing text on the graph widget.
+         Font                   : Gdk.Font.Gdk_Font := Gdk.Font.Null_Font;
       end record;
 
 

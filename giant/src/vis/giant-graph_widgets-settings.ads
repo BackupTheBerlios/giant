@@ -20,12 +20,16 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-graph_widgets-settings.ads,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/06/29 13:56:08 $
+--  $Date: 2003/06/30 02:55:18 $
 --
 ------------------------------------------------------------------------------
 
+
+with Glib;
+
+with Giant.Graph_Lib.Node_Attribute_Filters;
 
 package Giant.Graph_Widgets.Settings is
 
@@ -53,6 +57,10 @@ package Giant.Graph_Widgets.Settings is
    --  Must be called one and only one time during the lifetime of a graph
    --  widget. 'Set_Style' must have been called before.
    procedure Set_Up
+     (Widget : access Graph_Widget_Record'Class);
+
+
+   procedure Shut_Down
      (Widget : access Graph_Widget_Record'Class);
 
 
@@ -118,15 +126,52 @@ package Giant.Graph_Widgets.Settings is
 
    ---------------------------------------------------------------------------
    --  Gets the icon to be shown inside annotated nodes or 'Null_Pixmap'
-   function Get_Annotation_Icon
-     (Widget       : access Graph_Widget_Record'Class)
-     return Gdk.Pixmap.Gdk_Pixmap;
+   procedure Get_Annotation_Icon
+     (Widget       : access Graph_Widget_Record'Class;
+      Icon         :    out Gdk.Pixmap.Gdk_Pixmap;
+      Width        :    out Glib.Gint;
+      Height       :    out Glib.Gint);
 
    ---------------------------------------------------------------------------
    --  The icon to be shown for 'Node' or 'Null_Pixmap'
-   function Get_Node_Icon
+   procedure Get_Node_Icon
+     (Widget       : access Graph_Widget_Record'Class;
+      Node         : in     Vis_Data.Vis_Node_Id;
+      Icon         :    out Gdk.Pixmap.Gdk_Pixmap;
+      Width        :    out Glib.Gint;
+      Height       :    out Glib.Gint);
+
+
+   ----------------
+   -- Attributes --
+   ----------------
+
+   function Show_Node_Class_Name
      (Widget       : access Graph_Widget_Record'Class;
       Node         : in     Vis_Data.Vis_Node_Id)
-     return Gdk.Pixmap.Gdk_Pixmap;
+     return Boolean;
+
+   function Get_Node_Attribute_Count
+     (Widget       : access Graph_Widget_Record'Class;
+      Node         : in     Vis_Data.Vis_Node_Id)
+     return Natural;
+
+   function Get_Node_Attributes
+     (Widget       : access Graph_Widget_Record'Class;
+      Node         : in     Vis_Data.Vis_Node_Id)
+     return Graph_Lib.Node_Attribute_Filters.Filtered_Iterator;
+
+
+   -----------
+   -- Fonts --
+   -----------
+
+   function Get_Edge_Font
+     (Widget : access Graph_Widget_Record'Class)
+     return Gdk.Font.Gdk_Font;
+
+   function Get_Node_Font
+     (Widget : access Graph_Widget_Record'Class)
+     return Gdk.Font.Gdk_Font;
 
 end Giant.Graph_Widgets.Settings;

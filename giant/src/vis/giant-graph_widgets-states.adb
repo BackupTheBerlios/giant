@@ -20,30 +20,33 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.1 $
 --  $Author: keulsn $
---  $Date: 2003/06/30 02:55:17 $
+--  $Date: 2003/06/30 02:55:18 $
 --
 ------------------------------------------------------------------------------
---
---  This package performs the actual drawing work for a graph widget.
---  It updates the buffers according to the modifications on the data
---  managed by the package 'Vis_Data' and then maps the buffers to the
---  'Drawable' provided by GtkAda.
---
 
 
-package Giant.Graph_Widgets.Drawing is
+package body Giant.Graph_Widgets.States is
 
-   ----------------------------------------------------------------------------
-   --  Settings must have been 'Set_Up' before.
-   procedure Set_Up
-     (Widget : access Graph_Widget_Record'Class);
+   procedure Enable_Drawing
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      raise Unimplemented;
+   end Enable_Drawing;
 
-   ----------------------------------------------------------------------------
-   --  Ensures that the display buffer is up to date. Clearing the window
-   --  results in correct display of the graph widget.
-   procedure Update_Display
-     (Widget : access Graph_Widget_Record'Class);
+   procedure Disable_Drawing
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      raise Unimplemented;
+   end Disable_Drawing;
 
-end Giant.Graph_Widgets.Drawing;
+   function Is_Visible
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean is
+   begin
+      raise Unimplemented;
+      return False;
+   end Is_Visible;
+
+end Giant.Graph_Widgets.States;
