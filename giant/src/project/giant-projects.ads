@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.18 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.19 $
 -- $Author: schwiemn $
--- $Date: 2003/06/18 13:50:29 $
+-- $Date: 2003/06/18 14:39:43 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -210,6 +210,9 @@ package Giant.Projects is
    --
    -- The project directory must have been created before.
    --
+   -- The IML Graph "Bauhaus_IML_Graph_File" must have been loaded before
+   -- by the package Giant.Graph_Lib.
+   --
    -- Parameters:
    --   Project_Name - The name of a project.
    --     This name must be a valid file name according
@@ -227,6 +230,9 @@ package Giant.Projects is
    --     "Project_Directory" is not found.
    --   Directory_Holds_Already_A_Project_File_Exception - Raised if
    --     "Project_Directory" already holds a project file.
+   --   Wrong_IML_Graph_Loaded_Exception - Raised if the iml graph loaded
+   --     by giant.graph_lib has a checksum that differs to the checksum
+   --     passed via "Bauhaus_IML_Graph_File_Checksum".
    function Create_Empty_Project
      (Project_Name                    : in String;
       Project_Directory               : in String;
@@ -347,7 +353,8 @@ package Giant.Projects is
      return String;
           
    --------------------------------------------------------------------------- 
-   -- Returns the full file name (incl. absolute path) of the project file.
+   -- Returns the full file name (incl. absolute path) of the project file
+   -- (xml file).
    --
    -- Parameters:
    --   Project - A instance of the ADT that describes a project.
@@ -357,7 +364,7 @@ package Giant.Projects is
    --   Project_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Project_Access" is passed as
    --     parameter;
-   function Get_Project_File
+   function Get_Project_File_Name
      (Project : in Project_Access)
      return String;
 
@@ -952,7 +959,7 @@ private
    -- Management of Subgraphs
    ---------------------------------------------------------------------------
 
-   type Subgraph_Data_Elemet is record
+   type Subgraph_Data_Element is record
      Subgraph         : Graph_Lib.Subgraphs.Subgraph;
      Highlight_Status : Subgraph_Highlight_Status;
      -- True if an management file for the iml subgraph already exists, False
@@ -967,7 +974,7 @@ private
      (Key_Type   => Ada.Strings.Unbounded.Unbounded_String,
       Equal      => Ada.Strings.Unbounded."=",
       Hash       => Unbounded_String_Hash,
-      Value_Type => Subgraph_Data_Elemet);
+      Value_Type => Subgraph_Data_Element);
 
   ----------------------------------------------------------------------------
   -- Project Data object

@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.ads,v $, $Revision: 1.4 $
+-- $RCSfile: giant-file_management.ads,v $, $Revision: 1.5 $
 -- $Author: schwiemn $
--- $Date: 2003/06/17 14:03:02 $
+-- $Date: 2003/06/18 14:39:43 $
 --
 -- -----------------------------------------------
 --
@@ -126,30 +126,6 @@ package Giant.File_Management is
    procedure Delete_File (File_Name : in String);
 
    ---------------------------------------------------------------------------
-   -- Returns the "path" out of a string holding a file name including
-   -- a path.
-   --
-   -- Only the path must exist. It is not checked whether the file exists
-   -- too.
-   -- If the passed path in "File_Path" is relative then a relative path
-   -- to the directory will be returned if it is absolute then a absolute
-   -- path will be returned.
-   --
-   -- Parameters:
-   --   File_Path - A File Name String that holds a file name and a path.
-   -- Returns:
-   --   The Path to the directory there the file is loacted.
-   --   If only a file name is passed (without a path) then the
-   --   working directory for the current execution environment
-   --   will be returned.
-   -- Raises:
-   --   Directory_Could_Not_Be_Calculated_Exception - Raised if the
-   --   directory that is part of the file name "File_Path" does
-   --   not exist.
-   function Return_Dir_Path_For_File_Path (File_Path : in String) 
-     return String;
-
-   ---------------------------------------------------------------------------
    -- For a given realtive Path to a file and a path to a directory there the
    -- relative path may begin, this subprogram calculates the aboslute path
    -- to that file as returned by:
@@ -210,6 +186,30 @@ package Giant.File_Management is
    -- file of the program is located.
    procedure Set_Currunt_Working_Dir_To_Exec_Dir;
    
+   ---------------------------------------------------------------------------
+   -- Returns the "path" out of a string holding a file name including
+   -- a path.
+   --
+   -- Only the path must exist. It is not checked whether the file exists
+   -- too.
+   -- If the passed path in "File_Path" is relative then a relative path
+   -- to the directory will be returned if it is absolute then a absolute
+   -- path will be returned.
+   --
+   -- Parameters:
+   --   File_Path - A File Name String that holds a file name and a path.
+   -- Returns:
+   --   The Path to the directory there the file is loacted.
+   --   If only a file name is passed (without a path) then the
+   --   working directory for the current execution environment
+   --   will be returned.
+   -- Raises:
+   --   Directory_Could_Not_Be_Calculated_Exception - Raised if the
+   --   directory that is part of the file name "File_Path" does
+   --   not exist.
+   function Return_Dir_Path_For_File_Path (File_Path : in String) 
+     return String;
+      
    ---------------------------------------------------------------------------
    -- Calculates a name out of a file name by neglecting the path and the
    -- ending that may be part of a file name,
