@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.15 $
 --  $Author: squig $
---  $Date: 2003/06/24 10:43:05 $
+--  $Date: 2003/06/24 10:50:12 $
 --
 
 with Ada.Text_Io; use Ada.Text_Io;
@@ -141,7 +141,8 @@ package body Giant.Default_Dialog is
          Button := New_Button (-"Close", On_Close_Button_Clicked'access);
          Add_Button (Dialog, Button, False);
          Gtk.Button.Grab_Default (Button);
-      elsif (Buttons = Button_Okay_Cancel) then
+      elsif (Buttons = Button_Okay
+             or else Buttons = Button_Okay_Cancel) then
          Button := New_Button (-"Okay", On_Okay_Button_Clicked'access);
          Add_Button (Dialog, Button, False);
          Gtk.Button.Grab_Default (Button);

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.ads,v $, $Revision: 1.9 $
+--  $RCSfile: giant-default_dialog.ads,v $, $Revision: 1.10 $
 --  $Author: squig $
---  $Date: 2003/06/24 10:43:05 $
+--  $Date: 2003/06/24 10:50:12 $
 --
 ------------------------------------------------------------------------------
 --
@@ -45,8 +45,8 @@ package Giant.Default_Dialog is
        Response_No);
 
    type Button_Type is
-     (Button_None, Button_Cancel, Button_Close, Button_Okay_Cancel,
-      Button_Yes_No, Button_Yes_No_Cancel);
+     (Button_None, Button_Cancel, Button_Close, Button_Okay,
+      Button_Okay_Cancel, Button_Yes_No, Button_Yes_No_Cancel);
 
    type Default_Dialog_Record is new Gtk.Window.Gtk_Window_Record with private;
 

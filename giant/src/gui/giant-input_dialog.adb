@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-input_dialog.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-input_dialog.adb,v $, $Revision: 1.5 $
 --  $Author: squig $
---  $Date: 2003/06/24 10:43:05 $
+--  $Date: 2003/06/24 10:50:12 $
 --
 
 with Gtk.Button;
@@ -59,7 +59,7 @@ package body Giant.Input_Dialog is
       Dialog.Input_Validator := Input_Validator;
       Dialog.Custom_Data := Custom_Data;
 
-      Box := Add_Icon_Box (Dialog, Pixmaps.Confirmation_Xpm, Message);
+      Box := Add_Icon_Box (Dialog, Gtkada.Pixmaps.Confirmation_Xpm, Message);
 
       Gtk.Gentry.Gtk_New (Dialog.Input);
       Gtk.Box.Add (Box, Dialog.Input);

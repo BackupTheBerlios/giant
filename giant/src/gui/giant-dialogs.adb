@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-dialogs.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-dialogs.adb,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/06/24 10:43:05 $
+--  $Date: 2003/06/24 10:50:12 $
 --
 
 with Gtk.Box;
@@ -41,7 +41,7 @@ package body Giant.Dialogs is
    begin
       Default_Dialog.Create (Dialog, -"Giant Question", Buttons);
       Box := Default_Dialog.Add_Icon_Box
-        (Dialog, Pixmaps.Confirmation_Xpm, Message);
+        (Dialog, Gtkada.Pixmaps.Confirmation_Xpm, Message);
 
       Default_Dialog.Show_Modal (Dialog);
 
@@ -60,7 +60,7 @@ package body Giant.Dialogs is
    begin
       Default_Dialog.Create (Dialog, Title, Default_Dialog.Button_Close);
       Box := Default_Dialog.Add_Icon_Box
-        (Dialog, Pixmaps.Error_Xpm, Message);
+        (Dialog, Gtkada.Pixmaps.Error_Xpm, Message);
 
       Default_Dialog.Show_Modal (Dialog);
 
@@ -69,19 +69,19 @@ package body Giant.Dialogs is
 
    procedure Show_Info_Dialog
      (Message : in String;
-      Title   : in String := -"Giant Error")
+      Title   : in String := -"Giant Information")
    is
       Dialog : Default_Dialog.Default_Dialog_Access;
       Box : Gtk.Box.Gtk_Hbox;
    begin
-      Default_Dialog.Create (Dialog, Title, Default_Dialog.Button_Okay);
+      Default_Dialog.Create (Dialog, Title, Default_Dialog.Button_Close);
       Box := Default_Dialog.Add_Icon_Box
-        (Dialog, Pixmaps.Information_Xpm, Message);
+        (Dialog, Gtkada.Pixmaps.Information_Xpm, Message);
 
       Default_Dialog.Show_Modal (Dialog);
 
       Default_Dialog.Destroy (Dialog);
-   end Show_Error_Dialog;
+   end Show_Info_Dialog;
 
    function Show_Input_Dialog
      (Message         : in String;
