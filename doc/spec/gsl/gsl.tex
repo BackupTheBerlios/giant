@@ -1,6 +1,6 @@
 % =============================================================================
-%  $RCSfile: gsl.tex,v $ $Revision: 1.3 $
-%  $Date: 2003/04/23 00:53:38 $
+%  $RCSfile: gsl.tex,v $ $Revision: 1.4 $
+%  $Date: 2003/04/24 02:08:31 $
 %  $Author: keulsn $
 %
 %  Description: Spezifikation der GIANT Scripting Language
@@ -90,7 +90,7 @@ Studienprojekt A -- IML Browser\\
 \chapter{GIANT Scripting Language}
 
 
-\MakeShortVerb{\`}
+\MakeShortVerb{\°}
 
 
 %%%% Non-terminals
@@ -465,20 +465,20 @@ Jedes Objekt kann einen Wert jedes Typs speichern.
 Eine Aktivierungsumgebung bindet Variablen an Objekte. Beim Start des GSL
 Interpreters existiert eine erste Aktivierungsumgebung \bottomenv.
 
-In \bottomenv existiert für jeden zulässigen Namen `<Name>` eines
-IML-Teilgraphen in GIANT eine Variable \gq{\toksubgraph\tokdot`<Name>`}.
+In \bottomenv existiert für jeden zulässigen Namen °<Name>° eines
+IML-Teilgraphen in GIANT eine Variable \gq{\toksubgraph\tokdot°<Name>°}.
 (Es gibt also aufzählbar unendlich viele solche Variablen.)
 Jede dieser Variablen ist an den IML-Teilgraphen mit dem entsprechenden
-Namen `<Name>` gebunden, sofern dieser IML-Teilgraph existiert.
+Namen °<Name>° gebunden, sofern dieser IML-Teilgraph existiert.
 Existiert der IML-Teilgraph nicht, so ist die Variable an ein besonderes
 Objekt gebunden, das den Wert \toknull hat.
 
 Falls der GSL Interpreter im Kontext eines Anzeigefensters $W$ ausgeführt wird,
-dann existiert in \bottomenv für jeden zulässigen Namen `<Name>` einer
-Selektion im Fenster $W$ eine Variable \gq{\tokselection\tokdot`<Name>`}.
+dann existiert in \bottomenv für jeden zulässigen Namen °<Name>° einer
+Selektion im Fenster $W$ eine Variable \gq{\tokselection\tokdot°<Name>°}.
 (Es gibt also aufzählbar unendlich viele solche Variablen.)
 Jede dieser Variablen ist an die Selektion mit dem entsprechenden
-Namen `<Name>` gebunden, sofern diese Selektion existiert.
+Namen °<Name>° gebunden, sofern diese Selektion existiert.
 Existiert die Selektion nicht, so ist die Variable an ein besonderes
 Objekt gebunden, das den Wert \toknull hat. Wird der GSL Interpreter nicht
 im Kontext einen Anzeigefensters ausgeführt, so existiert keine dieser
@@ -594,6 +594,7 @@ Auswertung des Rumpfs von $S$. Für die genaue Beschreibung siehe
 \ref{script_activation}.
 
 \subsubsection{Vorraussetzung}
+\label{activation_preconds}
 
 Ein Script $S$ wird aktiviert durch Auswertung eines Ausdrucks, der aus einem
 Wert des Typs \tscriptreference besteht. Dieser Wert wird als
@@ -639,7 +640,7 @@ Andernfalls führt die Auswertung zu einem Laufzeitfehler.
 
 Dann wird für alle $i$ jedem Objekt das durch den Zugriffspfad $p_i$ erreicht
 wird der Wert $a_i$ zugewiesen. In GSL formuliert wird der Ausdruck
-`(assign (`$p_1$`, `$a_1$`), ..., assign (`$p_n$`, `$a_n$`))`
+°(assign (°$p_1$°, °$a_1$°), ..., assign (°$p_n$°, °$a_n$°))°
 ausgewertet und sein Ergebnis verworfen (Hinweis: Dieser Ausdruck ist kein
 korrekter GSL-Ausdruck, sondern dient nur der intuitiven Erläuterung).
 
@@ -647,7 +648,7 @@ Danach ist die Parameterübergabe abgeschlossen und der Rumpf des Scripts wird
 ausgewertet.
 
 \textbf{Richtlinie} Für die Parameter $p_i$ sollte jeweils eine
-neue lokale Variable erzeugt werden, z.B. durch \gq{`+name`}.
+neue lokale Variable erzeugt werden, z.B. durch \gq{°+name°}.
 
 \paragraph{Beispiel zur Parameterübergabe}
 
@@ -694,7 +695,7 @@ erweitert sind) verwendet.
 \toksemicolon & \toktick & \tokplus & \tokunderscore \\
 
 \tokselection & \toksubgraph & \tokbegincomment & \tokquote \\
-\tokfalse & \toktrue & \toknull & `\` \\
+\tokfalse & \toktrue & \toknull & °\° \\
 \end{tabular}
 
 Es wird zwischen Groß- und Kleinschreibung unterschieden.
@@ -769,23 +770,23 @@ fest. (siehe entsprechendes Nichtterminal der rechten Seite).
 \subsubsection{String-Literal}
 
 \begin{EBNF}
-\item[\nstringliteral] \tokquote $\langle$ `\`\tokquote |
-                       `\\ | `\`n | `\`t |
+\item[\nstringliteral] \tokquote $\langle$ °\°\tokquote |
+                       °\\° | °\°n | °\°t |
                        \nstringchar $\rangle$*
                        \tokquote
 \end{EBNF}
 
 Dabei steht \nstringchar für jedes Zeichen des (implementationsabhängigen)
-Zeichensatzes außer den Zeichen `\` und \tokquote.
+Zeichensatzes außer den Zeichen °\° und \tokquote.
 
 \begin{enumerate}
 \item Ein \nstringliteral ist vom Typ \tstring.
 \item Der Wert ist die ersetzte Folge von Zeichen zwischen den \tokquote.
-\item Die Zeichenfolge `\`\tokquote wird dabei ersetzt durch
+\item Die Zeichenfolge °\°\tokquote wird dabei ersetzt durch
 ein einfaches \tokquote.
-\item `\\` wird ersetzt durch das Zeichen `\`.
-\item `\`n wird ersetzt durch das Zeichen Zeilenumbruch.
-\item `\`t wird ersetzt durch ein Tabulatorzeichen.
+\item °\\° wird ersetzt durch das Zeichen °\°.
+\item °\°n wird ersetzt durch das Zeichen Zeilenumbruch.
+\item °\°t wird ersetzt durch ein Tabulatorzeichen.
 \end{enumerate}
 
 \subsubsection{Null-Literal}
@@ -865,7 +866,6 @@ des Objekts an den die Variable gebunden ist.
 \item Falls \toksubgraph angegeben ist:
   \begin{enumerate}
   \item Diese Inspektion ist eine Schnittstelle zu GIANT.
-  \item \nidentifier 
   \item Falls in GIANT ein IML-Teilgraph $T$ mit Namen \nidentifier existiert,
   dann ist das Ergebnis dieser Inspektion ein Wert $M$ vom zusammengesetzten
   Typ \tobjectset. $M$ enthält alle Graph-Knoten aus $T$ und alle
@@ -1061,7 +1061,6 @@ Zugriffspfad auf das Skript $S$.
   \item $A$ wird zerstört. Alle Objekte, die von lokalen Variablen in $A$
   gebunden wurden dürfen zerstört werden.
   \item Die Aktivierungsumgebung, die zuvor aktuell war wird wieder aktuell.
-  \nexpression.
   \item Falls kein Laufzeitfehler aufgetreten ist, so ist das Ergebnis der
   Auswertung der Wert $R$ (siehe Punkt \ref{script_result}).
 \end{enumerate}
@@ -1106,6 +1105,17 @@ das beschriebene Script enthält.}
 
 \subsection{Elementare Scripts}
 
+Die hier beschriebenen Scripts realisieren elementare Funktionalität,
+die der GSL
+Interpreter direkt zur Verfügung stellt. Der GSL Interpreter erzeugt die
+Objekte, in denen die Aktivierungsinformation gespeichert ist. Vor der
+Auswertung des Ausdrucks in der Datei \gq{standard.gsl} erzeugt der GSL
+Interpreter in der Aktivierungsumgebung \bottomenv die hier genannten
+Variablen.
+
+\subsubsection{Zuweisung}
+
+%%% assign
 \begin{scriptdef}{assign}
 \sparam{lhs}{\tvarreference}{Zugriffspfad auf eine sichtbare Variable}
 \sparam{rhs}{jeder Typ}{Zuzuweisender Wert eines beliebigen Typs. Es gibt
@@ -1118,12 +1128,31 @@ zu rhs. Falls rhs einen Wert eines der Typen
   \item \tvarreference
   \end{enumerate}
 hat, so muss für die Aktivierungsumgebungen gelten: $A_{rhs} \le A_{lhs}$,
-andernfalls führt die Auswertung zu einem Laufzeitfehler. Durch diese
-Einschränkung wird sichergestellt, dass zu keinem Zeitpunkt ein Wert
-eines der genannten Typen existiert, der ein Objekt referenziert, das an
-keine Variable gebunden ist.}
+andernfalls führt die Auswertung zu einem Laufzeitfehler.
+
+$A_{lhs}$ ist dabei die kleinste Aktivierungsumgebung, in der das durch lhs
+referenzierte Objekt an eine Variable gebunden ist. $A_{rhs}$ ist die kleinste
+Aktivierungsumgebung, in der das durch $A_{rhs}$ referenzierte Objekt
+an eine Variable gebunden ist.
+
+Durch diese Einschränkung wird sichergestellt, dass zu keinem Zeitpunkt ein
+Wert eines der Typen \tscriptreference oder \tvarreference existiert,
+der ein Objekt referenziert, das an keine Variable gebunden ist. Dieser Fall
+könnte sonst eintreten nachdem eine Aktivierungsumgebung zerstört wurde.}
 \end{scriptdef}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Kontrollfluss}
+
+%%% error
+\begin{scriptdef}{error}
+\sparam{message}{\tstring}{Fehlermeldung}
+\sresult{}{}
+\saction{Löst einen Laufzeitfehler geziehlt aus und veranlasst den GSL
+Interpreter dem Benutzer die Fehlermeldung message anzuzeigen.}
+\end{scriptdef}
+
+%%% run
 \begin{scriptdef}{run}
 \sparam{file\_name}{\tstring}{Name einer Bibliothek. An diesen Namen wird
 noch der Text \gq{.gsl} angehängt}
@@ -1138,6 +1167,7 @@ neue Variablen erzeugt werden, die die Aktivierungsinformation von den
 Scripts der Bibliothek enthalten.}
 \end{scriptdef}
 
+%%% if
 \begin{scriptdef}{if}
 \sparam{condition}{\tboolean oder \tscriptreference}{Ein Wert vom Typ
 \tboolean oder die Aktivierungsinformation für ein parameterloses Script,
@@ -1167,6 +1197,7 @@ einer Aktivierungsinformation geraten. Andernfalls würde der Ausdruck
 ausgewertet unabhängig davon, ob $b$ erfüllt ist, oder nicht.}
 \end{scriptdef}
 
+%%% loop
 \begin{scriptdef}{loop}
 \sparam{body}{\tscriptreference}{Aktivierungsinformation für parameterloses
 Script mit Ergebnistyp \tboolean}
@@ -1175,6 +1206,161 @@ Script mit Ergebnistyp \tboolean}
 body so oft ein weiteres Mal, bis body das Ergebnis \tokfalse hat.}
 \end{scriptdef}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Rechenoperationen}
+
+%%% add
+\label{scriptdef_add}
+\begin{scriptdef}{add}
+\sparam{a}{\tnatural oder \tvarreference}{Entweder eine Zahl oder ein
+Zugriffspfad auf ein Objekt, das einen Wert aus \tnodeset oder \tedgeset hat}
+\sparam{b}{\tnatural bzw.\ \tnodeid bzw.\ \tedgeid}{Abhängig von dem Typ
+von a ebenfalls eine Zahl oder der entsprechende Elementtyp}
+\sresult{\tnatural bzw.\ der namenlose Typ}{Abhängig von den Argumenten
+entweder die Summe der beiden Zahlen oder der Wert \toknull}
+\saction{Es werden zwei verschiedene Verwendungen unterschieden:
+\begin{enumerate}
+\item a ist vom Typ \tnatural und b ist vom Typ \tnatural. Dann hat
+dieses Script die Summe der beiden Zahlen als Ergebnis. Es ist ein
+Laufzeitfehler, falls der (implementationsabhängige) maximale Wertebereich
+überschritten wird.
+\item a ist vom Typ \tvarreference und hat als Wert einen Zugriffspfad auf
+ein Objekt, dessen Wert $N$ vom Typ \tnodeset ist. Dann muss b vom Typ
+\tnodeid sein. Der Wert $N$ wird um das Element b vergrößert, falls b zuvor
+noch nicht in $N$ enthalten war, andernfalls wird nichts getan. Das Ergebnis
+ist \toknull.
+\item a ist vom Typ \tvarreference und hat als Wert einen Zugriffspfad auf
+ein Objekt, dessen Wert $E$ vom Typ \tedgeset ist. Dann muss b vom Typ
+\tedgeid sein. Der Wert $E$ wird um das Element b vergrößert, falls b zuvor
+noch nicht in $E$ enthalten war, andernfalls wird nichts getan. Das Ergebnis
+ist \toknull.
+\end{enumerate}}
+\end{scriptdef}
+
+%%% sub
+\label{scriptdef_sub}
+\begin{scriptdef}{sub}
+\sparam{a}{\tnatural oder \tvarreference}{Entweder eine Zahl oder ein
+Zugriffspfad auf ein Objekt, das einen Wert aus \tnodeset oder \tedgeset hat}
+\sparam{b}{\tnatural bzw.\ \tnodeid bzw.\ \tedgeid}{Abhängig von dem Typ
+von a ebenfalls eine Zahl oder der entsprechende Elementtyp}
+\sresult{\tnatural bzw.\ der namenlose Typ}{Abhängig von den Argumenten
+entweder die Differenz der beiden Zahlen oder der Wert \toknull}
+\saction{Es werden zwei verschiedene Verwendungen unterschieden:
+\begin{enumerate}
+\item a ist vom Typ \tnatural und b ist vom Typ \tnatural. Dann hat
+dieses Script die Differenz a $-$ b der beiden Zahlen als Ergebnis. Es ist ein
+Laufzeitfehler, falls der (implementationsabhängige) maximale Wertebereich
+überschritten wird.
+\item a ist vom Typ \tvarreference und hat als Wert einen Zugriffspfad auf
+ein Objekt, dessen Wert $N$ vom Typ \tnodeset ist. Dann muss b vom Typ
+\tnodeid sein. Der Wert $N$ wird um das Element b verkleinert, falls b zuvor
+in $N$ enthalten war, andernfalls wird nichts getan. Das Ergebnis
+ist \toknull.
+\item a ist vom Typ \tvarreference und hat als Wert einen Zugriffspfad auf
+ein Objekt, dessen Wert $E$ vom Typ \tedgeset ist. Dann muss b vom Typ
+\tedgeid sein. Der Wert $E$ wird um das Element b verkleinert, falls b zuvor
+in $E$ enthalten war, andernfalls wird nichts getan. Das Ergebnis
+ist \toknull.
+\end{enumerate}}
+\end{scriptdef}
+
+%%% cat
+\begin{scriptdef}{cat}
+\sparam{left}{\tstring}{Der linke String}
+\sparam{right}{\tstring}{Der rechte String}
+\sresult{\tstring}{Konkatenation von left und right}
+\saction{Berechnet die Konkatenation zweier Strings.}
+\end{scriptdef}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Vergleiche}
+
+%%% less
+\begin{scriptdef}{less}
+\sparam{a}{\tnatural, \tedgeid, \tnodeid, \tstring}{}
+\sparam{b}{der selbe Typ wie a}{}
+\sresult{\tboolean}{Ergebnis der Ungleichung a < b}
+\saction{Berechet Enthaltensein des Paars (a, b) in einer irreflexiven
+antisymmetrischen und transitiven binären Relation. Die Relation ist auf den
+verschiedenen Typen folgendermaßen definiert:
+\begin{description}
+\item[\tnatural] Wie in der Mathematik für < üblich.
+\item[\tedgeid] Implementationsabhängig, hat keine besondere Semantik, kann
+verwendet werden um eine konsistente Sortierung verschiedener Listen zu
+erreichen.
+\item[\tnodeid] Implementierungsabhängig, hat keine besondere Semantik, kann
+verwendet werden um eine konsistente Sortierung verschiedener Listen zu
+erreichen.
+\item[\tstring] Imlementierungsabhängige lexikographische Ordnung.
+\end{description}}
+\end{scriptdef}
+
+%%% equal
+\begin{scriptdef}{equal}
+\sparam{a}{\tnatural, \tedgeid, \tnodeid, \tstring}{}
+\sparam{b}{der selbe Typ wie a}{}
+\sresult{\tboolean}{\toktrue, falls a und b gleiche Werte sind,
+\tokfalse sonst}
+\saction{Testet ob a = b.}
+\end{scriptdef}
+
+%%% in_regexp
+\begin{scriptdef}{in\_regexp}
+\sparam{s}{\tstring}{Teststring}
+\sparam{regexp}{\tstring}{Ein regulärer Ausdruck nach der Spezifikation
+des Ada95 Pakets GNAT.Reg\_Pat}
+\sresult{\tboolean}{\toktrue falls s in der durch regexp beschriebenen Sprache
+enthalten ist, \tokfalse sonst}
+\saction{Ermittelt, ob ein String in der Sprache eines regulären Ausdrucks
+enthalten ist. Es ist ein Laufzeitfehler, falls regexp syntaktisch nicht
+korrekt ist.}
+\end{scriptdef}
+
+%%% type_in
+\begin{scriptdef}{type\_in}
+\sparam{type}{\tstring}{Typname eines IML-Knoten oder einer IML-Kante}
+\sparam{class\_set}{\tstring}{Name einer Klassenmenge in GIANT}
+\sresult{\tboolean}{\toktrue falls type in class\_set enthalten ist, \tokfalse
+sonst}
+\saction{Testet ob der Typname type in der Klassenmenge class\_set enthalten
+ist. Der Name einer IML-Kanten hat das Format \gq{Knotentyp.Attributname}.
+Es ist ein Laufzeitfehler, falls class\_set kein Name einer Klassenmenge
+ist.}
+\end{scriptdef}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Mengen und Listen}
+
+In dieses Kapitel gehören auch die Variablen \textbf{add} und \textbf{sub}.
+Da diese jedoch nicht ausschließlich auf Mengen angewendet werden, sind
+sie in dem allgemeineren Kapitel \ref{scriptdef_add} aufgeführt.
+
+%%% empty_node_set
+\begin{scriptdef}{empty\_node\_set}
+\sresult{\tnodeset}{Ein Wert $M$ mit equal (size\_of ($M$), 0)}
+\saction{Hat als Ergebnis eine leere Knotenmenge.}
+\end{scriptdef}
+
+%%% empty_edge_set
+\begin{scriptdef}{empty\_edge\_set}
+\sresult{\tedgeset}{Ein Wert $M$ mit equal (size\_of ($M$), 0)}
+\saction{Hat als Ergebnis eine leere Kantenmenge.}
+\end{scriptdef}
+
+%%% is_in
+\begin{scriptdef}{is\_in}
+\sparam{set}{\tnodeset oder \tedgeset}{Ein Wert eines der Mengentypen}
+\sparam{element}{\tnodeid bzw.\ \tedgeid}{Ein Element, der Typ muss zum
+Argument set passend sein. Falls set ein Wert aus \tnodeset ist, so muss
+element ein Wert vom Typ \tnodeid sein. Falls set ein Wert aus \tedgeset
+ist, so muss element ein Wert vom Typ \tedgeid sein.}
+\sresult{\tboolean}{\toktrue, falls element in set enthalten ist, \tokfalse
+sonst}
+\saction{Testet, ob element in set enthalten ist.}
+\end{scriptdef}
+
+%%% for_each
 \begin{scriptdef}{for\_each}
 \sparam{set}{\tnodeset oder \tedgeset}{Grundmenge}
 \sparam{action}{\tscriptreference}{Aktivierungsinformation für ein Script,
@@ -1182,36 +1368,285 @@ das genau einen Parameter vom Elementtyp der Grundmenge hat (Also \tnodeid
 für \tnodeset bzw.\ \tedgeid für \tedgeset))}
 \sresult{}{\toknull}
 \saction{Iteriert über alle Elemente der Grundmenge und aktiviert action
-je einmal. Übergibt das Element an action als einzigen Parameter.}
+je einmal für jedes Element. Übergibt das Element an action als einzigen
+Parameter.}
 \end{scriptdef}
+
+%%% size_of
+\begin{scriptdef}{size\_of}
+\sparam{obj}{\tlist oder \tnodeset oder \tedgeset}{Irgendeine Liste, oder
+eine Menge}
+\sresult{\tnatural}{Anzahl der Werte in obj}
+\saction{Ermittelt die Anzahl der Einträge der Liste bzw.\ die Kardinalität
+der Menge.}
+\end{scriptdef}
+
+%%% get_entry
+\begin{scriptdef}{get\_entry}
+\sparam{list}{\tlist}{Irgendeine nicht-leere Liste}
+\sparam{index}{\tnatural}{Index des gewünschten Eintrags. Der am weitesten
+links stehende Eintrag hat die Nummer 1, der am weitesten rechts stehende
+hat die Nummer size\_of (list)}
+\sresult{}{Wert des index-ten Eintrags von list}
+\saction{Ermittelt den Wert eines bestimmten Eintrags von list}
+\end{scriptdef}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Typfeststellungen}
+
+%%% is_nodeid
+\begin{scriptdef}{is\_nodeid}
+\sparam{obj}{jeder Typ}{Der Wert irgendeines Ausdrucks}
+\sresult{\tboolean}{\toktrue, falls obj ein Wert vom Typ \tnodeid ist,
+\tokfalse andernfalls.}
+\saction{Überprüft, ob der Wert obj vom Typ \tnodeid ist.}
+\end{scriptdef}
+
+%%% is_edgeid
+\begin{scriptdef}{is\_edgeid}
+\sparam{obj}{jeder Typ}{Der Wert irgendeines Ausdrucks}
+\sresult{\tboolean}{\toktrue, falls obj ein Wert vom Typ \tedgeid ist,
+\tokfalse andernfalls.}
+\saction{Überprüft, ob der Wert obj vom Typ \tedgeid ist.}
+\end{scriptdef}
+
+%%% is_node_set
+\begin{scriptdef}{is\_node\_set}
+\sparam{obj}{jeder Typ}{Der Wert irgendeines Ausdrucks}
+\sresult{\tboolean}{\toktrue, falls obj ein Wert vom Typ \tnodeset ist,
+\tokfalse andernfalls.}
+\saction{Überprüft, ob der Wert obj vom Typ \tnodeset ist.}
+\end{scriptdef}
+
+%%% is_edge_set
+\begin{scriptdef}{is\_edge\_set}
+\sparam{obj}{jeder Typ}{Der Wert irgendeines Ausdrucks}
+\sresult{\tboolean}{\toktrue, falls obj ein Wert vom Typ \tedgeset ist,
+\tokfalse andernfalls.}
+\saction{Überprüft, ob der Wert obj vom Typ \tedgeset ist.}
+\end{scriptdef}
+
+%%% is_string
+\begin{scriptdef}{is\_string}
+\sparam{obj}{jeder Typ}{Der Wert irgendeines Ausdrucks}
+\sresult{\tboolean}{\toktrue, falls obj ein Wert vom Typ \tstring ist,
+\tokfalse andernfalls.}
+\saction{Überprüft, ob der Wert obj vom Typ \tstring ist.}
+\end{scriptdef}
+
+%%% is_boolean
+\begin{scriptdef}{is\_boolean}
+\sparam{obj}{jeder Typ}{Der Wert irgendeines Ausdrucks}
+\sresult{\tboolean}{\toktrue, falls obj ein Wert vom Typ \tboolean ist,
+\tokfalse andernfalls.}
+\saction{Überprüft, ob der Wert obj vom Typ \tboolean ist.}
+\end{scriptdef}
+
+%%% is_natural
+\begin{scriptdef}{is\_natural}
+\sparam{obj}{jeder Typ}{Der Wert irgendeines Ausdrucks}
+\sresult{\tboolean}{\toktrue, falls obj ein Wert vom Typ \tnatural ist,
+\tokfalse andernfalls.}
+\saction{Überprüft, ob der Wert obj vom Typ \tnatural ist.}
+\end{scriptdef}
+
+%%% is_list
+\begin{scriptdef}{is\_list}
+\sparam{obj}{jeder Typ}{Der Wert irgendeines Ausdrucks}
+\sresult{\tboolean}{\toktrue, falls obj ein Wert vom Typ \tlist ist, \tokfalse
+andernfalls.}
+\saction{Überprüft, ob der Wert obj vom Typ \tlist ist.}
+\end{scriptdef}
+
+%%% is_reference
+\begin{scriptdef}{is\_reference}
+\sparam{obj}{jeder Typ}{Der Wert irgendeines Ausdrucks}
+\sresult{\tboolean}{\toktrue, falls obj ein Wert vom Typ \tvarreference ist,
+\tokfalse andernfalls.}
+\saction{Überprüft, ob der Wert obj vom Typ \tvarreference ist.}
+\end{scriptdef}
+
+%%% is_script
+\begin{scriptdef}{is\_script}
+\sparam{obj}{jeder Typ}{Der Wert irgendeines Ausdrucks}
+\sresult{\tboolean}{\toktrue, falls obj ein Wert vom Typ \tscriptreference
+ist, \tokfalse andernfalls.}
+\saction{Überprüft, ob der Wert obj vom Typ \tscriptreference ist.}
+\end{scriptdef}
+
+%%% is_null
+\begin{scriptdef}{is\_null}
+\sparam{obj}{jeder Typ}{Der Wert irgendeines Ausdrucks}
+\sresult{\tboolean}{\toktrue, falls obj ein Wert des namenlosen Typs ist,
+\tokfalse andernfalls.}
+\saction{Überprüft, ob der Wert von obj der Wert \toknull des namenlosen
+Typs ist.}
+\end{scriptdef}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Interaktion mit GIANT}
 
-In diesem Kapitel werden alle Aktionen definiert, die mit GSL ausgelöst werden
-können.
+In diesem Kapitel werden alle Aktionen und alle Anfragen definiert, die mit
+GSL ausgelöst werden können.
 
+%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Interaktion mit dem GSL Interpreter}
 
-\begin{scriptdef}{Create\_Window}
-\sparam{Window\_Name}{\tstring}{Der Name des zu erzeugenden Anzeigefensters.}
+%%% get_current_window
+\begin{scriptdef}{get\_current\_window}
+\sresult{\tstring oder der namenlose Typ}{Name des Anzeigefensters oder
+\toknull}
+\saction{Falls der GSL Interpreter im Kontext eines Anzeigefenster ausgeführt
+wird, hat dieses Script als Ergebnis den Namen dieses Anzeigefensters.
+Andernfalls ist das Ergebnis der Wert \toknull.}
+\end{scriptdef}
+
+%%% set_current_window
+\begin{scriptdef}{set\_current\_window}
+\sparam{window\_name}{\tstring}{Name eines Anzeigefensters}
+\sresult{\tboolean}{\toktrue, falls der Kontext des GSL Interpreters geändert
+wurde, \tokfalse sonst}
+\saction{Ändert den Kontext des GSL Interpreters, so dass der GSL Interpreter
+danach im Kontext des Anzeigefensters mit Namen window\_name ausgeführt
+wird. Diese Aktion kann aus einer Vielzahl von Gründen fehlschlagen. Ein
+GSL Interpreter darf den Wechsel des Kontexts verbieten, falls kein
+Anzeigefenster mit Namen window\_name existiert oder falls Objekte existieren,
+die Referenzen auf Selektionen in einem anderen Anzeigefenster enthalten.
+Auf jeden Fall sollte deshalb das Ergebnis dieses Scripts beachtet werden.}
+\end{scriptdef}
+
+%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Anfragen an den IML-Graph}
+
+%%% root_node
+\begin{scriptdef}{root\_node}
+\sresult{\tnodeset}{Menge, die den Wurzelknoten des IML-Graphen enthält und
+nichts sonst.}
+\saction{Hat als Ergebnis eine Menge, die nur den Wurzelknoten des IML-Graphen
+enthält.}
+\end{scriptdef}
+
+%%% all_nodes
+\begin{scriptdef}{all\_nodes}
+\sresult{\tnodeset}{Menge aller IML-Knoten des IML-Graph}
+\saction{Hat als Ergebnis die Menge aller IML-Knoten des IML-Graph.}
+\end{scriptdef}
+
+%%% has_attribute
+\begin{scriptdef}{has\_attribute}
+\sparam{n}{\tnodeid}{Ein IML-Knoten}
+\sparam{attrib}{\tstring}{Name eines Attributs}
+\sresult{\tboolean}{\toktrue, falls der IML-Knoten n ein Attribut mit Name
+attrib besitzt, \tokfalse sonst}
+\saction{Testet, ob ein bestimmter IML-Knoten ein bestimmtes Attribut besitzt.}
+\end{scriptdef}
+
+%%% get_attribute
+\begin{scriptdef}{get\_attribute}
+\sparam{n}{\tnodeid}{Ein IML-Knoten}
+\sparam{attrib}{\tstring}{Name eines Attributs}
+\sresult{}{Wert des Attributs oder \toknull}
+\saction{Stellt fest, ob der IML-Knoten n ein Attribut mit Namen attrib
+besitzt. Falls nein ist das Ergebnis \toknull. Andernfalls ist das Ergebnis
+der Wert des Attributs. Solche Werte, die in der Reflektion durch einen
+Enumerator dargestellt werden, werden hier als \tlist dargestellt.}
+\end{scriptdef}
+
+%%% get_type
+\begin{scriptdef}{get\_type}
+\sparam{obj}{\tnodeid oder \tedgeid}{Ein IML-Knoten oder eine IML-Kante}
+\sresult{\tstring}{Typ von obj}
+\saction{Ergebnis ist die Typbezeichnung von obj. Für einen IML-Knoten ist
+dieser Text identisch mit dem Typname. Für eine IML-Kante setzt sich dieser
+Text zusammen aus Name des Typs des Startknoten . Name des Attributs dieser
+IML-Kante.}
+\end{scriptdef}
+
+%%% get_source
+\begin{scriptdef}{get\_source}
+\sparam{e}{\tedgeid}{Eine IML-Kante}
+\sresult{\tnodeid}{Startknoten von e}
+\saction{Ermittelt den Startknoten einer IML-Kante.}
+\end{scriptdef}
+
+%%% get_target
+\begin{scriptdef}{get\_target}
+\sparam{e}{\tedgeid}{Eine IML-Kante}
+\sresult{\tnodeid}{Zielknoten von e}
+\saction{Ermittelt den Zielknoten einer IML-Kante.}
+\end{scriptdef}
+
+%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Anfragen an die GUI}
+
+%%% exists_window
+\begin{scriptdef}{exists\_window}
+\sparam{window\_name}{\tstring}{Name eines Anzeigefensters}
+\sresult{\tboolean}{\toktrue, falls das Anzeigefenster existiert, \tokfalse
+sonst}
+\saction{Ermittelt, ob in GIANT ein Anzeigefenster mit Name window\_name
+existiert.}
+\end{scriptdef}
+
+%%% get_window_content
+\begin{scriptdef}{get\_window\_content}
+\sparam{window\_name}{\tstring}{Name eines Anzeigefensters}
+\sresult{\tobjectset}{Alle Fenster-Knoten und Fenster-Kanten des
+Anzeigefensters}
+\saction{Ermittelt den Teilgraphen des IML-Graphen der in dem Anzeigefenster
+window\_name enthalten ist.
+Es ist ein Laufzeitfehler, falls kein Anzeigefenster mit Namen window\_name
+existiert.}
+\end{scriptdef}
+
+%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Aktionen auf der GUI}
+
+%%% create_window
+\begin{scriptdef}{create\_window}
+\sparam{window\_name}{\tstring}{Der Name des zu erzeugenden Anzeigefensters.}
 \sresult{\tboolean}{\toktrue falls das Anzeigefenster erzeugt wurde,
 \tokfalse sonst.}
-\saction{Erzeugt ein neues Anzeigefenster mit Name Window\_Name in GIANT, falls
-ein solches noch nicht existiert.}
+\saction{Erzeugt ein neues Anzeigefenster mit Name window\_name in GIANT, falls
+ein solches noch nicht existiert. Öffnet das neue Anzeigefenster.}
 \end{scriptdef}
 
-\begin{scriptdef}{Insert\_Into\_Window}
-\sparam{Window\_Name}{\tstring}{}
-\sparam{Layout\_Algo}{\tstring}{}
-\sparam{Add\_Content}{\tstring}{}
-\sresult{}{\toknull}
-\saction{Bildet die größte Teilmenge $G$ von Content, so dass jede IML-Kante
-in $G$ zu genau zwei IML-Knoten in $G$ inzident ist und $G$ alle IML-Knoten
-aus Content enthält.
-Wendet den Layoutalgorithmus Layout\_Algo auf Content an. Fügt das Resultat
-in das Anzeigefenster mit Name Window\_Name ein.}
+%%% insert_into_window
+\begin{scriptdef}{insert\_into\_window}
+\sparam{window\_name}{\tstring}{Name eines Anzeigefensters}
+\sparam{layout\_algo}{\tstring}{Aufrufstring eines Layoutalgorithmus}
+\sparam{add\_content}{\tobjectset}{Einzufügender IML-Teilgraph}
+\sresult{\tnatural}{Anzahl der eingefügten IML-Knoten und IML-Kanten}
+\saction{Bildet die größte Teilmenge $G$ von add\_content, so dass jede
+IML-Kante in $G$ zu genau zwei IML-Knoten in $G$ inzident ist und $G$ alle
+IML-Knoten aus add\_content enthält.
+Wendet den Layoutalgorithmus layout\_algo auf content an. Fügt das Resultat
+in das Anzeigefenster mit Name window\_name ein.
+
+Es ist ein Laufzeitfehler, falls layout\_algo kein korrekter Aufrufstring ist.
+Es ist ein Laufzeitfehler, falls kein Anzeigefenster mit Namen window\_name
+existiert.}
+\end{scriptdef}
+
+%%% remove_from_window
+\begin{scriptdef}{remove\_from\_window}
+\sparam{window\_name}{\tstring}{Name eines Anzeigefensters}
+\sparam{remove\_content}{\tobjectset}{Zu entfernende IML-Knoten und IML-Kanten}
+\sresult{\tnatural}{Anzahl der entfernten IML-Knoten und IML-Kanten}
+\saction{Entfernt alle diejenigen IML-Knoten und IML-Kanten, die sowohl
+in remove\_content als auch in dem Anzeigefenster mit mit Name window\_name
+enthalten sind aus dem Anzeigefenster. Zusätzlich werden alle Fenster-Kanten
+aus dem Anzeigefenster entfernt, deren Start- oder Zielknoten im Fenster
+nicht mehr enthalten ist.
+
+Es ist ein Laufzeitfehler, falls kein Anzeigefenster mit Namen window\_name
+existiert.}
 \end{scriptdef}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Häufig verwendete Scripts}
 \label{standard}
 
@@ -1219,8 +1654,143 @@ Die hier definierten Scripts bilden eine Umgebung, die das Schreiben von
 benutzerdefinierten Scripts vereinfachen soll. Jedes hier vorgestellte Script
 ist redundant.
 
+Diese Scripts werden durch den Ausdruck in der Datei \gq{standard.gsl}
+definiert.
 
-\DeleteShortVerb{\`}
+\begin{scriptdef}{not}
+\sparam{a}{\tboolean oder \tscriptreference}{boolscher Wert oder
+Aktivierungsinformation für ein parameterloses Script, dass den boolschen
+Wert zum Ergebnis hat}
+\sresult{\tboolean}{Negation von a}
+\saction{Logische Negation}
+\end{scriptdef}
+
+\begin{scriptdef}{and\_then}
+\sparam{a}{\tboolean oder \tscriptreference}{boolscher Wert oder
+Aktivierungsinformation für ein parameterloses Script, dass den boolschen
+Wert zum Ergebnis hat}
+\sparam{b}{nur \tscriptreference}{Aktivierungsinformation für ein
+parameterloses Script, dass den boolschen Wert zum Ergebnis hat}
+\sresult{\tboolean}{Logische Konjunktion von a und b}
+\saction{Berechnet die logische Konjunktion. Falls a eine
+Aktivierungsinformation ist, so wird das zugehörige Script aktiviert und
+liefert als Ergebnis $v$. Andernfalls ist $v =$ a.
+Falls $v$ nicht erfüllt ist, so wird das durch b referenzierte Script nicht
+aktiviert. Andernfalls wird es ausgewertet und die Konjunktion berechnet.}
+\end{scriptdef}
+
+\begin{scriptdef}{and}
+\sparam{a}{\tboolean oder \tscriptreference}{boolscher Wert oder
+Aktivierungsinformation für ein parameterloses Script, dass den boolschen
+Wert zum Ergebnis hat}
+\sparam{b}{\tboolean oder \tscriptreference}{boolscher Wert oder
+Aktivierungsinformation für ein parameterloses Script, dass den boolschen
+Wert zum Ergebnis hat}
+\sresult{\tboolean}{Logische Konjunktion von a und b}
+\saction{Berechnet die logische Konjunktion. Falls Aktivierungsinformationen
+übergeben wurden, so werden die zugehörigen Scripts auf jeden Fall aktiviert.
+Falls a und b beides Aktivierungsinformationen sind, so wird zuerst a, dann
+b aktiviert.}
+\end{scriptdef}
+
+\begin{scriptdef}{or\_else}
+\sparam{a}{\tboolean oder \tscriptreference}{boolscher Wert oder
+Aktivierungsinformation für ein parameterloses Script, dass den boolschen
+Wert zum Ergebnis hat}
+\sparam{b}{nur \tscriptreference}{Aktivierungsinformation für ein
+parameterloses Script, dass den boolschen Wert zum Ergebnis hat}
+\sresult{\tboolean}{Logische Disjunktion von a und b}
+\saction{Berechnet die logische Diskunktion. Falls a eine
+Aktivierungsinformation ist, so wird das zugehörige Script aktiviert und
+liefert als Ergebnis $v$. Andernfalls ist $v =$ a.
+Falls $v$ erfüllt ist, so wird das durch b referenzierte Script nicht
+aktiviert. Andernfalls wird es ausgewertet und die Disjunktion berechnet.}
+\end{scriptdef}
+
+\begin{scriptdef}{or}
+\sparam{a}{\tboolean oder \tscriptreference}{boolscher Wert oder
+Aktivierungsinformation für ein parameterloses Script, dass den boolschen
+Wert zum Ergebnis hat.}
+\sparam{b}{\tboolean oder \tscriptreference}{boolscher Wert oder
+Aktivierungsinformation für ein parameterloses Script, dass den boolschen
+Wert zum Ergebnis hat.}
+\sresult{\tboolean}{Logische Disjunktion von a und b}
+\saction{Berechnet die logische Disjunktion. Falls Aktivierungsinformationen
+übergeben wurden, so werden die zugehörigen Scripts auf jeden Fall aktiviert.
+Falls a und b beides Aktivierungsinformationen sind, so wird zuerst a, dann
+b aktiviert.}
+\end{scriptdef}
+
+\begin{scriptdef}{while}
+\sparam{b}{\tscriptreference}{Aktivierungsinformation für ein
+parameterloses Script das als Ergebnis einen Wert vom Typ \tboolean hat.}
+\sparam{c}{\tscriptreference}{Aktivierungsinformation für ein parameterloses
+Script.}
+\sresult{}{\toknull}
+\saction{Wertet abwechselnd zuerst b und dann c aus. Stoppt, sobald b das
+Ergebnis \tokfalse hat.}
+\end{scriptdef}
+
+\begin{scriptdef}{repeat}
+\sparam{c}{\tscriptreference}{Aktivierungsinformation für ein parameterloses
+Script.}
+\sparam{until}{\tscriptreference}{Aktivierungsinformation für ein
+parameterloses Script das als Ergebnis einen Wert vom Typ \tboolean hat.}
+\sresult{}{\toknull}
+\saction{Wertet c einmal aus. Wertet dann abwechselnd zuerst until und dann
+c aus. Stoppt, sobald until das Ergebnis \tokfalse hat.}
+\end{scriptdef}
+
+\begin{scriptdef}{union}
+\sparam{A}{\tnodeset oder \tedgeset}{}
+\sparam{B}{der selbe Typ wie A}{}
+\sresult{der selbe Typ wie A}{}
+\saction{Berechnet die Mengenvereinigung von A und B.}
+\end{scriptdef}
+
+\begin{scriptdef}{intersection}
+\sparam{A}{\tnodeset oder \tedgeset}{}
+\sparam{B}{der selbe Typ wie A}{}
+\sresult{der selbe Typ wie A}{}
+\saction{Berechnet die Schnittmenge von A und B.}
+\end{scriptdef}
+
+\begin{scriptdef}{difference}
+\sparam{A}{\tnodeset oder \tedgeset}{}
+\sparam{B}{der selbe Typ wie A}{}
+\sresult{der selbe Typ wie A}{}
+\saction{Berechnet die Mengendifferenz A - B.}
+\end{scriptdef}
+
+\begin{scriptdef}{select\_nodes}
+\sparam{from}{\tnodeset}{Gundmenge}
+\sparam{node\_predicate}{\tscriptreference}{Aktivierungsinformation für ein
+Script, das als einzigen Parameter einen Wert vom Typ \tnodeid nimmt und
+ein Ergebnis vom Typ \tboolean hat}
+\sresult{\tnodeset}{}
+\saction{Ermittelt die größte Teilmenge von from, so dass alle IML-Knoten in
+dieser Teilmenge das node\_predicate erfüllen.}
+\end{scriptdef}
+
+\begin{scriptdef}{build\_nodes}
+\sparam{edge\_set}{\tedgeset}{Kantenmenge}
+\sparam{node\_predicate}{\tscriptreference}{Aktivierungsinformation für ein
+Script, das als einzigen Parameter einen Wert vom Typ \tnodeid nimmt und
+ein Ergebnis vom Typ \tboolean hat}
+\sresult{\tnodeset}{}
+\saction{Ermittelt die Menge aller IML-Knoten, die zu einer Kante aus
+edge\_set inzident sind und das node\_predicate erfüllen.}
+\end{scriptdef}
+
+\begin{scriptdef}{is\_object\_set}
+\sparam{obj}{jeder Typ}{Der Wert irgendeines Ausdrucks}
+\sresult{\tboolean}{\toktrue, falls obj ein Wert des zusammengesetzten
+Typs \tobjectset ist, \tokfalse andernfalls.}
+\saction{Überprüft, ob der Wert obj vom zusammengesetzten Typ \tobjectset ist.}
+\end{scriptdef}
+
+
+\DeleteShortVerb{\°}
 
 %==============================================================================
 %
