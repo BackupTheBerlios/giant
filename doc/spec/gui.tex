@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.96 $
-%  $Date: 2003/04/21 19:52:59 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.97 $
+%  $Date: 2003/04/21 20:54:40 $
 %  $Author: schwiemn $
 %
 %  Description: 
@@ -452,7 +452,7 @@ Bestandteile des Dialoges sind:
  Bei einer Mengenoperation über IML-Teilgraphen, werden alle IML-Teilgraphen
  des Projektes angezeigt, von denen dann einer ausgewählt werden kann.
  
- \item <OP> Combobox\\
+ \item <op> Combobox\\
  Mengenoperation, die ausgeführt werden soll; auswählbar sind: Union, Difference oder Intersection.
 
  \item RIGHT\_SOURCE Combobox\\
@@ -654,12 +654,13 @@ busy. Please be patient.} beschriftet.
      dass über den aktuellen Fortschritt
      einer Berechnung informiert, wobei der Gesamtaufwand unbekannt sein kann. 
      Hierzu wird kontinuierlich die Anzahl der schon bearbeiteten
-     Datensätze textuell ausgegeben, und, sofern bekannt, die Prozentzahl der schon
+     Datensätze textuell ausgegeben, und, sofern bekannt, die Prozentzahl 
+     der bereits
      bearbeiteten Datensätze im Verhältnis zur gesamten Datenmenge.
      Während dieser Dialog sichtbar ist, ist der Rest der GUI von GIANT
      gesperrt.
      Im Fenster existiert ein Button \gq{Cancel} \label{Progressbar-Modale-Cancel}, 
-     der die momentane Berechnung abbricht.
+     mit dem eine laufende Berechnung abgebrochen werden kann.
 
 %%% Local Variables: 
 %%% TeX-master: "spec"
