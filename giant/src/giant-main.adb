@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.27 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.28 $
 --  $Author: squig $
---  $Date: 2003/06/30 18:54:09 $
+--  $Date: 2003/07/07 14:04:47 $
 --
 --
 ------------------------------------------------------------------------------
@@ -51,6 +51,7 @@ is
    package Logger is new Giant.Logger("giant.main");
 
    Version : constant String := "20030627";
+   Start_Gui : Boolean := True;
 
    Config_Filename : constant String
      := File_Management.Get_User_Config_Path & "settings.xml";
@@ -74,7 +75,7 @@ is
 
       loop
          case GNAT.Command_Line.Getopt
-           ("-graph: -execute: -version -help")
+           ("-execute: -e: -graph: -g: -help -h -n -nogui -version -v ")
          is
            --  long option names
            when '-' =>
@@ -92,6 +93,9 @@ is
                    --  "help"
                    Put_Help;
                    GNAT.OS_Lib.OS_Exit (0);
+                when 'n' =>
+                   --  "nogui"
+                   Start_Gui := False;
                 when 'v' =>
                    --  "version"
                    Ada.Text_IO.Put_Line ("version: " & Version);
@@ -179,7 +183,10 @@ begin
 
    Logger.Debug ("starting giant");
 
-   Controller.Show_Gui;
+   if (Start_Gui) then
+      Logger.Debug ("initializing gui");
+      Controller.Show_Gui;
+   end if;
 
    Logger.Debug ("closing giant");
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.41 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.42 $
 --  $Author: squig $
---  $Date: 2003/07/07 13:40:28 $
+--  $Date: 2003/07/07 14:04:47 $
 --
 
 with Ada.Strings.Unbounded;
@@ -49,6 +49,20 @@ package body Giant.Controller is
       Right       : in Graph_Lib.Subgraphs.Subgraph;
       Target_Name : in String)
      return Graph_Lib.Subgraphs.Subgraph;
+
+   ---------------------------------------------------------------------------
+   --  Application
+   ---------------------------------------------------------------------------
+
+   procedure Exit_Application
+   is
+   begin
+      if (Gsl_Interpreter = null) then
+         -- FIX
+         --Gsl.Interpreters.Destory (Gsl_Interpreter);
+         null;
+      end if;
+   end Exit_Application;
 
    ---------------------------------------------------------------------------
    --  GUI
@@ -424,6 +438,17 @@ package body Giant.Controller is
       Gui_Manager.Add_Selection (Window_Name, Target_Name);
    end Duplicate_Selection;
 
+   function Exists_Selection
+     (Window_Name : in String;
+      Name        : in String)
+     return Boolean
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+   begin
+      return Vis_Windows.Does_Selection_Exist (Window, Name);
+   end Exists_Selection;
+
    function Get_Selection
      (Window_Name : in String;
       Name        : in String)
@@ -621,6 +646,14 @@ package body Giant.Controller is
       Projects.Add_Subgraph (Current_Project, Target);
       Gui_Manager.Add_Subgraph (Target_Name);
    end Duplicate_Subgraph;
+
+   function Exists_Subgraph
+     (Name : in String)
+     return Boolean
+   is
+   begin
+      return Projects.Does_Subgraph_Exist (Current_Project, Name);
+   end Exists_Subgraph;
 
    function Get_Subgraph
      (Name        : in String)

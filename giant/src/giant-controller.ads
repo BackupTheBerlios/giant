@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.29 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.30 $
 --  $Author: squig $
---  $Date: 2003/07/07 13:40:28 $
+--  $Date: 2003/07/07 14:04:47 $
 --
 ------------------------------------------------------------------------------
 --
@@ -59,6 +59,14 @@ with Giant.Vis;
 with Giant.Vis_Windows;
 
 package Giant.Controller is
+
+   ---------------------------------------------------------------------------
+   --  Application
+   ---------------------------------------------------------------------------
+
+   ---------------------------------------------------------------------------
+   --  Exits the application
+   procedure Exit_Application;
 
    ---------------------------------------------------------------------------
    --  GUI
@@ -244,6 +252,16 @@ package Giant.Controller is
       Source_Name : in String;
       Target_Name : in String);
 
+   ---------------------------------------------------------------------------
+   --  Returns True, if a selection with Name exists.
+   --
+   --  See:
+   --    Giant.Vis_Windows.Does_Selection_Exist
+   function Exists_Selection
+     (Window_Name : in String;
+      Name        : in String)
+     return Boolean;
+
    function Get_Selection
      (Window_Name : in String;
       Name        : in String)
@@ -302,6 +320,15 @@ package Giant.Controller is
    procedure Duplicate_Subgraph
      (Source_Name : in String;
       Target_Name : in String);
+
+   ---------------------------------------------------------------------------
+   --  Returns True, if a subgraph with Name exists.
+   --
+   --  See:
+   --    Giant.Projects.Does_Subgraph_Exist
+   function Exists_Subgraph
+     (Name : in String)
+     return Boolean;
 
    function Get_Subgraph
      (Name : in String)

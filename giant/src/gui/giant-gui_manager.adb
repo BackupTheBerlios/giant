@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.28 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.29 $
 --  $Author: squig $
---  $Date: 2003/07/04 22:45:46 $
+--  $Date: 2003/07/07 14:04:47 $
 --
 
 with Ada.Strings.Unbounded;
@@ -133,6 +133,10 @@ package body Giant.Gui_Manager is
      return Boolean
    is
    begin
+      if (not Gui_Initialized) then
+         return True;
+      end if;
+
       if (Main_Window.Hide (Ask_For_Confirmation)) then
          Gtk.Main.Main_Quit;
          return True;

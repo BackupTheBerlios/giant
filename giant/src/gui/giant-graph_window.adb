@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.26 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.27 $
 --  $Author: squig $
---  $Date: 2003/07/04 20:41:28 $
+--  $Date: 2003/07/07 14:04:47 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -266,11 +266,26 @@ package body Giant.Graph_Window is
       Removed : Boolean;
    begin
       Removed := Controller.Remove_Selection
-        (Get_Window_Name (Source), Get_Selected_Selection (Window));
+        (Get_Window_Name (Source), Get_Selected_Selection (Window),
+         Remove_Content => False, Ask_For_Confirmation => True);
    exception
       when Vis_Windows.Standard_Selection_May_Not_Be_Removed_Exception =>
          Dialogs.Show_Error_Dialog ("The default selection can not be removed.");
    end On_Selection_List_Delete;
+
+   procedure On_Selection_List_Delete_With_Content
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+      Window : constant Graph_Window_Access := Graph_Window_Access (Source);
+      Removed : Boolean;
+   begin
+      Removed := Controller.Remove_Selection
+        (Get_Window_Name (Source), Get_Selected_Selection (Window),
+         Remove_Content => True, Ask_For_Confirmation => True);
+   exception
+      when Vis_Windows.Standard_Selection_May_Not_Be_Removed_Exception =>
+         Dialogs.Show_Error_Dialog ("The default selection can not be removed.");
+   end On_Selection_List_Delete_With_Content;
 
    procedure On_Selection_List_Duplicate
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
@@ -655,6 +670,10 @@ package body Giant.Graph_Window is
       Gtk.Menu.Append (Window.Selection_List_Menu,
                        New_Menu_Item (-"Delete",
                                       On_Selection_List_Delete'Access,
+                                      Window));
+      Gtk.Menu.Append (Window.Selection_List_Menu,
+                       New_Menu_Item (-"Delete With Content",
+                                      On_Selection_List_Delete_With_Content'Access,
                                       Window));
 
       --  selections
