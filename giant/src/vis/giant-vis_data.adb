@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.6 $
 --  $Author: keulsn $
---  $Date: 2003/06/23 01:11:07 $
+--  $Date: 2003/06/23 16:18:36 $
 --
 ------------------------------------------------------------------------------
 
@@ -91,13 +91,12 @@ package body Giant.Vis_Data is
    -- Edges --
    -----------
 
-   function Is_Edge_Below
-     (Left  : in     Vis_Edge_Id;
-      Right : in     Vis_Edge_Id)
-     return Boolean is
+   function Get_Graph_Edge
+     (Edge : in     Vis_Edge_Id)
+     return Graph_Lib.Edge_Id is
    begin
-      return Is_Below (Left.Layer, Right.Layer);
-   end Is_Edge_Below;
+      return Edge.Edge;
+   end Get_Graph_Edge;
 
    function Get_Layer
      (Edge  : in     Vis_Edge_Id)
@@ -106,10 +105,32 @@ package body Giant.Vis_Data is
       return Edge.Layer;
    end Get_Layer;
 
+   function Is_Edge_Below
+     (Left  : in     Vis_Edge_Id;
+      Right : in     Vis_Edge_Id)
+     return Boolean is
+   begin
+      return Is_Below (Left.Layer, Right.Layer);
+   end Is_Edge_Below;
+
 
    -----------
    -- Nodes --
    -----------
+
+   function Get_Graph_Node
+     (Node : in     Vis_Node_Id)
+     return Graph_Lib.Node_Id is
+   begin
+      return Node.Node;
+   end Get_Graph_Node;
+
+   function Get_Layer
+     (Node  : in     Vis_Node_Id)
+     return Layer_Type is
+   begin
+      return Node.Layer;
+   end Get_Layer;
 
    function Is_Node_Below
      (Left  : in     Vis_Node_Id;
@@ -118,13 +139,6 @@ package body Giant.Vis_Data is
    begin
       return Is_Below (Left.Layer, Right.Layer);
    end Is_Node_Below;
-
-   function Get_Layer
-     (Node  : in     Vis_Node_Id)
-     return Layer_Type is
-   begin
-      return Node.Layer;
-   end Get_Layer;
 
    function Get_Extent
      (Node  : in     Vis_Node_Id)

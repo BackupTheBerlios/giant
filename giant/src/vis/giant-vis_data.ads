@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.8 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.9 $
 --  $Author: keulsn $
---  $Date: 2003/06/23 01:11:07 $
+--  $Date: 2003/06/23 16:18:36 $
 --
 ------------------------------------------------------------------------------
 --
@@ -166,6 +166,20 @@ package Giant.Vis_Data is
 
    type Vis_Edge_Id is access all Vis_Edge_Record;
 
+
+   ----------------------------------------------------------------------------
+   --  Gets the edge for the visual representation
+   function Get_Graph_Edge
+     (Edge : in     Vis_Edge_Id)
+     return Graph_Lib.Edge_Id;
+
+   ----------------------------------------------------------------------------
+   --  Gets the layer 'Edge' is inside. No other edge must be in the same
+   --  layer. The user must ensure this.
+   function Get_Layer
+     (Edge  : in     Vis_Edge_Id)
+     return Layer_Type;
+
    ----------------------------------------------------------------------------
    --  Total ordering on Vis_Edge_Id
    --  Returns:
@@ -201,6 +215,20 @@ package Giant.Vis_Data is
    type Vis_Node_Record is limited private;
 
    type Vis_Node_Id is access all Vis_Node_Record;
+
+
+   ----------------------------------------------------------------------------
+   --  Gets the node for the visual representation
+   function Get_Graph_Node
+     (Node : in     Vis_Node_Id)
+     return Graph_Lib.Node_Id;
+
+   ----------------------------------------------------------------------------
+   --  Gets the layer 'Node' is inside. No other node must be in the same
+   --  layer. The user must ensure this.
+   function Get_Layer
+     (Node : in     Vis_Node_Id)
+     return Layer_Type;
 
    ----------------------------------------------------------------------------
    --  Total ordering on Vis_Node_Id
@@ -559,7 +587,7 @@ private
          Target            : Vis_Node_Id;
          --  Width of this edge
          Width             : Vis.Absolute_Int;
-         --  Hight level of this edge
+         --  Layer of this edge
          Layer             : Layer_Type;
          --  Start point, inflection points, end point
          Points            : Absolute_Point_Array (1 .. Number_Of_Points);

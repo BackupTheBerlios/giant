@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.5 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.6 $
 --  $Author: keulsn $
---  $Date: 2003/06/23 01:11:07 $
+--  $Date: 2003/06/23 16:18:36 $
 --
 ------------------------------------------------------------------------------
 --
@@ -757,6 +757,11 @@ package Giant.Graph_Widgets is
       Zoom       : in     Vis.Zoom_Level);
 
 
+   ----------------------------------------------------------------------------
+   --  Style for drawing of edges
+   --  can be 'Continouus_Line', 'Dashed_Line', 'Dotted_Line'
+   type Edge_Style_Type is new Config.Vis_Styles.Edge_Line_Style;
+
                            ------------------
 private                    -- private part --
                            ------------------
@@ -780,14 +785,26 @@ private                    -- private part --
    type Lock_Type is null record;
 
 
+   -------------
+   -- Drawing --
+   -------------
 
    --------------
    -- Settings --
    --------------
 
-   type Setting_Type is
+   ----------------------------------------------------------------------------
+   --  Mapping Config.Color_Access --> allocated color
+   package Color_Mappings is new Hashed_Mappings
+     (Key_Type   => Config.Color_Access,
+      Hash       => Config.Hash_Color_Access,
+      Value_Type => Gdk.Color.Gdk_Color);
+
+   type Settings_Type is
       record
-         null;
+         --  Colors used for drawing. All those colors are allocated in the
+         --  default 'Colormap'.
+         Color_Pool : Color_Mappings.Mapping;
       end record;
 
 
@@ -799,6 +816,8 @@ private                    -- private part --
    --  The one and only graph widget tagged type
    type Graph_Widget_Record is new Gtk.Widget.Gtk_Widget_Record with
       record
+         Settings : Settings_Type;
+
          All_Nodes          : Vis_Data.Vis_Node_Sets.Set;
          Node_Map           : Node_Id_Mappings.Mapping;
          Highest_Node_Layer : Vis_Data.Layer_Pool;
