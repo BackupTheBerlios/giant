@@ -26,6 +26,9 @@ GIANT_PATH      = ../
 AUNIT_PATH      = $(GIANT_PATH)/../src/aunit-1.01
 XMLADA_PATH     = $(GIANT_PATH)/../src/xmlada-0.7.1
 
+IML_ARCHIVE     = iml_browser_030923.tar.gz
+#fetched by target fetch-iml from droste:/home/bauhaus/imbphase/
+
 AUNIT_INCLUDES  = -I$(AUNIT_PATH)/aunit/framework -I$(AUNIT_PATH)/aunit/text_reporter
 IMLLIB_INCLUDES = -I$(IMLLIB_PATH)/IML.generated -I$(IMLLIB_PATH)/IML.src -I$(IMLLIB_PATH)/Reuse.src -I$(IMLLIB_PATH)/usr.local.reuse
 IMLLIB_LIBS = 
@@ -63,6 +66,7 @@ SRCDIST = compile.bat.dist ChangeLog COPYING Makefile.dist src
 DIST = COPYING etc giant.sh NEWS README shared
 DIST_PATH = /projects/tmp/giant/releases/giant-$(VERSION)
 RELEASE_TAG = $(shell echo giant-$(VERSION) | sed -e 's/\./_/g')
+LCOV = /projects/tmp/giant/lcov-1.0
 
 ifeq ($(shell test -r Makefile.local && echo "true"),true)
   include Makefile.local
@@ -92,8 +96,8 @@ tags :
 
 fetch-iml :
 	mkdir -p $(TMP_PATH)
-	scp droste.informatik.uni-stuttgart.de:/home/bauhaus/imbphase/iml_browser_030825.tar.gz $(TMP_PATH)
-	tar -C $(TMP_PATH) -xzvf $(TMP_PATH)/iml_browser_030825.tar.gz
+	scp droste.informatik.uni-stuttgart.de:/home/bauhaus/imbphase/$(IML_ARCHIVE) $(TMP_PATH)
+	tar -C $(TMP_PATH) -xzvf $(TMP_PATH)/$(IML_ARCHIVE)
 
 sloc :
 	PATH=/home/stsopra/giant/sloccount-2.22:$(PATH) sloccount src/
@@ -119,14 +123,16 @@ html : all
 	gnathtml $(HTML_DEPTH) -f -l1 -o$(HTML_PATH) $(HTML_MAIN)
 
 gcov :
+#please add GNAT_FLAGS+=-fprofile-arcs -ftest-coverage
+# to your Makefile.local in src/giant to use this
 	test -x $(GCOV_OUT_PATH) || mkdir $(GCOV_OUT_PATH)
-	PATH=/home/stsopra/giant/lcov-1.0:$(PATH) lcov.pl --directory obj --reset
+	PATH=$(LCOV):$(PATH) lcov.pl --directory obj --reset
 	make -C test
 	cd test/ && ./framework_test
 #find obj/ -maxdepth 1 -name "*.da" -not -name "giant-*" -exec rm {} \;
-	PATH=/home/stsopra/giant/lcov-1.0:$(PATH) lcov.pl --directory obj \
+	PATH=$(LCOV):$(PATH) lcov.pl --directory obj \
 	  --capture --output-file $(GCOV_OUT_PATH)/giant.info
-	PATH=/home/stsopra/giant/lcov-1.0:$(PATH) genhtml.pl \
+	PATH=$(LCOV):$(PATH) genhtml.pl \
 	  --show-details --output-directory $(GCOV_OUT_PATH) \
 	  --title "GIANT Test Coverage" $(GCOV_OUT_PATH)/giant.info
 
