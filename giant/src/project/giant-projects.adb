@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.27 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.28 $
 --  $Author: schwiemn $
---  $Date: 2003/06/20 13:45:48 $
+--  $Date: 2003/06/22 16:22:47 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -125,7 +125,7 @@ package body Giant.Projects is
    --  is actually loaded by the graph_lib.
    --  The check is based on an hash id value calculated for the iml graph.
    function Is_Correct_IML_Graph_Loaded (Graph_ID : in Integer)
-     return Boolean is
+                                        return Boolean is
    begin
       if (Graph_Lib.Get_Graph_Hash = Graph_ID) then
          return True;
@@ -153,13 +153,13 @@ package body Giant.Projects is
       -- Does no changes if "Directory" already is an absolute path.
       Absolute_Dir_Path := Ada.Strings.Unbounded.To_Unbounded_String
         (File_Management.Get_Absolute_Path_To_Directory_From_Relative
-          (GNAT.Directory_Operations.Get_Current_Dir,
-           Directory));
+         (GNAT.Directory_Operations.Get_Current_Dir,
+          Directory));
 
       -- build file name for thefile
       return Ada.Strings.Unbounded.To_Unbounded_String
         (File_Management.Append_Dir_Separator_If_Necessary
-          (Ada.Strings.Unbounded.To_String (Absolute_Dir_Path))
+         (Ada.Strings.Unbounded.To_String (Absolute_Dir_Path))
          & Name
          & Ending);
    end Create_Name_For_File;
@@ -180,17 +180,17 @@ package body Giant.Projects is
       String_Lists.Attach
         (File_List,
          File_Management.Get_Filtered_Files_From_Directory
-           (Directory,
-            True,
-            Const_Subgraph_Security_File_Ending));
+         (Directory,
+          True,
+          Const_Subgraph_Security_File_Ending));
 
       -- Security Files for visualisation windows
       String_Lists.Attach
         (File_List,
          File_Management.Get_Filtered_Files_From_Directory
-           (Directory,
-            True,
-            Const_Vis_Window_Security_File_Ending));
+         (Directory,
+          True,
+          Const_Vis_Window_Security_File_Ending));
 
       File_List_Iter := String_Lists.MakeListIter (File_List);
 
@@ -198,7 +198,7 @@ package body Giant.Projects is
 
          String_Lists.Next (File_List_Iter, A_File_Name);
          File_Management.Delete_File (Ada.Strings.Unbounded.To_String
-           (A_File_Name));
+                                      (A_File_Name));
       end loop;
 
       String_Lists.Destroy (File_List);
@@ -209,7 +209,8 @@ package body Giant.Projects is
    --   Ensures that the Name of the vis window corresponds to the
    --   file's name from that it is loaded
    --   (user may have changed this name).
-   function Load_Vis_Window_Into_Main_Memory (File_Path : String)
+   function Load_Vis_Window_Into_Main_Memory
+     (File_Path : String)
      return Vis_Windows.Visual_Window_Access is
 
       Stream_File       : Ada.Streams.Stream_IO.File_Type;
@@ -271,7 +272,7 @@ package body Giant.Projects is
       Bauhaus_Out_Stream := Bauhaus_IO.Make_Internal (Ada_Stream);
 
       Vis_Windows.Visual_Window_Access_Write
-           (Bauhaus_Out_Stream, Vis_Window);
+        (Bauhaus_Out_Stream, Vis_Window);
 
       -- close resources
       Bauhaus_IO.Release (Bauhaus_Out_Stream);
@@ -283,7 +284,8 @@ package body Giant.Projects is
    --   Ensures that the Name of the subgraph corresponds to the
    --   file's name from that it is loaded
    --   (user may have changed this name).
-   function Load_Sub_Graph_Data_Into_Main_Memory (File_Path : String)
+   function Load_Sub_Graph_Data_Into_Main_Memory
+     (File_Path : String)
      return Subgraph_Data_Element is
 
       Stream_File        : Ada.Streams.Stream_IO.File_Type;
@@ -393,7 +395,7 @@ package body Giant.Projects is
       -- Write content of dtd file
       Ada.Text_IO.Put_Line
         ("<!ELEMENT giant_project_file "
-          &"(global_data, visualisation_windows, subgraphs)>");
+         &"(global_data, visualisation_windows, subgraphs)>");
 
       Ada.Text_IO.New_Line;
       Ada.Text_IO.Put_Line
@@ -423,11 +425,11 @@ package body Giant.Projects is
       Ada.Text_IO.Put_Line
         ("    >");
 
-       Ada.Text_IO.New_Line;
+      Ada.Text_IO.New_Line;
       Ada.Text_IO.Put_Line
         ("  <!ELEMENT subgraphs (a_subgraph_file)*>");
 
-       Ada.Text_IO.New_Line;
+      Ada.Text_IO.New_Line;
       Ada.Text_IO.Put_Line
         ("    <!ELEMENT a_subgraph_file EMPTY>");
       Ada.Text_IO.Put_Line
@@ -495,7 +497,7 @@ package body Giant.Projects is
       Ada.Text_IO.Put_Line
         ("    iml_graph_file_path = """
          & Ada.Strings.Unbounded.To_String
-           (The_Project.Abs_Bauhaus_IML_Graph_File)
+         (The_Project.Abs_Bauhaus_IML_Graph_File)
          & """");
       Ada.Text_IO.Put_Line
         ("    iml_graph_checksum = """
@@ -505,7 +507,7 @@ package body Giant.Projects is
       Ada.Text_IO.Put_Line
         ("    node_annotations_file_name = """
          & Ada.Strings.Unbounded.To_String
-           (The_Project.Node_Annotations_File)
+         (The_Project.Node_Annotations_File)
          & """ />");
 
       --  write entries for the files holding the
@@ -527,9 +529,9 @@ package body Giant.Projects is
 
             Ada.Text_IO.Put_Line
               ("    <a_vis_window_file file_path = """
-              & Ada.Strings.Unbounded.To_String
-                  (A_Vis_Window_Data_Element.Existing_Vis_Window_File)
-              & """ />");
+               & Ada.Strings.Unbounded.To_String
+               (A_Vis_Window_Data_Element.Existing_Vis_Window_File)
+               & """ />");
          end if;
       end loop;
 
@@ -554,9 +556,9 @@ package body Giant.Projects is
 
             Ada.Text_IO.Put_Line
               ("    <a_subgraph_file file_path = """
-              & Ada.Strings.Unbounded.To_String
-                  (A_Subgraph_Data_Element.Existing_Subgraph_File)
-              & """ />");
+               & Ada.Strings.Unbounded.To_String
+               (A_Subgraph_Data_Element.Existing_Subgraph_File)
+               & """ />");
          end if;
       end loop;
 
@@ -611,24 +613,24 @@ package body Giant.Projects is
 
          XML_File_Access.Load_XML_File_Validated
            (Ada.Strings.Unbounded.To_String
-             (Absolute_Project_File_Name),
+            (Absolute_Project_File_Name),
             A_Tree_Reader,
             A_XML_Document);
 
          -- check for project files
          if (XML_File_Access.Does_XML_Document_Belong_To_Type
-           ("giant_project_file", A_XML_Document) = True) then
+             ("giant_project_file", A_XML_Document) = True) then
 
             Project_Exists := True;
          end if;
 
          Tree_Readers.Free (A_Tree_Reader);
       exception
-        when Error : others =>
-           Logger.Error ("error parsing project file");
-           Logger.Error (Error);
+         when Error : others =>
+            Logger.Error ("error parsing project file");
+            Logger.Error (Error);
 
-           Project_Exists := False;
+            Project_Exists := False;
       end;
 
       return Project_Exists;
@@ -662,7 +664,7 @@ package body Giant.Projects is
       String_Lists.Attach
         (File_List,
          File_Management.Get_Filtered_Files_From_Directory
-           (Project_Directory, True, ".xml"));
+         (Project_Directory, True, ".xml"));
 
       File_List_Iter := String_Lists.MakeListIter (File_List);
 
@@ -678,7 +680,7 @@ package body Giant.Projects is
 
             -- check for project files
             if (XML_File_Access.Does_XML_Document_Belong_To_Type
-              ("giant_project_file", A_XML_Document) = True) then
+                ("giant_project_file", A_XML_Document) = True) then
 
                Project_File_Found := True;
             end if;
@@ -733,18 +735,18 @@ package body Giant.Projects is
       --  get the global setting node
       XML_Nodes_List :=
         DOM.Core.Documents.Get_Elements_By_Tag_Name
-          (Project_XML_Document, "global_data");
+        (Project_XML_Document, "global_data");
 
       --  the list holds only one node
       Data_XML_Node := DOM.Core.Nodes.Item (XML_Nodes_List, 0);
 
       Bauhaus_IML_Graph_File := Ada.Strings.Unbounded.To_Unbounded_String
         (DOM.Core.Elements.Get_Attribute
-          (Data_XML_Node, "iml_graph_file_path"));
+         (Data_XML_Node, "iml_graph_file_path"));
       Bauhaus_IML_Graph_File_Checksum :=
         Integer'Value (
-          (DOM.Core.Elements.Get_Attribute
-            (Data_XML_Node, "iml_graph_checksum")));
+                       (DOM.Core.Elements.Get_Attribute
+                        (Data_XML_Node, "iml_graph_checksum")));
 
       --  deallocate storrage
       DOM.Core.Free (XML_Nodes_List);
@@ -816,7 +818,7 @@ package body Giant.Projects is
       ------------------------
       XML_Nodes_List :=
         DOM.Core.Documents.Get_Elements_By_Tag_Name
-          (Project_XML_Document, "global_data");
+        (Project_XML_Document, "global_data");
       -- list only holds one element
       Data_XML_Node := DOM.Core.Nodes.Item (XML_Nodes_List, 0);
 
@@ -825,29 +827,29 @@ package body Giant.Projects is
 
       New_Project_Access.Abs_Project_Directory :=
         Ada.Strings.Unbounded.To_Unbounded_String
-          (File_Management.Return_Dir_Path_For_File_Path
-            (Ada.Strings.Unbounded.To_String
-              (Absolute_Project_File_Name)));
+        (File_Management.Return_Dir_Path_For_File_Path
+         (Ada.Strings.Unbounded.To_String
+          (Absolute_Project_File_Name)));
 
       New_Project_Access.Abs_Bauhaus_IML_Graph_File :=
         Ada.Strings.Unbounded.To_Unbounded_String
-          (DOM.Core.Elements.Get_Attribute
-            (Data_XML_Node, "iml_graph_file_path"));
+        (DOM.Core.Elements.Get_Attribute
+         (Data_XML_Node, "iml_graph_file_path"));
 
 
       New_Project_Access.Bauhaus_IML_Graph_File_Checksum :=
         Integer'Value (
-          (DOM.Core.Elements.Get_Attribute
-            (Data_XML_Node, "iml_graph_checksum")));
+                       (DOM.Core.Elements.Get_Attribute
+                        (Data_XML_Node, "iml_graph_checksum")));
 
       -- calculate path relative to project directory if necessary
       New_Project_Access.Node_Annotations_File :=
         Ada.Strings.Unbounded.To_Unbounded_String
-          (File_Management.Get_Absolute_Path_To_File_From_Relative
-            (Ada.Strings.Unbounded.To_String
-              (New_Project_Access.Abs_Project_Directory),
-            (DOM.Core.Elements.Get_Attribute
-              (Data_XML_Node, "node_annotations_file_name"))));
+        (File_Management.Get_Absolute_Path_To_File_From_Relative
+         (Ada.Strings.Unbounded.To_String
+          (New_Project_Access.Abs_Project_Directory),
+          (DOM.Core.Elements.Get_Attribute
+           (Data_XML_Node, "node_annotations_file_name"))));
 
       DOM.Core.Free (XML_Nodes_List);
 
@@ -857,7 +859,7 @@ package body Giant.Projects is
 
       XML_Nodes_List :=
         DOM.Core.Documents.Get_Elements_By_Tag_Name
-          (Project_XML_Document, "subgraphs");
+        (Project_XML_Document, "subgraphs");
       -- list only holds one element
       Subgraphs_XML_Node := DOM.Core.Nodes.Item (XML_Nodes_List, 0);
       DOM.Core.Free (XML_Nodes_List);
@@ -873,22 +875,22 @@ package body Giant.Projects is
          -- calculate absolute path if necessary
          A_Subgraph_File_Name :=
            Ada.Strings.Unbounded.To_Unbounded_String
-             (File_Management.Get_Absolute_Path_To_File_From_Relative
-               (Ada.Strings.Unbounded.To_String
-                 (New_Project_Access.Abs_Project_Directory),
-               (DOM.Core.Elements.Get_Attribute
-                 (A_XML_Node, "file_path"))));
+           (File_Management.Get_Absolute_Path_To_File_From_Relative
+            (Ada.Strings.Unbounded.To_String
+             (New_Project_Access.Abs_Project_Directory),
+             (DOM.Core.Elements.Get_Attribute
+              (A_XML_Node, "file_path"))));
 
          New_Subgraph_Data_Element :=
            Load_Sub_Graph_Data_Into_Main_Memory
-             (Ada.Strings.Unbounded.To_String
-               (A_Subgraph_File_Name));
+           (Ada.Strings.Unbounded.To_String
+            (A_Subgraph_File_Name));
 
          Subgraph_Data_Hashs.Bind
            (New_Project_Access.All_Subgraphs,
             Ada.Strings.Unbounded.To_Unbounded_String
-              (Graph_Lib.Subgraphs.Get_Name
-                (New_Subgraph_Data_Element.Subgraph)),
+            (Graph_Lib.Subgraphs.Get_Name
+             (New_Subgraph_Data_Element.Subgraph)),
             New_Subgraph_Data_Element);
       end loop;
 
@@ -902,7 +904,7 @@ package body Giant.Projects is
 
       XML_Nodes_List :=
         DOM.Core.Documents.Get_Elements_By_Tag_Name
-          (Project_XML_Document, "visualisation_windows");
+        (Project_XML_Document, "visualisation_windows");
       -- list only holds one element
       Vis_Window_XML_Node := DOM.Core.Nodes.Item (XML_Nodes_List, 0);
       DOM.Core.Free (XML_Nodes_List);
@@ -918,18 +920,18 @@ package body Giant.Projects is
          -- calculate absolute path if necessary
          A_Vis_Window_File_Name :=
            Ada.Strings.Unbounded.To_Unbounded_String
-             (File_Management.Get_Absolute_Path_To_File_From_Relative
-               (Ada.Strings.Unbounded.To_String
-                 (New_Project_Access.Abs_Project_Directory),
-               (DOM.Core.Elements.Get_Attribute
-                 (A_XML_Node, "file_path"))));
+           (File_Management.Get_Absolute_Path_To_File_From_Relative
+            (Ada.Strings.Unbounded.To_String
+             (New_Project_Access.Abs_Project_Directory),
+             (DOM.Core.Elements.Get_Attribute
+              (A_XML_Node, "file_path"))));
 
          ----------- build new vis window data element
          New_Vis_Window_Data_Element.Vis_Window_Name :=
            Ada.Strings.Unbounded.To_Unbounded_String
-             (File_Management.Calculate_Name_For_File
-               (Ada.Strings.Unbounded.To_String
-                 (A_Vis_Window_File_Name)));
+           (File_Management.Calculate_Name_For_File
+            (Ada.Strings.Unbounded.To_String
+             (A_Vis_Window_File_Name)));
 
          New_Vis_Window_Data_Element.Is_File_Linked := True;
 
@@ -959,8 +961,8 @@ package body Giant.Projects is
       ------------------------
       New_Project_Access.The_Node_Annotations :=
         Node_Annotations.Load_From_File
-          (Ada.Strings.Unbounded.To_String
-            (New_Project_Access.Node_Annotations_File));
+        (Ada.Strings.Unbounded.To_String
+         (New_Project_Access.Node_Annotations_File));
 
 
       --  deallocate storrage
@@ -1008,7 +1010,7 @@ package body Giant.Projects is
 
       -- check for correct iml Graph
       if not Is_Correct_IML_Graph_Loaded (Bauhaus_IML_Graph_File_Checksum)
-        then
+      then
 
          raise Wrong_IML_Graph_Loaded_Exception;
       end if;
@@ -1016,18 +1018,18 @@ package body Giant.Projects is
       --  calculate absolute paths
       Abs_Project_Directory := Ada.Strings.Unbounded.To_Unbounded_String
         (File_Management.Get_Absolute_Path_To_Directory_From_Relative
-          (GNAT.Directory_Operations.Get_Current_Dir, Project_Directory));
+         (GNAT.Directory_Operations.Get_Current_Dir, Project_Directory));
 
       Abs_Project_Directory :=
         Ada.Strings.Unbounded.To_Unbounded_String
-          (File_Management.Append_Dir_Separator_If_Necessary
-            (Ada.Strings.Unbounded.To_String (Abs_Project_Directory)));
+        (File_Management.Append_Dir_Separator_If_Necessary
+         (Ada.Strings.Unbounded.To_String (Abs_Project_Directory)));
 
-      Abs_Node_Annotations_File := 
+      Abs_Node_Annotations_File :=
         File_Management.Append_Dir_Separator_If_Necessary
-          (Ada.Strings.Unbounded.To_String (Abs_Project_Directory))
-           & Ada.Strings.Unbounded.To_Unbounded_String
-             (Const_Node_Annotations_File_Name);
+        (Ada.Strings.Unbounded.To_String (Abs_Project_Directory))
+        & Ada.Strings.Unbounded.To_Unbounded_String
+        (Const_Node_Annotations_File_Name);
 
       Abs_IML_Graph_File := Ada.Strings.Unbounded.To_Unbounded_String
         (File_Management.Get_Absolute_Path_To_File_From_Relative
@@ -1053,8 +1055,8 @@ package body Giant.Projects is
       --  - only while creating a new project (also written to xml file);
       --  Per default this file is loacted in the project directory.
       New_Project_Access.Node_Annotations_File :=
-         Ada.Strings.Unbounded.To_Unbounded_String
-           (Const_Node_Annotations_File_Name);
+        Ada.Strings.Unbounded.To_Unbounded_String
+        (Const_Node_Annotations_File_Name);
 
       New_Project_Access.All_Vis_Windows :=
         Known_Vis_Windows_Hashs.Create;
@@ -1069,7 +1071,7 @@ package body Giant.Projects is
       --  (a xml project file and a dtd).
       Write_DTD_To_Directory
         (Ada.Strings.Unbounded.To_String
-          (New_Project_Access.Abs_Project_Directory));
+         (New_Project_Access.Abs_Project_Directory));
       Write_Project_XML_File (New_Project_Access);
 
       --  write empty xml file for node annotations
@@ -1129,10 +1131,10 @@ package body Giant.Projects is
          if Is_Vis_Window_Memory_Loaded
            (Project,
             Ada.Strings.Unbounded.To_String
-              (A_Vis_Window_Data_Element.Vis_Window_Name)) then
+            (A_Vis_Window_Data_Element.Vis_Window_Name)) then
 
             Vis_Windows.Deallocate_Vis_Window_Deep
-             (A_Vis_Window_Data_Element.Vis_Window);
+              (A_Vis_Window_Data_Element.Vis_Window);
          end if;
       end loop;
 
@@ -1193,28 +1195,28 @@ package body Giant.Projects is
          P_Vis_Window_File_Name : Ada.Strings.Unbounded.Unbounded_String;
       begin
 
-          -- calculate new file name
-          P_Vis_Window_File_Name :=
-            Create_Name_For_File
-              (Ada.Strings.Unbounded.To_String
-                 (P_Project.Abs_Project_Directory),
-               Ada.Strings.Unbounded.To_String
-                 (P_Vis_Window_Data.Vis_Window_Name),
-               Const_Vis_Window_File_Ending);
+         -- calculate new file name
+         P_Vis_Window_File_Name :=
+           Create_Name_For_File
+           (Ada.Strings.Unbounded.To_String
+            (P_Project.Abs_Project_Directory),
+            Ada.Strings.Unbounded.To_String
+            (P_Vis_Window_Data.Vis_Window_Name),
+            Const_Vis_Window_File_Ending);
 
-          Write_Vis_Window_To_File
-            (Ada.Strings.Unbounded.To_String
-               (P_Vis_Window_File_Name),
-             P_Vis_Window);
+         Write_Vis_Window_To_File
+           (Ada.Strings.Unbounded.To_String
+            (P_Vis_Window_File_Name),
+            P_Vis_Window);
 
-          -- change vis window status
-          P_Vis_Window_Data.Is_File_Linked := True;
-          P_Vis_Window_Data.Existing_Vis_Window_File :=
-             P_Vis_Window_File_Name;
-          Known_Vis_Windows_Hashs.Update_Value
-            (P_Project.All_Vis_Windows,
-             P_Vis_Window_Key,
-             P_Vis_Window_Data);
+         -- change vis window status
+         P_Vis_Window_Data.Is_File_Linked := True;
+         P_Vis_Window_Data.Existing_Vis_Window_File :=
+           P_Vis_Window_File_Name;
+         Known_Vis_Windows_Hashs.Update_Value
+           (P_Project.All_Vis_Windows,
+            P_Vis_Window_Key,
+            P_Vis_Window_Data);
       end Process_Vis_Window;
 
 
@@ -1240,7 +1242,7 @@ package body Giant.Projects is
          --  change the new node annoations file
          Abs_Node_Annotations_File := New_Abs_Project_Directory
            & Ada.Strings.Unbounded.To_Unbounded_String
-             (Const_Node_Annotations_File_Name);
+           (Const_Node_Annotations_File_Name);
          Project.Node_Annotations_File := Abs_Node_Annotations_File;
 
          --  "Migrate the project"
@@ -1250,14 +1252,14 @@ package body Giant.Projects is
 
          Project.Abs_Project_Directory :=
            Ada.Strings.Unbounded.To_Unbounded_String
-             (New_Abs_Project_Directory);
+           (New_Abs_Project_Directory);
       end if;
 
       --  Process visualisation windows
       -----------------------------------------------
       Known_Vis_Iter :=
         Known_Vis_Windows_Hashs.Make_Bindings_Iter
-          (Project.All_Vis_Windows);
+        (Project.All_Vis_Windows);
 
       while Known_Vis_Windows_Hashs.More (Known_Vis_Iter) loop
 
@@ -1276,7 +1278,7 @@ package body Giant.Projects is
                A_Vis_Window := Get_Visualisation_Window
                  (Project,
                   Ada.Strings.Unbounded.To_String
-                    (A_Vis_Window_Data_Element.Vis_Window_Name));
+                  (A_Vis_Window_Data_Element.Vis_Window_Name));
 
                Process_Vis_Window
                  (Project,
@@ -1287,14 +1289,14 @@ package body Giant.Projects is
                Free_Memory_For_Vis_Window
                  (Project,
                   Ada.Strings.Unbounded.To_String
-                    (A_Vis_Window_Data_Element.Vis_Window_Name));
+                  (A_Vis_Window_Data_Element.Vis_Window_Name));
             else
 
                --  window is already memory loaded
                A_Vis_Window := Get_Visualisation_Window
                  (Project,
                   Ada.Strings.Unbounded.To_String
-                    (A_Vis_Window_Data_Element.Vis_Window_Name));
+                  (A_Vis_Window_Data_Element.Vis_Window_Name));
 
                Process_Vis_Window
                  (Project,
@@ -1319,22 +1321,22 @@ package body Giant.Projects is
                   -- calculate new file name if window if not file linked
                   A_Vis_Window_File_Name :=
                     Create_Name_For_File
-                      (Ada.Strings.Unbounded.To_String
-                         (Project.Abs_Project_Directory),
-                       Ada.Strings.Unbounded.To_String
-                         (A_Vis_Window_Data_Element.Vis_Window_Name),
-                       Const_Vis_Window_File_Ending);
+                    (Ada.Strings.Unbounded.To_String
+                     (Project.Abs_Project_Directory),
+                     Ada.Strings.Unbounded.To_String
+                     (A_Vis_Window_Data_Element.Vis_Window_Name),
+                     Const_Vis_Window_File_Ending);
                end if;
 
                Write_Vis_Window_To_File
                  (Ada.Strings.Unbounded.To_String
-                    (A_Vis_Window_File_Name),
+                  (A_Vis_Window_File_Name),
                   A_Vis_Window_Data_Element.Vis_Window);
 
                -- change vis window status
                A_Vis_Window_Data_Element.Is_File_Linked := True;
                A_Vis_Window_Data_Element.Existing_Vis_Window_File :=
-                  A_Vis_Window_File_Name;
+                 A_Vis_Window_File_Name;
                Known_Vis_Windows_Hashs.Update_Value
                  (Project.All_Vis_Windows,
                   A_Vis_Window_Key,
@@ -1362,11 +1364,11 @@ package body Giant.Projects is
 
             A_Subgraph_File_Name :=
               Create_Name_For_File
-                (Ada.Strings.Unbounded.To_String
-                  (Project.Abs_Project_Directory),
-                 Graph_Lib.Subgraphs.Get_Name
-                    (A_Subgraph_Data_Element.Subgraph),
-                 Const_Subgraph_File_Ending);
+              (Ada.Strings.Unbounded.To_String
+               (Project.Abs_Project_Directory),
+               Graph_Lib.Subgraphs.Get_Name
+               (A_Subgraph_Data_Element.Subgraph),
+               Const_Subgraph_File_Ending);
          end if;
 
          -- Keep existing file (do not migrate)
@@ -1379,7 +1381,7 @@ package body Giant.Projects is
 
          Write_Sub_Graph_Data_To_File
            (Ada.Strings.Unbounded.To_String
-             (A_Subgraph_File_Name),
+            (A_Subgraph_File_Name),
             A_Subgraph_Data_Element);
 
          -- change subgraph status
@@ -1388,15 +1390,15 @@ package body Giant.Projects is
            A_Subgraph_File_Name;
 
          Subgraph_Data_Hashs.Update_Value
-            (Project.All_Subgraphs,
-             A_Subgraph_Key,
-             A_Subgraph_Data_Element);
+           (Project.All_Subgraphs,
+            A_Subgraph_Key,
+            A_Subgraph_Data_Element);
       end loop;
 
       -- write dtd (overwritten if already exists)
       Write_DTD_To_Directory
         (Ada.Strings.Unbounded.To_String
-          (Project.Abs_Project_Directory));
+         (Project.Abs_Project_Directory));
 
       -- Write Node_Annotations (file name has already be changed if project
       -- is migrated).
@@ -1404,14 +1406,14 @@ package body Giant.Projects is
       Node_Annotations.Write_To_File
         (Project.The_Node_Annotations,
          Ada.Strings.Unbounded.To_String
-           (Project.Node_Annotations_File));
+         (Project.Node_Annotations_File));
 
       -- Kill all Security save files (only if project is not migrated)
       --------------------------------------
       if not Change_Project_Files then
          Kill_All_Security_Files
            (Ada.Strings.Unbounded.To_String
-             (Project.Abs_Project_Directory));
+            (Project.Abs_Project_Directory));
       end if;
 
       -- Update Project XML File (MUST happen at the end - not before)
@@ -1466,11 +1468,11 @@ package body Giant.Projects is
       --  calculate absloute paths for new files
       Abs_Project_Directory := Ada.Strings.Unbounded.To_Unbounded_String
         (File_Management.Get_Absolute_Path_To_Directory_From_Relative
-          (GNAT.Directory_Operations.Get_Current_Dir, New_Project_Directory));
+         (GNAT.Directory_Operations.Get_Current_Dir, New_Project_Directory));
 
       Abs_Project_Directory := Ada.Strings.Unbounded.To_Unbounded_String
         (File_Management.Append_Dir_Separator_If_Necessary
-          (Ada.Strings.Unbounded.To_String (Abs_Project_Directory)));
+         (Ada.Strings.Unbounded.To_String (Abs_Project_Directory)));
 
       -- migrate
       General_Store_Whole_Project
@@ -1479,24 +1481,24 @@ package body Giant.Projects is
          New_Project_Name          => New_Project_Name,
          New_Abs_Project_Directory =>
            Ada.Strings.Unbounded.To_String
-             (Abs_Project_Directory));
+         (Abs_Project_Directory));
    end Store_Whole_Project_As;
-   
-   --------------------------------------------------------------------------- 
+
+   ---------------------------------------------------------------------------
    procedure Store_Whole_Project_As_For_File
-      (Project               : in Project_Access;
-       New_Project_File_Name : in String) is
+     (Project               : in Project_Access;
+      New_Project_File_Name : in String) is
    begin
-        
+
       Store_Whole_Project_As
         (Project           => Project,
          New_Project_Name      =>
            File_Management.Calculate_Name_For_File (New_Project_File_Name),
          New_Project_Directory =>
-           File_Management.Return_Dir_Path_For_File_Path 
-             (New_Project_File_Name));   
+           File_Management.Return_Dir_Path_For_File_Path
+         (New_Project_File_Name));
    end Store_Whole_Project_As_For_File;
-        
+
    ---------------------------------------------------------------------------
    function Get_Project_Name
      (Project : in Project_Access)
@@ -1524,9 +1526,9 @@ package body Giant.Projects is
 
       return  Ada.Strings.Unbounded.To_String
         (Create_Name_For_File
-          (Ada.Strings.Unbounded.To_String (Project.Abs_Project_Directory),
-           Ada.Strings.Unbounded.To_String (Project.Project_Name),
-           ".xml"));
+         (Ada.Strings.Unbounded.To_String (Project.Abs_Project_Directory),
+          Ada.Strings.Unbounded.To_String (Project.Project_Name),
+          ".xml"));
    end Get_Project_File_Name;
 
    ---------------------------------------------------------------------------
@@ -1572,7 +1574,7 @@ package body Giant.Projects is
       Vis_Window_Name : in String)
      return Boolean is
 
-     A_Vis_Window_Data_Element : Vis_Window_Data_Element;
+      A_Vis_Window_Data_Element : Vis_Window_Data_Element;
 
    begin
 
@@ -1601,9 +1603,9 @@ package body Giant.Projects is
      (Project : in Project_Access)
      return String_Lists.List is
 
-     Names_List : String_Lists.List;
-     Vis_Iter   : Known_Vis_Windows_Hashs.Values_Iter;
-     A_Vis_Window_Data_Element : Vis_Window_Data_Element;
+      Names_List : String_Lists.List;
+      Vis_Iter   : Known_Vis_Windows_Hashs.Values_Iter;
+      A_Vis_Window_Data_Element : Vis_Window_Data_Element;
    begin
 
       if (Project = null) then
@@ -1612,16 +1614,16 @@ package body Giant.Projects is
 
       Names_List := String_Lists.Create;
       Vis_Iter := Known_Vis_Windows_Hashs.Make_Values_Iter
-          (Project.All_Vis_Windows);
+        (Project.All_Vis_Windows);
 
-       while Known_Vis_Windows_Hashs.More (Vis_Iter) loop
+      while Known_Vis_Windows_Hashs.More (Vis_Iter) loop
 
-          Known_Vis_Windows_Hashs.Next (Vis_Iter, A_Vis_Window_Data_Element);
-          String_Lists.Attach
-            (Names_List, A_Vis_Window_Data_Element.Vis_Window_Name);
-       end loop;
+         Known_Vis_Windows_Hashs.Next (Vis_Iter, A_Vis_Window_Data_Element);
+         String_Lists.Attach
+           (Names_List, A_Vis_Window_Data_Element.Vis_Window_Name);
+      end loop;
 
-       return Names_List;
+      return Names_List;
    end Get_All_Visualisation_Window_Names;
 
    ---------------------------------------------------------------------------
@@ -1630,8 +1632,8 @@ package body Giant.Projects is
       Vis_Window_Name : in String)
      return Vis_Windows.Visual_Window_Access is
 
-     Vis_Window_Data     : Vis_Window_Data_Element;
-     New_Vis_Window_Inst : Vis_Windows.Visual_Window_Access;
+      Vis_Window_Data     : Vis_Window_Data_Element;
+      New_Vis_Window_Inst : Vis_Windows.Visual_Window_Access;
 
    begin
 
@@ -1650,19 +1652,19 @@ package body Giant.Projects is
          return Known_Vis_Windows_Hashs.Fetch
            (Project.All_Vis_Windows,
             Ada.Strings.Unbounded.To_Unbounded_String
-             (Vis_Window_Name)).Vis_Window;
-      --  load vis window into main memory
+            (Vis_Window_Name)).Vis_Window;
+         --  load vis window into main memory
       else
 
          New_Vis_Window_Inst := Load_Vis_Window_Into_Main_Memory
-             (Ada.Strings.Unbounded.To_String
-               (Vis_Window_Data.Existing_Vis_Window_File));
+           (Ada.Strings.Unbounded.To_String
+            (Vis_Window_Data.Existing_Vis_Window_File));
 
          -- update data entry
          Vis_Window_Data := Known_Vis_Windows_Hashs.Fetch
            (Project.All_Vis_Windows,
             Ada.Strings.Unbounded.To_Unbounded_String
-              (Vis_Window_Name));
+            (Vis_Window_Name));
 
          Vis_Window_Data.Vis_Window := New_Vis_Window_Inst;
          Vis_Window_Data.Is_Memory_Loaded := True;
@@ -1683,9 +1685,7 @@ package body Giant.Projects is
       New_Vis_Window_Name : in String) is
 
       A_Vis_Window_Data_Element : Vis_Window_Data_Element;
-      -- Keep track on status
-      Was_File_Linked : Boolean := False;
-
+      New_Vis_Window_File_Name : Ada.Strings.Unbounded.Unbounded_String;
    begin
 
       if (Project = null) then
@@ -1710,30 +1710,47 @@ package body Giant.Projects is
          raise Visualisation_Window_Is_Not_Memory_Loaded_Exception;
       end if;
 
-      -- remove old management file if one exists
-      ---------------------------------------
-      if A_Vis_Window_Data_Element.Is_File_Linked then
-
-         File_Management.Delete_File
-           (Ada.Strings.Unbounded.To_String
-             (A_Vis_Window_Data_Element.Existing_Vis_Window_File));
-         A_Vis_Window_Data_Element.Is_File_Linked := False;
-         A_Vis_Window_Data_Element.Existing_Vis_Window_File :=
-           Ada.Strings.Unbounded.Null_Unbounded_String;
-         Was_File_Linked := True;
-      end if;
-
-      -- change name of Vis_Window Access
+      -- change name of Vis_Window
       -----------------------------------
       Vis_Windows.Change_Name
         (A_Vis_Window_Data_Element.Vis_Window,
          New_Vis_Window_Name);
 
-      -- update hash map and data model
-      ---------------------------------
       A_Vis_Window_Data_Element.Vis_Window_Name :=
         Ada.Strings.Unbounded.To_Unbounded_String (New_Vis_Window_Name);
 
+      -- rename old management file
+      ------------------------------------------
+      if A_Vis_Window_Data_Element.Is_File_Linked then
+
+         New_Vis_Window_File_Name :=
+           Create_Name_For_File
+           (File_Management.Return_Dir_Path_For_File_Path
+            (Ada.Strings.Unbounded.To_String
+             (A_Vis_Window_Data_Element.Existing_Vis_Window_File)),
+            Ada.Strings.Unbounded.To_String
+            (A_Vis_Window_Data_Element.Vis_Window_Name),
+            Const_Vis_Window_File_Ending);
+
+         -- copy old file
+         File_Management.Copy_File
+           (Ada.Strings.Unbounded.To_String
+            (A_Vis_Window_Data_Element.Existing_Vis_Window_File),
+            Ada.Strings.Unbounded.To_String
+            (New_Vis_Window_File_Name));
+
+         -- delete old file
+         File_Management.Delete_File
+           (Ada.Strings.Unbounded.To_String
+            (A_Vis_Window_Data_Element.Existing_Vis_Window_File));
+
+         -- update status
+         A_Vis_Window_Data_Element.Existing_Vis_Window_File :=
+           New_Vis_Window_File_Name;
+      end if;
+
+      -- update hash map
+      ---------------------------------
       Known_Vis_Windows_Hashs.Unbind
         (Project.All_Vis_Windows,
          Ada.Strings.Unbounded.To_Unbounded_String (Vis_Window_Name));
@@ -1743,20 +1760,18 @@ package body Giant.Projects is
          Ada.Strings.Unbounded.To_Unbounded_String (New_Vis_Window_Name),
          A_Vis_Window_Data_Element);
 
-      -- write new management file if necessary
-      -----------------------------------------
-      if Was_File_Linked then
+      -- update xml file
+      -- necessary to keep track on the new file name for
+      -- file linked vis windows.
+      ----------------------------------------------------------
+      Write_Project_XML_File (Project);
 
-         Store_Single_Visualisation_Window
-           (Project,
-            New_Vis_Window_Name);
-      end if;
    end Change_Vis_Window_Name;
 
    ---------------------------------------------------------------------------
    procedure Add_Visualisation_Window
-    (Project    : in Project_Access;
-     Vis_Window : in Vis_Windows.Visual_Window_Access) is
+     (Project    : in Project_Access;
+      Vis_Window : in Vis_Windows.Visual_Window_Access) is
 
       New_Vis_Window_Data : Vis_Window_Data_Element;
    begin
@@ -1766,15 +1781,15 @@ package body Giant.Projects is
       end if;
 
       if (Does_Vis_Window_Exist
-        (Project,
-         Vis_Windows.Get_Name (Vis_Window)) = True) then
+          (Project,
+           Vis_Windows.Get_Name (Vis_Window)) = True) then
 
          raise Visualisation_Window_Is_Already_Part_Of_Project_Exception;
       end if;
 
       New_Vis_Window_Data.Vis_Window_Name :=
         Ada.Strings.Unbounded.To_Unbounded_String
-          (Vis_Windows.Get_Name (Vis_Window));
+        (Vis_Windows.Get_Name (Vis_Window));
 
       New_Vis_Window_Data.Is_File_Linked := False;
       New_Vis_Window_Data.Existing_Vis_Window_File :=
@@ -1824,16 +1839,16 @@ package body Giant.Projects is
          -- calculate new file name if window if not file linked
          A_Vis_Window_File_Name :=
            Create_Name_For_File
-             (Ada.Strings.Unbounded.To_String
-                (Project.Abs_Project_Directory),
-              Ada.Strings.Unbounded.To_String
-                (A_Vis_Window_Data_Element.Vis_Window_Name),
-              Const_Vis_Window_File_Ending);
+           (Ada.Strings.Unbounded.To_String
+            (Project.Abs_Project_Directory),
+            Ada.Strings.Unbounded.To_String
+            (A_Vis_Window_Data_Element.Vis_Window_Name),
+            Const_Vis_Window_File_Ending);
       end if;
 
       Write_Vis_Window_To_File
         (Ada.Strings.Unbounded.To_String
-           (A_Vis_Window_File_Name),
+         (A_Vis_Window_File_Name),
          A_Vis_Window_Data_Element.Vis_Window);
 
       A_Vis_Window_Data_Element.Is_File_Linked := True;
@@ -1843,6 +1858,9 @@ package body Giant.Projects is
         (Project.All_Vis_Windows,
          A_Vis_Window_Data_Element.Vis_Window_Name,
          A_Vis_Window_Data_Element);
+
+      -- update xml file
+      Write_Project_XML_File (Project);
    end Store_Single_Visualisation_Window;
 
    ---------------------------------------------------------------------------
@@ -1876,14 +1894,14 @@ package body Giant.Projects is
       ------------------------------------------------------
       Security_File_Name := Create_Name_For_File
         (Ada.Strings.Unbounded.To_String
-           (Project.Abs_Project_Directory),
+         (Project.Abs_Project_Directory),
          Ada.Strings.Unbounded.To_String
-           (A_Vis_Window_Data_Element.Vis_Window_Name),
+         (A_Vis_Window_Data_Element.Vis_Window_Name),
          Const_Vis_Window_Security_File_Ending);
 
       Write_Vis_Window_To_File
         (Ada.Strings.Unbounded.To_String
-           (Security_File_Name),
+         (Security_File_Name),
          A_Vis_Window_Data_Element.Vis_Window);
 
       --  deallocate memory needed for vis window
@@ -1929,14 +1947,14 @@ package body Giant.Projects is
       if A_Vis_Window_Data_Element.Is_Memory_Loaded then
          Security_File_Name := Create_Name_For_File
            (Ada.Strings.Unbounded.To_String
-              (Project.Abs_Project_Directory),
+            (Project.Abs_Project_Directory),
             Ada.Strings.Unbounded.To_String
-              (A_Vis_Window_Data_Element.Vis_Window_Name),
+            (A_Vis_Window_Data_Element.Vis_Window_Name),
             Const_Vis_Window_Security_File_Ending);
 
          Write_Vis_Window_To_File
            (Ada.Strings.Unbounded.To_String
-              (Security_File_Name),
+            (Security_File_Name),
             A_Vis_Window_Data_Element.Vis_Window);
       end if;
 
@@ -1944,8 +1962,9 @@ package body Giant.Projects is
       -----------------------------------
       if A_Vis_Window_Data_Element.Is_File_Linked then
 
-         File_Management.Delete_File (Ada.Strings.Unbounded.To_String
-           (A_Vis_Window_Data_Element.Existing_Vis_Window_File));
+         File_Management.Delete_File
+           (Ada.Strings.Unbounded.To_String
+            (A_Vis_Window_Data_Element.Existing_Vis_Window_File));
       end if;
 
       -- remove vis window from project (no deallocation)
@@ -1953,6 +1972,10 @@ package body Giant.Projects is
       Known_Vis_Windows_Hashs.Unbind
         (Project.All_Vis_Windows,
          A_Vis_Window_Data_Element.Vis_Window_Name);
+
+      -- update xml file
+      ------------------
+      Write_Project_XML_File (Project);
    end Remove_Visualisation_Window;
 
 
@@ -1975,7 +1998,7 @@ package body Giant.Projects is
       return Subgraph_Data_Hashs.Is_Bound
         (Project.All_Subgraphs,
          Ada.Strings.Unbounded.To_Unbounded_String
-           (Subgraph_Name));
+         (Subgraph_Name));
    end Does_Subgraph_Exist;
 
    ---------------------------------------------------------------------------
@@ -1997,7 +2020,7 @@ package body Giant.Projects is
       return Subgraph_Data_Hashs.Fetch
         (Project.All_Subgraphs,
          Ada.Strings.Unbounded.To_Unbounded_String
-           (Subgraph_Name)).Subgraph;
+         (Subgraph_Name)).Subgraph;
    end Get_Subgraph;
 
    ---------------------------------------------------------------------------
@@ -2005,9 +2028,9 @@ package body Giant.Projects is
      (Project : in Project_Access)
      return String_Lists.List is
 
-     Names_List              : String_Lists.List;
-     Subgraph_Iter           : Subgraph_Data_Hashs.Values_Iter;
-     A_Subgraph_Data_Element : Subgraph_Data_Element;
+      Names_List              : String_Lists.List;
+      Subgraph_Iter           : Subgraph_Data_Hashs.Values_Iter;
+      A_Subgraph_Data_Element : Subgraph_Data_Element;
    begin
 
       if (Project = null) then
@@ -2025,8 +2048,8 @@ package body Giant.Projects is
          String_Lists.Attach
            (Names_List,
             Ada.Strings.Unbounded.To_Unbounded_String
-              (Graph_Lib.Subgraphs.Get_Name
-                (A_Subgraph_Data_Element.Subgraph)));
+            (Graph_Lib.Subgraphs.Get_Name
+             (A_Subgraph_Data_Element.Subgraph)));
       end loop;
 
       return Names_List;
@@ -2039,9 +2062,7 @@ package body Giant.Projects is
       New_Subgraph_Name : in String) is
 
       A_Subgraph_Data_Element : Subgraph_Data_Element;
-      Was_File_Linked : Boolean := False;
-
-      A_Subgraph_File_Name : Ada.Strings.Unbounded.Unbounded_String;
+      New_Subgraph_File_Name : Ada.Strings.Unbounded.Unbounded_String;
    begin
 
       if (Project = null) then
@@ -2062,45 +2083,40 @@ package body Giant.Projects is
         (Project.All_Subgraphs,
          Ada.Strings.Unbounded.To_Unbounded_String (Subgraph_Name));
 
-      -- remove old management file if exists
-      ---------------------------------------
-      if A_Subgraph_Data_Element.Is_File_Linked then
-
-         File_Management.Delete_File
-           (Ada.Strings.Unbounded.To_String
-             (A_Subgraph_Data_Element.Existing_Subgraph_File));
-         A_Subgraph_Data_Element.Is_File_Linked := False;
-         A_Subgraph_Data_Element.Existing_Subgraph_File :=
-           Ada.Strings.Unbounded.Null_Unbounded_String;
-         Was_File_Linked := True;
-      end if;
-
       -- change name of subgraph
       --------------------------
       Graph_Lib.Subgraphs.Rename
         (A_Subgraph_Data_Element.Subgraph,
          New_Subgraph_Name);
 
-      -- create new management file if necessary
+      -- rename old management file
       ------------------------------------------
-      if Was_File_Linked then
-         A_Subgraph_File_Name :=
+      if A_Subgraph_Data_Element.Is_File_Linked then
+
+         New_Subgraph_File_Name :=
            Create_Name_For_File
-             (Ada.Strings.Unbounded.To_String
-                (Project.Abs_Project_Directory),
-              Graph_Lib.Subgraphs.Get_Name
-                (A_Subgraph_Data_Element.Subgraph),
-              Const_Subgraph_File_Ending);
+           (File_Management.Return_Dir_Path_For_File_Path
+            (Ada.Strings.Unbounded.To_String
+             (A_Subgraph_Data_Element.Existing_Subgraph_File)),
+            Graph_Lib.Subgraphs.Get_Name
+            (A_Subgraph_Data_Element.Subgraph),
+            Const_Subgraph_File_Ending);
 
-           Write_Sub_Graph_Data_To_File
-              (Ada.Strings.Unbounded.To_String
-                (A_Subgraph_File_Name),
-               A_Subgraph_Data_Element);
+         -- copy old file
+         File_Management.Copy_File
+           (Ada.Strings.Unbounded.To_String
+            (A_Subgraph_Data_Element.Existing_Subgraph_File),
+            Ada.Strings.Unbounded.To_String
+            (New_Subgraph_File_Name));
 
-            -- change subgraph status
-            A_Subgraph_Data_Element.Is_File_Linked := True;
-            A_Subgraph_Data_Element.Existing_Subgraph_File :=
-              A_Subgraph_File_Name;
+         -- delete old file
+         File_Management.Delete_File
+           (Ada.Strings.Unbounded.To_String
+            (A_Subgraph_Data_Element.Existing_Subgraph_File));
+
+         -- update subgraph status
+         A_Subgraph_Data_Element.Existing_Subgraph_File :=
+           New_Subgraph_File_Name;
       end if;
 
       -- update hash map and data model
@@ -2113,6 +2129,10 @@ package body Giant.Projects is
         (Project.All_Subgraphs,
          Ada.Strings.Unbounded.To_Unbounded_String (New_Subgraph_Name),
          A_Subgraph_Data_Element);
+
+      -- update xml file - necessary to keep track on new file name
+      -------------------------------------------------------------
+      Write_Project_XML_File (Project);
    end Change_Subgraph_Name;
 
    ---------------------------------------------------------------------------
@@ -2133,23 +2153,23 @@ package body Giant.Projects is
          raise Subgraph_Is_Already_Part_Of_Project_Exception;
       end if;
 
-     New_Subgraph_Data_Element.Subgraph               := Subgraph;
-     New_Subgraph_Data_Element.Highlight_Status       := None;
-     New_Subgraph_Data_Element.Is_File_Linked         := False;
-     New_Subgraph_Data_Element.Existing_Subgraph_File :=
-       Ada.Strings.Unbounded.Null_Unbounded_String;
+      New_Subgraph_Data_Element.Subgraph               := Subgraph;
+      New_Subgraph_Data_Element.Highlight_Status       := None;
+      New_Subgraph_Data_Element.Is_File_Linked         := False;
+      New_Subgraph_Data_Element.Existing_Subgraph_File :=
+        Ada.Strings.Unbounded.Null_Unbounded_String;
 
-     Subgraph_Data_Hashs.Bind
-       (Project.All_Subgraphs,
-        Ada.Strings.Unbounded.To_Unbounded_String
-          (Graph_Lib.Subgraphs.Get_Name (Subgraph)),
-        New_Subgraph_Data_Element);
+      Subgraph_Data_Hashs.Bind
+        (Project.All_Subgraphs,
+         Ada.Strings.Unbounded.To_Unbounded_String
+         (Graph_Lib.Subgraphs.Get_Name (Subgraph)),
+         New_Subgraph_Data_Element);
    end Add_Subgraph;
 
    ---------------------------------------------------------------------------
    procedure Remove_Subgraph
-      (Project       : in Project_Access;
-       Subgraph_Name : in String) is
+     (Project       : in Project_Access;
+      Subgraph_Name : in String) is
 
       A_Subgraph_Data_Element : Subgraph_Data_Element;
       Security_File_Name : Ada.Strings.Unbounded.Unbounded_String;
@@ -2173,21 +2193,22 @@ package body Giant.Projects is
       -----------------------
       Security_File_Name := Create_Name_For_File
         (Ada.Strings.Unbounded.To_String
-           (Project.Abs_Project_Directory),
+         (Project.Abs_Project_Directory),
          Subgraph_Name,
          Const_Subgraph_Security_File_Ending);
 
       Write_Sub_Graph_Data_To_File
         (Ada.Strings.Unbounded.To_String
-           (Security_File_Name),
+         (Security_File_Name),
          A_Subgraph_Data_Element);
 
       -- remove management file if exists
       -----------------------------------
       if A_Subgraph_Data_Element.Is_File_Linked then
 
-         File_Management.Delete_File (Ada.Strings.Unbounded.To_String
-           (A_Subgraph_Data_Element.Existing_Subgraph_File));
+         File_Management.Delete_File
+           (Ada.Strings.Unbounded.To_String
+            (A_Subgraph_Data_Element.Existing_Subgraph_File));
       end if;
 
       -- remove subgraph from project (no deallocation)
@@ -2195,6 +2216,10 @@ package body Giant.Projects is
       Subgraph_Data_Hashs.Unbind
         (Project.All_Subgraphs,
          Ada.Strings.Unbounded.To_Unbounded_String (Subgraph_Name));
+
+      -- update xml file
+      -------------------------------------------------------------
+      Write_Project_XML_File (Project);
    end Remove_Subgraph;
 
    ---------------------------------------------------------------------------
@@ -2216,7 +2241,7 @@ package body Giant.Projects is
       return Subgraph_Data_Hashs.Fetch
         (Project.All_Subgraphs,
          Ada.Strings.Unbounded.To_Unbounded_String
-           (Subgraph_Name)).Highlight_Status;
+         (Subgraph_Name)).Highlight_Status;
    end Get_Highlight_Status;
 
    ---------------------------------------------------------------------------
@@ -2249,16 +2274,16 @@ package body Giant.Projects is
 
       Subgraph_Data_Hashs.Unbind
         (Project.All_Subgraphs,
-          Ada.Strings.Unbounded.To_Unbounded_String
-            (Graph_Lib.Subgraphs.Get_Name
-              (A_Subgraph_Data_Element.Subgraph)));
+         Ada.Strings.Unbounded.To_Unbounded_String
+         (Graph_Lib.Subgraphs.Get_Name
+          (A_Subgraph_Data_Element.Subgraph)));
 
       Subgraph_Data_Hashs.Bind
         (Project.All_Subgraphs,
-          Ada.Strings.Unbounded.To_Unbounded_String
-            (Graph_Lib.Subgraphs.Get_Name
-              (New_Subgraph_Data_Element.Subgraph)),
-                New_Subgraph_Data_Element);
+         Ada.Strings.Unbounded.To_Unbounded_String
+         (Graph_Lib.Subgraphs.Get_Name
+          (New_Subgraph_Data_Element.Subgraph)),
+         New_Subgraph_Data_Element);
    end Change_Highlight_Status;
 
    ---------------------------------------------------------------------------

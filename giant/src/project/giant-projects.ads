@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.24 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.25 $
 -- $Author: schwiemn $
--- $Date: 2003/06/20 08:57:39 $
+-- $Date: 2003/06/22 16:22:47 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -336,17 +336,17 @@ package Giant.Projects is
       (Project               : in Project_Access;
        New_Project_Name      : in String;
        New_Project_Directory : in String);
-      
+
    ---------------------------------------------------------------------------
    -- Same functionality as "Store_Whole_Project_As" -> just a wrapper.
    --
    -- Parameters:
    --   New_Project_File_Name - The full name (incl. absolute path) of a
-   --   new Project File (xml file).     
+   --   new Project File (xml file).
    procedure Store_Whole_Project_As_For_File
       (Project               : in Project_Access;
        New_Project_File_Name : in String);
-       
+
    ---------------------------------------------------------------------------
    -- Returns the name of a project
    --
@@ -574,9 +574,9 @@ package Giant.Projects is
    --  If you change the name of a visualisation window while it is
    --  part of a project you have to use this subprogramm.
    --
-   --  If exists the old management file will be deleted. And a
-   --  new one (with a name corresponding to the new name) will be created
-   --  in the project directory.
+   --  If exists the old management file will be renamed too
+   --  (if already a file with the new name exists it will be
+   --   overwritten).
    --
    --  You may only change the names of MEMORY LOADED vis_windows.
    --
@@ -846,9 +846,9 @@ package Giant.Projects is
    --  If you change the name of a subgraph while it is
    --  part of a project you have to use this subprogramm.
    --
-   --  If exists the old management file will be deleted. And a
-   --  new one (with a name corresponding to the new name) will be created
-   --  in the project directory.
+   --  If exists the old management file will be renamed too
+   --  (if already a file with the new name exists it will be
+   --   overwritten).
    --
    -- Parameters:
    --   Project - The instance of the ADT holding a project.

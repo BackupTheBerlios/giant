@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.ads,v $, $Revision: 1.7 $
+-- $RCSfile: giant-file_management.ads,v $, $Revision: 1.8 $
 -- $Author: schwiemn $
--- $Date: 2003/06/22 14:28:01 $
+-- $Date: 2003/06/22 16:22:47 $
 --
 -- -----------------------------------------------
 --
@@ -124,7 +124,6 @@ package Giant.File_Management is
    --   File_Cannot_Be_Deleted_Exception - Raised if the file could not be
    --   found, accessed or deleted.
    procedure Delete_File (File_Name : in String);
-
 
    ---------------------------------------------------------------------------
    -- Copies a file, existing Target files will be overwritten
