@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-handlers.ads,v $, $Revision: 1.6 $
+--  $RCSfile: giant-graph_widgets-handlers.ads,v $, $Revision: 1.7 $
 --  $Author: keulsn $
---  $Date: 2003/07/09 19:45:36 $
+--  $Date: 2003/07/09 20:07:54 $
 --
 ------------------------------------------------------------------------------
 --
@@ -37,6 +37,8 @@ with Gtk.Handlers;
 with Gtk.Object;
 with Gtkada.Types;
 with Glib;
+
+with Giant.Graph_Lib;
 
 package Giant.Graph_Widgets.Handlers is
 
@@ -56,6 +58,23 @@ package Giant.Graph_Widgets.Handlers is
    --  are not imported into GtkAda. Therefore it is hard to see, how
    --  one can have signals with more than one argument. Therefore
    --  multiple arguments are packed into records.
+
+
+   ----------------------------------------------------------------------------
+   --  "edge_popup_event" on an edge within a graph widget
+   type Edge_Popup_Action is
+      record
+         Event    : Gdk.Event.Gdk_Event_Button;
+         Edge     : Graph_Lib.Edge_Id;
+      end record;
+
+   ----------------------------------------------------------------------------
+   --  "node_popup_event" on an edge within a graph widget
+   type Node_Popup_Action is
+      record
+         Event    : Gdk.Event.Gdk_Event_Button;
+         Node     : Graph_Lib.Node_Id;
+      end record;
 
    ----------------------------------------------------------------------------
    --  "button_press_event" on the graph widget while it was in action mode
@@ -92,6 +111,32 @@ package Giant.Graph_Widgets.Handlers is
    --    Args - The GtkAda argument array
    --    Num  - The Index of an argument in 'Args'
    --  Returns:
+   --    The 'Edge_Popup_Action' at index 'Num' in 'Args'
+   function To_Edge_Popup_Action
+     (Args : in Gtk.Arguments.Gtk_Args;
+      Num  : in Natural)
+     return Edge_Popup_Action;
+
+   ----------------------------------------------------------------------------
+   --  Conversion function for Marshallers
+   --
+   --  Parameters
+   --    Args - The GtkAda argument array
+   --    Num  - The Index of an argument in 'Args'
+   --  Returns:
+   --    The 'Node_Popup_Action' at index 'Num' in 'Args'
+   function To_Node_Popup_Action
+     (Args : in Gtk.Arguments.Gtk_Args;
+      Num  : in Natural)
+     return Node_Popup_Action;
+
+   ----------------------------------------------------------------------------
+   --  Conversion function for Marshallers
+   --
+   --  Parameters
+   --    Args - The GtkAda argument array
+   --    Num  - The Index of an argument in 'Args'
+   --  Returns:
    --    The 'Button_Press_Action' at index 'Num' in 'Args'
    function To_Button_Press_Action
      (Args : in Gtk.Arguments.Gtk_Args;
@@ -99,13 +144,43 @@ package Giant.Graph_Widgets.Handlers is
      return Button_Press_Action;
 
 
-   --------------------------------------
+   ------------------------------
+   -- "background_popup_event" --
+   ------------------------------
+
+   ----------------------------------------------------------------------------
+   --  Emitted whenever the user has requested a pop up-menu on the background
+   --  of a graph widget
+   Background_Popup_Event : constant String :=
+     "background_popup_event";
+
+   ----------------------------------------------------------------------------
+   --  Type of handlers for signal Background_Popup_Event
+   --  Parameters:
+   --    Widget - The graph widget
+   --    Action - The user action inside 'Widget'
+   type Background_Popup_Event_Cb is access procedure
+     (Widget : access Graph_Widget_Record'Class;
+      Action : in     Button_Press_Action);
+
+   --  Package providing the 'Connect' subprograms, if no user data is needed.
+   package Background_Popup_Cbs renames Graph_Widget_Callbacks;
+
+   ----------------------------------------------------------------------------
+   --  Emits the signal.
+   procedure Emit_Background_Popup_Event
+     (Widget   : access Graph_Widget_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event_Button;
+      Location : in     Vis.Logic.Vector_2d);
+
+
+   ------------------------
    -- "edge_popup_event" --
-   --------------------------------------
+   ------------------------
 
    ----------------------------------------------------------------------------
    --  Emitted whenever the user has requested a pop up-menu on an edge
-   Action_Mode_Button_Press_Event : constant String :=
+   Edge_Popup_Event : constant String :=
      "edge_popup_event";
 
    ----------------------------------------------------------------------------
@@ -114,8 +189,8 @@ package Giant.Graph_Widgets.Handlers is
    --    Widget - The graph widget
    --    Action - The user action inside 'Widget'
    type Edge_Popup_Event_Cb is access procedure
-     (Widget      : access Graph_Widget_Record'Class;
-      User_Action : in     Edge_Popup_Action);
+     (Widget : access Graph_Widget_Record'Class;
+      Action : in     Edge_Popup_Action);
 
    --  Package providing the 'Connect' subprograms, if no user data is needed.
    package Edge_Popup_Cbs renames Graph_Widget_Callbacks;
@@ -126,6 +201,35 @@ package Giant.Graph_Widgets.Handlers is
      (Widget : access Graph_Widget_Record'Class;
       Event  : in     Gdk.Event.Gdk_Event_Button;
       Edge   : in     Graph_Lib.Edge_Id);
+
+
+   ------------------------
+   -- "node_popup_event" --
+   ------------------------
+
+   ----------------------------------------------------------------------------
+   --  Emitted whenever the user has requested a pop up-menu on a node
+   Node_Popup_Event : constant String :=
+     "node_popup_event";
+
+   ----------------------------------------------------------------------------
+   --  Type of handlers for signal Node_Popup_Event
+   --  Parameters:
+   --    Widget - The graph widget
+   --    Action - The user action inside 'Widget'
+   type Node_Popup_Event_Cb is access procedure
+     (Widget : access Graph_Widget_Record'Class;
+      Action : in     Node_Popup_Action);
+
+   --  Package providing the 'Connect' subprograms, if no user data is needed.
+   package Node_Popup_Cbs renames Graph_Widget_Callbacks;
+
+   ----------------------------------------------------------------------------
+   --  Emits the signal.
+   procedure Emit_Node_Popup_Event
+     (Widget : access Graph_Widget_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event_Button;
+      Node   : in     Graph_Lib.Node_Id);
 
 
    --------------------------------------
@@ -144,8 +248,8 @@ package Giant.Graph_Widgets.Handlers is
    --    Widget - The graph widget
    --    Action - The user action inside 'Widget'
    type Action_Mode_Button_Press_Event_Cb is access procedure
-     (Widget      : access Graph_Widget_Record'Class;
-      User_Action : in     Button_Press_Action);
+     (Widget : access Graph_Widget_Record'Class;
+      Action : in     Button_Press_Action);
 
    --  Package providing the 'Connect' subprograms, if no user data is needed.
    package Action_Mode_Cbs renames Graph_Widget_Callbacks;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-handlers.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-graph_widgets-handlers.adb,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/07/02 16:49:15 $
+--  $Date: 2003/07/09 20:07:54 $
 --
 ------------------------------------------------------------------------------
 
@@ -32,6 +32,8 @@ with System;
 
 package body Giant.Graph_Widgets.Handlers is
 
+   type Edge_Popup_Action_Access is access constant Edge_Popup_Action;
+   type Node_Popup_Action_Access is access constant Node_Popup_Action;
    type Button_Press_Action_Access is access constant Button_Press_Action;
 
    type Rectangle_Access is access constant Vis.Logic.Rectangle_2d;
@@ -77,6 +79,34 @@ package body Giant.Graph_Widgets.Handlers is
    end To_Rectangle_2d;
 
 
+   function To_Edge_Popup_Action
+     (Args : in Gtk.Arguments.Gtk_Args;
+      Num  : in Natural)
+     return Edge_Popup_Action is
+
+      function Convert is new Ada.Unchecked_Conversion
+        (Source => System.Address, Target => Edge_Popup_Action_Access);
+
+      Action : Edge_Popup_Action_Access;
+   begin
+      Action := Convert (Gtk.Arguments.Get_Nth (Args, Num));
+      return Action.all;
+   end To_Edge_Popup_Action;
+
+   function To_Node_Popup_Action
+     (Args : in Gtk.Arguments.Gtk_Args;
+      Num  : in Natural)
+     return Node_Popup_Action is
+
+      function Convert is new Ada.Unchecked_Conversion
+        (Source => System.Address, Target => Node_Popup_Action_Access);
+
+      Action : Node_Popup_Action_Access;
+   begin
+      Action := Convert (Gtk.Arguments.Get_Nth (Args, Num));
+      return Action.all;
+   end To_Node_Popup_Action;
+
    function To_Button_Press_Action
      (Args : in Gtk.Arguments.Gtk_Args;
       Num  : in Natural)
@@ -91,6 +121,51 @@ package body Giant.Graph_Widgets.Handlers is
       return Action.all;
    end To_Button_Press_Action;
 
+
+   procedure Emit_Background_Popup_Event
+     (Widget   : access Graph_Widget_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event_Button;
+      Location : in     Vis.Logic.Vector_2d) is
+
+      function To_Address is new Ada.Unchecked_Conversion
+        (Source => Button_Press_Action_Access, Target => System.Address);
+      User_Action : aliased constant Button_Press_Action := (Event, Location);
+   begin
+      Action_Mode_Marshallers.Emit_By_Name
+        (Object => Widget,
+         Name   => Background_Popup_Event,
+         Param  => To_Address (User_Action'Unchecked_Access));
+   end Emit_Background_Popup_Event;
+
+   procedure Emit_Edge_Popup_Event
+     (Widget   : access Graph_Widget_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event_Button;
+      Edge     : in     Graph_Lib.Edge_Id) is
+
+      function To_Address is new Ada.Unchecked_Conversion
+        (Source => Edge_Popup_Action_Access, Target => System.Address);
+      User_Action : aliased constant Edge_Popup_Action := (Event, Edge);
+   begin
+      Action_Mode_Marshallers.Emit_By_Name
+        (Object => Widget,
+         Name   => Edge_Popup_Event,
+         Param  => To_Address (User_Action'Unchecked_Access));
+   end Emit_Edge_Popup_Event;
+
+   procedure Emit_Node_Popup_Event
+     (Widget   : access Graph_Widget_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event_Button;
+      Node     : in     Graph_Lib.Node_Id) is
+
+      function To_Address is new Ada.Unchecked_Conversion
+        (Source => Node_Popup_Action_Access, Target => System.Address);
+      User_Action : aliased constant Node_Popup_Action := (Event, Node);
+   begin
+      Action_Mode_Marshallers.Emit_By_Name
+        (Object => Widget,
+         Name   => Node_Popup_Event,
+         Param  => To_Address (User_Action'Unchecked_Access));
+   end Emit_Node_Popup_Event;
 
    procedure Emit_Action_Mode_Button_Press_Event
      (Widget   : access Graph_Widget_Record'Class;
