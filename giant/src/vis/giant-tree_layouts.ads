@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.ads,v $, $Revision: 1.9 $
+--  $RCSfile: giant-tree_layouts.ads,v $, $Revision: 1.10 $
 --  $Author: koppor $
---  $Date: 2003/07/08 13:54:17 $
+--  $Date: 2003/07/10 17:09:31 $
 --
 ------------------------------------------------------------------------------
 --
@@ -69,8 +69,8 @@ package Giant.Tree_Layouts is
    Max_Nodes_In_One_Run : constant := 100;
 
    ---------------------------------------------------------------------------
-   --  Minimal Distance of two neighbours
-   X_Distance           : constant := 1.0;
+   --  Distance of two neighbours in % of Get_Current_Maximum_Node_Width
+   X_Distance           : constant Vis.Logic_Float := 10.0;
 
    ---------------------------------------------------------------------------
    --  Initializes the tree-layout-algorithm
@@ -245,8 +245,8 @@ private
         --  Rootnode of the tree to layout
         Tree_Root        : Node_Layout_Data;
 
-        --  Distance between two nodes used at FirstWalk
-        Distance         : Vis.Logic_Float;
+        --  Distance between two nodes; used at FirstWalk
+        X_Distance       : Vis.Logic_Float;
 
         --  Maximum X-Coordinate used at tree
         --  Set at SecondWalk
