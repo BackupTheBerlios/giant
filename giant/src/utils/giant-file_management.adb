@@ -20,13 +20,15 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.17 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.18 $
 -- $Author: schwiemn $
--- $Date: 2003/06/27 09:27:31 $
+-- $Date: 2003/06/27 15:25:44 $
 --
 --
 with Ada.Streams;
 with Ada.Streams.Stream_IO;
+with Ada.Strings.Fixed;
+with Ada.Unchecked_Deallocation;
 
 with GNAT.OS_Lib;
 
@@ -450,8 +452,7 @@ package body Giant.File_Management is
    function Get_User_Config_Path
      return String
    is
-      Path : String
-        := Append_Dir_Separator_If_Necessary
+      Path : String := Append_Dir_Separator_If_Necessary
         (GNAT.OS_Lib.Getenv ("HOME").all)
         & ".giant" & GNAT.OS_Lib.Directory_Separator;
    begin
@@ -461,37 +462,8 @@ package body Giant.File_Management is
       return Path;
    end Get_User_Config_Path;
 
-
-
-   procedure Execute
-     (Command : in String)
-   is
---      Args   : GNAT.OS_Lib.Argument_List_Access;
---      Pid    : GNAT.OS_Lib.Process_Id;
---      Prog   : GNAT.OS_Lib.String_Access;
-   begin
---      Args := Argument_String_To_List (Command);
---      Prog := Locate_Exec_On_Path (Args (Args'First).all);
-
---      if Prog /= null then
---         Pid := GNAT.OS_Lib.Non_Blocking_Spawn
---           (Prog.all, Args (Args'First + 1 .. Args'Last));
---         Free (Prog);
---      end if;
---
---      if Args /= null then
---         for J in Args'Range loop
---            Free (Args (J));
---         end loop;
---
---         Free (Args);
---      end if;
-
-null;
-   end Execute;
-   
    ---------------------------------------------------------------------------
-   procedure Deallocate_Argument_List 
+   procedure Deallocate_Argument_List_Content 
      (The_Arg_List : in out GNAT.OS_Lib.Argument_List) is 
    
    begin
@@ -500,7 +472,11 @@ null;
       
          GNAT.OS_Lib.Free (The_Arg_List (I));            
       end loop;
-   end Deallocate_Argument_List;   
+   end Deallocate_Argument_List_Content;   
+   
+   ---------------------------------------------------------------------------
+   procedure Free_Argument_List_Access is new Ada.Unchecked_Deallocation
+     (GNAT.OS_Lib.Argument_List, GNAT.OS_Lib.Argument_List_Access);
    
    ---------------------------------------------------------------------------
    function Substitute_Sub_Strings
@@ -543,46 +519,67 @@ null;
       end if;
    end Substitute_Sub_Strings;
    
+   ---------------------------------------------------------------------------
+   procedure Execute
+     (Command : in String)
+   is
+      use GNAT.OS_Lib;
+   
+      Args   : GNAT.OS_Lib.Argument_List_Access;
+      Pid    : GNAT.OS_Lib.Process_Id;
+      Prog   : GNAT.OS_Lib.String_Access;            
+   begin
+      Args := GNAT.OS_Lib.Argument_String_To_List (Command);
+      Prog := GNAT.OS_Lib.Locate_Exec_On_Path (Args (Args'First).all);
 
+      if Prog /= null then
+         Pid := GNAT.OS_Lib.Non_Blocking_Spawn
+           (Prog.all, Args (Args'First + 1 .. Args'Last));
+         Free (Prog);
+      end if;
+
+      if Args /= null then
+         for J in Args'Range loop
+            GNAT.OS_Lib.Free (Args (J));
+         end loop;
+
+         Deallocate_Argument_List_Content (Args.all);
+         Free_Argument_List_Access (Args);
+      end if;
+   end Execute;
+   
    ---------------------------------------------------------------------------
    procedure Execute_External_Editor
      (Command  : in String;
       Filename : in String;
       Line     : in Natural;
       Column   : in Natural) is
-   
-
-
-
---            function Substitute
---        (Name : String; File : String; Line : Natural) return String
---      is
---         Index : Natural := Name'First;
---      begin
---         while Index < Name'Last loop
---            if Name (Index) = '%' and then Name (Index + 1) = 'f' then
---               return Name (Name'First .. Index - 1) &
---                 File & Substitute (Name (Index + 2 .. Name'Last), File, Line);
-
---            elsif Name (Index) = '%' and then Name (Index + 1) = 'l' then
---               declare
---                  Img : constant String := Natural'Image (Line);
---               begin
---                  return Name (Name'First .. Index - 1) &
---                    Img (Img'First + 1 .. Img'Last) &
---                    Substitute (Name (Index + 2 .. Name'Last), File, Line);
---               end;
---            end if;
-
---            Index := Index + 1;
---         end loop;
-
---         return Name;
---      end Substitute;
-
+      
+      Parsed_Command_String : Ada.Strings.Unbounded.Unbounded_String;
    begin
-
-      null;
+   
+      Parsed_Command_String := 
+        Ada.Strings.Unbounded.To_Unbounded_String (Command);
+   
+      Parsed_Command_String := Ada.Strings.Unbounded.To_Unbounded_String
+        (Substitute_Sub_Strings
+          (Ada.Strings.Unbounded.To_String (Parsed_Command_String),
+           "%l", 
+           Ada.Strings.Fixed.Trim (Integer'Image(Line), Ada.Strings.Both)));
+   
+      Parsed_Command_String := Ada.Strings.Unbounded.To_Unbounded_String
+        (Substitute_Sub_Strings
+          (Ada.Strings.Unbounded.To_String (Parsed_Command_String),
+           "%c", 
+           Ada.Strings.Fixed.Trim (Integer'Image(Column), Ada.Strings.Both)));
+                  
+      Parsed_Command_String := Ada.Strings.Unbounded.To_Unbounded_String
+        (Substitute_Sub_Strings
+          (Ada.Strings.Unbounded.To_String (Parsed_Command_String),
+           "%f", 
+           Filename));
+           
+      Execute (Ada.Strings.Unbounded.To_String (Parsed_Command_String));                          
    end Execute_External_Editor;
-
+      
 end Giant.File_Management;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-projects-test.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-projects-test.adb,v $, $Revision: 1.8 $
 --  $Author: schwiemn $
---  $Date: 2003/06/26 15:23:35 $
+--  $Date: 2003/06/27 15:25:44 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -34,6 +34,8 @@ with Giant.Logger;
 with Giant.Graph_Lib;
 with Giant.Graph_Lib.Subgraphs;
 with Giant.Vis_Windows;
+with Giant.Node_Annotations;
+
 
 with Giant.Projects;
 
@@ -75,47 +77,158 @@ package body Giant.Projects.Test is
    ---------------------------------------------------------------------------
    procedure Test_Initialize (R : in out AUnit.Test_Cases.Test_Case'Class) is
    
-      New_Project : Giant.Projects.Project_Access;
+      Test_Project_1 : Giant.Projects.Project_Access;
       
       Subgraph_Donald : Giant.Graph_Lib.Subgraphs.Subgraph;
       Subgraph_Daisy  : Giant.Graph_Lib.Subgraphs.Subgraph;
       
-      Vis_Window_Durchsicht : Giant.Vis_Windows.Visual_Window_Access;                  
+      Vis_Window_Durchsicht : Giant.Vis_Windows.Visual_Window_Access; 
+      
+      Return_Vis_Window  : Giant.Vis_Windows.Visual_Window_Access;      
+      Return_Subgraph    : Giant.Graph_Lib.Subgraphs.Subgraph;
+      
+      Return_Annotations : Node_Annotations.Node_Annotation_Access;
+                 
    begin
-   
+            
       -- remove all files in the project directory
-      Kill_Files_In_Dir ("resources/test_project_directory/");
+  --    Kill_Files_In_Dir ("resources/test_project_directory/");
    
       -- in the target dir for Save As
       Kill_Files_In_Dir ("resources/test_project_copy_dir");
       
-      New_Project := Giant.Projects.Create_Empty_Project 
-        ("My_Test_Project",
-         "resources/test_project_directory/",
-         "resources/rfg_examp.iml",
-         Giant.Graph_Lib.Get_Graph_Hash);
-   
-      Assert (Projects.Does_Project_Exist_File
-        ("resources/test_project_directory/My_Test_Project.xml"),
-         "Does_Project_Exist");
-                          
---      Subgraph_Donald := Giant.Graph_Lib.Subgraphs.Create ("Donald");
---      Subgraph_Daisy  := Giant.Graph_Lib.Subgraphs.Create ("Daisy");
-         
---      Vis_Window_Durchsicht := Giant.Vis_Windows.Create_New ("Durchsicht");
-         
---      Giant.Projects.Add_Subgraph (New_Project, Subgraph_Donald);
---      Giant.Projects.Add_Subgraph (New_Project, Subgraph_Daisy);
+      Kill_Files_In_Dir ("resources/test_project_copy_dir_2");
       
---      Giant.Projects.Add_Visualisation_Window 
---        (New_Project, Vis_Window_Durchsicht);
+  --    Test_Project_1 := Giant.Projects.Create_Empty_Project 
+  --      ("My_Test_Project",
+  --       "resources/test_project_directory/",
+  --       "resources/rfg_examp.iml",
+  --       Giant.Graph_Lib.Get_Graph_Hash);
+        
+  --    Assert (Projects.Does_Project_Exist_File
+  --      ("resources/test_project_directory/My_Test_Project.xml"),
+  --       "Does_Project_Exist");
+        
+     
+     -------
+  --    Projects.Store_Whole_Project (Test_Project_1);                         
+         
+  --    Projects.Deallocate_Project_Deep (Test_Project_1); 
+
+            
+      Test_Project_1 := Projects.Load_Project_File 
+        ("resources/test_project_directory/My_Test_Project.xml");
+      ---------  
+        
+        
+        
+                                            
+      Subgraph_Donald := Giant.Graph_Lib.Subgraphs.Create ("Donald");
+      Subgraph_Daisy  := Giant.Graph_Lib.Subgraphs.Create ("Daisy");
+         
+      Vis_Window_Durchsicht := Giant.Vis_Windows.Create_New ("Durchsicht");
+         
+         
+         
+         
+         
+         
+             
+      Giant.Projects.Add_Subgraph (Test_Project_1, Subgraph_Donald);
+      Giant.Projects.Add_Subgraph (Test_Project_1, Subgraph_Daisy);
       
+      Giant.Projects.Add_Visualisation_Window 
+        (Test_Project_1, Vis_Window_Durchsicht);
+                              
+                                                    
+      Giant.Projects.Store_Single_Visualisation_Window 
+        (Test_Project_1, "Durchsicht");
+        
+      Giant.Projects.Free_Memory_For_Vis_Window
+        (Test_Project_1, "Durchsicht");
+        
+                     
+      Return_Vis_Window := Giant.Projects.Get_Visualisation_Window 
+        (Test_Project_1, "Durchsicht");
+      
+      Return_Subgraph := Giant.Projects.Get_Subgraph
+        (Test_Project_1, "Donald");
+        
+      Return_Annotations := Get_Node_Annotations (Test_Project_1);
+
+      
+      Projects.Store_Whole_Project (Test_Project_1);
+       
+       
+      ---- New Project Directory
       Projects.Store_Whole_Project_As
-         (New_Project,
+         (Test_Project_1,
           "Copy_Of_My_Test_Project",
           "resources/test_project_copy_dir");
           
-      Projects.Deallocate_Project_Deep (New_Project);
+  
+      -- Renamning          
+      Projects.Change_Subgraph_Name 
+        (Test_Project_1, "Donald", "Donald_Neu");
+        
+                  
+      Projects.Change_Vis_Window_Name 
+        (Test_Project_1, "Durchsicht", "Volle_Durchsicht");
+                        
+        
+      Assert (Projects.Does_Subgraph_Exist 
+        (Test_Project_1, "Donald_Neu"), 
+         "Check whether Subgraph renamed correctly");
+        
+      Assert (not Projects.Does_Subgraph_Exist 
+        (Test_Project_1, "Donald"), 
+         "Check whether Subgraph renamed correctly");  
+      
+      
+      Assert (Projects.Does_Vis_Window_Exist 
+        (Test_Project_1, "Volle_Durchsicht"), 
+         "Check whether Vis Window renamed correctly");
+        
+      Assert (not Projects.Does_Vis_Window_Exist 
+        (Test_Project_1, "Durchsicht"), 
+         "Check whether Vis Window renamed correctly");  
+               
+      Projects.Store_Whole_Project (Test_Project_1);                         
+         
+      Projects.Deallocate_Project_Deep (Test_Project_1);
+
+
+      ---- Load stored Project            
+      Test_Project_1 := Projects.Load_Project_File 
+        ("resources/test_project_copy_dir/Copy_Of_My_Test_Project.xml");
+        
+        
+      ---- New Project Directory
+      Projects.Store_Whole_Project_As
+         (Test_Project_1,
+          "Copy_Of_My_Test_Project",
+          "resources/test_project_copy_dir_2");
+      
+      
+      Projects.Remove_Subgraph (Test_Project_1, "Donald_Neu");
+  
+      Projects.Remove_Visualisation_Window 
+        (Test_Project_1, "Volle_Durchsicht");      
+                  
+      Assert (not Projects.Does_Vis_Window_Exist 
+        (Test_Project_1, "Volle_Durchsicht"), 
+         "Check whether Subgraph removed");  
+         
+      Assert (not Projects.Does_Vis_Window_Exist 
+        (Test_Project_1, "Volle_Durchsicht"), 
+         "Check whether Vis Window removed");  
+      
+      Projects.Store_Whole_Project (Test_Project_1);
+            
+      Projects.Deallocate_Project_Deep (Test_Project_1);
+      
+      -- TODO
+      -- Add checks for all files that should have been created
    
    end;
 
@@ -138,11 +251,11 @@ package body Giant.Projects.Test is
       Giant.Graph_Lib.Load      
         ("resources/rfg_examp.iml");
         
- --     Giant.Config.Vis_Styles.Initialize_Config_Vis_Styles
- --       ("resources/vis_styles/resources_dir",
- --        "",
- --        "", 
- --        "resources/vis_styles/only_defaults_giant_vis_style.xml");                                          
+      Giant.Config.Vis_Styles.Initialize_Config_Vis_Styles
+        ("resources/vis_styles/resources_dir",
+         "",
+         "", 
+         "resources/vis_styles/only_defaults_giant_vis_style.xml");                                          
    end Set_Up;
 
    procedure Tear_Down (T : in out Test_Case) is

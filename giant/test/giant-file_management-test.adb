@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-file_management-test.adb,v $, $Revision: 1.3 $
---  $Author: squig $
---  $Date: 2003/06/18 17:32:02 $
+--  $RCSfile: giant-file_management-test.adb,v $, $Revision: 1.4 $
+--  $Author: schwiemn $
+--  $Date: 2003/06/27 15:25:44 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -83,10 +83,77 @@ package body Giant.File_Management.Test is
 
       Assert (Return_Dir_Path_For_File_Path ("resources/test") = "resources/",
               "Return_Dir_Path_For_File_Path: resources/test");
-      Assert (Return_Dir_Path_For_File_Path ("/tmp") = "/tmp",
+      Assert (Return_Dir_Path_For_File_Path ("/tmp") = "/",
               "Return_Dir_Path_For_File_Path: /tmp");
    end Test_Names;
+   
+   procedure Test_Substitute (R : in out AUnit.Test_Cases.Test_Case'Class) is        
+   
+   begin
+   
+      Logger.Debug ("Substitute Soll: ""Life is Life"" - IST: """
+                    & File_Management.Substitute_Sub_Strings
+                        (Source => "%A% is %A%",
+                         Needle => "%A%",
+                         Fork   => "Life")
+                    & """");
 
+      Assert (File_Management.Substitute_Sub_Strings
+                 (Source => "%A% is %A%",
+                  Needle => "%A%",
+                  Fork   => "Life") = "Life is Life", 
+              "String: ""Required Result: Life is Life""");
+              
+      Assert (File_Management.Substitute_Sub_Strings
+                 (Source => "Hallo",
+                  Needle => "%A%",
+                  Fork   => "Life") = "Hallo", 
+              "String: ""Required Result: Hallo""");
+              
+     Assert (File_Management.Substitute_Sub_Strings
+                 (Source => "zu kurz",
+                  Needle => "%aaaaaaaDu%",
+                  Fork   => "Life") = "zu kurz", 
+              "String: ""Required Result: Du""");        
+              
+      Assert (File_Management.Substitute_Sub_Strings
+                 (Source => "%",
+                  Needle => "%",
+                  Fork   => "Winner") = "Winner", 
+              "String: ""Required Result: Winner""");
+              
+      Assert (File_Management.Substitute_Sub_Strings
+                 (Source => "%%%%%",
+                  Needle => "%",
+                  Fork   => "Winner") = "WinnerWinnerWinnerWinnerWinner", 
+              "String: ""Required Result: WinnerWinnerWinnerWinnerWinner""");  
+                                        
+      Assert (File_Management.Substitute_Sub_Strings
+                 (Source => "The  Big  Boss",
+                  Needle => " Big ",
+                  Fork   => "Small") = "The Small Boss", 
+              "String: ""Required Result: The Small Boss""");
+              
+      Assert (File_Management.Substitute_Sub_Strings
+                 (Source => "The Big Boss",
+                  Needle => " big ",
+                  Fork   => "Small") = "The Big Boss", 
+              "String: ""Required Result: The Big Boss""");              
+   end Test_Substitute;
+   
+   procedure Test_Editor_Call (R : in out AUnit.Test_Cases.Test_Case'Class) is        
+   
+   begin
+   
+     File_Management.Execute_External_Editor
+       (Command  => "/usr/bin/emacs +%l:%c %f",
+        Filename => "./resources/global_config.xml",
+        Line     => 10,
+        Column   => 5);
+                       
+   end Test_Editor_Call;
+   
+   
    function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is
    begin
       return new String'("File_Management");
@@ -94,8 +161,10 @@ package body Giant.File_Management.Test is
 
    procedure Register_Tests (T : in out Test_Case) is
    begin
-      Register_Routine (T, Test_Init'Access, "Init");
-      Register_Routine (T, Test_Names'Access, "Names");
+      Register_Routine (T, Test_Init'Access,        "Init");
+      Register_Routine (T, Test_Names'Access,       "Names");
+      Register_Routine (T, Test_Substitute'Access,  "Substitute");
+      Register_Routine (T, Test_Editor_Call'Access, "Editor_Call");
    end Register_Tests;
 
    procedure Set_Up (T : in out Test_Case) is
