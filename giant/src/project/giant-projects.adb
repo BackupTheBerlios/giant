@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.35 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.36 $
 --  $Author: schwiemn $
---  $Date: 2003/06/26 13:23:55 $
+--  $Date: 2003/06/26 13:45:02 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -457,7 +457,7 @@ package body Giant.Projects is
       Subgraphs_Iter : Subgraph_Data_Hashs.Values_Iter;
       A_Subgraph_Data_Element : Subgraph_Data_Element;
       
-      Rel_Path := Ada.Strings.Unbounded.Unbounded_String;
+      Rel_Path : Ada.Strings.Unbounded.Unbounded_String;
 
    begin
 
