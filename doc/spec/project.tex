@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: project.tex,v $, $Revision: 1.17 $
-%  $Date: 2003/02/25 14:33:49 $
-%  $Author: squig $
+%  $RCSfile: project.tex,v $, $Revision: 1.18 $
+%  $Date: 2003/02/25 14:37:57 $
+%  $Author: schwiemn $
 %
 %  Description:
 %
@@ -9,7 +9,7 @@
 
 
 %===================
-\section {Persistenz über Projekte}
+\section {Persistenz der Projekte}
 
 GIANT speichert persistente Informationen in so genannten Projekten.
 \begin {enumerate}
@@ -23,11 +23,6 @@ GIANT speichert persistente Informationen in so genannten Projekten.
   die gespeicherten Informationen beziehen, sowie aus den gespeicherten 
   Informationen für IML-Teilgraphen, Anzeigefenster und Knoten-Annotationen.
  
-  \item
-  Jedes Projekt hat einen vom Benutzer definierbaren Namen, dieser Name 
-  entspricht dem Namen der Projektdatei und wird innerhalb des IML-Browsers 
-  angezeigt.
-
   \item
   Der Name eines bereits angelegten Projektes kann mit den Mitteln von 
   GIANT nicht geändert werden (außer dadurch, dass  man das Projekt unter 
@@ -45,11 +40,6 @@ GIANT speichert persistente Informationen in so genannten Projekten.
   Voraussetzung hierfür ist allerdings, dass dies 
   in der Reflektion zum IML-Graphen unterstützt wird.
   
-  \item
-  GIANT weiß nicht, ob ein geladenes Projekt gegenüber den für das Projekt
-  in der Projektdatei und in den Verwaltungssdateien gespeicherten 
-  Informationen modifiziert wurde oder nicht.
-
 \end {enumerate}
 
 
@@ -106,6 +96,9 @@ GIANT speichert persistente Informationen in so genannten Projekten.
   \begin {enumerate}
   
     \item
+    Diese Datei ist eine Binärdatei.
+  
+    \item
     Zu jedem Anzeigefenster gibt es eine Verwaltungsdatei. 
     
     \item
@@ -121,7 +114,7 @@ GIANT speichert persistente Informationen in so genannten Projekten.
     \item Der komplette Anzeigeinhalt 
           (alle visualisierten Knoten und Kanten mit Position).
     \item Alle Pins (gespeicherte sichtbare Anzeigeinhalte).
-    \item Alle dem Anzeigefenster bekannten Selektionen.
+    \item Alle Selektionen des Anzeigefensters.
  
   \end {enumerate}
  
@@ -135,8 +128,11 @@ GIANT speichert persistente Informationen in so genannten Projekten.
 
   \subsection {Verwaltungsdateien für IML-Teilgraphen}
   \begin {enumerate}
+  
+    \item
+    Diese Datei ist eine Binärdatei.
 
-   \item
+    \item
     Für jeden IML-Teilgraphen gibt es eine eigene Verwaltungsdatei.
     
     \item
@@ -148,12 +144,13 @@ GIANT speichert persistente Informationen in so genannten Projekten.
   
   \subsection {Die Verwaltungsdatei für Knoten-Annotationen}
   \begin {enumerate}
+  
+   \item
+   Diese Datei liegt als XML Datei vor.
 
    \item
    Alle Knoten-Annotationen werden in einer Verwaltungsdatei gespeichert.
-   
-   \item
-   Diese Datei liegt als XML Datei vor.
+  
   \end{enumerate}
   
 

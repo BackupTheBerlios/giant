@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: afa.tex,v $, $Revision: 1.1 $
-%  $Date: 2003/02/25 13:16:01 $
+%  $RCSfile: afa.tex,v $, $Revision: 1.2 $
+%  $Date: 2003/02/25 14:37:57 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung allgemeiner funktionaler Anforderungen - UseCase
@@ -16,40 +16,38 @@
   ausgegeben. Ist dies nicht möglich, wird eine entsprechende Fehlermeldung
   über die Kommandozeile ausgegeben.
   \item
-  GIANT soll sich bezüglich der Fehlerbehandlung konsistent verhalten.
+  GIANT verhält sich bezüglich der Fehlerbehandlung konsistent.
   Das im Folgenden beschriebene Fehlerverhalten gilt daher pauschal für
   das gesamte System. 
   \item
   Abweichungen von diesem Verhalten werden gegebenenfalls an der 
-  entsprechenden Stelle (z.B.\ bei dem jeweiligen UseCase) explizit 
-  spezifiziert.
+  entsprechenden Stelle explizit spezifiziert.
 \end{enumerate}
 
   \subsection {Ungültige oder unvollständige Eingaben bei Dialogen}
   \begin {enumerate}
     \item
-    Eingaben in Dialoge etc. werden immer dann geprüft, wenn der Benutzer
-    die Eingaben in dem gesamten Dialogfenster z.B. durch klicken auf einen
+    Eingaben in Dialogen werden immer dann geprüft, wenn der Benutzer
+    alle Eingaben in dem Dialogfenster durch klicken auf einen
     \gq{OK-Button} bestätigt.
 
     \item
     Stellt das System dann eine unzulässige oder fehlende Eingabe fest, so
-    erscheint der allgemeine Fehlerdialog mit einer entsprechenden Mitteilung
+    erscheint der allgemeine Fehlerdialog mit einer Mitteilung
     zur Fehlerursache.
   
     \item
-    Nach Schließen des Fehlerdialoges kehrt das System zu der Stelle
-    im Ablauf zurück, die dem Zustand vor der Fehlerprüfung entspricht, also
+    Nach Schließen des Fehlerdialoges kehrt das System zu der Stelle, die
+    im Ablauf unmittelbar vor der Fehlerüberprüfung lag, zurück. Also
     typischerweise zu dem Dialog, in dem die fehlerhafte Eingabe getätigt 
-    wurde.\\
-    Die zuvor in den entsprechenden Dialogen getätigten Eingaben des Benutzers
-    (die Eingabedaten, die den Fehler verursacht haben) bleiben erhalten.
+    wurde. Die zuvor in den jeweiligen Dialogen getätigten Eingaben des 
+    Benutzers bleiben erhalten.
     
   \end {enumerate}
 
   \subsection {Ungültige oder unvollständige Eingaben bei Kommandozeilenaufruf}
   Der Start von GIANT wird abgeborchen. Auf der Kommandozeile wird eine
-  entsprechende Meldung mit Hinweisen zur Fehlerursache ausgegeben.
+  Meldung mit Hinweisen zur Fehlerursache ausgegeben.
 
   \subsection {Fehler beim Einlesen von Dateien}
   Aufgrund der Vielzahl der hierbei möglichen Fehlern (technische Defekte etc.)
@@ -77,9 +75,9 @@
     zu prüfen.
     
     \item
-    Stellt das System fest, dass eine einzulesende Datei ungültige 
+    Stellt das System dennoch fest, dass eine einzulesende Datei ungültige 
     Daten enthält, so wird das System mit einer entsprechenden Fehlermeldung
-    abgeborchen.
+    beendet.
   \end {enumerate}
 
 
@@ -98,79 +96,60 @@
      Inhalt, so dass erkennbar ist, dass das System noch läuft.
      
      \item
-     Anzeige eines Progressbars, der darstellt, welcher Anteil der
-     Gesamtberechnung in Prozent bereits erledigt ist.
-     
-     \item
      Anzeige eines Progressbars, der über den aktuellen Fortschritt
      einer Berechnung informiert, ohne dabei den Gesamtaufwand zu 
-     kennen. Dies könnte z.B. durch fortlaufende Ausgabe der Zahl
-     bereits geprüfter IML-Knoten während der Abarbeitung einer
-     Anfrage geschehen.
-     
+     kennen.     
      
    \end {enumerate}
 
 
-  \subsection {Ergebnisbericht bei Anfragen}
-  Nach Abarbeitung einer Anfrage wird der Benutzer durch grafische Ausgabe 
-  eines Protokolls über die Ergebnisse der Anfrage unterrichtet.
-  
->>>>>>>>>> WOLLEN / SOLLEN WIR SO WAS MACHEN ????
->>>>>>>>> Eventuell bei der Spez. der ANfrage
->>>>>>>>> Checken ob machbar
-  \begin {enumerate}
-  
-    \item
-    Angabe aller erzeugten IML-Teilgraphen (Name und Größe).
-    
-    \item
-    Angabe aller neu geöffneten Anzeigefenster.
-    
-    \item 
-    Angabe aller neu erzeugten Selektionen (mit entsprechendem 
-    Anzeigefenster).
-  
-  
-  \end {enumerate}
-  
-  
-  
+   
 \section {Zulässige Eingaben}
 Hier wird beschrieben, welche Eingaben für Namen etc. innerhalb
 von GIANT (z.B. bei den entsprechenden Texteingabedialogen) zulässig sind.
 Unzulässige Namen werden generell abgelehnt und führen zu einer Fehlermeldung.
 
-  \subsection {STANDARD FILENAME}
-  Ein String, der einen für das jeweilige Betriebssystem zulässigen Dateinamen
-  darstellt.\\
-  Entsprechend des Typs der Datei erwartet GIANT immer eine entsprechende
-  Endung der Form ''*.xyz''. Diese Endung wird bei der Eingabe des Namens
-  innerhalb von GIANT automatisch ergänzt.\\
-  Verschiedene Dateitypen folgen z.B.\ aus den Knofigurationsdateien und aus
-  den Verwaltungsdateien für Projekte (siehe auch \ref{Konfiguration von GIANT} 
-  und \ref{GIANT Projektverwaltung}).\\
-  Da Betriebssysteme für Dateien unterschiedliche Namenskonventionen haben, 
-  kann hier keine Plattformunabhängigkeit mehr garantiert werden.
+  \subsection {STANDARD NAME}
+  Ein String, der nur die im Folgenden beschriebenen Zeichen enthalten darf.
+  Der String darf nicht mit einem Schlüsselwort der GQSL Anfragesprache 
+  übereinstimmen.\\
+  Zulässige Zeichen sind:
+  \begin {enumerate}
+  
+    \item
+    Groß- und Kleibuchstaben des deutschen Alphabetes. Nicht zulässig sind
+    Umlaute und das Zeichen ''"s''.
+    
+    \item
+    Die Ziffern ''0'' bis ''9''.
+    
+    \item
+    Das Zeichen ''\_''. 
+  
+   
+  \end {enumerate}
 
 
   \subsection {Zulässige Namen}
   \begin {enumerate}
   
-    \item Name eines Projektes: STANDARD FILENAME
-    \item Name eines IML-Teilgraphen: STANDARD FILENAME\\
+    \item Name eines Projektes: STANDARD NAME
+    
+    \item Name eines IML-Teilgraphen: STANDARD NAME\\
           Dieser Name muss für jeden IML-Teilgraphen innerhalb eines
 	  Projektes eindeutig sein.
     
-    \item Name eines Anzeigefensters: STANDARD FILENAME\\
+    \item Name eines Anzeigefensters: STANDARD NAME\\
           Dieser Name muss für jedes Anzeigefenster innerhalb des Projektes
 	  eindeutig sein.
     
-    \item Name einer Selektion: STANDARD FILENAME
-          Dieser Name muss nicht eindeutig sein.
+    \item Name einer Selektion: STANDARD NAME \\
+          Dieser Name muss für jede Selektionn 
+	  innerhalb eines Anzeigefensters eindeutig sein.
     
-    \item Name eines Pins: STANDARD FILENAME
-          Dieser Name muss nicht eindeutig sein.
+    \item Name eines Pins: STANDARD NAME
+          Dieser Name muss für jeden Pin
+	  innerhalb eins Anzeigfensters eindeutig sein.
  
   \end {enumerate}
  
@@ -223,6 +202,11 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
   \begin {enumerate}
   
     \item
+    Neben den vom Benutzer erzeugten Selektionen
+    gibt es zu jedem Anzeigefenster standardmäßig immer eine aktuelle
+    Selektion, diese kann auch leer sein.
+  
+    \item
     Es gibt zu jedem Anzeigefenster beliebig viele Selektionen, 
     davon ist maximal immer eine die aktuelle Selektion (diese kann
     natürlich auch leer sein, also keine Fenster-Knoten oder 
@@ -235,7 +219,7 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
     durch das Selektieren mittels linker Maustaste etc. geändert werden.
       
     \item
-    Natürlich kann der Benutzer jederzeit bestimmen welche, der Selektion die
+    Der Benutzer kann jederzeit bestimmen, welche der Selektion die
     aktuelle Selektion ist.
     
     \item 
@@ -254,7 +238,7 @@ in Anzeigefenster}
    \subsection {Vorgabe der Zielposition}
      \label{Vorgabe der Zielposition}
    Für bestimmte UseCases (siehe z.B.\ 
-   \ref{IML-Teilgraph in Anzeigefenster einfügen}
+   \ref{IML-Teilgraph in Anzeigefenster einfügen})
    muss der Benutzer manuell Zielpositionen innerhalb eines 
    zu bestimmenden Anzeigefensters auswählen. An dieser
    Zielposition werden dann z.B. neue Fenster-Knoten etc. eingefügt.\\
@@ -272,7 +256,7 @@ in Anzeigefenster}
      
      \item
      Befindet sich die Maus über dem Bereich des Anzeigefensters, wo
-     der IML-Graph (Teile davon) visualisiert wird, so wird anstatt des
+     der IML-Graph visualisiert wird, so wird anstatt des
      Mauszeigers ein Fadenkreuz angezeigt.
      
      \item
@@ -285,13 +269,10 @@ in Anzeigefenster}
    \subsection {Automatisches Erzeugen neuer Selektionen im Zielfenster}
    Sämtliche Fenster-Knoten und Fenster-Kanten, die in einem Schritt in
    ein Anzeigefenster eingefügt werden, werden dort automatisch
-   zu einer neuen Selektion, auf die über die Selektionsauswahlliste
-   (siehe \ref{Selektionsauswahlliste}) zugegriffen werden kann.\\
-   Hierzu muss der Benutzer natürlich bei jedem \gq{Einfügevorgang}
-   einen Namen für die neue Selektion vergeben.
+   zur aktuellen Selektion und können dann vom Benutzer 
+   mit einem Namen versehen werden und als Selektion gespeichert werden.
    
-
-
+   
    \subsection{Einfügen von Selektionen in Anzeigefenster}
       \label{Einfügen von Selektionen in Anzeigefenster}
    Hier wird das grundlegende Verhalten beim Einfügen von Selektionen
@@ -332,13 +313,13 @@ in Anzeigefenster}
    
      \item
      Das Layout für den IML-Teilgraphen wird vor dem Einfügen gemäß eines
-     zu bestimmenden Layoutalgorithmus berechnet.
+     vom Benutzer vorgegebenen Layoutalgorithmus berechnet.
      
      \item
      Die Graph-Knoten und Graph-Kanten des IML-Teilgraphen werden dann
      genau wie eine Selektion in das Anzeigefenster eingefügt, dies geschieht
      dann zu den gleichen Bedingungen, wie oben unter 
-     \ref{Einfügen von IML-Teilgraphen in Anzeigefenster} beschrieben.
+     \ref{Einfügen von Selektionen in Anzeigefenster} beschrieben.
        
    \end{enumerate} 
   
@@ -370,7 +351,7 @@ in Anzeigefenster}
   
   
   \subsection {IML-Teilgraph aus Selektion ableiten}
-    \label{IML-Teilgraphen aus Selektion ableiten}.
+    \label{IML-Teilgraphen aus Selektion ableiten}
   
   \begin {enumerate}
   
@@ -379,11 +360,9 @@ in Anzeigefenster}
     
     \item
     Es wird ein neuer IML-Teilgraph erzeugt. Dieser umfasst alle Knoten und
-    Kanten der Selektion, welche einen wirklichen Teilgraphen bilden.
-    
-    \item
+    Kanten der Selektion, welche einen gültigen Teilgraphen bilden.
     Kanten der Selektion, deren Start- und Zielknoten nicht ebenfalls
-    bestandteil der Selektion sind, werden ignoriert.
+    Bestandteil der Selektion sind, werden also ignoriert.
  
   \end {enumerate}
   
@@ -408,8 +387,7 @@ in Anzeigefenster}
     
         
     \item 
-    Andere anderen Selektionen des Anzeigefensters 
-    werden entsprechend aktualisiert.
+    Andere Selektionen des Anzeigefensters werden entsprechend aktualisiert.
       
   \end{enumerate}
 

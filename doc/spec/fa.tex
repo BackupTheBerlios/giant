@@ -1,7 +1,7 @@
 % =============================================================================
-%  $RCSfile: fa.tex,v $, $Revision: 1.12 $
-%  $Date: 2003/02/24 21:33:34 $
-%  $Author: birdy $
+%  $RCSfile: fa.tex,v $, $Revision: 1.13 $
+%  $Date: 2003/02/25 14:37:57 $
+%  $Author: schwiemn $
 %
 %  Description:
 %
@@ -9,29 +9,25 @@
 
 \section{Der Aktor \gq{Benutzer}}
 Aktor im Sinne der anschließend spezifizierten UseCases ist immmer die 
-menschliche Person, die den IML-Browser GIANT gerade benutzt, also der 
-\gq{Benutzer}. Da GIANT keinen Mehrbenutzerbetrieb vorsieht, ist dies immer 
-eine einzige Person. 
-Neben dem \gq{Benutzer} sind keine weiteren Aktoren vorgesehen.\\
+menschliche Person, die den IML-Browser GIANT gerade bedient, also der 
+\gq{Benutzer}. Neben dem \gq{Benutzer} sind keine weiteren Aktoren 
+vorgesehen.\\
 
 
   \subsection{Anforderungen an den Aktor \gq{Benutzer}}
-  GIANT ist eine Profi-Werkzeug. Weder das System noch das Handbuch richten 
-  sich an unerfahrene Benutzer. Zur Bedienung muss der Benutzer daher 
-  zwingend über die folgenden Kenntnisse verfügen:
+  Zur Bedienung von GIANT muss der Benutzer über 
+  die folgenden Kenntnisse verfügen (davon wir auch im Benutzerhandbuch
+  ausgegangen):
 
   \begin{itemize}
     \item Erfahrung im Umgang mit grafischen GUIs und 
           dem entsprechenden Betriebssystem.
   
-    \item Grundkenntnisse in XML 
-          (nur für das Editieren der Konfigurationsdateien).
-
     \item Erfahrung im Bereich Reengineering.
 
     \item Kenntnisse über Struktur und Aufbau des IML-Graphen. 
     
-    \item Kenntnisse in der Anfragesprache von GIANT
+    \item Kenntnisse in der Anfragesprache GQSL von GIANT
 
   \end{itemize}
 
@@ -46,25 +42,27 @@ die folgenden Optionen.
   \subsection {Mögliche Parameter}
   \begin {enumerate}
     
-    \item loadiml=''Pfad''\\
+    \item loadiml=''Pfad''; als Kurzversion auch li="Pfad"\\
     Angabe des Pfades zu einer existierenden IML-Graph Datei.
     
-    \item newprojectfile=''Pfad''\\
+    \item newprojectfile=''Pfad''; als Kurzversion auch np="Pfad"\\
     Angabe des Pfades für die neu zu erstellenden Projektdatei 
-    (darf nicht bereits vorhanden sein, sonst Fehlermeldung).\\
+    (die Datei darf nicht bereits vorhanden sein, sonst Fehlermeldung).\\
     Das Verzeichnis der Projektdatei ist automatisch Projektverzeichnis,
-    falls schon vorhanden darf darin keine weitere Projektdatei liegen
-    (sonst Fehlermeldung).\\
-    Existiert das Projektverzeichnis noch nicht, so wird es ebenfalls angelegt.
+    falls das Verzeichnis schon vorhanden ist, darf darin keine 
+    weitere Projektdatei liegen.
+    Existiert das Projektverzeichnis noch nicht, so wird es neu angelegt.
     
-    \item loadproject=''Pfad''\\
+    \item loadproject=''Pfad''; als Kurzversion auch lp="Pfad" \\
     Angabe des Pfades zu einer existierenden Projektdatei.
+          
+    \item loadquery=''Pfad''; als Kurzversion auch lq="Pfad" \\
+    Pfad zu einer Datei in der ein GQSL Skript gespeichert ist.
+  
+    \item help\\
+    Zeigt Hilfe zu den Kommandozeilenparametern an.
+  
       
-    \item executequery=''Anfrage''\\
-    Eingabe eines Wortes der Anfragespreche als String.
-     
-    \item loadquery=''Pfad''\\
-    Pfad zu einer Datei in der ein Wort der Anfragesprache gespeichert ist.
       
   \end {enumerate}
       
@@ -100,8 +98,8 @@ die folgenden Optionen.
   
 % ==============================================================================
 \section{Beenden von GIANT}
-Giant kann durch Schließen des HAUPTFENSTERS oder durch Auswahl 
-des entsprechenden Eintages im Hauptmenü oder durch ALT+F4 beendet werden.\\
+Giant kann durch Auswahl des entsprechenden Eintages im Hauptmenü 
+beendet werden.\\
 Ablauf:
 
 \begin {enumerate}
