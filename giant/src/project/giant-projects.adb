@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.31 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.32 $
 --  $Author: schwiemn $
---  $Date: 2003/06/25 08:43:56 $
+--  $Date: 2003/06/25 16:53:18 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -252,19 +252,19 @@ package body Giant.Projects is
       Bauhaus_Out_Stream : Bauhaus_IO.Out_Stream_Type;
    begin
 
-      -- check if file exists, create new one if necessary
-      if (not GNAT.OS_Lib.Is_Writable_File (File_Path)) then
-         Ada.Streams.Stream_IO.Create
-           (Stream_File,
-            Ada.Streams.Stream_IO.Out_File,
-            File_Path);
-
-      else
+      -- test if file exists, create new one if necessary      
+      begin 
          Ada.Streams.Stream_IO.Open
            (Stream_File,
             Ada.Streams.Stream_IO.Out_File,
             File_Path);
-      end if;
+      exception 
+         when Ada.Streams.Stream_IO.Name_Error =>
+         Ada.Streams.Stream_IO.Create
+           (Stream_File,
+            Ada.Streams.Stream_IO.Out_File,
+            File_Path);
+      end;
 
       Ada_Stream := Ada.Streams.Stream_IO.Stream (Stream_File);
       Bauhaus_Out_Stream := Bauhaus_IO.Make_Internal (Ada_Stream);
@@ -871,6 +871,8 @@ package body Giant.Projects is
                         (Data_XML_Node, "iml_graph_checksum")));
 
       New_Project_Access.All_Subgraphs := Subgraph_Data_Hashs.Create;
+      All_Vis_Windows.All_Subgraphs := Known_Vis_Windows_Hashs.Create;     
+      
 
       --  check whether correct iml graph is loaded
       ---------------------------------------------
