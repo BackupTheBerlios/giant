@@ -4,11 +4,12 @@ REQUIREMENTS
  on the system:
 
   * gnat 3.14p
-  * GtkAda 2.2
+  * GtkAda 2.2.0
+  * xmlada 0.7.1
 
 RUN
 
- Run the giant script from the root directory like this: ./giant. 
+ Run the giant script from like this: ./giant. 
 
 INSTALL
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant.ads,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/09/01 22:09:10 $
+--  $Date: 2003/09/09 19:56:37 $
 --
 ------------------------------------------------------------------------------
 --
@@ -33,7 +33,7 @@
 
 package Giant is
 
-   VERSION : constant String := "1.0.0";
+   VERSION : constant String := "1.1.0";
 
    function "-" (S : String) return String;
 

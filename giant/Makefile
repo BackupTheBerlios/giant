@@ -6,7 +6,7 @@ TMP_PATH		= /tmp/$(shell id -un)
 
 # gnatmake is called from this directory
 # therefore all pathes need to be relative to this directory
-OUT_PATH        = obj/
+OUT_PATH        = obj-$(shell uname -s)/
 
 GCOV_OUT_PATH   = gcov/
 
@@ -44,7 +44,7 @@ ALL_CFLAGS      = $(CFLAGS) $(TARGET_CFLAGS) $(GNAT_FLAGS) $(INCLUDES) $(CUSTOM_
 ALL_LFLAGS      = $(LFLAGS) $(TARGET_LFLAGS) $(LIBS)
 
 MAIN = src/giant-main.adb
-EXEC = giant
+EXEC = giant-$(shell uname -s)
 
 # may be -d (do not follow pre-compiled libraries) or -D
 HTML_DEPTH      = -d
@@ -56,8 +56,10 @@ HTML_PATH       = ../../html
 HTML_MAIN       = $(shell namei $(MAIN) | xargs | sed s/.*\ -\ //)
 
 VERSION = $(shell grep VERSION src/giant.ads | sed -e 's/.* "//;s/".*//')
-SRCDIST = COPYING Makefile README src
-DIST = COPYING etc/ giant.sh Makefile README shared/
+SRCDIST = compile.bat.dist COPYING Makefile.dist src
+DIST = COPYING etc giant.sh Makefile README shared
+DIST_PATH = /projects/tmp/giant/releases/giant-$(VERSION)
+RELEASE_TAG = $(shell echo giant-$(VERSION) | sed -e 's/\./_/g')
 
 ifeq ($(shell test -r Makefile.local && echo "true"),true)
   include Makefile.local
@@ -123,11 +125,19 @@ gcov :
 	  --title "GIANT Test Coverage" $(GCOV_OUT_PATH)/giant.info
 
 release :
-	rm -rf tmp
-	mkdir tmp
-	cd tmp; cvs -d `cat ../CVS/Root` export \
-	  -r `echo giant-$(VERSION) | sed -e 's/\./_/g'` giant
-	mkdir tmp/giant-$(VERSION)
-	tar -C tmp/giant -cf - $(SRCDIST) | tar -C tmp/giant-$(VERSION) -xvf -
-	tar -C tmp -czvf giant-$(VERSION).tar.gz giant-$(VERSION)/
-#mv tmp/giant-$(VERSION)/giant.sh tmp/giant-$(VERSION)/giant
+#	rm -rf tmp
+#	mkdir tmp
+#	cd tmp; cvs -d `cat ../CVS/Root` export -r $(RELEASE_TAG) giant
+	mkdir -p $(DIST_PATH)
+	cd $(DIST_PATH)/../template; tar -cf - . \
+	  | (cd $(DIST_PATH); tar -xvf -)	
+	mkdir -p $(DIST_PATH)/src/giant
+	cd tmp/giant; tar -cf - $(SRCDIST) \
+	  | (cd $(DIST_PATH)/src/giant; tar -xvf -)
+	cd tmp/giant; tar -cf - $(DIST) \
+	  | (cd $(DIST_PATH); tar -xvf -)
+	mv $(DIST_PATH)/giant.sh $(DIST_PATH)/giant
+	mv $(DIST_PATH)/src/giant/compile.bat.dist $(DIST_PATH)/src/compile.bat
+	mv $(DIST_PATH)/src/giant/Makefile.dist $(DIST_PATH)/src/Makefile
+	ssh zweig "cd $(DIST_PATH)/src && make && cp giant/giant-SunOS ../"
+	ssh schmidt "setenv PATH /usr/local/ada/bin:$PATH && cd $(DIST_PATH)/src && make && cp giant/giant-Linux ../"
