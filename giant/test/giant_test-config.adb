@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant_test_config.adb,v $, $Revision: 1.1 $
+-- $RCSfile: giant_test-config.adb,v $, $Revision: 1.1 $
 -- $Author: schwiemn $
--- $Date: 2003/06/11 12:36:11 $
+-- $Date: 2003/06/13 08:52:37 $
 --
 -- ------
 -- Used to test the package Giant.Config
@@ -32,7 +32,7 @@ with Giant.Config;
 with Ada.Text_IO;
 
 
-procedure giant_test_config is
+procedure Giant_Test.Config is
 
 begin
 
@@ -41,4 +41,4 @@ begin
    Ada.Text_IO.Put_Line (">>>>> Phase 1: Initializing the Config ADO");
 
 
-end giant_test_config;
+end Giant_Test.Config;
