@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.28 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.29 $
 --  $Author: squig $
---  $Date: 2003/07/07 14:04:47 $
+--  $Date: 2003/07/07 14:10:22 $
 --
 --
 ------------------------------------------------------------------------------
@@ -190,6 +190,7 @@ begin
 
    Logger.Debug ("closing giant");
 
+   Controller.Exit_Application;
    Giant.Graph_Lib.Destroy;
 
    --  store config settings

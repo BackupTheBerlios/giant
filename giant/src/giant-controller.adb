@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.42 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.43 $
 --  $Author: squig $
---  $Date: 2003/07/07 14:04:47 $
+--  $Date: 2003/07/07 14:10:22 $
 --
 
 with Ada.Strings.Unbounded;
@@ -56,11 +56,10 @@ package body Giant.Controller is
 
    procedure Exit_Application
    is
+      use type Gsl.Interpreters.Interpreter;
    begin
       if (Gsl_Interpreter = null) then
-         -- FIX
-         --Gsl.Interpreters.Destory (Gsl_Interpreter);
-         null;
+         Gsl.Interpreters.Destroy (Gsl_Interpreter);
       end if;
    end Exit_Application;
 
