@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.11 $
+--  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.12 $
 --  $Author: koppor $
---  $Date: 2003/06/26 15:56:23 $
+--  $Date: 2003/06/28 22:18:08 $
 --
 ------------------------------------------------------------------------------
 --
@@ -237,6 +237,11 @@ private
    ---------------------------------------------------------------------------
    --  removes given edge if it has no source or no target in the given
    --  graph
+   --
+   --  Pre:
+   --    given edge has to exist in given graph
+   --  Raises:
+   --    Edge_Does_Not_Exist if pre-condition is not satisfied
    procedure Ensure_Graph_Edge_Properties
      (Graph : in out Subgraph;
       Edge  : in     Edge_Id);
