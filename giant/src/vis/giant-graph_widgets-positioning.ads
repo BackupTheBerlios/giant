@@ -1,33 +1,33 @@
-------------------------------------------------------------------------------
---
+-----------------------------------------------------------------------------
 --  GIANT - Graphical IML Analysis and Navigation Tool
 --
 --  Copyright (C) 2003 Philipp Haeuser, Steffen Keul, Oliver Kopp,
 --  Steffen Pingel, Gerrit Schulz and Martin Schwienbacher.
 --
---  Redistribution and use in source and binary forms, with or without
---  modification, are permitted to the department of
---  Programmiersprachen und Übersetzerbau, University of Stuttgart for
---  academic purposes.
+--  This program is free software; you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License version 2 as
+--  published by the Free Software Foundation.
 --
---  THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
---  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
---  OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
---  DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS NAMED ABOVE OR
---  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
---  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
---  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
---  USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
---  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
---  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
---  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
---  POSSIBILITY OF SUCH DAMAGE.
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program; if not, write to the Free Software
+--  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+--
+--  As a special exception, if you link this unit with the Bauhaus toolkit
+--  to produce an executable, this unit does not by itself cause the resulting
+--  executable to be covered by the GNU General Public License. This
+--  exception does not however invalidate any other reasons why the
+--  executable file might be covered by the GNU Public License.
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-positioning.ads,v $, $Revision: 1.10 $
+--  $RCSfile: giant-graph_widgets-positioning.ads,v $, $Revision: 1.11 $
 --  $Author: squig $
---  $Date: 2003/12/04 11:46:56 $
+--  $Date: 2003/12/05 16:50:27 $
 --
 ------------------------------------------------------------------------------
 --
