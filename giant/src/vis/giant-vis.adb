@@ -20,12 +20,14 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-vis.adb,v $, $Revision: 1.15 $
 --  $Author: keulsn $
---  $Date: 2003/08/02 16:27:43 $
+--  $Date: 2003/08/07 20:01:59 $
 --
 ------------------------------------------------------------------------------
 
+
+with Giant.Logger;
 
 package body Giant.Vis is
 
@@ -269,6 +271,183 @@ package body Giant.Vis is
          return False;
       end if;
    end Intersects_Line_Rectangle;
+
+   procedure Clip_Line_To_Rectangle
+     (From      : in out Absolute.Vector_2d;
+      To        : in out Absolute.Vector_2d;
+      Rectangle : in     Absolute.Rectangle_2d;
+      Intersect :    out Boolean) is
+
+      use Absolute;
+      use Logic;
+
+      function Calculate_Point_Inside_Out
+        (Origin     : in     Absolute.Vector_2d;
+         Direction  : in     Absolute.Vector_2d;
+         Horizontal : in     Absolute_Int;
+         Vertical   : in     Absolute_Int)
+        return Absolute.Vector_2d is
+
+         Float_Direction    : Logic.Vector_2d;
+         Horizontal_Way     : Logic_Float;
+         Vertical_Way       : Logic_Float;
+         Direction_Gradient : Logic_Float;
+         Way_Gradient       : Logic_Float;
+         Factor             : Logic_Float;
+      begin
+         if Get_X (Direction) = 0 then
+            return Absolute.Combine_Vector
+              (X => Get_X (Origin), Y => Horizontal);
+         elsif Get_Y (Direction) = 0 then
+            return Absolute.Combine_Vector
+              (X => Vertical, Y => Get_Y (Origin));
+         else
+            Float_Direction := To_Logic (Direction);
+            Direction_Gradient := Get_Y (Float_Direction) /
+              Get_X (Float_Direction);
+            Horizontal_Way := Logic_Float (Vertical - Get_X (Origin));
+            Vertical_Way := Logic_Float (Horizontal - Get_Y (Origin));
+            Way_Gradient := Vertical_Way / Horizontal_Way;
+
+            if abs Way_Gradient <= abs Direction_Gradient then
+               Factor := Vertical_Way /
+                 Get_Y (Float_Direction);
+            else
+               Factor := Horizontal_Way /
+                 Get_X (Float_Direction);
+            end if;
+            return Origin + To_Absolute (Factor * Float_Direction);
+         end if;
+      end Calculate_Point_Inside_Out;
+
+      Old_From : Absolute.Vector_2d := From;
+      Old_To   : Absolute.Vector_2d := To;
+      Left            : Logic_Float;
+      Right           : Logic_Float;
+      Top             : Logic_Float;
+      Bottom          : Logic_Float;
+      From_Inside     : Boolean;
+      To_Inside       : Boolean;
+      Inside_Point    : Absolute.Vector_2d;
+      Outside_Point   : Absolute.Vector_2d;
+      Direction       : Absolute.Vector_2d;
+      Vertical        : Absolute_Int;
+      Horizontal      : Absolute_Int;
+      X               : Logic_Float;
+      Y               : Logic_Float;
+      Left_Point      : Logic.Vector_2d;
+      Right_Point     : Logic.Vector_2d;
+      Origin          : Absolute.Vector_2d;
+      Float_Direction : Logic.Vector_2d;
+   begin
+      From_Inside := Is_Inside (Rectangle, From);
+      To_Inside := Is_Inside (Rectangle, To);
+      if From_Inside xor To_Inside then
+         --  exactly one point inside rectangle
+         if To_Inside then
+            Inside_Point := To;
+            Outside_Point := From;
+         else
+            Inside_Point := From;
+            Outside_Point := To;
+         end if;
+         Direction := Outside_Point - Inside_Point;
+         if Get_X (Direction) >= 0 then
+            Vertical := Get_Right (Rectangle);
+         else
+            Vertical := Get_Left (Rectangle);
+         end if;
+         if Get_Y (Direction) <= 0 then
+            Horizontal := Get_Top (Rectangle);
+         else
+            Horizontal := Get_Bottom (Rectangle);
+         end if;
+         From := Inside_Point;
+         To := Calculate_Point_Inside_Out
+           (Origin     => Inside_Point,
+            Direction  => Direction,
+            Horizontal => Horizontal,
+            Vertical   => Vertical);
+         Intersect := True;
+      elsif To_Inside then
+         --  both points inside, do not need to clip
+         Intersect := True;
+      else
+         --  no point inside
+         Left := Logic_Float (Get_Left (Rectangle));
+         Right := Logic_Float (Get_Right (Rectangle));
+         Top := Logic_Float (Get_Top (Rectangle));
+         Bottom := Logic_Float (Get_Bottom (Rectangle));
+         Intersect := False;
+         if Get_X (From) <= Get_X (To) then
+            Left_Point := To_Logic (From);
+            Right_Point := To_Logic (To);
+            Direction := To - From;
+            Origin := From;
+         else
+            Left_Point := To_Logic (To);
+            Right_Point := To_Logic (From);
+            Direction := From - To;
+            Origin := To;
+         end if;
+         Float_Direction := Right_Point - Left_Point;
+         if Get_X (Float_Direction) > 0.0 and then
+           Get_X (Left_Point) < Left then
+
+            Y := Intersects_Line_Vertical_Line_Y
+              (Origin    => Left_Point,
+               Direction => Float_Direction,
+               Vertical  => Left);
+            Intersect := Top <= Y and Y <= Bottom;
+            if Intersect then
+               From := Absolute.Combine_Vector
+                 (Get_Left (Rectangle), Absolute_Int (Y));
+               if Get_Y (Direction) >= 0 then
+                  Horizontal := Get_Bottom (Rectangle);
+               else
+                  Horizontal := Get_Top (Rectangle);
+               end if;
+            end if;
+         end if;
+         if not Intersect then
+            if Get_Y (Float_Direction) > 0.0 and then
+              Get_Y (Left_Point) < Top then
+
+               X := Intersects_Line_Horizontal_Line_X
+                 (Origin     => Left_Point,
+                  Direction  => Float_Direction,
+                  Horizontal => Top);
+               Intersect := Left <= X and X <= Right;
+               if Intersect then
+                  From := Absolute.Combine_Vector
+                    (Absolute_Int (X), Get_Top (Rectangle));
+                  Horizontal := Get_Bottom (Rectangle);
+               end if;
+            elsif Get_Y (Float_Direction) < 0.0 and then
+              Get_Y (Left_Point) > Bottom then
+
+               X := Intersects_Line_Horizontal_Line_X
+                 (Origin     => Left_Point,
+                  Direction  => Float_Direction,
+                  Horizontal => Bottom);
+               Intersect := Left <= X and X <= Right;
+               if Intersect then
+                  From := Absolute.Combine_Vector
+                    (Absolute_Int (X), Get_Bottom (Rectangle));
+                  Horizontal := Get_Top (Rectangle);
+               end if;
+            end if;
+         end if;
+
+         if Intersect then
+            To := Calculate_Point_Inside_Out
+              (Origin     => Origin,
+               Direction  => Direction,
+               Horizontal => Horizontal,
+               Vertical   => Get_Right (Rectangle));
+         end if;
+      end if;
+   end Clip_Line_To_Rectangle;
 
    function Transform
      (Size           : in     Logic_Float;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.ads,v $, $Revision: 1.9 $
+--  $RCSfile: giant-graph_widgets-drawing.ads,v $, $Revision: 1.10 $
 --  $Author: keulsn $
---  $Date: 2003/07/20 23:20:04 $
+--  $Date: 2003/08/07 20:01:59 $
 --
 ------------------------------------------------------------------------------
 --
@@ -127,17 +127,31 @@ package Giant.Graph_Widgets.Drawing is
 
 private
 
-   Default_Dash_Length          : constant := 5;
-   Default_Dash_Separation      : constant := 2;
-   Default_Dot_Length           : constant := 2;
-   Default_Dot_Separation       : constant := 2;
+   Default_Dash_Length           : constant := 5;
+   Default_Dash_Separation       : constant := 2;
+   Default_Dot_Length            : constant := 2;
+   Default_Dot_Separation        : constant := 2;
 
-   Default_Edge_Line_Thickness  : constant := 0;
-   Default_Edge_Light_Thickness : constant := 4;
+   Default_Edge_Line_Thickness   : constant := 0;
+   Default_Edge_Light_Thickness  : constant := 4;
 
-   Default_Node_Light_Thickness : constant := 6;
+   Default_Node_Light_Thickness  : constant := 6;
 
-   Default_Text_Spacing         : constant := 3;
-   Default_Text_Abbreviation    : constant String := "...";
+   Default_Text_Spacing          : constant := 3;
+   Default_Text_Abbreviation     : constant String := "...";
+
+   ----------------------------------------------------------------------------
+   --  GtkAda cannot use the complete 'Gint'Range' as coordinate space for
+   --  drawing lines via 'Draw_Line'. Thus we are forced to do some clipping
+   --  for ourselves. To avoid off-by-one rounding errors when drawing one line
+   --  in multiple segments during scolling, we use the maximum range possible.
+   --  Since this is undocumented, this maximum range is determined by
+   --  experiment and likely to change.
+   Line_Drawing_Inside_Rectangle : constant Vis.Absolute.Rectangle_2d :=
+     Vis.Absolute.Combine_Rectangle
+     (X_1 => Vis.Absolute_Int (-2**13 - 1),
+      Y_1 => Vis.Absolute_Int (-2**13 - 1),
+      X_2 => Vis.Absolute_Int (2**13 - 1),
+      Y_2 => Vis.Absolute_Int (2**13 - 1));
 
 end Giant.Graph_Widgets.Drawing;

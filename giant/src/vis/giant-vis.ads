@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis.ads,v $, $Revision: 1.14 $
+--  $RCSfile: giant-vis.ads,v $, $Revision: 1.15 $
 --  $Author: keulsn $
---  $Date: 2003/08/02 16:27:43 $
+--  $Date: 2003/08/07 20:01:59 $
 --
 ------------------------------------------------------------------------------
 
@@ -159,6 +159,12 @@ package Giant.Vis is
       To             : in     Absolute.Vector_2d;
       Rectangle      : in     Absolute.Rectangle_2d)
      return Boolean;
+
+   procedure Clip_Line_To_Rectangle
+     (From           : in out Absolute.Vector_2d;
+      To             : in out Absolute.Vector_2d;
+      Rectangle      : in     Absolute.Rectangle_2d;
+      Intersect      :    out Boolean);
 
    function Transform
      (Size           : in     Logic_Float;

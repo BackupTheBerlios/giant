@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.38 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.39 $
 --  $Author: keulsn $
---  $Date: 2003/08/04 03:40:02 $
+--  $Date: 2003/08/07 20:01:59 $
 --
 ------------------------------------------------------------------------------
 --
@@ -625,6 +625,9 @@ package Giant.Graph_Widgets is
    --  to this subprogram is complete. Highlighting is an attribute specific
    --  to single edges and nodes, not to selections.
    --
+   --  Ignores all edges and nodes in 'Selection' that are not contained in
+   --  'Widget'.
+   --
    --  Parameters:
    --    Widget    - The graph widget
    --    Selection - The edges and nodes to be highlighted
@@ -636,6 +639,9 @@ package Giant.Graph_Widgets is
 
    ----------------------------------------------------------------------------
    --  Remove a highlight color from all edges and nodes in a selection.
+   --
+   --  Ignores all edges and nodes in 'Selection' that are not contained in
+   --  'Widget'.
    --
    --  Parameters:
    --    Widget    - The graph widget
@@ -655,6 +661,9 @@ package Giant.Graph_Widgets is
    --  to this subprogram is complete. Highlighting is an attribute specific
    --  to single edges and nodes, not to selections.
    --
+   --  Ignores all edges and nodes in 'Subgraph' that are not contained in
+   --  'Widget'.
+   --
    --  Parameters:
    --    Widget    - The graph widget
    --    Selection - The edges and nodes to be highlighted
@@ -666,6 +675,9 @@ package Giant.Graph_Widgets is
 
    ----------------------------------------------------------------------------
    --  Removes a highlight color from all the edges and nodes in a subgraph.
+   --
+   --  Ignores all edges and nodes in 'Subgraph' that are not contained in
+   --  'Widget'.
    --
    --  Parameters:
    --    Widget    - The graph widget

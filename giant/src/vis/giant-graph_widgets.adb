@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.41 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.42 $
 --  $Author: keulsn $
---  $Date: 2003/08/04 03:40:02 $
+--  $Date: 2003/08/07 20:01:59 $
 --
 ------------------------------------------------------------------------------
 
@@ -1046,8 +1046,7 @@ package body Giant.Graph_Widgets is
       begin
          if Edge /= null then
             Add_Edge_Highlighting (Widget, Edge, Highlight);
-         else
-            raise Unknown_Edge_Id;
+         --  else ignore
          end if;
       end Add_Local_Edge_Highlighting;
 
@@ -1057,10 +1056,29 @@ package body Giant.Graph_Widgets is
       begin
          if Node /= null then
             Add_Node_Highlighting (Widget, Node, Highlight);
-         else
-            raise Unknown_Node_Id;
+         --  else ignore
          end if;
       end Add_Local_Node_Highlighting;
+
+      procedure Add_Edge_To_Selection_Selective
+        (Widget : access Graph_Widget_Record'Class;
+         Edge   : in     Vis_Data.Vis_Edge_Id) is
+      begin
+         if Edge /= null then
+            Add_Edge_To_Selection (Widget, Edge);
+         --  else ignore
+         end if;
+      end Add_Edge_To_Selection_Selective;
+
+      procedure Add_Node_To_Selection_Selective
+        (Widget : access Graph_Widget_Record'Class;
+         Node   : in     Vis_Data.Vis_Node_Id) is
+      begin
+         if Node /= null then
+            Add_Node_To_Selection (Widget, Node);
+         --  else ignore
+         end if;
+      end Add_Node_To_Selection_Selective;
 
       procedure Local_Highlight_Edges is new For_All_Graph_Edges
         (Action => Add_Local_Edge_Highlighting);
@@ -1068,9 +1086,9 @@ package body Giant.Graph_Widgets is
         (Action => Add_Local_Node_Highlighting);
 
       procedure Register_Selected_Edges is new For_All_Graph_Edges
-        (Action => Add_Edge_To_Selection);
+        (Action => Add_Edge_To_Selection_Selective);
       procedure Register_Selected_Nodes is new For_All_Graph_Nodes
-        (Action => Add_Node_To_Selection);
+        (Action => Add_Node_To_Selection_Selective);
 
       Lock : Lock_Type;
    begin
@@ -1081,9 +1099,7 @@ package body Giant.Graph_Widgets is
       Local_Highlight_Edges
         (Widget => Widget,
          Edges  => Graph_Lib.Selections.Get_All_Edges (Selection));
-      --  Here it is assured that neither Unknown_Edge_Id nor Unknown_Node_Id
-      --  need to be raised --> Add_Edge_To_Selection and
-      --  Add_Node_To_Selection may be called safely.
+
       if Vis_Data."=" (Highlight, Vis_Data.Current_Local) then
          --  Update selection if correct color set.
          Register_Selected_Edges
@@ -1110,8 +1126,7 @@ package body Giant.Graph_Widgets is
       begin
          if Edge /= null then
             Remove_Edge_Highlighting (Widget, Edge, Highlight);
-         else
-            raise Unknown_Edge_Id;
+         --  else ignore
          end if;
       end Remove_Local_Edge_Highlighting;
 
@@ -1121,10 +1136,29 @@ package body Giant.Graph_Widgets is
       begin
          if Node /= null then
             Remove_Node_Highlighting (Widget, Node, Highlight);
-         else
-            raise Unknown_Node_Id;
+         --  else ignore
          end if;
       end Remove_Local_Node_Highlighting;
+
+      procedure Remove_Edge_From_Selection_Selective
+        (Widget : access Graph_Widget_Record'Class;
+         Edge   : in     Vis_Data.Vis_Edge_Id) is
+      begin
+         if Edge /= null then
+            Remove_Edge_From_Selection (Widget, Edge);
+         --  else ignore
+         end if;
+      end Remove_Edge_From_Selection_Selective;
+
+      procedure Remove_Node_From_Selection_Selective
+        (Widget : access Graph_Widget_Record'Class;
+         Node   : in     Vis_Data.Vis_Node_Id) is
+      begin
+         if Node /= null then
+            Remove_Node_From_Selection (Widget, Node);
+         --  else ignore
+         end if;
+      end Remove_Node_From_Selection_Selective;
 
       procedure Local_Unhighlight_Edges is new For_All_Graph_Edges
         (Action => Remove_Local_Edge_Highlighting);
@@ -1132,9 +1166,9 @@ package body Giant.Graph_Widgets is
         (Action => Remove_Local_Node_Highlighting);
 
       procedure Unregister_Selected_Edges is new For_All_Graph_Edges
-        (Action => Remove_Edge_From_Selection);
+        (Action => Remove_Edge_From_Selection_Selective);
       procedure Unregister_Selected_Nodes is new For_All_Graph_Nodes
-        (Action => Remove_Node_From_Selection);
+        (Action => Remove_Node_From_Selection_Selective);
 
       Lock : Lock_Type;
    begin
@@ -1145,9 +1179,7 @@ package body Giant.Graph_Widgets is
       Local_Unhighlight_Edges
         (Widget => Widget,
          Edges  => Graph_Lib.Selections.Get_All_Edges (Selection));
-      --  Here it is assured that neither Unknown_Edge_Id nor Unknown_Node_Id
-      --  need to be raised --> Remove_Edge_From_Selection and
-      --  Remove_Node_From_Selection may be called safely.
+
       if Vis_Data."=" (Highlight, Vis_Data.Current_Local) then
          --  Update selection if correct color set.
          Unregister_Selected_Edges
@@ -1174,8 +1206,7 @@ package body Giant.Graph_Widgets is
       begin
          if Edge /= null then
             Add_Edge_Highlighting (Widget, Edge, Highlight);
-         else
-            raise Unknown_Edge_Id;
+         --  else ignore
          end if;
       end Add_Global_Edge_Highlighting;
 
@@ -1185,8 +1216,7 @@ package body Giant.Graph_Widgets is
       begin
          if Node /= null then
             Add_Node_Highlighting (Widget, Node, Highlight);
-         else
-            raise Unknown_Node_Id;
+         --  else ignore
          end if;
       end Add_Global_Node_Highlighting;
 
@@ -1221,8 +1251,7 @@ package body Giant.Graph_Widgets is
       begin
          if Edge /= null then
             Remove_Edge_Highlighting (Widget, Edge, Highlight);
-         else
-            raise Unknown_Edge_Id;
+         --  else ignore
          end if;
       end Remove_Global_Edge_Highlighting;
 
@@ -1232,8 +1261,7 @@ package body Giant.Graph_Widgets is
       begin
          if Node /= null then
             Remove_Node_Highlighting (Widget, Node, Highlight);
-         else
-            raise Unknown_Node_Id;
+         --  else ignore
          end if;
       end Remove_Global_Node_Highlighting;
 

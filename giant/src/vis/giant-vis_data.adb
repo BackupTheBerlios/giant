@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.35 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.36 $
 --  $Author: keulsn $
---  $Date: 2003/08/04 03:40:02 $
+--  $Date: 2003/08/07 20:01:59 $
 --
 ------------------------------------------------------------------------------
 
@@ -215,6 +215,20 @@ package body Giant.Vis_Data is
    -----------
    -- Edges --
    -----------
+
+   function Image
+     (Node  : in     Vis_Node_Id)
+     return String;
+
+   function Image
+     (Edge : in     Vis_Edge_Id)
+     return String is
+   begin
+      return "((" & Image (Get_Source (Edge)) &
+        "." & Graph_Lib.Get_Edge_Tag (Get_Graph_Edge (Edge)) & ")" &
+        " -> " & Image (Get_Target (Edge)) &
+        ")";
+   end Image;
 
    function Create_Edge
      (Graph_Edge  : in     Graph_Lib.Edge_Id;
@@ -561,20 +575,6 @@ package body Giant.Vis_Data is
       Edge.Layer := Layer;
    end Set_Layer;
 
---     procedure Set_Sized
---       (Edge  : in     Vis_Edge_Id;
---        State : in     Boolean) is
---     begin
---        Edge.Flags (Sized) := State;
---     end Set_Sized;
-
---     procedure Set_Locked
---       (Edge  : in     Vis_Edge_Id;
---        State : in     Boolean) is
---     begin
---        Edge.Flags (Locked) := State;
---     end Set_Locked;
-
    function Is_Edge_Below
      (Left  : in     Vis_Edge_Id;
       Right : in     Vis_Edge_Id)
@@ -588,10 +588,18 @@ package body Giant.Vis_Data is
    -- Nodes --
    -----------
 
+   function Image
+     (Node       : in     Vis_Node_Id)
+     return String is
+   begin
+      return Graph_Lib.Node_Id_Image (Get_Graph_Node (Node));
+   end Image;
+
    function Create_Node
      (Graph_Node : in     Graph_Lib.Node_Id;
       Layer      : in     Layer_Type)
      return Vis_Node_Id is
+
    begin
       return new Vis_Node_Record'
         (Position       => Vis.Logic.Zero_2d,

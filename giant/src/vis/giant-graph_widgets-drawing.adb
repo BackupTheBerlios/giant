@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.26 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.27 $
 --  $Author: keulsn $
---  $Date: 2003/08/04 11:01:49 $
+--  $Date: 2003/08/07 20:01:59 $
 --
 ------------------------------------------------------------------------------
 
@@ -349,20 +349,36 @@ package body Giant.Graph_Widgets.Drawing is
          From   : in     Vis.Absolute.Vector_2d;
          To     : in     Vis.Absolute.Vector_2d) is
 
-         From_X : Glib.Gint;
-         From_Y : Glib.Gint;
-         To_X   : Glib.Gint;
-         To_Y   : Glib.Gint;
+         From_Point : Vis.Absolute.Vector_2d := From;
+         To_Point   : Vis.Absolute.Vector_2d := To;
+         From_X     : Glib.Gint;
+         From_Y     : Glib.Gint;
+         To_X       : Glib.Gint;
+         To_Y       : Glib.Gint;
+         Intersect  : Boolean;
+         Gc_To_Use  : Gdk.GC.Gdk_Gc := Gc;
       begin
-         Vis.To_Gdk (From, From_X, From_Y);
-         Vis.To_Gdk (To, To_X, To_Y);
-         Gdk.Drawable.Draw_Line
-           (Drawable   => Buffer,
-            Gc         => Gc,
-            X1         => From_X,
-            Y1         => From_Y,
-            X2         => To_X,
-            Y2         => To_Y);
+         --  now the funny part: although 'Draw_Line' takes 'Gint' as parameter
+         --  type, all values must be in 'Line_Drawing_Inside_Rectangle'.
+         --  Thus we need to do some clipping manually...
+         Vis.Clip_Line_To_Rectangle
+           (From      => From_Point,
+            To        => To_Point,
+            Rectangle => Line_Drawing_Inside_Rectangle,
+            Intersect => Intersect);
+
+         if Intersect then
+            Vis.To_Gdk (From_Point, From_X, From_Y);
+            Vis.To_Gdk (To_Point, To_X, To_Y);
+
+            Gdk.Drawable.Draw_Line
+              (Drawable   => Buffer,
+               Gc         => Gc_To_Use,
+               X1         => From_X,
+               Y1         => From_Y,
+               X2         => To_X,
+               Y2         => To_Y);
+         end if;
       end Draw_Edge_Line;
 
       procedure Draw_All_Edge_Lines
@@ -455,7 +471,7 @@ package body Giant.Graph_Widgets.Drawing is
 
       Gdk.GC.Set_Foreground
         (GC    => Widget.Drawing.Edge_Line (Style),
-         Color => Settings.Get_Edge_Color (Widget, Edge));
+          Color => Settings.Get_Edge_Color (Widget, Edge));
       Draw_All_Edge_Lines
         (Gc    => Widget.Drawing.Edge_Line (Style),
          Style => Style,
