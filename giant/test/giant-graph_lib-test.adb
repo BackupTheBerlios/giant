@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.11 $
 --  $Author: koppor $
---  $Date: 2003/07/06 01:55:28 $
+--  $Date: 2003/07/06 02:44:27 $
 --
 
 with Ada.Text_IO;
@@ -38,24 +38,27 @@ package body Giant.Graph_Lib.Test is
    --------------------------------------------------------------------------
    --  Parameters for the graph to use for testing
 
---       IML_Filename   : constant String :=
---         "/home/stsopra/giant/graphs/httpd.iml";
---       IML_Edge_Count : constant Integer := 0;  --  with all: 2316410
---       IML_Node_Count : constant Integer := 0;  --  with all: 797777
+--   IML_Filename   : constant String :=
+--     "resources/httpd.iml";
+--     "/home/stsopra/giant/graphs/httpd.iml";
+--   IML_Edge_Count : constant Integer := 2108289;  --  with all: 2316410
+--   IML_Node_Count : constant Integer := 790020;  --  with all: 797777
 
---     IML_Filename   : constant String :=
---       "/home/stsopra/giant/graphs/wget.iml";
---     IML_Edge_Count : constant Integer := 0; --  with all: 1274794
---     IML_Node_Count : constant Integer := 0; --  with all: 472583
+--   IML_Filename   : constant String :=
+--     "resources/wget.iml";
+--     "/home/stsopra/giant/graphs/wget.iml";
+--   IML_Edge_Count : constant Integer := 1130446; --  with all: 1274794
+--   IML_Node_Count : constant Integer := 465457; --  with all: 472583
 
---     IML_Filename   : constant String :=
---       "/home/stsopra/giant/graphs/concept_analysis.iml";
---     IML_Edge_Count : constant Integer := 0; -- with all: 156072
---     IML_Node_Count : constant Integer := 0; -- with all:  646
+--   IML_Filename   : constant String :=
+--     "resources/concept_analysis.iml";
+--     "/home/stsopra/giant/graphs/concept_analysis.iml";
+--   IML_Edge_Count : constant Integer := 141758; -- with all: 156072
+--   IML_Node_Count : constant Integer := 53398; -- with all:
 
-     IML_Filename   : constant String  := "resources/rfg_examp.iml";
-     IML_Edge_Count : constant Integer := 631; --  with all: 646
-     IML_Node_Count : constant Integer := 202; --  with all: 216
+   IML_Filename   : constant String  := "resources/rfg_examp.iml";
+   IML_Edge_Count : constant Integer := 631; --  with all: 646
+   IML_Node_Count : constant Integer := 202; --  with all: 216
 
    -------------------------------------
    --  Global variables and routines  --
