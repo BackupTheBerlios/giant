@@ -55,6 +55,10 @@ HTML_PATH       = ../../html
 # filename of MAIN only
 HTML_MAIN       = $(shell namei $(MAIN) | xargs | sed s/.*\ -\ //)
 
+VERSION = $(shell grep VERSION src/giant.ads | sed -e 's/.* "//;s/".*//')
+SRCDIST = COPYING giant.sh Makefile README src etc/global_config.xml etc/
+DIST = COPYING etc/ giant.sh Makefile README shared/
+
 ifeq ($(shell test -r Makefile.local && echo "true"),true)
   include Makefile.local
 endif
@@ -118,3 +122,11 @@ gcov :
 	  --show-details --output-directory $(GCOV_OUT_PATH) \
 	  --title "GIANT Test Coverage" $(GCOV_OUT_PATH)/giant.info
 
+release :
+	rm -rf tmp
+	mkdir tmp
+	cd tmp; cvs -d `cat ../CVS/Root` export \
+	  -r `echo giant-$(VERSION) | sed -e 's/\./_/g'` giant
+	mkdir tmp/giant-$(VERSION)
+	tar -C tmp/giant -cf - $(DIST) | tar -C tmp/giant-$(VERSION) -xvf -
+	mv tmp/giant-$(VERSION)/giant.sh tmp/giant-$(VERSION)/giant
