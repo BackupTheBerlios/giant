@@ -1,5 +1,7 @@
 2003-10-07  Oliver Kopp  <koppor@studi.informatik.uni-stuttgart.de>
 
+	* shared/class_sets/all_nodes.xml: added for generate_subgraph_dialog
+
 	* src/gui/giant-main_window.adb: added generate_subgraph_dialog
 
 	* src/gui/giant-generate_subgraph_dialog.adb: added

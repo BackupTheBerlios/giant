@@ -7,16 +7,22 @@ in the source directory for details.
 Version ?
 
  * ported to IML-lib 20030923
+ * gui
+     - added "Generate Subgraph..." in context-menu of subgraph
+ * class_sets
+     - new all_nodes.xml matching all nodes
  * Treelayout: 
      - position of matrix-layout fixed
      - New Parameter "Reverse_Edges" - useful for layouting edges
        belonging to "parent_edge_class_set"
+     - fixed root-node-finding
  * gsl:
      - speed up
      - new script "generate_subgraph__only_parent_edges"
  * documentation:
      - added layoutparameters @ GSL-Documentation @ handbook
      - added instance_of for edges and class_sets @ gsl-spec
+     - added further explanation of class_sets of tree_layout
 
 Version 1.1.1 (2003-09-24)
 
