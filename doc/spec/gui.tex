@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.22 $
-%  $Date: 2003/02/21 17:08:30 $
-%  $Author: schwiemn $
+%  $RCSfile: gui.tex,v $, $Revision: 1.23 $
+%  $Date: 2003/02/24 10:36:10 $
+%  $Author: birdy $
 %
 %  Description: Bis zu Revision 1.6 sind UseCase-artige Beschreibungen enthalten,
 %  die für UseCases nützlich sein könnten. 
@@ -87,6 +87,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
   Im Fenster befindet sich zuoberst eine Liste WINDOW\_LIST.
    
     \subsubsection {Inhalt Window List}
+    \label{WINDOW\_LIST}
    
       WINDOW\_LIST hat die Spalten WINDOW\_NAME und WINDOW\_OPEN. In WINDOW\_NAME
       wird der Name der Anzeigefenster dargestellt, in WINDOW\_OPEN befindet
@@ -95,7 +96,9 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     
     \subsubsection {PopUp Menü Window list}
     
+    
         Beim Rechtsklick auf WINDOW\_LIST öffnet sich ein Popup-Menü mit folgenden Menüpunkten:
+	\label{WINDOW\_LIST\_POPUP}
 
         \begin{enumerate}
           \item Open Window
@@ -130,7 +133,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     \subsubsection {PopUp Menü Subgraph List}
         
       Beim Rechtsklick auf SUBGRAPH\_LIST öffnet sich ein Popup-Menü mit folgenden Menüpunkten:
-
+	\label{SUBGRAPH\_LIST\_POPUP}
         \begin{enumerate}
           \item highlight (zum Hervorheben eines Teilgraphen in allen Fenstern mit Farbe SUBGRAPH\_COL)
           \item Change highlighting color
@@ -146,6 +149,12 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     
   \subsection {Zugehörige Dialoge}
   
+  	\begin{enumerate}
+		\label SUBGRAPH\_LIST/NEW\_WINDOW
+		\item SUBGRAPH\_LIST/NEW\_WINDOW
+			Dieser Dialog ermöglicht, ein neues Fenster anzulegen
+			
+	\end{enumerate}
   >>>>>>>>>>>>KURZE Beschreibung aller DIALOGE die NUR!!!! vom HAUPTFENSTER AUS erreichbar sind.
 
 
@@ -326,6 +335,7 @@ Darunter befinden sich zwei Buttons: Anfrage verwerfen und Anfrage
 übernehmen als IML-Teilgraph. 
 
 \section{Allgemeiner Texteingabedialog}
+\label{DIALOG\_WINDOW}
 
 Ein allgemeiner Texteingabedialog ist ein Fenster DIALOG\_WINDOW mit dem
 Titel \gq{GIANT Dialog}. Im Fenster ist ein einzeiliges Textfeld TEXT\_FIELD
@@ -351,44 +361,43 @@ Bestandteile des Dialoges sind:
  alle Selektionen des entsprechenden Anzeigefensters angezeigt.\\
  Bei einer Mengenoperation über IML-Teilgraphen, werden alle IML-Teilgraphen
  des Projektes angezeigt.
-   
- \item LEFT\_SOURCE Combobox\\
- Soll eine Mengenoperation für Selektionen ausgeführt werden, so werden hier
- alle Selektionen des entsprechenden Anzeigefensters angezeigt.\\
- Bei einer Mengenoperation über IML-Teilgraphen, werden alle IML-Teilgraphen
- des Projektes angezeigt.
-
+ 
  \item TARGET Textfield\\
  Name der neuen Selektion oder des neuen IML-Teilgraphen als Ergebnis
  der Mengenoperation.
   
- \item Ein OK Button\\
+ \item Ein OK Button: OK\\
  Entsprechende Mengenoperation wird ausgeführt.
  
- \item Ein Cancel Button\\
+ \item Ein Cancel Button: CANCEL\\
  Bricht die Eingabe ab.
  
- 
-
 \end {enumerate}
-
-
 
 
 \section {Layoutalgorithmen Dialog}
 
+Der Dialog Layoutalgorithmen bietet folgende Möglichkeiten:
+
+\begin {enumerate}
 
 >>>>>>>>>>>>>>>> Noch genauer zu beschreiben
 >>>> AUSFORMULIEREN und ENTSPRECHEND FORMATIEREN
 
-Bietet folgende Möglichkeiten:\\
-- Auswahl des Layoutalgorithmus\\
-- Eingabe der zu berücksichtigenden Kanten bei semantischen Layouts\\
-- OK Button\\
-- Cancel Button\\
-- Textfeld zur Eingabe des Namens für die Selektion (in dem ANziegefenster
-wo sie eingefügt wurde).
 
+\item Auswahl des Layoutalgorithmus\\
+	Hiermit kann der Layoutalgorithmus ausgewählt werden.
+
+\item Eingabe der zu berücksichtigenden Kanten bei semantischen Layouts\\
+
+
+
+\item OK Button\\
+\item Cancel Button\\
+\item Textfeld zur Eingabe des Namens für die Selektion (in dem Anzeigefenster wo sie eingefügt wurde)\\
+
+
+\end {enumerate}
 
 
 
@@ -423,25 +432,10 @@ mit \gq{No}.
   des von GTK/ADA bereit gestellten Filechooser-Dialogs.
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+\section{Fadenkreuzcursor}
+\label{Fadenkreuzcursor}
+	Der Cursor verwandelt sich nach Auswahl bestimmter
+	Funktionen in ein Fadenkreuz. Durch Rechtsklick auf einen
+	Knoten/eine Kante in einem Fenster wird dieser Knoten/diese
+	Kante für die jeweilige Funktion ausgewählt. Der Cursor verwandelt
+	sich dann wieder in den Normalcursor.
