@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.32 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.33 $
 --  $Author: squig $
---  $Date: 2003/07/10 20:17:45 $
+--  $Date: 2003/07/10 21:24:48 $
 --
 --
 ------------------------------------------------------------------------------
@@ -182,7 +182,7 @@ begin
 
    --  load config settings
    Config_Settings.Initialize_Config_Settings
-     ("test/resources/global_config.xml", Config_Filename);
+     ("dist/global_config.xml", Config_Filename);
 
    Config.Global_Data.Initialize_Config_Data;
 
@@ -192,10 +192,9 @@ begin
    Config.Vis_Styles.Initialize_Config_Vis_Styles
      (Resources_Root_Dir     =>
         Config.Global_Data.Get_Resources_Directory,
-      GIANT_VIS_Directory    => "",
+      GIANT_VIS_Directory    => "dist/vis_styles_set_1",
       User_Vis_Directory     => "",
-      Default_Vis_Style_File =>
-        "test/resources/vis_styles/only_defaults_giant_vis_style.xml");
+      Default_Vis_Style_File => "dist/vis_styles_set_1/Default.xml");
 
    Logger.Debug ("intializing class sets");
    Config.Class_Sets.Initialize_Class_Sets (".");

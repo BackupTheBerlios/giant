@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.17 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.18 $
 -- $Author: squig $
--- $Date: 2003/07/03 18:41:20 $
+-- $Date: 2003/07/10 21:24:48 $
 --
 
 with Glib;
@@ -30,6 +30,10 @@ with Gtk.Arguments;
 with Gtk.Enums; use Gtk.Enums;
 with Gtk.Tearoff_Menu_Item;
 
+with Gnat.OS_Lib;
+
+with Giant.Config;
+with Giant.Config.Global_Data;
 with Giant.Dialogs;
 
 package body Giant.Gui_Utils is
@@ -84,8 +88,8 @@ package body Giant.Gui_Utils is
      return String
    is
    begin
-      -- FIX: use config.getResourcePath()
-      return "icons/" & Filename;
+      return Config.Global_Data.Get_Resources_Directory & "icons"
+        & GNAT.OS_Lib.Directory_Separator & Filename;
    end;
 
    function Get_Selected_Row
