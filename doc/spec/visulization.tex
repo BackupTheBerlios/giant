@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: visulization.tex,v $, $Revision: 1.2 $
-%  $Date: 2003/02/14 14:34:49 $
+%  $RCSfile: visulization.tex,v $, $Revision: 1.3 $
+%  $Date: 2003/02/14 17:20:54 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -11,20 +11,20 @@ Genaue Beschreibung der Visualisierung des Graphen in einem Anzeigefenster.
 
 \section{Visualisierungsstiele}
 Der Benutzer kann über XML-Konfigurationsdateien beliebige viele Visualisierungsstiele
-erzeugen. Über so solch einen Visualisierungsstiel kann er definieren wie Knoten und
+erzeugen. Über einen Visualisierungsstiel kann er definieren, wie Knoten und
 Kanten von Graphen in den Anzeigefenstern dargestellt werden, wobei er die 
 Einstellungen für Knoten und Kanten differenziert für die verschiedenen Knoten- und
 Kantenklassen des IML-Graphen vornehmen kann.\\
-Zu jedem Anzeigfenster gibt es eine Liste aus der zur Laufzeit ein 
+Zu jedem Anzeigefenster gibt es eine Liste aus der zur Laufzeit ein 
 entsprechender vordefinierter Visualisierungsstiel ausgewählt werden kann.\\
 Auf diese Art und Weise kann der Benutzer also je nach aktuellem Bedarf
-die Darstellung im ANzeigefenster änderen.
+die Darstellung im Anzeigefenster ändern.
 
-WAS KANN ALLES KONFIGURIERT WERDEN USW.:- VERWEIS AUF KONFIGURATIOS DATEIEN
+>>>>>>>>>>>>>>>>>>WAS KANN ALLES KONFIGURIERT WERDEN USW.:- VERWEIS AUF KONFIGURATIONSDATEIEN
 
 
 \section{Visualisierung von Knoten}
-Hier wird die Visualisierung eines Knotens auf dem Anziegeinhalt innerhalb eines Anzeigefensters 
+Hier wird die Visualisierung eines Knotens auf dem Anzeigeinhalt innerhalb eines Anzeigefensters 
 beschrieben. Die Tatsächliche Darstellung hängt stark von der aktuellen Zoomstufe und dem gewählten
 Visualisierungsstiel ab.
 
@@ -35,11 +35,13 @@ Visualisierungsstiel ab.
   \subsection {Knoten-Rechteck}
   Grundlage der Darstellung eines Knotens ist immer ein Rechteck mit fixer Breite.
   Die Höhe des Rechtecks ist proportional zur Anzahl der Attribute des Knotens, die  
-  direkt im Anzeigefenster dargestellt werden.
+  direkt im Anzeigefenster dargestellt werden. Jedes Knoten-Rechteck hat eine 
+  konfigurierbare Füllfarbe und einen Rahmen, dessen Farbe ebenfalls konfiguriert werden
+  kann.
 
   \subsection {Knoten-Icon}
   Jeder Knoten kann über ein vordefiniertes Icon verfügen, welches im linken oberen Eck des
-  Knoten-Rechtecks darhgestellt wird. Dieses Icon muss eine Größe 32*32 Pixel haben.
+  Knoten-Rechtecks dargestellt wird.
 
 
   \subsection {Klassenname und ID}
@@ -56,18 +58,18 @@ Visualisierungsstiel ab.
 \section{Visualisierung von Kanten}
 
 Kanten sind immer gerade Linien von einem Start- zu einem Zielknoten. Kanten können sich hinsichtlich
-ihrer Linienfarbe und der Art der Line (z.B. gestrichelt oder durchgezogen) unterscheiden.
+ihrer Linienfarbe und der Art der Linie (z.B. gestrichelt oder durchgezogen) unterscheiden.
 Der IML-Graph kennt auch Schleifen, solche Kanten werden durch zwei Kantenknickpunkte
 umgelenkt.
 
   \subsection{Kantenknickpunkte}
   Der Benutzer kann bei jeder Kante manuell beliebig viele Kantenknickpunkte hinzufügen.
   Die Kante selbst besteht dann aus mehreren geraden Linien vom Startknoten über beliebig
-  viele Kantenknickpunkt hiwnweg zum Zielknoten.\\
+  viele Kantenknickpunkt hinweg zum Zielknoten.\\
   
   \begin{itemize}   
     \item Kantenknickpunkte werden als kleine Rauten dargestellt
-    \item Die Farbe der Kantenknlickpunkte entspricht der Farbe für die Linie der Kante
+    \item Die Farbe der Kantenknickpunkte entspricht der Farbe für die Linie der Kante
   \end{itemize}
 
   Layoutalgorithmen, die diese Kantenknickpunkt automatisch erzeugen sind momentan nicht vorgesehen.
@@ -81,51 +83,58 @@ umgelenkt.
 
 Innerhalb eines Anzeigefensters können
 \begin {itemize}
-  \item die \gq{aktuelle Selektion} (kann natürlich auch lehr sein),
+  \item die \gq{aktuelle Selektion} (kann natürlich auch leer sein),
   \item bis zu drei weitere Selektionen,
   \item und bis zu vier IML-Teilgraphen
 \end {itemize}
 unterschiedbar hervorgehoben werden.
 
 
-\subsection {Selektionen und aktuelle Selektionen}
+  \subsection {Selektionen und aktuelle Selektionen}
 
-Beim Hervorheben von Knoten und Kanten von Selektionen werden diese mittels einer 
-definierbaren Farbe eingefärbt.
+  Beim Hervorheben von Knoten und Kanten von Selektionen werden diese mittels einer 
+  definierbaren Farbe eingefärbt.
+
+    \begin {itemize} 
+      \item Jeder Knoten einer Selektion wird dadurch hervorgehoben, dass das die Füllfarbe 
+            und die Rahmenfarbe des Knoten-Rechtecks auf eine entsprechende Farbe gesetzt werden.
+            Der Rahmen des Knoten-Rechtecks wird darüber hinaus verbreitert.
+
+      \item Jede Kante wird dadurch hervorgehoben, dass ihre Linie, ihre Beschriftung
+            und alle ihre Kantenknickpunkte entspechend eingefärbt werden.
+    \end {itemize}
+
+  Gehören ein Knoten oder eine Kante zu mehrern hervorgehobenen Selektionen, so wird immer die Farbe der
+  zuletzt zum Hervorheben gewählten Selektion genommen. Knoten und Kanten der aktuellen Selektion werden
+  immer mit der Farbe für aktuelle Selektionen hervorgehoben.
+
+
+  \subsection {IML-Teilgraphen}
+  Beim Hervorheben eines IML-Teilgraphen werden die entsprechenden Knoten und Kanten falls sie in
+  den Anzeigefenstern vorhanden sind dort von den Selektionen unterscheidbar hervorgehoben.
 
   \begin {itemize} 
-    \item Jeder Knoten einer Selektion wird dadurch hervorgehoben, dass das die Füllfarbe 
-          und die Rahmenfarbe des Knotenvierecks auf die entsprechende Farbe gesetzt werden.
+    \item Jeder Knoten eines IML-Teilgraphen wird dadurch hervorgehoben, dass er mit einem weiteren
+          rechteckigen Rahmen versehen wird, der eine konfigurierbare Farbe hat.
 
-    \item Jede Kante wird dadurch hervorgehoben, dass ihre Linie und alle ihre Kanten
-
-
-
-und jeder Kantenknickpunkt 
-
-
-  \end {itemize}
-
-
-
-Gehört ein Knoten oder eine Kante zu mehrern hervorgehobenen Selektionen, so wird immer die Farbe der
-zuletzt zum Hervorheben gewählten Selektion genommen. Knoten und Kanten der aktuellen Selektion werden
-immer mit der Farbe für aktuelle Selektionen hervorgehoben.
->>>>>>>>>>>>>>>>>>>>>CHECKEN OB SO MACHBAR UND SINNVOLL
-
-
-
-
-Werden Knoten und Kanten von IML-Teilgraphen hervorgehoben 
+      \item Jede Kante wird dadurch hervorgehoben, dass ihre Linie, dicker gezeichnet wird..
+    \end {itemize}  
  
+  Gehört ein Knoten zu mehrern hervorgehobenen IML-Teilgraphen, so erhält der zusätzliche Rahmen die Farbe, 
+  die der des zuletzt hervorgehobenen IML-Teilgraphen entspreicht.
 
 
+  \subsection {Über Selektionen und IML-Teilgraphen gleichzeitig hervorgehobene Kanten}
+  Die Kante wird gemäß der Selektion entsprechend eingefärbt, ihre Line wird dicker gezeichnet.
+  
 
-Wie weiter unten beschrieben kann der Kunde über die Konfigurationsdateien einstellen mit welchen Farben
-Selektionen und IML-Teilgraphen hervorgehoben werden sollen, und mit welchen Farben Knoten und Kanten
-(je nach Klasse) generell eigefärbt werden. Es macht natürlich keinen Sinn, für das Einfärben von
-Knoten und Kanten  hier die gleiche oder eine zu ähnliche Farbe zu wählen, wie für das hervorheben 
-von Selektionen.
+
+  \subsection {Anmerkung}
+  Wie weiter unten beschrieben kann der Kunde über die Konfigurationsdateien einstellen mit welchen Farben
+  Selektionen und IML-Teilgraphen hervorgehoben werden sollen, und mit welchen Farben Knoten und Kanten
+  (je nach Klasse) generell eingefärbt werden. Es macht natürlich keinen Sinn, für das Einfärben von
+  Knoten und Kanten  hier die gleiche oder eine zu ähnliche Farbe zu wählen, wie für das hervorheben 
+  von Selektionen.
 
 
 
@@ -136,26 +145,53 @@ Je nach Zoomstufe erhöht sich die Anzahl der im Anzeigefenster dargestellten Kno
 Beim Herauszoomen müssen also Details verringert werden, dies geschieht bei GIANT in mehreren
 Stufen.\\
 Eine exakte Spezifikation der Detailstufen, insbesondere ab welcher Zoomstufe welche 
-Detailstufe gewählt wird, ist an dieser Stelle nicht sinnvoll. Dies wird bei
-der Implementierung geschehen. Auf jeden Fall wird es aber die folgenden Detailstufen geben:
+Detailstufe gewählt wird, ist an dieser Stelle nicht sinnvoll. Optimale Parameter
+hierfür werdeb im Laufe der Implementierung ermittelt.\\
+Beim Herauszoomen wird GIANT zuerst versuchen, die Größe der Knoten-Rechtecke durch
+Verringerung der Schriftgröße zu verringern. Erst wenn die Schrift klein genug ist
+(aber noch gut lesbar) wird GIANT Elemente der Knoten- und Kantendarstellung entfernen.
+
+
+
+Auf jeden Fall wird es aber die folgenden Detailstufen geben:
+
+  \subsection {Maximale Details}
+  Bei maximaler bis hoher Zoomstufe (nahe ans Bild herangezoomt).\\
+  Alle oben beschriebenen Bestandteile von Knoten und Kanten werden angezeigt.\\
+  Alle Beschriftungen in maximaler Schriftgröße.
 
   \subsection {Volle Details}
-  Falls sehr nah herangezoomt wurde.
-  Das Knoten-Rechteck enthält alle 
+  Nur die Schriftgröße für Knoten- und Kantenbeschriftungen wird verringert. 
 
+  \subsection {Hohe Details}
+  Alle oben beschriebenen Bestandteile von Kanten werden angezeigt.\\
+  Bei Knoten werden nur noch das Icon, der Klassenname und die ID im Knoten-Rechteck angezeigt,
+  die anderen Attribute aber nicht mehr.
 
+  \subsection {Mäßige Deteils}
+  Die Beschriftungen von Kanten werden nicht mehr angezeigt.\\
+  Bei Knoten enthält das Knoten-Rechteck nur noch das Icon.\\
 
+  \subsection {Geringe Details}
+  Bei sehr geringer Zoomstufe.\\
+  Die Kantenknickpunkte werden nicht mehr explizit angezeigt (geknickte Kanten bleiben aber natürlich
+  geknickt).\\
+  Bei Knoten wird nur noch das reine Knoten-Rechteck mit Rahmen und Füllfarbe angezeigt.
 
-
+  \subsection {Minimale Details}
+  Bei minimaler Zoomstufe.\\
+  Die Verbleibenden Knoten-Rechtecke werden immer kleiner, bis sie ihre minimale größe Erreicht haben.
 
 
 
 \section{Minimap}
+Zu jedem Anzeigefenster gibt es genau eine Minimap, welche den gesamten Anzeigeinhalt stark
+abstrahiert darstellt. Die Minimap bietet die folgende Funktionalität:
+\begin {itemize}
 
 
-  Der Benutzer kann über die Konfigurationsdateien beliebig viele Visualisierungsstiele
-erzeugen. Ein Visualisierungsstiel beschreibt wie Knoten und Kanten innerhalb eines
-Anzeigefensters dargestellt werden (Icons, Farbe, Attribute ...). Der Benutzer
-kann zu jeder Zeit in einem Anzeigefenster einene der zuvor definierten 
-Visualisierungsstiele auswählen
-Laufzeit von GIANT kann der Benutzer innerhalb eines Anzeigefensters 
+
+
+
+\end {itemize}
+
