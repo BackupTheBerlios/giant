@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.59 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.60 $
 --  $Author: squig $
---  $Date: 2003/09/01 22:09:11 $
+--  $Date: 2003/09/02 19:51:16 $
 --
 
 with Ada.Exceptions;
@@ -606,17 +606,21 @@ package body Giant.Main_Window is
          Color_Access : Config.Color_Access;
          Color : Gdk.Color.Gdk_Color;
       begin
+         Style := Gtk.Style.Copy
+           (Gui_Utils.String_Clists.Get_Style (Subgraph_List));
+
          Color_Access
            := Config.Global_Data.Get_Subgraph_Highlight_Color (Config_Id);
          Color := Gdk.Color.Parse (Config.Get_Color_Value (Color_Access));
 
-         Style := Gtk.Style.Copy
-           (Gui_Utils.String_Clists.Get_Style (Subgraph_List));
          Gtk.Style.Set_Foreground (Style, State_Normal, Color);
          Gtk.Style.Set_Foreground (Style, State_Selected, Color);
          return Style;
+      exception
+         when Gdk.Color.Wrong_Color =>
+            Logger.Error ("Could not be parse color. Using default instead.");
+            return Style;
       end;
-
    begin
       Styles (Projects.None) := null;
       Styles (Projects.Color_1)

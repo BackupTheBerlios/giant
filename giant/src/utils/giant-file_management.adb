@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.26 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.27 $
 -- $Author: squig $
--- $Date: 2003/09/01 22:09:11 $
+-- $Date: 2003/09/02 19:51:16 $
 --
 --
 
@@ -392,43 +392,30 @@ package body Giant.File_Management is
    function Get_Absolute_Path_From_Relative
      (Start_Dir    : in String;
       Rel_Path : in String)
-     return String is
-
+     return String
+   is
       -- store "working directory for the execution environment"
       Old_Exec_Dir : String := GNAT.Directory_Operations.Get_Current_Dir;
-
-      -- needed to calculate an absolute path
-      ADA_Text_IO_File : ADA.Text_IO.File_Type;
-
-      Abs_Path : Ada.Strings.Unbounded.Unbounded_String;
-
    begin
-
       if (GNAT.OS_Lib.Is_Directory (Start_Dir) = False) then
-
          -- if an invalid start directory is passed the file
          -- obviously could not be found
          raise Abs_Path_Could_Not_Be_Calculated_Exception;
       end if;
 
       GNAT.Directory_Operations.Change_Dir (Start_Dir);
+      GNAT.Directory_Operations.Change_Dir (Rel_Path);
 
-      ADA.Text_IO.Open
-        (File => ADA_Text_IO_File,
-         Mode => ADA.Text_IO.In_File,
-         Name => Rel_Path);
+      declare
+         Abs_Path : constant String
+           := GNAT.Directory_Operations.Get_Current_Dir;
+      begin
+         -- switch back to old
+         -- "working directory for the execution environment"
+         GNAT.Directory_Operations.Change_Dir (Old_Exec_Dir);
 
-      Abs_Path := Ada.Strings.Unbounded.To_Unbounded_String
-        (ADA.Text_IO.Name (ADA_Text_IO_File));
-
-      ADA.Text_IO.Close (ADA_Text_IO_File);
-
-      -- switch back to old
-      -- "working directory for the execution environment"
-      GNAT.Directory_Operations.Change_Dir (Old_Exec_Dir);
-
-      return Ada.Strings.Unbounded.To_String (Abs_Path);
-
+         return Abs_Path;
+      end;
    exception
       when others =>
          GNAT.Directory_Operations.Change_Dir (Old_Exec_Dir);

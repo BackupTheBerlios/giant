@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.55 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.56 $
 --  $Author: squig $
---  $Date: 2003/08/26 16:07:16 $
+--  $Date: 2003/09/02 19:51:16 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -538,15 +538,20 @@ package body Giant.Graph_Window is
          Color_Access : Config.Color_Access;
          Color : Gdk.Color.Gdk_Color;
       begin
+         Style := Gtk.Style.Copy
+           (Gui_Utils.String_Clists.Get_Style (Window.Selection_List));
+
          Color_Access
            := Config.Global_Data.Get_Selection_Highlight_Color (Config_Id);
          Color := Gdk.Color.Parse (Config.Get_Color_Value (Color_Access));
 
-         Style := Gtk.Style.Copy
-           (Gui_Utils.String_Clists.Get_Style (Window.Selection_List));
          Gtk.Style.Set_Foreground (Style, Gtk.Enums.State_Normal, Color);
          Gtk.Style.Set_Foreground (Style, Gtk.Enums.State_Selected, Color);
          return Style;
+      exception
+         when Gdk.Color.Wrong_Color =>
+            Logger.Error ("Could not be parse color. Using default instead.");
+            return Style;
       end;
 
    begin
