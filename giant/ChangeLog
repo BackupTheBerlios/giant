@@ -1,3 +1,7 @@
+2003-11-11  Steffen Keul  <keulsn@studi.informatik.uni-stuttgart.de>
+
+	* src/vis/giant-graph_widgets.adb: Fidex dead-zooming
+	  
 2003-11-10  Steffen Keul  <keulsn@studi.informatik.uni-stuttgart.de>
 
 	* src/vis/giant-graph_widgets.ad[s|b],
@@ -7,7 +11,6 @@
 	* src/vis/giant-vectors.ad[s|b]: placed pragma Inline into spec
 	files, to allow inter-package inlining
 	  
-
 2003-11-06  Steffen Pingel  <squig@users.sourceforge.net>
 
 	* src/giant-controller.adb: Fixed exception when a window is

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.55 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.56 $
 --  $Author: keulsn $
---  $Date: 2003/11/10 04:03:56 $
+--  $Date: 2003/11/11 21:59:45 $
 --
 ------------------------------------------------------------------------------
 
@@ -1981,12 +1981,14 @@ package body Giant.Graph_Widgets is
       Settings.Set_Zoom (Widget, Actual_Zoom);
       Positioning.Set_Zoom (Widget, Actual_Zoom);
       Set_Location (Widget, Location);
-      --  Recalculation of logic area will be done on release anyway, so might
-      --  as well use it to resize the logic area-estimate and thus update
-      --  mini map and scroll bars
-      Widget.Logic_Area := Vis.Logic.Combine_Rectangle
-        (Top_Left     => Vis.Logic.Zero_2d,
-         Bottom_Right => Vis.Logic.Zero_2d);
+      if Zoom >= Default_Minimum_Precise_Zoom then
+         --  Recalculation of logic area will be done on release anyway, so
+         --  might as well use it to resize the logic area-estimate and thus
+         --  update mini map and scroll bars.
+         Widget.Logic_Area := Vis.Logic.Combine_Rectangle
+           (Top_Left     => Vis.Logic.Zero_2d,
+            Bottom_Right => Vis.Logic.Zero_2d);
+      end if;
       Release_Lock (Widget, Lock);
    end Set_Location_And_Zoom_Level;
 
