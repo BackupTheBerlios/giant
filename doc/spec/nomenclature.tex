@@ -1,39 +1,37 @@
 \begin{nomenclature}
 
-\term{Begriff}{Englische Übersetzung}{Erklärung}
-
-
-\term{Anzeigefenster}{XXXXXXX Window}{
+\term{Anzeigefenster}{Visualisation Window}{
 Ein Fenster in dem ein Teilgraph des IML-Graphen nach bestimmten Kriterien 
 visualisiert ist. Jedem Anzeigefenster ist ein Anzeigeinhalt zugeordnet.
 }
 
-\term{Anzeigeinhalt}{XXXXXXX}{
-Eine "virtuelle" Oberfläche auf der die Objekte des visualisierten Teilgraphen
-angeordnet sind, d.h. räumliche Layoutinformation zu allen Objekten des 
+\term{Anzeigeinhalt}{Visualisation Data Content}{
+Eine \gq{virtuelle} Oberfläche auf der die Objekte des visualisierten Teilgraphen
+(also Fenster-Knoten und Fenster-Kanten) angeordnet sind, 
+d.h. räumliche Layoutinformation zu allen Objekten des 
 entsprechenden Anzeigefensters. Abhängig von der Zoomstufe ist jeweils nur ein 
-bestimmter Teil des Anzeigeinhaltes sichtbar - der scihtbare Anzeigeinhalt. 
+bestimmter Teil des Anzeigeinhaltes sichtbar - der sichtbare Anzeigeinhalt. 
 Die Größe des Anzeigeinhaltes ist theoretisch unbegrenzt. 
 }
 
-\term{Sichtbarer Anzeigeinhalt}{XXXXXXXXXXXX}{
-Der Bereich des Inhaltes eines Anzeigefensters, der zur Zeit sichtbar 
+\term{Sichtbarer Anzeigeinhalt}{Visualisation Focus}{
+Der Bereich des Anzeigeinhaltes eines Anzeigefensters, der zur Zeit sichtbar 
 dargestellt wird.
 }
 
 \term{IML-Graph}{IML Graph}{
-Der IML-Graph wie er von der Bauhaus Reengineering GmbH gestetellt wird.
+Der IML-Graph, wie er von der Bauhaus Reengineering GmbH gestetellt wird.
 Auf diesen Graphen wird nur über das sogenannte Reflection-Model zugegriffen.
 }
 
-\term{Graph-Selektion ANDERER NAME DA KEINE SELEKTION}{Graph Selection}{
+\term{IML-Teilgraph}{IML Subgraph}{
 Eine Menge über Knoten und Kanten des IML-Graphen, die so gestaltet ist,
 dass sie einen Teilgraphen des IML-Graphen darstellt.
 }
 
-\term{Fenster-Selektion}{Window Selection}{
+\term{Selektion}{Selection}{
 Eine Auswahl von Knoten und Kanten eines visualisierten Teilgraphen des 
-IML-Graphen innerhalb eines Anzeigefensters
+IML-Graphen innerhalb eines Anzeigefensters.
 }
 
 \term{IML-Knoten}{IML Node}{
@@ -42,6 +40,14 @@ Ein Knoten des Bauhaus IML-Graphen.
 
 \term{IML-Kante}{IML Edge}{
 Eine Kante des Bauhaus IML-Graphen.
+}
+
+\term{Graph-Knoten}{Graph Node}{
+Ein Knoten des IML-Graphen welcher Bestandteil eines IML-Teilgraphen ist.
+}
+
+\term{Graph-Kante}{Graph Edge}{
+Eine Kante des IML-Graphen welche Bestandteil eines IML-Teilgraphen ist.
 }
 
 \term{Fenster-Knoten}{Window Node}{
@@ -60,23 +66,33 @@ Ein Knoten des IML-Graphen welcher Bestandteil einer Graph-Selektion ist.
 Eine Kante des IML-Graphen welche Bestandteil einer Graph-Selektion ist.
 }
 
-\term{Knotenklasse}{XXXXXXX}{Erklärung}
+\term{Knotenklasse}{Node Class}{
+Die Einteilung der Knoten des IML-Graphen in verschiedene Klassen, 
+wie sie sich aus der IML-Graph-Bibliothek von Bauhaus ergibt.
+}
 
-\term{Kantenklasse}{XXXXXXX}{Erklärung}
+\term{Kantenklasse}{Edge Class}{
+Die Einteilung der Kanten des IML-Graphen in verschiedene Klassen, 
+wie sie sich aus der IML-Graph-Bibliothek von Bauhaus ergibt.
+}
 
-\term{Layout}{XXXXXXX}{Erklärung} {
+\term{Layout}{Layout}{
 Die zweidimensionale räumliche Anordnung von Fenster-Knoten und Fenster-Kanten innerhalb
-eines Anzeigefensters.
+eines Anzeigefensters auf dem sogenannten Anzeigeinhalt.
 }
 
 
-\term{Selektieren}{XXXXXXX}{Erklärung}
+\term{selektieren}{to select}{
+Selektieren beschreibt einen Vorgang über den der Benutzer, z.B.\ durch Anklicken 
+von Fenster-Knoten oder Fenster-Kanten mit der Maus, eine Selektion aufbaut.
+}
 
 
-
-\term{Hervorheben}{XXXXXXX}{Erklärung}
-
-
+\term{hervorheben}{to highlight}{
+Hervorheben bedeutet, dass in einem Anzeigefenster visualisierte Fenster-Knoten oder Fenster-Kanten 
+z.B.\ durch  eine farbige Umrahmung von anderen Fenster-Knoten oder Fenster-Kanten unterscheidbar
+gemacht werden
+}
 
 \end{nomenclature}
 
