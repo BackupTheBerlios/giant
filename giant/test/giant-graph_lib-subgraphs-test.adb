@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_lib-subgraphs-test.adb,v $, $Revision: 1.3 $
---  $Author: squig $
---  $Date: 2003/06/27 15:26:16 $
+--  $RCSfile: giant-graph_lib-subgraphs-test.adb,v $, $Revision: 1.4 $
+--  $Author: koppor $
+--  $Date: 2003/07/22 10:19:21 $
 --
 
 with Ada.Text_IO;
@@ -72,6 +72,44 @@ package body Giant.Graph_Lib.Subgraphs.Test is
       Destroy (Cloned_Subgraph);
    end Test_Rename_Duplicate;
 
+   ---------------------------------------------------------------------------
+   --  Works only with rfg_examp.iml
+   procedure Test_Selection_To_Subgraph
+     (R : in out AUnit.Test_Cases.Test_Case'Class)
+   is
+      The_Selection : Selections.Selection;
+      Node          : Graph_Lib.Node_Id;
+
+      The_Graph     : Subgraph;
+   begin
+      The_Selection := Selections.Create ("");
+
+      --  Node with all outgoing edges
+      Node := Graph_Lib.Node_Id_Value ("3");
+      Selections.Add_Node (The_Selection, Node);
+      declare
+         Outgoing_Edges : Graph_Lib.Edge_Id_Array :=
+           Graph_Lib.Get_Outgoing_Edges (Node);
+      begin
+         for I in Outgoing_Edges'Range loop
+            Selections.Add_Edge (The_Selection, Outgoing_Edges (I));
+         end loop;
+      end;
+
+      Logger.Warn (Integer'Image (Selections.Get_Edge_Count (The_Selection)));
+
+      -- add one target node
+      Selections.Add_Node (The_Selection, Graph_Lib.Node_Id_Value ("35"));
+
+      The_Graph := Create ("", The_Selection);
+
+      Assert (Get_Edge_Count (The_Graph) = 1,
+              "Graph is not a real graph");
+
+      Selections.Destroy (The_Selection);
+      Destroy (The_Graph);
+   end Test_Selection_To_Subgraph;
+
    procedure Done (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
    begin
@@ -92,6 +130,8 @@ package body Giant.Graph_Lib.Subgraphs.Test is
    begin
       Register_Routine (T, Init'Access, "Init");
       Register_Routine (T, Test_Rename_Duplicate'Access, "Rename_Duplicate");
+      Register_Routine (T, Test_Selection_To_Subgraph'Access,
+                        "Selection to Subgraph");
       Register_Routine (T, Done'Access, "Done");
    end Register_Tests;
 
