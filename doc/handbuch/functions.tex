@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: functions.tex,v $, $Revision: 1.17 $
-%  $Date: 2003/09/09 22:28:16 $
+%  $RCSfile: functions.tex,v $, $Revision: 1.18 $
+%  $Date: 2003/09/19 18:01:22 $
 %  $Author: birdy $
 %
 %  Description: 
@@ -27,17 +27,21 @@ Giant kann wie folgt von der Kommandozeile aus gestartet werden:
 
 °./giant°
 
- \item{Mit Parametern, [] bedeutet \gq{optional}, | bedeutet \gq{oder}:}\\
+ \item{Mit Parametern, °[]° bedeutet \gq{optional}, °|° bedeutet \gq{oder}:}\\
 
-°./giant  project-file [-g graph-file] [-e script-file] [-c config-file] | -h | -v°
+°./giant  project-file [-g graph-file] [-e script-file]°\\
+°     [-c config-file] | -h | -v°
 
-project-file ist der Filename der Projektdatei, graph-file der Filename
-des IML-Graphen, script-file ein auszuführender GSL-Ausdruck, config-file die
-optional anzugebende globale Konfigurationsdatei, siehe Abschnitt
+°project-file° ist der Filename der Projektdatei, °graph-file° der Filename
+des IML-Graphen. °script-file° ist eine Datei, die ein GSL Script enthält,
+daß nach dem Laden bzw. Erzeugen des Projektes Ausgeführt wird. °config-file°
+ist die optional anzugebende globale Konfigurationsdatei, siehe Abschnitt
 \ref{config-allgemeines-punkt2}.
 
-Die Option -h steht für Hilfe, -v für ausführlicheres Output auf
-der Konsole.
+Die Option °-h° steht für Hilfe, mit °-v° kann die Programmversion von
+GIANT angezeigt werden.\\
+Wenn ein Graph-File angegeben wird und °project-file° nicht existiert, wird
+ein neues Projekt mit diesem Namen erzeugt.
 
 \end{enumerate}
 
@@ -66,8 +70,8 @@ Im Fenster befinden sich zwei Listen, Window List und
 Subgraph List.
 
 
-  \subsection {Kopfzeile}
-  In der Kopfzeile wird \gq{GIANT - <Projektname>} dargestellt.
+  \subsection {Titelzeile}
+  In der Titelzeile wird \gq{GIANT - <Projektname>} dargestellt.
  
   \subsection {Menüleiste (Main Window)}
   In der Menüleiste befinden sich folgende Einträge:
@@ -127,8 +131,7 @@ Subgraph List.
 	 
 	 \item {Info}
 	 
-	 Gibt Informationen über die Version von GIANT und die Autoren von GIANT aus.
-	 **** Node Info Fenster wird angezeigt. Gehört hier doch nicht hin? ****
+	 Zeigt einen Informationsdialog über den Graphen an.
 	 
          \item {Quit}
 	 
@@ -151,14 +154,14 @@ Subgraph List.
 	
     \subsubsection {Untermenü Window}  
 	\begin{enumerate}
-          \item {New}
+          \item {New}\\
 	  Mit diesem Menüpunkt kann ein neues leeres Fenster geöffnet werden.
         \end{enumerate}
     \subsubsection {Untermenü Subgraph}  
 	\begin{enumerate}
-          \item {New}
+          \item {New}\\
 	  Mit diesem Menüpunkt kann ein neuer leerer IML-Teilgraph erstellt werden.
-         \item {Set Operation}
+         \item {Set Operation}\\
 	  Mit diesem Menüpunkt kann eine Mengenoperation auf IML-Teilgraphen
 	  durchgeführt werden, GIANT zeigt dazu den \gq{Set Operation Dialog},
 	  siehe Abschnitt \ref{Common-Set-Operation-Dialog}.
@@ -398,9 +401,9 @@ Subgraph List.
 	       Der Benutzer wählt einen geeigneten Betrag aus und bestätigt mit OK. }	 
          \item{GIANT schiebt die Knoten entsprechend auseinander.}
         \end{itemize}
-	\item Select All**** so richtig?\\
+	\item Select All\\
 	   Bei Auswahl dieses Menüpunktes werden alle Knoten im Fenster selektiert.
-	\item Select Nothing **** so?\\
+	\item Select Nothing\\
 	   Bei Auswahl dieses Menüpunktes wird bei allen Knoten im Fenster die
 	   Selektierung aufgehoben.
         Als weitere Menüpunkte im Popup-Menü erscheinen die im GIANT-Config-File
@@ -413,7 +416,7 @@ Subgraph List.
     geklickt wird, öffnet sich das folgende
     Popup-Menü:
      \begin{itemize}
-       \item Zoom to edge **** gibt es das noch?\\
+       \item Zoom to edge\\
          Dieser Menüpunkt zoomt so, daß die gewählte Kante gut im Anzeigefenster
 	 sichtbar ist.
      \end{itemize}
@@ -480,12 +483,6 @@ Subgraph List.
         auf die gewünschte Selektion in der
         Selektionsauswahlliste und wählt im zugehörigen Popup-Menü den Eintrag
         \gq{Unhighlight Selection} aus.
-      \item Show\\
-          Was macht das? ****
-      \item Hide\\
-          Was macht das? ****
-      \item Show All\\
-          Was macht das? ****
       \item Apply Layout\\
           Mittels dieser Funktion können Selektionen innerhalb
           eines Anzeigefensters layoutet werden.

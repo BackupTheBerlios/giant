@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: handbuch.tex,v $, $Revision: 1.12 $
-%  $Date: 2003/09/18 18:16:51 $
-%  $Author: koppor $
+%  $RCSfile: handbuch.tex,v $, $Revision: 1.13 $
+%  $Date: 2003/09/19 18:01:22 $
+%  $Author: birdy $
 %
 %  Description: Master Datei des Handbuchs
 %
@@ -40,7 +40,7 @@
 % subsubsections nummerieren
 \setcounter{secnumdepth}{3}
 
-\newcommand\version{Version 1.1 (Vorabversion)\xspace}
+\newcommand\version{Version 1.2\xspace}
 %\newcommand\version{\today\xspace}
 
 %\graphicspath{{gui-pictures/}} %OK: it MAY work with graphics. With graphicx, it surely doesn't
@@ -72,22 +72,11 @@ Studienprojekt A -- IML Browser\\
   \vspace{3cm}
   \includegraphics[scale=.5]{../logo}
 \end{center}
-%\newpage
+\newpage
 
 \MakeShortVerb{\°}
 
-%**\input{history}
-
-%===============================================================================
-%
-% ToDo - Aus fertigem Dokument entferenen
-%
-% \chapter*{ToDo -- nicht in fertiger Spez.}
-
-% Hier Sachen beschreiben, die irgendwie beim Erstellen der Spez.\ 
-% beachtet werden sollen.
-
-% \input{todo_spec}
+\input{history}
 
 %===============================================================================
 %
@@ -122,7 +111,8 @@ Möglichkeiten von GIANT vorgestellt und kurz beschrieben.
 \chapter{Technische Produktumgebung}
 
 Hier wird die zum Betrieb von GIANT nötige Hardware 
-und die nötige Software beschrieben.
+und die nötige Software sowie die Installation von GIANT
+auf Linux-Systemen beschrieben.
 
 \input{technical}
 

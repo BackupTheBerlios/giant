@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: technical.tex,v $, $Revision: 1.3 $
-%  $Date: 2003/09/09 22:12:40 $
+%  $RCSfile: technical.tex,v $, $Revision: 1.4 $
+%  $Date: 2003/09/19 18:01:22 $
 %  $Author: birdy $
 %
 %  Description: Hier sind die Anforderungen an die Programmumgebung 
@@ -16,10 +16,10 @@
 \index{Anforderungen!an die Software}
 Das Programm stellt an die installierte Software folgende Anforderungen:
 \begin{itemize}
-  \item Sun Solaris oder Linux Betriebssystem **** welche Versionen?
-  \item Bauhaus Tools
-  \item Emacs oder vi Texteditor
-  \item GTK2 mit GTKAda
+  \item Sun Solaris, Linux oder Windows Betriebssystem
+  \item Emacs oder vi Texteditor für die Anzeige vom Sourcecode
+  \item GTK 2.0 oder höher
+  \item GTKAda 2.2
 \end{itemize}
 
 
@@ -49,4 +49,22 @@ von 2 GB und mehr empfehlenswert.
   \item Maus mit mindestens zwei Tasten
 \end{itemize}
 
+\section{Installation}
 
+Die Giant-Installation unter Linux geht folgendermaßen Vonstatten:
+
+Zunächst muß das Installationsarchiv (welches sich im Userverzeichnis,
+z.B. /home/sysop befindet), entpackt werden. Bei der GIANT-Version
+1.1 ist das entpackte Distributions-Archiv ca. 450 MB groß.\\
+
+Entpacken des gzip-Archives:
+
+°cd /home/sysop°\\
+
+°gzip -d giant-1.1.0.tar.gz°\\
+
+Entpacken des darin befindlichen Tar-Archives:
+
+°tar xf giant-1.1.0.tar°\\
+
+Im nun ********

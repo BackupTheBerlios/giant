@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.16 $
-%  $Date: 2003/09/09 22:12:40 $
+%  $RCSfile: config.tex,v $, $Revision: 1.17 $
+%  $Date: 2003/09/19 18:01:21 $
 %  $Author: birdy $
 %
 %  Description:
@@ -60,9 +60,9 @@ aufgelistet,
 jeweils mit ihrem Defaultwert. Wenn die betreffenden Daten im Config-File
 nicht existieren, so wird der im Folgenden als Beispiel angegebene Wert von
 GIANT als default verwendet.
-Farben können entweder im Format RGB:XX/YY/ZZ (wobei XX , YY und ZZ jeweils
+Farben können entweder im Format °#XXYYZZ° (wobei XX , YY und ZZ jeweils
 die Rot- Grün- und Blau-Anteile zweistellig Hexadezimal angeben) oder
-mit den GTK bekannten Namen (z.B. red) angegeben werden.\\
+mit den GTK bekannten Namen (z.B. °red°) angegeben werden.\\
 
 \label{Pfad-Expansion1}
 Einstellungsdaten, die einen Pfad darstellen, müssen mit einem Pfadseperator
@@ -96,31 +96,31 @@ Das folgende Icon wird verwendet, graphisch um anzuzeigen, daß ein Knoten annoti
 
 Die Farbe der aktuellen Selektion:
 
-°  <setting name = "Current_Selection_Highlight_Color" value="RGB:AA/AA/AA" />°\\
+°  <setting name = "Current_Selection_Highlight_Color" value="#AAAAAA" />°\\
 
 Die Farbe Nr. 1 für die Hervorhebung von Selektionen:
 
-°  <setting name = "Selection\_Highlight_Color_1" value="RGB:AA/AA/AA" />°\\
+°  <setting name = "Selection\_Highlight_Color_1" value="#AAAAAA" />°\\
 
 Die Farbe Nr. 2 für die Hervorhebung von Selektionen:
 
-°  <setting name = "Selection_Highlight_Color_2" value="RGB:AA/AA/AA" />°\\
+°  <setting name = "Selection_Highlight_Color_2" value="#AAAAAA" />°\\
 
 Die Farbe Nr. 3 für die Hervorhebung von Selektionen:
 
-°  <setting name = "Selection_Highlight_Color_3" value="RGB:AA/AA/AA" />°\\
+°  <setting name = "Selection_Highlight_Color_3" value="#AAAAAA" />°\\
 
 Die Farbe Nr. 1 für die Hervorhebung von IML-Teilgraphen:
 
-°  <setting name = "IML_Subgraph_Highlight_Color_1" value="RGB:AA/AA/AA" />°\\
+°  <setting name = "IML_Subgraph_Highlight_Color_1" value="#AAAAAA" />°\\
 
 Die Farbe Nr. 2 für die Hervorhebung von IML-Teilgraphen:
 
-°  <setting name = "IML_Subgraph_Highlight_Color_2" value="RGB:AA/AA/AA" />°\\
+°  <setting name = "IML_Subgraph_Highlight_Color_2" value="#AAAAAA" />°\\
 
 Die Farbe Nr. 3 für die Hervorhebung von IML-Teilgraphen:
 
-°  <setting name = "IML_Subgraph_Highlight_Color_3" value="RGB:AA/AA/AA" />°\\
+°  <setting name = "IML_Subgraph_Highlight_Color_3" value="#AAAAAA" />°\\
          
 	 
 Hier kann eine Menge von Pfaden, ggf. getrennt durch den Path Seperator des
@@ -177,7 +177,7 @@ Pulldown-Menü \gq{Script} des GIANT-Hauptfensters auftauchen.
 Diese Scripts werden beim Auswählen des jeweils dazugehörigen Menüpunktes
 ohne Parameter gestartet.
 
-°  <setting name = "GSL.No_Param value="" />°\\
+°  <setting name = "GSL.No_Param" value="" />°\\
 
 Mit der folgenden Zeile kann festgelegt werden, welche GSL-Scripts im
 Kontext-Menü bei Drücken der rechten Maustaste, wenn der Mauszeiger
@@ -188,7 +188,7 @@ im Kontextmenü.\\
 Diese Scripts werden beim Auswählen des jeweils dazugehörigen Menüpunktes
 jeweils ohne Parameter gestartet.
 
-°  <setting name = "GSL.No_Param_Context value="" />°\\
+°  <setting name = "GSL.No_Param_Context" value="" />°\\
 
 Mit der folgenden Zeile kann festgelegt werden, welche GSL-Scripts im
 Kontext-Menü bei Drücken der rechten Maustaste, wenn der Mauszeiger
@@ -199,7 +199,7 @@ Kontextmenü.\\
 Den Scripts wird dabei die ID des Knotens als
 Parameter übergeben.\\ 
 
-°  <setting name = "GSL.Node_Id_Param value="" />°\\
+°  <setting name = "GSL.Node_Id_Param" value="" />°\\
 
 Mit der folgenden Zeile kann festgelegt werden, welche GSL-Scripts im
 Kontext-Menü bei Drücken der rechten Maustaste, wenn der Mauszeiger
@@ -210,7 +210,7 @@ Kontextmenü.\\
 Den Scripts wird dabei die ID der Kante als
 Parameter übergeben.\\ 
 
-°  <setting name = "GSL.Edge_Id_Param value="" />°\\
+°  <setting name = "GSL.Edge_Id_Param" value="" />°\\
 
 Mit der folgenden Zeile kann festgelegt werden, welche GSL-Scripts im
 Kontext-Menü bei Drücken der rechten Maustaste, wenn der Mauszeiger
@@ -221,7 +221,7 @@ Jedes Script ergibt eine mögliche Auswahl im Kontextmenü.\\
 Den Scripts wird dabei der IML-Teilgraph als
 Parameter übergeben.\\ 
 
-°  <setting name = "GSL.Subgraph_Param value="" />°\\
+°  <setting name = "GSL.Subgraph_Param" value="" />°\\
 
 Mit der folgenden Zeile kann festgelegt werden, welche GSL-Scripts im
 Kontext-Menü bei Drücken der rechten Maustaste, wenn der Mauszeiger
@@ -232,7 +232,7 @@ Jedes Script ergibt eine mögliche Auswahl im Kontextmenü.\\
 Den Scripts wird dabei die Selektion als
 Parameter übergeben.\\ 
 
-°  <setting name = "GSL.Selection_Param value="" />°\\
+°  <setting name = "GSL.Selection_Param" value="" />°\\
 
 Hier nun ein Beispiel-Configfile (global\_config.xml). Wie man sieht,
 müssen nicht alle möglichen Einstellungen zugewiesen werden.
