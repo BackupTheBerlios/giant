@@ -1,5 +1,10 @@
 2003-09-24  Steffen Pingel  <squig@users.sourceforge.net>
 
+	* src/utils/giant-file_management.adb: Fixed exception when
+	passing empty String to Append_Dir_Separator_If_Necessary.
+
+	* NEWS: Released Giant 1.1.1 (giant-1_1_1)
+
 	* Makefile.dist: Updated to new iml_browser. Removed -g from
 	compiler flags.
 
@@ -72,6 +77,10 @@
 	  config fille (eg. to the node annotation icon) will now be
 	  expanded correctly.
 
+2003-09-15  Steffen Pingel  <squig@users.sourceforge.net>
+
+	* NEWS: Released Giant 1.1.0 (giant-1_1_0)
+	
 2003-09-15  Oliver Kopp  <koppor@schmidt.informatik.uni-stuttgart.de>
 
 	* src/vis/giant-tree_layouts.adb: Removed debug statements.
@@ -253,5 +262,5 @@
 
 2003-09-02  Steffen Pingel  <squig@users.sourceforge.net>
 
-	* Released 1.0.0 (giant-1_0_0)
+	* NEWS: Released Giant 1.0.0 (giant-1_0_0)
 	

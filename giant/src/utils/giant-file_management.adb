@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.33 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.34 $
 -- $Author: squig $
--- $Date: 2003/09/20 20:27:37 $
+-- $Date: 2003/09/24 15:57:36 $
 --
 --
 
@@ -551,6 +551,10 @@ package body Giant.File_Management is
      return String is
       Dir_Separator : Character := GNAT.OS_Lib.Directory_Separator;
    begin
+      if (Directory = "") then
+         return "";
+      end if;
+
       -- append directory separator if necessary
       if (Directory (Directory'Last) = Dir_Separator) then
 
