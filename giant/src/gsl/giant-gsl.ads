@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/06 19:59:57 $
+-- $Date: 2003/06/09 14:17:15 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -30,6 +30,8 @@
 -- from Bauhaus Reuse
 with Stacks_Unbounded;
 pragma Elaborate (Stacks_Unbounded);
+
+with Giant.Default_Logger;
 
 package Giant.Gsl is
 
@@ -50,6 +52,9 @@ package Giant.Gsl is
    type Syntax_Node is access all Syntax_Node_Record;
 
    Null_Node : constant Syntax_Node;
+
+   procedure Log_Syntax_Node
+     (Node : Syntax_Node);
 
    ---------------------------------------------------------------------------
    -- from Reuse
