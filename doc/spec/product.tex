@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: product.tex,v $, $Revision: 1.16 $
-%  $Date: 2003/02/20 11:51:53 $
+%  $RCSfile: product.tex,v $, $Revision: 1.17 $
+%  $Date: 2003/02/20 18:27:56 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung des Produktes. Übersicht über die Funktionen
@@ -345,9 +345,88 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
   
   
   
+\section {Verhalten beim Einfügen von IML-Teilgraphen und Selektionen
+in Anzeigefenster}
+
+
+   \subsection {Vorgabe der Zielposition}
+     \label{Vorgabe der Zielposition}
+   Für bestimmte UseCases (siehe z.B.\ 
+   \ref{IML-Teilgraph in Anzeigefenster einfügen}
+   muss der Benutzer manuell Zielpositionen innerhalb eines 
+   zu bestimmenden Anzeigefensters auswählen. An dieser
+   Zielposition werden dann z.B. neue Fenster-Knoten etc. eingefügt.\\
+   
+   Ablauf:
+   
+   
+   \begin {enumerate}
+   
+     \item
+     Der Benutzer wählt das entsprechende Anzeigefenster aus
+     (dadurch dass er ihm je nach Betriebssystemkonvention den
+     Fokus gibt).          
+     
+     \item
+     Befindet sich die Maus über den Bereich des Anzeigefensters, wo
+     der IML-Graph (Teile davon) visualisiert wird, so wird anstatt des
+     Mauszeigers ein Fadenkreuz angezeigt.
+     
+     \item
+     Durch Klicken mit der linken Maustaste wird dann über das Fadenkreuz die
+     Zielposition vorgegeben.
+     
+   \end{enumerate}
+
+
+   \subsection{Einfügen von IML-Teilgraphen in Anzeigefenster}
+      \label{Einfügen von IML-Teilgraphen in Anzeigefenster}
+   Hier wird das grundlegende Verhalten beim Einfügen von Selektionen
+   in Anzeigefenster (Kopieren einer Selektion aus einem Anzeigefenster
+   in ein anderes) beschrieben.
+   
+   \begin{enumerate}
+   
+     \item
+     Das Layout der Selektion wird beim Einfügen in ein Anzeigefenster
+     übernommen.
+     
+     \item
+     Die Position von Knoten der einzufügenden Selektion, 
+     die bereits in dem Anzeigefenster visualisiert sind,
+     bleibt unverändert.
+     
+     \item
+     Kanten der Selektion werden nur eingefügt, falls ihr Start- und Zielknoten
+     ebenfalls Bestandteil der Selektion ist oder bereits im Anzeigefenster
+     visualisiert ist. 
+     
+     \item
+     Die neu eingefügte Selektion ist nun auch dem entsprechenden 
+     Anzeigefenster (dort wo sie eingefügt wurde) als Selektion bekannt.
+   
+   \end{enumerate}
+     
   
-  
-  
+   \subsection{Einfügen von IML-Teilgraphen in Anzeigefenster}
+     \label{Einfügen von IML-Teilgraphen in Anzeigefenster}
+   Hier wird das grundlegende Verhalten beim Einfügen von IML-Teilgraphen
+   in Anzeigefenster (Kopieren einer Selektion aus einem Anzeigefenster
+   in ein anderes) beschrieben.
+   
+   \begin{enumerate}
+   
+     \item
+     Das Layout für den IML-Teilgraphen wird vor dem Einfügen gemäß einem
+     zu bestimmenden Layoutalgorithmus berechnet.
+     
+     \item
+     Die Graph-Knoten und Graph-Kanten des IML-Teilgraphen werden dann
+     genau wie eine Selektion in das Anzeigefenster eingefügt, dies geschieht
+     dann zu den gleichen Bedingungen, wie oben unter 
+     \ref{Einfügen von IML-Teilgraphen in Anzeigefenster} beschrieben.
+       
+   \end{enumerate} 
   
   
   

@@ -1,43 +1,279 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.3 $
-%  $Date: 2003/02/05 14:01:12 $
-%  $Author: schulzgt $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.4 $
+%  $Date: 2003/02/20 18:27:57 $
+%  $Author: schwiemn $
 %
 %  Description: Use-Cases für die Fensterfunktionalität der GUI
 %
 % ==============================================================================
 
-\begin{uc}[Label]{UC: Leeres Anzeigefenster erzeugen}
+\begin{uc}[Leeres Anzeigefenster erzeugen]{UC: Leeres Anzeigefenster erzeugen}
+Über diesen UseCase kann der Benutzer neue Anzeigefenster innerhalb eines
+Projektes anlegen.
+
+
+  \begin{precond}
+    \cond Ein Projekt ist geladen.
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond 
+    Das neue leere Anzeigefenster ist geöffnet.
+    
+    \cond
+    Das neue Anzeigefenster ist Bestandteil des Projektes. Eine
+    Verwaltungsdatei für das Anzeigefenster ist im Projektverzeichnis
+    angelegt.
+
+  \end{postsuccess}
+
+  \begin{postfail}
+    \cond Das System bleibt im bisherigen Zustand.
+  \end{postfail}
+  
+  \begin{proc}    
+    \step[1]
+    Der Benutzer startet den UseCase über das PopUp Menü
+    >>>>>>>>>>>>>>>VERWEIS PopUp Menüs für Anzeigefenster
+    
+    \step[2] 
+    GIANT öffnet den allgemeinen Texteingabedialog. <<<<VERWEIS GUI>>>>.
+      
+    \step[3] 
+    Der Benutzer gibt dort einen zulässigen Namen für das neue Anzeigefenster
+    ein und bestätigt seine Eingabe mit OK.
+    
+    \step[4]
+    GIANT erzeugt ein neues Anzeigefenster und öffnet dies.
+  
+  \end{proc}
+
+  \begin{aproc}
+    \astep{3} Der Benutzer bricht die Verarbeitung mit Cancel ab.
+  \end{aproc}
+
+
 \end{uc}
 
-\begin{uc}[Label]{UC: IML-Teilgraph in Anzeigefenster einfügen}
+
+
+
+% ==============================================================================
+\begin{uc}[Anzeigefenster löschen]{UC: Anzeigefenster löschen}
+Mit diesem UseCase werden bestehende Anzeigefenster aus dem Projekt 
+entfernt und gelöscht. Alle Informationen zu dem Anzeigefenster
+gehen hierbei unwiederbringlich verloren.
+
+
+  \begin{precond}
+    \cond Ein Projekt mit mindestens einem Anzeigefenster ist geladen.
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond 
+    Das gelöschte Anzeigefenster ist nicht mehr Bestandteil des Projektes.
+    
+    \cond
+    Die Verwaltungsdatei für das Anzeigefenster wurde ebenfalls gelöscht.
+ 
+  \end{postsuccess}
+
+  \begin{postfail}
+    \cond Das System bleibt im bisherigen Zustand.
+  \end{postfail}
+  
+  \begin{proc}    
+    \step[1]
+    Der Benutzer startet den UseCase über das PopUp Menü
+    >>>>>>>>>>>>>>>VERWEIS PopUp Menüs für Anzeigefenster
+    
+    \step[2] 
+    Giant zeigt die allgemeine Sicherheitsabfrage und fragt nach, ob das
+    Anzeigefenster wirklich gelöscht werden soll.
+      
+    \step[3] 
+    Der Benutzer bestätigt mit YES.
+    
+    \step[4]
+    GIANT entfernt das Anziegefenster aus dem Projekt und löscht die 
+    zugehörige Verwaltungsdatei.
+  
+  \end{proc}
+
+  \begin{aproc}
+    \astep{3} Der Benutzer bricht die Verarbeitung mit NEIN ab.
+  \end{aproc}
+  
 \end{uc}
 
+
+% ==============================================================================
+\begin{uc}[Anzeigefenster öffnen]{UC: Anzeigefenster öffnen}
+Dient zum Öffnen eines Anzeigefensters des Projektes.
+
+
+  \begin{precond}
+    \cond Ein Projekt mit mindestens einem Anzeigefenster ist geladen.
+    \cond Es gibt mindestens ein nicht geöffnetes Anzeigefenster.
+  \end{precond}
+
+  \begin{postsuccess}
+  
+    \cond Das Anzeigefenster ist geöffnet.
+ 
+  \end{postsuccess}
+
+
+  \begin{proc}    
+
+    \step[1]
+    Der Benutzer führt einen Rechtsklick auf ein nicht geöffnetes
+    Anzeigefenster in der >>>>Liste VERWEIS GUI<<< durch und wählt im
+    PopUp Menü den entsprechenden Eintag aus.
+    >>>>>>>>>>>>>>>VERWEIS PopUp Menüs für Anzeigefenster
+   
+    \step[2]
+    GIANT öffnet das entsprechende Anzeigefenster.
+  
+  \end{proc}
+ 
+\end{uc}
+
+% ==============================================================================
+\begin{uc}[Anzeigefenster schliesen]{UC: Anzeigefenster schliessen}
+Mit diesem UseCase wird ein geöffnetes Anzeigefenster geschlossen.
+
+  \begin{precond}
+    \cond Ein Projekt mit mindestens einem Anzeigefenster ist geladen.
+    \cond Es gibt mindestens ein geöffnetes Anzeigefenster.
+  \end{precond}
+
+  \begin{postsuccess}
+  
+    \cond Das Anzeigefenster ist geschlossen.
+    
+    \cond Nach dem letzten Speichern am Anzeigefenster vorgenommene
+    Modifikationen (neue Knoten eingefügt etc.) sind in der Verwaltungsdatei
+    gespeichert oder nicht.
+ 
+  \end{postsuccess}
+
+
+  \begin{proc}    
+
+    \step[1]
+    Der Benutzer schließt das Anzeigefenster (durch klicken auf das ''X''
+    Symbol rechts oben in der Titelleiste des Anzeigefensters).\\
+    Alternativ kann er das Anzeigefenster über das entsprechende PopUp
+    Menü in der >>>>Liste VERWEIS GUI<<< schließen.
+         
+    \step[2]
+    GIANT zeigt die allgemeine Sicherheitsabfrage 
+    (siehe \ref{Sicherheitsabfrage}) und fragt nach, ob es eventuelle
+    Änderungen im Anziegefenster speichern soll oder nicht.
+    
+    \step[3]
+    Bestätigt der Benutzer mit YES, werden die Änderungen in die 
+    Verwaltungsdatei geschrieben. Anderenfalls gehen sämtliche 
+    nicht gespeicherten Änderungen am Anzeigefenster verloren.
+    
+    \step[4]
+    GIANT schleißt das Anzeigefenster.
+  
+  \end{proc}
+
+
+\end{uc}
+
+
+% ==============================================================================
+\begin{uc}[IML-Teilgraph in Anzeigefenster einfügen]
+          {UC: IML-Teilgraph in Anzeigefenster einfügen}
+
+Mit diesem UseCase können die Graph-Kanten und Graph-Knoten 
+von IML-Teilgraphen in Anzeigefenster eingefügt werden.
+	  
+
+  \begin{precond}
+    \cond Ein Projekt mit mindestens einem Anzeigefenster ist geladen.
+    
+    \cond Es gibt mindestens einen IML-Teilgraphen.
+    
+  \end{precond}
+
+  \begin{postsuccess}
+    
+    \cond 
+    Alle Knoten und Kanten des IML-Teilgraphen sind in das Anzeigefenster
+    entsprechend dem gewählten Layout eingefügt.
+   
+
+  \end{postsuccess}
+
+  \begin{postfail}
+    \cond Das System bleibt im bisherigen Zustand.
+  \end{postfail}
+  
+  \begin{proc}    
+    \step[1]
+    Der Benutzer startet den UseCase über das PopUp Menü
+    >>>>>>>>>>>>>>>VERWEIS PopUp Menüs für IML-Teilgraphen
+    
+    \step[2] 
+    Giant zeigt die allgemeine Sicherheitsabfrage und fragt nach, ob das
+    Anzeigefenster wirklich gelöscht werden soll.
+      
+    \step[3] 
+    Der Benutzer bestätigt mit YES.
+    
+    \step[4]
+    GIANT entfernt das Anziegefenster aus dem Projekt und löscht die 
+    zugehörige Verwaltungsdatei.
+  
+  \end{proc}
+
+  \begin{aproc}
+    \astep{3} Der Benutzer bricht die Verarbeitung mit NEIN ab.
+  \end{aproc}
+
+
+
+
+\end{uc}
+
+% ==============================================================================
 \begin{uc}[Label]{UC: Selektion in Anzeigefenster einfügen}
 Layout wird beibehalten
 \end{uc}
 
+% ==============================================================================
 \begin{uc}[Label]{UC: Selektion aus Anzeigefenster löschen}
 Objekte und Selektion werden gelöscht, andere Selektionen werden angepaßt
 \end{uc}
 
+% ==============================================================================
 \begin{uc}[Label]{UC: Anzeigefensters scrollen}
 unbegrenzt, Scrollbar, Tastatur, Maus (Adobe-Hand)
 \end{uc}
 
+% ==============================================================================
 \begin{uc}[Label]{UC: Anzeigefenster zoomen}
 begranzter Bereich, anpassen der Detaillierung
 \end{uc}
 
+% ==============================================================================
 \begin{uc}[Label]{UC: Zoomen einer Selektion}
 \end{uc}
 
+% ==============================================================================
 \begin{uc}[Label]{UC: Zoomen auf gesamten Inhalt eines Anzeigefensters}
 \end{uc}
 
+% ==============================================================================
 \begin{uc}[Label]{UC: Zoomen auf eine Kante}
 \end{uc}
 
+% ==============================================================================
 \begin{uc}[Label]{UC: Verschieben von Knoten, Selektionen, Kantenknickpunkten}
 Kantenknickpunkte, Knoten, Selektionen (jeweils die aktuelle Selektion),
 Drag and Drop, Cut and Paste
