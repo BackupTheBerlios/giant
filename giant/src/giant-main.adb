@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.25 $
---  $Author: squig $
---  $Date: 2003/06/30 15:46:28 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.26 $
+--  $Author: koppor $
+--  $Date: 2003/06/30 18:35:58 $
 --
 --
 ------------------------------------------------------------------------------
@@ -157,8 +157,6 @@ begin
 
    Logger.Debug ("parsing command line arguments");
    Parse_Arguments;
-
-   New_Test_Project;
 
    Logger.Debug ("starting giant");
 
