@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-layout_dialog.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-layout_dialog.adb,v $, $Revision: 1.6 $
 --  $Author: squig $
---  $Date: 2003/09/01 22:09:11 $
+--  $Date: 2003/09/09 15:31:24 $
 --
 
 with Ada.Exceptions;
@@ -102,9 +102,8 @@ package body Giant.Layout_Dialog is
 
       --  node
       Gtk.Table.Gtk_New (Table, Rows => 2, Columns => 2, Homogeneous => False);
-      Gtk.Table.Set_Row_Spacings (Table, Glib.Guint (DEFAULT_SPACING));
-      Gtk.Table.Set_Col_Spacings (Table, Glib.Guint
-                                  (DEFAULT_SPACING));
+      Gtk.Table.Set_Row_Spacings (Table, DEFAULT_SPACING);
+      Gtk.Table.Set_Col_Spacings (Table, DEFAULT_SPACING);
       Gtk.Table.Set_Border_Width (Table, DEFAULT_SPACING);
       Gtk.Box.Pack_Start (Center_Box, Add_Frame (Table, ""),
                           expand => False, Fill => False,

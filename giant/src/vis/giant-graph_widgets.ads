@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.43 $
---  $Author: keulsn $
---  $Date: 2003/09/02 13:43:07 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.44 $
+--  $Author: squig $
+--  $Date: 2003/09/09 15:31:25 $
 --
 ------------------------------------------------------------------------------
 --
@@ -64,6 +64,7 @@ with Ada.Streams;
 with Gdk.Bitmap;
 with Gdk.Color;
 with Gdk.Cursor;
+with Gtk.Drawing_Area;
 with Gdk.Font;
 with Gdk.GC;
 with Gdk.Pixmap;
@@ -99,7 +100,8 @@ package Giant.Graph_Widgets is
 
    ----------------------------------------------------------------------------
    --  A widget to display a graph
-   type Graph_Widget_Record is new Gtk.Widget.Gtk_Widget_Record with private;
+   type Graph_Widget_Record is
+     new Gtk.Drawing_Area.Gtk_Drawing_Area_Record with private;
 
    type Graph_Widget is access all Graph_Widget_Record'Class;
 
@@ -1573,7 +1575,7 @@ private                    -- private part --
 
    ----------------------------------------------------------------------------
    --  The one and only graph widget tagged type
-   type Graph_Widget_Record is new Gtk.Widget.Gtk_Widget_Record with
+   type Graph_Widget_Record is new Gtk.Drawing_Area.Gtk_Drawing_Area_Record with
       record
          --  Region manager for the graph widget. May be accessed
          --  by subpackages.

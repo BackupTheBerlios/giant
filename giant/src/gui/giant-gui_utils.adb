@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.22 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.23 $
 -- $Author: squig $
--- $Date: 2003/08/15 16:37:18 $
+-- $Date: 2003/09/09 15:31:24 $
 --
 
 with Glib;
@@ -40,6 +40,34 @@ with Giant.Logger;
 package body Giant.Gui_Utils is
 
    package Logger is new Giant.Logger("giant.gui_utils");
+
+   function Default_Spacing
+     return Glib.Guint
+   is
+   begin
+      return Glib.Guint (ADA_DEFAULT_SPACING);
+   end Default_Spacing;
+
+   function Default_Spacing
+     return Glib.Gint
+   is
+   begin
+      return Glib.Gint (ADA_DEFAULT_SPACING);
+   end Default_Spacing;
+
+   function Button_Spacing
+     return Glib.Guint
+   is
+   begin
+      return Glib.Guint (ADA_BUTTON_SPACING);
+   end Button_Spacing;
+
+   function Button_Spacing
+     return Glib.Gint
+   is
+   begin
+      return Glib.Gint (ADA_BUTTON_SPACING);
+   end Button_Spacing;
 
    procedure Add_Row_Widgets
      (Table : in     Gtk.Table.Gtk_Table;

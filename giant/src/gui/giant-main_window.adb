@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.61 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.62 $
 --  $Author: squig $
---  $Date: 2003/09/08 15:33:10 $
+--  $Date: 2003/09/09 15:31:24 $
 --
 
 with Ada.Exceptions;
@@ -34,6 +34,7 @@ with Gdk.Color;
 with Gdk.Event;
 with Gdk.Types;
 with Glib; use type Glib.Gint;
+with Glib.Object;
 with Gtk.Box;
 with Gtk.Clist;
 pragma Elaborate_All (Gtk.Clist);
@@ -101,7 +102,7 @@ package body Giant.Main_Window is
 
    --  signal stuff
 
-   Class_Record : System.Address := System.Null_Address;
+   Class_Record : Glib.Object.GObject_Class := Glib.Object.Uninitialized_Class;
 
    Signals : constant Gtkada.Types.Chars_Ptr_Array :=
      (1 => Interfaces.C.Strings.New_String ("can_close_project"),
@@ -739,7 +740,11 @@ package body Giant.Main_Window is
       Set_Title (Window, -"GIANT");
 
       --  provide signals
-      Gtk.Object.Initialize_Class_Record (Window, Signals, Class_Record);
+      Glib.Object.Initialize_Class_Record
+        (Object       => Window,
+         Signals      => Signals,
+         Class_Record => Class_Record,
+         Type_Name    => "Main_Window");
 
       --  tooltips
       Gtk.Tooltips.Gtk_New (Tooltips);

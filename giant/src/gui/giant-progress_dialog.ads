@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-progress_dialog.ads,v $, $Revision: 1.4 $
+--  $RCSfile: giant-progress_dialog.ads,v $, $Revision: 1.5 $
 --  $Author: squig $
---  $Date: 2003/06/14 16:40:24 $
+--  $Date: 2003/09/09 15:31:24 $
 --
 ------------------------------------------------------------------------------
 --
@@ -31,8 +31,8 @@
 -- Emits the "cancelled" callback when the cancel button is pressed.
 --
 
-with Gtk.Label;
 with Gtk.Adjustment;
+with Gtk.Label;
 with Gtk.Progress_Bar;
 with Gtk.Window;
 

@@ -20,20 +20,22 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.19 $
---  $Author: keulsn $
---  $Date: 2003/09/02 04:49:38 $
+--  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.20 $
+--  $Author: squig $
+--  $Date: 2003/09/09 15:31:24 $
 --
 ------------------------------------------------------------------------------
 
 
 with System;
 
+with Gdk.Event;
 with Gdk.Main;
 with Gdk.Rectangle;
 with Gdk.Threads;
 with Gdk.Window;
 with Gdk.Window_Attr;
+with Glib.Object;
 with Gtk.Arguments;
 with Gtk.Enums;
 with Gtk.Style;
@@ -56,17 +58,17 @@ package body Giant.Graph_Widgets.Callbacks is
      (Data_Type => Graph_Widget);
 
    function "or"
-     (Left  : in Gdk.Types.Gdk_Event_Mask;
-      Right : in Gdk.Types.Gdk_Event_Mask)
-     return Gdk.Types.Gdk_Event_Mask
-     renames Gdk.Types."or";
+     (Left  : in Gdk.Event.Gdk_Event_Mask;
+      Right : in Gdk.Event.Gdk_Event_Mask)
+     return Gdk.Event.Gdk_Event_Mask
+     renames Gdk.Event."or";
 
-   Handled_Event_Mask : constant Gdk.Types.Gdk_Event_Mask  :=
-     Gdk.Types.Button_Press_Mask or
-     Gdk.Types.Button_Release_Mask or
-     Gdk.Types.Pointer_Motion_Mask or
-     Gdk.Types.Enter_Notify_Mask or
-     Gdk.Types.Leave_Notify_Mask;
+   Handled_Event_Mask : constant Gdk.Event.Gdk_Event_Mask  :=
+     Gdk.Event.Button_Press_Mask or
+     Gdk.Event.Button_Release_Mask or
+     Gdk.Event.Pointer_Motion_Mask or
+     Gdk.Event.Enter_Notify_Mask or
+     Gdk.Event.Leave_Notify_Mask;
 
 
    ----------------
@@ -94,23 +96,23 @@ package body Giant.Graph_Widgets.Callbacks is
             Id  => Widget.Callbacks.Horizontal_Handler);
          Adj.Set_Lower
            (Widget.Callbacks.Horizontal_Adjustment,
-            Glib.Gfloat (Get_Left (Area)));
+            Glib.Gdouble (Get_Left (Area)));
          Adj.Set_Upper
            (Widget.Callbacks.Horizontal_Adjustment,
-            Glib.Gfloat (Get_Right (Area)));
+            Glib.Gdouble (Get_Right (Area)));
          Adj.Set_Page_Size
            (Widget.Callbacks.Horizontal_Adjustment,
-            Glib.Gfloat (Get_Width (Visible)));
+            Glib.Gdouble (Get_Width (Visible)));
          Adj.Set_Page_Increment
            (Widget.Callbacks.Horizontal_Adjustment,
-            Glib.Gfloat (0.9 * Get_Width (Visible)));
+            Glib.Gdouble (0.9 * Get_Width (Visible)));
          Adj.Set_Step_Increment
            (Widget.Callbacks.Horizontal_Adjustment,
-            Glib.Gfloat (0.05 * Get_Width (Visible)));
+            Glib.Gdouble (0.05 * Get_Width (Visible)));
          Adj.Changed (Widget.Callbacks.Horizontal_Adjustment);
          Adj.Set_Value
            (Widget.Callbacks.Horizontal_Adjustment,
-            Glib.Gfloat (Get_Left (Visible)));
+            Glib.Gdouble (Get_Left (Visible)));
          Gtk.Handlers.Handler_Unblock
            (Obj => Widget.Callbacks.Horizontal_Adjustment,
             Id  => Widget.Callbacks.Horizontal_Handler);
@@ -123,23 +125,23 @@ package body Giant.Graph_Widgets.Callbacks is
             Id  => Widget.Callbacks.Vertical_Handler);
          Adj.Set_Lower
            (Widget.Callbacks.Vertical_Adjustment,
-            Glib.Gfloat (Get_Top (Area)));
+            Glib.Gdouble (Get_Top (Area)));
          Adj.Set_Upper
            (Widget.Callbacks.Vertical_Adjustment,
-            Glib.Gfloat (Get_Bottom (Area)));
+            Glib.Gdouble (Get_Bottom (Area)));
          Adj.Set_Page_Size
            (Widget.Callbacks.Vertical_Adjustment,
-            Glib.Gfloat (Get_Height (Visible)));
+            Glib.Gdouble (Get_Height (Visible)));
          Adj.Set_Page_Increment
            (Widget.Callbacks.Vertical_Adjustment,
-            Glib.Gfloat (0.9 * Get_Height (Visible)));
+            Glib.Gdouble (0.9 * Get_Height (Visible)));
          Adj.Set_Step_Increment
            (Widget.Callbacks.Vertical_Adjustment,
-            Glib.Gfloat (0.05 * Get_Height (Visible)));
+            Glib.Gdouble (0.05 * Get_Height (Visible)));
          Adj.Changed (Widget.Callbacks.Vertical_Adjustment);
          Adj.Set_Value
            (Widget.Callbacks.Vertical_Adjustment,
-            Glib.Gfloat (Get_Top (Visible)));
+            Glib.Gdouble (Get_Top (Visible)));
          Gtk.Handlers.Handler_Unblock
            (Obj => Widget.Callbacks.Vertical_Adjustment,
             Id  => Widget.Callbacks.Vertical_Handler);
@@ -197,21 +199,20 @@ package body Giant.Graph_Widgets.Callbacks is
      (Widget : access Graph_Widget_Record'Class;
       Time   : in     Glib.Guint32) is
 
-      Value : Boolean;
+      Status : Gdk.Main.Gdk_Grab_Status;
    begin
       Widget.Callbacks.Mouse_Grab_Count :=
         Widget.Callbacks.Mouse_Grab_Count + 1;
       pragma Assert (Widget.Callbacks.Mouse_Grab_Count = 1);
       if Widget.Callbacks.Mouse_Grab_Count = 1 then
-         Value := Gdk.Main.Pointer_Grab
+         Status := Gdk.Main.Pointer_Grab
            (Window       => Get_Window (Widget),
             Owner_Events => False,
             Event_Mask   => Handled_Event_Mask,
             Confine_To   => Gdk.Window.Null_Window,
             Cursor       => Gdk.Cursor.Null_Cursor,
             Time         => Time);
-         --  Meaning of 'Value' is not documented in GtkAda! Therefore
-         --  we ignore it here.
+         pragma Assert (Gdk.Main."=" (Status, Gdk.Main.Grab_Success));
 
          --  start auto scrolling
          States.Begin_Auto_Scrolling (Widget);
@@ -437,13 +438,13 @@ package body Giant.Graph_Widgets.Callbacks is
          Stub : Gtk.Adjustment.Gtk_Adjustment_Record;
       begin
          return Gtk.Adjustment.Gtk_Adjustment
-           (Gtk.Get_User_Data (Addr, Stub));
+           (Glib.Object.Get_User_Data (Addr, Stub));
       end To_Adjustment;
 
       H_Adj : Gtk.Adjustment.Gtk_Adjustment := To_Adjustment
-        (Gtk.Arguments.Get_Nth (Args, 1));
+        (Gtk.Arguments.To_Address (Args, 1));
       V_Adj : Gtk.Adjustment.Gtk_Adjustment := To_Adjustment
-        (Gtk.Arguments.Get_Nth (Args, 2));
+        (Gtk.Arguments.To_Address (Args, 2));
    begin
       On_Set_Scroll_Adjustments (Widget, H_Adj, V_Adj);
    end Set_Scroll_Adjustments_Handler;
@@ -471,13 +472,13 @@ package body Giant.Graph_Widgets.Callbacks is
    package Requisition_Marshallers is new
      Size_Request_Cbs.Marshallers.Generic_Marshaller
        (Base_Type  => Gtk.Widget.Gtk_Requisition_Access,
-        Conversion => Gtk.Arguments.To_Requisition);
+        Conversion => Gtk.Widget.Get_Requisition);
 
    package Size_Allocate_Cbs renames Size_Request_Cbs;
    package Allocation_Marshallers is new
      Size_Allocate_Cbs.Marshallers.Generic_Marshaller
        (Base_Type  => Gtk.Widget.Gtk_Allocation_Access,
-        Conversion => Gtk.Arguments.To_Allocation);
+        Conversion => Gtk.Widget.Get_Allocation);
 
    package Expose_Event_Cbs renames Graph_Widget_Boolean_Callback;
 
@@ -579,7 +580,7 @@ package body Giant.Graph_Widgets.Callbacks is
      (Widget : access Graph_Widget_Record'Class) is
 
       Attributes      : Gdk.Window_Attr.Gdk_Window_Attr;
-      Attributes_Mask : Gdk.Types.Gdk_Window_Attributes_Type;
+      Attributes_Mask : Gdk.Window.Gdk_Window_Attributes_Type;
       Window          : Gdk.Window.Gdk_Window;
 
       procedure Set_User_Data
@@ -591,20 +592,20 @@ package body Giant.Graph_Widgets.Callbacks is
 
       Gdk.Window_Attr.Gdk_New
         (Window_Attr => Attributes,
-         Event_Mask  => Gdk.Types."or"
-                          (Get_Events (Widget), Gdk.Types.Exposure_Mask),
+         Event_Mask  => Gdk.Event."or"
+                          (Get_Events (Widget), Gdk.Event.Exposure_Mask),
          X           => Get_Allocation_X (Widget),
          Y           => Get_Allocation_Y (Widget),
          Width       => Glib.Gint (Get_Allocation_Width (Widget)),
          Height      => Glib.Gint (Get_Allocation_Height (Widget)),
-         Window_Type => Gdk.Types.Window_Child,
+         Window_Type => Gdk.Window.Window_Child,
          Visual      => Get_Visual (Widget),
          Colormap    => Get_Colormap (Widget));
 
       Attributes_Mask :=
-        Gdk.Types."or" (Gdk.Types."or" (Gdk.Types."or"
-        (Gdk.Types.Wa_X, Gdk.Types.Wa_Y), Gdk.Types.Wa_Visual),
-         Gdk.Types.Wa_Colormap);
+        Gdk.Window."or" (Gdk.Window."or" (Gdk.Window."or"
+        (Gdk.Window.Wa_X, Gdk.Window.Wa_Y), Gdk.Window.Wa_Visual),
+         Gdk.Window.Wa_Colormap);
       Gdk.Window.Gdk_New
         (Window,
          Gtk.Widget.Get_Window (Get_Parent (Widget)),
@@ -623,7 +624,7 @@ package body Giant.Graph_Widgets.Callbacks is
 
       Set_User_Data
         (Window,
-         Gtk.Get_Object (Widget));
+         Glib.Object.Get_Object (Widget));
    end On_Realize;
 
    procedure After_Realize

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.22 $
+--  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.23 $
 --  $Author: squig $
---  $Date: 2003/09/08 15:33:10 $
+--  $Date: 2003/09/09 15:31:24 $
 --
 
 with Ada.Unchecked_Conversion;
@@ -191,7 +191,7 @@ package body Giant.Graph_Window.Callbacks is
       Event  : in     Graph_Widgets.Handlers.Button_Press_Action)
    is
       use type Glib.Guint;
-      use type Gdk.Types.Gdk_Event_Type;
+      use type Gdk.Event.Gdk_Event_Type;
       use type Actions.Graph_Window_Action_Access;
 
       Window : Graph_Window_Access := Graph_Window_Access (Source);

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.18 $
---  $Author: keulsn $
---  $Date: 2003/09/02 04:49:38 $
+--  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.19 $
+--  $Author: squig $
+--  $Date: 2003/09/09 15:31:25 $
 --
 ------------------------------------------------------------------------------
 
@@ -31,8 +31,8 @@ with Ada.Strings.Unbounded;
 with Ada.Unchecked_Deallocation;
 
 with Gdk.Bitmap;
+with Gdk.Drawable;
 with Gdk.Pixmap;
-with Gdk.Window;
 
 with Giant.Logger;
 
@@ -196,11 +196,11 @@ package body Giant.Graph_Widgets.Settings is
       Icons.Set_Up_Icon_Array (Widget);
       Colors.Set_Up_Color_Array (Widget);
 
-      if Gdk.Font."=" (Widget.Settings.Font, Gdk.Font.Null_Font) then
+      if Gdk."=" (Widget.Settings.Font, Gdk.Font.Null_Font) then
          Gdk.Font.Load
            (Font      => Widget.Settings.Font,
             Font_Name => Default_Font_Name);
-         if Gdk.Font."=" (Widget.Settings.Font, Gdk.Font.Null_Font) then
+         if Gdk."=" (Widget.Settings.Font, Gdk.Font.Null_Font) then
             Settings_Logger.Error
               ("Could not load font """ & Default_Font_Name & """. Use "
                & "Null_Font instead.");
@@ -696,7 +696,7 @@ package body Giant.Graph_Widgets.Settings is
          end if;
          if Gdk."/=" (Pixmap, Gdk.Pixmap.Null_Pixmap) then
             Settings_Logger.Debug ("Icon loaded: " & File_Name);
-            Gdk.Window.Get_Size (Pixmap, Width, Height);
+            Gdk.Drawable.Get_Size (Pixmap, Width, Height);
          else
             Settings_Logger.Error
               ("Failed to load icon from file """ & File_Name & """.");

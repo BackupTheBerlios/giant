@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-handlers.adb,v $, $Revision: 1.7 $
---  $Author: keulsn $
---  $Date: 2003/08/19 12:42:32 $
+--  $RCSfile: giant-graph_widgets-handlers.adb,v $, $Revision: 1.8 $
+--  $Author: squig $
+--  $Date: 2003/09/09 15:31:25 $
 --
 ------------------------------------------------------------------------------
 
@@ -55,19 +55,18 @@ package body Giant.Graph_Widgets.Handlers is
    package Action_Mode_Marshallers is new
      Action_Mode_Cbs.Marshallers.Generic_Marshaller
      (Base_Type  => System.Address,
-      Conversion => Gtk.Arguments.Get_Nth);
+      Conversion => Glib.Values.Get_Address);
 
    package Logical_Area_Marshallers is new
      Logical_Area_Cbs.Marshallers.Generic_Marshaller
      (Base_Type  => System.Address,
-      Conversion => Gtk.Arguments.Get_Nth);
+      Conversion => Glib.Values.Get_Address);
 
    package Visible_Area_Marshallers renames Logical_Area_Marshallers;
 
 
    function To_Rectangle_2d
-     (Args : in Gtk.Arguments.Gtk_Args;
-      Num  : in Natural)
+     (Arg : in Glib.Values.Gvalue)
      return Vis.Logic.Rectangle_2d is
 
       function Convert is new Ada.Unchecked_Conversion
@@ -75,14 +74,13 @@ package body Giant.Graph_Widgets.Handlers is
 
       Rectangle : Rectangle_Access;
    begin
-      Rectangle := Convert (Gtk.Arguments.Get_Nth (Args, Num));
+      Rectangle := Convert (Glib.Values.Get_Address (Arg));
       return Rectangle.all;
    end To_Rectangle_2d;
 
 
    function To_Button_Press_Action
-     (Args : in Gtk.Arguments.Gtk_Args;
-      Num  : in Natural)
+     (Arg : in Glib.Values.Gvalue)
      return Button_Press_Action is
 
       function Convert is new Ada.Unchecked_Conversion
@@ -90,7 +88,7 @@ package body Giant.Graph_Widgets.Handlers is
 
       Action : Button_Press_Action_Access;
    begin
-      Action := Convert (Gtk.Arguments.Get_Nth (Args, Num));
+      Action := Convert (Glib.Values.Get_Address (Arg));
       return Action.all;
    end To_Button_Press_Action;
 
@@ -100,8 +98,7 @@ package body Giant.Graph_Widgets.Handlers is
 
 
    function To_Selection_Change_Action
-     (Args : in Gtk.Arguments.Gtk_Args;
-      Num  : in Natural)
+     (Arg : in Glib.Values.Gvalue)
      return Selection_Change_Action is
 
       function Convert is new Ada.Unchecked_Conversion
@@ -109,7 +106,7 @@ package body Giant.Graph_Widgets.Handlers is
 
       Action : Selection_Change_Action_Access;
    begin
-      Action := Convert (Gtk.Arguments.Get_Nth (Args, Num));
+      Action := Convert (Glib.Values.Get_Address (Arg));
       return Action.all;
    end To_Selection_Change_Action;
 
@@ -310,21 +307,21 @@ package body Giant.Graph_Widgets.Handlers is
 
    Signal_Parameters : constant Gtk.Object.Signal_Parameter_Types :=
      (--  Set_Scroll_Adjustments_Signal
-      1 => (1 => Gtk.Gtk_Type_Object, 2 => Gtk.Gtk_Type_Object),
+      1 => (1 => Glib.GType_Object, 2 => Glib.GType_Object),
       --  Background_Popup_Event
-      2 => (1 => Gtk.Gtk_Type_Pointer, 2 => Gtk.Gtk_Type_None),
+      2 => (1 => Glib.GType_Pointer, 2 => Glib.GType_None),
       --  Edge_Popup_Event
-      3 => (1 => Gtk.Gtk_Type_Pointer, 2 => Gtk.Gtk_Type_None),
+      3 => (1 => Glib.GType_Pointer, 2 => Glib.GType_None),
       --  Node_Popup_Event
-      4 => (1 => Gtk.Gtk_Type_Pointer, 2 => Gtk.Gtk_Type_None),
+      4 => (1 => Glib.GType_Pointer, 2 => Glib.GType_None),
       --  Selection_Chage_Siganl
-      5 => (1 => Gtk.Gtk_Type_Pointer, 2 => Gtk.Gtk_Type_None),
+      5 => (1 => Glib.GType_Pointer, 2 => Glib.GType_None),
       --  Action_Mode_Button_Press_Event
-      6 => (1 => Gtk.Gtk_Type_Pointer, 2 => Gtk.Gtk_Type_None),
+      6 => (1 => Glib.GType_Pointer, 2 => Glib.GType_None),
       --  Logical_Area_Changed_Signal
-      7 => (1 => Gtk.Gtk_Type_Pointer, 2 => Gtk.Gtk_Type_None),
+      7 => (1 => Glib.GType_Pointer, 2 => Glib.GType_None),
       --  Visible_Area_Changed_Signal
-      8 => (1 => Gtk.Gtk_Type_Pointer, 2 => Gtk.Gtk_Type_None));
+      8 => (1 => Glib.GType_Pointer, 2 => Glib.GType_None));
 
    function Get_Signal_Array
      return Gtkada.Types.Chars_Ptr_Array is

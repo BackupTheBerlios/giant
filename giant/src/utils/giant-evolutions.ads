@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.ads,v $, $Revision: 1.9 $
+--  $RCSfile: giant-evolutions.ads,v $, $Revision: 1.10 $
 --  $Author: squig $
---  $Date: 2003/07/11 12:58:49 $
+--  $Date: 2003/09/09 15:31:24 $
 --
 ------------------------------------------------------------------------------
 --
@@ -59,8 +59,8 @@
 
 with Ada.Real_Time;
 
+with Glib;
 with Gtk.Handlers;
-with Gtk.Main;
 
 with Giant.Progress_Dialog;
 
@@ -202,9 +202,6 @@ package Giant.Evolutions is
    --
    --  If 'Dialog' is provided then 'Progress_Dialog.Destroy (Dialog)' will
    --  be called after the evolution has been canceled or has finished.
-   --
-   --  This procedure returns immediately (does not wait until the evolution
-   --  has finished).
    --
    --  Parameters:
    --    Individual      - Subject of the evolution process
@@ -470,6 +467,11 @@ package Giant.Evolutions is
 private                       -- Private Part --
                               ------------------
 
+   --  Initial value for Handler_Ids
+   Null_Handler : constant Gtk.Handlers.Handler_Id :=
+     (Signal  => Glib.Null_Signal_Id,
+      Closure => null);
+
    -------------------------
    -- Private subprograms --
    -- for Evolution       --
@@ -614,7 +616,7 @@ private                       -- Private Part --
       State_Change    => Ada.Real_Time.Time_Last,
       Cancel_Request  => False,
       Dialog          => null,
-      Cancel_Handler  => 0);
+      Cancel_Handler  => Null_Handler);
 
    --  Priority ordering of 'Driver_State_Type's. Orders according to
    --  'Current_State', if equal then earlier 'State_Change' will decide.
@@ -642,7 +644,7 @@ private                       -- Private Part --
          --  Callback-binding for 'Progress_Dialog'
          Cancel_Handler  : Gtk.Handlers.Handler_Id;
          --  Handler id for the idle event
-         Idle_Handler    : Gtk.Main.Idle_Handler_Id;
+--         Idle_Handler    : Gtk.Main.Idle_Handler_Id;
       end record;
 
    No_Iterative_Driver_State : constant Iterative_Driver_State_Type :=
@@ -650,8 +652,9 @@ private                       -- Private Part --
       Update_Time     => Ada.Real_Time.Time_Last,
       Cancel_Request  => True,
       Dialog          => null,
-      Cancel_Handler  => 0,
-      Idle_Handler    => 0);
+      Cancel_Handler  => Null_Handler);
+--,
+--      Idle_Handler    => 0);
 
 
    ----------------------------------

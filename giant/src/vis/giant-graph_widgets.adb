@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.48 $
---  $Author: keulsn $
---  $Date: 2003/09/02 13:43:07 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.49 $
+--  $Author: squig $
+--  $Date: 2003/09/09 15:31:25 $
 --
 ------------------------------------------------------------------------------
 
@@ -30,6 +30,8 @@
 with Ada.Unchecked_Deallocation;
 with System;
 
+with Glib;
+with Glib.Object;
 with Gtk.Object;
 
 with Giant.Graph_Widgets.Callbacks;
@@ -247,7 +249,7 @@ package body Giant.Graph_Widgets is
    -- Construction, Destruction --
    -------------------------------
 
-   Class_Record : System.Address := System.Null_Address;
+   Class_Record : Glib.Object.GObject_Class := Glib.Object.Uninitialized_Class;
 
    ---------------------------------------------------------------------------
    --  Initializes the data structure. More initialization is done after the
@@ -255,15 +257,19 @@ package body Giant.Graph_Widgets is
    procedure Initialize
      (Widget       : access Graph_Widget_Record'Class;
       Style        : in     Config.Vis_Styles.Visualisation_Style_Access;
-      Pool         : in     Node_Annotations.Node_Annotation_Access) is
+      Pool         : in     Node_Annotations.Node_Annotation_Access)
+   is
    begin
-      Gtk.Widget.Initialize_Widget (Widget);
+      Gtk.Drawing_Area.Initialize (Widget);
       Gtk.Object.Initialize_Class_Record
         (Object                    => Widget,
          Signals                   => Handlers.Get_Signal_Array,
          Class_Record              => Class_Record,
-         Parameters                => Handlers.Get_Signal_Parameters,
-         Scroll_Adjustments_Signal => Handlers.Get_Scroll_Adjustments_Signal);
+         Type_Name                 => "Giant_Graph_Widget",
+         Parameters                => Handlers.Get_Signal_Parameters);
+      Gtk.Widget.Set_Scroll_Adjustments_Signal
+        (Widget => Class_Record,
+         Signal => Handlers.Set_Scroll_Adjustments_Signal);
 
       Set_Flags
         (Object => Widget,

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-clists.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-clists.adb,v $, $Revision: 1.8 $
 --  $Author: squig $
---  $Date: 2003/07/15 15:27:31 $
+--  $Date: 2003/09/09 15:31:24 $
 --
 
 with Ada.Strings.Unbounded;
@@ -104,7 +104,7 @@ package body Giant.Clists is
      return Boolean
    is
       use type Glib.Guint;
-      use type Gdk.Types.Gdk_Event_Type;
+      use type Gdk.Event.Gdk_Event_Type;
 
       function Activate
         (Children : in Gtk.Widget.Widget_List.Glist;
@@ -127,7 +127,7 @@ package body Giant.Clists is
 
    begin
       if Gdk.Event.Get_Button (Event) = 3
-        and then Gdk.Event.Get_Event_Type (Event) = Gdk.Types.Button_Press
+        and then Gdk.Event.Get_Event_Type (Event) = Gdk.Event.Button_Press
       then
          --  right single click
          if (Select_Clicked_Row (Source, Event)) then
@@ -139,7 +139,7 @@ package body Giant.Clists is
             return True;
          end if;
       elsif Gdk.Event.Get_Button (Event) = 1
-        and then Gdk.Event.Get_Event_Type (Event) = Gdk.Types.Gdk_2Button_Press
+        and then Gdk.Event.Get_Event_Type (Event) = Gdk.Event.Gdk_2Button_Press
       then
          --  left double click
          if (Select_Clicked_Row (Source, Event)) then

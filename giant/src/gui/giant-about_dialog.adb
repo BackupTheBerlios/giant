@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-about_dialog.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-about_dialog.adb,v $, $Revision: 1.8 $
 --  $Author: squig $
---  $Date: 2003/09/01 22:09:11 $
+--  $Date: 2003/09/09 15:31:24 $
 --
 
 with Ada.IO_Exceptions;
@@ -32,7 +32,7 @@ with Glib; use type Glib.Gint;
 with Gtkada.File_Selection;
 with Gtk.Box;
 with Gtk.Button;
-with Gtk.Editable;
+with Gtk.Old_Editable;
 with Gtk.Enums; use Gtk.Enums;
 with Gtk.Label;
 with Gtk.Notebook;
@@ -58,7 +58,7 @@ package body Giant.About_Dialog is
    --  Returns:
    --    True, if file was read successfully; False, otherwise
    procedure Show_File
-     (Text_Area : access Gtk.Editable.Gtk_Editable_Record'Class;
+     (Text_Area : access Gtk.Old_Editable.Gtk_Old_Editable_Record'Class;
       Filename : String;
       Alt_Text : String)
    is
@@ -70,12 +70,12 @@ package body Giant.About_Dialog is
       Ada.Text_IO.Open (In_File, Ada.Text_IO.In_File, Filename);
 
       -- Fix: Clear
-      --Gtk.Editable.Set_Position (Dialog.Text_Area, Glib.Gint (-1));
-      Position := Gtk.Editable.Get_Position (Text_Area);
+      --Gtk.Old_Editable.Set_Position (Dialog.Text_Area, Glib.Gint (-1));
+      Position := Gtk.Old_Editable.Get_Position (Text_Area);
 
       while (not Ada.Text_Io.End_Of_File (In_File)) loop
          Ada.Text_Io.Get_Line (In_File, Line, Last);
-         Gtk.Editable.Insert_Text (Text_Area, Line(1..Last) & ASCII.LF,
+         Gtk.Old_Editable.Insert_Text (Text_Area, Line(1..Last) & ASCII.LF,
                                    Position);
       end loop;
 
@@ -83,20 +83,20 @@ package body Giant.About_Dialog is
    exception
       when others =>
          declare
-            Position : Glib.Gint := Gtk.Editable.Get_Position (Text_Area);
+            Position : Glib.Gint := Gtk.Old_Editable.Get_Position (Text_Area);
          begin
-            Gtk.Editable.Insert_Text (Text_Area, Alt_Text, Position);
+            Gtk.Old_Editable.Insert_Text (Text_Area, Alt_Text, Position);
          end;
    end Show_File;
 
    procedure Append_Author
-     (Text_Area : access Gtk.Editable.Gtk_Editable_Record'Class;
+     (Text_Area : access Gtk.Old_Editable.Gtk_Old_Editable_Record'Class;
       Author : String)
    is
-      Position : Glib.Gint := Gtk.Editable.Get_Position (Text_Area);
+      Position : Glib.Gint := Gtk.Old_Editable.Get_Position (Text_Area);
    begin
-      Gtk.Editable.Insert_Text (Text_Area, Author, Position);
-      Gtk.Editable.Insert_Text (Text_Area, ASCII.LF & "" & ASCII.LF, Position);
+      Gtk.Old_Editable.Insert_Text (Text_Area, Author, Position);
+      Gtk.Old_Editable.Insert_Text (Text_Area, ASCII.LF & "" & ASCII.LF, Position);
    end;
 
    ---------------------------------------------------------------------------

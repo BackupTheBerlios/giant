@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-input_dialog.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-input_dialog.adb,v $, $Revision: 1.6 $
 --  $Author: squig $
---  $Date: 2003/06/24 10:50:12 $
+--  $Date: 2003/09/09 15:31:24 $
 --
 
 with Gtk.Button;
@@ -89,7 +89,7 @@ package body Giant.Input_Dialog is
      (Dialog : access Input_Dialog_Record)
      return String
    is
-      Text : constant String := Gtk.Gentry.Get_Chars (Dialog.Input);
+      Text : constant String := Gtk.Gentry.Get_Text (Dialog.Input);
    begin
       return Text;
    end Get_Text;

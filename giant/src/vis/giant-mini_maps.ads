@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-mini_maps.ads,v $, $Revision: 1.5 $
---  $Author: keulsn $
---  $Date: 2003/08/02 16:27:43 $
+--  $RCSfile: giant-mini_maps.ads,v $, $Revision: 1.6 $
+--  $Author: squig $
+--  $Date: 2003/09/09 15:31:25 $
 --
 ------------------------------------------------------------------------------
 --
@@ -32,6 +32,7 @@
 
 
 with Gdk.Color;
+with Gtk.Drawing_Area;
 with Gdk.GC;
 with Gdk.Pixmap;
 with Gtk.Handlers;
@@ -44,7 +45,7 @@ with Giant.Vis;
 
 package Giant.Mini_Maps is
 
-   type Mini_Map_Record is new Gtk.Widget.Gtk_Widget_Record with private;
+   type Mini_Map_Record is new Gtk.Drawing_Area.Gtk_Drawing_Area_Record with private;
 
    type Mini_Map is access all Mini_Map_Record'Class;
 
@@ -75,7 +76,7 @@ private
    --  recognized by Gdk.Color.Parse for every E : Mini_Map_Colors
    type Mini_Map_Colors is (Black, Red, White);
 
-   type Mini_Map_Record is new Gtk.Widget.Gtk_Widget_Record with
+   type Mini_Map_Record is new Gtk.Drawing_Area.Gtk_Drawing_Area_Record with
       record
          Watched              : Graph_Widgets.Graph_Widget := null;
          Logical_Area_Handler : Gtk.Handlers.Handler_Id;

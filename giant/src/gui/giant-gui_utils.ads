@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.17 $
+--  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.18 $
 --  $Author: squig $
---  $Date: 2003/08/15 16:37:18 $
+--  $Date: 2003/09/09 15:31:24 $
 --
 ------------------------------------------------------------------------------
 --
@@ -60,8 +60,13 @@ package Giant.Gui_Utils is
    --  Constants  --
    -----------------
 
-   DEFAULT_SPACING : constant Glib.Gint := 5;
-   BUTTON_SPACING : constant Glib.Gint := 10;
+   ADA_DEFAULT_SPACING : constant Integer := 5;
+   ADA_BUTTON_SPACING : constant Integer := 10;
+
+   function Default_Spacing return Glib.Guint;
+   function Default_Spacing return Glib.Gint;
+   function Button_Spacing return Glib.Guint;
+   function Button_Spacing return Glib.Gint;
 
    -----------------
    --  Callbacks  --

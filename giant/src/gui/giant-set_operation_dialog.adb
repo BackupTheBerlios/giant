@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-set_operation_dialog.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-set_operation_dialog.adb,v $, $Revision: 1.11 $
 --  $Author: squig $
---  $Date: 2003/07/18 14:27:39 $
+--  $Date: 2003/09/09 15:31:24 $
 --
 
 with Ada.Strings.Unbounded;
@@ -69,8 +69,8 @@ package body Giant.Set_Operation_Dialog is
                                  Default_Dialog.Button_Okay_Cancel);
 
       Gtk.Table.Gtk_New (Table, Rows => 5, Columns => 2, Homogeneous => False);
-      Gtk.Table.Set_Row_Spacings (Table, Glib.Guint (DEFAULT_SPACING));
-      Gtk.Table.Set_Col_Spacings (Table, Glib.Guint (DEFAULT_SPACING));
+      Gtk.Table.Set_Row_Spacings (Table, DEFAULT_SPACING);
+      Gtk.Table.Set_Col_Spacings (Table, DEFAULT_SPACING);
       Set_Center_Widget (Dialog, Table);
 
       --  left source
@@ -87,7 +87,10 @@ package body Giant.Set_Operation_Dialog is
 
       Gtk.Combo.Gtk_New (Dialog.Operation);
       Gtk.Combo.Set_Popdown_Strings (Dialog.Operation, Operations);
-       Gtk.Combo.Set_Value_In_List (Dialog.Operation, 0, Ok_If_Empty => False);
+      Gtk.Combo.Set_Value_In_List
+        (Combo_Box   => Dialog.Operation,
+         Val         => True,
+         Ok_If_Empty => False);
       Add_Row (Table, Row, New_Label (-"Operation"), Dialog.Operation);
 
       --  right source
@@ -117,7 +120,7 @@ package body Giant.Set_Operation_Dialog is
      return String
    is
    begin
-      return Gtk.Gentry.Get_Chars (Gtk.Combo.Get_Entry (Dialog.Left_Source));
+      return Gtk.Gentry.Get_Text (Gtk.Combo.Get_Entry (Dialog.Left_Source));
    end;
 
    function Get_Right_Source
@@ -125,7 +128,7 @@ package body Giant.Set_Operation_Dialog is
      return String
    is
    begin
-      return Gtk.Gentry.Get_Chars (Gtk.Combo.Get_Entry (Dialog.Right_Source));
+      return Gtk.Gentry.Get_Text (Gtk.Combo.Get_Entry (Dialog.Right_Source));
    end;
 
    function Get_Operation
@@ -133,7 +136,7 @@ package body Giant.Set_Operation_Dialog is
      return Operation_Type
    is
       Operation : String
-        := Gtk.Gentry.Get_Chars (Gtk.Combo.Get_Entry (Dialog.Operation));
+        := Gtk.Gentry.Get_Text (Gtk.Combo.Get_Entry (Dialog.Operation));
    begin
       if (Operation = -"Difference") then
          return Difference;
@@ -151,7 +154,7 @@ package body Giant.Set_Operation_Dialog is
      return String
    is
    begin
-      return Gtk.Gentry.Get_Chars (Dialog.Target);
+      return Gtk.Gentry.Get_Text (Dialog.Target);
    end;
 
    function Validate

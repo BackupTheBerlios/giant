@@ -1,3 +1,8 @@
+2003-09-09  Steffen Keul  <keulsn@droste.informatik.uni-stuttgart.de>
+
+	* src/utils/giant-evolutions.ads: Changed iterative handler from
+	idle signal to blocking implementation using Gtk.Main.Main_Iteration
+
 2003-09-08  Steffen Pingel  <squig@users.sourceforge.net>
 
 	* src/gui/giant-node_info_dialog.adb: Made dialog taller by default.
@@ -17,8 +22,90 @@
 	* src/gui/giant-layout_dialog.adb: Merged Actions package to
 	enable double referencing between action and dialog.
 
-2003-06-16  Steffen Pingel  <squig@users.sourceforge.net>
+2003-09-04  Steffen Pingel  <squig@users.sourceforge.net>
 
-	* src/project/giant-vis_windows.ads: Changed return type of
-	Get_Name. 
+	* src/vis/giant-graph_widgets-settings.adb: Rereplaced
+	Gdk.Font.Equals by Gdk."=".
 
+2003-09-03  Steffen Pingel  <squig@users.sourceforge.net>
+
+	* src/vis/giant-mini_maps.ads: Changed super class
+	from Gtk_Object to Gtk_Drawable.
+
+	* src/vis/giant-graph_widgets-drawing.ads: Changed super class
+	from Gtk_Object to Gtk_Drawable.
+
+	* src/giant-main.adb: Added Gdk.Threads.G_Init call.
+
+	* src/gui/giant-layout_dialog-widgets.adb: Replaced
+	Gtk.Gentry.Get_Chars by Gtk.Gentry.Get_Text.
+
+	* src/gui/giant-set_operation_dialog.adb: Fixed
+	Gtk.Combo.Set_Value_In_List. Replaced Gtk.Gentry.Get_Chars by
+	Gtk.Gentry.Get_Text. 
+
+	* src/gui/giant-about_dialog.adb: Replaced Gtk.Editable by
+	Gtk.Old_Editable. 
+
+	* src/vis/giant-mini_maps.adb: Replaced
+	Gtk.Arguments.To_Allocation by Gtk.Widget.Get_Allocation. Replaced
+	Gtk.Arguments.To_Requisition by Gtk.Widget.Get_Requisition.
+
+	* src/vis/giant-graph_widgets-drawing.adb: Replaced
+	Gtk.Window.Get_Size by Gtk.Window.Get_Geometry. 
+	Replaced Gdk.Drawable.Copy_Rect by Gdk.Drawable.Draw_Drawable.
+
+	* src/vis/giant-graph_widgets-callbacks.adb: Replaced
+	Gtk.Arguments.To_Allocation by Gtk.Widget.Get_Allocation. Replaced
+	Gtk.Arguments.To_Requisition by Gtk.Widget.Get_Requisition.
+
+	* src/vis/giant-graph_widgets-handlers.ads: Replaced Gtk.Arguments
+	by Gtk.GValues.
+
+	* src/vis/giant-graph_widgets-handlers.adb: Replaced
+	Gtk.Arguments.Get_Nth by Gtk.Arguments.To_Address.
+	Replaced Gtk.Gtk_Type_* by Glib.GType_*.
+
+	* src/vis/giant-graph_widgets-drawing.adb: Replaced
+	Gdk.Font.Text_* by Gdk.Font.String_*.
+
+	* src/vis/giant-graph_widgets-callbacks.adb: Replaced
+	Gtk.Arguments.Get_Nth by Gtk.Arguments.To_Address.
+
+	* src/gui/giant-gui_utils.ads: Replaced Spacing constants by
+	overloaded functions to work aroung Gint vs. Guint problem. 
+
+	* src/vis/giant-graph_widgets-callbacks.adb: Replaced Gdk.Types by
+	Gdk.Events. 
+
+	* src/gui/giant-progress_dialog.adb: Replaced Gtk.Object by
+	Glib.Object.
+
+	* src/gui/giant-main_window.adb: Replaced Gtk.Object by
+	Glib.Object. 
+
+	* src/gui/giant-gui_utils.ads: Changed constant types to
+	Glib.Guint. 
+
+	* src/gui/giant-graph_window.adb: Replaced Gtk.Gentry.Get_Chars by
+	Gtk.Gentry.Get_Text. 
+
+	* src/vis/giant-graph_widgets-settings.adb: Replaced Gdk.Font."="
+	by Gdk.Font.Equal.
+	Replaced Gdk.Window.Get_Size by Gdk.Drawable.Get_Size.
+
+	* src/vis/giant-graph_widgets.adb: Added type name field. Remove
+	Scroll_Adjustments_Signal. 
+	Changed type of Class_Record from System.Address to
+	GObject_Class. 
+
+	* src/gui/giant-input_dialog.adb: Replaced Gtk.Gentry.Get_Chars by
+	Gtk.Gentry.Get_Text. 
+
+	* src/utils/giant-evolutions.ads: Added Null_Handler. The type of
+	Gtk.Handlers.Handler_Id has been changed to a record.
+
+2003-09-02  Steffen Pingel  <squig@users.sourceforge.net>
+
+	* Released 1.0.0 (giant-1_0_0)
+	

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.41 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.42 $
 --  $Author: squig $
---  $Date: 2003/09/01 22:09:10 $
+--  $Date: 2003/09/09 15:31:24 $
 --
 --
 ------------------------------------------------------------------------------
@@ -240,6 +240,7 @@ begin
 
    Gtk.Main.Set_Locale;
    Gtk.Main.Init;
+   Gdk.Threads.G_Init;
    Gdk.Threads.Init;
 
    Gdk.Threads.Enter;

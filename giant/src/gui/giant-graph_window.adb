@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.57 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.58 $
 --  $Author: squig $
---  $Date: 2003/09/08 15:33:10 $
+--  $Date: 2003/09/09 15:31:24 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -454,7 +454,7 @@ package body Giant.Graph_Window is
    is
       Window : Graph_Window_Access := Graph_Window_Access (Source);
       Vis_Style_Name : String
-        := Gtk.Gentry.Get_Chars (Gtk.Combo.Get_Entry (Window.Vis_Style_Combo));
+        := Gtk.Gentry.Get_Text (Gtk.Combo.Get_Entry (Window.Vis_Style_Combo));
    begin
       Controller.Set_Vis_Style (Get_Window_Name (Window), Vis_Style_Name);
    end On_Vis_Style_Selected;
@@ -478,7 +478,7 @@ package body Giant.Graph_Window is
    is
       Window : Graph_Window_Access := Graph_Window_Access (Source);
       Zoom_String : String
-        := Gtk.Gentry.Get_Chars (Gtk.Combo.Get_Entry (Window.Zoom_Combo));
+        := Gtk.Gentry.Get_Text (Gtk.Combo.Get_Entry (Window.Zoom_Combo));
       Zoom_Level : Vis.Zoom_Level;
    begin
       if (Zoom_String = "") then

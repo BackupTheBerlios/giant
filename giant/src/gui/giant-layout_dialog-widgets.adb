@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-layout_dialog-widgets.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-layout_dialog-widgets.adb,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/07/15 11:50:26 $
+--  $Date: 2003/09/09 15:31:24 $
 
 with Glib;
 with Gtk.Enums;
@@ -192,7 +192,7 @@ package body Giant.Layout_Dialog.Widgets is
             & ",");
          Selection := Gtk.Enums.Gint_List.Next (Selection);
       end loop;
-      return Gtk.Gentry.Get_Chars (Container.Root_Node)
+      return Gtk.Gentry.Get_Text (Container.Root_Node)
         & ";" & Ada.Strings.Unbounded.To_String (Classes);
    end Get_Layout_Parameters;
 
@@ -214,9 +214,8 @@ package body Giant.Layout_Dialog.Widgets is
       Gtk.Box.Gtk_New_Vbox (Container.Widget);
 
       Gtk.Table.Gtk_New (Table, Rows => 2, Columns => 2, Homogeneous => False);
-      Gtk.Table.Set_Row_Spacings (Table, Glib.Guint (DEFAULT_SPACING));
-      Gtk.Table.Set_Col_Spacings (Table, Glib.Guint
-                                  (DEFAULT_SPACING));
+      Gtk.Table.Set_Row_Spacings (Table, DEFAULT_SPACING);
+      Gtk.Table.Set_Col_Spacings (Table, DEFAULT_SPACING);
       Gtk.Table.Set_Border_Width (Table, DEFAULT_SPACING);
       Gtk.Box.Pack_Start (Container.Widget, Table,
                           expand => False, Fill => False,
@@ -253,7 +252,7 @@ package body Giant.Layout_Dialog.Widgets is
      return String
    is
    begin
-      return Gtk.Gentry.Get_Chars (Container.Layout_Name);
+      return Gtk.Gentry.Get_Text (Container.Layout_Name);
    end Get_Layout_Name;
 
    function Get_Layout_Parameters
@@ -261,7 +260,7 @@ package body Giant.Layout_Dialog.Widgets is
      return String
    is
    begin
-      return Gtk.Gentry.Get_Chars (Container.Parameters);
+      return Gtk.Gentry.Get_Text (Container.Parameters);
    end Get_Layout_Parameters;
 
 end Giant.Layout_Dialog.Widgets;

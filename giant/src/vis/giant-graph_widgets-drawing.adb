@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.30 $
---  $Author: keulsn $
---  $Date: 2003/09/02 13:19:08 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.31 $
+--  $Author: squig $
+--  $Date: 2003/09/09 15:31:24 $
 --
 ------------------------------------------------------------------------------
 
@@ -123,8 +123,8 @@ package body Giant.Graph_Widgets.Drawing is
       Width  : Glib.Gint;
       Height : Glib.Gint;
    begin
-      Gdk.Window.Get_Size
-        (Window   => Drawable,
+      Gdk.Drawable.Get_Size
+        (Drawable => Drawable,
          Width    => Width,
          Height   => Height);
       Gdk.Drawable.Draw_Rectangle
@@ -199,11 +199,11 @@ package body Giant.Graph_Widgets.Drawing is
          return;
       end if;
 
-      Text_Width := Gdk.Font.Text_Measure (Font, Text);
+      Text_Width := Gdk.Font.String_Measure (Font, Text);
       if Text_Width > Width then
          --  leave width for abbreviation string
          Width := Width -
-           Gdk.Font.Text_Measure (Font, Default_Text_Abbreviation);
+           Gdk.Font.String_Measure (Font, Default_Text_Abbreviation);
 
          --  can draw at least abbreviation string?
          if Width >= 0 then
@@ -231,7 +231,7 @@ package body Giant.Graph_Widgets.Drawing is
                   --  Text'First <= Minimum + 1 <= Last ==> Last >= Text'First
                end if;
                --  Minimum + 1 <= Last <= Maximum
-               Text_Width := Gdk.Font.Text_Width
+               Text_Width := Gdk.Font.String_Width
                  (Font, Text (Text'First .. Last));
                if Text_Width < Width then
                   --  Minimum becomes greater, Text (Text'First .. Minimum)
@@ -286,14 +286,14 @@ package body Giant.Graph_Widgets.Drawing is
       Y : Glib.Gint;
    begin
       Vis.To_Gdk (Get_Top_Left (Area) - Origin, X, Y);
-      Gdk.Drawable.Copy_Area
-        (Dest     => Widget.Drawing.Buffer,
+      Gdk.Drawable.Draw_Drawable
+        (Drawable => Widget.Drawing.Buffer,
          GC       => Widget.Drawing.Background,
-         X        => X,
-         Y        => Y,
-         Source   => Widget.Drawing.Ready_Buffer,
-         Source_X => X,
-         Source_Y => Y,
+         XDest    => X,
+         YDest    => Y,
+         Src      => Widget.Drawing.Ready_Buffer,
+         XSrc     => X,
+         YSrc     => Y,
          Width    => Glib.Gint (Get_Width (Area)),
          Height   => Glib.Gint (Get_Height (Area)));
    end Copy_Ready_Into_Normal_Buffer;
@@ -327,8 +327,8 @@ package body Giant.Graph_Widgets.Drawing is
          Font := Settings.Get_Edge_Font (Widget);
          Height := Settings.Get_Edge_Font_Height (Widget);
          Width := Vis.Absolute_Natural
-           (Gdk.Font.Text_Measure (Font,
-                                   Graph_Lib.Get_Edge_Tag (Graph_Edge))) + 1;
+           (Gdk.Font.String_Measure (Font,
+                                     Graph_Lib.Get_Edge_Tag (Graph_Edge))) + 1;
          Vis_Data.Set_Text_Area_Size (Edge, Combine_Vector (Width, Height));
       else
          Vis_Data.Remove_Text_Area (Edge);
@@ -388,23 +388,23 @@ package body Giant.Graph_Widgets.Drawing is
 
          Source     : Vis.Absolute.Vector_2d;
          Target     : Vis.Absolute.Vector_2d;
-         Line_Style : Gdk.Types.Gdk_Line_Style;
+         Line_Style : Gdk.GC.Gdk_Line_Style;
       begin
          case Style is
             when Continuous_Line =>
-               Line_Style := Gdk.Types.Line_Solid;
+               Line_Style := Gdk.GC.Line_Solid;
             when Dashed_Line =>
-               Line_Style := Gdk.Types.Line_On_Off_Dash;
+               Line_Style := Gdk.GC.Line_On_Off_Dash;
             when Dotted_Line =>
-               Line_Style := Gdk.Types.Line_On_Off_Dash;
+               Line_Style := Gdk.GC.Line_On_Off_Dash;
          end case;
          --  set line width
          Gdk.GC.Set_Line_Attributes
            (GC         => Gc,
             Line_Width => Glib.Gint (Width),
             Line_Style => Line_Style,
-            Cap_Style  => Gdk.Types.Cap_Round,
-            Join_Style => Gdk.Types.Join_Round);
+            Cap_Style  => Gdk.GC.Cap_Round,
+            Join_Style => Gdk.GC.Join_Round);
          --  Cannot use 'Gdk.Drawable.Draw_Lines' because
          --  'Gdk.Types.Gdk_Points_Array' uses Glib.Gint16 as component type
          --  wich is too small.
@@ -1085,16 +1085,16 @@ package body Giant.Graph_Widgets.Drawing is
       --    ("Update_Display: " & Vis.Absolute.Image (Area));
       Update_Buffer (Widget);
 
-      Gdk.Drawable.Copy_Area
-        (Dest     => Widget.Drawing.Display,
+      Gdk.Drawable.Draw_Drawable
+        (Drawable => Widget.Drawing.Display,
          GC       => Widget.Drawing.Background,
-         X        => 0,
-         Y        => 0,
-         Source   => Widget.Drawing.Ready_Buffer,
-         Source_X => Glib.Gint (Get_Left (Widget.Drawing.Visible_Area) -
+         Xdest    => 0,
+         Ydest    => 0,
+         Src      => Widget.Drawing.Ready_Buffer,
+         XSrc     => Glib.Gint (Get_Left (Widget.Drawing.Visible_Area) -
                                 Get_Left (Widget.Drawing.Buffer_Area)),
-         Source_Y => Glib.Gint (Get_Top (Widget.Drawing.Visible_Area) -
-                                Get_Top (Widget.Drawing.Buffer_Area)),
+         YSrc      => Glib.Gint (Get_Top (Widget.Drawing.Visible_Area) -
+                                 Get_Top (Widget.Drawing.Buffer_Area)),
          Width    => Glib.Gint
                       (Vis.Absolute.Get_Width (Widget.Drawing.Visible_Area)),
          Height   => Glib.Gint
@@ -1168,8 +1168,8 @@ package body Giant.Graph_Widgets.Drawing is
    begin
       Gdk.Window.Get_Geometry
         (Gdk.Window.Null_Window, X, Y, Width, Height, Depth);
-      Gdk.Window.Get_Size
-        (Get_Window (Widget), Window_Width, Window_Height);
+      Gdk.Window.Get_Geometry
+        (Get_Window (Widget), X, Y, Window_Width, Window_Height, Depth);
       Width  := Glib.Gint'Max (Width, Window_Width);
       Height := Glib.Gint'Max (Height, Window_Height);
       Area := Vis.Absolute.Combine_Rectangle
@@ -1233,14 +1233,14 @@ package body Giant.Graph_Widgets.Drawing is
          Copy_From := Get_Top_Left (Intersection) - Get_Top_Left (Old_Buffer);
          Copy_To := Get_Top_Left (Intersection) - Get_Top_Left (New_Buffer);
 
-         Gdk.Drawable.Copy_Area
-           (Dest     => Widget.Drawing.Ready_Buffer,
+         Gdk.Drawable.Draw_Drawable
+           (Drawable => Widget.Drawing.Ready_Buffer,
             GC       => Widget.Drawing.Background,
-            X        => Glib.Gint (Get_X (Copy_To)),
-            Y        => Glib.Gint (Get_Y (Copy_To)),
-            Source   => Old_Ready_Buffer,
-            Source_X => Glib.Gint (Get_X (Copy_From)),
-            Source_Y => Glib.Gint (Get_Y (Copy_From)),
+            Xdest    => Glib.Gint (Get_X (Copy_To)),
+            Ydest    => Glib.Gint (Get_Y (Copy_To)),
+            Src      => Old_Ready_Buffer,
+            XSrc     => Glib.Gint (Get_X (Copy_From)),
+            YSrc     => Glib.Gint (Get_Y (Copy_From)),
             Width    => Glib.Gint (Get_Width (Intersection)),
             Height   => Glib.Gint (Get_Height (Intersection)));
 
@@ -1295,8 +1295,11 @@ package body Giant.Graph_Widgets.Drawing is
       New_Area         : Vis.Absolute.Rectangle_2d;
       New_Size         : Vis.Absolute.Vector_2d;
       Old_Ready_Buffer : Gdk.Pixmap.Gdk_Pixmap;
+      X                : Glib.Gint;
+      Y                : Glib.Gint;
       Width            : Glib.Gint;
       Height           : Glib.Gint;
+      Depth            : Glib.Gint;
    begin
       States.Changed_Visual (Widget);
       if not States.Can_Resize (Widget) then
@@ -1306,8 +1309,8 @@ package body Giant.Graph_Widgets.Drawing is
       Old_Size := Get_Size (Old_Area);
 
       --  update display size
-      Gdk.Window.Get_Size
-        (Get_Window (Widget), Width, Height);
+      Gdk.Window.Get_Geometry
+        (Get_Window (Widget), X, Y, Width, Height, Depth);
       Width := Glib.Gint'Max (Width, 1);
       Height := Glib.Gint'Max (Height, 1);
       Set_Size
@@ -1325,14 +1328,14 @@ package body Giant.Graph_Widgets.Drawing is
          Old_Ready_Buffer := Widget.Drawing.Ready_Buffer;
          Gdk.Pixmap.Ref (Old_Ready_Buffer);
          Reset_Buffers (Widget, New_Area);
-         Gdk.Drawable.Copy_Area
-           (Dest     => Widget.Drawing.Ready_Buffer,
+         Gdk.Drawable.Draw_Drawable
+           (Drawable => Widget.Drawing.Ready_Buffer,
             GC       => Widget.Drawing.Background,
-            X        => 0,
-            Y        => 0,
-            Source   => Old_Ready_Buffer,
-            Source_X => 0,
-            Source_Y => 0,
+            Xdest    => 0,
+            Ydest    => 0,
+            Src      => Old_Ready_Buffer,
+            XSrc     => 0,
+            YSrc     => 0,
             Width    => Glib.Gint (Vis.Absolute_Int'Min
                                    (Get_X (Old_Size), Get_X (New_Size))),
             Height   => Glib.Gint (Vis.Absolute_Int'Min
@@ -1363,10 +1366,10 @@ package body Giant.Graph_Widgets.Drawing is
 
          --  update 'Display's size
          New_Size := Calculate_Display_Size (Widget);
-         Gdk.Window.Get_Size
-           (Window => Widget.Drawing.Display,
-            Width  => Width,
-            Height => Height);
+         Gdk.Drawable.Get_Size
+           (Drawable => Widget.Drawing.Display,
+            Width    => Width,
+            Height   => Height);
          Old_Size := Combine_Vector
            (X => Vis.Absolute_Int (Width),
             Y => Vis.Absolute_Int (Height));
@@ -1480,7 +1483,7 @@ package body Giant.Graph_Widgets.Drawing is
       Gdk.GC.Gdk_New (Widget.Drawing.Rectangle_Gc, Window);
       Gdk.GC.Set_Foreground
         (Widget.Drawing.Rectangle_Gc, Settings.Get_Background_Color (Widget));
-      Gdk.GC.Set_Function (Widget.Drawing.Rectangle_Gc, Gdk.Types.Invert);
+      Gdk.GC.Set_Function (Widget.Drawing.Rectangle_Gc, Gdk.GC.Invert);
    end Set_Up_Rectangle_Gc;
 
 
@@ -1501,7 +1504,7 @@ package body Giant.Graph_Widgets.Drawing is
          Height => Height);
 
       --  Visible area
-      Gdk.Window.Get_Size
+      Gdk.Drawable.Get_Size
         (Get_Window (Widget), Width, Height);
       --  GdkAda can set a size of 0. Since our rectangle definition does
       --  not provide empty rectangles, we force the size to be non-null

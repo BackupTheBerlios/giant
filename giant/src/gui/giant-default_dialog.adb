@@ -20,14 +20,15 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.19 $
+--  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.20 $
 --  $Author: squig $
---  $Date: 2003/08/25 16:06:25 $
+--  $Date: 2003/09/09 15:31:24 $
 --
 
 with Ada.Text_Io; use Ada.Text_Io;
 with Ada.Strings.Unbounded;
 
+with Glib;
 with Gtk.Enums; use Gtk.Enums;
 with Gtk.Gentry;
 with Gtk.Label;

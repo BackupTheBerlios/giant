@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-handlers.ads,v $, $Revision: 1.12 $
---  $Author: keulsn $
---  $Date: 2003/09/02 04:49:38 $
+--  $RCSfile: giant-graph_widgets-handlers.ads,v $, $Revision: 1.13 $
+--  $Author: squig $
+--  $Date: 2003/09/09 15:31:25 $
 --
 ------------------------------------------------------------------------------
 --
@@ -30,11 +30,13 @@
 --  connect handlers to the signals emitted by 'Graph_Widgets.Graph_Widget'.
 --
 
-
 with Gdk.Event;
+with Glib.Values;
 with Gtk.Arguments;
 with Gtk.Object;
 with Gtkada.Types;
+
+with System;
 
 with Giant.Graph_Lib;
 
@@ -107,41 +109,34 @@ package Giant.Graph_Widgets.Handlers is
    --  Conversion function for Marshallers
    --
    --  Parameters:
-   --    Args - The GtkAda argument array
-   --    Num  - The Index of an argument in 'Args'
+   --    Args - The GtkAda argument
    --  Returns:
    --    The Area at index 'Num' in 'Args'
    function To_Rectangle_2d
-     (Args : in Gtk.Arguments.Gtk_Args;
-      Num  : in Natural)
+     (Arg : in Glib.Values.Gvalue)
      return Vis.Logic.Rectangle_2d;
 
    ----------------------------------------------------------------------------
    --  Conversion function for Marshallers
    --
    --  Parameters
-   --    Args - The GtkAda argument array
-   --    Num  - The Index of an argument in 'Args'
+   --    Args - The GtkAda argument
    --  Returns:
    --    The 'Button_Press_Action' at index 'Num' in 'Args'
    function To_Button_Press_Action
-     (Args : in Gtk.Arguments.Gtk_Args;
-      Num  : in Natural)
+     (Arg : in Glib.Values.Gvalue)
      return Button_Press_Action;
 
    ----------------------------------------------------------------------------
    --  Conversion function for Marshallers
    --
    --  Parameters
-   --    Args - The GtkAda argument array
-   --    Num  - The Index of an argument in 'Args'
+   --    Args - The GtkAda argument
    --  Returns:
    --    The 'Selection_Change_Action' at index 'Num' in 'Args'
    function To_Selection_Change_Action
-     (Args : in Gtk.Arguments.Gtk_Args;
-      Num  : in Natural)
+     (Arg : in Glib.Values.Gvalue)
      return Selection_Change_Action;
-
 
    ------------------------------
    -- "background_popup_event" --

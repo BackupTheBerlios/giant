@@ -20,15 +20,16 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-progress_dialog.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-progress_dialog.adb,v $, $Revision: 1.10 $
 --  $Author: squig $
---  $Date: 2003/06/25 16:07:51 $
+--  $Date: 2003/09/09 15:31:24 $
 --
 
 with Interfaces.C.Strings;
 with System;
 
 with Glib;
+with Glib.Object;
 with Gtk.Box;
 with Gtk.Enums; use Gtk.Enums;
 with Gtk.Handlers;
@@ -42,7 +43,7 @@ with Giant.Gui_Utils; use Giant.Gui_Utils;
 
 package body Giant.Progress_Dialog is
 
-   Class_Record : System.Address := System.Null_Address;
+   Class_Record : Glib.Object.GObject_Class := Glib.Object.Uninitialized_Class;
 
    Signals : constant Gtkada.Types.Chars_Ptr_Array :=
      (1 => Interfaces.C.Strings.New_String ("cancelled"));
@@ -70,25 +71,29 @@ package body Giant.Progress_Dialog is
    begin
       Default_Dialog.Initialize (Dialog, Title, Default_Dialog.Button_Cancel);
 
-      --  provide signal
-      Gtk.Object.Initialize_Class_Record
-        (Dialog, Signals, Class_Record);
+      --  provide signals
+      Glib.Object.Initialize_Class_Record
+        (Object       => Dialog,
+         Signals      => Signals,
+         Class_Record => Class_Record,
+         Type_Name    => "Progress_Dialog");
 
       Box := Get_Center_Box (Dialog);
 
       Gtk.Label.Gtk_New (Dialog.Progress_Label, Message);
       Gtk.Box.Pack_Start (Box, Dialog.Progress_Label, Expand => False,
-                         Fill => False, Padding => DEFAULT_SPACING);
+                          Fill => False, Padding => DEFAULT_SPACING);
 
       Gtk.Adjustment.Gtk_New (Dialog.Progress_Bar_Adjustment,
                               Value => 0.0, Lower => 0.0,
                               Upper => 100.0, Step_Increment => 1.0,
                               Page_Increment => 1.0, Page_Size => 1.0);
 
-      Gtk.Progress_Bar.Gtk_New (Dialog.Progress_Bar,
-                                Dialog.Progress_Bar_Adjustment);
-      Gtk.Progress_Bar.Set_Activity_Blocks (Dialog.Progress_Bar, 10);
-      Gtk.Progress_Bar.Set_Activity_Step (Dialog.Progress_Bar, 1);
+      Gtk.Progress_Bar.Gtk_New (Dialog.Progress_Bar);
+      Gtk.Progress_Bar.Set_Adjustment
+        (Dialog.Progress_Bar,
+         Dialog.Progress_Bar_Adjustment);
+      Gtk.Progress_Bar.Set_Pulse_Step (Dialog.Progress_Bar, Glib.Gdouble (1));
       Gtk.Box.Pack_Start (Box, Dialog.Progress_Bar, Expand => False,
                           Fill => False, Padding => DEFAULT_SPACING);
    end;
@@ -134,7 +139,7 @@ package body Giant.Progress_Dialog is
    is
    begin
       Gtk.Adjustment.Set_Lower (Dialog.Progress_Bar_Adjustment,
-                                Glib.Gfloat (Lower));
+                                Glib.Gdouble (Lower));
    end Set_Lower;
 
    procedure Set_Percentage
@@ -143,7 +148,7 @@ package body Giant.Progress_Dialog is
    is
    begin
       Gtk.Progress_Bar.Set_Percentage (Dialog.Progress_Bar,
-                                       Glib.Gfloat (Percentage));
+                                       Glib.Gdouble (Percentage));
    end Set_Percentage;
 
    procedure Set_Progress_Text
@@ -160,7 +165,7 @@ package body Giant.Progress_Dialog is
    is
    begin
       Gtk.Adjustment.Set_Upper (Dialog.Progress_Bar_Adjustment,
-                                Glib.Gfloat (Upper));
+                                Glib.Gdouble (Upper));
    end Set_Upper;
 
    procedure Set_Value (Dialog : access Progress_Dialog_Record;
@@ -174,14 +179,14 @@ package body Giant.Progress_Dialog is
                                 (Dialog.Progress_Bar_Adjustment));
       if (Upper_Bound = Float(0)) then
          Gtk.Adjustment.Set_Value (Dialog.Progress_Bar_Adjustment,
-                                   Glib.Gfloat (0));
+                                   Glib.Gdouble (0));
       else
          while (Mod_Value > Upper_Bound) loop
             Mod_Value := Mod_Value - Upper_Bound;
          end loop;
 
          Gtk.Adjustment.Set_Value (Dialog.Progress_Bar_Adjustment,
-                                   Glib.Gfloat (Mod_Value));
+                                   Glib.Gdouble (Mod_Value));
       end if;
    end Set_Value;
 

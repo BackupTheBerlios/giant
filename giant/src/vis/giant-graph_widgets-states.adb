@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.12 $
---  $Author: keulsn $
---  $Date: 2003/08/17 00:34:24 $
+--  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.13 $
+--  $Author: squig $
+--  $Date: 2003/09/09 15:31:25 $
 --
 ------------------------------------------------------------------------------
 
@@ -537,7 +537,7 @@ package body Giant.Graph_Widgets.States is
       if Gdk.Cursor."=" (Default_Waiting_Cursor, Gdk.Cursor.Null_Cursor) then
          Gdk.Cursor.Gdk_New
            (Widget      => Default_Waiting_Cursor,
-            Cursor_Type => Gdk.Types.Left_Ptr);
+            Cursor_Type => Gdk.Cursor.Left_Ptr);
       end if;
       return Default_Waiting_Cursor;
    end Get_Default_Default_Cursor;
@@ -548,7 +548,7 @@ package body Giant.Graph_Widgets.States is
       if Gdk.Cursor."=" (Default_Action_Cursor, Gdk.Cursor.Null_Cursor) then
          Gdk.Cursor.Gdk_New
            (Widget      => Default_Action_Cursor,
-            Cursor_Type => Gdk.Types.Watch);
+            Cursor_Type => Gdk.Cursor.Watch);
       end if;
       return Default_Waiting_Cursor;
    end Get_Default_Waiting_Cursor;
@@ -559,7 +559,7 @@ package body Giant.Graph_Widgets.States is
       if Gdk.Cursor."=" (Default_Action_Cursor, Gdk.Cursor.Null_Cursor) then
          Gdk.Cursor.Gdk_New
            (Widget      => Default_Action_Cursor,
-            Cursor_Type => Gdk.Types.Crosshair);
+            Cursor_Type => Gdk.Cursor.Crosshair);
       end if;
       return Default_Action_Cursor;
    end Get_Default_Action_Cursor;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-mini_maps.adb,v $, $Revision: 1.7 $
---  $Author: keulsn $
---  $Date: 2003/08/02 16:27:43 $
+--  $RCSfile: giant-mini_maps.adb,v $, $Revision: 1.8 $
+--  $Author: squig $
+--  $Date: 2003/09/09 15:31:25 $
 --
 ------------------------------------------------------------------------------
 
@@ -38,11 +38,13 @@ with Gdk.Types;
 with Gdk.Window;
 with Gdk.Window_Attr;
 with Glib;
+with Glib.Object;
 with Gtk.Arguments;
 with Gtk.Container;
 with Gtk.Enums;
 with Gtk.Object;
 with Gtk.Style;
+with Gtk.Window;
 with Gtkada.Types;
 
 with Giant.Graph_Widgets.Handlers;
@@ -57,15 +59,15 @@ package body Giant.Mini_Maps is
      (Name => "Giant.Mini_Maps");
 
    function "or"
-     (Left  : in     Gdk.Types.Gdk_Event_Mask;
-      Right : in     Gdk.Types.Gdk_Event_Mask)
-     return Gdk.Types.Gdk_Event_Mask
-     renames Gdk.Types."or";
+     (Left  : in     Gdk.Event.Gdk_Event_Mask;
+      Right : in     Gdk.Event.Gdk_Event_Mask)
+     return Gdk.Event.Gdk_Event_Mask
+     renames Gdk.Event."or";
 
-   Handled_Events : constant Gdk.Types.Gdk_Event_Mask :=
-     Gdk.Types.Button_Press_Mask or
-     Gdk.Types.Button1_Motion_Mask or
-     Gdk.Types.Button_Release_Mask;
+   Handled_Events : constant Gdk.Event.Gdk_Event_Mask :=
+     Gdk.Event.Button_Press_Mask or
+     Gdk.Event.Button1_Motion_Mask or
+     Gdk.Event.Button_Release_Mask;
 
 
    ----------------------
@@ -173,13 +175,13 @@ package body Giant.Mini_Maps is
    package Requisition_Marshallers is new
      Size_Request_Cbs.Marshallers.Generic_Marshaller
        (Base_Type  => Gtk.Widget.Gtk_Requisition_Access,
-        Conversion => Gtk.Arguments.To_Requisition);
+        Conversion => Gtk.Widget.Get_Requisition);
 
    package Size_Allocate_Cbs renames Size_Request_Cbs;
    package Allocation_Marshallers is new
      Size_Allocate_Cbs.Marshallers.Generic_Marshaller
        (Base_Type  => Gtk.Widget.Gtk_Allocation_Access,
-        Conversion => Gtk.Arguments.To_Allocation);
+        Conversion => Gtk.Widget.Get_Allocation);
 
    package Expose_Event_Cbs renames Mini_Map_Boolean_Callback;
 
@@ -222,14 +224,20 @@ package body Giant.Mini_Maps is
      (Widget : access Mini_Map_Record'Class) is
 
       Window : Gdk.Window.Gdk_Window;
+      X      : Glib.Gint;
+      Y      : Glib.Gint;
       Width  : Glib.Gint;
       Height : Glib.Gint;
+      Depth  : Glib.Gint;
    begin
       Window := Get_Window (Widget);
-      Gdk.Window.Get_Size
-        (Window,
-         Width,
-         Height);
+      Gdk.Window.Get_Geometry
+        (Window => Window,
+         X      => X,
+         Y      => Y,
+         Width  => Width,
+         Height => Height,
+         Depth  => Depth);
       if Gdk."/=" (Widget.Buffer, Gdk.Pixmap.Null_Pixmap) then
          Gdk.Pixmap.Unref (Widget.Buffer);
       end if;
@@ -276,13 +284,14 @@ package body Giant.Mini_Maps is
    -- Implementation --
    --------------------
 
-   Class_Record : System.Address := System.Null_Address;
+   Class_Record : Glib.Object.GObject_Class := Glib.Object.Uninitialized_Class;
 
    procedure Initialize
      (Widget  : access Mini_Map_Record;
       Watched : in     Graph_Widgets.Graph_Widget) is
    begin
-      Gtk.Widget.Initialize_Widget (Widget);
+      Gtk.Drawing_Area.Initialize (Widget);
+
       Widget.Watched := null;
       Widget.Buffer := Gdk.Pixmap.Null_Pixmap;
       Widget.Polluted := True;
@@ -290,9 +299,10 @@ package body Giant.Mini_Maps is
       Gtk.Object.Initialize_Class_Record
         (Object       => Widget,
          Signals      => Gtkada.Types.Null_Array,
-         Class_Record => Class_Record);
+         Class_Record => Class_Record,
+         Type_Name    => "MiniMap");
       Set_Events
-        (Widget, Gdk.Types."or" (Get_Events (Widget), Handled_Events));
+        (Widget, Gdk.Event."or" (Get_Events (Widget), Handled_Events));
 
       Realize_Cbs.Connect
         (Widget => Widget,
@@ -396,8 +406,8 @@ package body Giant.Mini_Maps is
 
       X                 : Glib.Gint  := 0;
       Y                 : Glib.Gint  := 0;
-      Width             : Glib.Guint := Get_Allocation_Width (Widget);
-      Height            : Glib.Guint := Get_Allocation_Height (Widget);
+      Width             : Glib.Gint  := Get_Allocation_Width (Widget);
+      Height            : Glib.Gint  := Get_Allocation_Height (Widget);
       Window_Rect       : Vis.Absolute.Rectangle_2d;
       Target_Rect       : Vis.Absolute.Rectangle_2d;
       Visible_Rect      : Vis.Absolute.Rectangle_2d;
@@ -502,7 +512,7 @@ package body Giant.Mini_Maps is
      (Widget : access Mini_Map_Record'Class) is
 
       Attributes      : Gdk.Window_Attr.Gdk_Window_Attr;
-      Attributes_Mask : Gdk.Types.Gdk_Window_Attributes_Type;
+      Attributes_Mask : Gdk.Window.Gdk_Window_Attributes_Type;
       Window          : Gdk.Window.Gdk_Window;
 
       procedure Set_User_Data
@@ -514,20 +524,20 @@ package body Giant.Mini_Maps is
 
       Gdk.Window_Attr.Gdk_New
         (Window_Attr => Attributes,
-         Event_Mask  => Gdk.Types."or"
-                          (Get_Events (Widget), Gdk.Types.Exposure_Mask),
+         Event_Mask  => Gdk.Event."or"
+                          (Get_Events (Widget), Gdk.Event.Exposure_Mask),
          X           => Get_Allocation_X (Widget),
          Y           => Get_Allocation_Y (Widget),
          Width       => Glib.Gint (Get_Allocation_Width (Widget)),
          Height      => Glib.Gint (Get_Allocation_Height (Widget)),
-         Window_Type => Gdk.Types.Window_Child,
+         Window_Type => Gdk.Window.Window_Child,
          Visual      => Get_Visual (Widget),
          Colormap    => Get_Colormap (Widget));
 
       Attributes_Mask :=
-        Gdk.Types."or" (Gdk.Types."or" (Gdk.Types."or"
-        (Gdk.Types.Wa_X, Gdk.Types.Wa_Y), Gdk.Types.Wa_Visual),
-         Gdk.Types.Wa_Colormap);
+        Gdk.Window."or" (Gdk.Window."or" (Gdk.Window."or"
+        (Gdk.Window.Wa_X, Gdk.Window.Wa_Y), Gdk.Window.Wa_Visual),
+         Gdk.Window.Wa_Colormap);
       Gdk.Window.Gdk_New
         (Window,
          Gtk.Widget.Get_Window (Get_Parent (Widget)),
@@ -546,7 +556,7 @@ package body Giant.Mini_Maps is
 
       Set_User_Data
         (Window,
-         Gtk.Get_Object (Widget));
+         Glib.Object.Get_Object (Widget));
 
    end On_Realize;
 
@@ -710,7 +720,7 @@ package body Giant.Mini_Maps is
       Event  : in     Gdk.Event.Gdk_Event_Button)
      return Boolean is
 
-      Value : Boolean;
+      Status : Gdk.Main.Gdk_Grab_Status;
       Point : Vis.Absolute.Vector_2d := Combine_Vector
         (X => Vis.Absolute_Int (Gdk.Event.Get_X (Event)),
          Y => Vis.Absolute_Int (Gdk.Event.Get_Y (Event)));
@@ -719,13 +729,13 @@ package body Giant.Mini_Maps is
          Graph_Widgets.Set_Location
            (Widget   => Widget.Watched,
             Location => Vis.Transform_Backward (Widget.Transformation, Point));
-         Value := Gdk.Main.Pointer_Grab
+         Status := Gdk.Main.Pointer_Grab
            (Window       => Get_Window (Widget),
             Owner_Events => False,
             Event_Mask   => Handled_Events,
             Confine_To   => Get_Window (Widget),
             Time         => Gdk.Event.Get_Time (Event));
-         --  Meaning of 'Value' is undocumented in GtkAda --> we ignore it.
+         pragma Assert (Gdk.Main."=" (Status, Gdk.Main.Grab_Success));
       end if;
       return True;
    end On_Button_Press_Event;

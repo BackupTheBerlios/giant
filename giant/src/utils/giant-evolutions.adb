@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.17 $
+--  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.18 $
 --  $Author: squig $
---  $Date: 2003/07/11 12:58:49 $
+--  $Date: 2003/09/09 15:31:24 $
 --
 ------------------------------------------------------------------------------
 
@@ -33,6 +33,7 @@ with Ada.Tags;
 
 with Gdk.Main;
 with Gdk.Threads;
+with Gtk.Main;
 
 with Tagged_Ptr_Ops;
 
@@ -141,6 +142,18 @@ package body Giant.Evolutions is
       Dialog     : in     Progress_Dialog.Progress_Dialog_Access);
 
    procedure Stop_Iterative_Driver;
+
+   ----------------------------------------------------------------------------
+   --  Originally implemented to be a callback to GtkAda's idle signal.
+   --  Since GtkAda 2.2.0 this does not work anymore because one cannot
+   --  start new event-loops inside an idle signal. (Thus an iterative
+   --  evolution could not open modal dialogs)
+   --
+   --  Return:
+   --    True if 'Step_Iterative_Driver' need be called again, False if
+   --    if all work is done and the iterative driver was already stopped.
+   function Step_Iterative_Driver
+     return Boolean;
 
 
    ---------------
@@ -698,7 +711,7 @@ package body Giant.Evolutions is
             State_Change    => Ada.Real_Time.Clock,
             Cancel_Request  => False,
             Position        => 0,
-            Cancel_Handler  => 0,
+            Cancel_Handler  => Null_Handler,
             Dialog          => Dialog);
 
          if Driver_State_Queues.Is_Empty (Update_Queue) then
@@ -891,6 +904,10 @@ package body Giant.Evolutions is
    -- Iterative Driver Callbacks --
    --------------------------------
 
+   ----------------------------------------------------------------------------
+   --  State of the iterative driver, used by 'Start_Iterative_Driver_State',
+   --  'Step_Iterative_Driver', 'Stop_Iterative_Driver' and
+   --  'Iterative_Cancel_Callback'
    Driver_State : Iterative_Driver_State_Type := No_Iterative_Driver_State;
 
 
@@ -901,7 +918,79 @@ package body Giant.Evolutions is
    end Iterative_Cancel_Callback;
 
 
-   function Iterative_Driver_Callback
+   -----------------------
+   -- Callback-handling --
+   -----------------------
+
+   Concurrent_Update_Id : Gtk.Main.Timeout_Handler_Id;
+
+   procedure Begin_Concurrent_Updates is
+   begin
+      Concurrent_Update_Id := Gtk.Main.Timeout_Add
+        (Poll_Delay_Milli_Seconds, Concurrent_Update_Callback'Access);
+   end Begin_Concurrent_Updates;
+
+   procedure End_Concurrent_Updates is
+   begin
+      Gtk.Main.Timeout_Remove (Concurrent_Update_Id);
+   end End_Concurrent_Updates;
+
+
+   ----------------------
+   -- Iterative_Driver --
+   ----------------------
+
+   procedure Start_Iterative_Driver
+     (Individual : access Iterative_Evolution'Class;
+      Started    :    out Boolean;
+      Dialog     : in     Progress_Dialog.Progress_Dialog_Access) is
+
+      Dead : Boolean;
+   begin
+      Started := Driver_State = No_Iterative_Driver_State;
+      if Started then
+         Driver_State :=
+           (Individual      => Evolution_Class_Access (Individual),
+            Update_Time     => Ada.Real_Time.Clock,
+            Cancel_Request  => False,
+            Cancel_Handler  => Null_Handler,
+            Dialog          => Dialog);
+
+         if Progress_Dialog."/=" (Driver_State.Dialog, null) then
+            Progress_Dialog.Ref (Driver_State.Dialog);
+            Driver_State.Cancel_Handler := Dialog_Cb.Connect
+              (Widget    => Driver_State.Dialog,
+               Name      => "cancelled",
+               Marsh     => Dialog_Cb.To_Marshaller
+                             (Iterative_Cancel_Callback'Access));
+            Progress_Dialog.Set_Modal (Driver_State.Dialog);
+            Init_Visuals (Driver_State.Individual, Driver_State.Dialog);
+         end if;
+
+         loop
+            while Gtk.Main.Events_Pending loop
+               Dead := Gtk.Main.Main_Iteration;
+               pragma Assert (not Dead);
+            end loop;
+
+            exit when not Step_Iterative_Driver;
+         end loop;
+      end if;
+   end Start_Iterative_Driver;
+
+   procedure Stop_Iterative_Driver is
+   begin
+      if Progress_Dialog."/=" (Driver_State.Dialog, null) then
+         Gtk.Handlers.Disconnect
+           (Driver_State.Dialog,
+            Driver_State.Cancel_Handler);
+         Progress_Dialog.Unref (Driver_State.Dialog);
+         Progress_Dialog.Destroy (Driver_State.Dialog);
+      end if;
+      Driver_State := No_Iterative_Driver_State;
+   end Stop_Iterative_Driver;
+
+   function Step_Iterative_Driver
      return Boolean is
 
       Parent         : Evolution_Class_Access;
@@ -909,10 +998,7 @@ package body Giant.Evolutions is
       Perform_Action : Evolution_Action;
       Next_Action    : Evolution_Action;
    begin
-      if Driver_State.Individual = null then
-         Evolution_Logger.Error ("Too many idle signals emitted.");
-         raise Gtk_Idle_Disconnect_Failed;
-      end if;
+      pragma Assert (Driver_State.Individual /= null);
 
       --  Individual might have produced sub-calculations. Continue with
       --  deepest child
@@ -985,72 +1071,11 @@ package body Giant.Evolutions is
          Driver_State := No_Iterative_Driver_State;
          return False;
       else
-         --  continue on next idle signal
+         --  continue with next step
          return True;
       end if;
-   end Iterative_Driver_Callback;
+   end Step_Iterative_Driver;
 
-
-   -----------------------
-   -- Callback-handling --
-   -----------------------
-
-   Concurrent_Update_Id : Gtk.Main.Timeout_Handler_Id;
-
-   procedure Begin_Concurrent_Updates is
-   begin
-      Concurrent_Update_Id := Gtk.Main.Timeout_Add
-        (Poll_Delay_Milli_Seconds, Concurrent_Update_Callback'Access);
-   end Begin_Concurrent_Updates;
-
-   procedure End_Concurrent_Updates is
-   begin
-      Gtk.Main.Timeout_Remove (Concurrent_Update_Id);
-   end End_Concurrent_Updates;
-
-
-   procedure Start_Iterative_Driver
-     (Individual : access Iterative_Evolution'Class;
-      Started    :    out Boolean;
-      Dialog     : in     Progress_Dialog.Progress_Dialog_Access) is
-   begin
-      Started := Driver_State = No_Iterative_Driver_State;
-      if Started then
-         Driver_State :=
-           (Individual      => Evolution_Class_Access (Individual),
-            Update_Time     => Ada.Real_Time.Clock,
-            Cancel_Request  => False,
-            Cancel_Handler  => 0,
-            Idle_Handler    => 0,
-            Dialog          => Dialog);
-
-         if Progress_Dialog."/=" (Driver_State.Dialog, null) then
-            Progress_Dialog.Ref (Driver_State.Dialog);
-            Driver_State.Cancel_Handler := Dialog_Cb.Connect
-              (Widget    => Driver_State.Dialog,
-               Name      => "cancelled",
-               Marsh     => Dialog_Cb.To_Marshaller
-                             (Iterative_Cancel_Callback'Access));
-            Progress_Dialog.Set_Modal (Driver_State.Dialog);
-            Init_Visuals (Driver_State.Individual, Driver_State.Dialog);
-         end if;
-         Driver_State.Idle_Handler := Gtk.Main.Idle_Add
-           (Iterative_Driver_Callback'Access);
-      end if;
-   end Start_Iterative_Driver;
-
-   procedure Stop_Iterative_Driver is
-   begin
-      if Progress_Dialog."/=" (Driver_State.Dialog, null) then
-         Gtk.Handlers.Disconnect
-           (Driver_State.Dialog,
-            Driver_State.Cancel_Handler);
-         Progress_Dialog.Destroy (Driver_State.Dialog);
-         Progress_Dialog.Unref (Driver_State.Dialog);
-      end if;
-      Gtk.Main.Idle_Remove (Driver_State.Idle_Handler);
-      Driver_State := No_Iterative_Driver_State;
-   end Stop_Iterative_Driver;
 
    procedure Start_Calculation_Blocked
      (Individual : access Evolution'Class)
@@ -1077,3 +1102,47 @@ package body Giant.Evolutions is
 
 
 end Giant.Evolutions;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
