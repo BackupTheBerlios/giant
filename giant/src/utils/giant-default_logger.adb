@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/05/23 17:13:22 $
+--  $Date: 2003/05/31 19:23:40 $
 --
 
 with Ada.IO_Exceptions;
@@ -47,7 +47,7 @@ package body Giant.Default_Logger is
    procedure Init
    is
    begin
-      Ada.Text_IO.Create (Out_File, Ada.Text_IO.Out_File, "debug.log", "");
+      Ada.Text_IO.Create (Out_File, Ada.Text_IO.Out_File, "debug.log");
    exception
       when others =>
          Err_Put_Line ("Could not open log file.");

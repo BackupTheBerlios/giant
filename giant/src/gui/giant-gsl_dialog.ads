@@ -20,26 +20,46 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-gsl_dialog.ads,v $, $Revision: 1.1 $
 --  $Author: squig $
 --  $Date: 2003/05/31 19:23:40 $
 --
---  Provides the main window. The main window is only instanciated once.
+------------------------------------------------------------------------------
 --
---  Pattern:
---    ADT
+-- Provides a dialog that can open save and executes GSL scripts.
 --
 
-package Giant.Main_Window is
+with Ada.Strings.Unbounded;
 
-   ---------------------------------------------------------------------------
-   --  Sets windows visible.
-   --
-   procedure Show;
+with Gtk.Box;
+with Gtk.Hbutton_Box;
+with Gtk.Text;
+with Gtk.Window;
 
-   ---------------------------------------------------------------------------
-   --  Quits the application.
-   --
-   procedure Quit;
+with Giant.Default_Dialog;
 
-end Giant.Main_Window;
+package Giant.Gsl_Dialog is
+
+   type Gsl_Dialog_Record is 
+	 new Default_Dialog.Default_Dialog_Record with private;
+
+   type Gsl_Dialog_Access is access all Gsl_Dialog_Record'Class;
+
+   function Can_Hide
+     (Dialog : access Gsl_Dialog_Record)
+     return Boolean;
+
+   procedure Create
+     (Dialog : out Gsl_Dialog_Access);
+
+   procedure Initialize
+     (Dialog : access Gsl_Dialog_Record'class);
+
+private
+   type Gsl_Dialog_Record is
+	 new Default_Dialog.Default_Dialog_Record with record  
+		Filename : Ada.Strings.Unbounded.Unbounded_String;
+		Text_Area : Gtk.Text.Gtk_Text;
+	 end record;
+
+end Giant.Gsl_Dialog;

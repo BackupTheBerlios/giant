@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.2 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.3 $
 -- $Author: squig $
--- $Date: 2003/05/23 19:03:25 $
+-- $Date: 2003/05/31 19:23:40 $
 --
 
 with Gtk.Enums; use Gtk.Enums;
@@ -105,13 +105,12 @@ package body Giant.Gui_Utils is
      return Gtk.Frame.Gtk_Frame
    is
      Frame : Gtk.Frame.Gtk_Frame;
-     scrolled_window : Gtk.Scrolled_Window.Gtk_Scrolled_Window;
+     Scrolled_Window : Gtk.Scrolled_Window.Gtk_Scrolled_Window;
    begin
       --Set_Shadow_Type (Main_Window.Window_List_Frame, Shadow_Etched_In);
 
       Gtk.Scrolled_Window.Gtk_New (Scrolled_Window);
-      Gtk.Scrolled_Window.Set_Policy (Scrolled_Window,
-                                      Policy_Automatic,
+      Gtk.Scrolled_Window.Set_Policy (Scrolled_Window, Policy_Automatic,
                                       Policy_Always);
       Gtk.Scrolled_Window.Add (Scrolled_Window, Widget);
 

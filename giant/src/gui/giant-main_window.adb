@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/05/23 19:03:25 $
+--  $Date: 2003/05/31 19:23:40 $
 --
 
 with Gdk.Event;
@@ -55,12 +55,19 @@ package body Giant.Main_Window is
    Window_List : Gtk.Clist.Gtk_Clist;
    Window_List_Menu : Gtk.Menu.Gtk_Menu;
 
-   procedure On_Project_Exit
+   function On_Delete
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class) return Boolean is
+   begin
+      Quit;
+      return True;
+   end On_Delete;
+
+   procedure On_Project_Quit
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
    begin
-      Gtk.Main.Main_Quit;
-   end On_Project_Exit;
+      Quit;
+   end On_Project_Quit;
 
    procedure On_Project_New
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
@@ -97,7 +104,7 @@ package body Giant.Main_Window is
 
       Gtk.Menu.Gtk_New (Window_List_Menu);
       Gtk.Menu.Append (Window_List_Menu,
-                       New_Menu_Item (-"Open", On_Window_List_Open'Access));
+                       New_Menu_Item (-"Open...", On_Window_List_Open'Access));
       Gtk.Menu.Append (Window_List_Menu,
                        New_Menu_Item (-"Close", On_Window_List_Close'Access));
 
@@ -150,7 +157,7 @@ package body Giant.Main_Window is
       Menu := New_Sub_Menu (Menu_Bar, -"Projekt");
       Add (Menu, New_Menu_Item (-"New", On_Project_New'Access));
       Add (Menu, New_Menu_Separator);
-      Add (Menu, New_Menu_Item (-"Exit", On_Project_Exit'Access));
+      Add (Menu, New_Menu_Item (-"Quit", On_Project_Quit'Access));
 
       return Menu_Bar;
    end Initialize_Menu;
@@ -193,7 +200,18 @@ package body Giant.Main_Window is
       Gtk.Box.Add (Box, Pane);
 
       Gtk.Paned.Add (Pane, Initialize_Window_List);
+
+      Widget_Return_Callback.Connect
+        (Window, "delete_event",
+         Widget_Return_Callback.To_Marshaller (On_Delete'Access));
    end Initialize;
+
+   procedure Quit
+   is
+   begin
+      -- FIX: ask user to save project
+      Gtk.Main.Main_Quit;
+   end Quit;
 
    procedure Show
    is

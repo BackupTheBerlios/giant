@@ -18,20 +18,25 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_test.adb,v $, $Revision: 1.3 $
+-- $RCSfile: giant-gui_test.adb,v $, $Revision: 1.4 $
 -- $Author: squig $
--- $Date: 2003/05/23 19:03:24 $
+-- $Date: 2003/05/31 19:23:40 $
 --
 with Gtk.Main;
 
+with Ada.Text_Io; use Ada.Text_Io;
+
 with Giant.Default_Dialog;
-with Giant.Main_Window;
 with Giant.Default_Logger;
+with Giant.Main_Window;
+with Giant.Gsl_Dialog;
+with Giant.Main_Window;
 with Giant.Logger;
 --with Config;
 
 procedure Giant.Gui_Test
 is
+   My_Gsl_Dialog : Gsl_Dialog.Gsl_Dialog_Access;
 begin
    Default_Logger.Init;
    --Config.Initialize_Config_Data ("/etc/giant/giantrc", ".giantrc");
@@ -39,8 +44,14 @@ begin
    Gtk.Main.Set_Locale;
    Gtk.Main.Init;
 
-   --Main_Window.Show;
-   Default_Dialog.Show_Error ("An Error has occured!");
+--     Default_Dialog.Show_Error ("An Error has occured!");
+
+--     Put_Line("Input:" & Default_Dialog.Show_Input ("Insert Text:"));
+
+     Gsl_Dialog.Create (My_Gsl_Dialog);
+     Gsl_Dialog.Show_All (My_Gsl_Dialog);
+
+--     Main_Window.Show;
 
    Gtk.Main.Main;
 

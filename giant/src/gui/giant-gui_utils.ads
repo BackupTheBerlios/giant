@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/05/23 19:03:25 $
+--  $Date: 2003/05/31 19:23:40 $
 --
 ------------------------------------------------------------------------------
 --
@@ -66,6 +66,9 @@ package Giant.Gui_Utils is
 
    package Menu_Item_Callback is new
      Gtk.Handlers.Callback (Gtk.Menu_Item.Gtk_Menu_Item_Record);
+
+   package Widget_Return_Callback is new
+     Gtk.Handlers.Return_Callback (Gtk.Widget.Gtk_Widget_Record, Boolean);
 
    function Add_Scrollbar_And_Frame
      (Widget : in Gtk.Widget.Gtk_Widget;

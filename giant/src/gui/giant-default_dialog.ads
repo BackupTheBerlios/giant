@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-default_dialog.ads,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/05/23 19:03:24 $
+--  $Date: 2003/05/31 19:23:40 $
 --
 ------------------------------------------------------------------------------
 --
@@ -30,37 +30,78 @@
 --
 
 with Gtk.Box;
+with Gtk.Button;
 with Gtk.Hbutton_Box;
 with Gtk.Window;
 
 package Giant.Default_Dialog is
-   
+
+   type Input_Callback is access function (S: in String) return Boolean;
+
    type Response_Type is
-	 (Response_Okay, Response_Cancel, Response_Yes, Response_No);
-	 
+      (Response_Okay, Response_Cancel, Response_Close, Response_Yes,
+       Response_No);
+
    type Button_Type is
-	 (Button_None, Button_Close, Button_Okay_Cancel, Button_Yes_No);
-   
+     (Button_None, Button_Close, Button_Okay_Cancel, Button_Yes_No);
+
+   type Default_Dialog_Record is new Gtk.Window.Gtk_Window_Record with private;
+
+   type Default_Dialog_Access is access all Default_Dialog_Record'Class;
+
+   procedure Add
+     (Dialog : access Default_Dialog_Record'Class;
+      Button : in     Gtk.Button.Gtk_Button);
+
+   function Add_Icon_Box
+     (Dialog        : access Default_Dialog_Record'Class;
+      Icon_Filename : in     String;
+      Message       : in     String                      := "")
+     return Gtk.Box.Gtk_Hbox;
+
+   ---------------------------------------------------------------------------
+   --  Called if one of the default buttons is pressed.
+   --
+   --  Sub-classes can overwrite this method.
+   --
+   --  Returns:
+   --    True
+   function Can_Hide
+     (Dialog : access Default_Dialog_Record)
+     return Boolean;
+
+   procedure Create
+     (Dialog  :    out Default_Dialog_Access;
+      Title   : in     String;
+      Buttons : in     Button_Type);
+
+   function Get_Center_Box
+     (Dialog : access Default_Dialog_Record'class)
+     return Gtk.Box.Gtk_Vbox;
+
+   function Get_Response
+     (Dialog : access Default_Dialog_Record'class)
+     return Response_Type;
+
+   procedure Initialize
+     (Dialog  : access Default_Dialog_Record'class;
+      Title   : in     String;
+      Buttons : in     Button_Type);
+
+   procedure Show_Error
+     (Message : in String);
+
+   function Show_Input
+     (Message  : in String)
+     return String;
+
+private
+
    type Default_Dialog_Record is new Gtk.Window.Gtk_Window_Record with record
       Center_Box : Gtk.Box.Gtk_Vbox;
-	  Button_Box : Gtk.Hbutton_Box.Gtk_Hbutton_Box;
-	  Response : Response_Type;
+      Button_Box : Gtk.Hbutton_Box.Gtk_Hbutton_Box;
+      Response : Response_Type;
+      Is_Modal : Boolean := False;
    end record;
-   
-   type Default_Dialog is
-	 access all Default_Dialog_Record'Class;
-   
-   procedure Create 
-	 (Dialog  :    out Default_Dialog;
-	  Title	  : in     String;
-	  Buttons : in     Button_Type);
-	 
-   function Add_Icon_Box 
-	 (Dialog		: in Default_Dialog;
-	  Icon_Filename	: in String;
-	  Message		: in String			:= "")
-	 return Gtk.Box.Gtk_Hbox;
-   
-   procedure Show_Error (Message : in String);
 
 end Giant.Default_Dialog;
