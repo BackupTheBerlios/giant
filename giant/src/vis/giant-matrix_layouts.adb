@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-matrix_layouts.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-matrix_layouts.adb,v $, $Revision: 1.11 $
 --  $Author: koppor $
---  $Date: 2003/07/11 00:46:39 $
+--  $Date: 2003/07/13 00:39:57 $
 --
 
 with Ada.Numerics.Generic_Elementary_Functions;
@@ -38,20 +38,22 @@ package body Giant.Matrix_Layouts is
    function Initialize
      (Widget              : in Giant.Graph_Widgets.Graph_Widget;
       Widget_Lock         : in Giant.Graph_Widgets.Lock_Type;
+      Release_Widget_Lock : in Boolean;
       Selection_To_Layout : in Giant.Graph_Lib.Selections.Selection;
       Target_Position     : in Giant.Vis.Logic.Vector_2d)
      return Matrix_Layout
    is
       Res : Matrix_Layout;
    begin
-      Res                 := new Matrix_Layout_Record;
-      Res.Widget          := Widget;
-      Res.Widget_Lock     := Widget_Lock;
-      Res.Nodes_To_Layout := Graph_Lib.Node_Id_Sets.Copy
+      Res                     := new Matrix_Layout_Record;
+      Res.Widget              := Widget;
+      Res.Widget_Lock         := Widget_Lock;
+      Res.Release_Widget_Lock := Release_Widget_Lock;
+      Res.Nodes_To_Layout     := Graph_Lib.Node_Id_Sets.Copy
         (Graph_Lib.Selections.Get_All_Nodes
          (Selection_To_Layout));
-      Res.Target_Position := Target_Position;
-      Res.State           := Init;
+      Res.Target_Position     := Target_Position;
+      Res.State               := Init;
 
       --  Evolutions.Initialize
       Initialize
@@ -67,7 +69,9 @@ package body Giant.Matrix_Layouts is
       Canceled : in     Boolean)
    is
    begin
-      Graph_Widgets.Release_Lock (Layout.Widget, Layout.Widget_Lock);
+      if Layout.Release_Widget_Lock then
+         Graph_Widgets.Release_Lock (Layout.Widget, Layout.Widget_Lock);
+      end if;
    end Finish;
 
    ---------------------------------------------------------------------------
