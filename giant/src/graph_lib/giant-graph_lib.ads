@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.24 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.25 $
 --  $Author: koppor $
---  $Date: 2003/06/28 19:08:44 $
+--  $Date: 2003/06/30 18:55:02 $
 --
 
 with Giant.Constant_Ptr_Hashs;
@@ -435,6 +435,22 @@ package Giant.Graph_Lib is
    -- Inspectors                 --
    --  On the edges of the graph --
    --------------------------------
+
+   ---------------------------------------------------------------------------
+   --  Returns:
+   --    Number of edges contained in currently loaded graph
+   --  Pre:
+   --    A graph is loaded
+   function Get_Edge_Count
+     return Natural;
+
+   ---------------------------------------------------------------------------
+   --  Returns:
+   --    Number of nodes contained in currently loaded graph
+   --  Pre:
+   --    A graph is loaded
+   function Get_Node_Count
+     return Natural;
 
    ---------------------------------------------------------------------------
    --  Returns:
