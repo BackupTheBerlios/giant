@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.4 $
---  $Author: schwiemn $
---  $Date: 2003/06/11 16:46:18 $
+--  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.5 $
+--  $Author: koppor $
+--  $Date: 2003/06/14 11:43:11 $
 --
 ------------------------------------------------------------------------------
 --
@@ -43,18 +43,18 @@ with Giant.Graph_Lib.Selections;
 
 package Giant.Graph_Lib.Subgraphs is
 
-   --  -----------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    --  It is assured, that a copy makes an alias
    type Subgraph is private;
 
-   --  -----------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    --  Creates a new subgraph,
    --    which has to be destroyed afterwards
    function Create
       (Name : in    Valid_Names.Standard_Name)
       return Subgraph;
 
-   --  -----------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    --  Creates a new subgraph,
    --    which has to be destroyed afterwards
    --
@@ -67,38 +67,38 @@ package Giant.Graph_Lib.Subgraphs is
       Selection_To_Convert : in Graph_Lib.Selections.Selection)
      return Subgraph;
 
-   --  -----------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    --  Removes Subgraph given from memory
    procedure Destroy
       (SubGraph_To_Destroy : in out Subgraph);
 
-   --  -----------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    --  Creates a deep-copy of the selection
    function Clone
       (SubGraph_To_Clone : in Subgraph)
       return Subgraph;
 
-   --  -----------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    procedure Rename
       (SubGraph_To_Rename : in out Subgraph;
        New_Name           : in     Valid_Names.Standard_Name);
 
-   --  -----------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    function Get_Name
      (Subgraph_To_Read : in Subgraph)
      return String;
 
-   --  -----------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    function "<"
       (Left  : in Subgraph;
        Right : in Subgraph)
       return Boolean;
 
-   --  ***********************************************************************
-   --  Streams
-   --  ***********************************************************************
+   ---------------
+   --  Streams  --
+   ---------------
 
-   --  -----------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    --  Notes:
    --    cp. Barnes p543
    --    Maybe u have to use "for Subgraph'Write use Subgraph_Write"
@@ -106,36 +106,36 @@ package Giant.Graph_Lib.Subgraphs is
       (Stream            : in Bauhaus_Io.Out_Stream_Type;
        Subgraph_To_Write : in Subgraph);
 
-   --  -----------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    procedure Subgraph_Read
       (Stream            : in     Bauhaus_Io.In_Stream_Type;
        Subgraph_To_Read  :    out Subgraph);
 
-   --  ***********************************************************************
-   --  Routines to add
-   --  ***********************************************************************
+   -----------------------
+   --  Routines to add  --
+   -----------------------
 
-   --  -----------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    --  Adds given Node to the given Subgraph
    procedure Add_Node
       (Subgraph_To_Modify : in out Subgraph;
        Node                : in     Node_Id);
 
-   --  -----------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    --  Adds all nodes in given set to the Subgraph
    procedure Add_Node_Set
       (Subgraph_To_Modify : in out Subgraph;
        Node_Set            : in     Node_Id_Set);
 
-   --  -----------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    --  Adds given Edge to the given Subgraph
    procedure Add_Edge
       (Subgraph_To_Modify : in out Subgraph;
        Edge                : in     Edge_Id);
 
-   --  -----------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    --  Adds all nodes in given set to the Subgraph
-   procedure Add_Node_Set
+   procedure Add_Edge_Set
       (Subgraph_To_Modify : in out Subgraph;
        Edge_Set            : in     Edge_Id_Set);
 
@@ -143,69 +143,76 @@ package Giant.Graph_Lib.Subgraphs is
    --  Routines to remove
    --  ***********************************************************************
 
-   --  -----------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    --  Adds given Node to the given Subgraph
    procedure Remove_Node
       (Subgraph_To_Modify : in out Subgraph;
        Node                : in     Node_Id);
 
-   --  -----------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    --  Adds all nodes in given set to the Subgraph
    procedure Remove_Node_Set
       (Subgraph_To_Modify : in out Subgraph;
        Node_Set            : in     Node_Id_Set);
 
-   --  -----------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    --  Adds given Edge to the given Subgraph
    procedure Remove_Edge
       (Subgraph_To_Modify : in out Subgraph;
        Edge                : in     Edge_Id);
 
-   --  -----------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    --  Adds all edges in given set to the Subgraph
    procedure Remove_Edge_Set
       (Subgraph_To_Modify : in out Subgraph;
        Edge_Set            : in     Edge_Id_Set);
 
-   --  ***********************************************************************
-   --  Set-operations
-   --  ***********************************************************************
+   ----------------------
+   --  Set-operations  --
+   ----------------------
 
-   --  -----------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    --  Creates a new selection where the two given Subgraphs are unified
    function Union
       (Left  : in Subgraph;
        Right : in Subgraph)
       return Subgraph;
 
-   --  -----------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    --  Creates a new selection
    function Symetric_Difference
       (Left  : in Subgraph;
        Right : in Subgraph)
       return Subgraph;
 
-   --  -----------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    --  Creates a new selection
    function Intersection
       (Left  : in Subgraph;
        Right : in Subgraph)
       return Subgraph;
 
-   --  ***********************************************************************
-   --  Convertions
-   --  ***********************************************************************
+   -------------------
+   --  Convertions  --
+   -------------------
 
-   --  -----------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    --  Converts current subgraph to a selection
    --    having the same name
    function Get_Selection
+     (Subgraph_To_Read : in Subgraph)
      return Graph_Lib.Selections.Selection;
 
 private
-   type Subgraph_Record is null record;
+   type Subgraph_Record is record
+      Sel : Selections.Selection;
+   end record;
 
    type Subgraph is access Subgraph_Record;
+
+   ---------------------------------------------------------------------------
+   --  removes all edges which have no source or no target
+   procedure Ensure_Graph_Edge_Properties (Graph : in out Subgraph);
 
 end Giant.Graph_Lib.Subgraphs;
 
