@@ -1,13 +1,18 @@
+PICS = $(shell grep includegraphics *.tex \
+	         | sed "s/.*includegraphics.*{\(.*\)}.*/\1.eps/")
+
 default: view
 
 include ../Makefile.incl
 
-$(shell ./create_MakefilePics.sh)
-include Makefile.pics
+#$(shell ./create_MakefilePics.sh)
+#include Makefile.pics
 
 ifeq ($(shell test -r ../Makefile.local && echo "true"),true)
   include ../Makefile.local
 endif
+
+pics: $(PICS)
 
 view: ps
 	gv spec.ps

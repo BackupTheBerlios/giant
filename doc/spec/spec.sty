@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: spec.sty,v $, $Revision: 1.9 $
-%  $Date: 2003/03/07 14:52:15 $
+%  $RCSfile: spec.sty,v $, $Revision: 1.10 $
+%  $Date: 2003/04/03 20:51:10 $
 %  $Author: squig $
 %
 %  Description:
@@ -42,8 +42,11 @@
 %   1 label
 %   2 name
 %
+\newcounter{uccount}
+\newcommand\uclabel[1]{\theuccount :#1}
+
 \newenvironment{uc}[2][]
-{\clearpage\section{#2}\ifx#1\undefined\else\label{#1}\fi}
+{\stepcounter{uccount}\clearpage\section{#2}\ifx#1\undefined\else\label{#1}\fi}
 {}
 
 % Vor- und Nachbedingungen als enumeration
@@ -74,21 +77,21 @@
     \renewcommand{\labelenumii}{\arabic{enumi}.\alph{enumii}}}
 {\end{enumerate}}
 
-\newcommand{\step}[1][]{\item \ifx#1\undefined\else\label{#1}\fi}
+\newcommand{\step}[1][]{\item \ifx#1\undefined\else\label{\uclabel{#1}}\fi}
 
 % Erweiterungen
 \newenvironment{eproc}
 {\subsection{Erweiterungen}\begin{itemize}}
 {\end{itemize}}
 
-\newcommand{\estep}[1]{\item Bei Punkt \ref{#1}:\\}
+\newcommand{\estep}[1]{\item Bei Punkt \ref{\uclabel{#1}}:\\}
 
 % Alternativen
 \newenvironment{aproc}
 {\subsection{Alternativen}\begin{itemize}}
 {\end{itemize}}
 
-\newcommand{\astep}[1]{\item Bei Punkt \ref{#1}:\\}
+\newcommand{\astep}[1]{\item Bei Punkt \ref{\uclabel{#1}}:\\}
 
 \newcommand{\ageneral}{\item Generell: \\}
 
