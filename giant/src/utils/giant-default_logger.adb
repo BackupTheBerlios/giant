@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/05/31 19:23:40 $
+--  $Date: 2003/06/14 19:01:39 $
 --
 
 with Ada.IO_Exceptions;
@@ -30,8 +30,6 @@ with Ada.Strings.Fixed;
 with Ada.Text_IO;
 
 package body Giant.Default_Logger is
-
-   Out_File : Ada.Text_IO.File_Type;
 
    procedure Close
    is

@@ -1,3 +1,6 @@
+framework_test :
+	make -C ../ MAIN=test/framework_test EXEC=test/framework_test
+
 mini_map :
 	make -C ../ MAIN=test/giant_test-mini_map EXEC=test/mini_map all
 
