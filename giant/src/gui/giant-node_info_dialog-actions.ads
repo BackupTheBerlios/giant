@@ -20,15 +20,17 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-node_info_dialog-actions.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-node_info_dialog-actions.ads,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/08/13 11:58:38 $
+--  $Date: 2003/08/25 16:06:25 $
 --
---  
+--
 --
 
 with Gdk.Event;
 
+with Giant.Graph_Widgets;
+with Giant.Graph_Widgets.Handlers;
 with Giant.Graph_Window;
 with Giant.Vis;
 
@@ -41,10 +43,10 @@ package Giant.Node_Info_Dialog.Actions is
 
    type Pick_Node_Action_Access is
      access all Pick_Node_Action_Type'Class;
-   
-   function Create 
-	 (Dialog : in Node_Info_Dialog_Access)
-	 return Pick_Node_Action_Access;
+
+   function Create
+     (Dialog : in Node_Info_Dialog_Access)
+     return Pick_Node_Action_Access;
 
    procedure Cancel
      (Action : access Pick_Node_Action_Type);
@@ -52,8 +54,7 @@ package Giant.Node_Info_Dialog.Actions is
    function Execute
      (Action   : access Pick_Node_Action_Type;
       Window   : access Graph_Window.Graph_Window_Record'Class;
-      Event    : in     Gdk.Event.Gdk_Event_Button;
-      Location : in     Vis.Logic.Vector_2d)
-	 return Boolean;
-      
+      Event    : in     Graph_Widgets.Handlers.Button_Press_Action)
+     return Boolean;
+
 End Giant.Node_Info_Dialog.Actions;

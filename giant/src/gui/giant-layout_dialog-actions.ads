@@ -20,50 +20,41 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window-actions.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-layout_dialog-actions.ads,v $, $Revision: 1.1 $
 --  $Author: squig $
 --  $Date: 2003/08/25 16:06:25 $
 --
+--  Provides the main window. The main window is only instanciated once.
+--
 
+with Gdk.Event;
 
-with Giant.Controller;
+with Giant.Graph_Widgets;
+with Giant.Graph_Widgets.Handlers;
+with Giant.Graph_Window;
+with Giant.Vis;
 
-package body Giant.Main_Window.Actions is
+package Giant.Layout_Dialog.Actions is
 
-   ---------------------------------------------------------------------------
-   --  Create Selection From Subgraph
-   ---------------------------------------------------------------------------
+   type Set_Position_Action_Type is
+     new Graph_Window.Actions.Graph_Window_Action_Type with record
+        Dialog : Layout_Dialog_Access;
+     end record;
+
+   type Set_Position_Action_Access is
+     access all Set_Position_Action_Type'Class;
 
    function Create
-     (Subgraph_Name : in String)
-     return Create_Selection_Action_Access
-   is
-      Action : Create_Selection_Action_Access;
-   begin
-      Action := new Create_Selection_Action_Type (Subgraph_Name'Length);
-      Action.Subgraph_Name := Subgraph_Name;
-      return Action;
-   end Create;
+     (Dialog : Layout_Dialog_Access)
+     return Set_Position_Action_Access;
 
    procedure Cancel
-     (Action : access Create_Selection_Action_Type)
-   is
-   begin
-      null;
-   end Cancel;
+     (Action : access Set_Position_Action_Type);
 
    function Execute
-     (Action   : access Create_Selection_Action_Type;
+     (Action   : access Set_Position_Action_Type;
       Window   : access Graph_Window.Graph_Window_Record'Class;
       Event    : in     Graph_Widgets.Handlers.Button_Press_Action)
-     return Boolean
-   is
-   begin
-      Controller.Create_Selection_From_Subgraph
-        (Action.Subgraph_Name,
-         Vis_Windows.Get_Name (Graph_Window.Get_Vis_Window (Window)),
-         Action.Subgraph_Name);
-      return True;
-   end Execute;
+     return Boolean;
 
-end Giant.Main_Window.Actions;
+end Giant.Layout_Dialog.Actions;

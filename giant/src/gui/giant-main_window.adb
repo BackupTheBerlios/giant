@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.57 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.58 $
 --  $Author: squig $
---  $Date: 2003/08/19 13:09:14 $
+--  $Date: 2003/08/25 16:06:25 $
 --
 
 with Ada.Exceptions;
@@ -57,6 +57,7 @@ with Gtkada.Types;
 
 with Giant.About_Dialog;
 with Giant.Clists;
+with Giant.Config;
 with Giant.Config.Global_Data;
 with Giant.Config_Settings;
 with Giant.Controller;
@@ -67,6 +68,7 @@ with Giant.File_Management;
 with Giant.Graph_Lib;
 with Giant.Graph_Lib.Subgraphs;
 with Giant.Gsl_Dialog;
+with Giant.Gsl;
 with Giant.Gsl.Interpreters;
 with Giant.Gui_Manager;
 with Giant.Gui_Manager.Actions;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-layout_dialog.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-layout_dialog.ads,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/07/08 16:07:32 $
+--  $Date: 2003/08/25 16:06:25 $
 --
 ------------------------------------------------------------------------------
 --
@@ -82,6 +82,10 @@ package Giant.Layout_Dialog is
      (Dialog         : access Layout_Dialog_Record'Class;
       Window_Name    : in     String;
       Selection_Name : in     String);
+
+   procedure Apply_Layout
+     (Dialog   : access Layout_Dialog_Record;
+      Position : in     Vis.Logic.Vector_2d);
 
    function Can_Hide
      (Dialog : access Layout_Dialog_Record)

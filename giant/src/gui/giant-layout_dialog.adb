@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-layout_dialog.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-layout_dialog.adb,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/07/15 11:50:26 $
+--  $Date: 2003/08/25 16:06:25 $
 --
 
 with Ada.Exceptions;
@@ -30,10 +30,15 @@ with Ada.Strings.Unbounded;
 
 with Glib;
 with Gtk.Box;
+with Gtk.Main;
 with Gtk.Table;
+with Gtk.Window;
 
 with Giant.Controller;
+with Giant.Gui_Manager;
+with Giant.Gui_Manager.Actions;
 with Giant.Gui_Utils;
+with Giant.Layout_Dialog.Actions;
 with Giant.Layout_Dialog.Widgets;
 with Giant.Layout_Factory;
 
@@ -132,35 +137,56 @@ package body Giant.Layout_Dialog is
      return Boolean
    is
       use type Default_Dialog.Response_Type;
-      use type Glib.Gint;
+--        use type Glib.Gint;
 
+      Window_Name : constant String
+        := Ada.Strings.Unbounded.To_String (Dialog.Window_Name);
+   begin
+      if (Get_Response (Dialog) = Default_Dialog.Response_Okay) then
+         if (Is_Modal (Dialog)) then
+            Gtk.Main.Main_Quit;
+         end if;
+
+         Gui_Manager.Actions.Set_Local_Action
+           (Window_Name,
+            Layout_Dialog.Actions.Create (Layout_Dialog_Access (Dialog)));
+
+         --  do not destory dialog, yet, the action will take care of
+         --  the disposal
+         Gtk.Window.Hide_All (Gtk.Window.Gtk_Window (Dialog));
+         return False;
+      end if;
+      return True;
+   end Can_Hide;
+
+   procedure Apply_Layout
+     (Dialog   : access Layout_Dialog_Record;
+      Position : in     Vis.Logic.Vector_2d)
+   is
       Container : Layout_Container
         := Dialog.Layouts (Integer (Gtk.Notebook.Get_Current_Page
                                     (Dialog.Layouts_Notebook)));
-
       Window_Name : constant String
         := Ada.Strings.Unbounded.To_String (Dialog.Window_Name);
       Selection_Name : constant String
         := Ada.Strings.Unbounded.To_String (Dialog.Selection_Name);
    begin
-      if (Get_Response (Dialog) = Default_Dialog.Response_Okay) then
-         Controller.Apply_Layout (Get_Layout_Name (Container),
-                                  Window_Name,
-                                  Selection_Name,
-                                  Dialog.Position,
-                                  Get_Layout_Parameters (Container));
-      end if;
-      return True;
+      Controller.Apply_Layout (Get_Layout_Name (Container),
+                               Window_Name,
+                               Selection_Name,
+                               Position,
+                               Get_Layout_Parameters (Container));
+      --Destroy (Dialog);
    exception
      when E: Layout_Factory.Invalid_Format =>
+        Show_All (Dialog);
         Controller.Show_Error (-"Invalid layout parameter"
                                & " (" & Ada.Exceptions.Exception_Message (E)
                                & ").");
-        return False;
      when Layout_Factory.Unknown_Algorithm =>
+        Show_All (Dialog);
         Controller.Show_Error (-"Unknown layout algorithm.");
-        return False;
-   end Can_Hide;
+   end Apply_Layout;
 
    procedure Show
      (Window_Name    : in String;
@@ -171,8 +197,7 @@ package body Giant.Layout_Dialog is
    begin
       Create (Dialog, Window_Name, Selection_Name);
       Dialog.Position := Position;
-      Show_Modal (Dialog);
-      Destroy (Dialog);
+      Show_All (Dialog);
    end Show;
 
 end Giant.Layout_Dialog;

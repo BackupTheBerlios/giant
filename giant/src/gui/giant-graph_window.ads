@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.26 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.27 $
 --  $Author: squig $
---  $Date: 2003/08/19 10:54:45 $
+--  $Date: 2003/08/25 16:06:25 $
 --
 ------------------------------------------------------------------------------
 --
@@ -43,6 +43,7 @@ with Gtk.Window;
 
 with Giant.Graph_Lib;
 with Giant.Graph_Widgets;
+with Giant.Graph_Widgets.Handlers;
 with Giant.Gui_Utils;
 with Giant.Mini_Maps;
 with Giant.Vis;
@@ -97,8 +98,7 @@ package Giant.Graph_Window is
       function Execute
         (Action   : access Graph_Window_Action_Type;
          Window   : access Graph_Window.Graph_Window_Record'Class;
-         Event    : in     Gdk.Event.Gdk_Event_Button;
-         Location : in     Vis.Logic.Vector_2d)
+         Event    : in     Graph_Widgets.Handlers.Button_Press_Action)
         return Boolean
          is abstract;
 
@@ -177,10 +177,13 @@ package Giant.Graph_Window is
    procedure Cancel_Local_Action
      (Window : access Graph_Window_Record);
 
+   procedure Set_Local_Action
+     (Window : access Graph_Window_Record;
+      Action : access Graph_Window.Actions.Graph_Window_Action_Type'Class);
+
    procedure Trigger_Local_Action
-     (Window   : access Graph_Window.Graph_Window_Record'Class;
-      Event    : in     Gdk.Event.Gdk_Event;
-      Location : in     Vis.Logic.Vector_2d);
+     (Window   : access Graph_Window.Graph_Window_Record;
+      Event    : in     Graph_Widgets.Handlers.Button_Press_Action);
 
    ---------------------------------------------------------------------------
    --  Node Annotations

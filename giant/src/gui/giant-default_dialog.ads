@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.ads,v $, $Revision: 1.12 $
+--  $RCSfile: giant-default_dialog.ads,v $, $Revision: 1.13 $
 --  $Author: squig $
---  $Date: 2003/07/10 21:01:40 $
+--  $Date: 2003/08/25 16:06:25 $
 --
 ------------------------------------------------------------------------------
 --
@@ -123,6 +123,12 @@ package Giant.Default_Dialog is
    procedure Hide
      (Source   : access Gtk.Widget.Gtk_Widget_Record'Class;
       Response : in     Response_Type);
+
+   ---------------------------------------------------------------------------
+   --  Returns true, if the dialog runs in a separate gtk event loop.
+   function Is_Modal
+     (Dialog : access Default_Dialog_Record)
+     return Boolean;
 
    ---------------------------------------------------------------------------
    --  Returns true, if the okay button was pressed.

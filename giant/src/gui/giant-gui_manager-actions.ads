@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager-actions.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-gui_manager-actions.ads,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/27 14:34:55 $
+--  $Date: 2003/08/25 16:06:25 $
 --
 --  Manages the actions that have global visiblity i.e. are pending
 --  for all graph windows.
@@ -30,6 +30,8 @@
 
 with Gdk.Event;
 
+with Giant.Graph_Widgets;
+with Giant.Graph_Widgets.Handlers;
 with Giant.Graph_Window;
 with Giant.Vis;
 
@@ -38,6 +40,10 @@ package Giant.Gui_Manager.Actions is
    procedure Set_Global_Action
      (Action : access Graph_Window.Actions.Graph_Window_Action_Type'Class);
 
+   procedure Set_Local_Action
+     (Window_Name : in     String;
+      Action      : access Graph_Window.Actions.Graph_Window_Action_Type'Class);
+
    function Is_Action_Pending
      return Boolean;
 
@@ -45,8 +51,7 @@ package Giant.Gui_Manager.Actions is
 
    procedure Trigger
      (Window   : access Graph_Window.Graph_Window_Record'Class;
-      Event    : in     Gdk.Event.Gdk_Event;
-      Location : in     Vis.Logic.Vector_2d);
+      Event    : in     Graph_Widgets.Handlers.Button_Press_Action);
 
 private
 

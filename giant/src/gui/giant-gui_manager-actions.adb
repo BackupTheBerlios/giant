@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager-actions.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-gui_manager-actions.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/08/12 13:14:05 $
+--  $Date: 2003/08/25 16:06:25 $
 
 with Giant.Graph_Window;
 
@@ -34,13 +34,30 @@ package body Giant.Gui_Manager.Actions is
      (Action : access Graph_Window.Actions.Graph_Window_Action_Type'Class)
    is
    begin
+      --  cancel currently pending action
       Cancel;
 
       Gui_Manager.Set_Status (-"Please select the target window");
       Pending_Action
         := Graph_Window.Actions.Graph_Window_Action_Access (Action);
+
+      --  start action mode for all open windows
       Set_Action_Mode (True);
    end Set_Global_Action;
+
+   procedure Set_Local_Action
+     (Window_Name : in     String;
+      Action      : access Graph_Window.Actions.Graph_Window_Action_Type'Class)
+   is
+      use type Graph_Window.Graph_Window_Access;
+      Window : Graph_Window.Graph_Window_Access
+        := Get_Open_Window (Window_Name);
+   begin
+      if (Window /= null) then
+         Gui_Manager.Set_Status (-"Please select the target position");
+         Graph_Window.Set_Local_Action (Window, Action);
+      end if;
+   end Set_Local_Action;
 
    function Is_Action_Pending
      return Boolean
@@ -62,14 +79,12 @@ package body Giant.Gui_Manager.Actions is
 
    procedure Trigger
      (Window   : access Graph_Window.Graph_Window_Record'Class;
-      Event    : in     Gdk.Event.Gdk_Event;
-      Location : in     Vis.Logic.Vector_2d)
+      Event    : in     Graph_Widgets.Handlers.Button_Press_Action)
    is
    begin
       if (Pending_Action /= null) then
          Gui_Manager.Set_Status ("");
-         if (Graph_Window.Actions.Execute (Pending_Action, Window,
-                                           Event, Location)) then
+         if (Graph_Window.Actions.Execute (Pending_Action, Window, Event)) then
             Graph_Window.Actions.Destroy (Pending_Action);
             Pending_Action := null;
             Set_Action_Mode (False);

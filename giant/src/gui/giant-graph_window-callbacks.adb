@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.18 $
+--  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.19 $
 --  $Author: squig $
---  $Date: 2003/08/19 13:09:14 $
+--  $Date: 2003/08/25 16:06:25 $
 --
 
 with Ada.Unchecked_Conversion;
@@ -184,9 +184,9 @@ package body Giant.Graph_Window.Callbacks is
    begin
       if Gdk.Event.Get_Button (Event.Event) = 1 then
          if (Gui_Manager.Actions.Is_Action_Pending) then
-            Gui_Manager.Actions.Trigger (Window, Event.Event, Event.Location);
+            Gui_Manager.Actions.Trigger (Window, Event);
          elsif (Graph_Window.Is_Local_Action_Pending (Window)) then
-            Trigger_Local_Action (Window, Event.Event, Event.Location);
+            Trigger_Local_Action (Window, Event);
          end if;
       elsif Gdk.Event.Get_Button (Event.Event) = 3 then
          if (Gui_Manager.Actions.Is_Action_Pending) then

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.53 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.54 $
 --  $Author: squig $
---  $Date: 2003/08/19 13:09:14 $
+--  $Date: 2003/08/25 16:06:25 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -762,6 +762,8 @@ package body Giant.Graph_Window is
    begin
       Gtk.Window.Initialize (Window, Gtk.Enums.Window_Toplevel);
       Update_Title (Window);
+      --  set default window size
+      Set_Usize (Window, 600, 600);
 
       --  horizontal split pane
       Gtk.Paned.Gtk_New_Hpaned (Window.Split_Pane);
@@ -1053,16 +1055,30 @@ package body Giant.Graph_Window is
       end if;
    end Cancel_Local_Action;
 
+   procedure Set_Local_Action
+     (Window : access Graph_Window.Graph_Window_Record;
+      Action : access Graph_Window.Actions.Graph_Window_Action_Type'Class)
+   is
+      use type Actions.Graph_Window_Action_Access;
+   begin
+      --  cancel currently pending action
+      Cancel_Local_Action (Window);
+
+      Window.Local_Action
+        := Graph_Window.Actions.Graph_Window_Action_Access (Action);
+      if (not Graph_Widgets.Is_Action_Mode_Active (Window.Graph)) then
+         Graph_Widgets.Start_Action_Mode (Window.Graph);
+      end if;
+   end Set_Local_Action;
+
    procedure Trigger_Local_Action
-     (Window   : access Graph_Window.Graph_Window_Record'Class;
-      Event    : in     Gdk.Event.Gdk_Event;
-      Location : in     Vis.Logic.Vector_2d)
+     (Window   : access Graph_Window.Graph_Window_Record;
+      Event    : in     Graph_Widgets.Handlers.Button_Press_Action)
    is
       use type Actions.Graph_Window_Action_Access;
    begin
       if (Window.Local_Action /= null) then
-         if (Actions.Execute (Window.Local_Action, Window, Event,
-                              Location)) then
+         if (Actions.Execute (Window.Local_Action, Window, Event)) then
             Actions.Destroy (Window.Local_Action);
             Window.Local_Action := null;
             Graph_Widgets.Cancel_Action_Mode (Window.Graph);

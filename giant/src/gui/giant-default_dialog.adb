@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.18 $
+--  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.19 $
 --  $Author: squig $
---  $Date: 2003/07/10 21:01:40 $
+--  $Date: 2003/08/25 16:06:25 $
 --
 
 with Ada.Text_Io; use Ada.Text_Io;
@@ -312,6 +312,14 @@ package body Giant.Default_Dialog is
       if (Can_Hide (Default_Dialog_Access (Dialog))) then
          Hide (Dialog);
       end if;
+   end;
+
+   function Is_Modal
+     (Dialog : access Default_Dialog_Record)
+     return Boolean
+   is
+   begin
+      return Dialog.Is_Modal;
    end;
 
    function Is_Response_Okay

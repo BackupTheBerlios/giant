@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window-actions.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-main_window-actions.ads,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/08/12 13:14:05 $
+--  $Date: 2003/08/25 16:06:25 $
 --
 --  Provides the main window. The main window is only instanciated once.
 --
@@ -30,6 +30,8 @@
 with Gdk.Event;
 
 with Giant.Graph_Window;
+with Giant.Graph_Widgets;
+with Giant.Graph_Widgets.Handlers;
 with Giant.Vis;
 
 package Giant.Main_Window.Actions is
@@ -52,8 +54,7 @@ package Giant.Main_Window.Actions is
    function Execute
      (Action   : access Create_Selection_Action_Type;
       Window   : access Graph_Window.Graph_Window_Record'Class;
-      Event    : in     Gdk.Event.Gdk_Event_Button;
-      Location : in     Vis.Logic.Vector_2d)
+      Event    : in     Graph_Widgets.Handlers.Button_Press_Action)
      return Boolean;
 
 end Giant.Main_Window.Actions;

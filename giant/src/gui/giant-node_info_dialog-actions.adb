@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-node_info_dialog-actions.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-node_info_dialog-actions.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/08/13 11:58:38 $
+--  $Date: 2003/08/25 16:06:25 $
 --
 
 
@@ -35,13 +35,13 @@ package body Giant.Node_Info_Dialog.Actions is
    ---------------------------------------------------------------------------
 
    function Create
-	 (Dialog : in Node_Info_Dialog_Access)
-	 return Pick_Node_Action_Access
+     (Dialog : in Node_Info_Dialog_Access)
+     return Pick_Node_Action_Access
    is
       Action : Pick_Node_Action_Access;
    begin
       Action := new Pick_Node_Action_Type;
-	  Action.Dialog := Dialog;
+      Action.Dialog := Dialog;
       return Action;
    end Create;
 
@@ -55,20 +55,18 @@ package body Giant.Node_Info_Dialog.Actions is
    function Execute
      (Action   : access Pick_Node_Action_Type;
       Window   : access Graph_Window.Graph_Window_Record'Class;
-      Event    : in     Gdk.Event.Gdk_Event_Button;
-      Location : in     Vis.Logic.Vector_2d)
-	 return Boolean
+      Event    : in     Graph_Widgets.Handlers.Button_Press_Action)
+     return Boolean
    is
-	  use type Graph_Lib.Node_Id;
+      use type Graph_Widgets.Handlers.Pressed_On_Type;
    begin
-	  if (Graph_Window.Get_Current_Node (Window) /= null) then
-		 Node_Info_Dialog.Set_Node (Action.Dialog,
-									Graph_Window.Get_Current_Node (Window));
-		 return True;
-	  end if;
-	  
-	  --  do not cancel action mode until user has selected a node
-	  return False;
+      if (Event.Pressed_On = Graph_Widgets.Handlers.On_Node) then
+         Node_Info_Dialog.Set_Node (Action.Dialog, Event.Node);
+         return True;
+      end if;
+
+      --  do not cancel action mode until user has selected a node
+      return False;
    end Execute;
 
 end Giant.Node_Info_Dialog.Actions;
