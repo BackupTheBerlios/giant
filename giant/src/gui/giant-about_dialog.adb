@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-about_dialog.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-about_dialog.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/07/03 18:43:27 $
+--  $Date: 2003/07/22 09:10:23 $
 --
 
 with Ada.IO_Exceptions;
@@ -132,7 +132,7 @@ package body Giant.About_Dialog is
 
       --  about
       Gtk.Label.Gtk_New (Label, "GIANT" & ASCII.LF & "" & ASCII.LF
-                         & "Graphical IML Analysis and Navigation Tool");
+                         & "  Graphical IML Analysis and Navigation Tool  ");
       Gtk.Notebook.Append_Page_Menu (Notebook, Label,
                                      New_Label (-"About"),
                                      New_Label (-"About"));
@@ -152,7 +152,7 @@ package body Giant.About_Dialog is
       Gtk.Scrolled_Window.Gtk_New (Scrolled_Window);
       Gtk.Scrolled_Window.Set_Policy (Scrolled_Window, Policy_Automatic,
                                       Policy_Automatic);
-      Gtk.Scrolled_Window.Add (Scrolled_Window, Text_Area);
+      Gtk.Scrolled_Window.Add_With_Viewport (Scrolled_Window, Text_Area);
       Gtk.Notebook.Append_Page_Menu (Notebook, Scrolled_Window,
                                      New_Label (-"Authors"),
                                      New_Label (-"Authors"));
@@ -167,7 +167,7 @@ package body Giant.About_Dialog is
       Gtk.Scrolled_Window.Gtk_New (Scrolled_Window);
       Gtk.Scrolled_Window.Set_Policy (Scrolled_Window, Policy_Automatic,
                                       Policy_Automatic);
-      Gtk.Scrolled_Window.Add (Scrolled_Window, Text_Area);
+      Gtk.Scrolled_Window.Add_With_Viewport (Scrolled_Window, Text_Area);
       Gtk.Notebook.Append_Page_Menu (Notebook, Scrolled_Window,
                                      New_Label (-"License"),
                                      New_Label (-"License"));
