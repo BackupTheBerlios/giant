@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.ads,v $, $Revision: 1.5 $
+--  $RCSfile: giant-graph_widgets-callbacks.ads,v $, $Revision: 1.6 $
 --  $Author: keulsn $
---  $Date: 2003/08/02 16:27:43 $
+--  $Date: 2003/08/04 03:40:02 $
 --
 ------------------------------------------------------------------------------
 
@@ -36,6 +36,14 @@ package Giant.Graph_Widgets.Callbacks is
    --  Connects all Callbacks 'Widget' needs
    procedure Connect_All_Callbacks
      (Widget : access Graph_Widget_Record'Class);
+
+   ----------------------------------------------------------------------------
+   --  Updates a user action so it respects newly appeared edges. This must
+   --  be called when new edges are shown on the graph widget, e.g. when
+   --  nodes come into view.
+   procedure Edges_Appeared
+     (Widget : access Graph_Widget_Record'Class;
+      Edges  : in     Vis_Data.Vis_Edge_Sets.Set);
 
    ----------------------------------------------------------------------------
    --  Updates the position of the mouse pointer. This must be called whenever

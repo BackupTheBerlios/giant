@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.15 $
+--  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.16 $
 --  $Author: keulsn $
---  $Date: 2003/08/02 16:27:43 $
+--  $Date: 2003/08/04 03:40:02 $
 --
 ------------------------------------------------------------------------------
 
@@ -31,6 +31,7 @@ with System;
 
 with Gdk.Main;
 with Gdk.Rectangle;
+with Gdk.Threads;
 with Gdk.Window;
 with Gdk.Window_Attr;
 with Gtk.Arguments;
@@ -765,6 +766,47 @@ package body Giant.Graph_Widgets.Callbacks is
       end if;
    end On_Button_Release_Event;
 
+   procedure Edges_Appeared
+     (Widget : access Graph_Widget_Record'Class;
+      Edges  : in     Vis_Edge_Sets.Set) is
+
+      Add_Edge_Queue : Vis_Edge_Lists.List;
+      Add_Node_Queue : Vis_Node_Lists.List;
+      Mode           : Selection_Modify_Type;
+      Rectangle      : Vis.Absolute.Rectangle_2d;
+      Edge           : Vis_Data.Vis_Edge_Id;
+      Iterator       : Vis_Edge_Sets.Iterator;
+   begin
+      if States.Is_Rectangle_Current (Widget) then
+         Mode := Interpret_Modifiers (States.Get_Mouse_Modifiers (Widget));
+         if Mode = Change then
+            Mode := Add;
+         end if;
+         Rectangle := Vis.Absolute.Combine_Rectangle
+           (X_1 => Vis.Absolute.Get_X (States.Get_Click_Point (Widget)),
+            Y_1 => Vis.Absolute.Get_Y (States.Get_Click_Point (Widget)),
+            X_2 => Vis.Absolute.Get_X (States.Get_Mouse_Position (Widget)),
+            Y_2 => Vis.Absolute.Get_Y (States.Get_Mouse_Position (Widget)));
+
+         Add_Edge_Queue := Vis_Edge_Lists.Create;
+         Add_Node_Queue := Vis_Node_Lists.Create;
+         Iterator := Vis_Edge_Sets.Make_Iterator (Edges);
+         while Vis_Edge_Sets.More (Iterator) loop
+            Vis_Edge_Sets.Next (Iterator, Edge);
+            if Vis_Data.Intersects (Edge, Rectangle) then
+               Vis_Edge_Lists.Attach (Edge, Add_Edge_Queue);
+            end if;
+         end loop;
+         Vis_Edge_Sets.Destroy (Iterator);
+
+         Modify_Selection
+           (Widget   => Widget,
+            Edges    => Add_Edge_Queue,
+            Nodes    => Add_Node_Queue,
+            Mode     => Mode);
+      end if;
+   end Edges_Appeared;
+
    procedure Mouse_Pointer_Moved_To
      (Widget          : access Graph_Widget_Record'Class;
       Motion_Position : in     Vis.Absolute.Vector_2d) is
@@ -797,7 +839,8 @@ package body Giant.Graph_Widgets.Callbacks is
               (Widget          => Widget,
                Mode            => Mode);
          end if;
-      elsif States.Is_Rectangle_Current (Widget) then
+      end if;
+      if States.Is_Rectangle_Current (Widget) then
          if Mode = Change then
             Mode := Add;
          end if;
@@ -898,11 +941,14 @@ package body Giant.Graph_Widgets.Callbacks is
       X      : Vis.Absolute_Int;
       Y      : Vis.Absolute_Int;
    begin
+      Gdk.Threads.Enter;
       if not States.Is_Auto_Scrolling (Widget) and
         Widget.Callbacks.Auto_Scroll_Connected then
 
          Gtk.Main.Timeout_Remove (Widget.Callbacks.Auto_Scroll_Handler);
          Widget.Callbacks.Auto_Scroll_Connected := False;
+
+         Gdk.Threads.Leave;
          return False;
       else
          Area := Drawing.Get_Visible_Area (Widget);
@@ -935,6 +981,7 @@ package body Giant.Graph_Widgets.Callbacks is
                         (Left  => Vis.Absolute.Get_Center (Area),
                          Right => Vis.Absolute.Combine_Vector (X, Y)));
 
+         Gdk.Threads.Leave;
          return True;
       end if;
    end On_Auto_Scroll_Timeout;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.24 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.25 $
 --  $Author: keulsn $
---  $Date: 2003/08/02 16:27:43 $
+--  $Date: 2003/08/04 03:40:02 $
 --
 ------------------------------------------------------------------------------
 
@@ -73,7 +73,8 @@ package body Giant.Graph_Widgets.Drawing is
      return Natural is
 
       Number_Of_Lights : Natural;
-      Highlighting : Vis_Data.Flags_Type := Vis_Data.Get_Highlighting (Node);
+      Highlighting : Vis_Data.Highlight_Array :=
+        Vis_Data.Get_Highlighting (Node);
    begin
       Number_Of_Lights := 0;
       for I in Vis_Data.Global_Highlight_Type loop
@@ -304,7 +305,7 @@ package body Giant.Graph_Widgets.Drawing is
       Edge   : in     Vis_Data.Vis_Edge_Id) is
 
       Number_Of_Lights : Natural;
-      Highlighting     : Vis_Data.Flags_Type :=
+      Highlighting     : Vis_Data.Highlight_Array :=
         Vis_Data.Get_Highlighting (Edge);
       Width            : Vis.Absolute_Natural;
       Height           : Vis.Absolute_Natural;
@@ -421,7 +422,7 @@ package body Giant.Graph_Widgets.Drawing is
       Light_Extra_Thickness : Vis.Absolute_Natural;
       Style                 : Edge_Style_Type :=
         Settings.Get_Edge_Style (Widget, Edge);
-      Highlighting          : Vis_Data.Flags_Type :=
+      Highlighting          : Vis_Data.Highlight_Array :=
         Vis_Data.Get_Highlighting (Edge);
    begin
       if Vis_Data.Is_Hidden (Edge) then
@@ -502,7 +503,7 @@ package body Giant.Graph_Widgets.Drawing is
       Icon_Height          : Vis.Absolute_Natural;
       Annotation_Height    : Vis.Absolute_Natural;
       Header_Height        : Vis.Absolute_Natural;
-      Highlighting         : Vis_Data.Flags_Type :=
+      Highlighting         : Vis_Data.Highlight_Array :=
         Vis_Data.Get_Highlighting (Node);
    begin
       Border_Thickness := Number_Of_Lights * Default_Node_Light_Thickness + 1;
@@ -655,7 +656,7 @@ package body Giant.Graph_Widgets.Drawing is
          Light_Rect      : Vis.Absolute.Rectangle_2d;
          Light_Thickness : Vis.Absolute_Int;
          Draw_Rect       : Vis.Absolute.Rectangle_2d;
-         Highlighting    : Vis_Data.Flags_Type;
+         Highlighting    : Vis_Data.Highlight_Array;
       begin
          Highlighting := Vis_Data.Get_Highlighting (Node);
          Draw_Rect := Vis_Data.Get_Extent (Node);

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.adb,v $, $Revision: 1.15 $
+--  $RCSfile: giant-vectors.adb,v $, $Revision: 1.16 $
 --  $Author: keulsn $
---  $Date: 2003/08/02 16:27:43 $
+--  $Date: 2003/08/04 03:40:02 $
 --
 ------------------------------------------------------------------------------
 
@@ -589,6 +589,12 @@ package body Giant.Vectors is
    begin
       if not Intersects (Left, Right) then
          Add (Left);
+      elsif Coord_Less_Equal (Get_Height (Left), Point_Size) or else
+        Coord_Less_Equal (Get_Width (Left), Point_Size) then
+         --  'Left' is too small to carve something off. Since 'Left'
+         --  and 'Right' have intersection, the result can only be the
+         --  empty rectangle, so we are done already.
+         null;
       else
          --  above part
          if Get_Top (Left) < Get_Top (Right) then

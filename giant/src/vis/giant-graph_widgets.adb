@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.40 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.41 $
 --  $Author: keulsn $
---  $Date: 2003/08/02 16:27:43 $
+--  $Date: 2003/08/04 03:40:02 $
 --
 ------------------------------------------------------------------------------
 
@@ -243,10 +243,10 @@ package body Giant.Graph_Widgets is
       Widget.Selected_Edges := Vis_Edge_Sets.Empty_Set;
       Widget.Selected_Nodes := Vis_Node_Sets.Empty_Set;
 
-      Widget.Locked_Edges := Vis_Edge_Sets.Empty_Set;
       Widget.Unsized_Edges := Vis_Edge_Sets.Empty_Set;
-      Widget.Locked_Nodes := Vis_Node_Sets.Empty_Set;
-      Widget.Unsized_Nodes := Vis_Node_Sets.Empty_Set;
+
+      Widget.Locked_Nodes := Vis_Node_Lists.Create;
+      Widget.Unsized_Nodes := Vis_Node_Lists.Create;
 
       Vis_Data.Set_Up (Widget.Manager);
       Widget.Edge_Map := Edge_Id_Mappings.Create;
@@ -298,9 +298,9 @@ package body Giant.Graph_Widgets is
          Vis_Data.Destroy (Node);
       end loop;
 
-      Vis_Node_Sets.Destroy (Widget.Locked_Nodes);
-      Vis_Node_Sets.Destroy (Widget.Unsized_Nodes);
-      Vis_Edge_Sets.Destroy (Widget.Locked_Edges);
+      Vis_Node_Lists.Destroy (Widget.Locked_Nodes);
+      Vis_Node_Lists.Destroy (Widget.Unsized_Nodes);
+
       Vis_Edge_Sets.Destroy (Widget.Unsized_Edges);
 
       Vis_Node_Sets.Destroy (Widget.Selected_Nodes);
@@ -426,12 +426,9 @@ package body Giant.Graph_Widgets is
          Graph_Node_Sets.Next (Node_Iterator, Graph_Node);
          Find_Or_Create (Widget, Graph_Node, Node);
          if Vis_Data.Has_Manager (Node) then
-            --  Must drop because the node existed already.
-            Vis_Data.Drop_Node (Widget.Manager, Node);
-            Vis_Node_Sets.Insert (Widget.Locked_Nodes, Node);
+            Add_Node_To_Locked (Widget, Node);
          else
-            --  Must assign new size
-            Vis_Node_Sets.Insert (Widget.Unsized_Nodes, Node);
+            Move_Node_To_Unsized (Widget, Node);
          end if;
       end loop;
       Graph_Node_Sets.Destroy (Node_Iterator);
@@ -443,17 +440,17 @@ package body Giant.Graph_Widgets is
          Find_Or_Create (Widget, Graph_Edge, Edge);
          if Edge /= null then
             if Vis_Data.Has_Manager (Edge) then
-               --  Must drop because the edge existed already.
-               Vis_Data.Drop_Edge (Widget.Manager, Edge);
-               Vis_Edge_Sets.Insert (Widget.Locked_Edges, Edge);
+               Add_Edge_To_Locked (Widget, Edge);
             else
-               --  Must assign new size
-               Vis_Edge_Sets.Insert (Widget.Unsized_Edges, Edge);
+               --  Move_Edge_To_Unsized (Widget, Edge);
+               --  Perform lazy assignment of size
+               null;
             end if;
          else
             Graph_Widget_Logger.Error
               ("Could not insert edge because incident nodes are not "
                & "contained in graph widget. Ignoring...");
+
          end if;
       end loop;
    end Insert_Selection;
@@ -663,6 +660,10 @@ package body Giant.Graph_Widgets is
       Vis_Node : Vis_Data.Vis_Node_Id := Look_Up (Widget, Node);
    begin
       if Vis_Node /= null then
+         if not Vis_Data.Is_Sized (Vis_Node) then
+            --  must set size
+            Drawing.Update_Node_Size (Widget, Vis_Node);
+         end if;
          return Positioning.Get_Logic
            (Widget, Vis.Absolute.Get_Width (Vis_Data.Get_Extent (Vis_Node)));
       else
@@ -678,6 +679,10 @@ package body Giant.Graph_Widgets is
       Vis_Node : Vis_Data.Vis_Node_Id := Look_Up (Widget, Node);
    begin
       if Vis_Node /= null then
+         if not Vis_Data.Is_Sized (Vis_Node) then
+            --  must set size
+            Drawing.Update_Node_Size (Widget, Vis_Node);
+         end if;
          return Positioning.Get_Logic
            (Widget, Vis.Absolute.Get_Height (Vis_Data.Get_Extent (Vis_Node))) +
            2.0 * Vis.Logic_Float
@@ -687,79 +692,107 @@ package body Giant.Graph_Widgets is
       end if;
    end Get_Current_Node_Height;
 
-   procedure Update_Size
-     (Widget   : access Graph_Widget_Record'Class;
-      Edge_Set : in     Vis_Edge_Sets.Set;
-      Node_Set : in     Vis_Node_Sets.Set) is
+   procedure Update_Node_Size
+     (Widget    : access Graph_Widget_Record'Class;
+      Node_List : in     Vis_Node_Lists.List) is
 
-      Edge_Iterator : Vis_Edge_Sets.Iterator;
-      Edge          : Vis_Data.Vis_Edge_Id;
-      Node_Iterator : Vis_Node_Sets.Iterator;
-      Node          : Vis_Data.Vis_Node_Id;
+      Iterator : Vis_Node_Lists.ListIter;
+      Node     : Vis_Data.Vis_Node_Id;
    begin
-      Edge_Iterator := Vis_Edge_Sets.Make_Iterator (Edge_Set);
-      while Vis_Edge_Sets.More (Edge_Iterator) loop
-         Vis_Edge_Sets.Next (Edge_Iterator, Edge);
-         Drawing.Update_Edge_Size (Widget, Edge);
-      end loop;
-      Vis_Edge_Sets.Destroy (Edge_Iterator);
-
-      Node_Iterator := Vis_Node_Sets.Make_Iterator (Node_Set);
-      while Vis_Node_Sets.More (Node_Iterator) loop
-         Vis_Node_Sets.Next (Node_Iterator, Node);
+      Iterator := Vis_Node_Lists.MakeListIter (Node_List);
+      while Vis_Node_Lists.More (Iterator) loop
+         Vis_Node_Lists.Next (Iterator, Node);
          Drawing.Update_Node_Size (Widget, Node);
+         Vis_Data.Set_Sized (Node, True);
       end loop;
-      Vis_Node_Sets.Destroy (Node_Iterator);
-   end Update_Size;
+   end Update_Node_Size;
+
 
    --  Settings must have been Set_Up
    procedure Flush_Locked
      (Widget : access Graph_Widget_Record'Class) is
 
-      procedure Position_And_Insert
-        (Edge_Set : in out Vis_Edge_Sets.Set;
-         Node_Set : in out Vis_Node_Sets.Set) is
-
-         Edge_Iterator : Vis_Edge_Sets.Iterator;
-         Edge          : Vis_Data.Vis_Edge_Id;
-         Node_Iterator : Vis_Node_Sets.Iterator;
-         Node          : Vis_Data.Vis_Node_Id;
-      begin
-         Update_Positioning
-           (Widget => Widget,
-            Edges  => Edge_Set,
-            Nodes  => Node_Set);
-
-         Edge_Iterator := Vis_Edge_Sets.Make_Iterator (Edge_Set);
-         while Vis_Edge_Sets.More (Edge_Iterator) loop
-            Vis_Edge_Sets.Next (Edge_Iterator, Edge);
-            Vis_Data.Insert_Edge (Widget.Manager, Edge);
-         end loop;
-         Vis_Edge_Sets.Destroy (Edge_Iterator);
-         Vis_Edge_Sets.Remove_All (Edge_Set);
-
-         Node_Iterator := Vis_Node_Sets.Make_Iterator (Node_Set);
-         while Vis_Node_Sets.More (Node_Iterator) loop
-            Vis_Node_Sets.Next (Node_Iterator, Node);
-            Vis_Data.Insert_Node (Widget.Manager, Node);
-         end loop;
-         Vis_Node_Sets.Destroy (Node_Iterator);
-         Vis_Node_Sets.Remove_All (Node_Set);
-      end Position_And_Insert;
-
+      Node           : Vis_Data.Vis_Node_Id;
+      Deferred_Nodes : Vis_Node_Lists.List := Vis_Node_Lists.Create;
+      Edge_Set       : Vis_Edge_Sets.Set;
+      Newly_Appeared : Vis_Edge_Sets.Set;
+      Edge_Iterator  : Vis_Edge_Sets.Iterator;
+      Edge           : Vis_Data.Vis_Edge_Id;
+      Lock           : Lock_Type;
+      Node_List      : Vis_Node_Lists.List;
    begin
       States.Flush_Locked_Content (Widget);
       States.Changed_Visual (Widget);
 
-      Update_Size
-        (Widget   => Widget,
-         Edge_Set => Widget.Unsized_Edges,
-         Node_Set => Widget.Unsized_Nodes);
+      Update_Node_Size
+        (Widget    => Widget,
+         Node_List => Widget.Unsized_Nodes);
 
-      Position_And_Insert (Widget.Unsized_Edges, Widget.Unsized_Nodes);
-      Position_And_Insert (Widget.Locked_Edges, Widget.Locked_Nodes);
+      Node_List := Vis_Node_Lists.Attach
+        (Widget.Unsized_Nodes, Widget.Locked_Nodes);
+      Widget.Unsized_Nodes := Vis_Node_Lists.Create;
+      Widget.Locked_Nodes := Vis_Node_Lists.Create;
 
-      Redraw (Widget);
+      while not Vis_Node_Lists.IsEmpty (Node_List) loop
+         Node := Vis_Node_Lists.FirstValue (Node_List);
+         Vis_Node_Lists.DeleteHead (Node_List);
+
+         Positioning.Update_Node_Position (Widget, Node);
+         Vis_Data.Insert_Node (Widget.Manager, Node);
+         Vis_Data.Set_Locked (Node, False);
+
+         if Is_In_Visible_Area (Widget, Node) then
+            --  Must process incident edges, cannot do so before node
+            --  positioning is completed.
+            Vis_Data.Set_Incident_Visible (Node, True);
+            Vis_Node_Lists.Attach (Node, Deferred_Nodes);
+         else
+            Vis_Data.Set_Incident_Visible (Node, False);
+         end if;
+      end loop;
+      Vis_Node_Lists.Destroy (Node_List);
+
+      Switch_Incident_Visible (Widget, Deferred_Nodes, Newly_Appeared);
+
+      Edge_Set := Vis_Edge_Sets.Copy (Newly_Appeared);
+
+      --  Add the unsized queue
+      Edge_Iterator := Vis_Edge_Sets.Make_Iterator (Widget.Unsized_Edges);
+      while Vis_Edge_Sets.More (Edge_Iterator) loop
+         Vis_Edge_Sets.Next (Edge_Iterator, Edge);
+
+         --  If an edge was on unsized queue and then appeared, then
+         --  it is still on unsized queue and in the region manager.
+         --  In this case this edge must not be inserted again.
+         if Vis_Data.Must_Be_Visible (Edge) and then
+           not Vis_Data.Has_Manager (Edge) then
+
+            Vis_Edge_Sets.Insert (Edge_Set, Edge);
+         end if;
+      end loop;
+      Vis_Edge_Sets.Destroy (Edge_Iterator);
+
+      Insert_Incident_Edges
+        (Widget => Widget,
+         Nodes  => Deferred_Nodes,
+         Edges  => Edge_Set);
+      Vis_Edge_Sets.Remove_All (Widget.Unsized_Edges);
+      Vis_Edge_Sets.Destroy (Edge_Set);
+
+      if not Vis_Edge_Sets.Is_Empty (Newly_Appeared) then
+         --  New edges have appeared. Must flush again.
+         Lock_All_Content (Widget, Lock);
+         Callbacks.Edges_Appeared (Widget, Newly_Appeared);
+         Vis_Edge_Sets.Destroy (Newly_Appeared);
+         Release_Lock (Widget, Lock);
+         --  Exit now because this function will be called recursively.
+         --  Recursion terminates if 'Callbacks.Edges_Appeared' does not
+         --  again make new edges appear, which it doesn't (hopefully)
+      else
+         --  No new edges have appeared
+         Vis_Edge_Sets.Destroy (Newly_Appeared);
+         Redraw (Widget);
+      end if;
    end Flush_Locked;
 
    procedure Release_Lock
@@ -881,7 +914,7 @@ package body Giant.Graph_Widgets is
    begin
       Lock_All_Content (Widget, Lock);
       Move_All_Nodes_To_Unsized (Widget);
-      Move_All_Edges_To_Unsized (Widget);
+      --  Move_All_Edges_To_Unsized (Widget);
       Settings.Set_Style (Widget, Style);
       Release_Lock (Widget, Lock);
    end Set_Vis_Style;
@@ -928,7 +961,7 @@ package body Giant.Graph_Widgets is
       Edge      : in     Vis_Data.Vis_Edge_Id;
       Highlight : in     Vis_Data.Highlight_Type) is
 
-      Current : Vis_Data.Flags_Type;
+      Current : Vis_Data.Highlight_Array;
    begin
       pragma Assert (States.Is_Locked (Widget));
       Current := Vis_Data.Get_Highlighting (Edge);
@@ -945,7 +978,7 @@ package body Giant.Graph_Widgets is
       Node      : in     Vis_Data.Vis_Node_Id;
       Highlight : in     Vis_Data.Highlight_Type) is
 
-      Current : Vis_Data.Flags_Type;
+      Current : Vis_Data.Highlight_Array;
    begin
       pragma Assert (States.Is_Locked (Widget));
       Current := Vis_Data.Get_Highlighting (Node);
@@ -967,7 +1000,7 @@ package body Giant.Graph_Widgets is
       Edge      : in     Vis_Data.Vis_Edge_Id;
       Highlight : in     Vis_Data.Highlight_Type) is
 
-      Current : Vis_Data.Flags_Type;
+      Current : Vis_Data.Highlight_Array;
    begin
       pragma Assert (States.Is_Locked (Widget));
       Current := Vis_Data.Get_Highlighting (Edge);
@@ -984,7 +1017,7 @@ package body Giant.Graph_Widgets is
       Node      : in     Vis_Data.Vis_Node_Id;
       Highlight : in     Vis_Data.Highlight_Type) is
 
-      Current : Vis_Data.Flags_Type;
+      Current : Vis_Data.Highlight_Array;
    begin
       pragma Assert (States.Is_Locked (Widget));
       Current := Vis_Data.Get_Highlighting (Node);
@@ -1368,18 +1401,23 @@ package body Giant.Graph_Widgets is
       Center     : in     Vis.Absolute.Vector_2d) is
 
       use type Vis.Absolute.Vector_2d;
-      Point : Vis.Absolute.Vector_2d;
-   begin
+      Point        : Vis.Absolute.Vector_2d;
+      Old_Area     : Vis.Absolute.Rectangle_2d;
+      Lock         : Lock_Type;
+  begin
+      Lock_All_Content (Widget, Lock);
       Point := States.Get_Mouse_Position (Widget);
       Point := Point + Center -
         Vis.Absolute.Get_Center (Drawing.Get_Visible_Area (Widget));
 
+      Old_Area := Drawing.Get_Visible_Area (Widget);
       Drawing.Move_Visible_Area_To
         (Widget => Widget,
          Point  => Center);
 
-      --  States.Set_Mouse_Position (Widget, Point);
       Callbacks.Mouse_Pointer_Moved_To (Widget, Point);
+
+      Make_Edges_Appear (Widget, Old_Area);
 
       if States.Must_Update_Visual_Area (Widget) then
          Notifications.Visible_Area_Changed
@@ -1387,7 +1425,7 @@ package body Giant.Graph_Widgets is
             Area   => Get_Visible_Area (Widget));
          States.Visual_Area_Updated (Widget);
       end if;
-      Redraw (Widget);
+      Release_Lock (Widget, Lock);
    end Set_Visible_Center;
 
    procedure Set_Location
@@ -1406,7 +1444,7 @@ package body Giant.Graph_Widgets is
    begin
       Lock_All_Content (Widget, Lock);
       Move_All_Nodes_To_Unsized (Widget);
-      Move_All_Edges_To_Unsized (Widget);
+      --  Move_All_Edges_To_Unsized (Widget);
       Positioning.Set_Zoom (Widget, Zoom);
       Set_Location (Widget, Location);
       Release_Lock (Widget, Lock);
@@ -1706,6 +1744,174 @@ package body Giant.Graph_Widgets is
    -- Helpers --
    -------------
 
+   procedure Make_Edges_Appear
+     (Widget           : access Graph_Widget_Record'Class;
+      Old_Visible_Area : in     Vis.Absolute.Rectangle_2d) is
+
+      Add_Queue    : Vis_Node_Lists.List;
+      Remove_Queue : Vis_Node_Lists.List;
+      Edges        : Vis_Edge_Sets.Set;
+      Lock         : Lock_Type;
+   begin
+      Lock_All_Content (Widget, Lock);
+
+      Vis_Data.Update_Area_Content_Nodes
+        (Manager      => Widget.Manager,
+         Old_Area     => Old_Visible_Area,
+         New_Area     => Drawing.Get_Visible_Area (Widget),
+         Add_Nodes    => Add_Queue,
+         Remove_Nodes => Remove_Queue);
+      Switch_Incident_Visible (Widget, Add_Queue, Edges);
+
+      Insert_Incident_Edges (Widget, Add_Queue, Edges);
+      Check_Remove_Incident_Edges (Widget, Remove_Queue);
+
+      Callbacks.Edges_Appeared (Widget, Edges);
+
+      Vis_Edge_Sets.Destroy (Edges);
+
+      Release_Lock (Widget, Lock);
+   end Make_Edges_Appear;
+
+   function Is_In_Visible_Area
+     (Widget : access Graph_Widget_Record'Class;
+      Node   : in     Vis_Data.Vis_Node_Id)
+     return Boolean is
+   begin
+      return Vis_Data.Intersects (Node, Drawing.Get_Visible_Area (Widget));
+   end Is_In_Visible_Area;
+
+   procedure Switch_Incident_Visible
+     (Widget     : access Graph_Widget_Record'Class;
+      Nodes      : in     Vis_Node_Lists.List;
+      Incident   :    out Vis_Edge_Sets.Set) is
+
+      procedure Collect_Incident_Unmanaged_Edges
+        (Node     : in     Vis_Data.Vis_Node_Id) is
+
+         Iterator : Vis_Edge_Lists.ListIter;
+         Edge     : Vis_Data.Vis_Edge_Id;
+      begin
+         Vis_Data.Make_Incoming_Iterator (Node, Iterator);
+         while Vis_Edge_Lists.More (Iterator) loop
+            Vis_Edge_Lists.Next (Iterator, Edge);
+            if not Vis_Data.Has_Manager (Edge) then
+               Vis_Edge_Sets.Insert (Incident, Edge);
+            end if;
+         end loop;
+         Vis_Data.Make_Outgoing_Iterator (Node, Iterator);
+         while Vis_Edge_Lists.More (Iterator) loop
+            Vis_Edge_Lists.Next (Iterator, Edge);
+            if not Vis_Data.Has_Manager (Edge) then
+               Vis_Edge_Sets.Insert (Incident, Edge);
+            end if;
+         end loop;
+      end Collect_Incident_Unmanaged_Edges;
+
+      Iterator : Vis_Node_Lists.ListIter;
+      Node     : Vis_Data.Vis_Node_Id;
+   begin
+      Iterator := Vis_Node_Lists.MakeListIter (Nodes);
+      while Vis_Node_Lists.More (Iterator) loop
+         Vis_Node_Lists.Next (Iterator, Node);
+         Vis_Data.Set_Incident_Visible (Node, True);
+         Collect_Incident_Unmanaged_Edges (Node);
+      end loop;
+   end Switch_Incident_Visible;
+
+   procedure Insert_Incident_Edges
+     (Widget : access Graph_Widget_Record'Class;
+      Nodes  : in out Vis_Node_Lists.List;
+      Edges  : in     Vis_Edge_Sets.Set) is
+
+      procedure Size_And_Position_One
+        (Widget : access Graph_Widget_Record'Class;
+         Edge   : in     Vis_Data.Vis_Edge_Id) is
+      begin
+         Drawing.Update_Edge_Size (Widget, Edge);
+         Positioning.Update_Edge_Position (Widget, Edge);
+      end Size_And_Position_One;
+
+      procedure Size_And_Position_All is new For_All
+        (Object_Type => Vis_Data.Vis_Edge_Id,
+         "<"         => Vis_Data.Is_Edge_Below,
+         "="         => Vis_Data."=",
+         Object_Sets => Vis_Edge_Sets,
+         Action      => Size_And_Position_One);
+
+      procedure Adjust_Arrow_And_Insert_One
+        (Widget : access Graph_Widget_Record'Class;
+         Edge   : in     Vis_Data.Vis_Edge_Id) is
+      begin
+         Positioning.Adjust_Arrow (Widget, Edge);
+         Vis_Data.Insert_Edge (Widget.Manager, Edge);
+      end Adjust_Arrow_And_Insert_One;
+
+      procedure Adjust_Arrow_And_Insert_All is new For_All
+        (Object_Type => Vis_Data.Vis_Edge_Id,
+         "<"         => Vis_Data.Is_Edge_Below,
+         "="         => Vis_Data."=",
+         Object_Sets => Vis_Edge_Sets,
+         Action      => Adjust_Arrow_And_Insert_One);
+
+      Node          : Vis_Data.Vis_Node_Id;
+      Edge_Set      : Vis_Edge_Sets.Set := Vis_Edge_Sets.Empty_Set;
+      Iterator      : Vis_Node_Lists.ListIter;
+   begin
+      --  Position edges, directly docking
+      Size_And_Position_All (Widget, Edges);
+
+      --  Correct positioning to avoid edges lying on top of each other
+      while not Vis_Node_Lists.IsEmpty (Nodes) loop
+         Node := Vis_Node_Lists.FirstValue (Nodes);
+         Vis_Node_Lists.DeleteHead (Nodes);
+
+         Positioning.Adjust_Ports (Widget, Node);
+      end loop;
+      Vis_Node_Lists.Destroy (Nodes);
+
+      --  Position arrow heads
+      Adjust_Arrow_And_Insert_All (Widget, Edges);
+
+      Vis_Edge_Sets.Destroy (Edge_Set);
+   end Insert_Incident_Edges;
+
+   procedure Check_Remove_Incident_Edges
+     (Widget : access Graph_Widget_Record'Class;
+      Nodes  : in out Vis_Node_Lists.List) is
+
+      Node     : Vis_Data.Vis_Node_Id;
+      Iterator : Vis_Edge_Lists.ListIter;
+      Edge     : Vis_Data.Vis_Edge_Id;
+   begin
+      while not Vis_Node_Lists.IsEmpty (Nodes) loop
+         Node := Vis_Node_Lists.FirstValue (Nodes);
+         Vis_Node_Lists.DeleteHead (Nodes);
+
+         Vis_Data.Set_Incident_Visible (Node, False);
+
+         Vis_Data.Make_Incoming_Iterator (Node, Iterator);
+         while Vis_Edge_Lists.More (Iterator) loop
+            Vis_Edge_Lists.Next (Iterator, Edge);
+            if not Vis_Data.Must_Be_Visible (Edge) and then
+              Vis_Data.Has_Manager (Edge) then
+
+               Vis_Data.Drop_Edge (Widget.Manager, Edge);
+            end if;
+         end loop;
+         Vis_Data.Make_Outgoing_Iterator (Node, Iterator);
+         while Vis_Edge_Lists.More (Iterator) loop
+            Vis_Edge_Lists.Next (Iterator, Edge);
+            if not Vis_Data.Must_Be_Visible (Edge) and then
+              Vis_Data.Has_Manager (Edge) then
+
+               Vis_Data.Drop_Edge (Widget.Manager, Edge);
+            end if;
+         end loop;
+      end loop;
+      Vis_Node_Lists.Destroy (Nodes);
+   end Check_Remove_Incident_Edges;
+
    --  Either 'Edge' must not be part of selection or all edges in selection
    --  must be raised in correct order as part of an atomic operation
    procedure Raise_Edge
@@ -1731,25 +1937,7 @@ package body Giant.Graph_Widgets is
       if Vis_Data.Has_Manager (Edge) then
          Vis_Data.Change_Layer (Widget.Manager, Edge, New_Layer);
       else
-         Vis_Edge_Sets.Remove_If_Exists
-           (A_Set   => Widget.Unsized_Edges,
-            Element => Edge,
-            Found   => Is_Unsized);
-
-         if not Is_Unsized then
-            Vis_Edge_Sets.Remove_If_Exists
-              (A_Set   => Widget.Locked_Edges,
-               Element => Edge,
-               Found   => Is_Locked);
-         end if;
-
          Vis_Data.Set_Layer (Edge, New_Layer);
-         if Is_Unsized then
-            Vis_Edge_Sets.Insert (Widget.Unsized_Edges, Edge);
-         end if;
-         if Is_Locked then
-            Vis_Edge_Sets.Insert (Widget.Locked_Edges, Edge);
-         end if;
       end if;
 
       if Is_Selected then
@@ -1779,35 +1967,10 @@ package body Giant.Graph_Widgets is
 
       if Vis_Data.Has_Manager (Node) then
          Vis_Data.Change_Layer (Widget.Manager, Node, New_Layer);
-         pragma Assert
-           (not Vis_Node_Sets.Is_Member (Widget.Unsized_Nodes, Node));
-         pragma Assert
-           (not Vis_Node_Sets.Is_Member (Widget.Locked_Nodes, Node));
+         pragma Assert (Vis_Data.Is_Sized (Node));
+         pragma Assert (not Vis_Data.Is_Locked (Node));
       else
-         Vis_Node_Sets.Remove_If_Exists
-           (A_Set   => Widget.Unsized_Nodes,
-            Element => Node,
-            Found   => Is_Unsized);
-
-         pragma Assert
-           ((not Is_Unsized and not Vis_Node_Sets.Is_Member
-              (Widget.Locked_Nodes, Node)) or
-            (Is_Unsized xor Vis_Node_Sets.Is_Member
-              (Widget.Locked_Nodes, Node)));
-         if not Is_Unsized then
-            Vis_Node_Sets.Remove_If_Exists
-              (A_Set   => Widget.Locked_Nodes,
-               Element => Node,
-               Found   => Is_Locked);
-         end if;
-
          Vis_Data.Set_Layer (Node, New_Layer);
-         if Is_Unsized then
-            Vis_Node_Sets.Insert (Widget.Unsized_Nodes, Node);
-         end if;
-         if Is_Locked then
-            Vis_Node_Sets.Insert (Widget.Locked_Nodes, Node);
-         end if;
       end if;
 
       if Is_Selected then
@@ -1870,27 +2033,18 @@ package body Giant.Graph_Widgets is
      (Widget : access Graph_Widget_Record'Class;
       Edge   : in     Vis_Data.Vis_Edge_Id) is
    begin
-      if Vis_Data.Has_Manager (Edge) then
-         Vis_Data.Drop_Edge (Widget.Manager, Edge);
-      end if;
-      if not Vis_Edge_Sets.Is_Member (Widget.Unsized_Edges, Edge) then
-
-         --  will not insert twice, even if already
-         --  'Is_Member (Widget.Locked_Edges, Edge)'
-         Vis_Edge_Sets.Insert (Widget.Locked_Edges, Edge);
-      end if;
+      Vis_Data.Drop_Edge (Widget.Manager, Edge);
    end Add_Edge_To_Locked;
 
    procedure Add_Edges_To_Locked
      (Widget : access Graph_Widget_Record'Class;
-      Edges  : in     Vis_Edge_Lists.ListIter) is
+      Edges  : in out Vis_Edge_Lists.ListIter) is
 
-      Iterator : Vis_Edge_Lists.ListIter := Edges;
-      Edge     : Vis_Data.Vis_Edge_Id;
+      Current : Vis_Data.Vis_Edge_Id;
    begin
-      while Vis_Edge_Lists.More (Iterator) loop
-         Vis_Edge_Lists.Next (Iterator, Edge);
-         Add_Edge_To_Locked (Widget, Edge);
+      while Vis_Edge_Lists.More (Edges) loop
+         Vis_Edge_Lists.Next (Edges, Current);
+         Add_Edge_To_Locked (Widget, Current);
       end loop;
    end Add_Edges_To_Locked;
 
@@ -1903,14 +2057,13 @@ package body Giant.Graph_Widgets is
       if Vis_Data.Has_Manager (Node) then
          Vis_Data.Drop_Node (Widget.Manager, Node);
       end if;
-      if not Vis_Node_Sets.Is_Member
-        (Widget.Unsized_Nodes, Node) then
+      if Vis_Data.Is_Sized (Node) and then
+        not Vis_Data.Is_Locked (Node) then
 
-         --  will not insert twice, even if already
-         --  'Is_Member (Widget.Locked_Nodes, Node)'
-         Vis_Node_Sets.Insert (Widget.Locked_Nodes, Node);
+         Vis_Data.Set_Locked (Node, True);
+         Vis_Node_Lists.Attach (Node, Widget.Locked_Nodes);
 
-         --  add all incident
+         --  Drop all incident
          Vis_Data.Make_Outgoing_Iterator (Node, Edge_Iterator);
          Add_Edges_To_Locked (Widget, Edge_Iterator);
          Vis_Data.Make_Incoming_Iterator (Node, Edge_Iterator);
@@ -1925,9 +2078,6 @@ package body Giant.Graph_Widgets is
       if Vis_Data.Has_Manager (Edge) then
          Vis_Data.Drop_Edge (Widget.Manager, Edge);
       end if;
-      Vis_Edge_Sets.Remove_If_Exists (Widget.Locked_Edges, Edge);
-      --  will not insert twice, even if already
-      --  'Is_Member (Widget.Unsized_Edges, Edge)'
       Vis_Edge_Sets.Insert (Widget.Unsized_Edges, Edge);
    end Move_Edge_To_Unsized;
 
@@ -1953,15 +2103,14 @@ package body Giant.Graph_Widgets is
       if Vis_Data.Has_Manager (Node) then
          Vis_Data.Drop_Node (Widget.Manager, Node);
       end if;
-      Vis_Node_Sets.Remove_If_Exists (Widget.Locked_Nodes, Node);
-      --  will not insert twice, even if already
-      --  'Is_Member (Widget.Unsized_Nodes, Node)'
-      Vis_Node_Sets.Insert (Widget.Unsized_Nodes, Node);
+      Vis_Data.Set_Locked (Node, False);
+      Vis_Data.Set_Sized (Node, False);
+      Vis_Node_Lists.Attach (Node, Widget.Unsized_Nodes);
       --  add all incident
       Vis_Data.Make_Outgoing_Iterator (Node, Edge_Iterator);
-      Move_Edges_To_Unsized (Widget, Edge_Iterator);
+      Add_Edges_To_Locked (Widget, Edge_Iterator);
       Vis_Data.Make_Incoming_Iterator (Node, Edge_Iterator);
-      Move_Edges_To_Unsized (Widget, Edge_Iterator);
+      Add_Edges_To_Locked (Widget, Edge_Iterator);
    end Move_Node_To_Unsized;
 
    procedure Move_All_Edges_To_Unsized
@@ -2045,8 +2194,12 @@ package body Giant.Graph_Widgets is
    procedure Resize_Graph_Widget
      (Widget : access Graph_Widget_Record'Class;
       Size   : in     Vis.Absolute.Vector_2d) is
+
+      Old_Area : Vis.Absolute.Rectangle_2d :=
+        Drawing.Get_Visible_Area (Widget);
    begin
       Drawing.Resize_Display (Widget);
+      Make_Edges_Appear (Widget, Old_Area);
    end Resize_Graph_Widget;
 
    procedure Find_Or_Create
@@ -2127,44 +2280,51 @@ package body Giant.Graph_Widgets is
    end Look_Up;
 
 
-   procedure Update_Node_Positions is new For_All
-     (Object_Type => Vis_Data.Vis_Node_Id,
-      "<"         => Vis_Data.Is_Node_Below,
-      "="         => Vis_Data."=",
-      Object_Sets => Vis_Node_Sets,
-      Action      => Positioning.Update_Node_Position);
+--     procedure Update_Node_Positions is new For_All
+--       (Object_Type => Vis_Data.Vis_Node_Id,
+--        "<"         => Vis_Data.Is_Node_Below,
+--        "="         => Vis_Data."=",
+--        Object_Sets => Vis_Node_Sets,
+--        Action      => Positioning.Update_Node_Position);
 
-   procedure Update_Edge_Positions is new For_All
-     (Object_Type => Vis_Data.Vis_Edge_Id,
-      "<"         => Vis_Data.Is_Edge_Below,
-      "="         => Vis_Data."=",
-      Object_Sets => Vis_Edge_Sets,
-      Action      => Positioning.Update_Edge_Position);
+--     procedure Update_Edge_Positions is new For_All
+--       (Object_Type => Vis_Data.Vis_Edge_Id,
+--        "<"         => Vis_Data.Is_Edge_Below,
+--        "="         => Vis_Data."=",
+--        Object_Sets => Vis_Edge_Sets,
+--        Action      => Positioning.Update_Edge_Position);
 
-   procedure Adjust_Nodes_Ports is new For_All
-     (Object_Type => Vis_Data.Vis_Node_Id,
-      "<"         => Vis_Data.Is_Node_Below,
-      "="         => Vis_Data."=",
-      Object_Sets => Vis_Node_Sets,
-      Action      => Positioning.Adjust_Ports);
+--     procedure Adjust_Nodes_Ports is new For_All
+--       (Object_Type => Vis_Data.Vis_Node_Id,
+--        "<"         => Vis_Data.Is_Node_Below,
+--        "="         => Vis_Data."=",
+--        Object_Sets => Vis_Node_Sets,
+--        Action      => Positioning.Adjust_Ports);
 
-   procedure Adjust_Arrows is new For_All
-     (Object_Type => Vis_Data.Vis_Edge_Id,
-      "<"         => Vis_Data.Is_Edge_Below,
-      "="         => Vis_Data."=",
-      Object_Sets => Vis_Edge_Sets,
-      Action      => Positioning.Adjust_Arrow);
+--     procedure Adjust_Arrows is new For_All
+--       (Object_Type => Vis_Data.Vis_Edge_Id,
+--        "<"         => Vis_Data.Is_Edge_Below,
+--        "="         => Vis_Data."=",
+--        Object_Sets => Vis_Edge_Sets,
+--        Action      => Positioning.Adjust_Arrow);
 
-   procedure Update_Positioning
-     (Widget : access Graph_Widget_Record'Class;
-      Edges  : in     Vis_Edge_Sets.Set;
-      Nodes  : in     Vis_Node_Sets.Set) is
-   begin
-      Update_Node_Positions (Widget, Nodes);
-      Update_Edge_Positions (Widget, Edges);
-      Adjust_Nodes_Ports (Widget, Nodes);
-      Adjust_Arrows (Widget, Edges);
-   end Update_Positioning;
+--     procedure Update_Positioning
+--       (Widget : access Graph_Widget_Record'Class;
+--        Edges  : in     Vis_Edge_Sets.Set;
+--        Nodes  : in     Vis_Node_Sets.Set) is
+--     begin
+--        Update_Node_Positions (Widget, Nodes);
+--        Update_Edge_Positions (Widget, Edges);
+--        Adjust_Nodes_Ports (Widget, Nodes);
+--        Adjust_Arrows (Widget, Edges);
+--     end Update_Positioning;
+
+--     procedure Update_Node_Positioning
+--       (Widget : access Graph_Widget_Record'Class;
+--        Nodes  : in     Vis_Node_Lists.List) is
+--     begin
+--        Update_Node_Positions (Widget, Nodes);
+--     end Update_Node_Positioning;
 
    procedure Redraw
      (Widget : access Graph_Widget_Record'Class) is

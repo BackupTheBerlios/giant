@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.34 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.35 $
 --  $Author: keulsn $
---  $Date: 2003/08/02 16:27:43 $
+--  $Date: 2003/08/04 03:40:02 $
 --
 ------------------------------------------------------------------------------
 
@@ -240,7 +240,7 @@ package body Giant.Vis_Data is
          Left_Arrow_Point  => Vis.Absolute.Zero_2d,
          Right_Arrow_Point => Vis.Absolute.Zero_2d,
          Regions           => Region_Lists.Create,
-         Flags             => (Hidden => False, Annotated => False,
+         Flags             => (Hidden => False,
                                Highlight_Type => False));
 
       Vis_Edge_Lists.Attach (Edge, Source.Outgoing_Edges);
@@ -403,14 +403,19 @@ package body Giant.Vis_Data is
       return Edge.Flags (Hidden);
    end Is_Hidden;
 
+   function Must_Be_Visible
+     (Edge : in     Vis_Edge_Id)
+     return Boolean is
+   begin
+      return Are_Incident_Visible (Get_Source (Edge)) or else
+        Are_Incident_Visible (Get_Target (Edge));
+   end Must_Be_Visible;
+
    function Get_Highlighting
      (Edge : in     Vis_Edge_Id)
-     return Flags_Type is
-
-      Only_Highlighting : Flags_Type := (Highlight_Type'Range => True,
-                                         others => False);
+     return Highlight_Array is
    begin
-      return Edge.Flags and Only_Highlighting;
+      return Edge.Flags (Highlight_Type'Range);
    end Get_Highlighting;
 
    procedure Add_Highlight_Color
@@ -432,8 +437,7 @@ package body Giant.Vis_Data is
    begin
       Edge.Flags := Edge.Flags and
         (Highlight_Type'Range => False,
-         Hidden               => True,
-         Annotated            => True);
+         Hidden               => True);
    end Remove_All_Highlight_Colors;
 
    procedure Set_Thickness
@@ -557,6 +561,20 @@ package body Giant.Vis_Data is
       Edge.Layer := Layer;
    end Set_Layer;
 
+--     procedure Set_Sized
+--       (Edge  : in     Vis_Edge_Id;
+--        State : in     Boolean) is
+--     begin
+--        Edge.Flags (Sized) := State;
+--     end Set_Sized;
+
+--     procedure Set_Locked
+--       (Edge  : in     Vis_Edge_Id;
+--        State : in     Boolean) is
+--     begin
+--        Edge.Flags (Locked) := State;
+--     end Set_Locked;
+
    function Is_Edge_Below
      (Left  : in     Vis_Edge_Id;
       Right : in     Vis_Edge_Id)
@@ -584,6 +602,8 @@ package body Giant.Vis_Data is
          Outgoing_Edges => Vis_Edge_Lists.Create,
          Regions        => Region_Lists.Create,
          Flags          => (Hidden => False, Annotated => False,
+                            Sized => False, Locked => False,
+                            Incident_Visible => False,
                             Highlight_Type => False));
    end Create_Node;
 
@@ -687,14 +707,32 @@ package body Giant.Vis_Data is
       return Node.Flags (Annotated);
    end Is_Annotated;
 
+   function Is_Sized
+     (Node : in     Vis_Node_Id)
+     return Boolean is
+   begin
+     return Node.Flags (Sized);
+   end Is_Sized;
+
+   function Is_Locked
+     (Node : in     Vis_Node_Id)
+     return Boolean is
+   begin
+      return Node.Flags (Locked);
+   end Is_Locked;
+
+   function Are_Incident_Visible
+     (Node : in     Vis_Node_Id)
+     return Boolean is
+   begin
+      return Node.Flags (Incident_Visible);
+   end Are_Incident_Visible;
+
    function Get_Highlighting
      (Node : in     Vis_Node_Id)
-     return Flags_Type is
-
-      Only_Highlighting : Flags_Type := (Highlight_Type'Range => True,
-                                         others => False);
+     return Highlight_Array is
    begin
-      return Node.Flags and Only_Highlighting;
+      return Node.Flags (Highlight_Type'Range);
    end Get_Highlighting;
 
    procedure Set_Position
@@ -747,7 +785,10 @@ package body Giant.Vis_Data is
       Node.Flags := Node.Flags and
         (Highlight_Type'Range => False,
          Hidden               => True,
-         Annotated            => True);
+         Annotated            => True,
+         Sized                => True,
+         Locked               => True,
+         Incident_Visible     => True);
    end Remove_All_Highlight_Colors;
 
    procedure Set_Annotated
@@ -756,6 +797,27 @@ package body Giant.Vis_Data is
    begin
       Node.Flags (Annotated) := State;
    end Set_Annotated;
+
+   procedure Set_Sized
+     (Node   : in     Vis_Node_Id;
+      State  : in     Boolean) is
+   begin
+      Node.Flags (Sized) := State;
+   end Set_Sized;
+
+   procedure Set_Locked
+     (Node   : in     Vis_Node_Id;
+      State  : in     Boolean) is
+   begin
+      Node.Flags (Locked) := State;
+   end Set_Locked;
+
+   procedure Set_Incident_Visible
+     (Node  : in     Vis_Node_Id;
+      State : in     Boolean) is
+   begin
+      Node.Flags (Incident_Visible) := State;
+   end Set_Incident_Visible;
 
    function Is_Node_Below
      (Left  : in     Vis_Node_Id;
@@ -1829,6 +1891,38 @@ package body Giant.Vis_Data is
         (Node_Merger, Old_Area, New_Area, Add_Nodes, Remove_Nodes);
       Node_Update_Iterators.Destroy (Node_Merger);
    end Update_Area_Content;
+
+   procedure Update_Area_Content_Nodes
+     (Manager      : in     Region_Manager;
+      Old_Area     : in     Vis.Absolute.Rectangle_2d;
+      New_Area     : in     Vis.Absolute.Rectangle_2d;
+      Add_Nodes    :    out Vis_Node_Lists.List;
+      Remove_Nodes :    out Vis_Node_Lists.List) is
+
+      package Node_Iterator_Lists renames Node_Update_Iterators.Iterator_Lists;
+      All_Node_Iterators : Node_Iterator_Lists.List :=
+        Node_Iterator_Lists.Create;
+
+      procedure Add_Region
+        (Region : in     Region_Id) is
+      begin
+         Node_Iterator_Lists.Attach
+           (Vis_Node_Sets.Make_Iterator (Region.Nodes), All_Node_Iterators);
+      end Add_Region;
+
+      procedure Process_Regions is new Process_Regions_In_Area_Difference
+        (Action => Add_Region);
+
+      Node_Merger : Node_Update_Iterators.Merger_Access;
+   begin
+      Process_Regions (Manager, Old_Area, New_Area);
+
+      Node_Merger := Node_Update_Iterators.Create (All_Node_Iterators);
+      Node_Iterator_Lists.Destroy (All_Node_Iterators);
+      Update_Area_Content_Merged_Nodes
+        (Node_Merger, Old_Area, New_Area, Add_Nodes, Remove_Nodes);
+      Node_Update_Iterators.Destroy (Node_Merger);
+   end Update_Area_Content_Nodes;
 
    procedure Start_Refresh_Operation
      (Manager         : in out Region_Manager;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.37 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.38 $
 --  $Author: keulsn $
---  $Date: 2003/08/02 16:27:43 $
+--  $Date: 2003/08/04 03:40:02 $
 --
 ------------------------------------------------------------------------------
 --
@@ -1149,6 +1149,49 @@ private                    -- private part --
    -----------------------
 
    ----------------------------------------------------------------------------
+   --  Inserts those edges into the region manager that are incident to
+   --  all nodes that were not in 'Old_Visible_Area' but are now in the
+   --  visible area. Removes all edges that were in 'Old_Visible_Area' but
+   --  are not in the visible area.
+   procedure Make_Edges_Appear
+     (Widget           : access Graph_Widget_Record'Class;
+      Old_Visible_Area : in     Vis.Absolute.Rectangle_2d);
+
+   ----------------------------------------------------------------------------
+   --  Returns True if and only if 'Node' is (partially) inside the visible
+   --  area and thus all edges incident to 'Node' must be displayed.
+   function Is_In_Visible_Area
+     (Widget : access Graph_Widget_Record'Class;
+      Node   : in     Vis_Data.Vis_Node_Id)
+     return Boolean;
+
+   ----------------------------------------------------------------------------
+   --  Switches all nodes in 'Nodes' to 'Visible_Incident' state.
+   --  Creates a new set 'Incident' and adds all edges to be newly
+   --  inserted to that set.
+   --  The edges in 'Incident' must then be added to the region manager.
+   procedure Switch_Incident_Visible
+     (Widget   : access Graph_Widget_Record'Class;
+      Nodes    : in     Vis_Node_Lists.List;
+      Incident :    out Vis_Edge_Sets.Set);
+
+   ----------------------------------------------------------------------------
+   --  Inserts all edges in 'Edges' to the region manager. 'Nodes' should
+   --  be a list of all incident nodes to any of the edges.
+   --  Clears and destroys the list 'Nodes'
+   procedure Insert_Incident_Edges
+     (Widget   : access Graph_Widget_Record'Class;
+      Nodes    : in out Vis_Node_Lists.List;
+      Edges    : in     Vis_Edge_Sets.Set);
+
+   ----------------------------------------------------------------------------
+   --  Removes all edges incident to any of the nodes in 'Nodes' from the
+   --  region manager, if both adjacent nodes are outside of the visible area.
+   procedure Check_Remove_Incident_Edges
+     (Widget : access Graph_Widget_Record'Class;
+      Nodes  : in out Vis_Node_Lists.List);
+
+   ----------------------------------------------------------------------------
    --  Raises 'Edge' on top of all other edges
    procedure Raise_Edge
      (Widget : access Graph_Widget_Record'Class;
@@ -1184,7 +1227,7 @@ private                    -- private part --
    --  the set of locked edges.
    procedure Add_Edges_To_Locked
      (Widget : access Graph_Widget_Record'Class;
-      Edges  : in     Vis_Edge_Lists.ListIter);
+      Edges  : in out Vis_Edge_Lists.ListIter);
 
    --  Drops 'Node' from the region manager and adds it to the set of locked
    --  nodes. Calls 'Add_Edges_To_Locked' on all incident edges.
@@ -1220,12 +1263,6 @@ private                    -- private part --
    --  flushes the locking-sets into the region manager
    procedure Flush_Locked
      (Widget : access Graph_Widget_Record'Class);
-
-   --  updates the positioning
-   procedure Update_Positioning
-     (Widget : access Graph_Widget_Record'Class;
-      Edges  : in     Vis_Edge_Sets.Set;
-      Nodes  : in     Vis_Node_Sets.Set);
 
    --  enqueus a redraw event if necessary.
    procedure Redraw
@@ -1358,7 +1395,10 @@ private                    -- private part --
          Ready_Buffer   : Gdk.Pixmap.Gdk_Pixmap;
          Display        : Gdk.Pixmap.Gdk_Pixmap;
 
-         Visible_Area   : Vis.Absolute.Rectangle_2d;
+         Visible_Area   : Vis.Absolute.Rectangle_2d :=
+           Vis.Absolute.Combine_Rectangle
+           (Top_Left     => Vis.Absolute.Zero_2d,
+            Bottom_Right => Vis.Absolute.Zero_2d);
 
          Debug_Gc       : Gdk.GC.Gdk_GC;
 
@@ -1452,10 +1492,10 @@ private                    -- private part --
          Node_Map       : Node_Id_Mappings.Mapping;
          Node_Layers    : Vis_Data.Layer_Pool;
 
-         Locked_Edges   : Vis_Edge_Sets.Set;
          Unsized_Edges  : Vis_Edge_Sets.Set;
-         Locked_Nodes   : Vis_Node_Sets.Set;
-         Unsized_Nodes  : Vis_Node_Sets.Set;
+
+         Locked_Nodes   : Vis_Node_Lists.List;
+         Unsized_Nodes  : Vis_Node_Lists.List;
 
          Selected_Edges : Vis_Edge_Sets.Set;
          Selected_Nodes : Vis_Node_Sets.Set;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.25 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.26 $
 --  $Author: keulsn $
---  $Date: 2003/08/02 16:27:43 $
+--  $Date: 2003/08/04 03:40:02 $
 --
 ------------------------------------------------------------------------------
 --
@@ -168,12 +168,13 @@ package Giant.Vis_Data is
    -----------
 
    type Flags_Enumeration_Type is
-     (Hidden, Annotated,
+     (Sized, Locked,                    --  only for nodes
+      Incident_Visible, Annotated,
+      Hidden,                           --  for edges and nodes
       Current_Local, First_Local, Second_Local, Third_Local,
-      First_Global, Second_Global, Third_Global);
-
-   type Flags_Type is array (Flags_Enumeration_Type) of Boolean;
-   pragma Pack (Flags_Type);
+      First_Global, Second_Global, Third_Global
+                                        --  only for edges
+      );
 
    subtype Highlight_Type is
      Flags_Enumeration_Type range Current_Local .. Third_Global;
@@ -183,6 +184,22 @@ package Giant.Vis_Data is
 
    subtype Global_Highlight_Type is
      Highlight_Type range First_Global .. Third_Global;
+
+   subtype Edge_Flags_Enumeration_Type is Flags_Enumeration_Type range
+     Hidden .. Flags_Enumeration_Type'Last;
+
+   subtype Node_Flags_Enumeration_Type is Flags_Enumeration_Type range
+     Flags_Enumeration_Type'First .. Highlight_Type'Last;
+
+   type All_Flags_Type is array (Flags_Enumeration_Type range <>) of Boolean;
+   pragma Pack (All_Flags_Type);
+
+   subtype Edge_Flags_Type is All_Flags_Type
+     (Edge_Flags_Enumeration_Type'Range);
+   subtype Node_Flags_Type is All_Flags_Type
+     (Node_Flags_Enumeration_Type'Range);
+   subtype Highlight_Array is All_Flags_Type
+     (Highlight_Type'Range);
 
 
    --------------------
@@ -305,9 +322,16 @@ package Giant.Vis_Data is
      (Edge : in     Vis_Edge_Id)
      return Boolean;
 
+   ----------------------------------------------------------------------------
+   --  Returns True if one of the nodes incident to 'Edge' has the
+   --  'Are_Incident_Visible'-Flag set.
+   function Must_Be_Visible
+     (Edge : in     Vis_Edge_Id)
+     return Boolean;
+
    function Get_Highlighting
      (Edge : in     Vis_Edge_Id)
-     return Flags_Type;
+     return Highlight_Array;
 
    procedure Add_Highlight_Color
      (Edge   : in     Vis_Edge_Id;
@@ -494,9 +518,21 @@ package Giant.Vis_Data is
      (Node : in     Vis_Node_Id)
      return Boolean;
 
+   function Is_Sized
+     (Node : in     Vis_Node_Id)
+     return Boolean;
+
+   function Is_Locked
+     (Node : in     Vis_Node_Id)
+     return Boolean;
+
+   function Are_Incident_Visible
+     (Node : in     Vis_Node_Id)
+     return Boolean;
+
    function Get_Highlighting
      (Node : in     Vis_Node_Id)
-     return Flags_Type;
+     return Highlight_Array;
 
    procedure Set_Position
      (Node     : in Vis_Node_Id;
@@ -519,6 +555,18 @@ package Giant.Vis_Data is
       Layer  : in     Layer_Type);
 
    procedure Set_Annotated
+     (Node   : in     Vis_Node_Id;
+      State  : in     Boolean);
+
+   procedure Set_Sized
+     (Node   : in     Vis_Node_Id;
+      State  : in     Boolean);
+
+   procedure Set_Locked
+     (Node   : in     Vis_Node_Id;
+      State  : in     Boolean);
+
+   procedure Set_Incident_Visible
      (Node   : in     Vis_Node_Id;
       State  : in     Boolean);
 
@@ -751,8 +799,12 @@ package Giant.Vis_Data is
    --    Manager      - The region manager
    --    Old_Area     - A rectangle
    --    New_Area     - A new rectangle
-   --    Add_Edges    -
-   --    Remove_Edges -
+   --    Add_Edges    - List of edges to be added to 'Content', so 'Content'
+   --                   will contain all edges in or intersecting 'New_Area'.
+   --                   This list must be destroyed.
+   --    Remove_Edges - List of edges to be removed from 'Content', so
+   --                   'Content' will not contain any edge not in or
+   --                   intersecting 'New_Area'. This list must be destroyed.
    --    Add_Nodes    - List of nodes to be added to 'Content', so 'Content'
    --                   will contain all nodes in or intersecting 'New_Area'.
    --                   This list must be destroyed.
@@ -765,6 +817,16 @@ package Giant.Vis_Data is
       New_Area     : in     Vis.Absolute.Rectangle_2d;
       Add_Edges    :    out Vis_Edge_Lists.List;
       Remove_Edges :    out Vis_Edge_Lists.List;
+      Add_Nodes    :    out Vis_Node_Lists.List;
+      Remove_Nodes :    out Vis_Node_Lists.List);
+
+   ----------------------------------------------------------------------------
+   --  See 'Update_Area_Content'. But works only on nodes. Ignores any edges
+   --  intersected by 'Old_Area' or 'New_Area' to increase performance only.
+   procedure Update_Area_Content_Nodes
+     (Manager      : in     Region_Manager;
+      Old_Area     : in     Vis.Absolute.Rectangle_2d;
+      New_Area     : in     Vis.Absolute.Rectangle_2d;
       Add_Nodes    :    out Vis_Node_Lists.List;
       Remove_Nodes :    out Vis_Node_Lists.List);
 
@@ -969,7 +1031,7 @@ private
          --  (Over-)Estimate of regions this edge is contained in
          Regions           : Region_Lists.List;
          --  Visual attributes of this edge
-         Flags             : Flags_Type;
+         Flags             : Edge_Flags_Type;
       end record;
 
    type Vis_Node_Record is
@@ -989,7 +1051,7 @@ private
          --  (Over-)Estimate of regions this node is contained in
          Regions        : Region_Lists.List;
          --  Visual attributes of this node
-         Flags          : Flags_Type;
+         Flags          : Node_Flags_Type;
       end record;
 
    type Region_Record is limited
