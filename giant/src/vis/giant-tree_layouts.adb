@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.16 $
+--  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.17 $
 --  $Author: koppor $
---  $Date: 2003/07/15 16:19:13 $
+--  $Date: 2003/07/15 16:38:56 $
 --
 ------------------------------------------------------------------------------
 --  Variables are named according to the paper
@@ -517,6 +517,10 @@ package body Giant.Tree_Layouts is
          Data.Thread   := null;
          Data.Ancestor := Data;
 
+         --  not initialized in the paper, but needs to be initialized
+         Data.Change   := 0.0;
+         Data.Shift    := 0.0;
+
          --  needed for the definitve layout
          Data.Level    := Level;
          Data.Node     := Node;
@@ -590,9 +594,9 @@ package body Giant.Tree_Layouts is
          Layout.FirstWalk_Stack  := FirstWalk_Stacks.Create;
          Layout.SecondWalk_Stack := SecondWalk_Stacks.Create;
 
+         --  we have to use 1+X_Distance, since the nodes have not 0 width
          Layout.X_Distance :=
-           Graph_Widgets.Get_Current_Maximum_Node_Width (Layout.Widget) *
-           (X_Distance);
+           Graph_Widgets.Get_Current_Maximum_Node_Width (Layout.Widget) * (1+X_Distance);
 
          --  next step is the "normal" initialize of the treelayout
          Layout.State := Init_Run_Part_One;
