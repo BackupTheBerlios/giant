@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.4 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.5 $
 --  $Author: squig $
---  $Date: 2003/06/17 21:56:25 $
+--  $Date: 2003/06/18 15:16:26 $
 --
 ------------------------------------------------------------------------------
 --
@@ -31,11 +31,10 @@
 -- Emits the "cancelled" callback when the cancel button is pressed.
 --
 
-with Gtk.Label;
-
 with Gtk.Clist;
 with Gtk.Combo;
 with Gtk.Gentry;
+with Gtk.Label;
 with Gtk.Menu;
 with Gtk.Option_Menu;
 with Gtk.Paned;

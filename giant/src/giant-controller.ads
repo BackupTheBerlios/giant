@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.7 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.8 $
 --  $Author: squig $
---  $Date: 2003/06/17 21:56:25 $
+--  $Date: 2003/06/18 15:16:26 $
 --
 ------------------------------------------------------------------------------
 --
@@ -65,11 +65,29 @@ package Giant.Controller is
      (Filename : in String);
 
    ---------------------------------------------------------------------------
+   --  GSL
+   ---------------------------------------------------------------------------
+
+   procedure Execute_GSL
+     (Script : in String);
+
+   ---------------------------------------------------------------------------
+   --  GUI
+   ---------------------------------------------------------------------------
+
+   procedure Show_Gui;
+
+   function Hide_Gui
+     (Ask_For_Confirmation : in Boolean := True)
+     return Boolean;
+
+   ---------------------------------------------------------------------------
    --  Windows
    ---------------------------------------------------------------------------
 
    function Close_Window
-     (Name : in String)
+     (Name                 : in String;
+      Ask_For_Confirmation : in Boolean := True)
      return Boolean;
 
    procedure Create_Window
@@ -80,12 +98,6 @@ package Giant.Controller is
 
    procedure Remove_Window
      (Name : in String);
-
-   ---------------------------------------------------------------------------
-   --  GUI
-   ---------------------------------------------------------------------------
-
-   procedure Show;
 
 private
 

@@ -1,3 +1,6 @@
+all : 
+	make -C ../../ all
+
 merging_iterators :
 	make -C ../../ MAIN=src/utils/giant-merging_iterators all
 
@@ -9,8 +12,5 @@ fixed_priority_queues :
 
 evolutions :
 	make -C ../../ MAIN=src/utils/giant-evolutions all
-
-all : 
-	make -C ../../ all
 
 .PHONY : all

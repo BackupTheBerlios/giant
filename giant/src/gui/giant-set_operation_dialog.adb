@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-set_operation_dialog.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-set_operation_dialog.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/03 14:45:52 $
+--  $Date: 2003/06/18 15:16:26 $
 --
 
 with Glib;
@@ -36,7 +36,7 @@ with Giant.Gui_Utils; use Giant.Gui_Utils;
 package body Giant.Set_Operation_Dialog is
 
    procedure Create
-     (Dialog  :    out Set_Operation_Dialog_Acess)
+     (Dialog : out Set_Operation_Dialog_Access)
    is
    begin
       Dialog := new Set_Operation_Dialog_Record;
@@ -49,7 +49,7 @@ package body Giant.Set_Operation_Dialog is
       Box : Gtk.Box.Gtk_Vbox;
    begin
       Default_Dialog.Initialize (Dialog, -"Set Operation",
-								 Default_Dialog.Button_Okay_Cancel);
+                                 Default_Dialog.Button_Okay_Cancel);
 
       Box := Default_Dialog.Get_Center_Box (Dialog);
    end;
@@ -58,78 +58,20 @@ package body Giant.Set_Operation_Dialog is
      (Dialog : access Set_Operation_Dialog_Record)
      return Boolean
    is
+      use type Default_Dialog.Response_Type;
+
       -- the reason for closing the dialog
       Response : Default_Dialog.Response_Type;
-      use Default_Dialog;
    begin
       Response := Default_Dialog.Get_Response (Dialog);
 
       if (Default_Dialog.Get_Response (Dialog)
-          = Default_Dialog.Response_Cancel) then
-         -- the cancel button was pressed
-         Set_Operation_Dialog_Callback.Emit_By_Name (Dialog, "cancelled");
+          = Default_Dialog.Response_Okay) then
+         -- run the operation
+         null;
       end if;
 
-      return False;
+      return True;
    end Can_Hide;
-
-   function Get_Activity_Mode
-     (Dialog        : access Set_Operation_Dialog_Record)
-     return Boolean
-   is
-   begin
-      return Gtk.Progress_Bar.Get_Activity_Mode (Dialog.Progress_Bar);
-   end Get_Activity_Mode;
-
-   procedure Set_Activity_Mode
-     (Dialog        : access Set_Operation_Dialog_Record;
-      Activity_Mode : in     Boolean)
-   is
-   begin
-      Gtk.Progress_Bar.Set_Activity_Mode (Dialog.Progress_Bar, Activity_Mode);
-   end Set_Activity_Mode;
-
-   procedure Set_Lower
-     (Dialog : access Set_Operation_Dialog_Record;
-      Lower  : in     Float)
-   is
-   begin
-      Gtk.Adjustment.Set_Lower (Dialog.Progress_Bar_Adjustment,
-                                Glib.Gfloat (Lower));
-   end Set_Lower;
-
-   procedure Set_Percentage
-     (Dialog     : access Set_Operation_Dialog_Record;
-      Percentage : in     Float)
-   is
-   begin
-      Gtk.Progress_Bar.Set_Percentage (Dialog.Progress_Bar,
-                                       Glib.Gfloat (Percentage));
-   end Set_Percentage;
-
-   procedure Set_Progress_Text
-     (Dialog : access Set_Operation_Dialog_Record;
-      Text   : in     String)
-   is
-   begin
-      Gtk.Progress_Bar.Set_Show_Text (Dialog.Progress_Bar, True);
-      Gtk.Progress_Bar.Set_Format_String (Dialog.Progress_Bar, Text);
-   end Set_Progress_Text;
-
-   procedure Set_Upper (Dialog : access Set_Operation_Dialog_Record;
-                        Upper  : in     Float)
-   is
-   begin
-      Gtk.Adjustment.Set_Upper (Dialog.Progress_Bar_Adjustment,
-                                Glib.Gfloat (Upper));
-   end Set_Upper;
-
-   procedure Set_Value (Dialog : access Set_Operation_Dialog_Record;
-                        Value  : in     Float)
-   is
-   begin
-      Gtk.Adjustment.Set_Value (Dialog.Progress_Bar_Adjustment,
-                                Glib.Gfloat (Value));
-   end Set_Value;
 
 end Giant.Set_Operation_Dialog;

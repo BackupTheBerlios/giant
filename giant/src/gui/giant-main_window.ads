@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.ads,v $, $Revision: 1.4 $
+--  $RCSfile: giant-main_window.ads,v $, $Revision: 1.5 $
 --  $Author: squig $
---  $Date: 2003/06/17 16:58:34 $
+--  $Date: 2003/06/18 15:16:26 $
 --
 --  Provides the main window. The main window is only instanciated once.
 --
@@ -51,8 +51,12 @@ package Giant.Main_Window is
    procedure Show;
 
    ---------------------------------------------------------------------------
-   --  Quits the application.
+   --  Hides the application.
    --
-   procedure Quit;
+   --  Return:
+   --    True, if window was hidden.
+   function Hide
+     (Ask_For_Confirmation: Boolean)
+     return Boolean;
 
 end Giant.Main_Window;

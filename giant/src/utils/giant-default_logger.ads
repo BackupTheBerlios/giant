@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-default_logger.ads,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/06/14 19:01:39 $
+--  $Date: 2003/06/18 15:16:26 $
 --
 ------------------------------------------------------------------------------
 --
@@ -41,6 +41,10 @@ package Giant.Default_Logger is
    type Level_Type is (Level_Off, Level_Fatal, Level_Error, Level_Warn,
                        Level_Info, Level_Debug);
 
+   type Logger_Listener is access
+     procedure (Level   : in Level_Type;
+                Name    : in String;
+                Message : in String);
 
    ---------------------------------------------------------------------------
    --  Opens the log file. Prints a message to stderr if open fails.
@@ -104,6 +108,15 @@ package Giant.Default_Logger is
      (Message : in String;
       Name    : in String := DEFAULT_NAME);
 
+
+   ---------------------------------------------------------------------------
+   --  Registers a listener for all log messages.
+   --
+   --  Parameters:
+   --    Listener - A callback that is invoked when a message is received
+   procedure Set_Listener
+     (Listener : in Logger_Listener);
+
    ---------------------------------------------------------------------------
    --  Prints Message to stderr.
    --
@@ -113,6 +126,7 @@ package Giant.Default_Logger is
 private
 
    Out_File : Ada.Text_IO.File_Type;
+   Listener : Logger_Listener := null;
 
 end Giant.Default_Logger;
 

@@ -21,9 +21,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.8 $
 --  $Author: squig $
---  $Date: 2003/06/17 21:56:25 $
+--  $Date: 2003/06/18 15:16:26 $
 --
 
 with Giant.Graph_Lib;
@@ -36,10 +36,9 @@ package body Giant.Controller is
    package Logger is new Giant.Logger("giant.controller");
 
    ---------------------------------------------------------------------------
-   --  Creates a new project.
-   --
-   --  See:
-   --    Project_Management.Create_New_Empty_Project
+   --  Projects
+   ---------------------------------------------------------------------------
+
    procedure Create_Project
      (Name              : in String;
       Project_Directory : in String;
@@ -85,12 +84,47 @@ package body Giant.Controller is
       Projects.Store_Whole_Project_As (Current_Project, Filename, "");
    end Save_Project;
 
-   function Close_Window
-     (Name : in String)
+   ---------------------------------------------------------------------------
+   --  GSL
+   ---------------------------------------------------------------------------
+
+   procedure Execute_GSL
+     (Script : in String)
+   is
+   begin
+      -- FIX: execute script
+      null;
+   end Execute_GSL;
+
+   ---------------------------------------------------------------------------
+   --  GUI
+   ---------------------------------------------------------------------------
+
+   procedure Show_Gui
+   is
+   begin
+      Gui_Manager.Show;
+   end Show_Gui;
+
+   function Hide_Gui
+     (Ask_For_Confirmation: Boolean := True)
      return Boolean
    is
    begin
-      return Gui_Manager.Close (Name, Ask_For_Confirmation => True);
+      return Gui_Manager.Hide (Ask_For_Confirmation);
+   end Hide_Gui;
+
+   ---------------------------------------------------------------------------
+   --  Windows
+   ---------------------------------------------------------------------------
+
+   function Close_Window
+     (Name : in String;
+      Ask_For_Confirmation: Boolean := True)
+     return Boolean
+   is
+   begin
+      return Gui_Manager.Close (Name, Ask_For_Confirmation);
    end Close_Window;
 
    procedure Create_Window
@@ -143,12 +177,6 @@ package body Giant.Controller is
       Projects.Remove_Visualisation_Window
         (Current_Project, Name);
    end Remove_Window;
-
-   procedure Show
-   is
-   begin
-      Gui_Manager.Show;
-   end Show;
 
 end Giant.Controller;
 

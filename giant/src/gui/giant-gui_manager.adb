@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.6 $
 --  $Author: squig $
---  $Date: 2003/06/17 21:56:25 $
+--  $Date: 2003/06/18 15:16:26 $
 --
 
 with Ada.Strings.Unbounded;
@@ -45,11 +45,17 @@ package body Giant.Gui_Manager is
    package Graph_Window_Lists is new Lists (Graph_Window.Graph_Window_Access);
    Open_Windows : Graph_Window_Lists.List := Graph_Window_Lists.Create;
 
-   procedure Quit
+   function Hide
+     (Ask_For_Confirmation: Boolean)
+     return Boolean
    is
    begin
-      Main_Window.Quit;
-   end Quit;
+      if (Main_Window.Hide (Ask_For_Confirmation)) then
+         Gtk.Main.Main_Quit;
+         return True;
+      end if;
+      return False;
+   end Hide;
 
    procedure Show
    is

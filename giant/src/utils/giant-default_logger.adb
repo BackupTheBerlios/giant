@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.5 $
 --  $Author: squig $
---  $Date: 2003/06/14 19:01:39 $
+--  $Date: 2003/06/18 15:16:26 $
 --
 
 with Ada.IO_Exceptions;
@@ -54,13 +54,17 @@ package body Giant.Default_Logger is
    ---------------------------------------------------------------------------
    --  Prints a single line to the log file if open.
    --
-   procedure Put_Line (Level : Level_Type; Name : String; Message : String)
+   procedure Put_Line
+     (Level   : in Level_Type;
+      Name    : in String;
+      Message : in String)
    is
       use Ada.Strings.Fixed;
    begin
       if (Ada.Text_IO.Is_Open (Out_File)) then
+         -- cut off Level_ and pad to 5 letters
          Ada.Text_IO.Put (Out_File,
-                          Head (Tail (Level_Type'Image (Level), 5), 5));
+                          Head (Tail (Level_Type'Image (Level), 6), 5));
          Ada.Text_Io.Put (Out_File, " [");
          Ada.Text_IO.Put (Out_File, Head (Name, 15));
          Ada.Text_Io.Put (Out_File, "] ");
@@ -68,47 +72,58 @@ package body Giant.Default_Logger is
          Ada.Text_IO.New_Line (Out_File);
          Ada.Text_Io.Flush (Out_File);
       end if;
+
+      if (Listener /= null) then
+         Listener (Level, Name, Message);
+      end if;
    exception
       when others =>
          null; -- just ignore it to not clutter stderr
    end Put_Line;
 
-   procedure Debug (Message : String;
-                    Name : String := DEFAULT_NAME)
+   procedure Debug (Message : in String;
+                    Name    : in String := DEFAULT_NAME)
    is
    begin
       Put_Line (Level_Debug, Name, Message);
    end Debug;
 
-   procedure Error (Message : String;
-                    Name : String := DEFAULT_NAME)
+   procedure Error (Message : in String;
+                    Name    : in String := DEFAULT_NAME)
    is
    begin
       Put_Line (Level_Error, Name, Message);
    end Error;
 
-   procedure Fatal (Message : String;
-                    Name : String := DEFAULT_NAME)
+   procedure Fatal (Message : in String;
+                    Name    : in String := DEFAULT_NAME)
    is
    begin
       Put_Line (Level_Fatal, Name, Message);
    end Fatal;
 
-   procedure Info (Message : String;
-                    Name : String := DEFAULT_NAME)
+   procedure Info (Message : in String;
+                   Name    : in String := DEFAULT_NAME)
    is
    begin
       Put_Line (Level_Info, Name, Message);
    end Info;
 
-   procedure Warn (Message : String;
-                    Name : String := DEFAULT_NAME)
+   procedure Warn (Message : in String;
+                   Name    : in String := DEFAULT_NAME)
    is
    begin
       Put_Line (Level_Warn, Name, Message);
    end Warn;
 
-   procedure Err_Put_Line (Message : String)
+   procedure Set_Listener
+     (Listener : in Logger_Listener)
+   is
+   begin
+      Default_Logger.Listener := Listener;
+   end Set_Listener;
+
+   procedure Err_Put_Line (Message : in String)
    is
    begin
       Ada.Text_IO.Put_Line (Ada.Text_IO.Standard_Error, Message);

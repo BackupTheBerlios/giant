@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.8 $
 --  $Author: squig $
---  $Date: 2003/06/17 16:08:41 $
+--  $Date: 2003/06/18 15:16:26 $
 --
 --
 ------------------------------------------------------------------------------
@@ -52,7 +52,7 @@ begin
 
    Logger.Debug ("initializing gtk");
 
-   Controller.Show;
+   Controller.Show_Gui;
 
    Logger.Debug ("closing giant");
 

@@ -20,15 +20,15 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.5 $
 --  $Author: squig $
---  $Date: 2003/06/03 22:05:21 $
+--  $Date: 2003/06/18 15:16:26 $
 --
 
 with Ada.IO_Exceptions;
 with Ada.Text_Io; use Ada.Text_Io;
 
-with Glib;
+with Glib; use type Glib.Gint;
 with Gtkada.File_Selection;
 with Gtk.Box;
 with Gtk.Button;
@@ -38,10 +38,15 @@ with Gtk.Scrolled_Window;
 with Gtk.Text;
 with Gtk.Widget;
 
+with Giant.Controller;
 with Giant.Default_Dialog;
 with Giant.Gui_Utils; use Giant.Gui_Utils;
 
 package body Giant.Gsl_Dialog is
+
+   ---------------------------------------------------------------------------
+   --  File Operations
+   ---------------------------------------------------------------------------
 
    ---------------------------------------------------------------------------
    --  Returns:
@@ -109,6 +114,10 @@ package body Giant.Gsl_Dialog is
    end Write;
 
    ---------------------------------------------------------------------------
+   --  File Dialogs
+   ---------------------------------------------------------------------------
+
+   ---------------------------------------------------------------------------
    --  Returns:
    --    True, if file was saved or dialog was cancelled; False, otherwise
    function Show_Save_As_Dialog
@@ -164,6 +173,10 @@ package body Giant.Gsl_Dialog is
       return True;
    end;
 
+   ---------------------------------------------------------------------------
+   --  Callbacks
+   ---------------------------------------------------------------------------
+
    procedure On_Open_Button_Clicked
      (Source : access Gtk.Button.Gtk_Button_Record'Class)
    is
@@ -218,7 +231,6 @@ package body Giant.Gsl_Dialog is
       use Default_Dialog;
    begin
       Response := Default_Dialog.Get_Response (Dialog);
-      Put_Line ("Close:" & Response_Type'Image (Response));
 
       if (not Save_Unchanged (Dialog)) then
          return False;
@@ -227,12 +239,19 @@ package body Giant.Gsl_Dialog is
       if (Default_Dialog.Get_Response (Dialog)
           = Default_Dialog.Response_Okay) then
          -- the okay button was pressed
-         -- FIX: execute script
-         null;
+         declare
+            Script : String := Gtk.Text.Get_Text (Dialog.Text_Area);
+         begin
+            Controller.Execute_GSL (Script);
+         end;
       end if;
 
       return True;
    end Can_Hide;
+
+   ---------------------------------------------------------------------------
+   --  Initializer
+   ---------------------------------------------------------------------------
 
    procedure Create
      (Dialog  :    out Gsl_Dialog_Access)
@@ -254,6 +273,7 @@ package body Giant.Gsl_Dialog is
       -- text area
       Gtk.Text.Gtk_New (Dialog.Text_Area);
       Gtk.Text.Set_Editable (Dialog.Text_Area, True);
+      Gtk.Text.Set_USize (Dialog.Text_Area, -1, 250);
 
       Gtk.Scrolled_Window.Gtk_New (Scrolled_Window);
       Gtk.Scrolled_Window.Set_Policy (Scrolled_Window, Policy_Automatic,

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/06/17 20:28:40 $
+--  $Date: 2003/06/18 15:16:26 $
 --
 
 with Glib;
@@ -109,6 +109,7 @@ package body Giant.Graph_Window is
       Zoom_Levels : String_List.Glist;
    begin
       Gtk.Window.Initialize (Window, Window_Toplevel);
+      Set_Title (Window, Vis_Windows.Get_Name (Window.Visual_Window));
 
       --  horizontal split pane
       Gtk.Paned.Gtk_New_Hpaned (Window.Split_Pane);
