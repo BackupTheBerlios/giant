@@ -1,7 +1,6 @@
-
 % ==============================================================================
-%  $RCSfile: project.tex,v $, $Revision: 1.10 $
-%  $Date: 2003/02/13 15:06:44 $
+%  $RCSfile: project.tex,v $, $Revision: 1.11 $
+%  $Date: 2003/02/13 15:28:13 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -12,7 +11,7 @@
 %===================
 \section {Persistenz über Projekte}
 
-GIANT speichert persistente Informationen in sogenannten Projekten.
+GIANT speichert persistente Informationen in so genannten Projekten.
 Ein Projekt besteht aus einem Verweis auf eine IML-Graph-Datei, auf die sich
 die gespeicherten Informationen beziehen, sowie aus gespeicherten Informationen für
 IML-Teilgraphen und Anzeigefenster.\\
@@ -22,16 +21,14 @@ Der Name eines bereits angelegten Projektes kann nicht geändert werden (außer da
 man das Projekt neu speichert und das alte löscht). 
 Der Benutzer kann beliebig viele Projekte erzeugen.\\
 Während der Arbeit mit GIANT kann jederzeit ein Projekt geladen werden, wobei immer nur ein
-Projekt gleichzeitig geöffnet sein darf. Vorraussetzung hierfür ist alledings, dass dies 
+Projekt gleichzeitig geöffnet sein darf. Voraussetzung hierfür ist allerdings, dass dies 
 von der Reflektion zum IML-Graphen unterstützt wird.
 
   \subsection {Das Projektverzeichnis}
   In dem Projektverzeichnis liegt die Projektdatei, der Name des Projektverzeichnisses ist beliebig.
-  Im Projektverzeichnis befinden sich ein Unterverzeichnis für Verwaltungsdateien für Anzeigefenster
-  und ein Unterverzeichnis  für alle zum Projekt gehörenden 
-
-.\\
-  In jedem Projektverzeichnis darf nur ein Projekt gespeichert werden.
+  Im Projektverzeichnis befinden sich ein Unterverzeichnis für die Verwaltungsdateien für Anzeigefenster  
+  und ein Unterverzeichnis für die Verwaltungsdateien für IML-Teilgraphen. 
+  \\In jedem Projektverzeichnis darf nur ein Projekt gespeichert werden.
 
   \subsection {Die Projektdatei}
   Die Projektdatei befindet sich im Projektverzeichnis und enthält Informationen, 
@@ -45,7 +42,7 @@ von der Reflektion zum IML-Graphen unterstützt wird.
   \subsection {Prüfung der IML-Graph Datei}
   Die Reflektion muss für jede IML-Graph Datei eine möglichst eindeutige Prüfsumme berechnen können.
   Beim Laden eines Projektes wird überprüft, ob die in der Projektdatei gespeicherte Prüfsumme
-  der Prüfsumme der zu ladenen IML-Graph Datei entspricht. 
+  der Prüfsumme der zu ladenden IML-Graph Datei entspricht. 
   Das Verhalten von GIANT für den Fall, dass eine IML-Graph Datei geladen wird, 
   die zwar die passende Prüfsumme hat, aber nicht den IML-Graphen enthält, 
   der dem Projekt eigentlich zu Grunde liegt, ist undefiniert.
@@ -91,7 +88,7 @@ von der Reflektion zum IML-Graphen unterstützt wird.
     Alle im Projekt bereits vorhandenen Anzeigefenster (alle Anzeigefenster zu denen es eine entsprechende
     Verwaltungsdatei gibt) werden auf der GUI in der Liste über die Anzeigefenster angezeigt, 
     egal ob sie geöffnet oder nicht. Sie können aus dann dieser Liste ausgewählt und geöffnet werden.\\
-    Wird ein solches Anzeigefenster geschlossen, so fragt GIANT nach, ob er eventuelle Änderungen speichern soll
+    Wird ein solches Anzeigefenster geschlossen, so fragt GIANT nach, ob es eventuelle Änderungen speichern soll
     oder nicht. Falls ja, werden eventuelle Änderungen in die für das Anzeigefenster bereits 
     vorhandene Verwaltungsdatei geschrieben, anderenfalls bleibt der Zustand des Anzeigefensters nach der letzten
     Speicherung vorhanden (die zugehörige Verwaltungsdatei wird nicht verändert).
@@ -110,12 +107,14 @@ von der Reflektion zum IML-Graphen unterstützt wird.
   %===
   \subsection {Persistenz von IML-Teilgraphen}
   Alle in einem Projekt bereits vorhandenen IML-Teilgraphen werden auf der GUI angezeigt (in einer entsprechenden Liste).
-  IML-Teilgraphen können nicht einzeln gespeichert oder geladen werden, sondern nur über die Funktion 
-  \gq{Alles Speichern} (siehe oben).
+  IML-Teilgraphen können über die Funktion \gq{Alles Speichern} (siehe oben) gespeichert werden.
   Wird das Programm beendet, ohne das zuvor die Funktion \gq{Alles Speichern} ausgeführt wird, so gehen 
   alle nicht gespeicherten Informationen zu den IML-Teilgraphen verloren. Der Zustand des Projektes 
   nach dem letzten Speichern bleibt dann erhalten.
-
   Beim Ausführen der Funktion \gq{Alles Speichern} werden sämtliche Änderungen für die IML-Teilgraphen 
   in die Verwaltungsdateien geschrieben. Verwaltungsdateien für IML-Teilgraphen, die zwischendurch gelöscht
   wurden, werden ebenfalls gelöscht. Für neu angelegte IML-Teilgraphen werden dann Verwaltungsdateien erzeugt.
+  Selektiv kann auch ein einzelner IML-Teilgraph gespeichert werden, hierbei wird dann die bereits bestehende
+  Verwaltungsdatei aktualisiert oder neu erzeugt, falls es für diesen IML-Teilgraphen noch keine Verwaltungsdatei
+  gibt.
+
