@@ -4,7 +4,7 @@
 
 <giant_config_file>
 
-  <!-- <absolute_path_root root_directory  = "resources_dir" /> -->
+  <absolute_path_root root_directory  = "resources_dir" />
   			
   <!-- Required Config Settings -->  
   

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.2 $
-%  $Date: 2003/08/01 12:32:20 $
+%  $RCSfile: config.tex,v $, $Revision: 1.3 $
+%  $Date: 2003/08/01 15:31:38 $
 %  $Author: birdy $
 %
 %  Description:
@@ -36,6 +36,7 @@
  
 \end {enumerate}
 
+\clearpage
 
 \section {Die globale Konfigurationsdatei} \index{Konfigurationsdatei}
 Diese Datei ist in XML verfasst. In Ihr können die anschließend beschriebenen
@@ -47,62 +48,109 @@ Hier das File giant\_config\_file.dtd:
 
 \verbatiminput{giant_config_file.dtd}
 
+Hier sind die möglichen Einstellungen, die im Config-File sein können, aufgelistet,
+jeweils mit ihrem Defaultwert. Wenn die betreffenden Daten im Config-File
+nicht existieren, so wird der im Folgenden als Beispiel angegebene Wert von
+GIANT als default verwendet.
+Farben können entweder im Format RGB:XX/YY/ZZ (wobei XX , YY und ZZ jeweils
+die Rot- Grün- und Blau-Anteile zweistellig Hexadezimal angeben) oder
+mit den GTK bekannten Namen (z.B. red) angegeben werden.\\
 
+Einstellungsdaten, die einen Pfad darstellen, müssen mit einem Pfadseperator
+(z.B: / bei Linux) enden.
+Bei relativen Pfaden versucht GIANT, den Pfad nacheinander bis zum Erfolg
+wie folgt zu erweitern:
+\begin{enumerate}
+  \item{Erweiterung um das root\_directory Attribut des <absolute\_path\_root> - Knotens
+        aus dem Config-File.}
+   \item{Wenn kein absolute\_path\_root - Knoten im Config-File existiert oder
+         kein gültiger Pfad zusammengesetzt werden konnte, so wird versucht,
+	 vom Directory aus, in dem sich das Config-File befand, die Datei bzw.
+	 das Directory zu finden.}
+\end{enumerate}
 
-      (To\_UStr ("Resources\_Directory"),
-        To\_Ustr ("."), null),
+Das folgende Directory gibt an, wo sich das GIANT-Verzeichnis der Installation
+von GIANT mit allen Unterverzeichnissen befindet.
+Wird dieses weggelassen, wird das Verzeichnis, in dem sich der Nutzer
+in der Shell des Betriebssystemes bei Aufruf von GIANT befindet, verwendet.
 
-       (To\_UStr ("Icon\_For\_Node\_Annotations"),
-        To\_UStr ("my\_icon.xpm"), null),
+\hspace{10mm}<absolute\_path\_root root\_directory  = "." />
 
-       (To\_UStr ("Current\_Selection\_Highlight\_Color"),
-        To\_UStr ("RGB:AA/AA/AA"), null),
+Das folgende Directory gibt an, in welchem Verzeichnis die Bilder von GIANT
+gesucht werden, wenn andere Erweiterungen (Expansionen) fehlschlagen:
 
-       (To\_UStr ("Selection\_Highlight\_Color\_1"),
-        To\_UStr ("RGB:AA/AA/AA"), null),
+\hspace{10mm}<setting name = "Resources\_Directory" value="." />
 
-       (To\_UStr ("Selection\_Highlight\_Color\_2"),
-        To\_UStr ("RGB:AA/AA/AA"), null),
+Das folgende Icon wird verwendet, graphisch um anzuzeigen, daß ein Knoten annotiert ist:
 
-       (To\_UStr ("Selection\_Highlight\_Color\_3"),
-        To\_UStr ("RGB:AA/AA/AA"), null),
+\hspace{10mm}<setting name = "Icon\_For\_Node\_Annotations" value="my\_icon.xpm" />
 
-       (To\_UStr ("IML\_Subgraph\_Highlight\_Color\_1"),
-        To\_UStr ("RGB:AA/AA/AA"), null),
+Die Farbe der aktuellen Selektion:
 
-       (To\_UStr ("IML\_Subgraph\_Highlight\_Color\_2"),
-        To\_UStr ("RGB:AA/AA/AA"), null),
+\hspace{10mm}<setting name = "Current\_Selection\_Highlight\_Color" value="RGB:AA/AA/AA" />
 
-       (To\_UStr ("IML\_Subgraph\_Highlight\_Color\_3"),
-        To\_UStr ("RGB:AA/AA/AA"), null),
-        
-       -- You may enter a sequence of paths separated by the OS' 
-       -- path separator for environment variables
-       (To\_UStr ("GSL.Include\_Paths"),
-        To\_UStr ("."), null),        
+Die Farbe Nr. 1 für die Hervorhebung von Selektionen:
+
+\hspace{10mm}<setting name = "Selection\_Highlight\_Color\_1" value="RGB:AA/AA/AA" />
+
+Die Farbe Nr. 2 für die Hervorhebung von Selektionen:
+
+\hspace{10mm}<setting name = "Selection\_Highlight\_Color\_2" value="RGB:AA/AA/AA" />
+
+Die Farbe Nr. 3 für die Hervorhebung von Selektionen:
+
+\hspace{10mm}<setting name = "Selection\_Highlight\_Color\_3" value="RGB:AA/AA/AA" />
+
+Die Farbe Nr. 1 für die Hervorhebung von IML-Teilgraphen:
+
+\hspace{10mm}<setting name = "IML\_Subgraph\_Highlight\_Color\_1" value="RGB:AA/AA/AA" />
+
+Die Farbe Nr. 2 für die Hervorhebung von IML-Teilgraphen:
+
+\hspace{10mm}<setting name = "IML\_Subgraph\_Highlight\_Color\_2" value="RGB:AA/AA/AA" />
+
+Die Farbe Nr. 3 für die Hervorhebung von IML-Teilgraphen:
+
+\hspace{10mm}<setting name = "IML\_Subgraph\_Highlight\_Color\_3" value="RGB:AA/AA/AA" />
+         
+Hier kann eine Menge von Pfaden, ggf. getrennt durch den Path Seperator des
+Betriebssystems, angegeben werden: (****** Wofür dieser Pfad?)
+
+\hspace{10mm}<setting name = "GSL.Include\_Paths" value="." />
                 
-       (To\_UStr ("Main\_Window.Height"),
-        To\_UStr ("400"),
-        Validate\_Integer'Access),
+Hier kann die Höhe des Hauptfensters angegeben werden:
+		
+\hspace{10mm}<setting name = "Main\_Window.Height" value="400" />
 
-       (To\_UStr ("Main\_Window.Width"),
-        To\_UStr ("200"),
-        Validate\_Integer'Access),
+Hier kann die Breite des Hauptfensters angegeben werden:
 
-       (To\_UStr ("Main\_Window.Separator"),
-        To\_UStr ("230"),
-        Validate\_Integer'Access),
+\hspace{10mm}<setting name = "Main\_Window.Width" value="200" />
 
-       (To\_UStr ("Confirm.Delete"),
-        To\_UStr ("True"),
-        null),
+Hier kann angegeben werden, nach wieviel Pixeln der
+untere Bereich des Hauptfensters mit der unteren Liste anfängt:
 
-       (To\_UStr ("Editor.Source"),
-        To\_UStr ("/usr/bin/emacs +%l:%c %f"),
+\hspace{10mm}<setting name = "Main\_Window.Separator" value="230" />
+
+Hier kann festgelegt werden, ob bei Löschoperationen eine
+Sicherheitsabfrage erfolgen soll (***** welche Löschoperationen genau?)
+
+\hspace{10mm}<setting name = "Confirm.Delete" value="true" />
+
+Hier kann der Editor zum Anzeigen der Quelltexte angegeben werden,
+mit seinem Aufruf. \%l wird dabei durch die Zeilennummer ersetzt,
+\%c durch die Spaltennummer und \%f durch den Dateinamen der
+betreffenden Datei. So kann bei den meisten Editoren dafür gesorgt
+werden, daß durch den Aufruf die Datei geladen wird und der Editor
+mit dem Cursor an die richtige Stelle in der Datei springt.
+GIANT spawned einen neuen Prozeß, in dem der Editor abläuft.
+
+\hspace{10mm}<setting name = "Editor.Source" value="/usr/bin/emacs +\%l:\%c \%f" />\\
 
 
 
+Hier nun ein Beispiel-Configfile (global\_config.xml) :
 
+\verbatiminput{global_config.xml}
 
 
 
