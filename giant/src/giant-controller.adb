@@ -21,9 +21,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.16 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.17 $
 --  $Author: squig $
---  $Date: 2003/06/23 12:40:58 $
+--  $Date: 2003/06/23 17:33:34 $
 --
 
 with Ada.Strings.Unbounded;
@@ -295,6 +295,16 @@ package body Giant.Controller is
       Gui_Manager.Add_Selection (Window_Name, Target_Name);
    end Duplicate_Selection;
 
+   procedure Hide_Selection
+     (Window_Name    : in String;
+      Selection_Name : in String)
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+   begin
+      Vis_Windows.Fade_Out_Selection (Window, Selection_Name);
+   end;
+
    function Remove_Selection
      (Window_Name          : in String;
       Name                 : in String;
@@ -324,6 +334,21 @@ package body Giant.Controller is
         (Window, Old_Name, New_Name);
       Gui_Manager.Rename_Selection (Window_Name, Old_Name, New_Name);
    end Rename_Selection;
+
+   procedure Show_All_Selections
+     (Window_Name    : in String)
+   is
+   begin
+      null;
+   end;
+
+   procedure Show_Selection
+     (Window_Name    : in String;
+      Selection_Name : in String)
+   is
+   begin
+      null;
+   end;
 
    ---------------------------------------------------------------------------
    --  Subgraphs

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.14 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.15 $
 --  $Author: squig $
---  $Date: 2003/06/23 12:40:58 $
+--  $Date: 2003/06/23 17:33:34 $
 --
 ------------------------------------------------------------------------------
 --
@@ -125,6 +125,10 @@ package Giant.Controller is
       Source_Name : in String;
       Target_Name : in String);
 
+   procedure Hide_Selection
+     (Window_Name    : in String;
+      Selection_Name : in String);
+
    function Remove_Selection
      (Window_Name          : in String;
       Name                 : in String;
@@ -135,6 +139,13 @@ package Giant.Controller is
      (Window_Name : in String;
       Old_Name    : in String;
       New_Name    : in String);
+
+   procedure Show_All_Selections
+     (Window_Name    : in String);
+
+   procedure Show_Selection
+     (Window_Name    : in String;
+      Selection_Name : in String);
 
    ---------------------------------------------------------------------------
    --  Subgraphs

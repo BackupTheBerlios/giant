@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.10 $
+--  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.11 $
 --  $Author: squig $
---  $Date: 2003/06/23 11:30:45 $
+--  $Date: 2003/06/23 17:33:34 $
 --
 ------------------------------------------------------------------------------
 --
@@ -78,6 +78,9 @@ package Giant.Gui_Utils is
 
    package Menu_Item_Callback is new
      Gtk.Handlers.Callback (Gtk.Menu_Item.Gtk_Menu_Item_Record);
+
+   package Widget_Callback is new
+     Gtk.Handlers.Callback (Gtk.Widget.Gtk_Widget_Record);
 
    package Widget_Return_Callback is new
      Gtk.Handlers.Return_Callback (Gtk.Widget.Gtk_Widget_Record, Boolean);
@@ -154,8 +157,14 @@ package Giant.Gui_Utils is
      return Glib.Gint;
 
    function New_Button
-     (Label    : in String;
-      Callback : in Button_Callback.Marshallers.Void_Marshaller.handler)
+     (Label    : in     String;
+      Callback : in     Button_Callback.Marshallers.Void_Marshaller.Handler)
+     return Gtk.Button.Gtk_Button;
+
+   function New_Button
+     (Label    : in     String;
+      Callback : in     Widget_Callback.Marshallers.Void_Marshaller.Handler;
+      Widget   : access Gtk.Widget.Gtk_Widget_Record'Class)
      return Gtk.Button.Gtk_Button;
 
    function New_Column_Label
@@ -169,9 +178,18 @@ package Giant.Gui_Utils is
      (Title : in String)
      return Gtk.Label.Gtk_Label;
 
+   ---------------------------------------------------------------------------
+   --  @deprecated
+   --
    function New_Menu_Item
      (Label    : in String;
       Callback : in Menu_Item_Callback.Marshallers.Void_Marshaller.Handler)
+     return Gtk.Menu_Item.Gtk_Menu_Item;
+
+   function New_Menu_Item
+     (Label    : in     String;
+      Callback : in     Widget_Callback.Marshallers.Void_Marshaller.Handler;
+      Widget   : access Gtk.Widget.Gtk_Widget_Record'Class)
      return Gtk.Menu_Item.Gtk_Menu_Item;
 
    function New_Menu_Separator

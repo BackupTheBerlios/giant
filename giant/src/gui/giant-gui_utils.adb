@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.14 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.15 $
 -- $Author: squig $
--- $Date: 2003/06/23 11:30:45 $
+-- $Date: 2003/06/23 17:33:34 $
 --
 
 with Glib;
@@ -102,7 +102,7 @@ package body Giant.Gui_Utils is
 
    function New_Button
      (Label    : in String;
-      Callback : in Button_Callback.Marshallers.Void_Marshaller.handler)
+      Callback : in Button_Callback.Marshallers.Void_Marshaller.Handler)
      return Gtk.Button.Gtk_Button
    is
      Button : Gtk.Button.Gtk_Button;
@@ -111,6 +111,21 @@ package body Giant.Gui_Utils is
       Gtk.Button.Set_Flags (Button, Gtk.Widget.Can_Default);
       Button_Callback.Connect
         (Button, "clicked", Button_Callback.To_Marshaller (Callback));
+      return Button;
+   end New_Button;
+
+   function New_Button
+     (Label    : in     String;
+      Callback : in     Widget_Callback.Marshallers.Void_Marshaller.Handler;
+      Widget   : access Gtk.Widget.Gtk_Widget_Record'Class)
+     return Gtk.Button.Gtk_Button
+   is
+     Button : Gtk.Button.Gtk_Button;
+   begin
+      Gtk.Button.Gtk_New (Button, Label);
+      Gtk.Button.Set_Flags (Button, Gtk.Widget.Can_Default);
+      Widget_Callback.Object_Connect
+        (Button, "clicked", Widget_Callback.To_Marshaller (Callback), Widget);
       return Button;
    end New_Button;
 
@@ -161,6 +176,21 @@ package body Giant.Gui_Utils is
       Gtk.Menu_Item.Gtk_New (Item, Label);
       Menu_Item_Callback.Connect
         (Item, "activate", Menu_Item_Callback.To_Marshaller (Callback));
+      return Item;
+   end New_Menu_Item;
+
+   function New_Menu_Item
+     (Label    : in     String;
+      Callback : in     Widget_Callback.Marshallers.Void_Marshaller.Handler;
+      Widget   : access Gtk.Widget.Gtk_Widget_Record'Class)
+      return Gtk.Menu_Item.Gtk_Menu_Item
+   is
+      Item : Gtk.Menu_Item.Gtk_Menu_Item;
+   begin
+      Gtk.Menu_Item.Gtk_New (Item, Label);
+      Widget_Callback.Object_Connect
+        (Item, "activate", Widget_Callback.To_Marshaller (Callback),
+         Widget);
       return Item;
    end New_Menu_Item;
 
