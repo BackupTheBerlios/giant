@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/05/23 16:32:56 $
+--  $Date: 2003/05/23 16:51:45 $
 --
 
 with Gdk.Event;
@@ -30,6 +30,7 @@ with Gdk.Types;
 with Glib;
 with Gtk.Box;
 with Gtk.Clist;
+pragma Elaborate_All (Gtk.Clist);
 with Gtk.Enums; use Gtk.Enums;
 with Gtk.Main;
 with Gtk.Menu;
@@ -47,8 +48,8 @@ with Giant.Gui_Utils; use Giant.Gui_Utils;
 
 package body Giant.Main_Window is
 
---     package Window_List_Data is new
---       Gtk.Clist.Row_Data (String);
+   package Window_List_Data is new
+     Gtk.Clist.Row_Data (String);
 
    --  main window instance
    Window : Gtk.Window.Gtk_Window;
@@ -211,7 +212,7 @@ package body Giant.Main_Window is
                                                          & Integer'Image (I));
          Row_Data(1) := Interfaces.C.Strings.New_String ("X");
          Row := Gtk.Clist.Append (Window_List, Row_Data);
-         --Window_List_Data.Set (Window_List, Row, "custom_data");
+         Window_List_Data.Set (Window_List, Row, "custom_data");
          Free (Row_Data);
       end loop;
 
