@@ -1,3 +1,9 @@
+2003-10-07  Oliver Kopp  <koppor@studi.informatik.uni-stuttgart.de>
+
+	* handbuch/functions.tex (section {Layoutalgorithmen
+	Dialog}\label{Layoutalgorithmen-Dialog}): Erläuterung zu Classsets
+	ergänzt.
+
 2003-10-06  Oliver Kopp  <koppor@studi.informatik.uni-stuttgart.de>
 
 	* handbuch/gsl.tex (section{GSL-FAQ}): added reverse_edges
