@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.10 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.11 $
 --  $Author: keulsn $
---  $Date: 2003/06/26 20:20:24 $
+--  $Date: 2003/06/27 16:58:58 $
 --
 ------------------------------------------------------------------------------
 --
@@ -857,18 +857,14 @@ private                    -- private part --
    -- Settings --
    --------------
 
-   ----------------------------------------------------------------------------
-   --  Mapping Config.Color_Access --> allocated color
-   package Color_Mappings is new Hashed_Mappings
-     (Key_Type   => Config.Color_Access,
-      Hash       => Config.Hash_Color_Access,
-      Value_Type => Gdk.Color.Gdk_Color);
+   type Color_Array_Access is access Gdk.Color.Gdk_Color_Array;
 
    type Settings_Type is
       record
          --  Colors used for drawing. All those colors are allocated in the
          --  default 'Colormap'.
-         Color_Pool : Color_Mappings.Mapping;
+         All_Colors             : Color_Array_Access;
+         Highlight_Index_Offset : Integer;
       end record;
 
 

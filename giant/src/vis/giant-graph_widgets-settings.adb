@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.5 $
 --  $Author: keulsn $
---  $Date: 2003/06/24 21:17:42 $
+--  $Date: 2003/06/27 16:58:58 $
 --
 ------------------------------------------------------------------------------
 
@@ -75,29 +75,24 @@ package body Giant.Graph_Widgets.Settings is
       Value_Type => Gdk.Pixmap.Gdk_Pixmap);
 
    ---------------------------------------------------------------------------
-   --  Manages the settings for highlight colors.
-   --  These must be buffered because Giant.Config does not guarantee
-   --  efficient polling.
-   package Highlight_Colors is
+   --
+   package Colors is
 
-      function Is_Initialized
-        return Boolean;
+      procedure Set_Up_Color_Array
+        (Widget : access Graph_Widget_Record'Class);
 
-      procedure Initialize;
+      function Get_Color
+        (Widget : access Graph_Widget_Record'Class;
+         Index  : in     Integer);
 
-      function Get_Color_Access
-        (Highlighting : in     Vis_Data.Highlight_Type)
-        return Config.Color_Access;
+      function Get_Highlight_Color
+        (Widget : access Graph_Widget_Record'Class;
+         Light  : in     Vis_Data.Highlight_Type);
 
-   private
+      procedure Shut_Down_Color_Array
+        (Widget : access Graph_Widget_Record'Class);
 
-      type Highlight_Colors_Array is array (Vis_Data.Highlight_Type) of
-        Config.Color_Access;
-
-      Highlight_Colors             : Highlight_Colors_Array;
-      Highlight_Colors_Initialized : Boolean := False;
-
-   end Highlight_Colors;
+   end Colors;
 
    ---------------------------------------------------------------------------
    --  Manages the Pixmaps for icons.
@@ -137,80 +132,17 @@ package body Giant.Graph_Widgets.Settings is
       Map_Initialized   : Boolean := False;
    end Icons;
 
-
-   ---------------------------------------------------------------------------
-   --  Creates a color if it does not exist yet.
-   procedure Assure_Color
-     (Widget       : access Graph_Widget_Record'Class;
-      Color_Access : in     Config.Color_Access) is
-
-      Color : Gdk.Color.Gdk_Color;
-   begin
-      if not Color_Mappings.Is_Bound
-        (Widget.Settings.Color_Pool, Color_Access) then
-
-         declare
-            Color_Spec : String := Config.Get_Color_Value (Color_Access);
-         begin
-            Color := Gdk.Color.Parse (Color_Spec);
-            Gdk.Color.Alloc
-              (Colormap => Get_Colormap (Widget),
-               Color    => Color);
-         exception
-            when Gdk.Color.Wrong_Color =>
-               Settings_Logger.Error
-                 ("Could not parse the color specification """ & Color_Spec &
-                  """ or could not allocate that color. Will use black"
-                  & " instead.");
-               Color := Gdk.Color.Black (Get_Colormap (Widget));
-         end;
-         Color_Mappings.Bind (Widget.Settings.Color_Pool, Color_Access, Color);
-      end if;
-   end Assure_Color;
-
-   ---------------------------------------------------------------------------
-   --  Gets a color. If it is not created yet then creates it.
-   procedure Find_Color
-     (Widget       : access Graph_Widget_Record'Class;
-      Color_Access : in     Config.Color_Access;
-      Color        :    out Gdk.Color.Gdk_Color) is
-   begin
-      Color := Color_Mappings.Fetch
-        (Widget.Settings.Color_Pool, Color_Access);
-      --  The case "color" not yet allocated is handled in the exception
-      --  part for performance reasons. Otherwise double lookup for
-      --  every call would be necessary.
-   exception
-      when Color_Mappings.Not_Bound =>
-         Assure_Color (Widget, Color_Access);
-         Color := Color_Mappings.Fetch
-           (Widget.Settings.Color_Pool, Color_Access);
-   end Find_Color;
-
    procedure Set_Up
      (Widget : access Graph_Widget_Record'Class;
       Style  : in     Config.Vis_Styles.Visualisation_Style_Access) is
    begin
-      if not Highlight_Colors.Is_Initialized then
-         Highlight_Colors.Initialize;
-      end if;
       if not Icons.Is_Initialized then
          Icons.Initialize (Widget);
       end if;
-      --  Create never changing colors
-      for I in Vis_Data.Highlight_Type loop
-         Assure_Color (Widget, Highlight_Colors.Get_Color_Access (I));
-      end loop;
+      Colors.Set_Up_Color_Array (Widget);
       --  Create style-specific data
-      Set_Style (Widget, Style);
-   end Set_Up;
-
-   procedure Set_Style
-     (Widget : access Graph_Widget_Record'Class;
-      Style  : in     Config.Vis_Styles.Visualisation_Style_Access) is
-   begin
       Icons.Add_Vis_Style (Widget, Style);
-   end Set_Style;
+   end Set_Up;
 
    function Get_Highlight_Color
      (Widget       : access Graph_Widget_Record'Class;
@@ -219,25 +151,16 @@ package body Giant.Graph_Widgets.Settings is
 
       Color : Gdk.Color.Gdk_Color;
    begin
-      Find_Color
-        (Widget,
-         Highlight_Colors.Get_Color_Access (Highlighting),
-         Color);
-      return Color;
+      return Colors.Get_Highlight_Color (Widget, Highlighting;
    end Get_Highlight_Color;
 
    function Get_Background_Color
      (Widget       : access Graph_Widget_Record'Class)
      return Gdk.Color.Gdk_Color is
-
-      Color : Gdk.Color.Gdk_Color;
    begin
-      Find_Color
-        (Widget,
-         Config.Vis_Styles.Get_Vis_Window_Background_Color
-           (Get_Vis_Style (Widget)),
-         Color);
-      return Color;
+      return Colors.Get_Color
+        (Config.Vis_Styles.Get_Vis_Window_Background_Color
+         (Widget.Settings.Vis_Style));
    end Get_Background_Color;
 
    function Get_Edge_Style
@@ -377,46 +300,144 @@ package body Giant.Graph_Widgets.Settings is
    end Get_Node_Icon;
 
 
-   ----------------------
-   -- Highlight Colors --
-   ----------------------
+   ------------
+   -- Colors --
+   ------------
 
-   package body Highlight_Colors is
+   package body Colors is
 
-      function Is_Initialized
-        return Boolean is
+      function Create
+        (Color_Access : in     Config.Color_Access)
+        return Gdk.Color.Gdk_Color is
+
+         Color_Spec : String := Config.Get_Color_Value (Color_Access);
       begin
-         return Highlight_Colors_Initialized;
-      end Is_Initialized;
+         return Gdk.Color.Parse (Color_Spec);
+      exception
+         when Gdk.Color.Wrong_Color =>
+            Settings_Logger.Error
+              ("Color """ & Color_Spec & """ could not be parsed. Use default"
+               & " color instead.");
+            return Gdk.Color.Null_Color;
+      end Create;
 
-      procedure Initialize is
+      function Get_Highlight_Index
+        (Widget : access Graph_Widget_Record'Class;
+         Light  : in     Vis_Data.Highlight_Type)
+        return Natural is
       begin
-         Highlight_Colors :=
-           (Vis_Data.Current_Local =>
-              Config.Get_Current_Selection_Highlight_Color,
-            Vis_Data.First_Local   =>
-              Config.Get_Selection_Highlight_Color (Config.Color_1),
-            Vis_Data.Second_Local  =>
-              Config.Get_Selection_Highlight_Color (Config.Color_2),
-            Vis_Data.Third_Local   =>
-              Config.Get_Selection_Highlight_Color (Config.Color_3),
-            Vis_Data.First_Global  =>
-              Config.Get_Subgraph_Highlight_Color (Config.Color_1),
-            Vis_Data.Second_Global =>
-              Config.Get_Subgraph_Highlight_Color (Config.Color_2),
-            Vis_Data.Third_Global  =>
-              Config.Get_Subgraph_Highlight_Color (Config.Color_3));
-         Highlight_Colors_Initialized := True;
-      end Initialize;
+         return Widget.Settings.Highlight_Index_Offset + Vis_Data.Pos (Light);
+      end Get_Highlight_Index;
 
-      function Get_Color_Access
-        (Highlighting : in     Vis_Data.Highlight_Type)
-        return Config.Color_Access is
+      procedure Set_Up_Highlight_Colors
+        (Widget : access Graph_Widget_Record'Class) is
       begin
-         return Highlight_Colors (Highlighting);
-      end Get_Color_Access;
+         Widget.Settings.All_Colors
+           (Highlight_Index (Vis_Data.Current_Local)) :=
+           Create (Config.Get_Current_Selection_Highlight_Color);
+         Widget.Settings.All_Colors
+           (Highlight_Index (Vis_Data.First_Local)) :=
+           Create (Config.Get_Selection_Highlight_Color (Config.Color_1));
+         Widget.Settings.All_Colors
+           (Highlight_Index (Vis_Data.Second_Local)) :=
+           Create (Config.Get_Selection_Highlight_Color (Config.Color_2));
+         Widget.Settings.All_Colors
+           (Highlight_Index (Vis_Data.Third_Local)) :=
+           Create (Config.Get_Selection_Highlight_Color (Config.Color_3));
+         Widget.Settings.All_Colors
+           (Highlight_Index (Vis_Data.First_Global)) :=
+           Create (Config.Get_Subgraph_Highlight_Color (Config.Color_1));
+         Widget.Settings.All_Colors
+           (Highlight_Index (Vis_Data.Second_Global)) :=
+           Create (Config.Get_Subgraph_Highlight_Color (Config.Color_2));
+         Widget.Settings.All_Colors
+           (Highlight_Index (Vis_Data.Third_Global)) :=
+           Create (Config.Get_Subgraph_Highlight_Color (Config.Color_3));
+      end Set_Up_Highlight_Colors;
 
-   end Highlight_Colors;
+      procedure Set_Up_Color_Array
+        (Widget : access Graph_Widget_Record'Class) is
+
+         Color_Accesses : Config.Vis_Styles.Color_Access_Array_Access :=
+           Config.Vis_Styles.Get_All_Colors;
+      begin
+         if Widget.Settings.All_Colors /= null then
+            Shut_Down_Color_Array (Widget);
+         end if;
+
+         Widget.Settings.Highlight_Index_Offset := Style_Color_Accesses'Last -
+           Vis_Data.Highlight_Type'Pos (Vis_Data.Highlight_Type'First) + 1;
+         Widget.Settings.All_Colors := new Gdk.Color.Gdk_Color_Array
+           (Style_Color_Accesses'First .. Style_Color_Accesses'Last +
+                                            Vis_Data.Highlight_Type'Length);
+         Set_Up_Highlight_Colors (Widget);
+         for I in Style_Color_Accesses'Range loop
+            Widget.Settings.All_Colors := Create_Color
+              (Widget,
+               Config.Get_Color_Value (Style_Color_Accesses (I)));
+         end loop;
+
+         declare
+            Success      : Gdk.Color.Boolean_Array
+              (Widget.Settings.All_Colors'Range);
+            Result_Count : Glib.Gint;
+         begin
+            Gdk.Color.Alloc_Colors
+              (Colormap => Get_Colormap (Widget),
+               Colors   => Widget.Settings.All_Colors.all,
+               Success  => Success,
+               Result   => Result_Count);
+            if Result_Count < Widget.Settings.All_Color'Length then
+               Settings_Logger.Error
+                 (Glib.Gint'Image (Success'Length - Result_Count) & " colors "
+                  & "could not be allocated. Using default colors instead.");
+               for I in Success'Range loop
+                  if not Success (I) then
+                     Widget.Settings.All_Colors (I) := Gdk.Color.Null_Color;
+                  end if;
+               end loop;
+            end if;
+         end;
+      end Set_Up_Color_Array;
+
+      function Get_Color
+        (Widget : access Graph_Widget_Record'Class;
+         Index  : in     Integer)
+        return Gdk.Color.Gdk_Color is
+      begin
+         pragma Assert
+           (Index < Widget.Settings.Hightlight_Index_Offset +
+              Vis_Data.Highlight_Type'Pos
+              (Vis_Data.Highlight_Type'First));
+         return Widget.Settings.All_Colors (Index);
+      end Get_Color;
+
+      function Get_Highlight_Color
+        (Widget : access Graph_Widget_Record'Class;
+         Light  : in     Vis_Data.Highlight_Type)
+        return Gdk.Color.Gdk_Color is
+      begin
+         return Widget.Settings.All_Colors
+           (Vis_Data.Highlight_Type'Pos (Light) +
+            Widget.Settings.Highlight_Index_Offset);
+      end Get_Highlight_Color;
+
+      procedure Shut_Down_Color_Array
+        (Widget : access Graph_Widget_Record'Class) is
+
+         procedure Free is new Ada.Unchecked_Deallocation
+           (Object => Gdk.Color.Gdk_Color_Array,
+            Name   => Color_Array_Access);
+
+      begin
+         for I in Widget.Settings.All_Colors'Range loop
+            Gdk.Color.Free_Colors
+              (Get_Colormap (Widget), Widget.Settings.All_Colors.all);
+            Free (Widget.Settings.All_Colors);
+         end loop;
+      end Shut_Down_Color_Array;
+
+   end Colors;
 
 
    -----------
