@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: hashed_mappings_test.adb,v $, $Revision: 1.1 $
+--  $RCSfile: hashed_mappings_test.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/07/02 19:03:42 $
+--  $Date: 2003/07/02 19:30:15 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -37,38 +37,38 @@ with Giant.Graph_Lib; use Giant.Graph_Lib;
 with Giant.Logger;
 
 package body Hashed_Mappings_Test is
-   
+
    package Logger is new Giant.Logger("hashed_mappings_test");
 
    type Node_Record;
    type Node_Access is access all Node_Record;
-   
+
    type Edge_Record is record
-	  Source     : Node_Access;
-	  Target     : Node_Access;
-	  
-	  --  like in "outer" Edge_Record
-	  Attribute                : Node_Attribute_Id;
-	  Attribute_Element_Number : Natural;
-	  
-	  --  Used at conversion from temporary structure to
-	  --  graph_lib-internal structure
-	  Internal_Edge : Edge_Id;
+      Source     : Node_Access;
+      Target     : Node_Access;
+
+      --  like in "outer" Edge_Record
+      Attribute                : Node_Attribute_Id;
+      Attribute_Element_Number : Natural;
+
+      --  Used at conversion from temporary structure to
+      --  graph_lib-internal structure
+      Internal_Edge : Edge_Id;
    end record;
-   
+
    type Edge_Access is access Edge_Record;
-   
+
    package Edge_Lists is new Lists
-	 (ItemType => Edge_Access);
+     (ItemType => Edge_Access);
 
    type Node_Record is record
-	  Edges_In      : Edge_Lists.List;
-	  Edges_Out     : Edge_Lists.List;
-	  IML_Node      : Storables.Storable;
-	  
-	  --  Used at conversion from temporary structure to
-	  --  graph_lib-internal structure
-	  Internal_Node : Node_Id;
+      Edges_In      : Edge_Lists.List;
+      Edges_Out     : Edge_Lists.List;
+      IML_Node      : Storables.Storable;
+
+      --  Used at conversion from temporary structure to
+      --  graph_lib-internal structure
+      Internal_Node : Node_Id;
    end record;
 
    package Bucket_Pkg is new Lists (Node_Access, "=");
@@ -104,31 +104,26 @@ package body Hashed_Mappings_Test is
          28 => 536870909,
          29 => 1073741827,
          30 => 2147483647); -- Natural'LAST
-   
-   type List is access Bucket_Pkg.List;
-   
-   type Bucket_Array is array (Integer range <>) of list;
-   
+
+   type Bucket_Array is array (Integer range <>) of Bucket_Pkg.List;
+
    type Mapping_Rec (Max_Bucket : Natural) is record
       Size    : Natural;
       Index   : Natural; -- prime index
       Buckets : Bucket_Array (0 .. Max_Bucket);
    end record;
-   
+
    type Mapping is access Mapping_Rec;
 
    procedure Test_Create (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
-	  Big_Mapping : Mapping;
+      Big_Mapping : Mapping;
    begin
-	  Big_Mapping
-		:= new Mapping_Rec'(Max_Bucket => Primes (22),
-							Size       => 0,
-							Index      => 0,
-							Buckets    => (others => null));
---  	  Assert (Bucket_Pkg.IsEmpty (Big_Mapping.Buckets (0)),
---  			  "Created");
-	  Logger.debug ("max bucket : " & Natural'Image (Big_Mapping.Max_Bucket));
+      Big_Mapping
+        := new Mapping_Rec(Primes (25));
+--        Assert (Bucket_Pkg.IsEmpty (Big_Mapping.Buckets (0)),
+--                "Created");
+      Logger.debug ("max bucket : " & Natural'Image (Big_Mapping.Max_Bucket));
    end;
 
    function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is
