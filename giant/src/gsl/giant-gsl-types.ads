@@ -21,7 +21,7 @@
 --
 -- $RCSfile: giant-gsl-types.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/07 16:16:54 $
+-- $Date: 2003/07/14 15:22:08 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -44,7 +44,11 @@ package Giant.Gsl.Types is
    type Gsl_Node_Id is access all Gsl_Node_Id_Record;
 
    function Create_Gsl_Node_Id return Gsl_Node_Id;
-  
+   
+   function Is_Gsl_Node_Id
+     (Var : Gsl_Type)
+      return Boolean;
+
    function Get_Value
      (Var : Gsl_Node_Id)
       return Giant.Graph_Lib.Node_Id;
@@ -66,6 +70,10 @@ package Giant.Gsl.Types is
    type Gsl_Edge_Id is access all Gsl_Edge_Id_Record;
 
    function Create_Gsl_Edge_Id return Gsl_Edge_Id;
+
+   function Is_Gsl_Edge_Id
+     (Var : Gsl_Type)
+      return Boolean;
 
    function Get_Value
      (Var : Gsl_Edge_Id)
@@ -91,6 +99,10 @@ package Giant.Gsl.Types is
     (Value : Giant.Graph_Lib.Node_Id_Set)
      return Gsl_Node_Set;
 
+   function Is_Gsl_Node_Set
+     (Var : Gsl_Type)
+      return Boolean;
+
    function Get_Value
      (Var : Gsl_Node_Set)
       return Giant.Graph_Lib.Node_Id_Set;
@@ -114,6 +126,10 @@ package Giant.Gsl.Types is
    function Create_Gsl_Edge_Set
      (Value : Giant.Graph_Lib.Edge_Id_Set)
       return Gsl_Edge_Set;
+
+   function Is_Gsl_Edge_Set
+     (Var : Gsl_Type)
+      return Boolean;
 
    function Get_Value
      (Var : Gsl_Edge_Set)
@@ -140,6 +156,10 @@ package Giant.Gsl.Types is
      (Value : String) 
       return Gsl_String;
 
+   function Is_Gsl_String
+     (Var : Gsl_Type)
+      return Boolean;
+
    function Get_Value
      (Var : Gsl_String)
       return String;
@@ -164,6 +184,10 @@ package Giant.Gsl.Types is
      (Value : Boolean)
       return Gsl_Boolean;
 
+   function Is_Gsl_Boolean
+     (Var : Gsl_Type)
+      return Boolean;
+
    function Get_Value
      (Var : Gsl_Boolean)
       return Boolean;
@@ -185,6 +209,14 @@ package Giant.Gsl.Types is
    type Gsl_Natural is access all Gsl_Natural_Record;
 
    function Create_Gsl_Natural return Gsl_Natural;
+
+   function Create_Gsl_Natural
+     (Value : Natural)
+      return Gsl_Natural;
+
+   function Is_Gsl_Natural
+     (Var : Gsl_Type)
+      return Boolean;
 
    function Get_Value
      (Var : Gsl_Natural)
@@ -209,6 +241,10 @@ package Giant.Gsl.Types is
    function Create_Gsl_List
      (Size : Natural)
       return Gsl_List;
+
+   function Is_Gsl_List
+     (Var : Gsl_Type)
+      return Boolean;
 
    function Get_List_Size
      (Var      : Gsl_List)
@@ -243,6 +279,10 @@ package Giant.Gsl.Types is
      (Ref_Type : Reference_Type;
       Ref_Name : String) 
       return Gsl_Var_Reference;
+
+   function Is_Gsl_Var_Reference
+     (Var : Gsl_Type)
+      return Boolean;
 
    function Get_Ref_Type
      (Var : Gsl_Var_Reference)
@@ -281,6 +321,10 @@ package Giant.Gsl.Types is
    function Create_Gsl_Script_Reference
      (Runtime : Runtime_Function)
       return Gsl_Script_Reference;
+
+   function Is_Gsl_Script_Reference
+     (Var : Gsl_Type)
+      return Boolean;
 
    function Get_Script_Type
      (Object : Gsl_Script_Reference)

@@ -20,9 +20,9 @@
 --
 -- First Author: Gerrit Schulz
 --
--- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.9 $
+-- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.10 $
 -- $Author: schulzgt $
--- $Date: 2003/07/07 16:16:54 $
+-- $Date: 2003/07/14 15:22:08 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Tags;
@@ -30,6 +30,8 @@ use  Ada.Tags;
 
 package body Giant.Gsl.Types is
 
+   ---------------------------------------------------------------------------
+   --
    procedure Destroy_Gsl_Type
      (Var : in out Gsl_Type) is
    begin
@@ -62,6 +64,19 @@ package body Giant.Gsl.Types is
       return Var;
    end Create_Gsl_Node_Id;
 
+   function Is_Gsl_Node_Id
+     (Var : Gsl_Type)
+      return Boolean is
+   begin
+      if Var = Gsl_Null then
+         return false;
+      elsif Var'Tag = Gsl_Node_Id_Record'Tag then
+         return true;
+      else
+         return false;
+      end if;
+   end Is_Gsl_Node_Id;
+
    function Get_Value
      (Var : Gsl_Node_Id)
       return Giant.Graph_Lib.Node_Id is
@@ -83,9 +98,6 @@ package body Giant.Gsl.Types is
       return Gsl_Null;
    end Copy;
 
-   --procedure Free is new Ada.Unchecked_Deallocation
-   --  (Gsl_Node_Id_Record, Gsl_Node_Id);
-
    procedure Destroy
      (Object : in out Gsl_Node_Id) is
 
@@ -105,6 +117,19 @@ package body Giant.Gsl.Types is
       Var := new Gsl_Edge_Id_Record;
       return Var;
    end Create_Gsl_Edge_Id;
+
+   function Is_Gsl_Edge_Id
+     (Var : Gsl_Type)
+      return Boolean is
+   begin
+      if Var = Gsl_Null then
+         return false;
+      elsif Var'Tag = Gsl_Edge_Id_Record'Tag then
+         return true;
+      else
+         return false;
+      end if;
+   end Is_Gsl_Edge_Id;
 
    function Get_Value
      (Var : Gsl_Edge_Id)
@@ -150,6 +175,19 @@ package body Giant.Gsl.Types is
       return Var;
    end Create_Gsl_Node_Set;
 
+   function Is_Gsl_Node_Set
+     (Var : Gsl_Type)
+      return Boolean is
+   begin
+      if Var = Gsl_Null then
+         return false;
+      elsif Var'Tag = Gsl_Node_Set_Record'Tag then
+         return true;
+      else
+         return false;
+      end if;
+   end Is_Gsl_Node_Set;
+
    function Get_Value
      (Var : Gsl_Node_Set)
       return Giant.Graph_Lib.Node_Id_Set is
@@ -194,6 +232,19 @@ package body Giant.Gsl.Types is
       return Var;
    end Create_Gsl_Edge_Set;
 
+   function Is_Gsl_Edge_Set
+     (Var : Gsl_Type)
+      return Boolean is
+   begin
+      if Var = Gsl_Null then
+         return false;
+      elsif Var'Tag = Gsl_Edge_Set_Record'Tag then
+         return true;
+      else
+         return false;
+      end if;
+   end Is_Gsl_Edge_Set;
+
    function Get_Value
      (Var : Gsl_Edge_Set)
       return Giant.Graph_Lib.Edge_Id_Set is
@@ -237,6 +288,19 @@ package body Giant.Gsl.Types is
       Var.Value := Value;
       return Var;
    end;
+
+   function Is_Gsl_String
+     (Var : Gsl_Type)
+      return Boolean is
+   begin
+      if Var = Gsl_Null then
+         return false;
+      elsif Var'Tag = Gsl_String_Record'Tag then
+         return true;
+      else
+         return false;
+      end if;
+   end Is_Gsl_String;
 
    function Get_Value
      (Var : Gsl_String)
@@ -284,6 +348,19 @@ package body Giant.Gsl.Types is
       return Var;
    end Create_Gsl_Boolean;
 
+   function Is_Gsl_Boolean
+     (Var : Gsl_Type)
+      return Boolean is
+   begin
+      if Var = Gsl_Null then
+         return false;
+      elsif Var'Tag = Gsl_Boolean_Record'Tag then
+         return true;
+      else
+         return false;
+      end if;
+   end Is_Gsl_Boolean;
+
    function Get_Value
      (Var : Gsl_Boolean)
       return Boolean is
@@ -322,14 +399,34 @@ package body Giant.Gsl.Types is
    ---------------------------------------------------------------------------
    -- Gsl_Natural
    function Create_Gsl_Natural return Gsl_Natural is
+   begin
+      return Create_Gsl_Natural (0);
+   end Create_Gsl_Natural;
+ 
+   function Create_Gsl_Natural
+     (Value : Natural)
+      return Gsl_Natural is
 
       Var : Gsl_Natural;
    begin
       Var := new Gsl_Natural_Record;
-      Var.Value := 0;
+      Var.Value := Value;
       return Var;
-   end;
-  
+   end Create_Gsl_Natural;
+ 
+   function Is_Gsl_Natural
+     (Var : Gsl_Type)
+      return Boolean is
+   begin
+      if Var = Gsl_Null then
+         return false;
+      elsif Var'Tag = Gsl_Natural_Record'Tag then
+         return true;
+      else
+         return false;
+      end if;
+   end Is_Gsl_Natural;
+
    function Get_Value
      (Var : Gsl_Natural)
       return Natural is
@@ -377,6 +474,19 @@ package body Giant.Gsl.Types is
       Var.List_Size := Size;
       return Var;
    end Create_Gsl_List;
+
+   function Is_Gsl_List
+     (Var : Gsl_Type)
+      return Boolean is
+   begin
+      if Var = Gsl_Null then
+         return false;
+      elsif Var'Tag = Gsl_List_Record'Tag then
+         return true;
+      else
+         return false;
+      end if;
+   end Is_Gsl_List;
 
    function Get_List_Size
      (Var      : Gsl_List)
@@ -435,6 +545,19 @@ package body Giant.Gsl.Types is
       Var.Ref_Name := Ref_Name;
       return Var;
    end;
+
+   function Is_Gsl_Var_Reference
+     (Var : Gsl_Type)
+      return Boolean is
+   begin
+      if Var = Gsl_Null then
+         return false;
+      elsif Var'Tag = Gsl_Var_Reference_Record'Tag then
+         return true;
+      else
+         return false;
+      end if;
+   end Is_Gsl_Var_Reference;
 
    function Get_Ref_Type
      (Var : Gsl_Var_Reference)
@@ -499,6 +622,19 @@ package body Giant.Gsl.Types is
       Var.Runtime := Runtime;
       return Var;
    end;
+
+   function Is_Gsl_Script_Reference
+     (Var : Gsl_Type)
+      return Boolean is
+   begin
+      if Var = Gsl_Null then
+         return false;
+      elsif Var'Tag = Gsl_Script_Reference_Record'Tag then
+         return true;
+      else
+         return false;
+      end if;
+   end Is_Gsl_Script_Reference;
 
    function Get_Script_Type
      (Object : Gsl_Script_Reference)
