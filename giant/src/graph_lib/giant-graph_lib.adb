@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.45 $
---  $Author: koppor $
---  $Date: 2003/07/06 03:16:03 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.46 $
+--  $Author: schwiemn $
+--  $Date: 2003/07/07 06:21:55 $
 
 --  TBD:
 --    s/Program_Error/somethingofmyown
@@ -1444,7 +1444,7 @@ package body Giant.Graph_Lib is
    is
    begin
       return
-        Get_Node_Class_Tag (Edge_Class.Source_Node_Class) &
+        Get_Node_Class_Tag (Edge_Class.Source_Node_Class) & "." &
         Convert_Node_Attribute_Id_To_Name (Edge_Class.Source_Node_Attribute);
    end Get_Edge_Class_Tag;
 
