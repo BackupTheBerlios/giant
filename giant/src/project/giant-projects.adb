@@ -20,11 +20,29 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.6 $
 --  $Author: schwiemn $
---  $Date: 2003/06/16 07:34:08 $
+--  $Date: 2003/06/16 15:39:47 $
 --
+with Ada.Text_IO;
+with Ada.Streams.Stream_IO;
+with Ada.Unchecked_Deallocation;
+
+with GNAT.OS_Lib; -- from GNAT
+with GNAT.Directory_Operations; -- from GNAT
+
 with Bauhaus_IO; -- from Bauhaus IML "Reuse.src"
+
+with Tree_Readers;       -- from xmlada
+with Dom.Core;           -- from xmlada
+with Dom.Core.Nodes;     -- from xmlada
+with Dom.Core.Documents; -- from xmlada
+with Dom.Core.Elements;  -- from xmlada
+
+with Giant.File_Management; -- from GIANT
+with Giant.XML_File_Access; -- from GIANT
+
+
 
 package body Giant.Projects is
 
@@ -32,8 +50,24 @@ package body Giant.Projects is
    --  Name used for the file holding the node annotations
    Const_Node_Annotations_File_Name : constant String := 
      "node_annotations.xml";
-
-
+          
+   ---------------------------------------------------------------------------
+   --  Ending of Management file for a visual window
+   Window_File_Ending : constant String := ".viswin";     
+          
+   ---------------------------------------------------------------------------
+   --  Emergency files ending
+   Window_Emergency_File_Ending : constant String := ".viswin~";
+      
+   ---------------------------------------------------------------------------
+   --  Ending of Management file for a subgraph
+   Subgraph_File_Ending : constant String := ".subgraph";     
+          
+   ---------------------------------------------------------------------------
+   --  Emergency files ending
+   Subgraph_Emergency_File_Ending : constant String := ".subgraph~";
+   
+   
    ---------------------------------------------------------------------------
    --  0.1
    --  Streaming functionality for platform independent streams.
@@ -54,12 +88,12 @@ package body Giant.Projects is
       Bauhaus_IO.Read_Integer (Stream, Highlight_Integer_Id);
       Element.Highlight_Status := 
         Subgraph_Highlight_Status'Val (Highlight_Integer_Id);   
-   end Subgraph_Data_Elemet_Read;
+   end Subgraph_Data_Element_Read;
  
    ---------------------------------------------------------------------------
    --  Does not write all parts of the record !!!
    procedure Subgraph_Data_Element_Write
-     (Stream  : in Bauhaus_IO.In_Stream_Type;
+     (Stream  : in Bauhaus_IO.Out_Stream_Type;
       Element : in Subgraph_Data_Elemet) is 
       
       Highlight_Integer_Id : Integer;
@@ -71,13 +105,15 @@ package body Giant.Projects is
       Highlight_Integer_Id := 
         Subgraph_Highlight_Status'Pos (Element.Highlight_Status);   
       Bauhaus_IO.Write_Integer (Stream, Highlight_Integer_Id);
-   end Subgraph_Data_Elemet_Read;
+   end Subgraph_Data_Element_Write;
          
          
    ---------------------------------------------------------------------------
    --  0.2
    --  Internal Subprograms
    ---------------------------------------------------------------------------  
+   
+   --- TODO Subprgram zur Erzeugung von Emergency Files Name basteln
          
    ---------------------------------------------------------------------------         
    function Append_Dir_Separator_If_Necessary 
@@ -86,9 +122,9 @@ package body Giant.Projects is
       Dir_Separator : Character := GNAT.OS_Lib.Directory_Separator;          
    begin               
       -- append directory separator if necessary
-      if (Project_Directory (Project_Directory)'Last = Dir_Separator)
+      if (Directory (Directory'Last) = Dir_Separator) then
       
-         return := Directory;
+         return Directory;
       else    
          
          return (Directory & Dir_Separator);
@@ -104,7 +140,7 @@ package body Giant.Projects is
      
       use Ada.Strings.Unbounded;  
       
-      Absolute_Project_Path := Ada.Strings.Unbounded.Unbounded_String          
+      Absolute_Project_Path : Ada.Strings.Unbounded.Unbounded_String;          
    begin         
                   
       -- calculate absolute path for dir based on the current execution
@@ -116,11 +152,12 @@ package body Giant.Projects is
            Project_Directory));
        
       -- build file name for project file
-      return:= (Append_Dir_Separator_If_Necessary 
-        (Ada.Strings.Unbounded.To_String (Absolute_Project_Path); 
-        & Valid.Names.To_String (Project_Name)
-        & ".xml";)
-   end Calculate_Abs_Project_File_Name;
+      return Ada.Strings.Unbounded.To_Unbounded_String 
+        (Append_Dir_Separator_If_Necessary 
+          (Ada.Strings.Unbounded.To_String (Absolute_Project_Path))
+         & Valid_Names.To_String (Project_Name)
+         & ".xml");
+   end Calculate_Project_File_Name;
 
    ---------------------------------------------------------------------------
    function Load_Vis_Window_Into_Main_Memory (File_Path : String)
@@ -140,15 +177,103 @@ package body Giant.Projects is
       Ada_Stream := Ada.Streams.Stream_IO.Stream (Stream_File);    
       Bauhaus_In_Stream := Bauhaus_IO.Make_Internal (Ada_Stream);
                
-      Vis_Windows.Visual_Window_Access_Read;
-        (Bauhaus_In_Stream, A_Subgraph_Data_Elemet.Subgraph);
+      Vis_Windows.Visual_Window_Access_Read
+        (Bauhaus_In_Stream, New_Vis_Window);
                                      
       -- close resources
       Bauhaus_IO.Release (Bauhaus_In_Stream);      
       Ada.Streams.Stream_IO.Close (Stream_File);
       
-      return Vis_Windows.Visual_Window_Access;
+      return New_Vis_Window;
    end Load_Vis_Window_Into_Main_Memory;
+   
+   ---------------------------------------------------------------------------
+   procedure Write_Vis_Window_To_File 
+     (File_Path  : in String;
+      Vis_Window : in Vis_Windows.Visual_Window_Access) is
+   
+      Stream_File        : Ada.Streams.Stream_IO.File_Type;  
+      Ada_Stream         : Ada.Streams.Stream_IO.Stream_Access;
+      Bauhaus_Out_Stream : Bauhaus_IO.Out_Stream_Type;
+   
+   begin
+
+      Ada.Streams.Stream_IO.Open
+        (Stream_File,
+         Ada.Streams.Stream_IO.Out_File,
+         File_Path);
+         
+      Ada_Stream := Ada.Streams.Stream_IO.Stream (Stream_File);    
+      Bauhaus_Out_Stream := Bauhaus_IO.Make_Internal (Ada_Stream);
+         
+      Vis_Windows.Visual_Window_Access_Write
+           (Bauhaus_Out_Stream, Vis_Window);
+                       
+      -- close resources
+      Bauhaus_IO.Release (Bauhaus_Out_Stream);      
+      Ada.Streams.Stream_IO.Close (Stream_File);
+   end Write_Vis_Window_To_File;
+      
+   ---------------------------------------------------------------------------
+   function Load_Sub_Graph_Data_Into_Main_Memory (File_Path : String)
+        return Subgraph_Data_Elemet is
+     
+      Stream_File        : Ada.Streams.Stream_IO.File_Type;  
+      Ada_Stream         : Ada.Streams.Stream_IO.Stream_Access;
+      Bauhaus_In_Stream  : Bauhaus_IO.In_Stream_Type;
+      New_Sub_Graph_Data : Subgraph_Data_Elemet;
+   begin
+      
+      Ada.Streams.Stream_IO.Open
+        (Stream_File,
+         Ada.Streams.Stream_IO.In_File,
+         File_Path);
+         
+      Ada_Stream        := Ada.Streams.Stream_IO.Stream (Stream_File);    
+      Bauhaus_In_Stream := Bauhaus_IO.Make_Internal (Ada_Stream);
+               
+      Subgraph_Data_Element_Read
+        (Bauhaus_In_Stream, New_Sub_Graph_Data);
+                                           
+      --  close resources
+      Bauhaus_IO.Release (Bauhaus_In_Stream);      
+      Ada.Streams.Stream_IO.Close (Stream_File);
+      
+      --  -----      
+      New_Sub_Graph_Data.Is_File_Linked := True;
+      New_Sub_Graph_Data.Existing_Subgraph_File := 
+        Ada.Strings.Unbounded.To_Unbounded_String (File_Path);
+           
+      return New_Sub_Graph_Data;
+   end Load_Sub_Graph_Data_Into_Main_Memory;
+   
+   ---------------------------------------------------------------------------
+   procedure Write_Sub_Graph_Data_To_File 
+     (File_Path     : in String;
+      Subgraph_Data : in Subgraph_Data_Elemet) is
+   
+      Stream_File        : Ada.Streams.Stream_IO.File_Type;  
+      Ada_Stream         : Ada.Streams.Stream_IO.Stream_Access;
+      Bauhaus_Out_Stream : Bauhaus_IO.Out_Stream_Type;
+   
+   begin
+
+      Ada.Streams.Stream_IO.Open
+        (Stream_File,
+         Ada.Streams.Stream_IO.Out_File,
+         File_Path);
+         
+      Ada_Stream := Ada.Streams.Stream_IO.Stream (Stream_File);    
+      Bauhaus_Out_Stream := Bauhaus_IO.Make_Internal (Ada_Stream);
+         
+      Subgraph_Data_Element_Write 
+        (Bauhaus_Out_Stream, Subgraph_Data);
+                       
+      --  close resources
+      Bauhaus_IO.Release (Bauhaus_Out_Stream);      
+      Ada.Streams.Stream_IO.Close (Stream_File);
+   end Write_Sub_Graph_Data_To_File;
+   
 
    ---------------------------------------------------------------------------
    --  0.3
@@ -176,9 +301,9 @@ package body Giant.Projects is
           (GNAT.Directory_Operations.Get_Current_Dir,
             Project_Directory));
       Abs_DTD_File_Name := Append_Dir_Separator_If_Necessary 
-        (Ada.Strings.Unbounded.To_String (Abs_DTD_File_Path) 
-        & Ada.Strings.Unbounded.To_Unbounded_String 
-          ("giant_project_file.dtd"); 
+        (Ada.Strings.Unbounded.To_String(Abs_DTD_File_Path))
+         & Ada.Strings.Unbounded.To_Unbounded_String 
+           ("giant_project_file.dtd"); 
                  
       Ada.Text_IO.Create 
         (DTD_File, 
@@ -258,17 +383,18 @@ package body Giant.Projects is
    begin
    
       Abs_Project_File_Name :=
-        Calculate_Abs_Project_File_Name 
+        Calculate_Project_File_Name 
           (Valid_Names.To_Standard_Name
             (Ada.Strings.Unbounded.To_String (The_Project.Project_Name)),
-           Ada.Strings.Unbounded.To_String (The_Project.Project_Dirctory); 
+           Ada.Strings.Unbounded.To_String 
+             (The_Project.Abs_Project_Dirctory)); 
    
       --  create the file
       -------------------
       Ada.Text_IO.Create 
         (Project_File, 
          Ada.Text_IO.Out_File, 
-         Abs_Project_File_Name);              
+         Ada.Strings.Unbounded.To_String (Abs_Project_File_Name));              
       Ada.Text_IO.Set_Output (Project_File);   
       
       --  write xml file header for external dtd
@@ -293,16 +419,16 @@ package body Giant.Projects is
         ("    iml_graph_file_path = """
          & Ada.Strings.Unbounded.To_String 
            (The_Project.Abs_Bauhaus_IML_Graph_File)
-         & """")
+         & """");
       Ada.Text_IO.Put_Line
         ("    iml_graph_checksum = """
          & Integer'Image (The_Project.Bauhaus_IML_Graph_File_Checksum) 
-         & """")  
+         & """") ; 
       Ada.Text_IO.Put_Line
         ("    node_annotations_file_name = """
          & Ada.Strings.Unbounded.To_String 
            (The_Project.Node_Annotations_File)
-         & """ />")    
+         & """ />");
                 
       --  write entries for the files holding the 
       --  streamed visualisation windows
@@ -337,7 +463,7 @@ package body Giant.Projects is
       Ada.Text_IO.Put_Line 
         ("  <subgraphs>");   
         
-      Subgraphs_Iter : Subgraph_Data_Hashs.Make_Values_Iter
+      Subgraphs_Iter := Subgraph_Data_Hashs.Make_Values_Iter
         (The_Project.All_Subgraphs);
         
       -- only writes entries for subgraphs that have an management file
@@ -380,7 +506,8 @@ package body Giant.Projects is
       Project_Directory : in String)
      return Boolean is
       
-      Absolute_Project_File_Name : Ada.Strings.Unbounded.Unbounded_String;          
+      Absolute_Project_File_Name : Ada.Strings.Unbounded.Unbounded_String; 
+      Absolute_Project_Path : Ada.Strings.Unbounded.Unbounded_String;        
       A_File : Ada.Text_IO.File_Type;           
       Project_Exists : Boolean := False;
       
@@ -397,19 +524,21 @@ package body Giant.Projects is
       -- environment directory.
       -- Does no changes if "Project_Directory" already is an absolute path.
       Absolute_Project_Path := 
-        File_Management.Get_Absolute_Path_To_File_From_Relative
-          (GNAT.Directory_Operations.Get_Current_Dir,
-           Project_Directory);
+        Ada.Strings.Unbounded.To_Unbounded_String
+          (File_Management.Get_Absolute_Path_To_File_From_Relative
+            (GNAT.Directory_Operations.Get_Current_Dir,
+             Project_Directory));
        
       -- build file name 
-      Absolute_Project_File_Name := Calculate_Abs_Project_File_Name 
-        (Project_Name, Project_Directory);
+      Absolute_Project_File_Name := Calculate_Project_File_Name 
+        (Project_Name, 
+         Ada.Strings.Unbounded.To_String (Absolute_Project_Path));
             
       -- check whether the xml file is a file that describes project
       begin 
          XML_File_Access.Load_XML_File_Validated
            (Ada.Strings.Unbounded.To_String 
-             (Absolute_Project_File_NameFile_Name),
+             (Absolute_Project_File_Name),
             A_Tree_Reader,
             A_XML_Document);
             
@@ -457,7 +586,7 @@ package body Giant.Projects is
       String_Lists.Attach
         (File_List,
          File_Management.Get_Filtered_Files_From_Directory
-           (GIANT_Vis_Directory, True, ".xml"));
+           (Project_Directory, True, ".xml"));
               
       File_List_Iter := String_Lists.MakeListIter (File_List);   
                                        
@@ -482,7 +611,7 @@ package body Giant.Projects is
          exception 
             when others =>
                null;
-         end if;               
+         end;               
       end loop;
       
       String_Lists.Destroy (File_List);
@@ -493,7 +622,7 @@ package body Giant.Projects is
    --------------------------------------------------------------------------
    procedure Get_Bauhaus_IML_Graph_Data
      (Project_Name           : in Valid_Names.Standard_Name;
-      Project_Directory      : in String
+      Project_Directory      : in String;
       Bauhaus_IML_Graph_File : out Ada.Strings.Unbounded.Unbounded_String;
       Bauhaus_IML_Graph_File_Checksum : out Integer) is
       
@@ -514,19 +643,19 @@ package body Giant.Projects is
          raise Project_Does_Not_Exist_Exception;
       end if;
       
-      Absolute_Project_File_Name := Calculate_Abs_Project_File_Name 
+      Absolute_Project_File_Name := Calculate_Project_File_Name 
         (Project_Name, Project_Directory);
       
       --  it is already certain that the file describes a project  
       XML_File_Access.Load_XML_File_Validated
-        (Ada.Strings.Unbounded.To_String (A_File_Name),
+        (Ada.Strings.Unbounded.To_String (Absolute_Project_File_Name),
          Project_Tree_Reader,
          Project_XML_Document);
      
       --  get the global setting node
       XML_Nodes_List :=
         DOM.Core.Documents.Get_Elements_By_Tag_Name
-          (The_XML_Document, "global_data");
+          (Project_XML_Document, "global_data");
 
       --  the list holds only one node
       Data_XML_Node := DOM.Core.Nodes.Item (XML_Nodes_List, 0);
@@ -535,9 +664,9 @@ package body Giant.Projects is
         (DOM.Core.Elements.Get_Attribute 
           (Data_XML_Node, "iml_graph_file_path"));  
       Bauhaus_IML_Graph_File_Checksum := 
-        Ada.Strings.Unbounded.To_Unbounded_String
+        Integer'Value (
           (DOM.Core.Elements.Get_Attribute 
-            (Data_XML_Node, "iml_graph_checksum"));           
+            (Data_XML_Node, "iml_graph_checksum")));           
                      
       --  deallocate storrage
       DOM.Core.Free (XML_Nodes_List);       
@@ -560,7 +689,7 @@ package body Giant.Projects is
 
 
 
-     null;
+     return null;
    end Load_Project;
       
    ---------------------------------------------------------------------------
@@ -571,11 +700,12 @@ package body Giant.Projects is
       Bauhaus_IML_Graph_File_Checksum : in Integer)
      return Project_Access is
      
+      use Ada.Strings.Unbounded;
+     
       New_Project_Access        : Project_Access; 
       Abs_Node_Annotations_File : Ada.Strings.Unbounded.Unbounded_String;
       
       Abs_Project_Directory     : Ada.Strings.Unbounded.Unbounded_String;
-      Abs_Node_Annotations_File : Ada.Strings.Unbounded.Unbounded_String;
       Abs_IML_Graph_File        : Ada.Strings.Unbounded.Unbounded_String;
    begin
           
@@ -592,8 +722,10 @@ package body Giant.Projects is
         (File_Management.Get_Absolute_Path_To_Directory_From_Relative
           (GNAT.Directory_Operations.Get_Current_Dir, Project_Directory));
           
-      Abs_Project_Directory := Append_Dir_Separator_If_Necessary 
-        (Ada.Strings.Unbounded.To_String (Abs_Project_Directory);
+      Abs_Project_Directory := 
+        Ada.Strings.Unbounded.To_Unbounded_String
+          (Append_Dir_Separator_If_Necessary 
+            (Ada.Strings.Unbounded.To_String (Abs_Project_Directory)));
           
       Abs_Node_Annotations_File := Append_Dir_Separator_If_Necessary 
         (Ada.Strings.Unbounded.To_String (Abs_Project_Directory))
@@ -608,16 +740,15 @@ package body Giant.Projects is
       New_Project_Access := new Project_Element;   
          
       New_Project_Access.Project_Name := 
-        Ada.Strings.Unbounded.Unbounded_String 
+        Ada.Strings.Unbounded.To_Unbounded_String 
           (Valid_Names.To_String (Project_Name));
            
       --  stored as an absolute path  (not written to the xml file)          
-      New_Project_Access.Abs_Project_Dirctory := 
-        Ada.Strings.Unbounded.Unbounded_String (Abs_Project_Directory)); 
+      New_Project_Access.Abs_Project_Dirctory := Abs_Project_Directory; 
 
       --  stored as an absolute path  (also written to the xml file)       
       New_Project_Access.Abs_Bauhaus_IML_Graph_File := 
-        Ada.Strings.Unbounded.Unbounded_String (Abs_IML_Graph_File));  
+        Abs_IML_Graph_File;  
            
       New_Project_Access.Bauhaus_IML_Graph_File_Checksum := 
         Bauhaus_IML_Graph_File_Checksum; 
@@ -644,13 +775,13 @@ package body Giant.Projects is
       --  (a xml project file and a dtd).
       Write_DTD_To_Directory  
         (Ada.Strings.Unbounded.To_String 
-          (New_Project_Access.Project_Dirctory));          
+          (New_Project_Access.Abs_Project_Dirctory));          
       Write_Project_XML_File (New_Project_Access);
       
       --  write empty xml file for node annotations       
       Node_Annotations.Write_To_File
         (New_Project_Access.The_Node_Annotations,
-         Abs_Node_Annotations_File);
+         Ada.Strings.Unbounded.To_String (Abs_Node_Annotations_File));
             
       return New_Project_Access;
    end Create_Empty_Project;
@@ -715,7 +846,9 @@ package body Giant.Projects is
       Free_Project_Access (Project);
    end;   
    
-   ----------------------------------------------------------------------------
+   ----------------------------------------------------------------------------  
+--    !!!TODO All Destroy Emergency Files
+   
    procedure Store_Whole_Project (Project : in Project_Access) is
    
       use Ada.Strings.Unbounded;
@@ -725,7 +858,7 @@ package body Giant.Projects is
       
       Subgraphs_Iter : Subgraph_Data_Hashs.Values_Iter;
       A_Subgraph_Data_Elemet : Subgraph_Data_Elemet;               
-      Subgraph_File_Name := Ada.Strings.Unbounded.Unbounded_String;      
+      Subgraph_File_Name : Ada.Strings.Unbounded.Unbounded_String;      
       
       Stream_File : Ada.Streams.Stream_IO.File_Type;      
       Ada_Stream : Ada.Streams.Stream_IO.Stream_Access;      
@@ -744,11 +877,14 @@ package body Giant.Projects is
           (Project.All_Project_Vis_Windows);
         
       while Known_Vis_Windows_Hashs.More (Known_Vis_Iter) loop 
-          
+         
+         
+         
+--!!!!!!!!!!!!!!!---          TODO
          Known_Vis_Windows_Hashs.Next 
            (Known_Vis_Iter, A_Vis_Window_Data_Element);                              
-         Store_Single_Project_Visualisation_Window
-           (Project, A_Vis_Window_Data_Element.Vis_Window_Name);                   
+--         Store_Single_Project_Visualisation_Window
+--           (Project, A_Vis_Window_Data_Element.Vis_Window_Name);                   
       end loop;
       
       -- Write all iml_subgraphs into the management files and adjust
@@ -767,20 +903,18 @@ package body Giant.Projects is
          
             -- Create Stream File         
             Subgraph_File_Name := Project.Abs_Project_Dirctory 
-            & Graph_Lib.Subgraphs.Get_Name (A_Subgraph_Data_Elemet.Subgraph);
+            & Graph_Lib.Subgraphs.Get_Name (A_Subgraph_Data_Elemet.Subgraph)
             & ".xml";
             
             -- just create the file
             Ada.Streams.Stream_IO.Create
-              (Subgraph_Stream_File,
+              (Stream_File,
                Ada.Streams.Stream_IO.Out_File,
-               Subgraph_File_Name);
+               Ada.Strings.Unbounded.To_String (Subgraph_File_Name));
 
 
--- TODO SUbgraphs loeschen !!!
-               
-            -- close resources   
-            Ada.Streams.Stream_IO.Close (Subgraph_Stream_File);
+ 
+            Ada.Streams.Stream_IO.Close (Stream_File);
                   
             A_Subgraph_Data_Elemet.Is_File_Linked := True;
             A_Subgraph_Data_Elemet.Existing_Subgraph_File :=
@@ -792,13 +926,13 @@ package body Giant.Projects is
          Ada.Streams.Stream_IO.Open
            (Stream_File,
             Ada.Streams.Stream_IO.Out_File,
-            Subgraph_File_Name);
+            Ada.Strings.Unbounded.To_String (Subgraph_File_Name));
          
          Ada_Stream := Ada.Streams.Stream_IO.Stream (Stream_File);    
          Bauhaus_Out_Stream := Bauhaus_IO.Make_Internal (Ada_Stream);
          
          -- stream the subgraph
-         Graph_Lib.Subgraph_Write 
+         Graph_Lib.Subgraphs.Subgraph_Write 
            (Bauhaus_Out_Stream, A_Subgraph_Data_Elemet.Subgraph);
                        
          -- close resources
@@ -811,7 +945,8 @@ package body Giant.Projects is
       -------------------------
       Node_Annotations.Write_To_File
         (Project.The_Node_Annotations,
-         Project.Node_Annotations_File);
+         Ada.Strings.Unbounded.To_String
+           (Project.Node_Annotations_File));
       
       -- Update Project XML File (MUST happen at the end - not before)
       ---------------------------
@@ -821,6 +956,9 @@ package body Giant.Projects is
    ---------------------------------------------------------------------------
    --  Tricky Implementation working with status changes of visual window
    --  data elements and subgraph data elements.
+   
+   
+   --    !!!TODO All Destroy Emergency Files (in old directory)
    procedure Store_Whole_Project_As
      (Project           : in Project_Access;
       Project_Name      : in Valid_Names.Standard_Name;
@@ -828,7 +966,9 @@ package body Giant.Projects is
       
       use Ada.Strings.Unbounded;
       
-      Abs_Project_Directory : Ada.Strings.Unbounded.Unbounded_String;  
+      Abs_Project_Directory     : Ada.Strings.Unbounded.Unbounded_String; 
+      
+      Abs_Node_Annotations_File : Ada.Strings.Unbounded.Unbounded_String; 
       
       Known_Vis_Iter            : Known_Vis_Windows_Hashs.Values_Iter;
       A_Vis_Window_Data_Element : Vis_Window_Data_Element;    
@@ -954,8 +1094,8 @@ package body Giant.Projects is
            
       -- write dtd
       Write_DTD_To_Directory  
-        (Ada.S trings.Unbounded.To_String 
-          (New_Project_Access.Project_Dirctory));
+        (Ada.Strings.Unbounded.To_String 
+          (Abs_Project_Directory));
     
       -- Automatically writes the rest (xml file for
       -- node anntoations, the project xml file and management files
@@ -982,7 +1122,7 @@ package body Giant.Projects is
    ---------------------------------------------------------------------------
    function Get_Project_Directory
      (Project : in Project_Access)
-     return Ada.Strings.Unbounded.Unbounded_String is
+     return String is
      
    begin
    
@@ -1014,8 +1154,8 @@ package body Giant.Projects is
       return Known_Vis_Windows_Hashs.Is_Bound 
         (Project.All_Project_Vis_Windows, 
          Ada.Strings.Unbounded.To_Unbounded_String     
-           (Valid_Names.To_String (Vis_Window_Name));
-   end Does_Visualisation_Window_Exist;
+           (Valid_Names.To_String (Vis_Window_Name)));
+   end Does_Vis_Window_Exist;
    
    ---------------------------------------------------------------------------
    function Is_Vis_Window_Memory_Loaded
@@ -1031,14 +1171,25 @@ package body Giant.Projects is
       return Memory_Loaded_Vis_Window_Hashs.Is_Bound   
         (Project.All_Memory_Loaded_Vis_Windows, 
          Ada.Strings.Unbounded.To_Unbounded_String     
-           (Valid_Names.To_String (Vis_Window_Name));        
+           (Valid_Names.To_String (Vis_Window_Name)));        
    end Is_Vis_Window_Memory_Loaded;
-                           
+   
+   ---------------------------------------------------------------------------   
+   function Get_All_Visualisation_Window_Names
+     (Project : in Project_Access)
+     return String_Lists.List is
+     
+   begin
+      
+      -- Dummy
+      return String_Lists.Create;
+   end Get_All_Visualisation_Window_Names;
+                              
    ---------------------------------------------------------------------------
    function Get_Visualisation_Window
      (Project         : in Project_Access;
       Vis_Window_Name : in Valid_Names.Standard_Name)
-     return Vis_Window_Management.Visual_Window_Access is
+     return Vis_Windows.Visual_Window_Access is
      
      Vis_Window_Data     : Vis_Window_Data_Element;
      New_Vis_Window_Inst : Vis_Windows.Visual_Window_Access;
@@ -1049,31 +1200,30 @@ package body Giant.Projects is
          raise Project_Access_Not_Initialized_Exception;
       end if;  
       
-      if (Does_Vis_Window_Exist (Project, Vis_Window_Name) = False)
+      if (Does_Vis_Window_Exist (Project, Vis_Window_Name) = False) then
          raise Visualisation_Window_Is_Not_Part_Of_Project_Exception;
       end if;
       
    
       --  Check if already loaded and return the instance if that is the case
-      if Is_Vis_Window_Memory_Loaded (Project, Vis_Window_Name) = True) then
+      if (Is_Vis_Window_Memory_Loaded (Project, Vis_Window_Name) = True) then
       
          return Memory_Loaded_Vis_Window_Hashs.Fetch         
            (Project.All_Memory_Loaded_Vis_Windows, 
             Ada.Strings.Unbounded.To_Unbounded_String     
-             (Valid_Names.To_String (Vis_Window_Name));  
+             (Valid_Names.To_String (Vis_Window_Name)));  
       --  load vis window into main memory
       else
          
          Vis_Window_Data := Known_Vis_Windows_Hashs.Fetch
            (Project.All_Project_Vis_Windows, 
             Ada.Strings.Unbounded.To_Unbounded_String     
-              (Valid_Names.To_String (Vis_Window_Name));
+              (Valid_Names.To_String (Vis_Window_Name)));
          
          -- change data entry                  
          New_Vis_Window_Inst := 
            Load_Vis_Window_Into_Main_Memory 
-             (Project,
-              Ada.Strings.Unbounded.To_String
+             (Ada.Strings.Unbounded.To_String
                (Vis_Window_Data.Existing_Vis_Window_File));
           
          -- insert into hash map
@@ -1086,9 +1236,9 @@ package body Giant.Projects is
          Known_Vis_Windows_Hashs.Unbind 
            (Project.All_Project_Vis_Windows, 
             Ada.Strings.Unbounded.To_Unbounded_String     
-              (Valid_Names.To_String (Vis_Window_Name));
+              (Valid_Names.To_String (Vis_Window_Name)));
                                            
-         Vis_Window_Data.Is_Memory_Loaded := True
+         Vis_Window_Data.Is_Memory_Loaded := True;
 
          Known_Vis_Windows_Hashs.Bind
            (Project.All_Project_Vis_Windows, 
@@ -1096,62 +1246,146 @@ package body Giant.Projects is
               (Valid_Names.To_String (Vis_Window_Name)),
             Vis_Window_Data);
       
-         retrun New_Vis_Window_Inst;
+         return New_Vis_Window_Inst;
       end if;               
    end Get_Visualisation_Window;
 
    ---------------------------------------------------------------------------
    procedure Add_Visualisation_Window
     (Project    : in Project_Access;
-     Vis_Window : in Vis_Window_Management.Visual_Window_Access) is
-     
-     Vis_Window_Name : Ada.Strings.Unbounded.Unbounded_String;
-     
+     Vis_Window : in Vis_Windows.Visual_Window_Access) is
+
+      New_Vis_Window_Data : Vis_Window_Data_Element;
    begin
    
       if (Project = null) then 
          raise Project_Access_Not_Initialized_Exception;
       end if;  
-      
-      if (Does_Vis_Window_Exist (Project, Vis_Window_Name) = True)
-         raise Visualisation_Window_Is_Not_Part_Of_Project_Exception;
+           
+      if (Does_Vis_Window_Exist 
+        (Project,
+         Valid_Names.To_Standard_Name
+           (Vis_Windows.Get_Vis_Window_Name (Vis_Window))) = True) then
+         raise Visualisation_Window_Is_Already_Part_Of_Project_Exception;
       end if;
+      
+      New_Vis_Window_Data.Is_File_Linked := False;
+      New_Vis_Window_Data.Is_Memory_Loaded := True;
+      New_Vis_Window_Data.Existing_Vis_Window_File :=
+        Ada.Strings.Unbounded.Null_Unbounded_String;
+      New_Vis_Window_Data.Vis_Window_Name := 
+        Ada.Strings.Unbounded.To_Unbounded_String 
+          (Vis_Windows.Get_Vis_Window_Name (Vis_Window));
+      
+      Known_Vis_Windows_Hashs.Bind 
+        (Project.All_Project_Vis_Windows,
+         New_Vis_Window_Data.Vis_Window_Name,
+         New_Vis_Window_Data);
+         
+      Memory_Loaded_Vis_Window_Hashs.Bind
+        (Project.All_Memory_Loaded_Vis_Windows,
+         New_Vis_Window_Data.Vis_Window_Name,
+         Vis_Window);      
+   end Add_Visualisation_Window;
+               
+   ---------------------------------------------------------------------------
+   procedure Store_Single_Project_Visualisation_Window
+     (Project         : in Project_Access;
+      Vis_Window_Name : in Valid_Names.Standard_Name) is
+      
+   begin
+  -- DUMMY   
+      null;
+   end Store_Single_Project_Visualisation_Window;
    
-  end Add_Visualisation_Window;
+   ---------------------------------------------------------------------------
+   procedure Close_Window_In_Project
+     (Project         : in Project_Access;
+      Vis_Window_Name : in Valid_Names.Standard_Name) is
+      
+   begin
+  -- DUMMY   
+      null;
+   end Close_Window_In_Project;
    
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-  
-  
-   -- !!!! Save a single visualisation window should write this window
-   -- into the project file without changing the entries for the other
-   -- windows
+   ---------------------------------------------------------------------------
+   procedure Remove_Vis_Window_From_Project
+     (Project         : in Project_Access;
+      Vis_Window_Name : in Valid_Names.Standard_Name) is
+   begin 
+   -- DUMMY  
+      null;
+   end Remove_Vis_Window_From_Project;
+
+
+   ---------------------------------------------------------------------------
+   -- C Subgraphs
+   ---------------------------------------------------------------------------
  
- 
+   ---------------------------------------------------------------------------
+   function Does_Subgraph_Exist
+     (Project           : in Project_Access;
+      Subgraph_Name : in Valid_Names.Standard_Name)
+     return Boolean is
+     
+   begin
+   
+      -- DUMMY
+      return True;
+   end Does_Subgraph_Exist;
+
+   ---------------------------------------------------------------------------
+   function Get_Subgraph
+     (Project           : in Project_Access;
+      Subgraph_Name : in Valid_Names.Standard_Name)
+     return Graph_Lib.Subgraphs.Subgraph is
+    
+   begin
+   
+      -- DUMMY
+      return Graph_Lib.Subgraphs.Create(Subgraph_Name);
+   end Get_Subgraph;
+     
+
+   ---------------------------------------------------------------------------
+   function Get_All_Sungraphs
+     (Project : in Project_Access)
+     return String_Lists.List is
+   begin
+     
+       -- DUMMY
+      return String_Lists.Create;
+   end Get_All_Sungraphs;
+    
+   ---------------------------------------------------------------------------
+   procedure Add_Subgraph
+     (Project      : in Project_Access;
+      Subgraph : in Graph_Lib.Subgraphs.Subgraph) is
+      
+   begin
+      null;
+   end Add_Subgraph;
+      
+   ---------------------------------------------------------------------------
+   procedure Remove_Subgraph
+      (Project           : in Project_Access;
+       Subgraph_Name : in Valid_Names.Standard_Name) is
+       
+   begin
+      null;
+   end Remove_Subgraph;
+   
+   ---------------------------------------------------------------------------
+   -- D Node Annotations
+   ---------------------------------------------------------------------------
+   
+   ---------------------------------------------------------------------------
+   function Get_Node_Annotations
+     (Project : in Project_Access)
+     return Node_Annotations.Node_Annotation_Access is
+   begin
+      return Node_Annotations.Create_Empty;
+   end Get_Node_Annotations;
    
 end Giant.Projects;
 

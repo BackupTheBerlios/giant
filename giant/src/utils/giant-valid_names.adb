@@ -20,16 +20,16 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-valid_names.adb,v $, $Revision: 1.1 $
+-- $RCSfile: giant-valid_names.adb,v $, $Revision: 1.2 $
 -- $Author: schwiemn $
--- $Date: 2003/05/27 09:14:55 $
+-- $Date: 2003/06/16 15:39:47 $
 --
 with GNAT.OS_Lib;
 
 package body Giant.Valid_Names is
 
    ---------------------------------------------------------------------------
-   function Is_String_A_Correct_Standard_Name
+   function Is_Standard_Name
      (String_Value : in String) return Boolean is
 
    begin

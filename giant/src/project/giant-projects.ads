@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.9 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.10 $
 -- $Author: schwiemn $
--- $Date: 2003/06/16 07:34:08 $
+-- $Date: 2003/06/16 15:39:47 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -39,17 +39,17 @@
 -- regarding the node_annotations has been put into the package
 -- "Node_Annotation_Management".
 --
---with Ada.Text_IO;
---with Ada.Strings.Unbounded;
+with Ada.Strings.Unbounded;
 
---with Giant.Graph_Lib;                  -- from GIANT
---with Giant.Graph_Lib.Subgraphs;        -- from GIANT
---with Giant.Valid_Names;                -- from GIANT
---with Giant.Vis_Window_Sets;            -- from GIANT
---with Giant.Vis_Window_Management;      -- from GIANT
---with Giant.Node_Annotation_Management; -- from GIANT
+with Giant.Graph_Lib;           -- from GIANT
+with Giant.Graph_Lib.Subgraphs; -- from GIANT
+with Giant.Valid_Names;         -- from GIANT
+with Giant.Vis_Windows;         -- from GIANT
+with Giant.Node_Annotations;    -- from GIANT
 
---with String_Lists; -- from Bauhaus IML "Reuse.src"
+with String_Lists;    -- from Bauhaus IML "Reuse.src"
+with Hashed_Mappings; -- from Bauhaus IML "Reuse.src"
+with Unbounded_String_Hash; -- from Bauhaus IML "Reuse.src"
 
 package Giant.Projects is
 
@@ -62,7 +62,7 @@ package Giant.Projects is
 
    ---------------------------------------------------------------------------
    -- Describes the highlight status of an subgraph
-   type Subgraph_Highlight_Status : exception;
+   type Subgraph_Highlight_Status is (None, Color_1, Color_2, Color_3);
 
    ---------------------------------------------------------------------------
    -- Raised if a passed parameter of type Project_Access is not
@@ -155,7 +155,7 @@ package Giant.Projects is
    --     "Project_Directory" is not found or could not be accessed.
    procedure Get_Bauhaus_IML_Graph_Data
      (Project_Name           : in     Valid_Names.Standard_Name;
-      Project_Directory      : in     String
+      Project_Directory      : in     String;
       Bauhaus_IML_Graph_File :    out Ada.Strings.Unbounded.Unbounded_String;
       Bauhaus_IML_Graph_File_Checksum : out Integer);
 
@@ -317,7 +317,7 @@ package Giant.Projects is
    --     parameter;
    function Get_Project_Name
       (Project : in Project_Access)
-      return Straing;
+      return String;
 
 
    ---------------------------------------------------------------------------
@@ -333,7 +333,7 @@ package Giant.Projects is
    --     parameter.
    function Get_Project_Directory
      (Project : in Project_Access)
-     return Ada.Strings.Unbounded.Unbounded_String;
+     return String;
 
 
    ---------------------------------------------------------------------------
@@ -398,12 +398,12 @@ package Giant.Projects is
    ---------------------------------------------------------------------------
    -- Raised is a visualisation window is asked for that is not
    -- part of the project
-   Visualisation_Window_Is_Not_Part_Of_Project     : Exception
+   Visualisation_Window_Is_Not_Part_Of_Project_Exception     : Exception;
 
    ---------------------------------------------------------------------------
    -- Raised if a visualisation window that should be added to the
    -- project already exists.
-   Visualisation_Window_Is_Already_Part_Of_Project : Exception;
+   Visualisation_Window_Is_Already_Part_Of_Project_Exception : Exception;
 
    ---------------------------------------------------------------------------
    -- Determines whether a given Visualisation Window is part of
@@ -522,17 +522,18 @@ package Giant.Projects is
    --   to the project.
    -- Raises:
    --   Visualisation_Window_Is_Already_Part_Of_Project_Exception - Raised
-   --     there is already a visualisation window with the same name
+   --     if there is already a visualisation window with the same name
    --     as "Vis_Window" part of the project.
    --   Project_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Project_Access" is passed as
    --     parameter.
-   --   Vis_Window_Management.Vis_Window_Data_Access_
-   --     Not_Initialized_Exception
-   --     - Raised if "Vis_Window" is not initialized.
+   --   Giant.Vis_Windows.Visual_Window_Access_Not_Initialized_Exception
+   --     Raised if "Vis_Window" is not initialized
+   --     (this exception will be thrown by subprograms from the
+   --     package Giant.Vis_Windows).
    procedure Add_Visualisation_Window
     (Project    : in Project_Access;
-     Vis_Window : in Vis_Window_Management.Visual_Window_Access);
+     Vis_Window : in Vis_Windows.Visual_Window_Access);
 
    ---------------------------------------------------------------------------
    -- Writes the data of a single visualisation window into
@@ -540,7 +541,7 @@ package Giant.Projects is
    -- That should be done before the visualisation window is closed
    -- inside the project ("procedure Close_Window_In_Project").
    --
-   -- If the visualisation window "Vis_Window_Name" is not loeaded into
+   -- If the visualisation window "Vis_Window_Name" is not loaded into
    -- the main memory nothing will happen.
    --
    -- State Changes:
@@ -622,9 +623,13 @@ package Giant.Projects is
    --   ("Vis_Window_Management.Visual_Window_Data_Access")
    --   without affecting the internal datastructure of "Project".
    --
-   -- !!!
-   -- If it exists the management file for this visualisation window
-   -- is DELETED too.
+   -- Management Files:
+   --   If it exists the management file for this visualisation window
+   --   is DELETED too.
+   --
+   --   An "Emergency Save File" (describing the actual status of the window) 
+   --   will be created (this file will be removed on execution of 
+   --   Store_Whole_Project or Store_Whole_Project_As).
    --
    -- Parameters:
    --   Project - The instance of the ADT holding a project.
@@ -637,7 +642,7 @@ package Giant.Projects is
    --  Project_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Project_Access" is passed as
    --     parameter.
-   procedure Remove_Vis_Window_From_Project;
+   procedure Remove_Vis_Window_From_Project
      (Project         : in Project_Access;
       Vis_Window_Name : in Valid_Names.Standard_Name);
 
@@ -655,7 +660,7 @@ package Giant.Projects is
    ---------------------------------------------------------------------------
    -- This Exception is raised if a demanded Subgraph does not
    -- exist in the project
-   Subgraph_Is_Not_Part_Of_Project_Exception     : Exception
+   Subgraph_Is_Not_Part_Of_Project_Exception     : Exception;
 
    ---------------------------------------------------------------------------
    -- Raised if an Subgraph that should be added to the
@@ -705,7 +710,7 @@ package Giant.Projects is
    function Get_Subgraph
      (Project           : in Project_Access;
       Subgraph_Name : in Valid_Names.Standard_Name)
-     return Graph_Lib.IML_Subgraphs.IML_Subgraph_Access;
+     return Graph_Lib.Subgraphs.Subgraph;
 
    ---------------------------------------------------------------------------
    -- Returns the names of all subgraphs of the project (not sorted by 
@@ -749,8 +754,8 @@ package Giant.Projects is
    --     the project already has a subgraph with the same name
    --     as "Subgraph".
    procedure Add_Subgraph
-     (Project      : in Project_Access;
-      Subgraph : in Graph_Lib.IML_Subgraphs.IML_Subgraph_Access);
+     (Project  : in Project_Access;
+      Subgraph : in Graph_Lib.Subgraphs.Subgraph);
 
    ---------------------------------------------------------------------------
    -- Removes a subgraph from the project.
@@ -818,11 +823,9 @@ package Giant.Projects is
    -- Returns:
    --   An instance of the ADT holding all node annotations of this
    --   project.
-   -- Raises
-   !!!!!!!!!!!!!
-   function Get_Node_Annotations_Of_Project
+   function Get_Node_Annotations
      (Project : in Project_Access)
-     return Node_Annotation_Management.Node_Annotation_Access;
+     return Node_Annotations.Node_Annotation_Access;
 
 
 ------------------------------------------------------------------------------
@@ -833,7 +836,7 @@ private
    ---------------------------------------------------------------------------
 
    -- needed to describe the status of a visualistion window
-   Vis_Window_Data_Element is record 
+   type Vis_Window_Data_Element is record 
       Is_File_Linked           : Boolean;
       Is_Memory_Loaded         : Boolean;
       -- the management file for the visualisation window
@@ -863,10 +866,10 @@ private
      Highlight_Status : Subgraph_Highlight_Status;
      -- True if an management file for the iml subgraph already exists, False     
      -- otherwise.
-     Is_File_Linked   : Boolean:
+     Is_File_Linked : Boolean;
      -- Null string ("") if such a file does not exist yet,
      -- an absolute path if exists.
-     Existing_Subgraph_File    : Ada.Strings.Unbounded.Unbounded_String;
+     Existing_Subgraph_File : Ada.Strings.Unbounded.Unbounded_String;
    end record;
 
    package Subgraph_Data_Hashs is new Hashed_Mappings

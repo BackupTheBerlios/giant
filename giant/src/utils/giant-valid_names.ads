@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-valid_names.ads,v $, $Revision: 1.2 $
+-- $RCSfile: giant-valid_names.ads,v $, $Revision: 1.3 $
 -- $Author: schwiemn $
--- $Date: 2003/06/06 17:29:27 $
+-- $Date: 2003/06/16 15:39:47 $
 --
 -- -----------------------
 -- This package provides the functionality needed
@@ -61,7 +61,7 @@ pragma Elaborate_Body;
    -- Returns:
    --   True, if "String_Value" may be converted to standard name; False,
    --   otherwise.
-   function Is_String_A_Correct_Standard_Name
+   function Is_Standard_Name
      (String_Value : in String) return Boolean;
 
    ---------------------------------------------------------------------------
