@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.26 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.27 $
 --  $Author: koppor $
---  $Date: 2003/07/02 23:21:24 $
+--  $Date: 2003/07/03 15:09:46 $
 --
 --  TBD:
 --    Write into comment, when the routine may be used
@@ -720,7 +720,12 @@ package Giant.Graph_Lib is
 
    ---------------------------------------------------------------------------
    function Make_Attribute_Iterator
-      (Node     : in     Node_Id)
+      (Node_Class : in     Node_Class_Id)
+      return Node_Attribute_Iterator;
+
+   ---------------------------------------------------------------------------
+   function Make_Attribute_Iterator
+      (Node       : in     Node_Id)
       return Node_Attribute_Iterator;
 
    ---------------------------------------------------------------------------

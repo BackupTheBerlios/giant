@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.40 $
---  $Author: squig $
---  $Date: 2003/07/02 19:30:15 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.41 $
+--  $Author: koppor $
+--  $Date: 2003/07/03 15:10:14 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -1803,16 +1803,25 @@ package body Giant.Graph_Lib is
 
    ---------------------------------------------------------------------------
    function Make_Attribute_Iterator
-     (Node     : in     Node_Id)
+     (Node_Class : in     Node_Class_Id)
      return Node_Attribute_Iterator
    is
       Iterator : Node_Attribute_Iterator;
    begin
-      Iterator.Class := IML_Roots.Get_Class_ID
-        (IML_Roots.IML_Root (Node.IML_Node));
-
+      Iterator.Class := Node_Class;
       Iterator.CurrentIndex := Iterator.Class.Fields'First;
       return Iterator;
+   end Make_Attribute_Iterator;
+
+   ---------------------------------------------------------------------------
+   function Make_Attribute_Iterator
+     (Node     : in     Node_Id)
+     return Node_Attribute_Iterator
+   is
+   begin
+      return Make_Attribute_Iterator
+        (IML_Roots.Get_Class_ID
+         (IML_Roots.IML_Root (Node.IML_Node)));
    end Make_Attribute_Iterator;
 
    ---------------------------------------------------------------------------
