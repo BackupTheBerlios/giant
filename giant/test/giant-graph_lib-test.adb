@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.7 $
 --  $Author: koppor $
---  $Date: 2003/06/27 16:50:52 $
+--  $Date: 2003/06/30 18:54:45 $
 --
 
 with Ada.Text_IO;
@@ -37,9 +37,19 @@ package body Giant.Graph_Lib.Test is
 
    --------------------------------------------------------------------------
    --  Parameters for the graph to use for testing
-   IML_Filename   : constant String  := "resources/rfg_examp.iml";
-   IML_Edge_Count : constant Integer := 646;
-   IML_Node_Count : constant Integer := 216;
+   IML_Filename   : constant String :=
+     "/home/stsopra/giant/graphs/wget.iml";
+   IML_Edge_Count : constant Integer := 1274794;
+   IML_Node_Count : constant Integer := 472583;
+
+--     IML_Filename   : constant String :=
+--       "/home/stsopra/giant/graphs/concept_analysis.iml";
+--     IML_Edge_Count : constant Integer := 156072;
+--     IML_Node_Count : constant Integer := 646;
+
+   --  IML_Filename   : constant String  := "resources/rfg_examp.iml";
+   --  IML_Edge_Count : constant Integer := 646;
+   --  IML_Node_Count : constant Integer := 216;
 
    -------------------------------------
    --  Global variables and routines  --
@@ -57,7 +67,8 @@ package body Giant.Graph_Lib.Test is
       while More (Iter) loop
          Next (Iter, Attr);
 
-         Logger.Debug ("Attribute " & Convert_Node_Attribute_Id_To_Name (Attr));
+         Logger.Debug
+           ("Attribute " & Convert_Node_Attribute_Id_To_Name (Attr));
 
          case Get_Node_Attribute_Class_Id (Attr) is
             when Class_Node_Id =>
@@ -99,19 +110,22 @@ package body Giant.Graph_Lib.Test is
       --  check count directly
       --  n/a, since edges are not referenced directly
 
+      Logger.Debug ("Edges: " & Integer'Image (Get_Edge_Count));
+      Logger.Debug ("Nodes: " & Integer'Image (Get_Node_Count));
+
+      Assert (Get_Edge_Count = IML_Edge_Count, "Edge_Count");
+      Assert (Get_Node_Count = IML_Node_Count, "Node_Count");
+
       --  check count indirectly
       declare
          Set : Edge_Id_Set;
       begin
          Set := Giant.Graph_Lib.Get_All_Edges;
-         Logger.Debug ("Size: " & Integer'Image (Edge_Id_Sets.Size (Set)));
          Assert (Edge_Id_Sets.Size (Set) = IML_Edge_Count, "All_Edges.Size");
          Edge_Id_Sets.Destroy (Set);
       end;
 
       --  check count directly
-      Logger.Debug ("Size: " & Integer'Image
-                    (IML_Node_ID_Hashed_Mappings.Size (IML_Node_ID_Mapping)));
       Assert (IML_Node_ID_Hashed_Mappings.Size (IML_Node_ID_Mapping) =
               IML_Node_Count,
               "All_Nodes.Size (via Mapping)");
