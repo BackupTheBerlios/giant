@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.8 $
+--  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.9 $
 --  $Author: squig $
---  $Date: 2003/06/19 16:38:06 $
+--  $Date: 2003/06/20 16:47:35 $
 --
 --  Stores the window records. Handles the controller updates. Provides
 --  a facade for the gui.
@@ -31,10 +31,33 @@
 --    ADT
 --
 
+--  with Giant.Graph_Widgets;
+--  with Giant.Graph_Widgets.Notifications;
 with Giant.Graph_Window;
+with Giant.Vis;
 with Giant.Vis_Windows;
 
 package Giant.Gui_Manager is
+
+--     type Crosshair_Action_Callback is access function
+--       (Widget   : access Graph_Widgets.Graph_Widget_Record'Class;
+--        Action   : in     Graph_Widgets.Notifications.Crosshair_Action_Type;
+--        Location : in     Vis.Logic.Vector_2d)
+--       return Boolean;
+
+--     generic
+--        type Data_Type is private;
+--     package Crosshair_Action_Package is
+
+--        procedure Execute (Custom_Object : in Data_Type);
+
+--     private
+
+--        Custom_Object : Data_Type;
+
+--     end Crosshair_Action_Package;
+
+--     Pending_Action : Crosshair_Action_Callback;
 
    ---------------------------------------------------------------------------
    --  Main Application
@@ -56,6 +79,25 @@ package Giant.Gui_Manager is
      (Loaded : in Boolean);
 
    ---------------------------------------------------------------------------
+   --  Selections
+   ---------------------------------------------------------------------------
+
+   procedure Add_Selection
+     (Window_Name : in String;
+      Name        : in String);
+
+   function Remove_Selection
+     (Window_Name          : in String;
+      Name                 : in String;
+      Ask_For_Confirmation : in Boolean := True)
+     return Boolean;
+
+   procedure Rename_Selection
+     (Window_Name : in String;
+      Old_Name    : in String;
+      New_Name    : in String);
+
+   ---------------------------------------------------------------------------
    --  Subgraphs
    ---------------------------------------------------------------------------
 
@@ -63,7 +105,7 @@ package Giant.Gui_Manager is
      (Name : in String);
 
    function Remove_Subgraph
-     (Name : in String;
+     (Name                 : in String;
       Ask_For_Confirmation : in Boolean := True)
      return Boolean;
 

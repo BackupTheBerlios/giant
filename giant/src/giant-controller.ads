@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.11 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.12 $
 --  $Author: squig $
---  $Date: 2003/06/19 19:37:05 $
+--  $Date: 2003/06/20 16:47:35 $
 --
 ------------------------------------------------------------------------------
 --
@@ -94,6 +94,11 @@ package Giant.Controller is
    procedure Create_Selection
      (Window_Name : in String;
       Name        : in String := "Name");
+
+   procedure Create_Selection_From_Subgraph
+     (Subgraph_Name : in String;
+      Window_Name   : in String;
+      Name          : in String);
 
    function Remove_Selection
      (Window_Name          : in String;

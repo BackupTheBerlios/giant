@@ -20,7 +20,7 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-node_annotation_dialog.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-node_info_dialog.ads,v $, $Revision: 1.1 $
 --  $Author: squig $
 --  $Date: 2003/06/20 16:47:35 $
 --
@@ -31,35 +31,43 @@
 
 with Ada.Strings.Unbounded;
 
-with Gtk.Text;
+with Gtk.Clist;
+with Gtk.Label;
 
 with Giant.Default_Dialog;
 with Giant.Graph_Lib;
 
-package Giant.Node_Annotation_Dialog is
+package Giant.Node_Info_Dialog is
 
-   type Node_Annotation_Dialog_Record is
+   type Node_Info_Dialog_Record is
      new Default_Dialog.Default_Dialog_Record with private;
 
-   type Node_Annotation_Dialog_Access is
-      access all Node_Annotation_Dialog_Record'Class;
+   type Node_Info_Dialog_Access is 
+	  access all Node_Info_Dialog_Record'Class;
 
    function Can_Hide
-     (Dialog : access Node_Annotation_Dialog_Record)
+     (Dialog : access Node_Info_Dialog_Record)
      return Boolean;
 
    procedure Create
-     (Dialog :    out Node_Annotation_Dialog_Access;
-      Node   : in     Graph_Lib.Node_Id);
+     (Dialog : out Node_Info_Dialog_Access);
 
    procedure Initialize
-     (Dialog : access Node_Annotation_Dialog_Record'Class);
-
+     (Dialog : access Node_Info_Dialog_Record'Class);
+   
+   procedure Set_Node
+	 (Dialog : access Node_Info_Dialog_Record'Class;
+	  Node	 : in     Graph_Lib.Node_Id);
+  
 private
-   type Node_Annotation_Dialog_Record is
+   type Node_Info_Dialog_Record is
      new Default_Dialog.Default_Dialog_Record with record
-        Text_Area : Gtk.Text.Gtk_Text;
-        Node : Graph_Lib.Node_Id;
+		ID_Label : Gtk.Label.Gtk_Label;
+		Type_Label : Gtk.Label.Gtk_Label;
+        Attribute_List : Gtk.Clist.Gtk_Clist;
+		Successor_List : Gtk.Clist.Gtk_Clist;
+		Predecessor_List : Gtk.Clist.Gtk_Clist;
+		Node : Graph_Lib.Node_Id;
      end record;
 
-end Giant.Node_Annotation_Dialog;
+end Giant.Node_Info_Dialog;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.10 $
 --  $Author: squig $
---  $Date: 2003/06/19 19:37:05 $
+--  $Date: 2003/06/20 16:47:35 $
 --
 
 with Ada.Strings.Unbounded;
@@ -35,7 +35,7 @@ with String_Lists;
 
 with Giant.Controller;
 with Giant.Main_Window;
-with Giant.Graph_Window;
+with Giant.Graph_Window; use type Giant.Graph_Window.Graph_Window_Access;
 with Giant.Projects;
 
 package body Giant.Gui_Manager is
@@ -99,6 +99,16 @@ package body Giant.Gui_Manager is
       --  add selections
    end;
 
+--     package body Crosshair_Action_Package is
+
+--        procedure Execute (Custom_Object : in Data_Type)
+--        is
+--        begin
+--           null;
+--        end;
+
+--     end Crosshair_Action_Package;
+
    ---------------------------------------------------------------------------
    --  Main Application
    ---------------------------------------------------------------------------
@@ -152,6 +162,60 @@ package body Giant.Gui_Manager is
          Initialize_Project;
       end if;
    end Set_Project_Loaded;
+
+   ---------------------------------------------------------------------------
+   --  Selections
+   ---------------------------------------------------------------------------
+
+   procedure Add_Selection
+     (Window_Name : in String;
+      Name        : in String)
+   is
+      Window : Graph_Window.Graph_Window_Access
+        := Get_Open_Window (Window_Name);
+   begin
+      if (Window = Graph_Window.Null_Graph_Window) then
+         --  window is not shown
+         return;
+      end if;
+
+      Graph_Window.Add_Selection (Window, Name);
+   end Add_Selection;
+
+   function Remove_Selection
+     (Window_Name          : in String;
+      Name                 : in String;
+      Ask_For_Confirmation : in Boolean := True)
+     return Boolean
+   is
+      Window : Graph_Window.Graph_Window_Access
+        := Get_Open_Window (Window_Name);
+   begin
+      if (Window = Graph_Window.Null_Graph_Window) then
+         --  window is not shown
+         return True;
+      end if;
+
+      Graph_Window.Remove_Selection (Window, Name);
+      return True;
+   end Remove_Selection;
+
+   procedure Rename_Selection
+     (Window_Name : in String;
+      Old_Name    : in String;
+      New_Name    : in String)
+   is
+      Window : Graph_Window.Graph_Window_Access
+        := Get_Open_Window (Window_Name);
+   begin
+      if (Window = Graph_Window.Null_Graph_Window) then
+         --  window is not shown
+         return;
+      end if;
+
+      Graph_Window.Remove_Selection (Window, Old_Name);
+      Graph_Window.Add_Selection (Window, New_Name);
+   end Rename_Selection;
 
    ---------------------------------------------------------------------------
    --  Subgraphs
@@ -217,8 +281,6 @@ package body Giant.Gui_Manager is
       Ask_For_Confirmation : in Boolean)
      return Boolean
    is
-      use type Graph_Window.Graph_Window_Access;
-
       Closed : Boolean;
       Window : Graph_Window.Graph_Window_Access;
    begin

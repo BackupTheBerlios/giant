@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.7 $
+--  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.8 $
 --  $Author: squig $
---  $Date: 2003/06/19 16:38:06 $
+--  $Date: 2003/06/20 16:47:35 $
 --
 ------------------------------------------------------------------------------
 --
@@ -39,9 +39,11 @@ with Gtk.Label;
 with Gtk.Menu;
 with Gtk.Menu_Bar;
 with Gtk.Menu_Item;
+with Gtk.Misc;
 with Gtk.Paned;
 with Gtk.Scrolled_Window;
 with Gtk.Separator;
+with Gtk.Table;
 with Gtk.Widget;
 with Gtk.Window;
 
@@ -96,6 +98,12 @@ package Giant.Gui_Utils is
       Title  : in     String)
      return Gtk.Frame.Gtk_Frame;
 
+   procedure Add_Row
+     (Table : in     Gtk.Table.Gtk_Table;
+      Row   : in out Glib.Guint;
+      Left  : access Gtk.Misc.Gtk_Misc_Record'Class;
+      Right : access Gtk.Widget.Gtk_Widget_Record'Class);
+
    function Add_Scrollbar_And_Frame
      (Widget : access Gtk.Widget.Gtk_Widget_Record'class;
       Title  : in String)
@@ -104,6 +112,13 @@ package Giant.Gui_Utils is
    procedure Connect_Popup_Menu
      (List : access Gtk.Clist.Gtk_Clist_Record'Class;
       Menu : access Gtk.Menu.Gtk_Menu_Record'Class);
+
+   ---------------------------------------------------------------------------
+   --  Returns an absolute path to the passed icon.
+   --
+   function Get_Icon
+     (Filename : in String)
+     return String;
 
    function Get_Selected_Row
      (List : access Gtk.Clist.Gtk_Clist_Record'Class)

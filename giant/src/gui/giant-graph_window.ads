@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.7 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.8 $
 --  $Author: squig $
---  $Date: 2003/06/19 19:37:05 $
+--  $Date: 2003/06/20 16:47:35 $
 --
 ------------------------------------------------------------------------------
 --
@@ -76,15 +76,31 @@ package Giant.Graph_Window is
 
    procedure Add_Pin
      (Window : access Graph_Window_Record'Class;
-      Name : in String);
+      Name   : in     String);
 
    procedure Update_Pin
      (Window : access Graph_Window_Record'Class;
-      Name : in String);
+      Name   : in     String);
 
    procedure Remove_Pin
      (Window : access Graph_Window_Record'Class;
-      Name : in String);
+      Name   : in     String);
+
+   ---------------------------------------------------------------------------
+   --  Selection Methods
+   ---------------------------------------------------------------------------
+
+   procedure Add_Selection
+     (Window : access Graph_Window_Record'Class;
+      Name   : in     String);
+
+   procedure Update_Selection
+     (Window : access Graph_Window_Record'Class;
+      Name   : in     String);
+
+   procedure Remove_Selection
+     (Window : access Graph_Window_Record'Class;
+      Name   : in     String);
 
 private
    type Graph_Window_Record is

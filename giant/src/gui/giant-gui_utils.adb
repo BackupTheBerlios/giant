@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.10 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.11 $
 -- $Author: squig $
--- $Date: 2003/06/19 19:37:05 $
+-- $Date: 2003/06/20 16:47:35 $
 --
 
 with Glib;
@@ -28,16 +28,7 @@ with Gdk.Event;
 with Gdk.Types;
 with Gtk.Arguments;
 with Gtk.Enums; use Gtk.Enums;
-With Gtk.Frame;
-with Gtk.Label;
-with Gtk.Menu;
-with Gtk.Menu_Bar;
-with Gtk.Menu_Item;
-with Gtk.Paned;
-With Gtk.Scrolled_Window;
 with Gtk.Tearoff_Menu_Item;
-with Gtk.Widget;
-with Gtk.Window;
 
 package body Giant.Gui_Utils is
 
@@ -157,6 +148,35 @@ package body Giant.Gui_Utils is
       Clist_Callback.Connect
         (List, "click_column", On_Clist_Click_Column'Access);
    end Connect_Popup_Menu;
+
+   procedure Add_Row
+     (Table : in     Gtk.Table.Gtk_Table;
+      Row   : in out Glib.Guint;
+      Left  : access Gtk.Misc.Gtk_Misc_Record'Class;
+      Right : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+      use type Glib.Guint;
+   begin
+      --  right align
+      Gtk.Misc.Set_Alignment (Left, 1.0, 0.5);
+
+      Gtk.Table.Attach (Table, Left,
+                        Left_Attach => 0, Right_Attach => 1,
+                        Top_Attach => Row, Bottom_Attach => Row + 1);
+      Gtk.Table.Attach (Table, Right,
+                        Left_Attach => 1, Right_Attach => 2,
+                        Top_Attach => Row, Bottom_Attach => Row + 1);
+      Row := Row + 1;
+   end;
+
+   function Get_Icon
+     (Filename : in String)
+     return String
+   is
+   begin
+      -- FIX: use config.getResourcePath()
+      return "icon/" & Filename;
+   end;
 
    function Get_Selected_Row
      (List : access Gtk.Clist.Gtk_Clist_Record'Class)

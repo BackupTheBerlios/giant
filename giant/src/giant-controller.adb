@@ -21,9 +21,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.12 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.13 $
 --  $Author: squig $
---  $Date: 2003/06/19 19:37:05 $
+--  $Date: 2003/06/20 16:47:35 $
 --
 
 with Ada.Strings.Unbounded;
@@ -31,6 +31,7 @@ with Ada.Strings.Unbounded;
 with String_Lists;
 
 with Giant.Graph_Lib;
+with Giant.Graph_Lib.Selections;
 with Giant.Graph_Lib.Subgraphs;
 with Giant.Gui_Manager;
 With Giant.Logger;
@@ -204,6 +205,23 @@ package body Giant.Controller is
    begin
       null;
    end Create_Selection;
+
+   procedure Create_Selection_From_Subgraph
+     (Subgraph_Name : in String;
+      Window_Name   : in String;
+      Name          : in String)
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+      Subgraph : Giant.Graph_Lib.Subgraphs.Subgraph
+        := Projects.Get_Subgraph (Current_Project, Subgraph_Name);
+      Selection : Giant.Graph_Lib.Selections.Selection
+        := Giant.Graph_Lib.Selections.Create (Name);
+      -- FIX: , Subgraph
+   begin
+      Vis_Windows.Add_Selection (Window, Selection);
+      Gui_Manager.Add_Selection (Window_Name, Name);
+   end Create_Selection_From_Subgraph;
 
    function Remove_Selection
      (Window_Name          : in String;

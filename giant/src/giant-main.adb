@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.12 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.13 $
 --  $Author: squig $
---  $Date: 2003/06/19 16:38:06 $
+--  $Date: 2003/06/20 16:47:35 $
 --
 --
 ------------------------------------------------------------------------------
@@ -34,6 +34,7 @@ with Giant.Config;
 with Giant.Config.Vis_Styles;
 with Giant.Controller;
 with Giant.Default_Logger;
+with Giant.File_Management;
 with Giant.Logger;
 
 procedure Giant.Main
@@ -46,6 +47,8 @@ begin
 --     Config.Vis_Styles.Initialize_Config_Vis_Styles
 --       ("", "", "test/resources/giant_vis_style.xml");
 
+   -- FIX: remove the following lines
+   File_Management.Delete_File ("test/resources/GiantTest.xml");
    Controller.Create_Project ("test/resources/GiantTest.xml",
                               "test/resources/rfg_examp.iml");
 

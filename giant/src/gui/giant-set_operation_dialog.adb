@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-set_operation_dialog.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-set_operation_dialog.adb,v $, $Revision: 1.5 $
 --  $Author: squig $
---  $Date: 2003/06/19 19:37:06 $
+--  $Date: 2003/06/20 16:47:35 $
 --
 
 with Ada.Strings.Unbounded;
@@ -30,7 +30,6 @@ with Ada.Strings.Unbounded;
 with Glib;
 with Gtk.Box;
 with Gtk.Enums; use Gtk.Enums;
-with Gtk.Misc;
 with Gtk.Table;
 with Gtk.Widget;
 with Gtk.Window;
@@ -90,7 +89,8 @@ package body Giant.Set_Operation_Dialog is
       if (Default_Dialog.Get_Response (Dialog)
           = Default_Dialog.Response_Okay) then
          if (Get_Target (Dialog) = "") then
-            Default_Dialog.Show_Error_Dialog (-"Please provide a name for the target.");
+            Default_Dialog.Show_Error_Dialog
+              (-"Please provide a name for the target.");
             return False;
          end if;
 
@@ -117,10 +117,12 @@ package body Giant.Set_Operation_Dialog is
             end if;
          exception
             when Projects.Subgraph_Is_Not_Part_Of_Project_Exception =>
-               Default_Dialog.Show_Error_Dialog (-"Please select valid sources.");
+               Default_Dialog.Show_Error_Dialog
+                 (-"Please select valid sources.");
                return False;
             when Projects.Subgraph_Is_Already_Part_Of_Project_Exception =>
-               Default_Dialog.Show_Error_Dialog (-"The target name is already used. Please try a different name.");
+               Default_Dialog.Show_Error_Dialog
+                 (-"The target name is already used. Please try a different name.");
                return False;
          end;
       end if;
@@ -159,25 +161,6 @@ package body Giant.Set_Operation_Dialog is
       return Target;
    end;
 
-   procedure Add_Row
-     (Table : in     Gtk.Table.Gtk_Table;
-      Row   : in     Glib.Guint;
-      Left  : access Gtk.Misc.Gtk_Misc_Record'Class;
-      Right : access Gtk.Widget.Gtk_Widget_Record'Class)
-   is
-      use type Glib.Guint;
-   begin
-      --  right align
-      Gtk.Misc.Set_Alignment (Left, 1.0, 0.5);
-
-      Gtk.Table.Attach (Table, Left,
-                        Left_Attach => 0, Right_Attach => 1,
-                        Top_Attach => Row, Bottom_Attach => Row + 1);
-      Gtk.Table.Attach (Table, Right,
-                        Left_Attach => 1, Right_Attach => 2,
-                        Top_Attach => Row, Bottom_Attach => Row + 1);
-   end;
-
    procedure Initialize
      (Dialog  : access Set_Operation_Dialog_Record'Class)
    is
@@ -186,6 +169,7 @@ package body Giant.Set_Operation_Dialog is
       Table : Gtk.Table.Gtk_Table;
       Operations : String_List.Glist;
       Subgraphs : String_List.Glist := Get_Subgraphs;
+      Row : Glib.Guint := 0;
    begin
       Default_Dialog.Initialize (Dialog, -"Set Operation",
                                  Default_Dialog.Button_Okay_Cancel);
@@ -200,7 +184,7 @@ package body Giant.Set_Operation_Dialog is
       if (String_List.Length (Subgraphs) > 0) then
          Gtk.Combo.Set_Popdown_Strings (Dialog.Left_Source, Subgraphs);
       end if;
-      Add_Row (Table, 0, New_Label (-"Left Source"), Dialog.Left_Source);
+      Add_Row (Table, Row, New_Label (-"Left Source"), Dialog.Left_Source);
 
       --  operation
       String_List.Append (Operations, -"Difference");
@@ -210,23 +194,24 @@ package body Giant.Set_Operation_Dialog is
       Gtk.Combo.Gtk_New (Dialog.Operation);
       Gtk.Combo.Set_Popdown_Strings (Dialog.Operation, Operations);
       Gtk.Combo.Set_Value_In_List (Dialog.Operation, 0, Ok_If_Empty => False);
-      Add_Row (Table, 1, New_Label (-"Operation"), Dialog.Operation);
+      Add_Row (Table, Row, New_Label (-"Operation"), Dialog.Operation);
 
       --  left source
       Gtk.Combo.Gtk_New (Dialog.Left_Source);
       if (String_List.Length (Subgraphs) > 0) then
          Gtk.Combo.Set_Popdown_Strings (Dialog.Left_Source, Subgraphs);
       end if;
-      Add_Row (Table, 2, New_Label (-"Left Source"), Dialog.Left_Source);
+      Add_Row (Table, Row, New_Label (-"Left Source"), Dialog.Left_Source);
 
       --  separator
       Gtk.Table.Attach (Table, New_Hseperator,
                         Left_Attach => 1, Right_Attach => 2,
                         Top_Attach => 3, Bottom_Attach => 4);
+      Row := Row + 1;
 
       --  target
       Gtk.Gentry.Gtk_New (Dialog.Target);
-      Add_Row (Table, 4, New_Label (-"Target"), Dialog.Target);
+      Add_Row (Table, Row, New_Label (-"Target"), Dialog.Target);
    end;
 
 end Giant.Set_Operation_Dialog;

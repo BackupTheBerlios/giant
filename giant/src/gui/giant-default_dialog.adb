@@ -18,11 +18,11 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  First Author: <unkown>
+--  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.8 $
 --  $Author: squig $
---  $Date: 2003/06/19 19:37:05 $
+--  $Date: 2003/06/20 16:47:35 $
 --
 
 with Ada.Text_Io; use Ada.Text_Io;
@@ -144,7 +144,6 @@ package body Giant.Default_Dialog is
       Buttons : in     Button_Type)
    is
       Button : Gtk.Button.Gtk_Button;
-      Result : Boolean;
    begin
       Gtk.Window.Initialize (Dialog, Window_Toplevel);
       Set_Modal (Dialog, Dialog.Is_Modal);
@@ -223,7 +222,8 @@ package body Giant.Default_Dialog is
       Gtk.Box.Gtk_New_Hbox (Box);
       Set_Center_Widget (Dialog, Box);
 
-      Pixmap := Gtk.Pixmap.Create_Pixmap (Icon_Filename, Dialog);
+      Pixmap := Gtk.Pixmap.Create_Pixmap
+        (Gui_Utils.Get_Icon(Icon_Filename), Dialog);
       --Gtk.Pixmap.Set_Alignment (Dialog.Confirmation_Msg_Pixmap, 0.5, 0.5);
       Gtk.Box.Pack_Start (Box, pixmap, expand => True, Fill => True,
                           Padding => DEFAULT_SPACING);

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.17 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.18 $
 --  $Author: squig $
---  $Date: 2003/06/20 00:54:45 $
+--  $Date: 2003/06/20 16:47:35 $
 --
 
 with Ada.Strings.Unbounded;
@@ -57,6 +57,7 @@ with Giant.Gsl_Dialog;
 with Giant.Gui_Manager;
 with Giant.Gui_Utils; use Giant.Gui_Utils;
 with Giant.Logger;
+with Giant.Node_Info_Dialog;
 with Giant.Projects;
 with Giant.Set_Operation_Dialog;
 
@@ -200,8 +201,14 @@ package body Giant.Main_Window is
    procedure On_Project_Info
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
+      Dialog: Node_Info_Dialog.Node_Info_Dialog_Access;
    begin
-      Logger.Info ("Nodes : " & Integer'Image (Graph_Lib.Node_Id_Sets.Size (Graph_Lib.Get_All_Nodes)));
+      Logger.Info ("Nodes : " & Integer'Image
+                   (Graph_Lib.Node_Id_Sets.Size
+                    (Graph_Lib.Get_All_Nodes)));
+      Node_Info_Dialog.Create (Dialog);
+      Node_Info_Dialog.Set_Node (Dialog, Graph_Lib.Get_Root_Node);
+      Node_Info_Dialog.Show_All (Dialog);
    end On_Project_Info;
 
    procedure On_Project_Quit
