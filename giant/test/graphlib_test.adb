@@ -21,9 +21,9 @@
 --  Based on framework of: Steffen Pingel
 --  First Author:          Oliver Kopp
 --
---  $RCSfile: graphlib_test.adb,v $, $Revision: 1.8 $
+--  $RCSfile: graphlib_test.adb,v $, $Revision: 1.9 $
 --  $Author: koppor $
---  $Date: 2003/07/01 16:51:51 $
+--  $Date: 2003/07/09 17:09:57 $
 --
 
 with Ada.Text_Io;
@@ -82,7 +82,7 @@ procedure Graphlib_Test is
    procedure Subgraphs_Run is new AUnit.Test_Runner (Subgraphs_Suite);
 
 begin
-   Giant.Default_Logger.Init;
+   Giant.Default_Logger.Init ("debug.log");
    Giant.Default_Logger.Debug ("Starting Test...");
 
    Ada.Text_Io.Put ("Run");
