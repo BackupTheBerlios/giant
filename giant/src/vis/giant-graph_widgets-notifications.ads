@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-notifications.ads,v $, $Revision: 1.4 $
+--  $RCSfile: giant-graph_widgets-notifications.ads,v $, $Revision: 1.5 $
 --  $Author: keulsn $
---  $Date: 2003/06/26 20:20:24 $
+--  $Date: 2003/06/29 13:56:08 $
 --
 ------------------------------------------------------------------------------
 --
@@ -33,7 +33,6 @@
 
 
 with Gdk.Event;
-with Gtkada.Types;
 
 package Giant.Graph_Widgets.Notifications is
 
@@ -51,7 +50,7 @@ package Giant.Graph_Widgets.Notifications is
    --    Edge   - The edge, the PopUp Menu is requested for
    procedure Edge_Popup
      (Widget : access Graph_Widget_Record'Class;
-      Edge   : in     Graph_Lib.Edge_Id);
+      Edge   : in     Vis_Data.Vis_Edge_Id);
 
    ----------------------------------------------------------------------------
    --  Informs the controller that the user has requested a PopUp Menu for
@@ -62,7 +61,7 @@ package Giant.Graph_Widgets.Notifications is
    --    Node   - The node, the PopUp Menu is requested for
    procedure Node_Popup
      (Widget : access Graph_Widget_Record'Class;
-      Node   : in     Graph_Lib.Node_Id);
+      Node   : in     Vis_Data.Vis_Node_Id);
 
 
    -----------------------
@@ -149,14 +148,6 @@ package Giant.Graph_Widgets.Notifications is
    procedure Visible_Area_Changed
      (Widget : access Graph_Widget_Record'Class;
       Area   : in     Vis.Logic.Rectangle_2d);
-
-
-   -------------
-   -- Signals --
-   -------------
-
-   function Get_Signal_Array
-     return Gtkada.Types.Chars_Ptr_Array;
 
 
 end Giant.Graph_Widgets.Notifications;

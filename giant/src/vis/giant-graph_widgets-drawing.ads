@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-graph_widgets-drawing.ads,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/05/23 16:39:04 $
+--  $Date: 2003/06/29 13:56:08 $
 --
 ------------------------------------------------------------------------------
 --
@@ -33,14 +33,11 @@
 --
 
 
-with Gdk.Rectangle;
-
-with Giant.Vis_Data;
-
 package Giant.Graph_Widgets.Drawing is
 
-   procedure Draw
-     (Widget : access Graph_Widget_Record'Class;
-      Rect   : in     Gdk.Rectangle.Gdk_Rectangle);
+   ----------------------------------------------------------------------------
+   --  Settings must have been 'Set_Up' before.
+   procedure Set_Up
+     (Widget : access Graph_Widget_Record'Class);
 
 end Giant.Graph_Widgets.Drawing;

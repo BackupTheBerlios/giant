@@ -1,3 +1,6 @@
+settings :
+	make -C ../../ MAIN=src/vis/giant-graph_widgets-settings all
+
 vectors :
 	make -C ../../ MAIN=src/vis/giant-vectors all
 
@@ -12,6 +15,12 @@ mini_maps :
 
 graph_widgets :
 	make -C ../../ MAIN=src/vis/giant-graph_widgets all
+
+handlers :
+	make -C ../../ MAIN=src/vis/giant-graph_widgets-handlers all
+
+notifications :
+	make -C ../../ MAIN=src/vis/giant-graph_widgets-notifications all
 
 all : 
 	make -C ../../ all

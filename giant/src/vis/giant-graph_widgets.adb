@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.6 $
 --  $Author: keulsn $
---  $Date: 2003/06/26 19:58:14 $
+--  $Date: 2003/06/29 13:56:08 $
 --
 ------------------------------------------------------------------------------
 
@@ -33,6 +33,7 @@ with Gtk.Object;
 
 with Giant.Graph_Widgets.Callbacks;
 with Giant.Graph_Widgets.Drawing;
+with Giant.Graph_Widgets.Handlers;
 with Giant.Graph_Widgets.Notifications;
 with Giant.Graph_Widgets.Settings;
 
@@ -54,8 +55,11 @@ package body Giant.Graph_Widgets is
       Gtk.Widget.Initialize_Widget (Widget);
       Gtk.Object.Initialize_Class_Record
         (Object       => Widget,
-         Signals      => Notifications.Get_Signal_Array,
+         Signals      => Handlers.Get_Signal_Array,
          Class_Record => Class_Record);
+
+      --  Cannot set up yet, but must set visualization style.
+      Settings.Set_Style (Widget, Style);
    end Initialize;
 
    procedure Create

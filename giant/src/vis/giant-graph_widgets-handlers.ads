@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-handlers.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_widgets-handlers.ads,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/06/26 20:20:24 $
+--  $Date: 2003/06/29 13:56:08 $
 --
 ------------------------------------------------------------------------------
 --
@@ -31,8 +31,10 @@
 --
 
 
+with Gdk.Event;
 with Gtk.Arguments;
 with Gtk.Handlers;
+with Gtkada.Types;
 
 package Giant.Graph_Widgets.Handlers is
 
@@ -42,6 +44,26 @@ package Giant.Graph_Widgets.Handlers is
 
    package Graph_Widget_Callbacks is new Gtk.Handlers.Callback
      (Widget_Type => Graph_Widget_Record);
+
+
+   --------------------
+   -- Argument types --
+   --------------------
+
+   --  The gtk+ functions "gtk_signal_emitv" and "gtk_signal_emitv_by_name"
+   --  are not imported into GtkAda. Therefore it is hard to see, how
+   --  one can have signals with more than one argument. Therefore
+   --  multiple arguments are packed into records.
+
+   ----------------------------------------------------------------------------
+   --  "button_press_event" on the graph widget while it was in action mode
+   type Button_Press_Action is
+      record
+         --  The event given through "button_press_event"
+         Event    : Gdk.Event.Gdk_Event_Button;
+         --  The logical location where the event happened in the graph
+         Location : Vis.Logic.Vector_2d;
+      end record;
 
 
    -----------------
@@ -61,6 +83,19 @@ package Giant.Graph_Widgets.Handlers is
       Num  : in Natural)
      return Vis.Logic.Rectangle_2d;
 
+   ----------------------------------------------------------------------------
+   --  Conversion function for Marshallers
+   --
+   --  Parameters
+   --    Args - The GtkAda argument array
+   --    Num  - The Index of an argument in 'Args'
+   --  Returns:
+   --    The 'Button_Press_Action' at index 'Num' in 'Args'
+   function To_Button_Press_Action
+     (Args : in Gtk.Arguments.Gtk_Args;
+      Num  : in Natural)
+     return Button_Press_Action;
+
 
    --------------------------------------
    -- "action_mode_button_press_event" --
@@ -76,15 +111,20 @@ package Giant.Graph_Widgets.Handlers is
    --  Type of handlers for signal Action_Mode_Button_Press_Event
    --  Parameters:
    --    Widget - The graph widget
-   --    Area   - The visible area inside 'Widget'
+   --    Action - The user action inside 'Widget'
    type Action_Mode_Button_Press_Event_Cb is access procedure
+     (Widget      : access Graph_Widget_Record'Class;
+      User_Action : in     Button_Press_Action);
+
+   --  Package providing the 'Connect' subprograms, if no user data is needed.
+   package Action_Mode_Cbs renames Graph_Widget_Callbacks;
+
+   ----------------------------------------------------------------------------
+   --  Emits the signal.
+   procedure Emit_Action_Mode_Button_Press_Event
      (Widget   : access Graph_Widget_Record'Class;
       Event    : in     Gdk.Event.Gdk_Event_Button;
       Location : in     Vis.Logic.Vector_2d);
-
-   ----------------------------------------------------------------------------
-   --  Package providing the 'Connect' subprograms
-   package Action_Mode_Cbs renames Graph_Widget_Callbacks;
 
 
    ----------------------------
@@ -107,8 +147,14 @@ package Giant.Graph_Widgets.Handlers is
       Area   : in     Vis.Logic.Rectangle_2d);
 
    ----------------------------------------------------------------------------
-   --  Package providing the 'Connect' subprograms
+   --  Package providing the 'Connect' subprograms if no user data is needed.
    package Logical_Area_Cbs renames Graph_Widget_Callbacks;
+
+   ----------------------------------------------------------------------------
+   --  Emits the signal.
+   procedure Emit_Logical_Area_Changed
+     (Widget : access Graph_Widget_Record'Class;
+      Area   : in     Vis.Logic.Rectangle_2d);
 
 
    ----------------------------
@@ -131,7 +177,22 @@ package Giant.Graph_Widgets.Handlers is
       Area   : in     Vis.Logic.Rectangle_2d);
 
    ----------------------------------------------------------------------------
-   --  Package providing the 'Connect' subprograms
+   --  Package providing the 'Connect' subprograms, if no user data is needed.
    package Visible_Area_Cbs renames Graph_Widget_Callbacks;
+
+   ----------------------------------------------------------------------------
+   --  Emits the signal.
+   procedure Emit_Visible_Area_Changed
+     (Widget : access Graph_Widget_Record'Class;
+      Area   : in     Vis.Logic.Rectangle_2d);
+
+
+   -----------------
+   -- All Signals --
+   -----------------
+
+   function Get_Signal_Array
+     return Gtkada.Types.Chars_Ptr_Array;
+
 
 end Giant.Graph_Widgets.Handlers;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.11 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.12 $
 --  $Author: keulsn $
---  $Date: 2003/06/27 16:58:58 $
+--  $Date: 2003/06/29 13:56:08 $
 --
 ------------------------------------------------------------------------------
 --
@@ -61,8 +61,11 @@
 
 with Ada.Streams;
 
+with Gdk.Bitmap;
 with Gdk.Color;
 with Gdk.Cursor;
+with Gdk.Font;
+with Gdk.GC;
 with Gdk.Pixmap;
 with Gtk.Widget;
 pragma Elaborate_All (Gtk.Widget);
@@ -853,6 +856,30 @@ private                    -- private part --
    -- Drawing --
    -------------
 
+   type Edge_Style_GCs is array (Edge_Style_Type) of Gdk.GC.Gdk_GC;
+
+   type Highlight_GCs is array (Vis_Data.Highlight_Type) of Gdk.GC.Gdk_GC;
+
+   type Drawing_Type is
+      record
+         Buffer      : Gdk.Pixmap.Gdk_Pixmap;
+         Clip_Mask   : Gdk.Bitmap.Gdk_Bitmap;
+         Display     : Gdk.Pixmap.Gdk_Pixmap;
+
+         Background  : Gdk.GC.Gdk_GC;
+         Node_Border : Gdk.GC.Gdk_GC;
+         Node_Fill   : Gdk.GC.Gdk_GC;
+         Node_Text   : Gdk.GC.Gdk_GC;
+         Node_Light  : Highlight_GCs;
+
+         Edge_Line   : Edge_Style_GCs;
+         Edge_Label  : Gdk.GC.Gdk_GC;
+         Edge_Light  : Highlight_GCs;
+
+         Font        : Gdk.Font.Gdk_Font;
+      end record;
+
+
    --------------
    -- Settings --
    --------------
@@ -861,9 +888,15 @@ private                    -- private part --
 
    type Settings_Type is
       record
+         --  Visualisation style of a graph widget, used to configure
+         --  colors and icons
+         Vis_Style              : Config.Vis_Styles.Visualisation_Style_Access;
          --  Colors used for drawing. All those colors are allocated in the
-         --  default 'Colormap'.
+         --  default Colormap.
          All_Colors             : Color_Array_Access;
+         --  Offset for highlight colors. Addition to
+         --  ...'Pos (Vis_Data'Highlight_Type'First) gives the index of
+         --  first highlight color in 'All_Colors'
          Highlight_Index_Offset : Integer;
       end record;
 
@@ -876,15 +909,14 @@ private                    -- private part --
    --  The one and only graph widget tagged type
    type Graph_Widget_Record is new Gtk.Widget.Gtk_Widget_Record with
       record
-         Settings : Settings_Type;
+         Drawing     : Drawing_Type;
+         Settings    : Settings_Type;
 
-         All_Nodes          : Vis_Data.Vis_Node_Sets.Set;
-         Node_Map           : Node_Id_Mappings.Mapping;
-         Highest_Node_Layer : Vis_Data.Layer_Pool;
-         All_Edges          : Vis_Data.Vis_Edge_Sets.Set;
-         Edge_Map           : Edge_Id_Mappings.Mapping;
-         Highest_Edge_Layer : Vis_Data.Layer_Pool;
-         Manager            : Vis_Data.Region_Manager;
+         Node_Map    : Node_Id_Mappings.Mapping;
+         Node_Layers : Vis_Data.Layer_Pool;
+         Edge_Map    : Edge_Id_Mappings.Mapping;
+         Edge_Layers : Vis_Data.Layer_Pool;
+         Manager     : Vis_Data.Region_Manager;
       end record;
 
 end Giant.Graph_Widgets;

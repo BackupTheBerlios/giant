@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant_test-mini_map.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant_test-mini_map.adb,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/06/09 01:14:51 $
+--  $Date: 2003/06/29 13:56:08 $
 --
 ------------------------------------------------------------------------------
 
@@ -155,6 +155,8 @@ begin
 
    Gdk.Threads.Enter;
    Gtk.Main.Main;
+   Gtk.Window.Destroy (Main_Window);
+
    Gdk.Threads.Leave;
    Giant.Default_Logger.Close;
 end Giant_Test.Mini_Map;

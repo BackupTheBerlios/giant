@@ -20,20 +20,19 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.6 $
 --  $Author: keulsn $
---  $Date: 2003/06/27 16:58:58 $
+--  $Date: 2003/06/29 13:56:08 $
 --
 ------------------------------------------------------------------------------
 
 
-with Ada.Unchecked_Conversion;
+with Ada.Strings.Unbounded;
+with Ada.Unchecked_Deallocation;
 
 with Gdk.Bitmap;
-with Gtkada.Types;
-
-with Untagged_Ptr_Hash;
-pragma Elaborate_All (Untagged_Ptr_Hash);
+with Gdk.Pixmap;
+with Glib;
 
 with Giant.Controller;
 with Giant.Logger;
@@ -45,34 +44,6 @@ package body Giant.Graph_Widgets.Settings is
    package Settings_Logger is new Logger
      (Name => "Giant.Graph_Widgets.Settings");
 
-   function Hash_Chars_Ptr_Array_Access
-     (Key : in     Config.Chars_Ptr_Array_Access)
-     return Integer is
-
-      type Dummy_Type is null record;
-      type Dummy_Access is access Dummy_Type;
-      type Address_Record is record
-         First  : Dummy_Access;
-         Second : Dummy_Access;
-      end record;
-      pragma Pack (Address_Record);
-      function To_Address_Record is new Ada.Unchecked_Conversion
-        (Source => Config.Chars_Ptr_Array_Access,
-         Target => Address_Record);
-      function Hash_Dummy_Address is new Untagged_Ptr_Hash
-        (T     => Dummy_Type,
-         T_Ptr => Dummy_Access);
-
-      Dummy_Record : Address_Record;
-   begin
-      Dummy_Record := To_Address_Record (Key);
-      return Hash_Dummy_Address (Dummy_Record.Second);
-   end Hash_Chars_Ptr_Array_Access;
-
-   package Icon_Mappings is new Hashed_Mappings
-     (Key_Type   => Config.Chars_Ptr_Array_Access,
-      Hash       => Hash_Chars_Ptr_Array_Access,
-      Value_Type => Gdk.Pixmap.Gdk_Pixmap);
 
    ---------------------------------------------------------------------------
    --
@@ -83,16 +54,78 @@ package body Giant.Graph_Widgets.Settings is
 
       function Get_Color
         (Widget : access Graph_Widget_Record'Class;
-         Index  : in     Integer);
+         Index  : in     Integer)
+        return Gdk.Color.Gdk_Color;
 
       function Get_Highlight_Color
         (Widget : access Graph_Widget_Record'Class;
-         Light  : in     Vis_Data.Highlight_Type);
+         Light  : in     Vis_Data.Highlight_Type)
+        return Gdk.Color.Gdk_Color;
 
       procedure Shut_Down_Color_Array
         (Widget : access Graph_Widget_Record'Class);
 
    end Colors;
+
+   ----------------------------------------------------------------------------
+   --  Generic package to map the color encodings in Config.Vis_Styles
+   generic
+      type Graph_Object is private;
+      type Vis_Object is private;
+      type Graph_Object_Class is private;
+      with function Get_Graph_Object
+        (Source    : in     Vis_Object)
+        return Graph_Object;
+      with function Get_Class
+        (Object    : in     Graph_Object)
+        return Graph_Object_Class;
+   package Color_Retrieval is
+
+      generic
+         with function Get_Index
+           (Vis_Style : in     Config.Vis_Styles.Visualisation_Style_Access;
+            Object    : in     Graph_Object_Class)
+           return Integer;
+      function Find_Color
+        (Widget : access Graph_Widget_Record'Class;
+         Object : in     Vis_Object)
+         return Gdk.Color.Gdk_Color;
+
+   end Color_Retrieval;
+
+   package body Color_Retrieval is
+
+      function Find_Color
+        (Widget : access Graph_Widget_Record'Class;
+         Object : in     Vis_Object)
+         return Gdk.Color.Gdk_Color is
+
+         Index : Integer;
+      begin
+         Index := Get_Index
+           (Vis_Style => Get_Vis_Style (Widget),
+            Object    => Get_Class (Get_Graph_Object (Object)));
+         return Colors.Get_Color (Widget, Index);
+      end Find_Color;
+
+   end Color_Retrieval;
+
+   --  instance for edges
+   package Edge_Colors is new Color_Retrieval
+     (Vis_Object         => Vis_Data.Vis_Edge_Id,
+      Graph_Object       => Graph_Lib.Edge_Id,
+      Graph_Object_Class => Graph_Lib.Edge_Class_Id,
+      Get_Graph_Object   => Vis_Data.Get_Graph_Edge,
+      Get_Class          => Graph_Lib.Get_Edge_Class_Id);
+
+   --  instance for nodes
+   package Node_Colors is new Color_Retrieval
+     (Vis_Object         => Vis_Data.Vis_Node_Id,
+      Graph_Object       => Graph_Lib.Node_Id,
+      Graph_Object_Class => Graph_Lib.Node_Class_Id,
+      Get_Graph_Object   => Vis_Data.Get_Graph_Node,
+      Get_Class          => Graph_Lib.Get_Node_Class_Id);
+
 
    ---------------------------------------------------------------------------
    --  Manages the Pixmaps for icons.
@@ -102,56 +135,60 @@ package body Giant.Graph_Widgets.Settings is
    --  pixmap should be inialized specially for one Gdk_Window.
    package Icons is
 
-      function Is_Initialized
+      function Is_Set_Up
         return Boolean;
 
-      procedure Initialize
+      procedure Set_Up_Icon_Array
         (Widget : access Graph_Widget_Record'Class);
 
-      ------------------------------------------------------------------------
-      --  Adds all icons needed for 'Style'
-      procedure Add_Vis_Style
-        (Widget : access Graph_Widget_Record'Class;
-         Style  : in     Config.Vis_Styles.Visualisation_Style_Access);
-
       function Get_Icon
-        (Data   : in     Config.Chars_Ptr_Array_Access)
+        (Widget : access Graph_Widget_Record'Class;
+         Index  : in     Integer)
         return Gdk.Pixmap.Gdk_Pixmap;
 
       function Get_Annotation_Icon
+        (Widget : access Graph_Widget_Record'Class)
         return Gdk.Pixmap.Gdk_Pixmap;
+
+      procedure Shut_Down_Icon_Array
+        (Widget : access Graph_Widget_Record'Class);
+
 
    private
 
-      procedure Store_Icon
-        (Widget : access Graph_Widget_Record'Class;
-         Data   : in     Config.Chars_Ptr_Array_Access);
+      type Icon_Array_Type is array (Integer range <>) of
+        Gdk.Pixmap.Gdk_Pixmap;
 
-      Annotation_Access : Config.Chars_Ptr_Array_Access;
-      Map               : Icon_Mappings.Mapping;
-      Map_Initialized   : Boolean := False;
+      type Icon_Array_Access is access Icon_Array_Type;
+
+      -------------------------------------------------------------------------
+      --  All icons ever displayed in a graph widget. Last is the annotation
+      --  icon. Should be stored inside 'Graph_Widget_Record', but is not
+      --  to save storage.
+      Icons            : Icon_Array_Access := null;
    end Icons;
 
+
    procedure Set_Up
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Icons.Set_Up_Icon_Array (Widget);
+      Colors.Set_Up_Color_Array (Widget);
+   end Set_Up;
+
+   procedure Set_Style
      (Widget : access Graph_Widget_Record'Class;
       Style  : in     Config.Vis_Styles.Visualisation_Style_Access) is
    begin
-      if not Icons.Is_Initialized then
-         Icons.Initialize (Widget);
-      end if;
-      Colors.Set_Up_Color_Array (Widget);
-      --  Create style-specific data
-      Icons.Add_Vis_Style (Widget, Style);
-   end Set_Up;
+      Widget.Settings.Vis_Style := Style;
+   end Set_Style;
 
    function Get_Highlight_Color
      (Widget       : access Graph_Widget_Record'Class;
       Highlighting : in     Vis_Data.Highlight_Type)
      return Gdk.Color.Gdk_Color is
-
-      Color : Gdk.Color.Gdk_Color;
    begin
-      return Colors.Get_Highlight_Color (Widget, Highlighting;
+      return Colors.Get_Highlight_Color (Widget, Highlighting);
    end Get_Highlight_Color;
 
    function Get_Background_Color
@@ -159,8 +196,9 @@ package body Giant.Graph_Widgets.Settings is
      return Gdk.Color.Gdk_Color is
    begin
       return Colors.Get_Color
-        (Config.Vis_Styles.Get_Vis_Window_Background_Color
-         (Widget.Settings.Vis_Style));
+        (Widget,
+         Config.Vis_Styles.Get_Vis_Window_Background_Color
+           (Widget.Settings.Vis_Style));
    end Get_Background_Color;
 
    function Get_Edge_Style
@@ -180,15 +218,11 @@ package body Giant.Graph_Widgets.Settings is
       Edge         : in     Vis_Data.Vis_Edge_Id)
      return Gdk.Color.Gdk_Color is
 
-      Graph_Edge   : Graph_Lib.Edge_Id := Vis_Data.Get_Graph_Edge (Edge);
-      Color_Access : Config.Color_Access;
-      Color        : Gdk.Color.Gdk_Color;
+      function Find is new Edge_Colors.Find_Color
+        (Get_Index => Config.Vis_Styles.Get_Line_Color);
+
    begin
-      Color_Access := Config.Vis_Styles.Get_Line_Color
-        (Vis_Style  => Get_Vis_Style (Widget),
-         Edge_Class => Graph_Lib.Get_Edge_Class_Id (Graph_Edge));
-      Find_Color (Widget, Color_Access, Color);
-      return Color;
+      return Find (Widget, Edge);
    end Get_Edge_Color;
 
    function Show_Edge_Label
@@ -208,15 +242,11 @@ package body Giant.Graph_Widgets.Settings is
       Edge         : in     Vis_Data.Vis_Edge_Id)
      return Gdk.Color.Gdk_Color is
 
-      Graph_Edge   : Graph_Lib.Edge_Id := Vis_Data.Get_Graph_Edge (Edge);
-      Color_Access : Config.Color_Access;
-      Color        : Gdk.Color.Gdk_Color;
+      function Find is new Edge_Colors.Find_Color
+        (Get_Index => Config.Vis_Styles.Get_Text_Color);
+
    begin
-      Color_Access := Config.Vis_Styles.Get_Text_Color
-        (Vis_Style  => Get_Vis_Style (Widget),
-         Edge_Class => Graph_Lib.Get_Edge_Class_Id (Graph_Edge));
-      Find_Color (Widget, Color_Access, Color);
-      return Color;
+      return Find (Widget, Edge);
    end Get_Edge_Label_Color;
 
    function Get_Node_Border_Color
@@ -224,15 +254,11 @@ package body Giant.Graph_Widgets.Settings is
       Node         : in     Vis_Data.Vis_Node_Id)
      return Gdk.Color.Gdk_Color is
 
-      Graph_Node   : Graph_Lib.Node_Id := Vis_Data.Get_Graph_Node (Node);
-      Color_Access : Config.Color_Access;
-      Color        : Gdk.Color.Gdk_Color;
+      function Find is new Node_Colors.Find_Color
+        (Get_Index => Config.Vis_Styles.Get_Border_Color);
+
    begin
-      Color_Access := Config.Vis_Styles.Get_Border_Color
-        (Vis_Style  => Get_Vis_Style (Widget),
-         Node_Class => Graph_Lib.Get_Node_Class_Id (Graph_Node));
-      Find_Color (Widget, Color_Access, Color);
-      return Color;
+      return Find (Widget, Node);
    end Get_Node_Border_Color;
 
    function Get_Node_Fill_Color
@@ -240,15 +266,11 @@ package body Giant.Graph_Widgets.Settings is
       Node         : in     Vis_Data.Vis_Node_Id)
      return Gdk.Color.Gdk_Color is
 
-      Graph_Node   : Graph_Lib.Node_Id := Vis_Data.Get_Graph_Node (Node);
-      Color_Access : Config.Color_Access;
-      Color        : Gdk.Color.Gdk_Color;
+      function Find is new Node_Colors.Find_Color
+        (Get_Index => Config.Vis_Styles.Get_Fill_Color);
+
    begin
-      Color_Access := Config.Vis_Styles.Get_Fill_Color
-        (Vis_Style  => Get_Vis_Style (Widget),
-         Node_Class => Graph_Lib.Get_Node_Class_Id (Graph_Node));
-      Find_Color (Widget, Color_Access, Color);
-      return Color;
+      return Find (Widget, Node);
    end Get_Node_Fill_Color;
 
    function Get_Node_Text_Color
@@ -256,15 +278,11 @@ package body Giant.Graph_Widgets.Settings is
       Node         : in     Vis_Data.Vis_Node_Id)
      return Gdk.Color.Gdk_Color is
 
-      Graph_Node   : Graph_Lib.Node_Id := Vis_Data.Get_Graph_Node (Node);
-      Color_Access : Config.Color_Access;
-      Color        : Gdk.Color.Gdk_Color;
+      function Find is new Node_Colors.Find_Color
+        (Get_Index => Config.Vis_Styles.Get_Text_Color);
+
    begin
-      Color_Access := Config.Vis_Styles.Get_Text_Color
-        (Vis_Style  => Get_Vis_Style (Widget),
-         Node_Class => Graph_Lib.Get_Node_Class_Id (Graph_Node));
-      Find_Color (Widget, Color_Access, Color);
-      return Color;
+     return Find (Widget, Node);
    end Get_Node_Text_Color;
 
 
@@ -280,7 +298,7 @@ package body Giant.Graph_Widgets.Settings is
      (Widget       : access Graph_Widget_Record'Class)
      return Gdk.Pixmap.Gdk_Pixmap is
    begin
-      return Icons.Get_Annotation_Icon;
+      return Icons.Get_Annotation_Icon (Widget);
    end Get_Annotation_Icon;
 
    function Get_Node_Icon
@@ -289,14 +307,14 @@ package body Giant.Graph_Widgets.Settings is
      return Gdk.Pixmap.Gdk_Pixmap is
 
       Node_Class : Graph_Lib.Node_Class_Id;
-      Data       : Config.Chars_Ptr_Array_Access;
+      Index      : Integer;
    begin
       Node_Class := Graph_Lib.Get_Node_Class_Id
         (Node       => Vis_Data.Get_Graph_Node (Node));
-      Data := Config.Vis_Styles.Get_Node_Icon
+      Index := Config.Vis_Styles.Get_Node_Icon_Encoding
         (Vis_Style  => Get_Vis_Style (Widget),
          Node_Class => Node_Class);
-      return Icons.Get_Icon (Data);
+      return Icons.Get_Icon (Widget, Index);
    end Get_Node_Icon;
 
 
@@ -321,38 +339,41 @@ package body Giant.Graph_Widgets.Settings is
             return Gdk.Color.Null_Color;
       end Create;
 
-      function Get_Highlight_Index
+      function Highlight_Index
         (Widget : access Graph_Widget_Record'Class;
          Light  : in     Vis_Data.Highlight_Type)
         return Natural is
       begin
-         return Widget.Settings.Highlight_Index_Offset + Vis_Data.Pos (Light);
-      end Get_Highlight_Index;
+         return Widget.Settings.Highlight_Index_Offset +
+           Vis_Data.Highlight_Type'Pos (Light);
+      end Highlight_Index;
 
       procedure Set_Up_Highlight_Colors
         (Widget : access Graph_Widget_Record'Class) is
+
+         package C renames Config.Global_Data;
       begin
          Widget.Settings.All_Colors
-           (Highlight_Index (Vis_Data.Current_Local)) :=
-           Create (Config.Get_Current_Selection_Highlight_Color);
+           (Highlight_Index (Widget, Vis_Data.Current_Local)) :=
+           Create (C.Get_Current_Selection_Highlight_Color);
          Widget.Settings.All_Colors
-           (Highlight_Index (Vis_Data.First_Local)) :=
-           Create (Config.Get_Selection_Highlight_Color (Config.Color_1));
+           (Highlight_Index (Widget, Vis_Data.First_Local)) :=
+           Create (C.Get_Selection_Highlight_Color (C.Color_1));
          Widget.Settings.All_Colors
-           (Highlight_Index (Vis_Data.Second_Local)) :=
-           Create (Config.Get_Selection_Highlight_Color (Config.Color_2));
+           (Highlight_Index (Widget, Vis_Data.Second_Local)) :=
+           Create (C.Get_Selection_Highlight_Color (C.Color_2));
          Widget.Settings.All_Colors
-           (Highlight_Index (Vis_Data.Third_Local)) :=
-           Create (Config.Get_Selection_Highlight_Color (Config.Color_3));
+           (Highlight_Index (Widget, Vis_Data.Third_Local)) :=
+           Create (C.Get_Selection_Highlight_Color (C.Color_3));
          Widget.Settings.All_Colors
-           (Highlight_Index (Vis_Data.First_Global)) :=
-           Create (Config.Get_Subgraph_Highlight_Color (Config.Color_1));
+           (Highlight_Index (Widget, Vis_Data.First_Global)) :=
+           Create (C.Get_Subgraph_Highlight_Color (C.Color_1));
          Widget.Settings.All_Colors
-           (Highlight_Index (Vis_Data.Second_Global)) :=
-           Create (Config.Get_Subgraph_Highlight_Color (Config.Color_2));
+           (Highlight_Index (Widget, Vis_Data.Second_Global)) :=
+           Create (C.Get_Subgraph_Highlight_Color (C.Color_2));
          Widget.Settings.All_Colors
-           (Highlight_Index (Vis_Data.Third_Global)) :=
-           Create (Config.Get_Subgraph_Highlight_Color (Config.Color_3));
+           (Highlight_Index (Widget, Vis_Data.Third_Global)) :=
+           Create (C.Get_Subgraph_Highlight_Color (C.Color_3));
       end Set_Up_Highlight_Colors;
 
       procedure Set_Up_Color_Array
@@ -360,25 +381,26 @@ package body Giant.Graph_Widgets.Settings is
 
          Color_Accesses : Config.Vis_Styles.Color_Access_Array_Access :=
            Config.Vis_Styles.Get_All_Colors;
+         Num_Highlight : constant Integer :=
+           Vis_Data.Highlight_Type'Pos (Vis_Data.Highlight_Type'Last) -
+           Vis_Data.Highlight_Type'Pos (Vis_Data.Highlight_Type'First) + 1;
       begin
          if Widget.Settings.All_Colors /= null then
             Shut_Down_Color_Array (Widget);
          end if;
 
-         Widget.Settings.Highlight_Index_Offset := Style_Color_Accesses'Last -
+         Widget.Settings.Highlight_Index_Offset := Color_Accesses'Last -
            Vis_Data.Highlight_Type'Pos (Vis_Data.Highlight_Type'First) + 1;
+
          Widget.Settings.All_Colors := new Gdk.Color.Gdk_Color_Array
-           (Style_Color_Accesses'First .. Style_Color_Accesses'Last +
-                                            Vis_Data.Highlight_Type'Length);
+           (Color_Accesses'First .. Color_Accesses'Last + Num_Highlight);
          Set_Up_Highlight_Colors (Widget);
-         for I in Style_Color_Accesses'Range loop
-            Widget.Settings.All_Colors := Create_Color
-              (Widget,
-               Config.Get_Color_Value (Style_Color_Accesses (I)));
+         for I in Color_Accesses'Range loop
+            Widget.Settings.All_Colors (I) := Create (Color_Accesses (I));
          end loop;
 
          declare
-            Success      : Gdk.Color.Boolean_Array
+            Success      : Glib.Boolean_Array
               (Widget.Settings.All_Colors'Range);
             Result_Count : Glib.Gint;
          begin
@@ -387,10 +409,11 @@ package body Giant.Graph_Widgets.Settings is
                Colors   => Widget.Settings.All_Colors.all,
                Success  => Success,
                Result   => Result_Count);
-            if Result_Count < Widget.Settings.All_Color'Length then
+            if Glib."<" (Result_Count, Widget.Settings.All_Colors'Length) then
                Settings_Logger.Error
-                 (Glib.Gint'Image (Success'Length - Result_Count) & " colors "
-                  & "could not be allocated. Using default colors instead.");
+                 (Glib.Gint'Image (Glib."-" (Success'Length, Result_Count))
+                  & " colors could not be allocated. Using default colors "
+                  & "instead.");
                for I in Success'Range loop
                   if not Success (I) then
                      Widget.Settings.All_Colors (I) := Gdk.Color.Null_Color;
@@ -406,7 +429,7 @@ package body Giant.Graph_Widgets.Settings is
         return Gdk.Color.Gdk_Color is
       begin
          pragma Assert
-           (Index < Widget.Settings.Hightlight_Index_Offset +
+           (Index < Widget.Settings.Highlight_Index_Offset +
               Vis_Data.Highlight_Type'Pos
               (Vis_Data.Highlight_Type'First));
          return Widget.Settings.All_Colors (Index);
@@ -446,80 +469,84 @@ package body Giant.Graph_Widgets.Settings is
 
    package body Icons is
 
-      function Is_Initialized
-        return Boolean is
-      begin
-         return Map_Initialized;
-      end Is_Initialized;
-
-      procedure Initialize
-        (Widget : access Graph_Widget_Record'Class) is
-      begin
-         Map := Icon_Mappings.Create;
-         Annotation_Access := Config.Return_Icon_For_Node_Annotations;
-         Store_Icon (Widget, Annotation_Access);
-         Map_Initialized := True;
-      end Initialize;
-
-      procedure Add_Vis_Style
-        (Widget : access Graph_Widget_Record'Class;
-         Style  : in     Config.Vis_Styles.Visualisation_Style_Access) is
-
-         package Id_Sets renames Graph_Lib.Node_Class_Id_Sets;
-         All_Ids      : Id_Sets.Set := Graph_Lib.Get_All_Node_Class_Ids;
-         Iterator     : Id_Sets.Iterator;
-         Current_Icon : Config.Chars_Ptr_Array_Access;
-      begin
-         Iterator := Id_Sets.Make_Iterator (All_Ids);
-         while Id_Sets.More (Iterator) loop
-            Current_Icon := Config.Vis_Styles.Get_Node_Icon
-              (Vis_Style  => Style,
-               Node_Class => Id_Sets.Current (Iterator));
-            Store_Icon (Widget, Current_Icon);
-            Id_Sets.Next (Iterator);
-         end loop;
-         Id_Sets.Destroy (Iterator);
-         Id_Sets.Destroy (All_Ids);
-      end Add_Vis_Style;
-
-      function Get_Icon
-        (Data : in     Config.Chars_Ptr_Array_Access)
+      function Load_Icon
+        (Widget    : access Graph_Widget_Record'Class;
+         File_Name : in     String)
         return Gdk.Pixmap.Gdk_Pixmap is
-      begin
-         return Icon_Mappings.Fetch (Map, Data);
-      exception
-         when Icon_Mappings.Not_Bound =>
-            return Gdk.Pixmap.Null_Pixmap;
-      end Get_Icon;
-
-      function Get_Annotation_Icon
-        return Gdk.Pixmap.Gdk_Pixmap is
-      begin
-         return Get_Icon (Annotation_Access);
-      end Get_Annotation_Icon;
-
-      procedure Store_Icon
-        (Widget : access Graph_Widget_Record'Class;
-         Data   : in     Config.Chars_Ptr_Array_Access) is
 
          Pixmap : Gdk.Pixmap.Gdk_Pixmap;
          Mask   : Gdk.Bitmap.Gdk_Bitmap := Gdk.Bitmap.Null_Bitmap;
       begin
-         if Config."/=" (Data, null) and then
-           not Icon_Mappings.Is_Bound (Map, Data) then
-
-            Gdk.Pixmap.Create_From_Xpm_D
-              (Pixmap      => Pixmap,
-               Window      => Get_Window (Widget),
-               Mask        => Mask,
-               Transparent => Gdk.Color.Null_Color,
-               Data        => Data.all);
-
-            Icon_Mappings.Bind (Map, Data, Pixmap);
+         Gdk.Pixmap.Create_From_Xpm
+           (Pixmap      => Pixmap,
+            Window      => Get_Window (Widget),
+            Mask        => Mask,
+            Transparent => Gdk.Color.Null_Color,
+            Filename    => File_Name);
+         if Gdk."/=" (Mask, Gdk.Bitmap.Null_Bitmap) then
+            Gdk.Bitmap.Unref (Mask);
          end if;
-      end Store_Icon;
+         return Pixmap;
+      end Load_Icon;
+
+      function Is_Set_Up
+        return Boolean is
+      begin
+         return Icons /= null;
+      end Is_Set_Up;
+
+      procedure Set_Up_Icon_Array
+        (Widget : access Graph_Widget_Record'Class) is
+
+         Files : Config.Vis_Styles.Node_Icons_Array_Access :=
+           Config.Vis_Styles.Get_All_Node_Icons;
+      begin
+         if Icons /= null then
+            Shut_Down_Icon_Array (Widget);
+         end if;
+         Icons := new Icon_Array_Type'
+           (Files'First .. Files'Last + 1 => Gdk.Pixmap.Null_Pixmap);
+         Icons (Icons'Last) := Load_Icon
+           (Widget, Config.Global_Data.Get_Node_Annotations_Icon);
+         for I in Files'Range loop
+            Icons (I) := Load_Icon
+              (Widget, Ada.Strings.Unbounded.To_String (Files (I)));
+         end loop;
+      end Set_Up_Icon_Array;
+
+      function Get_Icon
+        (Widget : access Graph_Widget_Record'Class;
+         Index  : in     Integer)
+        return Gdk.Pixmap.Gdk_Pixmap is
+      begin
+         return Icons (Index);
+      end Get_Icon;
+
+      function Get_Annotation_Icon
+        (Widget : access Graph_Widget_Record'Class)
+        return Gdk.Pixmap.Gdk_Pixmap is
+      begin
+         return Icons (Icons'Last);
+      end Get_Annotation_Icon;
+
+      procedure Shut_Down_Icon_Array
+        (Widget : access Graph_Widget_Record'Class) is
+
+         procedure Free is new Ada.Unchecked_Deallocation
+           (Object => Icon_Array_Type,
+            Name   => Icon_Array_Access);
+
+      begin
+         if Icons /= null then
+            for I in Icons'Range loop
+               if Gdk."/=" (Icons (I), Gdk.Pixmap.Null_Pixmap) then
+                  Gdk.Pixmap.Unref (Icons (I));
+               end if;
+            end loop;
+            Free (Icons);
+         end if;
+      end Shut_Down_Icon_Array;
 
    end Icons;
-
 
 end Giant.Graph_Widgets.Settings;

@@ -21,4 +21,4 @@ graphlib :
 all:
 	make -C ../ all
 
-.PHONY : framework_test martin_test
+.PHONY : framework_test martin_test mini_map evolution

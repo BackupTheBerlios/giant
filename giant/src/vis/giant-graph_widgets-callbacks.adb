@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/06/26 20:20:24 $
+--  $Date: 2003/06/29 13:56:08 $
 --
 ------------------------------------------------------------------------------
 
@@ -30,6 +30,9 @@
 with Gdk.Types;
 with Gtk.Arguments;
 with Gtk.Handlers;
+
+with Giant.Graph_Widgets.Drawing;
+with Giant.Graph_Widgets.Settings;
 
 package body Giant.Graph_Widgets.Callbacks is
 
@@ -129,6 +132,8 @@ package body Giant.Graph_Widgets.Callbacks is
    procedure After_Realize
      (Widget : access Graph_Widget_Record'Class) is
    begin
+      Settings.Set_Up (Widget);
+      Drawing.Set_Up (Widget);
       raise Unimplemented;
    end After_Realize;
 

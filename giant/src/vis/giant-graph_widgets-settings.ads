@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-graph_widgets-settings.ads,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/06/23 16:18:36 $
+--  $Date: 2003/06/29 13:56:08 $
 --
 ------------------------------------------------------------------------------
 
@@ -34,25 +34,26 @@ package Giant.Graph_Widgets.Settings is
    ------------------------------
 
    ---------------------------------------------------------------------------
-   --  Sets up all configuration-dependent settings:
-   --  * highlight colors
-   --  * node colors
-   --  * edge colors
-   --  * background colors
-   --  Must be called one and only one time during the lifetime of a graph
-   --  widget.
-   procedure Set_Up
-     (Widget : access Graph_Widget_Record'Class;
-      Style  : in     Config.Vis_Styles.Visualisation_Style_Access);
-
-   ---------------------------------------------------------------------------
-   --  Changes the style-dependent settings:
+   --  Changes the style.
+   --  If possible ('Set_Up' must have been called before), then changes the
+   --  style-dependent settings:
    --  * node colors
    --  * edge colors
    --  * background color
    procedure Set_Style
      (Widget : access Graph_Widget_Record'Class;
       Style  : in     Config.Vis_Styles.Visualisation_Style_Access);
+
+   ---------------------------------------------------------------------------
+   --  Sets up all configuration-dependent settings:
+   --  * highlight colors
+   --  * node colors
+   --  * edge colors
+   --  * background colors
+   --  Must be called one and only one time during the lifetime of a graph
+   --  widget. 'Set_Style' must have been called before.
+   procedure Set_Up
+     (Widget : access Graph_Widget_Record'Class);
 
 
    ------------
