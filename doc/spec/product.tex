@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: product.tex,v $, $Revision: 1.14 $
-%  $Date: 2003/02/19 09:41:20 $
+%  $RCSfile: product.tex,v $, $Revision: 1.15 $
+%  $Date: 2003/02/19 18:02:50 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung des Produktes. Übersicht über die Funktionen
@@ -235,6 +235,36 @@ ausgeführt, dies ist aber nicht zwingend nötig.
   
   
   
+\section {Zulässige Eingaben}
+Hier wird beschrieben, welche Eingaben für Namen etc. innerhalb
+von GIANT (z.B. bei den entsprechenden Texteingabedialogen) zulässig sind.
+Unzulässige Namen werden generell abgelehnt und führen zu einer Fehlermeldung.
+
+  \subsection {STANDARD FILENAME}
+  Ein String, der einen für das jeweilige Betriebssystem zulässigen Dateinamen
+  darstellt.\\
+  Entsprechend des Typs der Datei erwartet GIANT immer eine entsprechende
+  Endung der Form ''*.xyz''. Diese Endung wird bei der Eingabe des Namens
+  innerhalb von GIANT automatisch ergänzt.\\
+  Verschiedene Dateitypen folgen z.B.\ aus den Knofigurationsdateien und aus
+  den Verwaltungsdateien für Projekte (siehe auch \ref{Konfiguration von GIANT} 
+  und \ref{GIANT Projektverwaltung}).\\
+  Da Betriebssysteme für Dateien unterschiedliche Namenskonventionen haben, 
+  kann hier keine Plattformunabhängigkeit mehr garantiert werden.
+
+
+  \subsection {Zulässige Namen}
+  \begin {enumerate}
+  
+    \item Name eines Projektes: STANDARD FILENAME
+    \item Name eines IML-Teilgraphen: STANDARD FILENAME
+    \item Name eines Anzeigefensters: STANDARD FILENAME
+    \item Name einer Selektion: STANDARD FILENAME
+    \item Name eines Pins: STANDARD FILENAME
+ 
+  \end {enumerate}
+ 
+  
 \section {Allgemeine Bedienkonzepte}
 Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
 
@@ -273,7 +303,13 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
   
 
     
-  \subsection {Aktuelle Selektion vs.\ Selektionen}
+  \subsection {Aktuelle Selektion vs.\ Selektionen} 
+               \label{Aktuelle Selektion vs Selektionen}	       
+  Abgesehen von den hier beschriebenen Punkten, verhält sich die aktuelle
+  Selektion wie jede andere Selektion. Falls nicht expilzit anders 
+  spezifiziert, ist insbesondere jeder UseCase für Selektionen auch auf die 
+  aktuelle Selektion anwendbar.
+	       
   \begin {enumerate}
   
     \item
@@ -289,7 +325,7 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
     durch das Selektieren mittels linker Maustaste etc. geändert werden.
       
     \item
-    Natürlich kann der Benutzer jederzeit bestimmen welche der Selektion die
+    Natürlich kann der Benutzer jederzeit bestimmen welche, der Selektion die
     aktuelle Selektion ist.
     
     \item 

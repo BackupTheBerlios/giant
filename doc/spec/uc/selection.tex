@@ -1,38 +1,339 @@
 % ==============================================================================
-%  $RCSfile: selection.tex,v $, $Revision: 1.1 $
-%  $Date: 2003/02/03 01:17:27 $
-%  $Author: schulzgt $
+%  $RCSfile: selection.tex,v $, $Revision: 1.2 $
+%  $Date: 2003/02/19 18:02:50 $
+%  $Author: schwiemn $
 %
 %  Description: Use-Cases für die Selektionen
 %
+%
 % ==============================================================================
 
-\begin{uc}[Label]{UC: Graphisch hervorheben}
+
+\begin{uc}[Selektion zur aktuellen Selektion machen]
+          {UC: Selektion zur aktuellen Selektion machen}
+	  
+Dieser UseCase dient dazu, eine Selektion zur aktuellen Selektion zu machen.
+Dies ist nötig, da nur die aktuelle Selektion mittels der Maus
+modifiziert werden kann. 
+Siehe auch \ref{Aktuelle Selektion vs Selektionen}. 
+	  
+	 
+  \begin{precond}
+    \cond Es gibt ein Anzeigefenster mit mindestens einer Selektion.
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond Die vorherige aktuelle Selektion ist nicht mehr aktuell.
+    \cond Die entsprechende Selektion ist nun die aktuelle Selektion und
+          als solche erkennbar angezeigt und hervorgehoben.
+    
+  \end{postsuccess}
+ 
+  \begin{proc}    
+    \step[1]
+    Der Benutzer führt mit der linken Maustaste einen Doppelklick 
+    auf eine nicht aktuelle Selektion durch.
+
+    \step[2]
+    GIANT macht die entsprechende Selektion zur aktuellen Selektion.  
+  \end{proc}
+	  
 \end{uc}
 
-\begin{uc}[Label]{UC: Graphische Hervorhebung aufheben}
+
+% ==============================================================================
+\begin{uc}[Aktuelle Selektion zurück stufen]
+          {UC: Aktuelle Selektion zurück stufen}
+	  
+Siehe auch \ref{Aktuelle Selektion vs Selektionen}. Mit diesem UseCase kann
+eine aktuelle Selektion auf den Status einer \gq{normalen} Selektion
+zurückgestuft werden.
+	  
+	 
+  \begin{precond}
+    \cond Es gibt ein Anzeigefenster mit einer aktuellen Selektion.
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond Es gibt keine aktuelle Selektion mehr.
+    
+  \end{postsuccess}
+ 
+  \begin{proc}    
+    \step[1]
+    Der Benutzer führt mit der linken Maustaste einen Doppelklick 
+    auf die aktuelle Selektion aus.
+
+    \step[2]
+    GIANT stuft die aktuelle Selektion auf den Status einer \gq{normalen}
+    Selektion zurück.
+  \end{proc}
+    
 \end{uc}
 
-\begin{uc}[Label]{UC: Selektion anlegen}
+
+% ==============================================================================
+\begin{uc}[Selektion graphisch hervorheben]
+          {UC: Selektion graphisch hervorheben}
+	  
+Dieser UseCase dient zum Hervorheben von Selektionen innerhalb eines
+Anzeigefensters.
+
+  \begin{precond}
+    \cond Es gibt ein Anzeigefenster mit mindestens einer Selektion.
+   
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond 
+    Die Selektion ist im entsprechenden Anzeigefenster hervorgehoben.
+    
+    \cond
+    Die Selektion, welche vorher mit der gleichen Farbe hervorgehoben war,
+    ist nicht mehr hervorgehoben.
+ 
+    
+  \end{postsuccess}
+ 
+  \begin{proc}    
+    \step[1]
+    Der Benutzer startet den UseCase über das PopUp Menü
+    >>>    Dort gibt es drei Eintäge für jede definierbare Farbe
+        
+      
+    \step[2]
+    GIANT hebt die Selektion mit der entsprechenden Farbe hervor.
+    
+  \end{proc}
+
+
+
 \end{uc}
 
-\begin{uc}[Label]{UC: Selektion kopieren}
+
+% ==============================================================================
+\begin{uc}[Graphische Hervorhebung einer Selektion aufheben]
+      {UC: Graphische Hervorhebung einer Selektion aufheben}
+      
+Dieser UseCase dient dazu, die Hervorhebung von Selektionen innerhalb eines 
+Anzeigefensters aufzuheben.
+      
+  \begin{precond}
+    \cond 
+    Es gibt ein Anzeigefenster mit mindestens einer hervorgehobenen
+    Selektion.
+   
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond 
+    Die Selektion ist im entsprechenden Anzeigefenster nicht mehr 
+    hervorgehoben.
+ 
+  \end{postsuccess}
+
+  
+  \begin{proc}    
+    \step[1]
+    Der Benutzer startet den UseCase über das PopUp Menü:
+    \\VERWEIS   
+    
+
+    \step[2]
+    GIANT setzt die Hervorhebung der Selektion zurück.
+    
+  \end{proc} 
+      
+      
 \end{uc}
 
-\begin{uc}[Label]{UC: Selektion umbenennen}
+%===============================================================================
+\begin{uc}[Neue Selektion anlegen]{UC: Neue Selektion anlegen}
+
+Mit diesem UseCase können neue, leere Selektionen angelegt werden.
+
+  \begin{precond}
+    \cond Es gibt ein geöffnetes Anzeigefenster.
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond Eine neue Selektion mit entsprechendem Namen
+         ist angelegt und erscheint in der Liste der Selektionen 
+	 (SELECTION\_LIST).
+    \cond Diese neue Selektion hat keinen Inhalt (selektierte Knoten und
+          Kanten).
+
+  \end{postsuccess}
+
+  \begin{postfail}
+    \cond Das System bleibt im bisherigen Zustand.
+  \end{postfail}
+  
+  \begin{proc}    
+    \step[1]
+    Der Benutzer startet den UseCase über das PopUp Menü:
+    !!!!!ENTSPRECHENDEN MENÜEINTAG NENNEN.
+    
+    \step[2] 
+    GIANT öffnet den allgemeinen Texteingabedialog <<<<VERWEIS GUI>>>>.
+      
+    \step[3] 
+    Der Benutzer gibt dort einen zulässigen Namen für die neue Selektion 
+    ein und bestätigt mit OK.\\
+    Hat bereits eine andere Selektion innerhalb des Anzeigefensters den selben
+    Namen erscheint eine Fehlermeldung.
+    
+    \step[4]
+    GIANT erzeugt die neue Selektion.
+  
+  \end{proc}
+
+  \begin{aproc}
+    \astep{3} Der Benutzer bricht die Verarbeitung mit Cancel ab.
+  \end{aproc}
+
 \end{uc}
 
+
+%===============================================================================
+\begin{uc}[Selektion kopieren]{UC: Selektion kopieren}
+Dieser UseCase dient zum Kopieren von Selektionen innerhalb eines 
+Anzeigefensters (nicht zum Kopieren in ein anderes Anzeigefenster).
+
+  \begin{precond}
+    \cond Es gibt ein geöffnetes Anzeigefenster mit einer Selektion.
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond 
+    Eine neue Selektion mit entsprechendem Namen ist angelegt 
+    und erscheint in der Liste der Selektionen (SELECTION\_LIST).
+    \cond
+    Die neue Selektion umfasst die gleichen Knoten und Kanten wie die
+    Selektion, von der kopiert wurde.
+
+  \end{postsuccess}
+
+  \begin{postfail}
+    \cond Das System bleibt im bisherigen Zustand.
+  \end{postfail}
+  
+  \begin{proc}    
+    \step[1]
+    Der Benutzer startet den UseCase durch Rechtsklick auf die zu kopierende
+    Selektion (\gq{Quellselektion}) und wählt aus dem PopUp Menü:
+    !!!!!ENTSPRECHENDEN MENÜEINTAG NENNEN.
+    
+    \step[2] 
+    GIANT öffnet den allgemeinen Texteingabedialog. <<<<VERWEIS GUI>>>>.
+      
+    \step[3] 
+    Der Benutzer gibt dort einen zulässigen Namen für die neue Selektion 
+    ein und bestätigt mit OK.\\
+    Hat bereits eine andere Selektion innerhalb des Anzeigefensters den selben
+    Namen erscheint eine Fehlermeldung.
+    
+    \step[4]
+    GIANT kopiert die Quellselektion und legt eine neue Selektion an.
+  
+  \end{proc}
+
+  \begin{aproc}
+    \astep{3} Der Benutzer bricht die Verarbeitung mit Cancel ab.
+  \end{aproc}
+
+\end{uc}
+%===============================================================================
+\begin{uc}[Selektion umbenennen]{UC: Selektion umbenennen}
+>>>> WEG LASSEN - KANN AUCH DURCH KOPIEREN UND LÖSCHEN ERLEDIGT WERDEN
+
+\end{uc}
+%===============================================================================
 \begin{uc}[Label]{UC: Selektion löschen}
-\end{uc}
 
-\begin{uc}[Label]{UC: Selektion modifizieren}
-\end{uc}
+Dieser UseCase dient zum Löschen von Selektionen innerhalb eines 
+Anzeigefensters.
 
+  \begin{precond}
+     \cond Es gibt ein geöffnetes Anzeigefenster mit einer Selektion.
+   \end{precond}
+
+
+  \begin{postsuccess}
+    \cond 
+    Die entsprechende Selektion ist gelöscht.
+    
+    \cond 
+    Die Fenster-Knoten und Fenster-Kanten, 
+    die zu dieser Selektion gehörten, werden nicht gelöscht.
+	  
+    \cond War die Selektion hervorgehoben, so wird die entsprechende
+    Hervorhebung der Fenster-Knoten und Fenster-Kanten aufgehoben.
+    
+  \end{postsuccess}
+
+  \begin{postfail}
+    \cond Das System bleibt im bisherigen Zustand.
+  \end{postfail}
+  
+  \begin{proc}    
+    \step[1]
+    Der Benutzer startet den UseCase durch Rechtsklick auf die zu löschende
+    Selektion (\gq{Quellselektion}) und wählt aus dem PopUp Menü:
+    !!!!!ENTSPRECHENDEN MENÜEINTAG NENNEN.
+    
+    \step[2]
+    GIANT löscht die entsprechende Selektion.
+  
+  \end{proc}
+
+\end{uc}
+%===============================================================================
+\begin{uc}[Selektion manuell modifizieren]
+         {UC: Selektionen manuell modifizieren}
+	 
+Jeweils die aktuelle Selektion kann mittels der Maus modifiziert 
+werden. 
+
+
+  \begin{precond}
+     \cond 
+     Es gibt ein geöffnetes Anzeigefenster mit mindestens
+     einer Selektion.
+   \end{precond}
+
+
+  \begin{postsuccess}
+    \cond 
+    Die entsprechenden Änderungen an der Selektion werden von Giant
+    sofort durchgeführt und übernommen.
+    
+  \end{postsuccess}
+
+  
+  \begin{proc}    
+    \step[1]
+    Falls noch nicht der Fall, macht der Benutzer die zu modifizierende 
+    Selektion zur aktuellen Selektion
+    (siehe \ref{Selektion zur aktuellen Selektion machen}).
+    
+    \step[2]
+    Mittels der unter 
+    \ref{Selektieren von Fenster-Knoten und Fenster-Kanten in Anzeigefenstern}
+    beschriebenen Möglichkeiten fügt der Benutzer der Selektion neue
+    Fenster-Knoten und Fenster-Kanten hinzu oder entfernt bestehende
+    Fenster-Knoten und Fenster-Kanten aus der Selektion.
+    
+  \end{proc}
+
+
+\end{uc}
+%===============================================================================
 \begin{uc}[Label]{UC: Mengenvereinigung von 2 Selektionen}
 \end{uc}
-
+%===============================================================================
 \begin{uc}[Label]{UC: Mengendifferenz von 2 Selektionen}
 \end{uc}
-
+%===============================================================================
 \begin{uc}[Label]{UC: Mengenschnitt von 2 Selektionen}
 \end{uc}
