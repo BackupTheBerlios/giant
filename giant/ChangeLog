@@ -1,5 +1,12 @@
 2003-10-07  Oliver Kopp  <koppor@studi.informatik.uni-stuttgart.de>
 
+	* src/gui/giant-main_window.adb: added generate_subgraph_dialog
+
+	* src/gui/giant-generate_subgraph_dialog.adb: added
+
+	* src/gui/giant-layout_dialog-widgets.adb: added handling for
+	Reverse_Edges
+
 	* src/vis/giant-layout_factory.adb: fixed root-node-finding
 
 2003-10-06  Oliver Kopp  <koppor@studi.informatik.uni-stuttgart.de>
