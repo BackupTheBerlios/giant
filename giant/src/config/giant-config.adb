@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config.adb,v $, $Revision: 1.5 $
+-- $RCSfile: giant-config.adb,v $, $Revision: 1.6 $
 -- $Author: schwiemn $
--- $Date: 2003/06/20 20:33:57 $
+-- $Date: 2003/06/22 11:42:24 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -57,7 +57,7 @@ package body Giant.Config is
    -- Internal subprograms
    ---------------------------------------------------------------------------
 
-   function Is_Config_ADO_Initialized return Boolean is   
+   function Is_Config_ADO_Initialized return Boolean is
    begin
       return ADO_Initialized;
    end Is_Config_ADO_Initialized;
@@ -71,8 +71,8 @@ package body Giant.Config is
    ---------------------------------------------------------------------------
    procedure Initialize_Config_Data is
    begin
-   
-   
+
+
      -- TODO
      null;
 
@@ -83,7 +83,7 @@ package body Giant.Config is
    procedure Clear_Config_Data is
 
    begin
-   
+
    -- TODO
    null;
 
@@ -116,7 +116,7 @@ package body Giant.Config is
 
       -- Mark ADO as not initialized
    --   ADO_Initialized := False;
-   
+
    end Clear_Config_Data;
 
 
@@ -127,12 +127,12 @@ package body Giant.Config is
 
    ---------------------------------------------------------------------------
    function Get_Resources_Directory (Root_Path : in String) return String is
-   
-   begin 
-   
+
+   begin
+
    raise Invalid_Resource_Directory_Exception;
    return "!";
-   
+
    end Get_Resources_Directory;
 
    ---------------------------------------------------------------------------
