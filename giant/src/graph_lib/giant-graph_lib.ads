@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.44 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.45 $
 --  $Author: koppor $
---  $Date: 2003/09/18 16:56:34 $
+--  $Date: 2003/09/18 17:08:27 $
 --
 --  TBD:
 --    * Write into comment, when the routine may be used
@@ -191,9 +191,6 @@ package Giant.Graph_Lib is
    Node_Attribute_Does_Not_Exist : exception;
    Edge_Does_Not_Exist           : exception;
    Edge_Class_Does_Not_Exist     : exception;
-
-   --  fixme: remove me
-   Wrong_Attribute_Type          : exception;
 
    -------------------
    --  Comparators  --
