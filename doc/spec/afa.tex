@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: afa.tex,v $, $Revision: 1.16 $
-%  $Date: 2003/04/15 23:20:14 $
+%  $RCSfile: afa.tex,v $, $Revision: 1.17 $
+%  $Date: 2003/04/16 17:45:38 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung allgemeiner funktionaler Anforderungen - UseCase
@@ -146,7 +146,7 @@ Unzulässige Namen werden generell abgelehnt und führen zu einer Fehlermeldung.
     \begin {enumerate}
   
       \item
-      Die Lateinischen Groß- und Kleinbuchstaben; nicht zulässig sind
+      Die lateinischen Groß- und Kleinbuchstaben; nicht zulässig sind
       Umlaute und das Zeichen ''"s''. Zulässig sind also nur die 
       ASCII-Zeichen 65 bis 90 und 97 bis 122 (gemäß Definition 
       der ISO-8859-Zeichensätze).
@@ -244,7 +244,7 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
 
    \item Selektieren durch Aufziehen eines Rahmens mittels 
    Control + gedrückte linke Maustaste.\\
-   Alle Fenster-Knoten und Kanten innerhalb des Rahmens, 
+   Alle Fenster-Knoten und Fenster-Kanten innerhalb des Rahmens, 
    die noch nicht selektiert sind, werden der aktuellen Selektion 
    hinzugefügt. Fenster-Knoten und Kanten innerhalb und außerhalb 
    des Rahmens, die bereits selektiert sind, bleiben selektiert.
@@ -453,8 +453,9 @@ in Anzeigefenster}
 
   
   Beim \gq{Entfernen} von Fenster-Knoten und Fenster-Kanten aus einem
-  Anzeigefenster werden nur die graphischen Repräsentationen der Knoten und
-  Kanten des Bauhaus-IML-Graphen in dem betroffenen Anzeigefenster gelöscht.
+  Anzeigefenster werden nur die graphischen Repräsentationen der IML-Knoten und
+  IML-Kanten des Bauhaus-IML-Graphen in dem betroffenen Anzeigefenster 
+  gelöscht.
   Graph-Knoten und Graph-Kanten von IML-Teilgraphen bleiben davon unberührt.
  
   \subsection {Entfernen aller Knoten und Kanten einer Selektion}

@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: load_store.tex,v $, $Revision: 1.18 $
-%  $Date: 2003/04/07 18:53:13 $
-%  $Author: squig $
+%  $RCSfile: load_store.tex,v $, $Revision: 1.19 $
+%  $Date: 2003/04/16 17:45:38 $
+%  $Author: schwiemn $
 %
 %  Description: UseCases für Lade- und Speicherfunktionalität
 %
@@ -31,37 +31,57 @@
 
     \cond Eine IML-Datei ist geladen.
 
-    \cond Das angegebene Projektverzeichnis ist gegebenenfalls erstellt 
+    \cond Das angegebene Projektverzeichnis ist gegebenenfalls 
+          (falls es noch nicht vorhanden war) erstellt 
           worden (siehe \ref {Project Das Projektverzeichnis}).
 
-    \cond Die Projektdatei (siehe \ref{Project Die Projektdatei})
+    \cond Die neu erstellte Projektdatei 
+          (siehe \ref{Project Die Projektdatei})
           liegt im Projektverzeichnis.
  
     \cond Ein eventuell zuvor geöffnetes Projekt ist geschlossen.
-    
-    \cond Änderungen an einem zuvor geöffneten Projekt sind gespeichert
-          oder verworfen.
+          Änderungen an dem eventuell zuvor geöffneten Projekt sind je
+          nach Entscheidung des Benutzers bei der entsprechenden 
+          Sicherheitsabfrage gespeichert oder verworfen.
+
   \end{postsuccess}
 
   \begin{postfail}
-    \cond Das System bleibt im bisherigen Zustand.
+    \cond Das System bleibt im bisherigen Zustand, falls der
+          Benutzer den UseCase mit Cancel abgebrochen hat.
+
+    \cond Tritt während des Erstellens des neuen Projektes,
+          nachdem das eventuell zuvor geöffnete Projekt
+          geschlossen wurde, ein Fehler auf, so bleibt das Verhalten
+          des Systems unspezifiziert.
+
   \end{postfail}
   
   \begin{proc}
     \step[1]
     Der Benutzer startet den UseCase über das Hauptmenü 
     (siehe \ref{Main-Window-File}) durch Auswahl von \gq{New Project}.
+
+    \step[2]
+    GIANT zeigt den Standard-Filechooser-Dialog und fordert den
+    Benutzer auf eine vorhandene IML-Graph Datei auszuwählen.
   
-    \step[2] Der Benutzer wählt im Standard-Filechooser-Dialog
-    (\gq{Please Select IML File}) eine IML-Datei aus und bestätigt
+    \step[3] Der Benutzer wählt im Standard-Filechooser-Dialog
+    eine IML-Datei aus und bestätigt
     seine Eingabe mit OK (siehe \ref{Standard-Filechooser-Dialog}).
     
-    \step[3] Der Benutzer gibt im Standard-Filechooser-Dialog
-    den Pfad und Namen der Projektdatei (\gq{Please select Project
-    Path and Project File Name}) ein. Der Name der Projektdatei ist
-    automatisch auch der Name für das Projekt.
-
     \step[4]
+    GIANT zeigt erneut den Standard-Filechooser-Dialog und fordert den
+    Benutzer zur Eingabe des Namens der Projektdatei auf.
+
+    \step[5] Der Benutzer gibt im Standard-Filechooser-Dialog
+    den Pfad und den Namen der Projektdatei (\gq{Please select Project
+    Path and Project File Name}) ein, die Dateiendung wird später
+    von GIANT automatisch gesetzt. Der Name der Projektdatei ist
+    automatisch auch der Name für das Projekt. Das Verzeichnis der
+    Projektdatei wird automatisch zum Projektverzeichnis.
+
+    \step[6]
     Dann bestätigt er seine Eingabe mit OK.\\
     Existiert die eingegebene Projektdatei bereits, 
     erscheint eine Fehlermeldung gemäß den unter Abschnitt 
@@ -71,7 +91,7 @@
     Das Verzeichnis in dem die Projektdatei liegt, wird automatisch zum 
     Projektverzeichnis.
     
-    \step[5] Falls bereits ein Projekt geöffnet ist, erscheint eine 
+    \step[7] Falls noch ein Projekt geöffnet ist, erscheint eine 
     Sicherheitsabfrage (siehe \ref{Sicherheitsabfrage})
     ob dieses gespeichert werden soll. Lehnt der Benutzer dies ab, gehen
     alle nicht gespeicherten Informationen verloren.\\
@@ -79,15 +99,16 @@
     die unter \ref{Alles Speichern} beschriebene Funktionalität 
     ausgeführt.
     
-    \step[6]
-    GIANT schließt das aktuell geöffnete Projekt, erstellt 
-    ein neues Projekt und öffnet dieses.
+    \step[8]
+    GIANT schließt das aktuell geöffnete Projekt (falls eines geöffnet war), 
+    legt, falls noch nicht vorhanden, ein neues Projektverzeichnis an,
+    erzeugt ein neues Projekt und öffnet dieses.
        
   \end{proc}
 
   \begin{aproc}
-    \astep{2} Der Benutzer bricht die Verarbeitung mit Cancel ab.  
-    \astep{3} Der Benutzer bricht die Verarbeitung mit Cancel ab.
+    \astep{3} Der Benutzer bricht die Verarbeitung mit Cancel ab.  
+    \astep{5} Der Benutzer bricht die Verarbeitung mit Cancel ab.
   \end{aproc}
 \end{uc}
 
@@ -95,14 +116,14 @@
 
 \begin{uc}[Projekt öffnen]{UC: Projekt öffnen}
 \index{Projekte!öffnen}
-  Öffnet ein GIANT Projekt. Ein eventuell bereits vorhandenes 
+  Öffnet ein GIANT Projekt. Ein eventuell bereits geöffnetes
   Projekt wird dabei geschlossen, wobei Änderungen auf Nachfrage 
   vorher gespeichert werden. \\ 
   Sollte der Benutzer die XML-Dateien 
   innerhalb des Projektverzeichnisses (siehe 
   \ref{Project Das Projektverzeichnis}) manuell modifiziert haben, so
   dass diese von den durch GIANT automatisch erstellten Dateien
-  abweichen, so wird keinerlei Garantie für das korrekte Öffnen
+  abweichen, wird keinerlei Garantie für das korrekte Öffnen
   des Projektes übernommen. Das Verhalten
   bezüglich eventuell auftretender Fehler ist undefiniert.
 
@@ -113,18 +134,31 @@
   \begin{postsuccess}
     \cond Das gewünschte GIANT Projekt ist geladen.
     \cond Die zugehörige IML-Datei ist geladen.
-    \cond Änderungen an einem zuvor geöffneten Projekt sind gespeichert
-    oder verworfen.
+    \cond Änderungen an einem eventuell zuvor geöffneten Projekt sind 
+          je nach Wahl des Benutzers bei der Sicherheitsabfrage gespeichert
+          oder verworfen.
+
   \end{postsuccess}
 
   \begin{postfail}
-    \cond Das System bleibt im bisherigen Zustand.
+    \cond Hat der Benutzer den UseCase mit Cancel abgebrochen, 
+          bleibt das System im bisherigen Zustand.
+
+    \cond Muss der UseCase während des Ladens des neuen Projektes
+          aufgrund eines Fehlers abgebrochen werden, so 
+          kehrt das System falls möglich in einen Zustand zurück,
+          der dem Start des Systems ohne Öffnen eines Projektes
+          entspricht.
+
+    
   \end{postfail}
   
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase über das Hauptmenü
     (siehe \ref{Main-Window-File} Menü) durch Auswahl von \gq{Load Project}.
+    GIANT zeigt daraufhin den Standard-Filechooser-Dialog und fordert
+    den Benutzer zur Auswahl eines zu öffnenden Projektes auf.
     
     \step[2] 
     Der Benutzer wählt aus dem Standard-Filechooser-Dialog (siehe 
@@ -141,7 +175,9 @@
     ausgeführt.
     
     \step[4]
-    GIANT schließt das alte Projekt und lädt das angegebene Projekt.
+    GIANT schließt das alte Projekt (falls eines geöffnet war)
+    und lädt das angegebene neue Projekt.
+
   \end{proc}
 
   \begin{aproc}
@@ -234,6 +270,9 @@ Speichert alle Informationen zu einem Projekt in eine neue Projektdatei
     \step[1]
     Der Benutzer startet den UseCase über das Hauptmenü
     (siehe \ref{Main-Window-File}) durch Auswahl von \gq{Save Project As...}.
+    Daraufhin zeigt GIANT den Standard-Filechooser-Dialog und fordert
+    den Benutzer auf den Namen und den Ort (Pfad) der neuen Projektdatei
+    einzugeben.
 
      
     \step[2] Der Benutzer gibt im Standard-Filechooser-Dialog 
@@ -241,7 +280,8 @@ Speichert alle Informationen zu einem Projekt in eine neue Projektdatei
              das neue Projektverzeichnis 
              (siehe \ref{Project Das Projektverzeichnis})
              und den Namen für die neue Projektdatei
-             (siehe \ref{Project Die Projektdatei}) vor. \\
+             (siehe \ref{Project Die Projektdatei}) vor, die Dateiendung 
+             wird später von GIANT automatisch gesetzt. \\
     Der Name der Projektdatei ist automatisch auch der Name für das Projekt.
     Zulässige Namen sind unter Abschnitt \ref{afa Zulaessige Namen}
     spezifiziert. \\
