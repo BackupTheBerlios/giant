@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.42 $
---  $Author: squig $
---  $Date: 2003/07/21 14:02:24 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.43 $
+--  $Author: keulsn $
+--  $Date: 2003/08/04 10:07:06 $
 --
 ------------------------------------------------------------------------------
 --
@@ -48,6 +48,7 @@
 --      returned.
 --
 
+with Giant.Evolutions;
 with Giant.Graph_Lib;
 with Giant.Graph_Lib.Selections;
 with Giant.Graph_Lib.Subgraphs;
@@ -318,7 +319,9 @@ package Giant.Controller is
       Selection             : in Graph_Lib.Selections.Selection;
       Layout_Name           : in String;
       Position              : in Vis.Logic.Vector_2d := Vis.Logic.Zero_2d;
-      Additional_Parameters : in String );
+      Additional_Parameters : in String;
+      Parent_Evolution      : in Evolutions.Iterative_Evolution_Class_Access :=
+        null);
 
    function Remove_Selection
      (Window_Name          : in String;

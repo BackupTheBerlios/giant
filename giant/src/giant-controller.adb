@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.72 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.73 $
 --  $Author: keulsn $
---  $Date: 2003/08/02 21:42:56 $
+--  $Date: 2003/08/04 10:06:48 $
 --
 
 with Ada.Strings.Unbounded;
@@ -35,7 +35,6 @@ with Giant.Config_Settings;
 with Giant.Config.Global_Data;
 with Giant.Config.Vis_Styles;
 with Giant.Dialogs;
-with Giant.Evolutions;
 with Giant.File_Management;
 with Giant.Graph_Lib;
 with Giant.Graph_Lib.Selections;
@@ -176,7 +175,9 @@ package body Giant.Controller is
       Lock                  : in Graph_Widgets.Lock_Type;
       Layout_Name           : in String;
       Position              : in Vis.Logic.Vector_2d              := Vis.Logic.Zero_2d;
-      Additional_Parameters : in String)
+      Additional_Parameters : in String;
+      Parent_Calculation    : in Evolutions.Iterative_Evolution_Class_Access :=
+        null)
    is
       Evolution : Evolutions.Evolution_Class_Access;
       Started : Boolean;
@@ -191,11 +192,16 @@ package body Giant.Controller is
                              Additional_Parameters =>
                                Additional_Parameters,
                              Layout_Evolution => Evolution);
-      Evolutions.Start_Calculation (Evolution,
-                                    Gui_Manager.Create_Progress_Dialog
-                                    (-"Applying Layout",
-                                     -"Layout is calculated..."),
-                                    Started);
+      if Evolutions."=" (Parent_Calculation, null) then
+         Evolutions.Start_Calculation (Evolution,
+                                       Gui_Manager.Create_Progress_Dialog
+                                       (-"Applying Layout",
+                                        -"Layout is calculated..."),
+                                       Started);
+      else
+         Evolutions.Start_Sub_Calculation
+           (Parent_Calculation, Evolution);
+      end if;
       --  Evolutions.Start_Calculation_Blocked (Evolution);
    end Apply_Layout;
 
@@ -708,8 +714,10 @@ package body Giant.Controller is
       Selection_Name        : in String;
       Selection             : in Graph_Lib.Selections.Selection;
       Layout_Name           : in String;
-      Position              : in Vis.Logic.Vector_2d            := Vis.Logic.Zero_2d;
-      Additional_Parameters : in String)
+      Position              : in Vis.Logic.Vector_2d      := Vis.Logic.Zero_2d;
+      Additional_Parameters : in String;
+      Parent_Evolution      : in Evolutions.Iterative_Evolution_Class_Access :=
+        null)
    is
       Window : Vis_Windows.Visual_Window_Access
         := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
@@ -1217,13 +1225,18 @@ package body Giant.Controller is
       Style : Config.Vis_Styles.Visualisation_Style_Access
         := Config.Vis_Styles.Initialize_Vis_Style_By_Name (Name);
    begin
-      Logger.Debug ("setting vis style for " & Window_Name & ": "
-                    & Name);
-
-      Vis_Windows.Set_Vis_Style (Window, Name);
-      Graph_Widgets.Set_Vis_Style (Vis_Windows.Get_Graph_Widget (Window),
-                                   Style);
-      Gui_Manager.Update_Vis_Style (Window_Name);
+      --  FIX: 'if' necessary?
+      if Vis_Windows.Get_Vis_Style (Window) = Name then
+         Logger.Error ("tried to set vis style " & Name & " in window" &
+                       Window_Name & ", but style is already active. Ignored");
+      else
+         Logger.Debug ("setting vis style for " & Window_Name & ": "
+                       & Name);
+         Vis_Windows.Set_Vis_Style (Window, Name);
+         Graph_Widgets.Set_Vis_Style (Vis_Windows.Get_Graph_Widget (Window),
+                                      Style);
+         Gui_Manager.Update_Vis_Style (Window_Name);
+      end if;
    end Set_Vis_Style;
 
    ---------------------------------------------------------------------------
