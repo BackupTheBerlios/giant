@@ -1,14 +1,43 @@
 % ==============================================================================
-%  $RCSfile: layouts.tex,v $, $Revision: 1.3 $
-%  $Date: 2003/03/31 16:29:39 $
-%  $Author: squig $
+%  $RCSfile: layouts.tex,v $, $Revision: 1.4 $
+%  $Date: 2003/04/02 11:23:40 $
+%  $Author: koppor $
 %
 %  Description: Beschreibung der Layouts
 %
 %  Last-Ispelled-Revision: 1.2
 %
 % ==============================================================================
+%chapter-remark included in spec.tex
 
+Hier werden die Layoutalgorithmen von \product beschrieben, mittels
+derer das Layout von Fenster-Knoten innerhalb von Anzeigefenstern
+automatisch berechnet werden kann.
 
-Hier bitte Layoutalgorithmen beschreiben.
+\product bietet zwei verschiedene Layoutalgorithmen an:
+\begin{itemize}
+  \item Treelayout
+  \item Matrixlayout
+\end{itemize}.
+
+Alle Knoten werden beim Layouten als gleich gro\"s betrachtet. Diese Gr\"osse ist konstant und betr\"agt 120x100 Pixel.
+
+\section{Treelayout}
+Das Treelayout basiert auf Walkers Algorithmus. Dabei werden folgende Eigenschaften erreicht:
+\begin{itemize}
+   \item Alle Kinder eines Knotens sind auf der gleichen Ebene
+   \item Alle Kinder eines Knotens haben den gleichen horizontalen Abstand zueinander
+   \item \ldots
+\end{itemize}.
+
+Beim Layouten wird die Reihenfolge der Kinder von der \verb$IML_Reflection$ \"ubernommen. In der Grundfunktionalit\"at werden alle Kanten betrachtet. 
+
+Als Erweiterung kann der Algorithmus nur bestimmte Kanten betrachten.
+Werden mehr Knoten layoutet als durch die gegebenen Kanten erreicht werden k\"onnen, werden in einem zweiten Lauf diese Knoten im Matrixlayout (siehe \ref{Matrixlayout} rechts von dem Baum angeordnet.
+
+\section{Matrixlayout}
+\label{Matrixlayout}
+Im Matrixlayout werden die Knoten in einem Quadrat ausgerichtet.
+Dabei werden die Knoten mittels einer Breitensuche besucht und in dieser Besuchsreihenfolge in das Quadrat eingef\"ugt.
+
 
