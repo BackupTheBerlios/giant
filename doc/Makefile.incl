@@ -1,0 +1,38 @@
+# generische Rules
+
+%.dvi : %.tex
+	latex $<
+	latex $<
+	latex $<
+#	while egrep -q '^LaTeX Warning: There were undefined references\.$$'\|'^LaTeX Warning: Label\(s\) may have changed\. Rerun to get cross-references right\.$$' $*.log >/dev/null 2>&1 ; do \
+#    		latex $< ; \
+#	done
+
+%.gls : 
+	latex $*.tex
+	makeindex $*.glo -s nomencl.ist -o $*.gls
+	rm -f $*.dvi
+
+%.ind :
+	latex $*.tex
+	makeindex -g $*.idx
+#-s idxstyle.sty 
+	rm -f $*.dvi
+
+%.ps : %.dvi
+	dvips -o $@ $<
+
+%.pdf : %.ps
+	ps2pdf $< $@
+
+%.book.ps : %.ps
+	psbook $< $*.book.ps
+
+%.booklet.ps : %.book.ps
+	psnup -2 $*.book.ps > $*.booklet.ps
+	@echo -e "\a\n\n now type rlp -p duesentrieb --duplex=short $*.booklet.ps \n"
+	@echo -e "\n on PS-Pool type p -pD $*.booklet.ps \n"
+
+
+
+
