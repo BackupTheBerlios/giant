@@ -22,26 +22,39 @@
 --
 -- $RCSfile: giant-gsl-compilers.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/02 20:42:44 $
+-- $Date: 2003/09/02 10:20:51 $
 --
--- This package implements the datatypes used in GSL.
+------------------------------------------------------------------------------
+-- This package implements a "compiler", more precise a code generator, 
+-- that generates GSL code (Execution_Stack) from a GSL file or an 
+-- entry point (Syntax_Node) to a syntax tree.
+-- The compiler uses Giant.Parser, an AFLEX/AYACC generated
+-- parser for the GSL to produce that syntax tree.
+-- During to performance reasons the syntax trees are chached by the
+-- compiler.
+-- 
 --
 
+-- from Ada
 with Ada.Strings.Unbounded;
 use  Ada.Strings.Unbounded;
 
+-- from Gnat
 with GNAT.OS_Lib;
 
+--from Bauhaus.Reuse
 with Hashed_Mappings;
-pragma Elaborate (Hashed_Mappings);
+pragma Elaborate_All (Hashed_Mappings);
 
 package Giant.Gsl.Compilers is
 
+   ---------------------------------------------------------------------------
+   -- main 'compiler' datatype
    type Compiler_Record is private;
    type Compiler is access all Compiler_Record;
 
    ---------------------------------------------------------------------------
-   --
+   -- datatype for the hash map of the compiler (to cach the GSL scripts)
    type Gsl_Script_Record (Name_Length : Natural) is private;
    type Gsl_Script is access all Gsl_Script_Record;
 
@@ -58,16 +71,28 @@ package Giant.Gsl.Compilers is
       Hash => Script_Hash);
 
    ---------------------------------------------------------------------------
+   -- creates a new compiler
    --
+   -- Returns:
+   --   the new compiler
    function Create_Compiler return Compiler;
 
    ---------------------------------------------------------------------------
+   -- destroys a compiler with all scripts and frees the memory
    --
+   -- Parameters:
+   --   Comp - the compiler to destroy
    procedure Destroy_Compiler
      (Comp : in out Compiler);
 
    ---------------------------------------------------------------------------
+   -- checks wether two timestamps are equal
    --
+   -- Parameters:
+   --   T1 - timestamp 1
+   --   T2 - timestamp 2
+   -- Returns:
+   --   true if T1 and T2 are equal else false
    function Is_Equal
      (T1 : GNAT.OS_Lib.OS_Time;
       T2 : GNAT.OS_Lib.OS_Time)
@@ -105,12 +130,16 @@ private
          Syntax_Tree : Syntax_Node;
       end record;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Push_Syntax_Node
-     (Node  :        Syntax_Node;
+     (Node  : in     Syntax_Node;
       Stack : in out Execution_Stacks.Stack);
 
+   ---------------------------------------------------------------------------
+   --
    procedure Push_Sequence
-     (Node  :        Syntax_Node;
+     (Node  : in     Syntax_Node;
       Stack : in out Execution_Stacks.Stack;
       Size  : in out Natural);
 
