@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/26 14:28:31 $
+-- $Date: 2003/08/29 14:27:46 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -491,7 +491,7 @@ package body Giant.Gsl.Interpreters is
       while Execution_Stacks.Is_Empty (S) = false loop
          Execution_Stacks.Pop (S, E);
          Default_Logger.Debug
-           ("Execution Stack: " & Log_Syntax_Node (E), "Giant.Gsl");
+           ("Execution Stack: " & Syntax_Node_Image (E), "Giant.Gsl");
       end loop;
       Default_Logger.Debug ("", "Giant.Gsl");
    end Log_Execution_Stack;
@@ -509,7 +509,7 @@ package body Giant.Gsl.Interpreters is
       while Result_Stacks.Is_Empty (S) = false loop
          Result_Stacks.Pop (S, E);
          Default_Logger.Debug
-           ("Result Stack: " & Log_Gsl_Type (E), "Giant.Gsl");
+           ("Result Stack: " & Gsl_Type_Image (E), "Giant.Gsl");
       end loop;
       Default_Logger.Debug ("", "Giant.Gsl");
    end Log_Result_Stack;
