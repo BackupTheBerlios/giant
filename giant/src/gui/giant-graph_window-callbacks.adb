@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.15 $
---  $Author: squig $
---  $Date: 2003/08/15 16:37:18 $
+--  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.16 $
+--  $Author: keulsn $
+--  $Date: 2003/08/16 13:23:20 $
 --
 
 with Ada.Unchecked_Conversion;
@@ -38,6 +38,7 @@ with Giant.Dialogs;
 with Giant.Layout_Dialog;
 with Giant.Gui_Manager;
 with Giant.Gui_Manager.Actions;
+with Giant.Gsl;
 with Giant.Gsl.Interpreters;
 with Giant.Make_Room_Dialog;
 with Giant.Node_Annotation_Dialog;
