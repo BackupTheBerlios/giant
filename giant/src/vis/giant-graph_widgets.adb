@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.28 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.29 $
 --  $Author: keulsn $
---  $Date: 2003/07/14 23:12:18 $
+--  $Date: 2003/07/15 09:49:16 $
 --
 ------------------------------------------------------------------------------
 
@@ -521,7 +521,8 @@ package body Giant.Graph_Widgets is
    begin
       if Vis_Node /= null then
          return Positioning.Get_Logic
-           (Widget, Vis.Absolute.Get_Height (Vis_Data.Get_Extent (Vis_Node)));
+           (Widget, Vis.Absolute.Get_Height (Vis_Data.Get_Extent (Vis_Node))) +
+           2 * Drawing.Get_Maximum_Node_Highlight_Width (Widget);
       else
          raise Unknown_Node_Id;
       end if;
@@ -704,7 +705,7 @@ package body Giant.Graph_Widgets is
       Selection  : access Graph_Lib.Selections.Selection;
       Color      : in     Config.Global_Data.Selection_High_Light_ID) is
    begin
-      raise Unimplemented;
+      null;
    end Add_Local_Highlighting;
 
    procedure Remove_Local_Highlighting
@@ -712,7 +713,7 @@ package body Giant.Graph_Widgets is
       Selection  : access Graph_Lib.Selections.Selection;
       Color      : in     Config.Global_Data.Selection_High_Light_ID) is
    begin
-      raise Unimplemented;
+      null;
    end Remove_Local_Highlighting;
 
    procedure Add_Global_Highlighting
@@ -720,7 +721,7 @@ package body Giant.Graph_Widgets is
       Subgraph   : access Graph_Lib.Subgraphs.Subgraph;
       Color      : in     Config.Global_Data.Subgraph_High_Light_ID) is
    begin
-      raise Unimplemented;
+      null;
    end Add_Global_Highlighting;
 
    procedure Remove_Global_Highlighting
@@ -728,13 +729,13 @@ package body Giant.Graph_Widgets is
       Subgraph   : access Graph_Lib.Subgraphs.Subgraph;
       Color      : in     Config.Global_Data.Subgraph_High_Light_ID) is
    begin
-      raise Unimplemented;
+      null;
    end Remove_Global_Highlighting;
 
    procedure Clear_Highlighting
      (Widget     : access Graph_Widget_Record'Class) is
    begin
-      raise Unimplemented;
+      null;
    end Clear_Highlighting;
 
 
