@@ -1,4 +1,4 @@
-------------------------------------------------------------------------------
+-----------------------------------------------------------------------------
 --  GIANT - Graphical IML Analysis and Navigation Tool
 --
 --  Copyright (C) 2003 Philipp Haeuser, Steffen Keul, Oliver Kopp,
@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.11 $
+--  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.12 $
 --  $Author: squig $
---  $Date: 2003/07/21 14:02:24 $
+--  $Date: 2003/08/05 20:56:19 $
 --
 
 with Ada.Unchecked_Conversion;

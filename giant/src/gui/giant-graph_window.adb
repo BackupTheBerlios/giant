@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.44 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.45 $
 --  $Author: squig $
---  $Date: 2003/07/21 15:49:58 $
+--  $Date: 2003/08/05 20:56:19 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -601,7 +601,7 @@ package body Giant.Graph_Window is
       Gtk.Menu.Append (Window.Selection_List_Menu,
                        New_Menu_Item (-"Set Active",
                                       On_Selection_List_Set_Active'Access,
-                                      Window));
+                                     Window));
       Gtk.Menu.Append (Window.Selection_List_Menu, New_Menu_Separator);
       Submenu := New_Sub_Menu (Window.Selection_List_Menu, -"Highlight");
       Gtk.Menu.Append (Submenu, New_Menu_Item
@@ -934,11 +934,20 @@ package body Giant.Graph_Window is
    end Update_Title;
 
    procedure Set_Global_Action_Mode
-     (Widget : access Graph_Window_Record;
+     (Window : access Graph_Window_Record;
       Enable : in     Boolean)
    is
    begin
-      null;
+      if (Enable) then
+         if (not Graph_Widgets.Is_Action_Mode_Active (Window.Graph)) then
+            Graph_Widgets.Start_Action_Mode (Window.Graph);
+         end if;
+      else
+         if (Graph_Widgets.Is_Action_Mode_Active (Window.Graph)
+             and not Is_Local_Action_Pending (Window)) then
+            Graph_Widgets.Cancel_Action_Mode (Window.Graph);
+         end if;
+      end if;
    end Set_Global_Action_Mode;
 
    ---------------------------------------------------------------------------

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.22 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.23 $
 --  $Author: squig $
---  $Date: 2003/07/21 14:02:24 $
+--  $Date: 2003/08/05 20:56:19 $
 --
 ------------------------------------------------------------------------------
 --
@@ -107,7 +107,7 @@ package Giant.Graph_Window is
      (Window : access Graph_Window_Record);
 
    procedure Set_Global_Action_Mode
-     (Widget : access Graph_Window_Record;
+     (Window : access Graph_Window_Record;
       Enable : in     Boolean);
 
    ---------------------------------------------------------------------------
