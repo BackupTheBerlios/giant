@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.62 $
---  $Author: keulsn $
---  $Date: 2003/09/12 20:30:12 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.63 $
+--  $Author: squig $
+--  $Date: 2003/09/17 08:22:29 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -144,7 +144,7 @@ package body Giant.Graph_Window is
 
    ---------------------------------------------------------------------------
    --  Returns:
-   --    False, if user cancelled or data was not modified; True, otherwise
+   --    False, if user cancelled
    function Save_Changes
      (Window : access Graph_Window_Record'Class)
      return Boolean
@@ -187,7 +187,8 @@ package body Giant.Graph_Window is
       Closed : Boolean;
    begin
       Closed := Controller.Close_Window
-        (Get_Window_Name (Gtk.Widget.Get_Toplevel (Source)), False);
+        (Get_Window_Name (Gtk.Widget.Get_Toplevel (Source)),
+         Ask_For_Confirmation => False);
    end On_Close_Project;
 
    function On_Close
@@ -197,8 +198,9 @@ package body Giant.Graph_Window is
       Closed : Boolean;
    begin
       Closed := Controller.Close_Window
-        (Get_Window_Name (Gtk.Widget.Get_Toplevel (Source)));
-      return True;
+        (Get_Window_Name (Gtk.Widget.Get_Toplevel (Source)),
+         Ask_For_Confirmation => True);
+      return not Closed;
    end On_Close;
 
    procedure On_Pick_Edge_Clicked
@@ -965,10 +967,8 @@ package body Giant.Graph_Window is
      return Boolean
    is
    begin
-      if (Ask_For_Confirmation) then
-         if (not Save_Changes (Window)) then
-            return False;
-         end if;
+      if (Ask_For_Confirmation and then not Save_Changes (Window)) then
+         return False;
       end if;
 
       Hide (Window);

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.21 $
+--  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.22 $
 --  $Author: squig $
---  $Date: 2003/09/12 00:18:24 $
+--  $Date: 2003/09/17 08:22:29 $
 --
 
 with Ada.Text_Io; use Ada.Text_Io;
@@ -173,16 +173,18 @@ package body Giant.Default_Dialog is
             On_Yes_Button_Clicked'access);
          Add_Button (Dialog, Button, False);
          Gtk.Button.Grab_Default (Button);
-         Add_Button (Dialog, New_Stock_Button (Gtk.Stock.Stock_No,
-                                               On_No_Button_Clicked'access),
+         Add_Button (Dialog,
+                     New_Stock_Button (Gtk.Stock.Stock_No,
+                                       On_No_Button_Clicked'access),
                      False);
       end if;
 
       if (Buttons = Button_Cancel
           or else Buttons = Button_Okay_Cancel
           or else Buttons = Button_Yes_No_Cancel) then
-         Add_Button (Dialog, New_Stock_Button (Gtk.Stock.Stock_Cancel,
-                                               On_No_Button_Clicked'access),
+         Add_Button (Dialog,
+                     New_Stock_Button (Gtk.Stock.Stock_Cancel,
+                                       On_Cancel_Button_Clicked'access),
                      False);
       end if;
 
