@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.17 $
+--  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.18 $
 --  $Author: koppor $
---  $Date: 2003/07/15 16:38:56 $
+--  $Date: 2003/07/15 16:39:24 $
 --
 ------------------------------------------------------------------------------
 --  Variables are named according to the paper
@@ -596,7 +596,7 @@ package body Giant.Tree_Layouts is
 
          --  we have to use 1+X_Distance, since the nodes have not 0 width
          Layout.X_Distance :=
-           Graph_Widgets.Get_Current_Maximum_Node_Width (Layout.Widget) * (1+X_Distance);
+           Graph_Widgets.Get_Current_Maximum_Node_Width (Layout.Widget) * (1.0+X_Distance);
 
          --  next step is the "normal" initialize of the treelayout
          Layout.State := Init_Run_Part_One;
