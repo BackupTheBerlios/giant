@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.ads,v $, $Revision: 1.13 $
+--  $RCSfile: giant-tree_layouts.ads,v $, $Revision: 1.14 $
 --  $Author: koppor $
---  $Date: 2003/07/14 08:23:20 $
+--  $Date: 2003/07/14 19:49:21 $
 --
 ------------------------------------------------------------------------------
 --
@@ -66,7 +66,7 @@ package Giant.Tree_Layouts is
 
    ---------------------------------------------------------------------------
    --  Maximum number of nost to be processed in one run
-   Max_Nodes_In_One_Run : constant := 100;
+   Max_Nodes_In_One_Run : constant := 1000;
 
    ---------------------------------------------------------------------------
    --  X-Distance of two neighbours as proportion of
