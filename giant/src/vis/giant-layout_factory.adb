@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.23 $
+--  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.24 $
 --  $Author: koppor $
---  $Date: 2003/10/06 18:23:11 $
+--  $Date: 2003/10/07 14:37:03 $
 --
 
 with Ada.Exceptions;
@@ -222,6 +222,7 @@ package body Giant.Layout_Factory is
                end if;
 
                Seen := Graph_Lib.Node_Id_Sets.Empty_Set;
+               Graph_Lib.Node_Id_Sets.Insert (Seen, Current_Node);
 
                loop
                   if Reverse_Edges then
@@ -249,11 +250,15 @@ package body Giant.Layout_Factory is
                        Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
                        (Meta_Class_Set,
                         Graph_Lib.Get_Edge_Class_Id (Current_Edge)) then
+
+--                          Logger.Debug ("Looking at edge " & Graph_Lib.Edge_Id_Image (Current_Edge));
+
                         if Reverse_Edges then
                            Node := Graph_Lib.Get_Target_Node (Current_Edge);
                         else
                            Node := Graph_Lib.Get_Source_Node (Current_Edge);
                         end if;
+
                         if Graph_Lib.Node_Id_Sets.Is_Member
                           (Graph_Lib.Selections.Get_All_Nodes
                            (Selection_To_Layout), Node) then
@@ -264,10 +269,15 @@ package body Giant.Layout_Factory is
                            if Graph_Lib.Node_Id_Sets.Is_Member
                              (Seen, Node) then
                               --  there is a circle in the graph.
+
+--                                Logger.Debug ("Circle");
+
                               Root_Found := True;
                            else
                               Graph_Lib.Node_Id_Sets.Insert (Seen, Node);
                               Root_Found := False;
+
+--                                Logger.Debug ("no circle");
                            end if;
                         end if;
                      end if;
@@ -278,8 +288,11 @@ package body Giant.Layout_Factory is
 
                   exit when not Predecessor_Found or Root_Found;
                end loop;
+--                 Logger.Debug (Boolean'Image (Predecessor_Found) & " " & Boolean'Image (Root_Found));
 
                Graph_Lib.Node_Id_Sets.Destroy (Seen);
+
+--                 Logger.Debug ("Found root " & Graph_Lib.Node_Id_Image (Current_Node));
 
                --  current node is the root of the tree
                return Current_Node;
@@ -334,7 +347,7 @@ package body Giant.Layout_Factory is
             String_Lists.Next (Parameters_Iter, Current_Parameter);
             Reverse_Edges :=
               (Ada.Strings.Unbounded.To_String (Current_Parameter) =
-               "Reverse_Edges");
+               Process_Edges_Reverse);
          else
             Reverse_Edges := False;
          end if;
