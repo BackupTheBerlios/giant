@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.12 $
+--  $RCSfile: giant-gui_utils.ads,v $, $Revision: 1.13 $
 --  $Author: squig $
---  $Date: 2003/06/23 21:57:04 $
+--  $Date: 2003/06/24 19:25:57 $
 --
 ------------------------------------------------------------------------------
 --
@@ -37,6 +37,7 @@ With Gtk.Frame;
 with Gtk.Handlers;
 with Gtk.Label;
 with Gtk.Menu;
+with Gtk.Menu_Shell;
 with Gtk.Menu_Bar;
 with Gtk.Menu_Item;
 with Gtk.Misc;
@@ -195,7 +196,7 @@ package Giant.Gui_Utils is
       return Gtk.Menu_Item.Gtk_Menu_Item;
 
    function New_Sub_Menu
-     (Menu_Bar : access Gtk.Menu_Bar.Gtk_Menu_Bar_Record'Class;
+     (Menu_Bar : access Gtk.Menu_Shell.Gtk_Menu_Shell_Record'Class;
       Label    : in String)
      return Gtk.Menu.Gtk_Menu;
 

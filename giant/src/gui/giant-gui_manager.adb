@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.13 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.14 $
 --  $Author: squig $
---  $Date: 2003/06/23 21:57:04 $
+--  $Date: 2003/06/24 19:25:57 $
 --
 
 with Ada.Strings.Unbounded;
@@ -262,6 +262,13 @@ package body Giant.Gui_Manager is
       Main_Window.Remove_Subgraph (Old_Name);
       Main_Window.Add_Subgraph (New_Name);
    end Rename_Subgraph;
+
+   procedure Update_Subgraph
+     (Name : in String)
+   is
+   begin
+      Main_Window.Update_Subgraph (Name);
+   end Update_Subgraph;
 
    ---------------------------------------------------------------------------
    --  Windows

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.12 $
+--  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.13 $
 --  $Author: squig $
---  $Date: 2003/06/24 10:43:05 $
+--  $Date: 2003/06/24 19:25:57 $
 --
 --  Stores the window records. Handles the controller updates. Provides
 --  a facade for the gui.
@@ -92,6 +92,9 @@ package Giant.Gui_Manager is
    procedure Rename_Subgraph
      (Old_Name : in String;
       New_Name : in String);
+
+   procedure Update_Subgraph
+     (Name : in String);
 
    ---------------------------------------------------------------------------
    --  Windows

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.16 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.17 $
 --  $Author: squig $
---  $Date: 2003/06/24 16:24:56 $
+--  $Date: 2003/06/24 19:25:57 $
 --
 ------------------------------------------------------------------------------
 --
@@ -166,6 +166,10 @@ package Giant.Controller is
    procedure Rename_Subgraph
      (Old_Name : in String;
       New_Name : in String);
+
+   procedure Set_Subgraph_Highlight_Status
+     (Name   : in String;
+      Status : in Projects.Subgraph_Highlight_Status);
 
    procedure Subgraph_Difference
      (Left_Name   : in String;

@@ -20,14 +20,15 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.27 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.28 $
 --  $Author: squig $
---  $Date: 2003/06/23 21:57:04 $
+--  $Date: 2003/06/24 19:25:57 $
 --
 
 with Ada.Strings.Unbounded;
 with Interfaces.C.Strings;
 
+with Gdk.Color;
 with Gdk.Event;
 with Gdk.Types;
 with Glib; use type Glib.Gint;
@@ -36,6 +37,7 @@ with Gtk.Clist;
 pragma Elaborate_All (Gtk.Clist);
 with Gtk.Container;
 with Gtk.Enums; use Gtk.Enums;
+with Gtk.Handlers;
 with Gtk.Main;
 with Gtk.Menu;
 with Gtk.Menu_Bar;
@@ -43,6 +45,7 @@ with Gtk.Menu_Item;
 with Gtk.Object;
 with Gtk.Paned;
 with Gtk.Status_Bar;
+with Gtk.Style;
 with Gtk.Widget;
 with Gtk.Window;
 with Gtk.Tearoff_Menu_Item;
@@ -51,6 +54,7 @@ with Gtkada.Types;
 
 with Giant.About_Dialog;
 with Giant.Clists;
+with Giant.Config.Global_Data;
 with Giant.Config_Settings;
 with Giant.Controller;
 with Giant.Default_Dialog;
@@ -69,6 +73,11 @@ with Giant.Set_Operation_Dialog;
 package body Giant.Main_Window is
 
    package Logger is new Giant.Logger("giant.main_window");
+
+   package Highlight_Menu_Callback is
+      new Gtk.Handlers.User_Callback
+     (Gtk.Menu_Item.Gtk_Menu_Item_Record,
+      Projects.Subgraph_Highlight_Status);
 
    procedure Update_Subgraph
      (List : access String_Clists.Giant_Data_Clist_Record;
@@ -99,6 +108,8 @@ package body Giant.Main_Window is
    Subgraph_List : String_Clists.Giant_Data_Clist;
 
    Status_Bar : Gtk.Status_Bar.Gtk_Status_Bar;
+
+   Styles : array (Projects.Subgraph_Highlight_Status) of Gtk.Style.Gtk_Style;
 
    ---------------------------------------------------------------------------
    --  Helper Methods
@@ -360,20 +371,13 @@ package body Giant.Main_Window is
    end Validate_Subgraph_Name;
 
    procedure On_Subgraph_List_Highlight
-     (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
+     (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class;
+      Status : in Projects.Subgraph_Highlight_Status)
    is
    begin
-      --Controller.Remove_Subgraph (Get_Selected_Subgraph);
-      null;
+      Controller.Set_Subgraph_Highlight_Status
+        (Get_Selected_Subgraph, Status);
    end On_Subgraph_List_Highlight;
-
-   procedure On_Subgraph_List_Unhightlight
-     (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
-   is
-   begin
-      --Controller.Remove_Subgraph (Get_Selected_Subgraph);
-      null;
-   end On_Subgraph_List_Unhightlight;
 
    procedure On_Subgraph_List_Create_Selection
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
@@ -450,6 +454,32 @@ package body Giant.Main_Window is
    --  Initializers
    ---------------------------------------------------------------------------
 
+   function Initialize_Style
+     (Config_Id : in Config.Global_Data.Subgraph_High_Light_ID)
+     return Gtk.Style.Gtk_Style
+   is
+      Style : Gtk.Style.Gtk_Style;
+      Color_Access : Config.Color_Access;
+   begin
+      Color_Access
+        := Config.Global_Data.Get_Subgraph_Highlight_Color (Config_Id);
+      Style := Gtk.Style.Copy
+        (String_Clists.Get_Style (Subgraph_List));
+      Gtk.Style.Set_Base (Style, State_Normal,
+                          Gdk.Color.Parse
+                          (Config.Get_Color_Value (Color_Access)));
+      return Style;
+   end;
+
+   procedure Initialize_Styles
+   is
+   begin
+      Styles (Projects.None) := String_Clists.Get_Style (Subgraph_List);
+      Styles (Projects.Color_1) := Initialize_Style (Config.Global_Data.Color_1);
+      Styles (Projects.Color_2) := Initialize_Style (Config.Global_Data.Color_2);
+      Styles (Projects.Color_3) := Initialize_Style (Config.Global_Data.Color_3);
+   end Initialize_Styles;
+
    function Initialize_Menu
      return Gtk.Menu_Bar.Gtk_Menu_Bar is
       Menu_Bar : Gtk.Menu_Bar.Gtk_Menu_Bar;
@@ -506,8 +536,25 @@ package body Giant.Main_Window is
       return Menu_Bar;
    end Initialize_Menu;
 
+   function New_Highlight_Menu_Item
+     (Label    : in String;
+      Status   : in Projects.Subgraph_Highlight_Status)
+      return Gtk.Menu_Item.Gtk_Menu_Item
+   is
+      Item : Gtk.Menu_Item.Gtk_Menu_Item;
+   begin
+      Gtk.Menu_Item.Gtk_New (Item, Label);
+      Highlight_Menu_Callback.Connect
+        (Item, "activate",
+         Highlight_Menu_Callback.To_Marshaller
+         (On_Subgraph_List_Highlight'Access),
+         Status);
+      return Item;
+   end New_Highlight_Menu_Item;
+
    procedure Initialize is
       Box : Gtk.Box.Gtk_Vbox;
+      Submenu : Gtk.Menu.Gtk_Menu;
    begin
       Gtk.Window.Initialize (Window, Window_Toplevel);
       Gtk.Window.Set_Title (Window, -"GIANT");
@@ -552,12 +599,19 @@ package body Giant.Main_Window is
       --  sub graph list popup menu
       Gtk.Menu.Gtk_New (Subgraph_List_Menu);
       Gtk.Menu.Append (Subgraph_List_Menu, New_TearOff_Menu_Item);
+      Submenu := New_Sub_Menu (Subgraph_List_Menu, -"Highlight");
+      Gtk.Menu.Append (Submenu,
+                       New_Highlight_Menu_Item
+                       (-"Color 1", Projects.Color_1));
+      Gtk.Menu.Append (Submenu,
+                       New_Highlight_Menu_Item
+                       (-"Color 2", Projects.Color_2));
+      Gtk.Menu.Append (Submenu,
+                       New_Highlight_Menu_Item
+                       (-"Color 3", Projects.Color_3));
       Gtk.Menu.Append (Subgraph_List_Menu,
-                       New_Menu_Item (-"Highlight",
-                                      On_Subgraph_List_Highlight'Access));
-      Gtk.Menu.Append (Subgraph_List_Menu,
-                       New_Menu_Item (-"Unhighlight In All Windows",
-                                      On_Subgraph_List_Unhightlight'Access));
+                       New_Highlight_Menu_Item
+                       (-"Unhighlight In All Windows", Projects.None));
       Gtk.Menu.Append (Subgraph_List_Menu, New_Menu_Separator);
       Gtk.Menu.Append (Subgraph_List_Menu,
                        New_Menu_Item (-"Insert As Selection...",
@@ -595,6 +649,8 @@ package body Giant.Main_Window is
       Widget_Return_Callback.Connect
         (Window, "delete_event",
          Widget_Return_Callback.To_Marshaller (On_Delete'Access));
+
+      Initialize_Styles;
    end Initialize;
 
    ---------------------------------------------------------------------------
@@ -656,8 +712,11 @@ package body Giant.Main_Window is
                               Natural'Image (Graph_Lib.Subgraphs.Get_Node_Count (Subgraph)));
       String_Clists.Set_Text (List, Row, 2,
                               Natural'Image (Graph_Lib.Subgraphs.Get_Edge_Count (Subgraph)));
-      -- FIX: fill in missing values
-      String_Clists.Set_Text (List, Row, 3, "FIX: Ask Martin");
+
+
+      String_Clists.Set_Cell_Style (List, Row, 3,
+                                    Styles (Projects.Get_Highlight_Status
+                                            (Controller.Get_Project, Name)));
    end Update_Subgraph;
 
    procedure Add_Subgraph

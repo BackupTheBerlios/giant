@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.16 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.17 $
 --  $Author: squig $
---  $Date: 2003/06/24 16:24:56 $
+--  $Date: 2003/06/24 19:25:57 $
 --
 --
 ------------------------------------------------------------------------------
@@ -33,6 +33,7 @@
 with GNAT.OS_Lib;
 
 with Giant.Config_Settings;
+with Giant.Config.Global_Data;
 with Giant.Config.Vis_Styles;
 with Giant.Controller;
 with Giant.Default_Logger;
@@ -49,9 +50,10 @@ begin
    Default_Logger.Init;
 
    --  load config settings
-   Config_Settings.Initialize_Config_Settings ("", Config_Filename);
+   Config_Settings.Initialize_Config_Settings
+     ("test/resources/global_config.xml", Config_Filename);
 
-   Config_Settings.Initialize_Config_Settings ("", Config_Filename);
+   Config.Global_Data.Initialize_Config_Data;
 
 
    -- read config

@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.15 $
+-- $RCSfile: giant-gui_utils.adb,v $, $Revision: 1.16 $
 -- $Author: squig $
--- $Date: 2003/06/23 17:33:34 $
+-- $Date: 2003/06/24 19:25:57 $
 --
 
 with Glib;
@@ -150,15 +150,15 @@ package body Giant.Gui_Utils is
    end;
 
    function New_Sub_Menu
-     (Menu_Bar : access Gtk.Menu_Bar.Gtk_Menu_Bar_Record'Class;
+     (Menu_Bar : access Gtk.Menu_Shell.Gtk_Menu_Shell_Record'Class;
       Label    : in     String)
      return Gtk.Menu.Gtk_Menu
    is
       Item : Gtk.Menu_Item.Gtk_Menu_Item;
       Menu : Gtk.Menu.Gtk_Menu;
    begin
-      Gtk.Menu_item.Gtk_New (Item, label);
-      Gtk.Menu_Bar.Append (Menu_Bar, Item);
+      Gtk.Menu_Item.Gtk_New (Item, label);
+      Gtk.Menu_Shell.Append (Menu_Bar, Item);
 
       Gtk.Menu.Gtk_New (Menu);
       Gtk.Menu_Item.Set_Submenu (Item, Menu);

@@ -21,9 +21,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.20 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.21 $
 --  $Author: squig $
---  $Date: 2003/06/24 16:24:56 $
+--  $Date: 2003/06/24 19:25:57 $
 --
 
 with Ada.Strings.Unbounded;
@@ -369,6 +369,7 @@ package body Giant.Controller is
       Unique_Name : String := Get_Unique_Name (Name);
    begin
       Subgraph := Graph_Lib.Subgraphs.Create (Unique_Name);
+      Graph_Lib.Subgraphs.Add_Edge_Set (Subgraph, Graph_Lib.Get_All_Edges);
       Graph_Lib.Subgraphs.Add_Node_Set (Subgraph, Graph_Lib.Get_All_Nodes);
 
       Projects.Add_Subgraph (Current_Project, Subgraph);
@@ -428,6 +429,16 @@ package body Giant.Controller is
 
       Gui_Manager.Rename_Subgraph (Old_Name, New_Name);
    end Rename_Subgraph;
+
+   procedure Set_Subgraph_Highlight_Status
+     (Name   : in String;
+      Status : in Projects.Subgraph_Highlight_Status)
+   is
+   begin
+      Projects.Change_Highlight_Status (Current_Project, Name,
+                                        Status);
+      Gui_Manager.Update_Subgraph (Name);
+   end Set_Subgraph_Highlight_Status;
 
    procedure Subgraph_Operation
      (Left_Name   : in String;
