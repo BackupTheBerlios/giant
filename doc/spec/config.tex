@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.33 $
-%  $Date: 2003/04/18 23:28:09 $
-%  $Author: schwiemn $
+%  $RCSfile: config.tex,v $, $Revision: 1.34 $
+%  $Date: 2003/04/19 15:58:16 $
+%  $Author: birdy $
 %
 %  Description:
 %
@@ -98,23 +98,23 @@ Für die Visualisierungsstile gelten die folgenden Konventionen:
   werden können.
 
   \item
-  In einem Visualisierungsstil können typspezifische Einstellungen 
+  In einem Visualisierungsstil können klassenspezifische Einstellungen 
   vorgenommen werden, die nur für Knoten und Kanten gelten, 
-  die zu dem entsprechenden Typ gehören.
-  Bei jeder typspezifischen Einstellung für Knoten und Kanten kann daher 
-  eine Liste der betroffenen Knoten- und Kantentypen angegeben werden, 
+  die zu der entsprechenden Klasse gehören.
+  Bei jeder klassenspezifischen Einstellung für Knoten und Kanten kann daher 
+  eine Liste der betroffenen Knoten- und Kantenklassen angegeben werden, 
   für die diese Einstellungen gelten sollen.
 
   \item
-  Wird ein Kanten- oder ein Knotentyp innerhalb eines
-  Visualisierungsstils mehreren typspezifischen Einstellungen zugeordnet,   
+  Wird eine Kanten- oder eine Knotenklasse innerhalb eines
+  Visualisierungsstils mehreren klassenspezifischen Einstellungen zugeordnet,   
   führt dies zu keinem Fehler, es bleibt aber unspezifiziert, 
   welche Einstellung tatsächlich genommen wird.
 
   \item
   Es gibt jeweils eine Standard-Einstellung, die für alle
-  Knoten- und Kantentyp genommen wird, für die keine
-  extra typspezifischen Einstellungen vorgenommen wurden.
+  Knoten- und Kantenklassen genommen wird, für die keine
+  extra klassenspezifischen Einstellungen vorgenommen wurden.
 
   \item \index{Visualisierungsstile!Standard-Visualisierungsstil}
   Es gibt immer einen von GIANT fest
@@ -147,12 +147,12 @@ Für die Visualisierungsstile gelten die folgenden Konventionen:
     \end{enumerate}
 
 
-  \subsection {Typspezifische Einstellungen für Knoten}
-  \index{Visualisierungsstile!typspezifische Einstellungen}
+  \subsection {Klassenspezifische Einstellungen für Knoten}
+  \index{Visualisierungsstile!klassenspezifische Einstellungen}
 
-  Folgende  Einstellungen können für Knotentypen vorgenommen werden. 
+  Folgende  Einstellungen können für Knotenklassen vorgenommen werden. 
   Es muss eine Standard-Einstellung erstellt werden, die für alle
-  Knotentypen angewendet wird, für die nichts anderes definiert ist.
+  Knotenklassen angewendet wird, für die nichts anderes definiert ist.
   \begin{enumerate}  
   
 
@@ -175,35 +175,35 @@ Für die Visualisierungsstile gelten die folgenden Konventionen:
   \end{enumerate}
 
   
-  \subsection {Typspezifische Einstellungen für Kanten}
-  Folgende Einstellungen können für Kantentyp vorgenommen werden.
+  \subsection {Klassenspezifische Einstellungen für Kanten}
+  Folgende Einstellungen können für Kantenklassen vorgenommen werden.
   Es muss eine Standard-Einstellung erstellt werden, die für alle
-  Kantentyp angewendet wird, für die nichts anderes definiert ist.
+  Kantenklassen angewendet wird, für die nichts anderes definiert ist.
   \begin{enumerate}
     \item Die Farbe der Kante.
     \item Die Farbe der Kantenbeschriftungen.
     \item Die Art der Linie der Kante (normal, gestrichelt).
-    \item Ob die Kante mit ihrem Kantentyp beschriftet werden soll oder 
+    \item Ob die Kante mit ihrer Kantenklasse beschriftet werden soll oder 
           nicht.
   \end{enumerate}
 
-  Ein Kantentyp wird durch den Knotentyp des Start-Knotens 
+  Eine Kantenklasse wird durch die Knotenklasse des Start-Knotens 
   und durch den Namen des Attributes, welches die Kante darstellt, 
   eindeutig festgelegt (siehe Begriffslexikon). 
   Will der Benutzer nun Einstellungen für
-  Kantenklassen vornehmen kann er sich entweder auf genau einen 
-  Kantentyp \gq{Start-Knotentyp.Attributname} beziehen oder
+  Kantenklassen vornehmen kann er sich entweder auf genau eine
+  Kantenklasse \gq{Start-Knotenklasse.Attributname} beziehen oder
   mittels eines Platzhalters auch auf mehrere:
 
   \begin{enumerate}
     \item Der Benutzer kann mittels des Platzhalters \gq{*}
-          eine typspezifische Einstellung für
-          alle Kanten, deren Start-Knoten zu einem bestimmten
-          Knotentyp gehört, 
-          vornehmen -- also \gq{Start-Knotentyp.*}.
+          eine klassenspezifische Einstellung für
+          alle Kanten, deren Start-Knoten zu einer bestimmten
+          Knotenklasse gehört, 
+          vornehmen -- also \gq{Start-Knotenklasse.*}.
 
    \item  Der Benutzer kann mittels des Platzhalters \gq{*}
-          eine typspezifische Einstellung für
+          eine klassenspezifische Einstellung für
           alle Kanten, bei denen das sie repräsentierende Attribut
           den gleichen Namen hat,
           vornehmen -- also \gq{*.Attributname}.
