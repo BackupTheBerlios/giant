@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.23 $
+--  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.24 $
 --  $Author: koppor $
---  $Date: 2003/09/15 13:19:09 $
+--  $Date: 2003/09/15 13:35:27 $
 --
 ------------------------------------------------------------------------------
 --  Variables are named according to the paper
@@ -343,10 +343,10 @@ package body Giant.Tree_Layouts is
 
             --  Logger.Debug ("Self:  " & Graph_Lib.Node_Id_Image
             --                (SecondWalk_Data.V.Node));
-            if SecondWalk_Data.V.Parent /= null then
-               --  Logger.Debug ("Parent:  " & Graph_Lib.Node_Id_Image
-               --                (SecondWalk_Data.V.Parent.Node));
-            end if;
+--              if SecondWalk_Data.V.Parent /= null then
+--             Logger.Debug ("Parent:  " & Graph_Lib.Node_Id_Image
+--                           (SecondWalk_Data.V.Parent.Node));
+--              end if;
 
             --  Logger.Debug ("HasRightSilbling: " & Boolean'Image
             --                (SecondWalk_Data.V.Right_Silbling /= null));
