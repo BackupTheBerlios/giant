@@ -20,13 +20,13 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-matrix_layouts.ads,v $, $Revision: 1.13 $
+--  $RCSfile: giant-matrix_layouts.ads,v $, $Revision: 1.14 $
 --  $Author: koppor $
---  $Date: 2003/07/14 16:14:39 $
+--  $Date: 2003/07/14 16:17:36 $
 --
 ------------------------------------------------------------------------------
 --
---  Contains the treelayout-algorithm
+--  Contains the matrixlayout-algorithm
 --
 
 with Giant.Evolutions;
@@ -116,15 +116,25 @@ private
 
    type Matrix_Layout_Record is
      new Evolutions.Iterative_Evolution with record
-        --  Init by Initialize
+
+        --------------------------
+        --  Init by Initialize  --
+        --------------------------
+
         Widget              : Graph_Widgets.Graph_Widget;
         Widget_Lock         : Graph_Widgets.Lock_Type;
         Release_Widget_Lock : Boolean;
+
+        --  TBD: convert to array or something like that
+        --       to gain even more speed
         Nodes_To_Layout     : Graph_Lib.Node_Id_Set;
+
         Target_Position     : Vis.Logic.Vector_2d;
         State               : Layout_State;
 
-        --  Init by Step.Init_Calculation
+        -------------------------------------
+        --  Init by Step.Init_Calculation  --
+        -------------------------------------
 
         --  Distance between two nodes used at FirstWalk
         X_Distance         : Vis.Logic_Float;
