@@ -1,0 +1,24 @@
+[ // Beginn einer Sequence
+
+  assign       // neues Script
+   (+my_script,
+    { (+a, +b, +c),
+      assign (a, add (b, c))
+    });        // a muss Zugriffspfad auf ein Objekt sein!
+               // an das durch a referenzierte Objekt wird
+               // das Ergebnis der Aktivierung von add (b, c)
+               // zugewiesen. add berechnet auf Natural-Werten
+               // die Summe.
+
+  assign
+   (+x, 17);
+
+  my_script    // Aktivierung
+   (+result,   // 1. Argument: Referenz auf das neue
+               //     Objekt, das an result gebunden ist
+    x,         // 2. Argument: Inspektion von x (17)
+    13);       // 3. Argument: Integer-Literal (13)
+
+  result;      // jetzt liefert result als Ergebnis 30
+
+] // Ende der Sequence, Ergebnis ist 30
