@@ -20,13 +20,15 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.20 $
+--  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.21 $
 --  $Author: keulsn $
---  $Date: 2003/09/12 20:30:13 $
+--  $Date: 2003/09/16 22:04:25 $
 --
 ------------------------------------------------------------------------------
 
 
+with Ada.Strings;
+with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded;
 with Ada.Unchecked_Deallocation;
 
@@ -39,8 +41,14 @@ pragma Elaborate_All (Giant.Logger);
 
 package body Giant.Graph_Widgets.Settings is
 
-   Default_Font_Name : constant String :=
-     "-*-courier-*-r-*-*-12-*-*-*-*-*-iso8859-*";
+   function Default_Font_Name
+     (Size : in     Natural)
+     return String is
+   begin
+     return "-*-courier-*-r-*-*-" &
+       Ada.Strings.Fixed.Trim (Natural'Image (Size), Ada.Strings.Both) &
+       "-*-*-*-*-*-iso8859-*";
+   end Default_Font_Name;
 
 
    package Settings_Logger is new Logger
@@ -194,32 +202,18 @@ package body Giant.Graph_Widgets.Settings is
          Right : in Glib.Gint)
         return Glib.Gint renames Glib."+";
    begin
+      Update_Font_Choice (Widget);
+
       Icons.Set_Up_Icon_Array (Widget);
       Colors.Set_Up_Color_Array (Widget);
-
-      if Gdk."=" (Widget.Settings.Font, Gdk.Font.Null_Font) then
-         Gdk.Font.Load
-           (Font      => Widget.Settings.Font,
-            Font_Name => Default_Font_Name);
-         if Gdk."=" (Widget.Settings.Font, Gdk.Font.Null_Font) then
-            Settings_Logger.Error
-              ("Could not load font """ & Default_Font_Name & """. Use "
-               & "Null_Font instead.");
-            Widget.Settings.Font_Height := 0;
-         else
-            --  above base line + base line + below base line
-            Widget.Settings.Font_Height := Vis.Absolute_Natural
-              (Gdk.Font.Get_Ascent (Widget.Settings.Font) +
-               1 +
-               Gdk.Font.Get_Descent (Widget.Settings.Font));
-         end if;
-      end if;
    end Set_Up;
 
    procedure Shut_Down
      (Widget : access Graph_Widget_Record'Class) is
    begin
-      Gdk.Font.Unref (Widget.Settings.Font);
+      if Gdk."/=" (Widget.Settings.Font, Gdk.Font.Null_Font) then
+         Gdk.Font.Unref (Widget.Settings.Font);
+      end if;
 
       Colors.Shut_Down_Color_Array (Widget);
       --  Icons not shut down because shared resource for all widgets
@@ -253,6 +247,79 @@ package body Giant.Graph_Widgets.Settings is
    begin
       return Widget.Settings.Node_Annotation_Pool;
    end Get_Annotation_Pool;
+
+
+   procedure Update_Font_Choice
+     (Widget : access Graph_Widget_Record'Class) is
+
+      Width               : Vis.Absolute_Natural := Widget.Settings.Node_Width;
+      Proposed_Font_Height: Vis.Absolute_Natural;
+   begin
+      Proposed_Font_Height := Width / Default_Node_Text_Lines_Estimate;
+      if Proposed_Font_Height < Default_Minimum_Font_Size then
+         Proposed_Font_Height := Default_Minimum_Font_Size;
+      elsif Proposed_Font_Height > Default_Maximum_Font_Size then
+         Proposed_Font_Height := Default_Maximum_Font_Size;
+      end if;
+      if Widget.Settings.Font_Choice /= Proposed_Font_Height then
+         Widget.Settings.Font_Choice := Proposed_Font_Height;
+
+         declare
+            Font_Name : String := Default_Font_Name
+              (Widget.Settings.Font_Choice);
+         begin
+            Gdk.Font.Load
+              (Font      => Widget.Settings.Font,
+               Font_Name => Font_Name);
+            if Gdk."=" (Widget.Settings.Font, Gdk.Font.Null_Font) then
+               Settings_Logger.Error
+                 ("Could not load font """ & Font_Name & """. Using "
+                  & "Null_Font instead.");
+               Widget.Settings.Font_Height := 0;
+            else
+               --  above base line + base line + below base line
+               Widget.Settings.Font_Height := Vis.Absolute_Natural
+                 (Gdk.Font.Get_Ascent (Widget.Settings.Font)) +
+                  1 +
+                  Vis.Absolute_Natural
+                    (Gdk.Font.Get_Descent (Widget.Settings.Font));
+               Settings_Logger.Debug
+                 ("Font loaded: """ & Font_Name & """, Height ="
+                  & Integer'Image (Widget.Settings.Font_Height));
+            end if;
+         end;
+      end if;
+   end Update_Font_Choice;
+
+
+   procedure Set_Zoom
+     (Widget : access Graph_Widget_Record'Class;
+      Zoom   : in     Vis.Zoom_Level) is
+
+      Width : Vis.Absolute_Natural;
+   begin
+      Width := Vis.Absolute_Natural (Zoom * Float (Default_Node_Width));
+      if Width < Default_Minimum_Node_Width then
+         Width := Default_Minimum_Node_Width;
+      end if;
+      Widget.Settings.Node_Width := Width;
+      Update_Font_Choice (Widget);
+
+      if Zoom < 0.3 then
+         Widget.Settings.Detail_Level := Low;
+      elsif Zoom < 0.7 then
+         Widget.Settings.Detail_Level := Average;
+      else
+         Widget.Settings.Detail_Level := High;
+      end if;
+   end Set_Zoom;
+
+   function Get_Detail_Level
+     (Widget : access Graph_Widget_Record'Class)
+     return Detail_Level_Type is
+   begin
+      return Widget.Settings.Detail_Level;
+   end Get_Detail_Level;
 
 
    -----------------------
@@ -458,7 +525,7 @@ package body Giant.Graph_Widgets.Settings is
      (Widget : access Graph_Widget_Record'Class)
      return Vis.Absolute_Natural is
    begin
-      return Default_Node_Width;
+      return Widget.Settings.Node_Width;
    end Get_Node_Width;
 
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.52 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.53 $
 --  $Author: keulsn $
---  $Date: 2003/09/12 20:30:13 $
+--  $Date: 2003/09/16 22:04:25 $
 --
 ------------------------------------------------------------------------------
 
@@ -440,7 +440,6 @@ package body Giant.Graph_Widgets is
                Read_Edge;
             end loop;
             Set_Location_And_Zoom_Level (Widget, Location, Level);
-
          when others =>
             Graph_Widget_Logger.Fatal
               ("Cannot read Graph Widget. Version number incorrect, expected" &
@@ -1103,6 +1102,9 @@ package body Giant.Graph_Widgets is
             Destroy_Node (Widget, Node);
          else
             Positioning.Update_Node_Position (Widget, Node);
+            Add_Logic_Area_Rectangle
+              (Widget,
+               Positioning.Get_Logic (Widget, Vis_Data.Get_Extent (Node)));
             Vis_Data.Insert_Node (Widget.Manager, Node);
             Vis_Data.Set_Locked (Node, False);
 
@@ -1976,6 +1978,7 @@ package body Giant.Graph_Widgets is
       Lock_All_Content (Widget, Lock);
       Move_All_Nodes_To_Unsized (Widget);
       --  Move_All_Edges_To_Unsized (Widget);
+      Settings.Set_Zoom (Widget, Actual_Zoom);
       Positioning.Set_Zoom (Widget, Actual_Zoom);
       Set_Location (Widget, Location);
       Release_Lock (Widget, Lock);
@@ -2739,6 +2742,53 @@ package body Giant.Graph_Widgets is
          States.Logic_Area_Changed (Widget);
       end if;
    end Add_Logic_Position;
+
+   procedure Add_Logic_Area_Rectangle
+     (Widget    : access Graph_Widget_Record'Class;
+      Rectangle : in     Vis.Logic.Rectangle_2d) is
+
+      function Is_Empty
+        (Rectangle : in     Vis.Logic.Rectangle_2d)
+        return Boolean is
+      begin
+         return Vis.Logic."="
+           (Vis.Logic.Get_Top_Left (Rectangle),
+            Vis.Logic.Get_Bottom_Right (Rectangle));
+      end Is_Empty;
+
+      X       : Vis.Logic_Float;
+      Y       : Vis.Logic_Float;
+      Changed : Boolean := False;
+   begin
+      if Is_Empty (Widget.Logic_Area) then
+         Changed := True;
+         Widget.Logic_Area := Rectangle;
+      else
+         X := Vis.Logic.Get_Left (Rectangle);
+         if X < Vis.Logic.Get_Left (Widget.Logic_Area) then
+            Changed := True;
+            Vis.Logic.Set_Left (Widget.Logic_Area, X);
+         end if;
+         X := Vis.Logic.Get_Right (Rectangle);
+         if X > Vis.Logic.Get_Right (Widget.Logic_Area) then
+            Changed := True;
+            Vis.Logic.Set_Right (Widget.Logic_Area, X);
+         end if;
+         Y := Vis.Logic.Get_Top (Rectangle);
+         if Y < Vis.Logic.Get_Top (Widget.Logic_Area) then
+            Changed := True;
+            Vis.Logic.Set_Top (Widget.Logic_Area, Y);
+         end if;
+         Y := Vis.Logic.Get_Bottom (Rectangle);
+         if Y > Vis.Logic.Get_Bottom (Widget.Logic_Area) then
+            Changed := True;
+            Vis.Logic.Set_Bottom (Widget.Logic_Area, Y);
+         end if;
+      end if;
+      if Changed then
+         States.Logic_Area_Changed (Widget);
+      end if;
+   end Add_Logic_Area_Rectangle;
 
    procedure Resize_Graph_Widget
      (Widget : access Graph_Widget_Record'Class;

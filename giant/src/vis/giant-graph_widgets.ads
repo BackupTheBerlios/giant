@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.46 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.47 $
 --  $Author: keulsn $
---  $Date: 2003/09/12 20:30:13 $
+--  $Date: 2003/09/16 22:04:25 $
 --
 ------------------------------------------------------------------------------
 --
@@ -1021,6 +1021,13 @@ package Giant.Graph_Widgets is
    --  can be 'Continuous_Line', 'Dashed_Line', 'Dotted_Line'
    type Edge_Style_Type is new Config.Vis_Styles.Edge_Line_Style;
 
+   ----------------------------------------------------------------------------
+   --  Details to be shown in a graph widget:
+   --  * Low     - Nodes are shown as rectangles
+   --  * Average - + Nodes contain icons, ids and type names
+   --  * High    - + Nodes contain attributes
+   type Detail_Level_Type is (Low, Average, High);
+
                            ------------------
 private                    -- private part --
                            ------------------
@@ -1049,8 +1056,12 @@ private                    -- private part --
    --  'States.Has_Logic_Area_Changed' should be checked and, if necessary,
    --  'Notifications.Logical_Area_Changed' should be called.
    procedure Add_Logic_Position
-     (Widget   : access Graph_Widget_Record'Class;
-      Position : in     Vis.Logic.Vector_2d);
+     (Widget    : access Graph_Widget_Record'Class;
+      Position  : in     Vis.Logic.Vector_2d);
+
+   procedure Add_Logic_Area_Rectangle
+     (Widget    : access Graph_Widget_Record'Class;
+      Rectangle : in     Vis.Logic.Rectangle_2d);
 
    ----------------------------------------------------------------------------
    --  Changes the size of 'Widget' and makes buffers grow when necessary
@@ -1406,6 +1417,8 @@ private                    -- private part --
    Default_Height     : constant := 200;
    --  Default zoom level
    Default_Zoom_Level : constant := 1.0;
+   --  Default width of a node displayed at 'Default_Zoom_Level'
+   Default_Node_Width : constant := 150;
 
    ----------------------------------------------------------------------------
    --  Hashmap that maps Graph_Lib.Edge_Id to Vis_Data.Vis_Edge_Id
@@ -1543,6 +1556,13 @@ private                    -- private part --
          --  Height of 'Font' cached for not accessing the Xserver everytime
          --  needed
          Font_Height            : Vis.Absolute_Natural;
+         --  The Height 'Font' is desired to have. Is not necessarily equal
+         --  to 'Font_Height' which is the actual height.
+         Font_Choice            : Vis.Absolute_Natural;
+         --  Width for each node in a graph widget. Depends on the Zoom_Level
+         Node_Width             : Vis.Absolute_Natural := Default_Node_Width;
+         --  Detail level for display of a graph widget
+         Detail_Level           : Detail_Level_Type := High;
       end record;
 
 
@@ -1553,6 +1573,8 @@ private                    -- private part --
    type Callbacks_Type is
       record
          Mouse_Grab_Count        : Natural := 0;
+
+         Accept_Scrolling        : Natural := 0;
 
          Previous_Selected_Edges : Vis_Edge_Lists.List;
          Previous_Selected_Nodes : Vis_Node_Lists.List;

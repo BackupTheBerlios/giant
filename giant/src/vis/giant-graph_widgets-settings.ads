@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.ads,v $, $Revision: 1.8 $
+--  $RCSfile: giant-graph_widgets-settings.ads,v $, $Revision: 1.9 $
 --  $Author: keulsn $
---  $Date: 2003/07/22 18:21:32 $
+--  $Date: 2003/09/16 22:04:25 $
 --
 ------------------------------------------------------------------------------
 
@@ -73,6 +73,16 @@ package Giant.Graph_Widgets.Settings is
 
    procedure Shut_Down
      (Widget : access Graph_Widget_Record'Class);
+
+
+   procedure Set_Zoom
+     (Widget : access Graph_Widget_Record'Class;
+      Zoom   : in     Vis.Zoom_Level);
+
+
+   function Get_Detail_Level
+     (Widget : access Graph_Widget_Record'Class)
+     return Detail_Level_Type;
 
 
    -----------------------
@@ -206,6 +216,14 @@ package Giant.Graph_Widgets.Settings is
 
 private
 
-   Default_Node_Width : constant := 150;
+   procedure Update_Font_Choice
+     (Widget : access Graph_Widget_Record'Class);
+
+
+   Default_Minimum_Node_Width       : constant := 10;
+   Default_Node_Text_Lines_Estimate : constant := 11;
+   Default_Minimum_Font_Size        : constant := 6;
+   Default_Maximum_Font_Size        : constant := 40;
+
 
 end Giant.Graph_Widgets.Settings;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.39 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.40 $
 --  $Author: keulsn $
---  $Date: 2003/09/12 20:30:14 $
+--  $Date: 2003/09/16 22:04:26 $
 --
 ------------------------------------------------------------------------------
 
@@ -961,16 +961,16 @@ package body Giant.Vis_Data is
      return Integer is
 
       Vector : Vis.Absolute.Vector_2d := Vis.Absolute.Vector_2d (Key);
-      X      : Vis.Absolute_Int       := abs Vis.Absolute.Get_X (Vector);
-      Y      : Vis.Absolute_Int       := abs Vis.Absolute.Get_Y (Vector);
-      Value  : Integer;
+      X      : Vis.Absolute_Natural   := abs Vis.Absolute.Get_X (Vector);
+      Y      : Vis.Absolute_Natural   := abs Vis.Absolute.Get_Y (Vector);
+      Value  : Natural range 0 .. 16#7FFF_FFFF#;
    begin
       -- use lower 2 bytes of each coordinate
       Value := 16#1# * (X mod 16#100#) + 16#100# * (Y mod 16#100#);
       X := X / 16#100#;
       Y := Y / 16#100#;
       Value := Value + 16#1_0000# * (X mod 16#100#)
-        + 16#100_0000# * (Y mod 16#100#);
+        + 16#100_0000# * (Y mod 16#80#);
       return Value;
    end Hash_Region_Position;
 

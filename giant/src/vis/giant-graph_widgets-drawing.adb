@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.32 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.33 $
 --  $Author: keulsn $
---  $Date: 2003/09/12 20:30:13 $
+--  $Date: 2003/09/16 22:04:25 $
 --
 ------------------------------------------------------------------------------
 
@@ -522,35 +522,41 @@ package body Giant.Graph_Widgets.Drawing is
       Header_Height        : Vis.Absolute_Natural;
       Highlighting         : Vis_Data.Highlight_Array :=
         Vis_Data.Get_Highlighting (Node);
+      Detail_Level         : Detail_Level_Type :=
+        Settings.Get_Detail_Level (Widget);
    begin
       Border_Thickness := Number_Of_Lights * Default_Node_Light_Thickness + 1;
 
-      Attributes_Height := Number_Of_Attributes *
-        (Default_Text_Spacing + Font_Height);
-
-      Header_Height := Default_Text_Spacing + Font_Height;
-      Icon_Height := Get_Y (Settings.Get_Node_Icon_Size (Widget, Node));
-      if Icon_Height > Header_Height then
-         Header_Height := Icon_Height;
-      end if;
-      if Vis_Data.Is_Annotated (Node) then
-         Annotation_Height := Get_Y
-           (Settings.Get_Annotation_Icon_Size (Widget));
-         if Annotation_Height > Header_Height then
-            Header_Height := Annotation_Height;
-         end if;
-      end if;
-
-      Height := Border_Thickness + Header_Height;
-      if Settings.Show_Node_Class_Name (Widget, Node) then
-         Height := Height + Default_Text_Spacing + Font_Height;
-      end if;
-      Height := Height +
-        Attributes_Height +
-        Default_Text_Spacing +
-        Border_Thickness;
-
       Width := 2 * Border_Thickness + Settings.Get_Node_Width (Widget);
+
+      if Detail_Level >= Average then
+         Header_Height := Default_Text_Spacing + Font_Height;
+         Icon_Height := Get_Y (Settings.Get_Node_Icon_Size (Widget, Node));
+         if Icon_Height > Header_Height then
+            Header_Height := Icon_Height;
+         end if;
+         if Vis_Data.Is_Annotated (Node) then
+            Annotation_Height := Get_Y
+              (Settings.Get_Annotation_Icon_Size (Widget));
+            if Annotation_Height > Header_Height then
+               Header_Height := Annotation_Height;
+            end if;
+         end if;
+
+         Height := 2 * Border_Thickness + Header_Height;
+         if Settings.Show_Node_Class_Name (Widget, Node) then
+            Height := Height + 2 * Default_Text_Spacing + Font_Height;
+         end if;
+
+         if Detail_Level >= High then
+            Attributes_Height := Number_Of_Attributes *
+              (Default_Text_Spacing + Font_Height);
+
+            Height := Height + Attributes_Height;
+         end if;
+      else
+         Height := Width;
+      end if;
 
       Vis_Data.Set_Node_Size (Node, Combine_Vector (Width, Height));
    end Update_Node_Size;
@@ -575,6 +581,8 @@ package body Giant.Graph_Widgets.Drawing is
       Buffer : in     Gdk.Pixmap.Gdk_Pixmap;
       Node   : in     Vis_Data.Vis_Node_Id;
       Origin : in     Vis.Absolute.Vector_2d) is
+
+      Detail_Level : Detail_Level_Type := Settings.Get_Detail_Level (Widget);
 
       procedure Draw_Node_Highlighting
         (Gc        : in     Gdk.GC.Gdk_GC;
@@ -827,6 +835,7 @@ package body Giant.Graph_Widgets.Drawing is
 
          Shrink (Draw_Rect, Default_Text_Spacing);
 
+         --  Node Id
          if Vis.Absolute_Int (Icons_Width) < Get_Width (Draw_Rect) then
             Id_Rect := Combine_Rectangle
               (X_1 => Get_Left (Draw_Rect) + Vis.Absolute_Int (Icons_Width),
@@ -857,40 +866,42 @@ package body Giant.Graph_Widgets.Drawing is
                Text   => Graph_Lib.Get_Node_Class_Tag (Graph_Node_Class));
          end if;
 
-         --  Attributes
-         Attrib_Name_Rect := Combine_Rectangle
-           (Top_Left     => Get_Top_Left (Class_Name_Rect),
-            Bottom_Right => Get_Bottom_Center (Class_Name_Rect) -
-                              Combine_Vector (Default_Text_Spacing / 2, 0));
-         Attrib_Value_Rect := Combine_Rectangle
-           (Top_Left     => Get_Top_Center (Class_Name_Rect) +
-                              Combine_Vector (Default_Text_Spacing / 2, 0),
-            Bottom_Right => Get_Bottom_Right (Class_Name_Rect));
+         if Detail_Level >= High then
+            --  Attributes
+            Attrib_Name_Rect := Combine_Rectangle
+              (Top_Left     => Get_Top_Left (Class_Name_Rect),
+               Bottom_Right => Get_Bottom_Center (Class_Name_Rect) -
+                                 Combine_Vector (Default_Text_Spacing / 2, 0));
+            Attrib_Value_Rect := Combine_Rectangle
+              (Top_Left     => Get_Top_Center (Class_Name_Rect) +
+                                 Combine_Vector (Default_Text_Spacing / 2, 0),
+               Bottom_Right => Get_Bottom_Right (Class_Name_Rect));
 
-         Iterator := Settings.Get_Node_Attributes (Widget, Node);
-         while Graph_Lib.Node_Attribute_Filters.More (Iterator) loop
-            Move (Attrib_Name_Rect, Line_Feed);
-            --  pragma Assert
-            --    (Get_Bottom (Attrib_Name_Rect) <= Get_Bottom (Draw_Rect));
-            Move (Attrib_Value_Rect, Line_Feed);
+            Iterator := Settings.Get_Node_Attributes (Widget, Node);
+            while Graph_Lib.Node_Attribute_Filters.More (Iterator) loop
+               Move (Attrib_Name_Rect, Line_Feed);
+               --  pragma Assert
+               --    (Get_Bottom (Attrib_Name_Rect) <= Get_Bottom (Draw_Rect));
+               Move (Attrib_Value_Rect, Line_Feed);
 
-            Graph_Lib.Node_Attribute_Filters.Next (Iterator, Attribute);
+               Graph_Lib.Node_Attribute_Filters.Next (Iterator, Attribute);
 
-            Draw_Text
-              (Buffer => Buffer,
-               Font   => Font,
-               Gc     => Widget.Drawing.Node_Text,
-               Area   => Attrib_Name_Rect,
-               Text   => Graph_Lib.Convert_Node_Attribute_Id_To_Name
-                           (Attribute));
-            Draw_Text
-              (Buffer => Buffer,
-               Font   => Font,
-               Gc     => Widget.Drawing.Node_Text,
-               Area   => Attrib_Value_Rect,
-               Text   => Graph_Lib.Get_Node_Attribute_Value_As_String
-                           (Graph_Node, Attribute));
-         end loop;
+               Draw_Text
+                 (Buffer => Buffer,
+                  Font   => Font,
+                  Gc     => Widget.Drawing.Node_Text,
+                  Area   => Attrib_Name_Rect,
+                  Text   => Graph_Lib.Convert_Node_Attribute_Id_To_Name
+                              (Attribute));
+               Draw_Text
+                 (Buffer => Buffer,
+                  Font   => Font,
+                  Gc     => Widget.Drawing.Node_Text,
+                  Area   => Attrib_Value_Rect,
+                  Text   => Graph_Lib.Get_Node_Attribute_Value_As_String
+                              (Graph_Node, Attribute));
+            end loop;
+         end if;
       end Draw_Node_Content;
 
       Inner_Rect : Vis.Absolute.Rectangle_2d;
@@ -900,7 +911,9 @@ package body Giant.Graph_Widgets.Drawing is
       end if;
 
       Draw_Node_Rectangle (Inner_Rect);
-      Draw_Node_Content (Inner_Rect);
+      if Detail_Level >= Average then
+         Draw_Node_Content (Inner_Rect);
+      end if;
    end Draw_Node;
 
    procedure Update_Buffer_Edges

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.22 $
+--  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.23 $
 --  $Author: keulsn $
---  $Date: 2003/09/12 20:30:13 $
+--  $Date: 2003/09/16 22:04:25 $
 --
 ------------------------------------------------------------------------------
 
@@ -82,19 +82,24 @@ package body Giant.Graph_Widgets.Callbacks is
       Logic   : Vis.Logic.Rectangle_2d;
       Visible : Vis.Logic.Rectangle_2d;
       Area    : Vis.Logic.Rectangle_2d;
+      Horizontal_Value : Glib.Gdouble;
+      Vertical_Value   : Glib.Gdouble;
       use Vis.Logic;
       package Adj renames Gtk.Adjustment;
    begin
+      if Widget.Callbacks.Accept_Scrolling /= 0 then
+         return;
+      end if;
       Logic := Get_Logical_Area (Widget);
       Visible := Get_Visible_Area (Widget);
       Area := Get_Surrounding (Logic, Visible);
 
+      Horizontal_Value := Glib.Gdouble (Get_Left (Visible));
+      Vertical_Value := Glib.Gdouble (Get_Top (Visible));
+
       if Adj."/="
         (Widget.Callbacks.Horizontal_Adjustment, Adj.Null_Adjustment) then
 
-         Gtk.Handlers.Handler_Block
-           (Obj => Widget.Callbacks.Horizontal_Adjustment,
-            Id  => Widget.Callbacks.Horizontal_Handler);
          Adj.Set_Lower
            (Widget.Callbacks.Horizontal_Adjustment,
             Glib.Gdouble (Get_Left (Area)));
@@ -114,16 +119,10 @@ package body Giant.Graph_Widgets.Callbacks is
          Adj.Set_Value
            (Widget.Callbacks.Horizontal_Adjustment,
             Glib.Gdouble (Get_Left (Visible)));
-         Gtk.Handlers.Handler_Unblock
-           (Obj => Widget.Callbacks.Horizontal_Adjustment,
-            Id  => Widget.Callbacks.Horizontal_Handler);
       end if;
       if Adj."/="
         (Widget.Callbacks.Vertical_Adjustment, Adj.Null_Adjustment) then
 
-         Gtk.Handlers.Handler_Block
-           (Obj => Widget.Callbacks.Vertical_Adjustment,
-            Id  => Widget.Callbacks.Vertical_Handler);
          Adj.Set_Lower
            (Widget.Callbacks.Vertical_Adjustment,
             Glib.Gdouble (Get_Top (Area)));
@@ -143,9 +142,6 @@ package body Giant.Graph_Widgets.Callbacks is
          Adj.Set_Value
            (Widget.Callbacks.Vertical_Adjustment,
             Glib.Gdouble (Get_Top (Visible)));
-         Gtk.Handlers.Handler_Unblock
-           (Obj => Widget.Callbacks.Vertical_Adjustment,
-            Id  => Widget.Callbacks.Vertical_Handler);
       end if;
    end Update_Scrollbars;
 
@@ -155,19 +151,22 @@ package body Giant.Graph_Widgets.Callbacks is
 
       Current : Vis.Logic.Vector_2d;
       Left    : Vis.Logic_Float;
+      New_X   : Vis.Logic_Float;
    begin
-      Current := Get_Location (Widget);
-      Left := Vis.Logic_Float (Gtk.Adjustment.Get_Value (Adjustment));
-      Vis.Logic.Set_X
-        (Current,
-         Left + Vis.Logic.Get_Width (Get_Visible_Area (Widget)) / 2.0);
-      Set_Location (Widget, Current);
-      --  Must clear queue because 'Set_Location' might update the value of
-      --  'Adjustment' thus emitting a new "value_changed" signal leading
-      --  into an infinite recursion.
+      Widget.Callbacks.Accept_Scrolling :=
+        Widget.Callbacks.Accept_Scrolling + 1;
+      if Widget.Callbacks.Accept_Scrolling = 1 then
+         Current := Get_Location (Widget);
+         Left := Vis.Logic_Float (Gtk.Adjustment.Get_Value (Adjustment));
+         New_X := Left + Vis.Logic.Get_Width (Get_Visible_Area (Widget)) / 2.0;
+         Vis.Logic.Set_X (Current, New_X);
+         Set_Location (Widget, Current);
+      end if;
       Gtk.Handlers.Emit_Stop_By_Name
         (Object => Widget.Callbacks.Horizontal_Adjustment,
          Name   => "value_changed");
+      Widget.Callbacks.Accept_Scrolling :=
+        Widget.Callbacks.Accept_Scrolling - 1;
    end On_Horizontal_Scroll;
 
    procedure On_Vertical_Scroll
@@ -176,19 +175,22 @@ package body Giant.Graph_Widgets.Callbacks is
 
       Current : Vis.Logic.Vector_2d;
       Top     : Vis.Logic_Float;
+      New_Y   : Vis.Logic_Float;
    begin
-      Current := Get_Location (Widget);
-      Top := Vis.Logic_Float (Gtk.Adjustment.Get_Value (Adjustment));
-      Vis.Logic.Set_Y
-        (Current,
-         Top + Vis.Logic.Get_Height (Get_Visible_Area (Widget)) / 2.0);
-      Set_Location (Widget, Current);
-      --  Must clear queue because 'Set_Location' might update the value of
-      --  'Adjustment' thus emitting a new "value_changed" signal leading
-      --  into an infinite recursion.
+      Widget.Callbacks.Accept_Scrolling :=
+        Widget.Callbacks.Accept_Scrolling + 1;
+      if Widget.Callbacks.Accept_Scrolling = 1 then
+         Current := Get_Location (Widget);
+         Top := Vis.Logic_Float (Gtk.Adjustment.Get_Value (Adjustment));
+         New_Y := Top + Vis.Logic.Get_Height (Get_Visible_Area (Widget)) / 2.0;
+         Vis.Logic.Set_Y (Current, New_Y);
+         Set_Location (Widget, Current);
+      end if;
       Gtk.Handlers.Emit_Stop_By_Name
         (Object => Widget.Callbacks.Vertical_Adjustment,
          Name   => "value_changed");
+      Widget.Callbacks.Accept_Scrolling :=
+        Widget.Callbacks.Accept_Scrolling - 1;
    end On_Vertical_Scroll;
 
 
@@ -570,6 +572,7 @@ package body Giant.Graph_Widgets.Callbacks is
                      (On_Leave_Notify_Event'Access));
 
       Realize_Handling.Set_Realize (Widget);
+      Widget.Callbacks.Accept_Scrolling := 0;
    end Connect_All_Callbacks;
 
 
