@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: selection.tex,v $, $Revision: 1.7 $
-%  $Date: 2003/02/21 17:08:30 $
-%  $Author: schwiemn $
+%  $RCSfile: selection.tex,v $, $Revision: 1.8 $
+%  $Date: 2003/03/19 19:03:35 $
+%  $Author: stupro $
 %
 %  Description: Use-Cases für die Selektionen
 %
@@ -25,7 +25,8 @@ Siehe auch \ref{Aktuelle Selektion vs Selektionen}.
   \begin{postsuccess}
     \cond Die vorherige aktuelle Selektion ist nicht mehr aktuell.
     \cond Die entsprechende Selektion ist nun die aktuelle Selektion und
-          als solche erkennbar angezeigt und hervorgehoben.
+          als solche erkennbar angezeigt und hervorgehoben, auch mittels
+	  einer Hervorhebung in der Selektionsauswahlliste des Fensters.
     
   \end{postsuccess}
  
@@ -97,8 +98,10 @@ Anzeigefensters.
  
   \begin{proc}    
     \step[1]
-    Der Benutzer startet den UseCase über das PopUp Menü
-    >>>    Dort gibt es drei Eintäge für jede definierbare Farbe
+    Der Benutzer startet den UseCase mit Rechtsklick in
+    die Selektionsauswahlliste \ref{Selektionsauswahlliste}
+    auf die entsprechende Selektion über das PopUp Menü
+    \gq{Highlight Selection Color1 (2,3)}.
         
       
     \step[2]
@@ -135,9 +138,10 @@ Anzeigefensters aufzuheben.
   
   \begin{proc}    
     \step[1]
-    Der Benutzer startet den UseCase über das PopUp Menü:
-    \\<<<<<<<<<VERWEIS   GUI >>>>>>>>>>>>>>>>
-    
+    Der Benutzer startet den UseCase mit Rechtsklick in
+    die Selektionsauswahlliste \ref{Selektionsauswahlliste}
+    auf die entsprechende Selektion über den PopUp-Menüpunkt
+    \gq{Unhighlight Selection}.
 
     \step[2]
     GIANT setzt die Hervorhebung der Selektion zurück.
@@ -171,11 +175,14 @@ Mit diesem UseCase können neue, leere Selektionen angelegt werden.
   
   \begin{proc}    
     \step[1]
-    Der Benutzer startet den UseCase über das PopUp Menü:
-    !!!!!ENTSPRECHENDEN MENÜEINTAG NENNEN.
+    Der Benutzer startet den UseCase mit Rechtsklick in
+    die Selektionsauswahlliste \ref{Selektionsauswahlliste}
+    auf die entsprechende Selektion über den PopUp-Menüpunkt
+    \gq{New Selection}.
     
     \step[2] 
-    GIANT öffnet den allgemeinen Texteingabedialog <<<<VERWEIS GUI>>>>.
+    GIANT öffnet den allgemeinen Texteingabedialog \ref{DIALOG-WINDOW},
+    \gq{Enter Name for new Selection}.
       
     \step[3] 
     Der Benutzer gibt dort einen zulässigen Namen für die neue Selektion 
@@ -221,11 +228,13 @@ Anzeigefensters (nicht zum Kopieren in ein anderes Anzeigefenster).
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase durch Rechtsklick auf die zu kopierende
-    Selektion (\gq{Quellselektion}) und wählt aus dem PopUp Menü:
-    !!!!!ENTSPRECHENDEN MENÜEINTAG NENNEN.
+    Selektion in der Selektionsauswahlliste \ref{Selektionsauswahlliste}
+    (\gq{Quellselektion}) und wählt aus dem PopUp Menü:
+    Copy Selection.
     
     \step[2] 
-    GIANT öffnet den allgemeinen Texteingabedialog. <<<<VERWEIS GUI>>>>.
+    GIANT öffnet den allgemeinen Texteingabedialog \ref{DIALOG-WINDOW},
+    \gq{Please enter name for copy of Selection X} .
       
     \step[3] 
     Der Benutzer gibt dort einen zulässigen Namen für die neue Selektion 
@@ -280,8 +289,10 @@ unverändert.
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase durch Rechtsklick auf die zu löschende
-    Selektion (\gq{Quellselektion}) und wählt aus dem PopUp Menü:
-    !!!!!ENTSPRECHENDEN MENÜEINTAG NENNEN.
+    Selektion in der Selektionsauswahlliste \ref{Selektionsauswahlliste}
+    (\gq{Quellselektion}) und wählt aus dem PopUp Menü:
+    Delete Selection.
+  
     
     \step[2]
     GIANT löscht die entsprechende Selektion.
@@ -362,19 +373,32 @@ Siehe hierzu \ref{Selektion aus IML-Teilgraphen ableiten}.
   \begin{proc} 
      
     \step[1]
-    Der Benutzer führt einen Rechtsklick auf den Quell-IML-Teilgraphen aus
-    und wählt im PopUp Menü den Eintrag <<<<<<<<<<< VERWEIS GUI >>>>>>
+    Der Benutzer führt einen Rechtsklick auf den Quell-IML-Teilgraphen 
+    in der Subgraph List im Hauptfenster aus
+    und wählt im dazugehörigen PopUp Menü \ref{PopUp Menü Subgraph List}
+    den Eintrag \gq{Create Window Selection from IML Subgraph}.
      
     \step[2]
-    GIANT zeigt den allgemeinen Texteingabediolog <<<<<<<<<VERWEIS GUI>>>>>
+    GIANT zeigt den allgemeinen Texteingabediolog \ref{DIALOG-WINDOW},
+    \gq{Enter name for new selection}
       	    
     \step[3]
     Der Benutzer gibt einen Namen für die neu zu erstellende Selektion ein
     und bestätigt mit OK.\\
     Gibt der Benutzer hier keinen Namen ein, so vergibt GIANT automatisch 
     einen Namen.
-       
+    
     \step[4]
+    Die Statuszeile im Hauptfenster zeigt an \gq{Please select window for
+    Insertion of new window selection}, der Mauszeiger verwandelt sich in
+    ein Fadenkreuz.
+    
+    \step[5]
+    Der Nutzer klickt auf die VIS\_PANE des Windows, in dem er die neue
+    Selektion erstellen will (Ziel-Anzeigefenster).
+       
+    \step[6]
+    Die Statuszeile im Hauptfenster wechselt wieder zur normalen Anzeige.
     GIANT erzeugt gemäß der unter \ref{Selektion aus IML-Teilgraphen ableiten}
     beschriebenen Konvention im Ziel-Anzeigefenster eine neue Selektion als 
     Ableitung aus dem Quell-IML-Teilgraphen.
@@ -436,9 +460,10 @@ Vorgehen analog zu \ref{Mengenoperationen auf 2 IML-Teilgraphen}.
   
   \begin{proc}    
     \step[1]
-    Der Benutzer startet den UseCase über durch Auswahl aus dem PopUp Menü 
-    <<<<<<<<<<<<<<!!!!!ENTSPRECHENDEN MENÜEINTAG NENNEN.
-    VERWEIS GUI>>>>>>>>>>>>>
+    Der Benutzer startet den UseCase über durch Auswahl des
+    Menüpunktes Selection Set Operation (Union/Difference/Intersection) 
+    aus dem PopUp Menü in der Selektionsauswahlliste SELECTION\_LIST
+    \label{Selektionsauswahlliste}.
     
     \step[2] 
     GIANT öffnet den Common\_Set\_Operation\_Dialog 

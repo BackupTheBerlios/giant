@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.37 $
-%  $Date: 2003/03/19 17:29:25 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.38 $
+%  $Date: 2003/03/19 19:03:59 $
 %  $Author: stupro $
 %
 %  Description: Bis zu Revision 1.6 sind UseCase-artige Beschreibungen enthalten,
@@ -73,7 +73,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
      
 
   \subsection {Statuszeile}
-
+   \label{Statuszeile}
     In der Statuszeile befindet sich die Information:
     GIANT - Project name: x , Windows: x , IML Nodes: x, IML Edges: x
 
@@ -135,6 +135,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
           \item unhighlight
           \item Copy IML Subgraph with existing layout % OK
           \item Copy IML Subgraph with new layout % OK
+	  \item Create Window Selection from IML Subgraph % OK
           \item Rename IML Subgraph
           \item Delete IML Subgraph
           \item IML Subgraph Set Operation (Union/Difference/Intersection)
@@ -232,6 +233,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     \begin{enumerate}
       \item New Selection
       \item Add Nodes to Selection
+      \item New IML Subgraph from Selection % ?
       
       \item Highlight Selection  Color1 [gemäß Einstellung in Config Datei] % OK
       \item Highlight Selection  Color2 [gemäß Einstellung in Config Datei] % OK
@@ -241,10 +243,9 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
       
       \item Unhighlight Selection % OK
       \item Change highlighting color 
-      \item Copy Selection
-      \item Rename Selection
+      \item Copy Selection % OK
       \item Delete Selection % OK
-      \item Selection Set Operation (Union/Difference/Intersection)
+      \item Selection Set Operation (Union/Difference/Intersection) % OK
       \item Export Selection
       \item Import Selection
     \end{enumerate}    
@@ -408,13 +409,17 @@ Der Dialog Layoutalgorithmen bietet folgende Möglichkeiten:
 \section{Dateneingabe}
 Beschreibung von verschiedenen Textfeldtypen etc. zur Eingabe von Daten.
 
+  \subsection{Knoten Annotations-Dialog}
+  \label{Knoten Annotations-Dialog}
+  
+  
 \subsection{Platz Schaffen-Dialog}
 \label{Platz Schaffen-Dialog}
 
 
 
-  \subsection{Knoten Annotations-Dialog}
-  \label{Knoten Annotations-Dialog}
+\subsection{Knoten Annotations-Dialog}
+\label{Knoten Annotations-Dialog}
 
 
 Im Dialogfenster MAKE\_ROOM wird in einem Textfeld als Zahl angegeben, um wieviel
