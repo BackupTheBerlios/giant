@@ -18,12 +18,11 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.12 $
+--  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.13 $
 --  $Author: koppor $
---  $Date: 2003/06/26 16:01:42 $
+--  $Date: 2003/06/27 15:51:26 $
 
 with Untagged_Ptr_Ops;
-with Ada.Unchecked_Deallocation;
 
 package body Giant.Graph_Lib.Selections is
 
@@ -135,9 +134,6 @@ package body Giant.Graph_Lib.Selections is
    procedure Destroy
      (Selection_To_Destroy : in out Selection)
    is
-
-      procedure Free_Selection is new Ada.Unchecked_Deallocation
-        (Selection_Record, Selection);
 
    begin
       Edge_Id_Sets.Destroy (Selection_To_Destroy.Edges);
@@ -276,7 +272,7 @@ package body Giant.Graph_Lib.Selections is
       Res.Edges := Selection_To_Rename.Edges;
       Res.Nodes := Selection_To_Rename.Nodes;
 
-      Destroy (Selection_To_Rename);
+      Free_Selection (Selection_To_Rename);
       Selection_To_Rename := Res;
    end Rename;
 
@@ -321,36 +317,10 @@ package body Giant.Graph_Lib.Selections is
         (Stream : in     Bauhaus_Io.In_Stream_Type;
          Edge   :    out Edge_Id)
       is
-         Source_Node              : Node_Id;
-         Target_Node              : Node_Id;
-         Attribute                : Node_Attribute_Id;
-         Attribute_Element_Number : Natural;
-
-         Len_Node_Class_Name      : Natural;
-         Len_Node_Attribute_Name  : Natural;
+         Edge_Internal_Id         : Positive;
       begin
-         Read_Node_Id (Stream, Source_Node);
-         Read_Node_Id (Stream, Target_Node);
-
-         Bauhaus_Io.Read_Natural (Stream, Len_Node_Class_Name);
-         Bauhaus_Io.Read_Natural (Stream, Len_Node_Attribute_Name);
-
-         declare
-            Node_Attribute_Name : String (1..Len_Node_Attribute_Name);
-         begin
-            Bauhaus_Io.Read_String (Stream, Node_Attribute_Name);
-            Attribute := Convert_Node_Attribute_Name_To_Id
-              (Get_Node_Class_Id (Source_Node).all.Name,
-               Node_Attribute_Name);
-         end;
-
-         Bauhaus_Io.Read_Natural (Stream, Attribute_Element_Number);
-
-         Edge := Edge_Id_Locator.Locate
-           (Source_Node,
-            Target_Node,
-            Attribute,
-            Attribute_Element_Number);
+         Bauhaus_Io.Read_Natural (Stream, Edge_Internal_Id);
+         Edge := All_Edges (Edge_Internal_Id);
       end Read_Edge_Id;
 
       ----------------------------------------------------------------------
@@ -396,26 +366,12 @@ package body Giant.Graph_Lib.Selections is
       ----------------------------------------------------------------------
       --  Is implemented here, since it is used only once
       --    if it will be used more, please put it in giant-graph_lib.ads
-      --
-      --  The full edge_record-information is written, since there is no
-      --     edge_id_image
       procedure Write_Edge_Id
         (Stream : in Bauhaus_Io.Out_Stream_Type;
          Edge   : in Edge_Id)
       is
       begin
-         Write_Node_Id (Stream, Edge.Source_Node);
-         Write_Node_Id (Stream, Edge.Target_Node);
-
-         declare
-            Image : String := Convert_Node_Attribute_Id_To_Name
-              (Edge.Attribute);
-         begin
-            Bauhaus_Io.Write_Natural (Stream, Image'Length);
-            Bauhaus_Io.Write_String  (Stream, Image);
-         end;
-
-         Bauhaus_Io.Write_Natural (Stream, Edge.Attribute_Element_Number);
+         Bauhaus_Io.Write_Natural (Stream, Edge.Internal_Id);
       end Write_Edge_Id;
 
       ----------------------------------------------------------------------

@@ -20,13 +20,15 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.14 $
+--  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.15 $
 --  $Author: koppor $
---  $Date: 2003/06/26 16:01:57 $
+--  $Date: 2003/06/27 15:51:39 $
 --
 ------------------------------------------------------------------------------
 --
 --  Contains the Selections
+
+with Ada.Unchecked_Deallocation;
 
 --  from Bauhaus
 with Lists;
@@ -220,6 +222,7 @@ package Giant.Graph_Lib.Selections is
       return Selection;
 
 private
+
    type Selection_Record (Name_Length : Positive) is record
       Name  : String (1..Name_Length);
       Nodes : Node_Id_Set;
@@ -227,6 +230,10 @@ private
    end record;
 
    type Selection is access Selection_Record;
+
+   ---------------------------------------------------------------------------
+   procedure Free_Selection is new Ada.Unchecked_Deallocation
+     (Selection_Record, Selection);
 
 end Giant.Graph_Lib.Selections;
 
