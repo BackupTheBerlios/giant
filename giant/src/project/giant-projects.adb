@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.39 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.40 $
 --  $Author: schwiemn $
---  $Date: 2003/06/26 19:33:50 $
+--  $Date: 2003/06/27 07:01:02 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -1343,11 +1343,17 @@ package body Giant.Projects is
             if not A_Vis_Window_Data_Element.Is_Memory_Loaded then
 
                -- will load the window into the main memory
+               -- changes a vis window data element
                A_Vis_Window := Get_Visualisation_Window
                  (Project,
                   Ada.Strings.Unbounded.To_String
                   (A_Vis_Window_Data_Element.Vis_Window_Name));
-
+                
+               -- reload as changed
+               A_Vis_Window_Data_Element := 
+                 Known_Vis_Windows_Hashs.Fetch 
+                   (Project.All_Vis_Windows, A_Vis_Window_Key);
+                  
                Process_Vis_Window
                  (Project,
                   A_Vis_Window,
