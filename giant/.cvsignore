@@ -1,5 +1,7 @@
 debug.log
 giant
+giant-Linux
+giant-Solaris
 locale
 Makefile.local
 obj*
