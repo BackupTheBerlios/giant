@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.36 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.37 $
 --  $Author: koppor $
---  $Date: 2003/07/17 16:13:05 $
+--  $Date: 2003/07/22 09:35:13 $
 --
 --  TBD:
 --    * Write into comment, when the routine may be used
@@ -459,6 +459,17 @@ package Giant.Graph_Lib is
    ---------------------------------------------------------------------------
    --  The caller may do anything with the array, since a copy is made
    --
+   --  Faster than Get_Incoming_Edges returning a set
+   --
+   --  Returns:
+   --    All incoming edges of given node
+   function Get_Incoming_Edges
+      (Node : in Node_Id)
+      return Edge_Id_Array;
+
+   ---------------------------------------------------------------------------
+   --  The caller may do anything with the array, since a copy is made
+   --
    --  disabled, since not needed yet
    --
    --  Returns:
@@ -479,7 +490,7 @@ package Giant.Graph_Lib is
    ---------------------------------------------------------------------------
    --  The caller may do anything with the array, since a copy is made
    --
-   --  Faster than Get_Outgoing_Edges returing a set
+   --  Faster than Get_Outgoing_Edges returning a set
    --
    --  Returns:
    --    All outgoing edges of given node
