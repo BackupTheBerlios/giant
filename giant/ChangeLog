@@ -1,4 +1,4 @@
-2003-09-17  Oliver Kopp  <koppor@gspc54.informatik.uni-stuttgart.de>
+2003-09-17  Oliver Kopp  <koppor@studi.informatik.uni-stuttgart.de>
 
 	* shared/gsl/standard.gsl: fixed while & repeat (Bug #931)
 	
