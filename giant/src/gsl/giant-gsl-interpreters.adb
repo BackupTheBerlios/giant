@@ -21,8 +21,8 @@
 -- First Author: Gerrit Schulz
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
--- $Author: squig $
--- $Date: 2003/07/01 16:28:35 $
+-- $Author: schulzgt $
+-- $Date: 2003/07/03 13:46:34 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -120,6 +120,8 @@ package body Giant.Gsl.Interpreters is
       Register_Runtime (Giant.Gsl.Runtime.Runtime_Set'Access, "set");
       Register_Runtime (Giant.Gsl.Runtime.Runtime_If'Access, "if");
       Register_Runtime (Giant.Gsl.Runtime.Runtime_Loop'Access, "loop");
+      Register_Runtime (Giant.Gsl.Runtime.Runtime_Error'Access, "error");
+      Register_Runtime (Giant.Gsl.Runtime.Runtime_Run'Access, "run");
 
       -- arithmetic (ref. GIANT Scripting Language Specification 1.5.1.3)
       Register_Runtime (Giant.Gsl.Runtime.Runtime_Add'Access, "add");
@@ -149,6 +151,8 @@ package body Giant.Gsl.Interpreters is
      (Individual  : access Interpreter_Record;
       Next_Action : out    Giant.Evolutions.Evolution_Action) is
 
+      use Giant.Gsl.Syntax_Tree;
+
       Cmd      : Syntax_Node;
       Res1     : Gsl_Type;
       Res2     : Gsl_Type;
@@ -161,81 +165,80 @@ package body Giant.Gsl.Interpreters is
          Execution_Stacks.Pop (Current_Interpreter.Execution_Stack, Cmd);
 
          -- execute a Gsl command
-         case Giant.Gsl.Syntax_Tree.Get_Node_Type (Cmd) is
+         case Get_Node_Type (Cmd) is
             when Literal =>
-               Lit := Giant.Gsl.Syntax_Tree.Get_Literal (Cmd);
+               Lit := Get_Literal (Cmd);
                if Lit /= Gsl_Null then
                   Lit := Copy (Lit);
-                  Result_Stacks.Push (Individual.Result_Stack, Lit);
+                  Result_Stacks.Push (Current_Interpreter.Result_Stack, Lit);
                else
-                  Result_Stacks.Push (Individual.Result_Stack, Gsl_Null);
+                  Result_Stacks.Push (Current_Interpreter.Result_Stack, 
+                                      Gsl_Null);
                end if;
 
             when Visible_Var =>
-               Lit := Giant.Gsl.Syntax_Tree.Get_Literal (Cmd);
+               Lit := Get_Literal (Cmd);
                Lit := Get_Var (Get_Ref_Name (Gsl_Var_Reference (Lit)));
                if Lit /= Gsl_Null then
                   Lit := Copy (Lit);
-                  Result_Stacks.Push (Individual.Result_Stack, Lit);
+                  Result_Stacks.Push (Current_Interpreter.Result_Stack, Lit);
                else
-                  Result_Stacks.Push (Individual.Result_Stack, Gsl_Null);
+                  Result_Stacks.Push (Current_Interpreter.Result_Stack,
+                                      Gsl_Null);
                end if;
 
             when Visible_Ref =>
-               Lit := Giant.Gsl.Syntax_Tree.Get_Literal (Cmd);
+               Lit := Get_Literal (Cmd);
                Lit := Copy (Lit);
                Result_Stacks.Push (Current_Interpreter.Result_Stack, Lit);
 
             when Var_Creation =>
-               Lit := Giant.Gsl.Syntax_Tree.Get_Literal (Cmd);
+               Lit := Get_Literal (Cmd);
                Create_Var (Get_Ref_Name (Gsl_Var_Reference (Lit)));
                Result_Stacks.Push (Current_Interpreter.Result_Stack, Lit);
 
             when Global_Ref =>
-               Lit := Giant.Gsl.Syntax_Tree.Get_Literal (Cmd);
+               Lit := Get_Literal (Cmd);
                Lit := Copy (Lit);
                Result_Stacks.Push (Current_Interpreter.Result_Stack, Lit);
 
             when Script_Decl =>
-               Lit := Giant.Gsl.Syntax_Tree.Get_Literal (Cmd);
+               Lit := Get_Literal (Cmd);
                Lit := Copy (Lit);
                Set_Activation_Record (Gsl_Script_Reference (Lit),
                  Current_Interpreter.Current_Activation_Record);
                Result_Stacks.Push (Current_Interpreter.Result_Stack, Lit);
 
             when List =>
-               Res_List := Create_Gsl_List
-                 (Giant.Gsl.Syntax_Tree.Get_Size (Cmd));
+               Res_List := Create_Gsl_List (Get_Size (Cmd));
                for i in reverse 1 .. Get_List_Size (Res_List) loop
-                  Result_Stacks.Pop (Individual.Result_Stack, Res1);
+                  Result_Stacks.Pop (Current_Interpreter.Result_Stack, Res1);
                   Set_Value_At (Res_List, i, Res1);
                end loop;
                Result_Stacks.Push
-                 (Individual.Result_Stack, Gsl_Type (Res_List));
+                 (Current_Interpreter.Result_Stack, Gsl_Type (Res_List));
 
             when Sequence =>
                if Giant.Gsl.Syntax_Tree.Get_Size (Cmd) = 0 then
                   Result_Stacks.Push
-                    (Individual.Result_Stack, Gsl_Null);
+                    (Current_Interpreter.Result_Stack, Gsl_Null);
                else
-                  Result_Stacks.Pop (Individual.Result_Stack, Res1);
-                  for i in 1 .. Giant.Gsl.Syntax_Tree.Get_Size (Cmd)-1 loop
-                     Result_Stacks.Pop (Individual.Result_Stack, Res2);
+                  Result_Stacks.Pop (Current_Interpreter.Result_Stack, Res1);
+                  for i in 1 .. Get_Size (Cmd)-1 loop
+                     Result_Stacks.Pop
+                       (Current_Interpreter.Result_Stack, Res2);
                      -- free the memory
                      Destroy_Gsl_Type (Res2);
                   end loop;
                   Result_Stacks.Push
-                    (Individual.Result_Stack, Res1);
+                    (Current_Interpreter.Result_Stack, Res1);
                end if;
 
             when Script_Activation => Script_Activation_Cmd;
 
-            when Script_Exec =>
-               Default_Logger.Debug
-                 ("Interpreter: SCRIPT_EXEC.", "Giant.Gsl");
-               Script_Exec_Cmd;
+            when Script_Exec => Script_Exec_Cmd;
 
-            when AR_Destroy =>
+            when Script_Finish =>
                Default_Logger.Debug
                  ("Interpreter: DESTROY Activation_Record.", "Giant.Gsl");
                Destroy_Activation_Record
@@ -244,9 +247,13 @@ package body Giant.Gsl.Interpreters is
                  (Current_Interpreter.Activation_Records,
                   Current_Interpreter.Current_Activation_Record);
 
-            when others =>
-               null;
+            when Script_Loop => null;
 
+            when Result_Pop =>
+               Result_Stacks.Pop (Current_Interpreter.Result_Stack, Res1);
+               Destroy_Gsl_Type (Res1);
+
+            when others => null;
          end case;
 
          --  advance
@@ -359,7 +366,7 @@ package body Giant.Gsl.Interpreters is
          Execution_Stacks.Push (Current_Interpreter.Execution_Stack,
            Giant.Gsl.Compilers.Get_Execution_Stack
              (Current_Interpreter.Gsl_Compiler,
-              Giant.Gsl.Syntax_Tree.Create_Node (AR_Destroy,
+              Giant.Gsl.Syntax_Tree.Create_Node (Script_Finish,
                 Null_Node, Null_Node)));
 
          -- push the code of the script
