@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_widgets-drawing.ads,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/06/30 02:55:17 $
+--  $Date: 2003/06/30 16:22:49 $
 --
 ------------------------------------------------------------------------------
 --
@@ -45,5 +45,45 @@ package Giant.Graph_Widgets.Drawing is
    --  results in correct display of the graph widget.
    procedure Update_Display
      (Widget : access Graph_Widget_Record'Class);
+
+   ----------------------------------------------------------------------------
+   --  Updates the size of an edge and sets the values. Uses the 'Settings'
+   --  package. Usually 'Edge' should be dropped from the region manager,
+   --  then 'Settings' should be updated if necessary, then this procedure
+   --  should be called, then 'Edge's source and target nodes should be
+   --  resized and moved, then the new points of 'Edge' should be set and
+   --  finally 'Edge' should be re-inserted into the region manager.
+   --  * Thickness
+   --  * Text area
+   procedure Update_Edge_Size
+     (Widget : access Graph_Widget_Record'Class;
+      Edge   : in     Vis_Data.Vis_Edge_Id);
+
+   ----------------------------------------------------------------------------
+   --  Updates the size of a node and sets the values. Uses the 'Settings'
+   --  package. Usually 'Node' should be dropped from the region manager,
+   --  then 'Settings' should be updated if necessary, then this procedure
+   --  should be called, then the new position of 'Node' should be set
+   --  if necessary and finally 'Node' should be re-inserted into the region
+   --  manager.
+   --  * Width
+   --  * Height
+   procedure Update_Node_Size
+     (Widget : access Graph_Widget_Record'Class;
+      Node   : in     Vis_Data.Vis_Node_Id);
+
+private
+
+   Default_Dash_Length          : constant := 5;
+   Default_Dash_Separation      : constant := 2;
+   Default_Dot_Length           : constant := 2;
+   Default_Dot_Separation       : constant := 2;
+
+   Default_Edge_Line_Thickness  : constant := 0;
+
+   Default_Node_Light_Thickness : constant := 6;
+
+   Default_Text_Spacing         : constant := 3;
+   Default_Text_Abbreviation    : constant String := "...";
 
 end Giant.Graph_Widgets.Drawing;

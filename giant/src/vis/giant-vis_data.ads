@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.14 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.15 $
 --  $Author: keulsn $
---  $Date: 2003/06/30 14:37:49 $
+--  $Date: 2003/06/30 16:22:49 $
 --
 ------------------------------------------------------------------------------
 --
@@ -821,11 +821,18 @@ private
          Nodes               : Vis_Node_Sets.Set;
       end record;
 
+
+   Default_Region_Width  : constant := 200;
+   Default_Region_Height : constant := 300;
+
    type Region_Manager is new Ada.Finalization.Controlled with
       record
-         Region_Width  : Vis.Absolute_Natural;
-         Region_Height : Vis.Absolute_Natural;
-         Regions       : Region_Mappings.Mapping;
+         Region_Width              : Vis.Absolute_Natural;
+         Region_Height             : Vis.Absolute_Natural;
+         Regions                   : Region_Mappings.Mapping;
+         --  If True then background space not covered by regions must
+         --  be refreshed.
+         Empty_Background_Polluted : Boolean;
       end record;
 
    ----------------------------------------------------------------------------

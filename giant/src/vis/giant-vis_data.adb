@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.11 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.12 $
 --  $Author: keulsn $
---  $Date: 2003/06/30 14:37:49 $
+--  $Date: 2003/06/30 16:22:49 $
 --
 ------------------------------------------------------------------------------
 
@@ -1105,6 +1105,9 @@ package body Giant.Vis_Data is
          Region := Get_Region_If_Exists (Manager, Position);
          if Region /= null then
             Add_Background_Pollution (Region);
+         else
+            --  add pollution to space not covered by regions
+            Manager.Empty_Background_Polluted := True;
          end if;
       end loop;
    end Pollute_Area;
@@ -1134,13 +1137,18 @@ package body Giant.Vis_Data is
             if Refresh_Pending then
                Remove_Background_Pollution (Region);
             end if;
-         else
-            --  'Positions' without 'Region_Id's will be refreshed by default
+         elsif Manager.Empty_Background_Polluted then
+            --  'Positions' without 'Region_Id's will be refreshed if
+            --  necessary.
             Rectangle_2d_Lists.Attach
               (Get_Region_Extent (Manager, Position),
                Refresh_Area);
          end if;
       end loop;
+      if Refresh_Pending then
+         --  Clear refresh flag for 'Position's without 'Region_Id's
+         Manager.Empty_Background_Polluted := False;
+      end if;
    end Start_Refresh_Background;
 
    procedure End_Refresh_Background
@@ -1276,7 +1284,10 @@ package body Giant.Vis_Data is
    procedure Initialize
      (Manager : in out Region_Manager) is
    begin
+      Manager.Region_Width := Default_Region_Width;
+      Manager.Region_Height := Default_Region_Height;
       Manager.Regions := Region_Mappings.Create;
+      Manager.Empty_Background_Polluted := True;
    end Initialize;
 
    procedure Finalize

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.14 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.15 $
 --  $Author: keulsn $
---  $Date: 2003/06/30 14:37:49 $
+--  $Date: 2003/06/30 16:22:49 $
 --
 ------------------------------------------------------------------------------
 --
@@ -674,14 +674,14 @@ package Giant.Graph_Widgets is
    --  or not.
    --  This subprogram only needs to be called if the status of an already
    --  inserted node is changed. If a node is newly inserted, then the graph
-   --  widget will be check its status automatically.
+   --  widget will check that node's status automatically.
+   --  This subprogram may be called even if 'Node' is not contained in
+   --  'Widget'.
    --
    --  Parameters:
    --    Widget - The graph widget
    --    Node   - A node with a new annotation or a node whose annotation was
    --             deleted
-   --  Precondition:
-   --    'Contains (Widget, Node)'
    --  Raises:
    --    Unknown_Node_Id if Precondition is not satisfied
    procedure Change_Annotation_State

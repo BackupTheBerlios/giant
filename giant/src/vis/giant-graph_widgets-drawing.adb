@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/06/30 14:37:49 $
+--  $Date: 2003/06/30 16:22:49 $
 --
 ------------------------------------------------------------------------------
 
@@ -40,19 +40,6 @@ package body Giant.Graph_Widgets.Drawing is
 
    use Vis.Absolute;
    use type Vis.Absolute_Int;
-
-
-   Default_Dash_Length          : constant := 5;
-   Default_Dash_Separation      : constant := 2;
-   Default_Dot_Length           : constant := 2;
-   Default_Dot_Separation       : constant := 2;
-
-   Default_Edge_Line_Thickness  : constant := 0;
-
-   Default_Node_Light_Thickness : constant := 6;
-
-   Default_Text_Spacing         : constant := 3;
-   Default_Text_Abbreviation    : constant String := "...";
 
 
    type Layer_Clipping_Array is array (Positive range <>) of
@@ -269,9 +256,17 @@ package body Giant.Graph_Widgets.Drawing is
    end Revert_Clipping;
    pragma Inline (Revert_Clipping);
 
+   --  NOTE: Must be synced with 'Draw_Edge'
+   procedure Update_Edge_Size
+     (Widget : access Graph_Widget_Record'Class;
+      Edge   : in     Vis_Data.Vis_Edge_Id) is
+   begin
+      raise Unimplemented;
+   end Update_Edge_Size;
 
    ----------------------------------------------------------------------------
    --  Draws a node onto 'Buffer'
+   --  NOTE: Must be synced with 'Update_Edge_Size'
    procedure Draw_Edge
      (Widget : access Graph_Widget_Record'Class;
       Buffer : in     Gdk.Pixmap.Gdk_Pixmap;
@@ -403,8 +398,32 @@ package body Giant.Graph_Widgets.Drawing is
    end Draw_Edge;
 
 
+   --  NOTE: Must be synced with 'Draw_Node'
+   procedure Update_Node_Size
+     (Widget : access Graph_Widget_Record'Class;
+      Node   : in     Vis_Data.Vis_Node_Id) is
+   begin
+      raise Unimplemented;
+--        Settings.Get_Node_Icon
+--      (Icon, Icon_Width, Icon_Height);
+--        Settings.Get_Annotation_Icon
+--      (Annotation_Icon, Annotation_Width, Annotation_Height);
+
+--        Height :=
+--      Number_Of_Lights * Default_Node_Light_Thickness +
+--      1 +  --  Border
+--          Max (Height (Icon), Height (Annotation_Icon), Get_Height (Font)) +
+--      Default_Text_Spacing +
+--      Get_Height (Font) +  --  Class name
+--      Number_Of_Attributes * (Get_Height (Font) + Default_Text_Spacing) + -- attributes
+--      Default_Text_Spacing +
+--      1 +  --  Border
+--      Number_Of_Lights * Default_Node_Light_Thickness
+   end Update_Node_Size;
+
    ----------------------------------------------------------------------------
    --  Draws a node onto 'Buffer'
+   --  NOTE: Must be synced with 'Update_Node_Size'
    procedure Draw_Node
      (Widget : access Graph_Widget_Record'Class;
       Buffer : in     Gdk.Pixmap.Gdk_Pixmap;
@@ -689,10 +708,10 @@ package body Giant.Graph_Widgets.Drawing is
          Attrib_Name_Rect := Combine_Rectangle
            (Top_Left     => Get_Top_Left (Class_Name_Rect),
             Bottom_Right => Get_Bottom_Center (Class_Name_Rect) -
-                              Combine_Vector (0, Default_Text_Spacing / 2));
+                              Combine_Vector (Default_Text_Spacing / 2, 0));
          Attrib_Value_Rect := Combine_Rectangle
            (Top_Left     => Get_Top_Center (Class_Name_Rect) +
-                              Combine_Vector (0, Default_Text_Spacing / 2),
+                              Combine_Vector (Default_Text_Spacing / 2, 0),
             Bottom_Right => Get_Bottom_Right (Class_Name_Rect));
 
          Iterator := Settings.Get_Node_Attributes (Widget, Node);
