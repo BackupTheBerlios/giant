@@ -1,6 +1,37 @@
 Die Fähigkeiten der GIANT Scripting Language (GSL) werden im Anhang 
 \gq{GSL}, der Teil der GIANT Spezifikation ist, beschrieben.
 
+\section{Parameter der Layoutalgorithmen}
+Bei der Funktion \verb1insert_into_window1 auf Seite 34 der
+GSL-Spezifikation ist als Parameter \verb1parameters1 für den
+gewählten Layoutalgorithmus zu übergeben. Diese werden 1:1 dem
+Parameter \verb1additional_parameters1 der Routine \verb1Create1 in
+\verb1src/vis/giant-layout_factory.ads1 übergeben. Die möglichen
+Parameter sind dort dokumentiert.
+
+Für das Matrix-Layout sind keine Parameter vorgesehen.
+
+Für das Treelayout sind es folgende (Auszug aus dem Kommentar):
+
+\begin{verbatim}
+    Format:  [<Root_Node_ID>]; <List_Of_Class_Set_Names>
+    Example: "5; Aber, Hallo"
+             "; Ja, genau"
+             It is not possible to use " or ; or , in a classsetname
+             Brackets are possible.
+ 
+    Meaning:
+      Root_Node_Id    : The root-node of the tree to layout
+                        If not given, the root-node is searched
+                        If there's more than one possible root-node-id,
+                        the result is random.
+      Class_Set_Names : Names of ClassSet containing node-classes
+                          and edge-classes to layout
+ 
+      Target_Position : Position on window, where the root-node has to
+                           be placed
+\end{verbatim}
+
 \section{GSL-FAQ}
 
 Hier finden sich einige oft gestellte Fragen zur GSL.
