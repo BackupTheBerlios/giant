@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-xml_file_access.adb,v $, $Revision: 1.3 $
+-- $RCSfile: giant-xml_file_access.adb,v $, $Revision: 1.4 $
 -- $Author: koppor $
--- $Date: 2003/10/01 23:00:35 $
+-- $Date: 2003/10/01 23:13:54 $
 --
 with GNAT.Directory_Operations; -- from GNAT
 
@@ -47,14 +47,12 @@ package body Giant.XML_File_Access is
       Old_Exec_Dir : String := GNAT.Directory_Operations.Get_Current_Dir;
 
    begin
-
       begin
         -- open input file
         Input_Sources.File.Open (File, Input_File);
-
       exception
          when others =>
-            raise  XML_File_Access_Error_Exception;
+            raise XML_File_Access_Error_Exception;
       end;
 
       -- activate "validation feature"
@@ -92,14 +90,13 @@ package body Giant.XML_File_Access is
       XML_Document := Tree_Readers.Get_Tree (Tree_Reader);
 
    exception
+      -- deallocate storrage and close file
+      when E : Sax.Readers.XML_Fatal_Error =>
+         Input_Sources.File.Close (Input_File);
+         Tree_Readers.Free (Tree_Reader);
+         GNAT.Directory_Operations.Change_Dir (Old_Exec_Dir);
 
-         -- deallocate storrage and close file
-     when E : Sax.Readers.XML_Fatal_Error =>
-          Input_Sources.File.Close (Input_File);
-          Tree_Readers.Free (Tree_Reader);
-          GNAT.Directory_Operations.Change_Dir (Old_Exec_Dir);
-
-                  raise XML_File_Parse_Fatal_Error_Exception;
+         raise XML_File_Parse_Fatal_Error_Exception;
    end Load_XML_File_Validated;
 
    ---------------------------------------------------------------------------
