@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/29 13:47:23 $
+-- $Date: 2003/07/31 09:13:34 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -55,13 +55,13 @@ package body Giant.Gsl.Runtime is
      (Parameter : Gsl_List)
       return Gsl_Type is
 
-      use Giant.Graph_Lib.Subgraphs;
-      use Giant.Graph_Lib.Selections;
-      use Giant.Gsl.Interpreters;
+      use Graph_Lib.Subgraphs;
+      use Graph_Lib.Selections;
+      use Gsl.Interpreters;
       Var   : Gsl_Type;
       Value : Gsl_Type;
-      Sub   : Giant.Graph_Lib.Subgraphs.Subgraph;
-      Sel   : Giant.Graph_Lib.Selections.Selection;
+      Sub   : Graph_Lib.Subgraphs.Subgraph;
+      Sel   : Graph_Lib.Selections.Selection;
    begin
       if Get_List_Size (Parameter) /= 2 then
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
@@ -82,7 +82,7 @@ package body Giant.Gsl.Runtime is
               (Get_Value_At (Gsl_List (Value), 1))));
             Add_Edge_Set (Sub, Get_Value (Gsl_Edge_Set
               (Get_Value_At (Gsl_List (Value), 2))));
-            Giant.Controller.Add_Subgraph (Sub);
+            Controller.Add_Subgraph (Sub);
          else
            Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
              "Script 'set': Gsl_Object_Set expected."); 
@@ -98,7 +98,7 @@ package body Giant.Gsl.Runtime is
               (Get_Value_At (Gsl_List (Value), 1))));
             Add_Edge_Set (Sel, Get_Value (Gsl_Edge_Set
               (Get_Value_At (Gsl_List (Value), 2))));
-            Giant.Controller.Add_Selection (Get_Current_Context, Sel, true);
+            Controller.Add_Selection (Get_Current_Context, Sel, true);
          else
            Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
              "Script 'set': Gsl_Object_Set expected."); 
@@ -113,20 +113,20 @@ package body Giant.Gsl.Runtime is
      (Parameter : Gsl_List)
       return Gsl_Type is
 
-      use Giant.Gsl.Interpreters;
-      use Giant.Gsl.Compilers;
-      use Giant.Gsl.Syntax_Tree;
-      Cond         : Gsl_Type;
-      True_Branch  : Gsl_Type;
-      False_Branch : Gsl_Type;
-      Param        : Gsl_List;
-      Comp         : Compiler;
-      ES           : Execution_Stacks.Stack;
-      RS           : Result_Stacks.Stack;
+      use Gsl.Interpreters;
+      use Gsl.Compilers;
+      use Gsl.Syntax_Tree;
+      Cond            : Gsl_Type;
+      True_Branch     : Gsl_Type;
+      False_Branch    : Gsl_Type;
+      Param           : Gsl_List;
+      Gsl_Compiler    : Gsl.Compilers.Compiler;
+      Execution_Stack : Execution_Stacks.Stack;
+      Result_Stack    : Result_Stacks.Stack;
    begin
-      Comp := Get_Current_Compiler;
-      ES := Get_Current_Execution_Stack;
-      RS := Get_Current_Result_Stack;
+      Gsl_Compiler    := Get_Compiler;
+      Execution_Stack := Get_Execution_Stack;
+      Result_Stack    := Get_Result_Stack;
 
       if Get_List_Size (Parameter) /= 3 then
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
@@ -139,11 +139,11 @@ package body Giant.Gsl.Runtime is
          if Get_Value (Gsl_Boolean (Cond)) = true then
             if Is_Gsl_Script_Reference (True_Branch) then
                -- Script_Activation to Execution Stack
-               Execution_Stacks.Push (ES, Get_Execution_Stack
-                 (Comp, Create_Node (Script_Activation, 
-                                     Null_Node, Null_Node)));
+               Execution_Stacks.Push (Execution_Stack, Get_Execution_Stack
+                 (Gsl_Compiler, Create_Node (Script_Activation,
+                                             Null_Node, Null_Node)));
 
-               Result_Stacks.Push (RS, True_Branch);
+               Result_Stacks.Push (Result_Stack, True_Branch);
                Param := Create_Gsl_List (0);
                return Gsl_Type (Param);
             else
@@ -152,11 +152,11 @@ package body Giant.Gsl.Runtime is
          else
             if Is_Gsl_Script_Reference (False_Branch) then
                -- Script_Activation to Execution Stack
-               Execution_Stacks.Push (ES, Get_Execution_Stack
-                 (Comp, Create_Node (Script_Activation, 
-                                     Null_Node, Null_Node)));
+               Execution_Stacks.Push (Execution_Stack, Get_Execution_Stack
+                 (Gsl_Compiler, Create_Node (Script_Activation, 
+                                             Null_Node, Null_Node)));
 
-               Result_Stacks.Push (RS, True_Branch);
+               Result_Stacks.Push (Result_Stack, False_Branch);
                Param := Create_Gsl_List (0);
                return Gsl_Type (Param);
             else
@@ -175,16 +175,16 @@ package body Giant.Gsl.Runtime is
      (Parameter : Gsl_List)
       return Gsl_Type is
 
-      use Giant.Gsl.Interpreters;
-      use Giant.Gsl.Compilers;
-      use Giant.Gsl.Syntax_Tree;
+      use Gsl.Interpreters;
+      use Gsl.Compilers;
+      use Gsl.Syntax_Tree;
       Script   : Gsl_Type;
       Loop_Cmd : Syntax_Node;
       Comp     : Compiler;
       ES       : Execution_Stacks.Stack;
    begin
-      Comp := Get_Current_Compiler;
-      ES := Get_Current_Execution_Stack;
+      Comp := Get_Compiler;
+      ES := Get_Execution_Stack;
       if Get_List_Size (Parameter) /= 1 then
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
            "Script 'loop': Expecting 1 parameter.");
@@ -238,15 +238,15 @@ package body Giant.Gsl.Runtime is
      (Parameter : Gsl_List)
       return Gsl_Type is
 
-      use Giant.Gsl.Interpreters;
-      use Giant.Gsl.Compilers;
-      use Giant.Gsl.Syntax_Tree;
+      use Gsl.Interpreters;
+      use Gsl.Compilers;
+      use Gsl.Syntax_Tree;
       Name : Gsl_Type;
       Comp : Compiler;
       ES   : Execution_Stacks.Stack;
    begin
-      Comp := Get_Current_Compiler;
-      ES := Get_Current_Execution_Stack;
+      Comp := Get_Compiler;
+      ES := Get_Execution_Stack;
       if Get_List_Size (Parameter) /= 1 then
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
            "Script 'run': Expecting 1 parameter.");
@@ -255,7 +255,7 @@ package body Giant.Gsl.Runtime is
       if Is_Gsl_String (Name) then
          -- push the code of the library to the execution stack 
          Execution_Stacks.Push (ES, Get_Execution_Stack (Comp, 
-           Giant.GSL_Support.Get_GSL_Include (Get_Value (Gsl_String (Name)) 
+           GSL_Support.Get_GSL_Include (Get_Value (Gsl_String (Name)) 
                                                          & ".gsl")));
          -- remove the Gsl_Null result from the result stack in the next step
          Execution_Stacks.Push (ES, Get_Execution_Stack (Comp,
@@ -276,12 +276,12 @@ package body Giant.Gsl.Runtime is
      (Parameter : Gsl_List)
       return Gsl_Type is
 
-      use Giant.Gsl.Interpreters;
+      use Gsl.Interpreters;
       A        : Gsl_Type;
       B        : Gsl_Type;
       Var      : Gsl_Type;
-      Node_Set : Giant.Graph_Lib.Node_Id_Sets.Set;
-      Edge_Set : Giant.Graph_Lib.Edge_Id_Sets.Set;
+      Node_Set : Graph_Lib.Node_Id_Sets.Set;
+      Edge_Set : Graph_Lib.Edge_Id_Sets.Set;
    begin
       if Get_List_Size (Parameter) /= 2 then
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
@@ -299,10 +299,10 @@ package body Giant.Gsl.Runtime is
          if Is_Gsl_Node_Set (Var) then
             Node_Set := Get_Value (Gsl_Node_Set (Var));
             if Is_Gsl_Node_Id (B) then
-               Giant.Graph_Lib.Node_Id_Sets.Insert
+               Graph_Lib.Node_Id_Sets.Insert
                  (Node_Set, Get_Value (Gsl_Node_Id (B)));
             elsif Is_Gsl_Node_Set (B) then
-               Giant.Graph_Lib.Node_Id_Sets.Union
+               Graph_Lib.Node_Id_Sets.Union
                  (Node_Set, Get_Value (Gsl_Node_Set (B)));
             else
                Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
@@ -314,10 +314,10 @@ package body Giant.Gsl.Runtime is
          elsif Is_Gsl_Edge_Set (Var) then
             Edge_Set := Get_Value (Gsl_Edge_Set (Var));
             if Is_Gsl_Edge_Id (B) then
-               Giant.Graph_Lib.Edge_Id_Sets.Insert
+               Graph_Lib.Edge_Id_Sets.Insert
                  (Edge_Set, Get_Value (Gsl_Edge_Id (B)));
             elsif Is_Gsl_Node_Set (B) then
-               Giant.Graph_Lib.Edge_Id_Sets.Union
+               Graph_Lib.Edge_Id_Sets.Union
                  (Edge_Set, Get_Value (Gsl_Edge_Set (B)));
             else
                Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
@@ -343,12 +343,12 @@ package body Giant.Gsl.Runtime is
      (Parameter : Gsl_List)
       return Gsl_Type is
 
-      use Giant.Gsl.Interpreters;
+      use Gsl.Interpreters;
       A        : Gsl_Type;
       B        : Gsl_Type;
       Var      : Gsl_Type;
-      Node_Set : Giant.Graph_Lib.Node_Id_Sets.Set;
-      Edge_Set : Giant.Graph_Lib.Edge_Id_Sets.Set;
+      Node_Set : Graph_Lib.Node_Id_Sets.Set;
+      Edge_Set : Graph_Lib.Edge_Id_Sets.Set;
    begin
       if Get_List_Size (Parameter) /= 2 then
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
@@ -362,35 +362,40 @@ package body Giant.Gsl.Runtime is
            (Get_Value (Gsl_Natural (A)) - Get_Value (Gsl_Natural (B))));
 
       elsif Is_Gsl_Var_Reference (A) then
-         if Is_Gsl_Node_Id (B) then
-            Var := Get_Var (Get_Ref_Name (Gsl_Var_Reference (A)));
-            if Is_Gsl_Node_Set (Var) then
-               Node_Set := Get_Value (Gsl_Node_Set (Var));
-               Giant.Graph_Lib.Node_Id_Sets.Remove_If_Exists
+         Var := Get_Var (Get_Ref_Name (Gsl_Var_Reference (A)));
+         if Is_Gsl_Node_Set (Var) then
+            Node_Set := Get_Value (Gsl_Node_Set (Var));
+            if Is_Gsl_Node_Id (B) then
+               Graph_Lib.Node_Id_Sets.Remove_If_Exists
                  (Node_Set, Get_Value (Gsl_Node_Id (B)));
-               Set_Value (Gsl_Node_Set (Var), Node_Set);
-               return Gsl_Null;
+            elsif Is_Gsl_Node_Set (B) then
+               Graph_Lib.Node_Id_Sets.Diff
+                 (Node_Set, Get_Value (Gsl_Node_Set (B)));
             else
                Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
-                 "Script 'sub': Gsl_Node_Set expected.");
+                 "Script 'sub': Gsl_Node_Id or Gsl_Node_Set expected.");
             end if;
+            Set_Value (Gsl_Node_Set (Var), Node_Set);
+            return Gsl_Null;
 
-         elsif Is_Gsl_Edge_Id (B) then
-            Var := Get_Var (Get_Ref_Name (Gsl_Var_Reference (B)));
-            if Is_Gsl_Edge_Set (Var) then
-               Edge_Set := Get_Value (Gsl_Edge_Set (Var));
-               Giant.Graph_Lib.Edge_Id_Sets.Remove_If_Exists
+         elsif Is_Gsl_Edge_Set (Var) then
+            Edge_Set := Get_Value (Gsl_Edge_Set (Var));
+            if Is_Gsl_Edge_Id (B) then
+               Graph_Lib.Edge_Id_Sets.Remove_If_Exists
                  (Edge_Set, Get_Value (Gsl_Edge_Id (B)));
-               Set_Value (Gsl_Edge_Set (Var), Edge_Set);
-               return Gsl_Null;
+            elsif Is_Gsl_Node_Set (B) then
+               Graph_Lib.Edge_Id_Sets.Diff
+                 (Edge_Set, Get_Value (Gsl_Edge_Set (B)));
             else
                Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
                  "Script 'sub': Gsl_Edge_Set expected.");
             end if;
+            Set_Value (Gsl_Edge_Set (Var), Edge_Set);
+            return Gsl_Null;
 
          else
             Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
-              "Script 'sub': Gsl_Node_Id or Gsl_Edge_Id expected.");
+              "Script 'sub': Gsl_Node_Set or Gsl_Edge_Set expected.");
          end if;
 
       else
@@ -600,8 +605,7 @@ package body Giant.Gsl.Runtime is
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
            "Script 'empty_node_set': Expecting no parameters.");
       end if;
-      Node_Set := Create_Gsl_Node_Set
-        (Giant.Graph_Lib.Node_Id_Sets.Empty_Set);
+      Node_Set := Create_Gsl_Node_Set (Graph_Lib.Node_Id_Sets.Empty_Set);
       return Gsl_Type (Node_Set);
    end Runtime_Empty_Node_Set;
 
@@ -617,8 +621,7 @@ package body Giant.Gsl.Runtime is
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
            "Script 'empty_edge_set': Expecting no parameters.");
       end if;
-      Edge_Set := Create_Gsl_Edge_Set
-        (Giant.Graph_Lib.Edge_Id_Sets.Empty_Set);
+      Edge_Set := Create_Gsl_Edge_Set (Graph_Lib.Edge_Id_Sets.Empty_Set);
       return Gsl_Type (Edge_Set);
    end Runtime_Empty_Edge_Set;
 
@@ -639,11 +642,11 @@ package body Giant.Gsl.Runtime is
       Set := Get_Value_At (Parameter, 1);
       Element := Get_Value_At (Parameter, 2);
       if Is_Gsl_Node_Set (Set) and Is_Gsl_Node_Id (Element) then
-         Res := Create_Gsl_Boolean (Giant.Graph_Lib.Node_Id_Sets.Is_Member
+         Res := Create_Gsl_Boolean (Graph_Lib.Node_Id_Sets.Is_Member
                                     (Get_Value (Gsl_Node_Set (Set)),
                                      Get_Value (Gsl_Node_Id (Element))));
       elsif Is_Gsl_Edge_Set (Set) and Is_Gsl_Edge_Id (Element) then
-         Res := Create_Gsl_Boolean (Giant.Graph_Lib.Edge_Id_Sets.Is_Member
+         Res := Create_Gsl_Boolean (Graph_Lib.Edge_Id_Sets.Is_Member
                                     (Get_Value (Gsl_Edge_Set (Set)),
                                      Get_Value (Gsl_Edge_Id (Element))));
 
@@ -670,13 +673,11 @@ package body Giant.Gsl.Runtime is
       Obj := Get_Value_At (Parameter, 1);
       if Is_Gsl_Node_Set (Obj) then
          return Gsl_Type (Create_Gsl_Node_Id
-           (Giant.Graph_Lib.Node_Id_Sets.First
-             (Get_Value (Gsl_Node_Set (Obj)))));
+           (Graph_Lib.Node_Id_Sets.First (Get_Value (Gsl_Node_Set (Obj)))));
 
       elsif Is_Gsl_Edge_Set (Obj) then
          return Gsl_Type (Create_Gsl_Edge_Id
-           (Giant.Graph_Lib.Edge_Id_Sets.First
-             (Get_Value (Gsl_Edge_Set (Obj)))));
+           (Graph_Lib.Edge_Id_Sets.First (Get_Value (Gsl_Edge_Set (Obj)))));
 
       else
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
@@ -691,6 +692,7 @@ package body Giant.Gsl.Runtime is
      (Parameter : Gsl_List)
       return Gsl_Type is
 
+      use Gsl.Interpreters;
       Obj  : Gsl_Type;
       Size : Gsl_Natural;
    begin
@@ -699,13 +701,16 @@ package body Giant.Gsl.Runtime is
            "Script 'size_of': Expecting 1 parameter.");
       end if;
       Obj := Get_Value_At (Parameter, 1);
+      if Is_Gsl_Var_Reference (Obj) then
+         Obj := Get_Var (Get_Ref_Name (Gsl_Var_Reference (Obj)));
+      end if;
       if Is_Gsl_List (Obj) then
          Size := Create_Gsl_Natural (Get_List_Size (Gsl_List (Obj)));
       elsif Is_Gsl_Node_Set (Obj) then
-         Size := Create_Gsl_Natural (Giant.Graph_Lib.Node_Id_Sets.Size
+         Size := Create_Gsl_Natural (Graph_Lib.Node_Id_Sets.Size
                                       (Get_Value (Gsl_Node_Set (Obj))));
       elsif Is_Gsl_Edge_Set (Obj) then
-         Size := Create_Gsl_Natural (Giant.Graph_Lib.Edge_Id_Sets.Size
+         Size := Create_Gsl_Natural (Graph_Lib.Edge_Id_Sets.Size
                                       (Get_Value (Gsl_Edge_Set (Obj))));
       else
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
@@ -964,9 +969,9 @@ package body Giant.Gsl.Runtime is
      (Parameter : Gsl_List)
       return Gsl_Type is
 
-      use Giant.Gsl.Interpreters;
+      use Gsl.Interpreters;
    begin
-      if Giant.Gsl.Interpreters.Get_Current_Context = "" then
+      if Gsl.Interpreters.Get_Current_Context = "" then
          return Gsl_Null;
       else
          return Gsl_Type (Create_Gsl_String (Get_Current_Context));
@@ -979,8 +984,8 @@ package body Giant.Gsl.Runtime is
      (Parameter : Gsl_List)
       return Gsl_Type is
 
-      use Giant.Controller;
-      use Giant.Gsl.Interpreters;
+      use Controller;
+      use Gsl.Interpreters;
       Name : Gsl_Type;
    begin
       if Get_List_Size (Parameter) /= 1 then
@@ -1041,7 +1046,7 @@ package body Giant.Gsl.Runtime is
       (Parameter : Gsl_List)
       return Gsl_Type is
 
-      use Giant.Graph_Lib;
+      use Graph_Lib;
       n      : Gsl_Type;
       attrib : Gsl_Type;
    begin
@@ -1068,13 +1073,13 @@ package body Giant.Gsl.Runtime is
       (Parameter : Gsl_List)
       return Gsl_Type is
 
-      use Giant.Graph_Lib;
+      use Graph_Lib;
       N             : Gsl_Type;
       Attrib        : Gsl_Type;
       Attrib_Id     : Node_Attribute_Id;
       N_Id          : Node_Id;
-      Node_Id_List  : Giant.Graph_Lib.Node_Id_List;
-      Node_Iter     : Giant.Graph_Lib.Node_Id_Lists.ListIter;
+      Node_Id_List  : Graph_Lib.Node_Id_List;
+      Node_Iter     : Graph_Lib.Node_Id_Lists.ListIter;
       Node_List     : Gsl_List;
       Pos           : Natural := 1;
       Sloc          : Gsl_List;
@@ -1166,7 +1171,7 @@ package body Giant.Gsl.Runtime is
       (Parameter : Gsl_List)
       return Gsl_Type is
 
-      use Giant.Graph_Lib;
+      use Graph_Lib;
       Obj : Gsl_Type;
    begin
       if Get_List_Size (Parameter) /= 1 then
@@ -1303,7 +1308,7 @@ package body Giant.Gsl.Runtime is
       Name := Get_Value_At (Parameter, 1);
       if Is_Gsl_String (Name) then
          return Gsl_Type (Create_Gsl_Boolean
-           (Giant.Controller.Exists_Window (Get_Value (Gsl_String (Name)))));
+           (Controller.Exists_Window (Get_Value (Gsl_String (Name)))));
       else
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
            "Script 'create_window': Gsl_String expected.");
@@ -1326,7 +1331,7 @@ package body Giant.Gsl.Runtime is
       (Parameter : Gsl_List)
       return Gsl_Type is
 
-      use Giant.Controller;
+      use Controller;
       Name: Gsl_Type;
    begin
       if Get_List_Size (Parameter) /= 1 then
