@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: functions.tex,v $, $Revision: 1.7 $
-%  $Date: 2003/07/04 19:46:42 $
+%  $RCSfile: functions.tex,v $, $Revision: 1.8 $
+%  $Date: 2003/07/06 12:40:02 $
 %  $Author: birdy $
 %
 %  Description: 
@@ -683,11 +683,15 @@ Subgraph List (4 Spalten).
 
   In der ComboBox zur Zoom-Kontrolle befindet sich
   neben den vorgegebenen Zoomstufen \index{Zoomstufe} noch der
-  Eintrag \gq{Fit in Window}.
+  Eintrag \gq{Fit in Window}, welcher dafür sorgt, daß der gesamte Graph im
+  Fenster sichtbar ist.
   
   Mittels der Buttons \gq{+}und \gq{-} kann die Zoomstufe nach oben bzw. unten
   verändert werden, pro Klick verändert sie sich um einen bestimmten Betrag.
-  ******
+  Mittels \gq{Pick Edge} kann Scrolling und Zoomstufe automatisch so eingestellt werden,
+  daß eine ausgewählte Kante komplett sichtbar ist, dazu wird \gq{Pick Edge} und
+  danach die auszuwählende Kante angeklickt.
+  
  
     \subsection{Scrollbars}
     \label{Scrolleisten}
@@ -707,21 +711,25 @@ Subgraph List (4 Spalten).
 
     In Knoten-Informationsfenstern (siehe Abbildung 
     \ref{Node-Info-Window-Pic}) 
-    können nähere Informationen zu Fenster-Knoten angezeigt werden.
+    können nähere Informationen zu Fenster-Knoten angezeigt werden.\\
     
     Im Knoten-Informationsfenster wird die ID und die Knotenklasse des 
     vom Fenster-Knoten repräsentierten IML-Knotens dargestellt,
     darunter befinden sich untereinander die drei scrollbaren 
     Listen \gq{Attributes}, \gq{Successor Nodes} und
-    \gq{Predecessor Nodes}.
+    \gq{Predecessor Nodes}.\\
     
     Unter den drei Listen befinden sich nebeneinander zwei Buttons
     \gq{Pick} und \gq{Close}. 
-    Pick dient zur Auswahl eines anderen Fenster-Knotens 
-    mittels des Fadenkreuzcursors. Die Informationen zu dem ausgewählten
+    \gq{Pick} dient zur Auswahl eines anderen Fenster-Knotens 
+    mittels des Fadenkreuzcursors, dazu wird nach Klicken von \gq{Pick}
+    ein Fensterknoten angeklickt, das Knoten-Informationsfenster öffnet sich.\\
+    
+    Die Informationen zu dem ausgewählten
     Fenster-Knoten werden dann im Knoten-Informationsfenster dargestellt
     (siehe hierzu auch UseCase 
-    \ref {Details zu Knoten in einem bestehenden Informationsfenster anzeigen}).
+    \ref {Details zu Knoten in einem bestehenden Informationsfenster anzeigen}).\\
+    Das Knoten-Informationsfenster enthält folgende Elemente:
     
     \subsection{Liste Attributes}
     
@@ -774,10 +782,18 @@ in das ein GSL Skript eingegeben werden kann.
 Unter Query Text befinden sich folgende Buttons:
 
       \begin{enumerate}
-        \item Open...
-        \item Save As...
-        \item OK
+        \item Open...\\
+	   Mit diesem Button kann ein auf Festplatte gespeichertes Skript geladen werden.
+	   Nach Klick auf diesen Button erscheint ein Dateiauswahlfenster, nach Auswahl
+	   eines Skriptes wird dieses in das Textfeld eingefügt.
+        \item Save As...\\
+	   Mit diesem Button kann das im Textfeld eingetippte Skript gespeichert werden.
+	   Nach dem Klick auf diesen Button erscheint ein Dateiauswahlfenster, nach
+	   Festlegen eines Dateinamens wird das Skript unter diesem Namen gespeichert.
+        \item OK\\
+	   Führt das eingegebene Skript aus.
         \item Cancel
+	   Schließt das Fenster ohne Ausführung oder Speicherung des Skriptes.
       \end{enumerate}
       
 \clearpage
