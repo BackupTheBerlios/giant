@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-mini_maps.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-mini_maps.adb,v $, $Revision: 1.7 $
 --  $Author: keulsn $
---  $Date: 2003/07/15 18:35:12 $
+--  $Date: 2003/08/02 16:27:43 $
 --
 ------------------------------------------------------------------------------
 
@@ -32,6 +32,7 @@ with System;
 with Gdk;
 with Gdk.Drawable;
 with Gdk.Event;
+with Gdk.Main;
 with Gdk.Rectangle;
 with Gdk.Types;
 with Gdk.Window;
@@ -54,6 +55,17 @@ package body Giant.Mini_Maps is
 
    package Mini_Map_Logger is new Logger
      (Name => "Giant.Mini_Maps");
+
+   function "or"
+     (Left  : in     Gdk.Types.Gdk_Event_Mask;
+      Right : in     Gdk.Types.Gdk_Event_Mask)
+     return Gdk.Types.Gdk_Event_Mask
+     renames Gdk.Types."or";
+
+   Handled_Events : constant Gdk.Types.Gdk_Event_Mask :=
+     Gdk.Types.Button_Press_Mask or
+     Gdk.Types.Button1_Motion_Mask or
+     Gdk.Types.Button_Release_Mask;
 
 
    ----------------------
@@ -127,6 +139,11 @@ package body Giant.Mini_Maps is
       Event  : in     Gdk.Event.Gdk_Event_Motion)
      return Boolean;
 
+   function On_Button_Release_Event
+     (Widget : access Mini_Map_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event_Button)
+     return Boolean;
+
    procedure On_Logical_Area_Changed
      (Graph_Widget : access Graph_Widgets.Graph_Widget_Record'Class;
       Area         : in     Vis.Logic.Rectangle_2d;
@@ -169,8 +186,8 @@ package body Giant.Mini_Maps is
    package Destroy_Cbs renames Mini_Map_Callback;
 
    package Button_Press_Event_Cbs renames Mini_Map_Boolean_Callback;
-
    package Motion_Notify_Event_Cbs renames Mini_Map_Boolean_Callback;
+   package Button_Release_Event_Cbs renames Mini_Map_Boolean_Callback;
 
 
    package Realize_Handling is new Gtk.Widget.Realize_Handling
@@ -221,6 +238,15 @@ package body Giant.Mini_Maps is
          Window => Window,
          Width  => Width,
          Height => Height);
+      Draw_Rectangle
+        (Drawable  => Widget.Buffer,
+         Gc        => Widget.Background_Gc,
+         Filled    => True,
+         Rectangle => Vis.Absolute.Combine_Rectangle
+                       (X_1 => 0,
+                        Y_1 => 0,
+                        X_2 => Vis.Absolute_Natural (Width) - 1,
+                        Y_2 => Vis.Absolute_Natural (Height) - 1));
       Gdk.Window.Set_Back_Pixmap
         (Window          => Window,
          Pixmap          => Widget.Buffer,
@@ -266,8 +292,7 @@ package body Giant.Mini_Maps is
          Signals      => Gtkada.Types.Null_Array,
          Class_Record => Class_Record);
       Set_Events
-        (Widget,
-         Gdk.Types."or" (Get_Events (Widget), Gdk.Types.Button_Press_Mask));
+        (Widget, Gdk.Types."or" (Get_Events (Widget), Handled_Events));
 
       Realize_Cbs.Connect
         (Widget => Widget,
@@ -304,9 +329,13 @@ package body Giant.Mini_Maps is
       Motion_Notify_Event_Cbs.Connect
         (Widget => Widget,
          Name   => "motion_notify_event",
-         Marsh  => Mini_Map_Boolean_Callback.To_Marshaller
+         Marsh  => Motion_Notify_Event_Cbs.To_Marshaller
                     (On_Motion_Notify_Event'Access));
-      Add_Events (Widget, Gdk.Types.Button1_Motion_Mask);
+      Button_Release_Event_Cbs.Connect
+        (Widget => Widget,
+         Name   => "button_release_event",
+         Marsh  => Button_Release_Event_Cbs.To_Marshaller
+                    (On_Button_Release_Event'Access));
 
       Realize_Handling.Set_Realize (Widget);
    end Initialize;
@@ -681,15 +710,36 @@ package body Giant.Mini_Maps is
       Event  : in     Gdk.Event.Gdk_Event_Button)
      return Boolean is
 
+      Value : Boolean;
       Point : Vis.Absolute.Vector_2d := Combine_Vector
         (X => Vis.Absolute_Int (Gdk.Event.Get_X (Event)),
          Y => Vis.Absolute_Int (Gdk.Event.Get_Y (Event)));
    begin
-      Graph_Widgets.Set_Location
-        (Widget   => Widget.Watched,
-         Location => Vis.Transform_Backward (Widget.Transformation, Point));
+      if Glib."=" (Gdk.Event.Get_Button (Event), 1) then
+         Graph_Widgets.Set_Location
+           (Widget   => Widget.Watched,
+            Location => Vis.Transform_Backward (Widget.Transformation, Point));
+         Value := Gdk.Main.Pointer_Grab
+           (Window       => Get_Window (Widget),
+            Owner_Events => False,
+            Event_Mask   => Handled_Events,
+            Confine_To   => Get_Window (Widget),
+            Time         => Gdk.Event.Get_Time (Event));
+         --  Meaning of 'Value' is undocumented in GtkAda --> we ignore it.
+      end if;
       return True;
    end On_Button_Press_Event;
+
+   function On_Button_Release_Event
+     (Widget : access Mini_Map_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event_Button)
+     return Boolean is
+   begin
+      if Glib."=" (Gdk.Event.Get_Button (Event), 1) then
+         Gdk.Main.Pointer_Ungrab (Gdk.Event.Get_Time (Event));
+      end if;
+      return True;
+   end On_Button_Release_Event;
 
    procedure On_Logical_Area_Changed
      (Graph_Widget : access Graph_Widgets.Graph_Widget_Record'Class;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.39 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.40 $
 --  $Author: keulsn $
---  $Date: 2003/07/22 19:31:38 $
+--  $Date: 2003/08/02 16:27:43 $
 --
 ------------------------------------------------------------------------------
 
@@ -774,6 +774,11 @@ package body Giant.Graph_Widgets is
          Notifications.Logical_Area_Changed (Widget, Widget.Logic_Area);
          States.Logic_Area_Updated (Widget);
       end if;
+      if States.Must_Update_Visual_Area (Widget) then
+         Notifications.Visible_Area_Changed
+           (Widget, Get_Visible_Area (Widget));
+         States.Visual_Area_Updated (Widget);
+      end if;
    end Release_Lock;
 
 
@@ -1358,13 +1363,23 @@ package body Giant.Graph_Widgets is
         (Widget, Vis.Absolute.Get_Center (Drawing.Get_Visible_Area (Widget)));
    end Get_Location;
 
-   procedure Set_Location
+   procedure Set_Visible_Center
      (Widget     : access Graph_Widget_Record'Class;
-      Location   : in     Vis.Logic.Vector_2d) is
+      Center     : in     Vis.Absolute.Vector_2d) is
+
+      use type Vis.Absolute.Vector_2d;
+      Point : Vis.Absolute.Vector_2d;
    begin
+      Point := States.Get_Mouse_Position (Widget);
+      Point := Point + Center -
+        Vis.Absolute.Get_Center (Drawing.Get_Visible_Area (Widget));
+
       Drawing.Move_Visible_Area_To
         (Widget => Widget,
-         Point  => Positioning.Get_Absolute (Widget, Location));
+         Point  => Center);
+
+      --  States.Set_Mouse_Position (Widget, Point);
+      Callbacks.Mouse_Pointer_Moved_To (Widget, Point);
 
       if States.Must_Update_Visual_Area (Widget) then
          Notifications.Visible_Area_Changed
@@ -1373,6 +1388,13 @@ package body Giant.Graph_Widgets is
          States.Visual_Area_Updated (Widget);
       end if;
       Redraw (Widget);
+   end Set_Visible_Center;
+
+   procedure Set_Location
+     (Widget     : access Graph_Widget_Record'Class;
+      Location   : in     Vis.Logic.Vector_2d) is
+   begin
+      Set_Visible_Center (Widget, Positioning.Get_Absolute (Widget, Location));
    end Set_Location;
 
    procedure Set_Location_And_Zoom_Level
@@ -1411,6 +1433,20 @@ package body Giant.Graph_Widgets is
       return Vis_Node_Sets.Is_Member (Widget.Selected_Nodes, Node);
    end Is_Node_In_Selection;
 
+   function Get_Selected_Edges
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis_Edge_Sets.Set is
+   begin
+      return Widget.Selected_Edges;
+   end Get_Selected_Edges;
+
+   function Get_Selected_Nodes
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis_Node_Sets.Set is
+   begin
+      return Widget.Selected_Nodes;
+   end Get_Selected_Nodes;
+
    procedure Add_Edge_To_Selection
      (Widget : access Graph_Widget_Record'Class;
       Edge   : in     Vis_Data.Vis_Edge_Id) is
@@ -1441,14 +1477,12 @@ package body Giant.Graph_Widgets is
 
    procedure Modify_Selection
      (Widget : access Graph_Widget_Record'Class;
-      Edges  : in     Vis_Edge_Sets.Set;
-      Nodes  : in     Vis_Node_Sets.Set;
+      Edges  : in out Vis_Edge_Lists.List;
+      Nodes  : in out Vis_Node_Lists.List;
       Mode   : in     Selection_Modify_Type) is
 
       Actual_Mode   : Selection_Modify_Type := Mode;
       Lock          : Lock_Type;
-      Edge_Iterator : Vis_Edge_Sets.Iterator;
-      Node_Iterator : Vis_Node_Sets.Iterator;
       Current_Edge  : Vis_Data.Vis_Edge_Id;
       Current_Node  : Vis_Data.Vis_Node_Id;
    begin
@@ -1458,9 +1492,9 @@ package body Giant.Graph_Widgets is
          Actual_Mode := Add;
       end if;
 
-      Edge_Iterator := Vis_Edge_Sets.Make_Iterator (Edges);
-      while Vis_Edge_Sets.More (Edge_Iterator) loop
-         Vis_Edge_Sets.Next (Edge_Iterator, Current_Edge);
+      while not Vis_Edge_Lists.IsEmpty (Edges) loop
+         Current_Edge := Vis_Edge_Lists.FirstValue (Edges);
+         Vis_Edge_Lists.DeleteHead (Edges);
          if Actual_Mode = Toggle and then
            Is_Edge_In_Selection (Widget, Current_Edge) then
 
@@ -1477,11 +1511,11 @@ package body Giant.Graph_Widgets is
                Highlight => Vis_Data.Current_Local);
          end if;
       end loop;
-      Vis_Edge_Sets.Destroy (Edge_Iterator);
+      Vis_Edge_Lists.Destroy (Edges);
 
-      Node_Iterator := Vis_Node_Sets.Make_Iterator (Nodes);
-      while Vis_Node_Sets.More (Node_Iterator) loop
-         Vis_Node_Sets.Next (Node_Iterator, Current_Node);
+      while not Vis_Node_Lists.IsEmpty (Nodes) loop
+         Current_Node := Vis_Node_Lists.FirstValue (Nodes);
+         Vis_Node_Lists.DeleteHead (Nodes);
          if Actual_Mode = Toggle and then
            Is_Node_In_Selection (Widget, Current_Node) then
 
@@ -1498,7 +1532,7 @@ package body Giant.Graph_Widgets is
                Highlight => Vis_Data.Current_Local);
          end if;
       end loop;
-      Vis_Node_Sets.Destroy (Node_Iterator);
+      Vis_Node_Lists.Destroy (Nodes);
 
       Release_Lock (Widget, Lock);
    end Modify_Selection;
@@ -1539,17 +1573,54 @@ package body Giant.Graph_Widgets is
       Release_Lock (Widget, Lock);
    end Clear_Selection;
 
+   procedure Notify_Selection_Change
+     (Widget : access Graph_Widget_Record'Class) is
+
+      Selection : Graph_Lib.Selections.Selection;
+
+      procedure Add_Edge
+        (Edge : in     Vis_Data.Vis_Edge_Id) is
+      begin
+         Graph_Lib.Selections.Add_Edge
+           (The_Selection => Selection,
+            Edge          => Vis_Data.Get_Graph_Edge (Edge));
+      end Add_Edge;
+
+      procedure Add_Node
+        (Node : in     Vis_Data.Vis_Node_Id) is
+      begin
+         Graph_Lib.Selections.Add_Node
+           (The_Selection => Selection,
+            Node          => Vis_Data.Get_Graph_Node (Node));
+      end Add_Node;
+
+      procedure Add_All_Edges is new Vis_Edge_Sets.Apply
+        (Execute => Add_Edge);
+      procedure Add_All_Nodes is new Vis_Node_Sets.Apply
+        (Execute => Add_Node);
+   begin
+      Selection := Graph_Lib.Selections.Create ("");
+      Add_All_Edges (Widget.Selected_Edges);
+      Add_All_Nodes (Widget.Selected_Nodes);
+      Notifications.Selection_Changed
+        (Widget     => Widget,
+         Action     => Change,
+         Difference => Selection);
+      Graph_Lib.Selections.Destroy (Selection);
+   end Notify_Selection_Change;
+
    procedure Modify_Selection_With_Edge_And_Notify
      (Widget : access Graph_Widget_Record'Class;
       Edge   : in     Vis_Data.Vis_Edge_Id;
       Mode   : in     Selection_Modify_Type) is
 
-      Action   : Selection_Change_Type;
-      Edge_Set : Vis_Edge_Sets.Set := Vis_Edge_Sets.Empty_Set;
+      Action    : Selection_Change_Type;
+      Edge_List : Vis_Edge_Lists.List := Vis_Edge_Lists.Create;
+      Node_List : Vis_Node_Lists.List := Vis_Node_Lists.Create;
       Selection : Graph_Lib.Selections.Selection :=
         Graph_Lib.Selections.Create ("");
    begin
-      Vis_Edge_Sets.Insert (Edge_Set, Edge);
+      Vis_Edge_Lists.Attach (Edge, Edge_List);
       Graph_Lib.Selections.Add_Edge
         (Selection, Vis_Data.Get_Graph_Edge (Edge));
       case Mode is
@@ -1567,15 +1638,14 @@ package body Giant.Graph_Widgets is
 
       Modify_Selection
         (Widget => Widget,
-         Edges  => Edge_Set,
-         Nodes  => Vis_Node_Sets.Empty_Set,
+         Edges  => Edge_List,
+         Nodes  => Node_List,
          Mode   => Mode);
       Notifications.Selection_Changed
         (Widget     => Widget,
          Action     => Action,
          Difference => Selection);
       Graph_Lib.Selections.Destroy (Selection);
-      Vis_Edge_Sets.Destroy (Edge_Set);
    end Modify_Selection_With_Edge_And_Notify;
 
    procedure Modify_Selection_With_Node_And_Notify
@@ -1584,11 +1654,12 @@ package body Giant.Graph_Widgets is
       Mode   : in     Selection_Modify_Type) is
 
       Action    : Selection_Change_Type;
-      Node_Set  : Vis_Node_Sets.Set := Vis_Node_Sets.Empty_Set;
+      Edge_List : Vis_Edge_Lists.List := Vis_Edge_Lists.Create;
+      Node_List : Vis_Node_Lists.List := Vis_Node_Lists.Create;
       Selection : Graph_Lib.Selections.Selection :=
         Graph_Lib.Selections.Create ("");
    begin
-      Vis_Node_Sets.Insert (Node_Set, Node);
+      Vis_Node_Lists.Attach (Node, Node_List);
       Graph_Lib.Selections.Add_Node
         (Selection, Vis_Data.Get_Graph_Node (Node));
       case Mode is
@@ -1606,15 +1677,14 @@ package body Giant.Graph_Widgets is
 
       Modify_Selection
         (Widget => Widget,
-         Edges  => Vis_Edge_Sets.Empty_Set,
-         Nodes  => Node_Set,
+         Edges  => Edge_List,
+         Nodes  => Node_List,
          Mode   => Mode);
       Notifications.Selection_Changed
         (Widget     => Widget,
          Action     => Action,
          Difference => Selection);
       Graph_Lib.Selections.Destroy (Selection);
-      Vis_Node_Sets.Destroy (Node_Set);
    end Modify_Selection_With_Node_And_Notify;
 
    procedure Clear_Selection_And_Notify

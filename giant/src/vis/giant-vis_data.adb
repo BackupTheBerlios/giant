@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.33 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.34 $
 --  $Author: keulsn $
---  $Date: 2003/07/22 19:31:38 $
+--  $Date: 2003/08/02 16:27:43 $
 --
 ------------------------------------------------------------------------------
 
@@ -377,6 +377,25 @@ package body Giant.Vis_Data is
       return Hit;
    end Hits;
 
+   function Intersects
+     (Edge : in     Vis_Edge_Id;
+      Area : in     Vis.Absolute.Rectangle_2d)
+     return Boolean is
+
+      I     : Integer;
+      Found : Boolean := False;
+   begin
+      I := Edge.Points'First;
+      while I < Edge.Points'Last and not Found loop
+         Found := Vis.Intersects_Line_Rectangle
+           (From      => Edge.Points (I),
+            To        => Edge.Points (I + 1),
+            Rectangle => Area);
+         I := I + 1;
+      end loop;
+      return Found;
+   end Intersects;
+
    function Is_Hidden
      (Edge : in     Vis_Edge_Id)
      return Boolean is
@@ -631,6 +650,14 @@ package body Giant.Vis_Data is
         (Rectangle => Get_Extent (Node),
          Point     => Point);
    end Hits;
+
+   function Intersects
+     (Node  : in     Vis_Node_Id;
+      Area  : in     Vis.Absolute.Rectangle_2d)
+     return Boolean is
+   begin
+      return Vis.Absolute.Intersects (Get_Extent (Node), Area);
+   end Intersects;
 
    procedure Make_Incoming_Iterator
      (Node           : in     Vis_Node_Id;
@@ -1004,29 +1031,6 @@ package body Giant.Vis_Data is
         (A_Set   => Region.Nodes,
          Element => Node);
    end Remove_Node_From_Region;
-
-   function Intersects_Area_Region
-     (Region    : access Region_Record;
-      Rectangle : in     Vis.Absolute.Rectangle_2d)
-     return Boolean is
-   begin
-      return Vis.Absolute.Intersects (Region.Extent, Rectangle);
-   end Intersects_Area_Region;
-
---     function Intersects_Edge_Region
---       (Region : access Region_Record;
---        Edge   : in     Vis_Edge_Id)
---       return Boolean is
---     begin
---     end Intersects_Edge_Region;
-
-   function Intersects_Node_Region
-     (Region : access Region_Record;
-      Node   : in     Vis_Node_Id)
-     return Boolean is
-   begin
-      return Vis.Absolute.Intersects (Region.Extent, Node.Extent);
-   end Intersects_Node_Region;
 
    function Get_Region_Extent
      (Region : access Region_Record)
@@ -1655,6 +1659,176 @@ package body Giant.Vis_Data is
          end if;
       end loop;
    end Pollute_Area;
+
+   generic
+      with procedure Action
+        (Region : in     Region_Id);
+   procedure Process_Regions_In_Area_Difference
+     (Manager  : in     Region_Manager;
+      Old_Area : in     Vis.Absolute.Rectangle_2d;
+      New_Area : in     Vis.Absolute.Rectangle_2d);
+
+   procedure Process_Regions_In_Area_Difference
+     (Manager  : in     Region_Manager;
+      Old_Area : in     Vis.Absolute.Rectangle_2d;
+      New_Area : in     Vis.Absolute.Rectangle_2d) is
+
+      Positions     : Position_Sets.Set := Position_Sets.Empty_Set;
+
+      procedure Add_Positions_In_Area
+        (Area      : in     Vis.Absolute.Rectangle_2d) is
+
+         Pool     : Position_Pool;
+         Iterator : Position_Iterator;
+      begin
+         Pool := Create_Position_Pool_From_Area
+           (Manager  => Manager,
+            Area     => Area);
+         Make_Position_Iterator
+           (Pool     => Pool,
+            Iterator => Iterator);
+         while Has_More (Iterator) loop
+            Position_Sets.Insert (Positions, Get_Current (Iterator));
+            Next (Iterator);
+         end loop;
+      end Add_Positions_In_Area;
+
+      Iterator      : Position_Sets.Iterator;
+      Region        : Region_Id;
+   begin
+      declare
+         Areas_1 : Vis.Absolute.Rectangle_2d_Array :=
+           Vis.Absolute."-" (New_Area, Old_Area);
+         Areas_2 : Vis.Absolute.Rectangle_2d_Array :=
+           Vis.Absolute."-" (Old_Area, New_Area);
+      begin
+         for I in Areas_1'Range loop
+            Add_Positions_In_Area (Areas_1 (I));
+         end loop;
+         for I in Areas_2'Range loop
+            Add_Positions_In_Area (Areas_2 (I));
+         end loop;
+      end;
+
+      Iterator := Position_Sets.Make_Iterator (Positions);
+      while Position_Sets.More (Iterator) loop
+         Region := Get_Region_If_Exists
+           (Manager  => Manager,
+            Position => Position_Sets.Current (Iterator));
+         if Region /= null then
+            Action (Region);
+         end if;
+         Position_Sets.Next (Iterator);
+      end loop;
+      Position_Sets.Destroy (Iterator);
+      Position_Sets.Destroy (Positions);
+   end Process_Regions_In_Area_Difference;
+
+   procedure Update_Area_Content_Merged_Edges
+     (Edge_Merger  : access Edge_Update_Iterators.Merger_Type;
+      Old_Area     : in     Vis.Absolute.Rectangle_2d;
+      New_Area     : in     Vis.Absolute.Rectangle_2d;
+      Add_Edges    :    out Vis_Edge_Lists.List;
+      Remove_Edges :    out Vis_Edge_Lists.List) is
+
+      Edge      : Vis_Edge_Id;
+      Is_In_Old : Boolean;
+      Is_In_New : Boolean;
+   begin
+      Add_Edges := Vis_Edge_Lists.Create;
+      Remove_Edges := Vis_Edge_Lists.Create;
+
+      while Edge_Update_Iterators.Has_More (Edge_Merger) loop
+         Edge := Edge_Update_Iterators.Get_Current (Edge_Merger);
+
+         Is_In_Old := Intersects (Edge, Old_Area);
+         Is_In_New := Intersects (Edge, New_Area);
+
+         if Is_In_Old and not Is_In_New then
+            Vis_Edge_Lists.Attach (Edge, Remove_Edges);
+         elsif not Is_In_Old and Is_In_New then
+            Vis_Edge_Lists.Attach (Edge, Add_Edges);
+         end if;
+
+         Edge_Update_Iterators.Forward (Edge_Merger);
+      end loop;
+   end Update_Area_Content_Merged_Edges;
+
+   procedure Update_Area_Content_Merged_Nodes
+     (Node_Merger  : access Node_Update_Iterators.Merger_Type;
+      Old_Area     : in     Vis.Absolute.Rectangle_2d;
+      New_Area     : in     Vis.Absolute.Rectangle_2d;
+      Add_Nodes    :    out Vis_Node_Lists.List;
+      Remove_Nodes :    out Vis_Node_Lists.List) is
+
+      Node      : Vis_Node_Id;
+      Is_In_Old : Boolean;
+      Is_In_New : Boolean;
+   begin
+      Add_Nodes := Vis_Node_Lists.Create;
+      Remove_Nodes := Vis_Node_Lists.Create;
+
+      while Node_Update_Iterators.Has_More (Node_Merger) loop
+         Node := Node_Update_Iterators.Get_Current (Node_Merger);
+
+         Is_In_Old := Intersects (Node, Old_Area);
+         Is_In_New := Intersects (Node, New_Area);
+
+         if Is_In_Old and not Is_In_New then
+            Vis_Node_Lists.Attach (Node, Remove_Nodes);
+         elsif not Is_In_Old and Is_In_New then
+            Vis_Node_Lists.Attach (Node, Add_Nodes);
+         end if;
+
+         Node_Update_Iterators.Forward (Node_Merger);
+      end loop;
+   end Update_Area_Content_Merged_Nodes;
+
+   procedure Update_Area_Content
+     (Manager      : in     Region_Manager;
+      Old_Area     : in     Vis.Absolute.Rectangle_2d;
+      New_Area     : in     Vis.Absolute.Rectangle_2d;
+      Add_Edges    :    out Vis_Edge_Lists.List;
+      Remove_Edges :    out Vis_Edge_Lists.List;
+      Add_Nodes    :    out Vis_Node_Lists.List;
+      Remove_Nodes :    out Vis_Node_Lists.List) is
+
+      package Edge_Iterator_Lists renames Edge_Update_Iterators.Iterator_Lists;
+      package Node_Iterator_Lists renames Node_Update_Iterators.Iterator_Lists;
+      All_Edge_Iterators : Edge_Iterator_Lists.List :=
+        Edge_Iterator_Lists.Create;
+      All_Node_Iterators : Node_Iterator_Lists.List :=
+        Node_Iterator_Lists.Create;
+
+      procedure Add_Region
+        (Region : in     Region_Id) is
+      begin
+         Edge_Iterator_Lists.Attach
+           (Vis_Edge_Sets.Make_Iterator (Region.Edges), All_Edge_Iterators);
+         Node_Iterator_Lists.Attach
+           (Vis_Node_Sets.Make_Iterator (Region.Nodes), All_Node_Iterators);
+      end Add_Region;
+
+      procedure Process_Regions is new Process_Regions_In_Area_Difference
+        (Action => Add_Region);
+
+      Edge_Merger : Edge_Update_Iterators.Merger_Access;
+      Node_Merger : Node_Update_Iterators.Merger_Access;
+   begin
+      Process_Regions (Manager, Old_Area, New_Area);
+
+      Edge_Merger := Edge_Update_Iterators.Create (All_Edge_Iterators);
+      Edge_Iterator_Lists.Destroy (All_Edge_Iterators);
+      Update_Area_Content_Merged_Edges
+        (Edge_Merger, Old_Area, New_Area, Add_Edges, Remove_Edges);
+      Edge_Update_Iterators.Destroy (Edge_Merger);
+
+      Node_Merger := Node_Update_Iterators.Create (All_Node_Iterators);
+      Node_Iterator_Lists.Destroy (All_Node_Iterators);
+      Update_Area_Content_Merged_Nodes
+        (Node_Merger, Old_Area, New_Area, Add_Nodes, Remove_Nodes);
+      Node_Update_Iterators.Destroy (Node_Merger);
+   end Update_Area_Content;
 
    procedure Start_Refresh_Operation
      (Manager         : in out Region_Manager;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.ads,v $, $Revision: 1.11 $
+--  $RCSfile: giant-vectors.ads,v $, $Revision: 1.12 $
 --  $Author: keulsn $
---  $Date: 2003/07/20 23:20:04 $
+--  $Date: 2003/08/02 16:27:43 $
 --
 ------------------------------------------------------------------------------
 
@@ -123,6 +123,8 @@ package Giant.Vectors is
 
    type Vector_2d is private;
 
+   type Vector_2d_Array is array (Positive range <>) of Vector_2d;
+
    --  Zero in vector space
    Zero_2d : constant Vector_2d;
 
@@ -214,6 +216,8 @@ package Giant.Vectors is
    ------------------
 
    type Rectangle_2d is private;
+
+   type Rectangle_2d_Array is array (Positive range <>) of Rectangle_2d;
 
    function Combine_Rectangle
      (X_1 : in     Coordinate_Type;
@@ -373,6 +377,11 @@ package Giant.Vectors is
      (First     : in     Rectangle_2d;
       Second    : in     Rectangle_2d)
      return Boolean;
+
+   function "-"
+     (Left      : in     Rectangle_2d;
+      Right     : in     Rectangle_2d)
+     return Rectangle_2d_Array;
 
    --  Read from Stream
    procedure Read_Rectangle

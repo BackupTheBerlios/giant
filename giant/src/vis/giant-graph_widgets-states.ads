@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-states.ads,v $, $Revision: 1.7 $
+--  $RCSfile: giant-graph_widgets-states.ads,v $, $Revision: 1.8 $
 --  $Author: keulsn $
---  $Date: 2003/07/20 23:20:04 $
+--  $Date: 2003/08/02 16:27:43 $
 --
 ------------------------------------------------------------------------------
 --
@@ -202,11 +202,23 @@ package Giant.Graph_Widgets.States is
      (Widget : access Graph_Widget_Record'Class)
      return Boolean;
 
+   procedure Set_Mouse_Modifiers
+     (Widget    : access Graph_Widget_Record'Class;
+      Modifiers : in     Gdk.Types.Gdk_Modifier_Type);
+
+   function Get_Mouse_Modifiers
+     (Widget    : access Graph_Widget_Record'Class)
+     return Gdk.Types.Gdk_Modifier_Type;
+
    --  To be used during click, drag and rectangle mode to keep track of the
    --  position of the mouse cursor.
    procedure Set_Mouse_Position
      (Widget : access Graph_Widget_Record'Class;
       Point  : in     Vis.Absolute.Vector_2d);
+
+   function Get_Mouse_Position
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis.Absolute.Vector_2d;
 
    function Get_Mouse_Move_Distance
      (Widget : access Graph_Widget_Record'Class)
@@ -235,6 +247,32 @@ package Giant.Graph_Widgets.States is
      (Widget : access Graph_Widget_Record'Class);
 
    function Is_Drag_Current
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean;
+
+
+   ----------------------------------------------------------------------------
+   --  Starts a moving action
+   procedure Begin_Move
+     (Widget : access Graph_Widget_Record'Class);
+
+   procedure End_Move
+     (Widget : access Graph_Widget_Record'Class);
+
+   function Is_Move_Current
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean;
+
+
+   ----------------------------------------------------------------------------
+   --  Starts auto scrolling mode
+   procedure Begin_Auto_Scrolling
+     (Widget : access Graph_Widget_Record'Class);
+
+   procedure End_Auto_Scrolling
+     (Widget : access Graph_Widget_Record'Class);
+
+   function Is_Auto_Scrolling
      (Widget : access Graph_Widget_Record'Class)
      return Boolean;
 

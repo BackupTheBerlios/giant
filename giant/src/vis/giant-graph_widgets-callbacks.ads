@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.ads,v $, $Revision: 1.4 $
+--  $RCSfile: giant-graph_widgets-callbacks.ads,v $, $Revision: 1.5 $
 --  $Author: keulsn $
---  $Date: 2003/07/20 23:20:04 $
+--  $Date: 2003/08/02 16:27:43 $
 --
 ------------------------------------------------------------------------------
 
@@ -36,6 +36,14 @@ package Giant.Graph_Widgets.Callbacks is
    --  Connects all Callbacks 'Widget' needs
    procedure Connect_All_Callbacks
      (Widget : access Graph_Widget_Record'Class);
+
+   ----------------------------------------------------------------------------
+   --  Updates the position of the mouse pointer. This must be called whenever
+   --  the position of the mouse pointer changes relative to the graph, e.g.
+   --  when the widget scrolls.
+   procedure Mouse_Pointer_Moved_To
+     (Widget          : access Graph_Widget_Record'Class;
+      Motion_Position : in     Vis.Absolute.Vector_2d);
 
 private
 
@@ -84,10 +92,31 @@ private
       Event  : in     Gdk.Event.Gdk_Event_Motion)
      return Boolean;
 
+   function On_Enter_Notify_Event
+     (Widget : access Graph_Widget_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event_Crossing)
+     return Boolean;
+
+   function On_Leave_Notify_Event
+     (Widget : access Graph_Widget_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event_Crossing)
+     return Boolean;
+
+   function On_Auto_Scroll_Timeout
+     (Widget : in     Graph_Widget)
+     return Boolean;
+
    Left_Button   : constant := 1;
    Middle_Button : constant := 2;
    Right_Button  : constant := 3;
 
+   --  Points the mouse cursor must be moved to activate a drag
    Default_Click_Distance_Tolerance : constant := 3;
+   --  Milliseconds between two auto scroll steps
+   Default_Auto_Scroll_Delay        : constant := 100;
+   --  Points the mouse cursor must be moved to reach the next speed level
+   Default_Auto_Scroll_Sensitivity  : constant := 3;
+   --  Points the move offset is increased in every acceleration level
+   Default_Auto_Scroll_Acceleration : constant := 10;
 
 end Giant.Graph_Widgets.Callbacks;

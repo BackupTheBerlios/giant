@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.36 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.37 $
 --  $Author: keulsn $
---  $Date: 2003/07/22 18:21:33 $
+--  $Date: 2003/08/02 16:27:43 $
 --
 ------------------------------------------------------------------------------
 --
@@ -67,7 +67,9 @@ with Gdk.Cursor;
 with Gdk.Font;
 with Gdk.GC;
 with Gdk.Pixmap;
+with Gdk.Types;
 with Glib;
+with Gtk.Main;
 with Gtk.Widget;
 pragma Elaborate_All (Gtk.Widget);
 
@@ -965,6 +967,7 @@ private                    -- private part --
    package Vis_Edge_Lists renames Vis_Data.Vis_Edge_Lists;
 
    package Vis_Node_Sets renames Vis_Data.Vis_Node_Sets;
+   package Vis_Node_Lists renames Vis_Data.Vis_Node_Lists;
 
 
    -------------------------
@@ -1000,6 +1003,10 @@ private                    -- private part --
      (Widget : access Graph_Widget_Record'Class;
       Nodes  : in     Vis_Node_Sets.Set;
       Offset : in     Vis.Logic.Vector_2d);
+
+   procedure Set_Visible_Center
+     (Widget : access Graph_Widget_Record'Class;
+      Center : in     Vis.Absolute.Vector_2d);
 
 
    ---------------------------
@@ -1049,6 +1056,16 @@ private                    -- private part --
       Node   : in     Vis_Data.Vis_Node_Id)
      return Boolean;
 
+   --  The returned set must not be modified!
+   function Get_Selected_Edges
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis_Edge_Sets.Set;
+
+   --  The returned set must not be modified!
+   function Get_Selected_Nodes
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis_Node_Sets.Set;
+
    --  Note:
    --    Highlighting must be adjustet manually
    --    Notification must be done manually
@@ -1082,19 +1099,26 @@ private                    -- private part --
    --  an item or change the selection to contain only specified items
    type Selection_Modify_Type is (Add, Toggle, Change);
 
+   --  Postcondition:
+   --    Edges is destroyed
+   --    Nodes is destroyed
    --  Note:
    --    Adjusts highlighting
    --    Notification must be done manually
    procedure Modify_Selection
      (Widget : access Graph_Widget_Record'Class;
-      Edges  : in     Vis_Edge_Sets.Set;
-      Nodes  : in     Vis_Node_Sets.Set;
+      Edges  : in out Vis_Edge_Lists.List;
+      Nodes  : in out Vis_Node_Lists.List;
       Mode   : in     Selection_Modify_Type);
 
    --  Note:
    --    Adjusts highlighting
    --    Notification must be done manually
    procedure Clear_Selection
+     (Widget : access Graph_Widget_Record'Class);
+
+   --  Notify all listeners of current selection state
+   procedure Notify_Selection_Change
      (Widget : access Graph_Widget_Record'Class);
 
    --  Note:
@@ -1276,6 +1300,8 @@ private                    -- private part --
    type Cursor_State_Array is array (Cursor_State_Type) of
      Gdk.Cursor.Gdk_Cursor;
 
+   type Mouse_State_Type is (None, Clicking, Moving, Dragging, Rectangling);
+
    type States_Type is
       record
          Logic_Area_Changed  : Boolean                := False;
@@ -1296,13 +1322,14 @@ private                    -- private part --
            (others => Gdk.Cursor.Null_Cursor);
          Current_Cursor      : Cursor_State_Type      := Default;
 
-         Mouse_Clicking      : Boolean                := False;
-         Mouse_Dragging      : Boolean                := False;
-         Mouse_Rectangle     : Boolean                := False;
+         Mouse_State         : Mouse_State_Type       := None;
          Mouse_Origin        : Vis.Absolute.Vector_2d := Vis.Absolute.Zero_2d;
          Mouse_Position      : Vis.Absolute.Vector_2d := Vis.Absolute.Zero_2d;
          Mouse_On_Node       : Vis_Data.Vis_Node_Id   := null;
          Mouse_On_Edge       : Vis_Data.Vis_Edge_Id   := null;
+         Mouse_Modifiers     : Gdk.Types.Gdk_Modifier_Type := 0;
+
+         Auto_Scrolling      : Boolean                := False;
       end record;
 
 
@@ -1326,25 +1353,27 @@ private                    -- private part --
 
    type Drawing_Type is
       record
-         Buffer       : Gdk.Pixmap.Gdk_Pixmap;
-         Buffer_Area  : Vis.Absolute.Rectangle_2d;
-         Ready_Buffer : Gdk.Pixmap.Gdk_Pixmap;
-         Display      : Gdk.Pixmap.Gdk_Pixmap;
+         Buffer         : Gdk.Pixmap.Gdk_Pixmap;
+         Buffer_Area    : Vis.Absolute.Rectangle_2d;
+         Ready_Buffer   : Gdk.Pixmap.Gdk_Pixmap;
+         Display        : Gdk.Pixmap.Gdk_Pixmap;
 
-         Visible_Area : Vis.Absolute.Rectangle_2d;
+         Visible_Area   : Vis.Absolute.Rectangle_2d;
 
-         Debug_Gc     : Gdk.GC.Gdk_GC;
+         Debug_Gc       : Gdk.GC.Gdk_GC;
 
-         Background   : Gdk.GC.Gdk_GC;
+         Background     : Gdk.GC.Gdk_GC;
 
-         Node_Border  : Gdk.GC.Gdk_GC;
-         Node_Fill    : Gdk.GC.Gdk_GC;
-         Node_Text    : Gdk.GC.Gdk_GC;
-         Node_Light   : Highlight_GCs;
+         Node_Border    : Gdk.GC.Gdk_GC;
+         Node_Fill      : Gdk.GC.Gdk_GC;
+         Node_Text      : Gdk.GC.Gdk_GC;
+         Node_Light     : Highlight_GCs;
 
-         Edge_Line    : Edge_Style_GCs;
-         Edge_Label   : Gdk.GC.Gdk_GC;
-         Edge_Light   : Highlight_GCs;
+         Edge_Line      : Edge_Style_GCs;
+         Edge_Label     : Gdk.GC.Gdk_GC;
+         Edge_Light     : Highlight_GCs;
+
+         Rectangle_Gc   : Gdk.GC.Gdk_GC;
       end record;
 
 
@@ -1376,6 +1405,22 @@ private                    -- private part --
       end record;
 
 
+   ---------------
+   -- Callbacks --
+   ---------------
+
+   type Callbacks_Type is
+      record
+         Mouse_Grab_Count        : Natural := 0;
+
+         Previous_Selected_Edges : Vis_Edge_Lists.List;
+         Previous_Selected_Nodes : Vis_Node_Lists.List;
+
+         Auto_Scroll_Handler     : Gtk.Main.Timeout_Handler_Id;
+         Auto_Scroll_Connected   : Boolean := False;
+      end record;
+
+
    -------------------------
    -- Graph_Widget_Record --
    -------------------------
@@ -1396,6 +1441,8 @@ private                    -- private part --
          Settings       : Settings_Type;
          --  Must only be used by subpackage States
          States         : States_Type;
+         --  Must only be used by subpackage Callbacks
+         Callbacks      : Callbacks_Type;
 
          --  The following fields must not be used by any subpackage
          Logic_Area     : Vis.Logic.Rectangle_2d;

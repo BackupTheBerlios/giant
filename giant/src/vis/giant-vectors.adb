@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-vectors.adb,v $, $Revision: 1.15 $
 --  $Author: keulsn $
---  $Date: 2003/07/20 23:20:04 $
+--  $Date: 2003/08/02 16:27:43 $
 --
 ------------------------------------------------------------------------------
 
@@ -31,6 +31,24 @@ with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Strings.Fixed;
 
 package body Giant.Vectors is
+
+   -------------
+   -- Helpers --
+   -------------
+
+   function "<"
+     (Left  : in Coordinate_Type;
+      Right : in Coordinate_Type)
+     return Boolean is
+   begin
+      return Coord_Less_Equal (Left, Right) and Left /= Right;
+   end "<";
+   pragma Inline ("<");
+
+
+   -------------
+   -- Vectors --
+   -------------
 
    function "-"
      (Op : in Vector_2d)
@@ -549,6 +567,72 @@ package body Giant.Vectors is
         and then Coord_Less_Equal (Get_Top (Second), Get_Bottom (First));
    end Intersects;
    pragma Inline (Intersects);
+
+   function "-"
+     (Left  : in     Rectangle_2d;
+      Right : in     Rectangle_2d)
+     return Rectangle_2d_Array is
+
+      Difference : Rectangle_2d_Array (1 .. 4);
+      Counter    : Natural := 0;
+
+      procedure Add
+        (Rectangle : in Rectangle_2d) is
+      begin
+         Counter := Counter + 1;
+         Difference (Counter) := Rectangle;
+      end Add;
+
+      Point            : Vector_2d;
+      Intersect_Top    : Coordinate_Type;
+      Intersect_Bottom : Coordinate_Type;
+   begin
+      if not Intersects (Left, Right) then
+         Add (Left);
+      else
+         --  above part
+         if Get_Top (Left) < Get_Top (Right) then
+            Point := Combine_Vector
+              (Get_Right (Left),
+               Coord_Sub (Get_Top (Right), Point_Size));
+            Add (Combine_Rectangle (Get_Top_Left (Left),
+                                    Point));
+
+            Intersect_Top := Get_Top (Right);
+         else
+            Intersect_Top := Get_Top (Left);
+         end if;
+         --  below part
+         if Get_Bottom (Right) < Get_Bottom (Left) then
+            Point := Combine_Vector
+              (Get_Left (Left),
+               Coord_Add (Get_Bottom (Right), Point_Size));
+            Add (Combine_Rectangle (Point,
+                                    Get_Bottom_Right (Left)));
+
+            Intersect_Bottom := Get_Bottom (Right);
+         else
+            Intersect_Bottom := Get_Bottom (Left);
+         end if;
+         --  left part
+         if Get_Left (Left) < Get_Left (Right) then
+            Add (Combine_Rectangle
+                 (X_1 => Get_Left (Left),
+                  Y_1 => Intersect_Top,
+                  X_2 => Coord_Sub (Get_Left (Right), Point_Size),
+                  Y_2 => Intersect_Bottom));
+         end if;
+         --  right part
+         if Get_Right (Right) < Get_Right (Left) then
+            Add (Combine_Rectangle
+                 (X_1 => Coord_Add (Get_Right (Right), Point_Size),
+                  Y_1 => Intersect_Top,
+                  X_2 => Get_Right (Left),
+                  Y_2 => Intersect_Bottom));
+         end if;
+      end if;
+      return Difference (1 .. Counter);
+   end "-";
 
    function Image
      (Rectangle : in     Rectangle_2d)

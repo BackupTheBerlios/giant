@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis.ads,v $, $Revision: 1.13 $
+--  $RCSfile: giant-vis.ads,v $, $Revision: 1.14 $
 --  $Author: keulsn $
---  $Date: 2003/07/20 23:20:04 $
+--  $Date: 2003/08/02 16:27:43 $
 --
 ------------------------------------------------------------------------------
 
@@ -154,6 +154,12 @@ package Giant.Vis is
       Vertical       : in     Logic_Float)
      return Logic_Float;
 
+   function Intersects_Line_Rectangle
+     (From           : in     Absolute.Vector_2d;
+      To             : in     Absolute.Vector_2d;
+      Rectangle      : in     Absolute.Rectangle_2d)
+     return Boolean;
+
    function Transform
      (Size           : in     Logic_Float;
       Zoom           : in     Zoom_Level)
@@ -205,12 +211,6 @@ package Giant.Vis is
      (Transformation : in     Transformation_Type;
       Source_Rect    : in     Absolute.Rectangle_2d)
      return Logic.Rectangle_2d;
-
---     procedure Transform_To_Gdk
---       (Point          : in     Logic.Vector_2d;
---        Transformation : in     Transformation_Type;
---        X              :    out Glib.Gint;
---        Y              :    out Glib.Gint);
 
    function Get_Transformation
      (Origin         : in     Logic.Vector_2d;

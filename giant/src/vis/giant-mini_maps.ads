@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-mini_maps.ads,v $, $Revision: 1.4 $
+--  $RCSfile: giant-mini_maps.ads,v $, $Revision: 1.5 $
 --  $Author: keulsn $
---  $Date: 2003/07/02 16:49:15 $
+--  $Date: 2003/08/02 16:27:43 $
 --
 ------------------------------------------------------------------------------
 --
@@ -47,37 +47,6 @@ package Giant.Mini_Maps is
    type Mini_Map_Record is new Gtk.Widget.Gtk_Widget_Record with private;
 
    type Mini_Map is access all Mini_Map_Record'Class;
-
-
---     --  ugly test code because Graph_Lib not done yet
---     package Graph_Widgets is
---        type Graph_Widget_Record is new Gtk.Widget.Gtk_Widget_Record
---          with private;
---        type Graph_Widget is access all Graph_Widget_Record;
---        function Create return Graph_Widget;
---        procedure Set_Location
---          (Widget     : access Graph_Widget_Record'Class;
---           Location   : in     Vis.Logic.Vector_2d);
---        procedure Set_User_Data
---          (Data   : in     Mini_Map);
---        procedure Set_Logical_Area
---          (Widget : access Graph_Widget_Record'Class;
---           Area   : in     Vis.Logic.Rectangle_2d);
---        procedure Set_Visible_Area
---          (Widget : access Graph_Widget_Record'Class;
---           Area   : in     Vis.Logic.Rectangle_2d);
---        function Get_Logical_Area
---          (Widget : access Graph_Widget_Record'Class)
---          return Vis.Logic.Rectangle_2d;
---        function Get_Visible_Area
---          (Widget : access Graph_Widget_Record'Class)
---          return Vis.Logic.Rectangle_2d;
---     private
---        type Graph_Widget_Record is new Gtk.Widget.Gtk_Widget_Record
---          with null record;
---     end Graph_Widgets;
---     --  end of ugly test code
-
 
    procedure Create
      (Widget  :    out Mini_Map;

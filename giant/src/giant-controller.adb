@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.69 $
---  $Author: schwiemn $
---  $Date: 2003/08/01 13:59:39 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.70 $
+--  $Author: keulsn $
+--  $Date: 2003/08/02 16:27:43 $
 --
 
 with Ada.Strings.Unbounded;
@@ -1269,10 +1269,10 @@ package body Giant.Controller is
       Projects.Add_Visualisation_Window (Current_Project, Window);
       Gui_Manager.Add_Window (Unique_Name);
       -- FIX: remove vvv
-      -- Create_Subgraph (Unique_Name & "_");
-      -- Create_Selection_From_Subgraph (Subgraph_Name  => Unique_Name & "_",
-      --                                Window_Name    => Unique_Name,
-      --                                Selection_Name => Unique_Name);
+      --  Create_Subgraph (Unique_Name & "_");
+      Create_Selection_From_Subgraph (Subgraph_Name  => Unique_Name & "_",
+                                      Window_Name    => Unique_Name,
+                                      Selection_Name => Unique_Name);
       -- FIX: remove ^^^
       Open_Window (Unique_Name);
    end Create_Window;

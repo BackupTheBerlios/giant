@@ -20,16 +20,15 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.23 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.24 $
 --  $Author: keulsn $
---  $Date: 2003/07/22 18:21:32 $
+--  $Date: 2003/08/02 16:27:43 $
 --
 ------------------------------------------------------------------------------
 
 
 with Ada.Unchecked_Conversion;
 
-with Gdk.Types;
 with Gdk.Drawable;
 with Gdk.Window;
 
@@ -1090,9 +1089,11 @@ package body Giant.Graph_Widgets.Drawing is
      (Widget : access Graph_Widget_Record'Class;
       Area   : in     Vis.Absolute.Rectangle_2d) is
 
-      Floating : Vis_Node_Sets.Iterator;
-      Node     : Vis_Data.Vis_Node_Id;
-      Origin   : Vis.Absolute.Vector_2d;
+      Floating  : Vis_Node_Sets.Iterator;
+      Node      : Vis_Data.Vis_Node_Id;
+      Origin    : Vis.Absolute.Vector_2d;
+      Point     : Vis.Absolute.Vector_2d;
+      Rectangle : Vis.Absolute.Rectangle_2d;
    begin
       if States.Is_Drag_Current (Widget) then
          Origin := Get_Top_Left (Widget.Drawing.Visible_Area) -
@@ -1107,6 +1108,20 @@ package body Giant.Graph_Widgets.Drawing is
                Origin => Origin);
          end loop;
          Vis_Node_Sets.Destroy (Floating);
+      end if;
+      if States.Is_Rectangle_Current (Widget) then
+         Origin := States.Get_Click_Point (Widget);
+         Point := States.Get_Mouse_Position (Widget);
+         Rectangle := Combine_Rectangle
+           (X_1 => Get_X (Origin),
+            Y_1 => Get_Y (Origin),
+            X_2 => Get_X (Point),
+            Y_2 => Get_Y (Point));
+         Draw_Filled
+           (Drawable  => Widget.Drawing.Display,
+            Gc        => Widget.Drawing.Rectangle_Gc,
+            Rectangle => Rectangle,
+            Origin    => Get_Top_Left (Widget.Drawing.Visible_Area));
       end if;
    end Update_Temporary;
 
@@ -1435,6 +1450,19 @@ package body Giant.Graph_Widgets.Drawing is
       end loop;
    end Set_Up_Edge_Gcs;
 
+   ----------------------------------------------------------------------------
+   --  Sets up the gc for drawing rectangles opened by a mouse action
+   procedure Set_Up_Rectangle_Gc
+     (Widget : access Graph_Widget_Record'Class) is
+
+      Window : Gdk.Window.Gdk_Window := Get_Window (Widget);
+      White  : Gdk.Color.Gdk_Color := Gdk.Color.White (Get_Colormap (Widget));
+   begin
+      Gdk.GC.Gdk_New (Widget.Drawing.Rectangle_Gc, Window);
+      Gdk.GC.Set_Foreground (Widget.Drawing.Rectangle_Gc, White);
+      Gdk.GC.Set_Function (Widget.Drawing.Rectangle_Gc, Gdk.Types.Invert);
+   end Set_Up_Rectangle_Gc;
+
 
    procedure Set_Up
      (Widget : access Graph_Widget_Record'Class) is
@@ -1475,6 +1503,7 @@ package body Giant.Graph_Widgets.Drawing is
       Set_Up_Background_Gc (Widget);
       Set_Up_Edge_Gcs (Widget);
       Set_Up_Node_Gcs (Widget);
+      Set_Up_Rectangle_Gc (Widget);
 
       Clear (Widget.Drawing.Background, Widget.Drawing.Display);
       Clear (Widget.Drawing.Background, Widget.Drawing.Ready_Buffer);
@@ -1496,6 +1525,7 @@ package body Giant.Graph_Widgets.Drawing is
 
       Gdk.GC.Destroy (Widget.Drawing.Debug_Gc);
       Gdk.GC.Destroy (Widget.Drawing.Background);
+      Gdk.GC.Destroy (Widget.Drawing.Rectangle_Gc);
 
       Gdk.GC.Destroy (Widget.Drawing.Node_Border);
       Gdk.GC.Destroy (Widget.Drawing.Node_Fill);

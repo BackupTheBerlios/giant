@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis.adb,v $, $Revision: 1.13 $
+--  $RCSfile: giant-vis.adb,v $, $Revision: 1.14 $
 --  $Author: keulsn $
---  $Date: 2003/07/20 23:20:04 $
+--  $Date: 2003/08/02 16:27:43 $
 --
 ------------------------------------------------------------------------------
 
@@ -178,6 +178,97 @@ package body Giant.Vis is
       return Logic.Get_Y (Direction) * (Vertical - Logic.Get_X (Origin)) /
         Logic.Get_X (Direction) + Logic.Get_Y (Origin);
    end Intersects_Line_Vertical_Line_Y;
+
+   function Intersects_Line_Rectangle
+     (From           : in     Absolute.Vector_2d;
+      To             : in     Absolute.Vector_2d;
+      Rectangle      : in     Absolute.Rectangle_2d)
+     return Boolean is
+
+      use Absolute;
+      Left      : Vis.Absolute_Int;
+      Right     : Vis.Absolute_Int;
+      Top       : Vis.Absolute_Int;
+      Bottom    : Vis.Absolute_Int;
+
+      function Intersects_Horizontal
+        (Horizontal : in     Absolute_Int)
+        return Boolean is
+
+         X         : Logic_Float;
+         Direction : Absolute.Vector_2d := To - From;
+      begin
+         if Get_X (Direction) = 0 then
+            X := Logic_Float (Get_X (From));
+         else
+            X := Intersects_Line_Horizontal_Line_X
+              (Origin     => To_Logic (From),
+               Direction  => To_Logic (Direction),
+               Horizontal => Logic_Float (Horizontal));
+         end if;
+         return Logic_Float (Left) <= X and then
+           X <= Logic_Float (Right);
+      end Intersects_Horizontal;
+
+      function Intersects_Vertical
+        (Vertical : in     Absolute_Int)
+        return Boolean is
+
+         Y         : Logic_Float;
+         Direction : Absolute.Vector_2d := To - From;
+      begin
+         if Get_Y (Direction) = 0 then
+            Y := Logic_Float (Get_Y (From));
+         else
+            Y := Intersects_Line_Vertical_Line_Y
+              (Origin    => To_Logic (From),
+               Direction => To_Logic (Direction),
+               Vertical  => Logic_Float (Vertical));
+         end if;
+         return Logic_Float (Top) <= Y and then
+           Y <= Logic_Float (Bottom);
+      end Intersects_Vertical;
+
+   begin
+      if Is_Inside (Rectangle, From) or else Is_Inside (Rectangle, To) then
+         return True;
+      else
+         Left := Get_Left (Rectangle);
+         Right := Get_Right (Rectangle);
+         Top := Get_Top (Rectangle);
+         Bottom := Get_Bottom (Rectangle);
+
+         if Get_X (From) < Left then
+            if Get_X (To) < Left then
+               return False;
+            elsif Intersects_Vertical (Left) then
+               return True;
+            end if;
+         elsif Get_X (From) > Right then
+            if Get_X (To) > Right then
+               return False;
+            elsif Intersects_Vertical (Right) then
+               return True;
+            end if;
+         end if;
+
+         if Get_Y (From) < Top then
+            if Get_Y (To) < Top then
+               return False;
+            elsif Intersects_Horizontal (Top) then
+               return True;
+            end if;
+         elsif Get_Y (From) > Bottom then
+            if Get_Y (To) > Bottom  then
+               return False;
+            elsif Intersects_Horizontal (Bottom) then
+               return True;
+            end if;
+         end if;
+
+         return False;
+      end if;
+   end Intersects_Line_Rectangle;
 
    function Transform
      (Size           : in     Logic_Float;

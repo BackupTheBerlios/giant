@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.15 $
 --  $Author: keulsn $
---  $Date: 2003/07/22 18:21:31 $
+--  $Date: 2003/08/02 16:27:43 $
 --
 ------------------------------------------------------------------------------
 
@@ -31,7 +31,6 @@ with System;
 
 with Gdk.Main;
 with Gdk.Rectangle;
-with Gdk.Types;
 with Gdk.Window;
 with Gdk.Window_Attr;
 with Gtk.Arguments;
@@ -53,6 +52,9 @@ package body Giant.Graph_Widgets.Callbacks is
    package Callbacks_Logger is new Logger
      (Name => "Giant.Graph_Widgets.Callbacks");
 
+   package Graph_Widget_Timeouts is new Gtk.Main.Timeout
+     (Data_Type => Graph_Widget);
+
    function "or"
      (Left  : in Gdk.Types.Gdk_Event_Mask;
       Right : in Gdk.Types.Gdk_Event_Mask)
@@ -62,12 +64,51 @@ package body Giant.Graph_Widgets.Callbacks is
    Handled_Event_Mask : constant Gdk.Types.Gdk_Event_Mask  :=
      Gdk.Types.Button_Press_Mask or
      Gdk.Types.Button_Release_Mask or
-     Gdk.Types.Button1_Motion_Mask;
+     Gdk.Types.Pointer_Motion_Mask or
+     Gdk.Types.Enter_Notify_Mask or
+     Gdk.Types.Leave_Notify_Mask;
 
 
    --------------------
    -- Mouse handling --
    --------------------
+
+   procedure Grab_Mouse
+     (Widget : access Graph_Widget_Record'Class;
+      Time   : in     Glib.Guint32) is
+
+      Value : Boolean;
+   begin
+      Widget.Callbacks.Mouse_Grab_Count :=
+        Widget.Callbacks.Mouse_Grab_Count + 1;
+      pragma Assert (Widget.Callbacks.Mouse_Grab_Count = 1);
+      if Widget.Callbacks.Mouse_Grab_Count = 1 then
+         Value := Gdk.Main.Pointer_Grab
+           (Window       => Get_Window (Widget),
+            Owner_Events => False,
+            Event_Mask   => Handled_Event_Mask,
+            Confine_To   => Gdk.Window.Null_Window,
+            Cursor       => Gdk.Cursor.Null_Cursor,
+            Time         => Time);
+         --  Meaning of 'Value' is not documented in GtkAda! Therefore
+         --  we ignore it here.
+
+         --  start auto scrolling
+         States.Begin_Auto_Scrolling (Widget);
+      end if;
+   end Grab_Mouse;
+
+   procedure Ungrab_Mouse
+     (Widget : access Graph_Widget_Record'Class;
+      Time   : in     Glib.Guint32) is
+   begin
+      Widget.Callbacks.Mouse_Grab_Count :=
+        Widget.Callbacks.Mouse_Grab_Count - 1;
+      if Widget.Callbacks.Mouse_Grab_Count = 0 then
+         States.End_Auto_Scrolling (Widget);
+         Gdk.Main.Pointer_Ungrab (Time);
+      end if;
+   end Ungrab_Mouse;
 
    function Interpret_Modifiers
      (Modifiers : in     Gdk.Types.Gdk_Modifier_Type)
@@ -120,6 +161,40 @@ package body Giant.Graph_Widgets.Callbacks is
       end if;
    end Process_Mouse_Click;
 
+   procedure Start_Rectangle
+     (Widget : access Graph_Widget_Record'Class;
+      Mode   : in     Selection_Modify_Type) is
+
+      Edge_Iterator : Vis_Edge_Sets.Iterator;
+      Edge          : Vis_Data.Vis_Edge_Id;
+      Node_Iterator : Vis_Node_Sets.Iterator;
+      Node          : Vis_Data.Vis_Node_Id;
+   begin
+      States.Begin_Rectangle (Widget);
+      States.Changed_Temporary (Widget);
+      Redraw (Widget);
+
+      Widget.Callbacks.Previous_Selected_Edges := Vis_Edge_Lists.Create;
+      Edge_Iterator := Vis_Edge_Sets.Make_Iterator
+        (Get_Selected_Edges (Widget));
+      while Vis_Edge_Sets.More (Edge_Iterator) loop
+         Vis_Edge_Sets.Next (Edge_Iterator, Edge);
+         Vis_Edge_Lists.Attach
+           (Edge, Widget.Callbacks.Previous_Selected_Edges);
+      end loop;
+      Vis_Edge_Sets.Destroy (Edge_Iterator);
+
+      Widget.Callbacks.Previous_Selected_Nodes := Vis_Node_Lists.Create;
+      Node_Iterator := Vis_Node_Sets.Make_Iterator
+        (Get_Selected_Nodes (Widget));
+      while Vis_Node_Sets.More (Node_Iterator) loop
+         Vis_Node_Sets.Next (Node_Iterator, Node);
+         Vis_Node_Lists.Attach
+           (Node, Widget.Callbacks.Previous_Selected_Nodes);
+      end loop;
+      Vis_Node_Sets.Destroy (Node_Iterator);
+   end Start_Rectangle;
+
    procedure Cancel_Click
      (Widget : access Graph_Widget_Record'Class) is
    begin
@@ -153,10 +228,10 @@ package body Giant.Graph_Widgets.Callbacks is
          Redraw (Widget);
       elsif Vis_Data."/=" (States.Get_Click_Edge (Widget), null) then
          --  Drag on edge --> ignore
-         States.End_Click (Widget);
+         null;
       else
          --  Rectangle
-         States.Begin_Rectangle (Widget);
+         Start_Rectangle (Widget, Mode);
       end if;
    end Begin_Mouse_Move_Action;
 
@@ -192,6 +267,40 @@ package body Giant.Graph_Widgets.Callbacks is
       States.Changed_Temporary (Widget);
       Release_Lock (Widget, Lock);
    end Cancel_Drag;
+
+   procedure Cancel_Rectangle
+     (Widget : access Graph_Widget_Record'Class) is
+
+      Lock : Lock_Type;
+   begin
+      Lock_All_Content (Widget, Lock);
+      States.End_Rectangle (Widget);
+      States.Changed_Temporary (Widget);
+      Clear_Selection (Widget);
+      Modify_Selection
+        (Widget => Widget,
+         Edges  => Widget.Callbacks.Previous_Selected_Edges,
+         Nodes  => Widget.Callbacks.Previous_Selected_Nodes,
+         Mode   => Add);
+      Release_Lock (Widget, Lock);
+   end Cancel_Rectangle;
+
+   procedure Finish_Rectangle
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Vis_Edge_Lists.Destroy (Widget.Callbacks.Previous_Selected_Edges);
+      Vis_Node_Lists.Destroy (Widget.Callbacks.Previous_Selected_Nodes);
+      States.End_Rectangle (Widget);
+      States.Changed_Temporary (Widget);
+      Notify_Selection_Change (Widget);
+      Redraw (Widget);
+   end Finish_Rectangle;
+
+   procedure Cancel_Move
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      States.End_Move (Widget);
+   end Cancel_Move;
 
 
    --------------------------
@@ -260,6 +369,9 @@ package body Giant.Graph_Widgets.Callbacks is
 
    package Motion_Notify_Event_Cbs renames Graph_Widget_Boolean_Callback;
 
+   package Enter_Notify_Event_Cbs renames Graph_Widget_Boolean_Callback;
+   package Leave_Notify_Event_Cbs renames Graph_Widget_Boolean_Callback;
+
 
    package Realize_Handling is new Gtk.Widget.Realize_Handling
      (Widget_Type  => Graph_Widget_Record,
@@ -319,6 +431,16 @@ package body Giant.Graph_Widgets.Callbacks is
          Name   => "motion_notify_event",
          Marsh  => Motion_Notify_Event_Cbs.To_Marshaller
                      (On_Motion_Notify_Event'Access));
+      Enter_Notify_Event_Cbs.Connect
+        (Widget => Widget,
+         Name   => "enter_notify_event",
+         Marsh  => Enter_Notify_Event_Cbs.To_Marshaller
+                     (On_Enter_Notify_Event'Access));
+      Leave_Notify_Event_Cbs.Connect
+        (Widget => Widget,
+         Name   => "leave_notify_event",
+         Marsh  => Leave_Notify_Event_Cbs.To_Marshaller
+                     (On_Leave_Notify_Event'Access));
 
       Realize_Handling.Set_Realize (Widget);
    end Connect_All_Callbacks;
@@ -396,6 +518,13 @@ package body Giant.Graph_Widgets.Callbacks is
    begin
       Drawing.Shut_Down (Widget);
       Settings.Shut_Down (Widget);
+      if Widget.Callbacks.Auto_Scroll_Connected then
+         Gtk.Main.Timeout_Remove (Widget.Callbacks.Auto_Scroll_Handler);
+         Widget.Callbacks.Auto_Scroll_Connected := False;
+      end if;
+      while Widget.Callbacks.Mouse_Grab_Count > 0 loop
+         Ungrab_Mouse (Widget, 0);
+      end loop;
    end On_Unrealize;
 
    procedure On_Destroy
@@ -503,17 +632,24 @@ package body Giant.Graph_Widgets.Callbacks is
       Click_Position          : Vis.Absolute.Vector_2d;
       Window_Origin           : Vis.Absolute.Vector_2d :=
         Vis.Absolute.Get_Top_Left (Drawing.Get_Visible_Area (Widget));
-      Value                   : Boolean;
    begin
+      States.Set_Mouse_Modifiers (Widget, Gdk.Event.Get_State (Event));
+
       if States.Is_Drag_Current (Widget) then
+         Ungrab_Mouse (Widget, Gdk.Event.Get_Time (Event));
          Cancel_Drag (Widget);
          return True;
       elsif States.Is_Rectangle_Current (Widget) then
-         --  Cancel_Rectangle (Widget);
+         Ungrab_Mouse (Widget, Gdk.Event.Get_Time (Event));
+         Cancel_Rectangle (Widget);
          return True;
       elsif States.Is_Click_Current (Widget) then
+         Ungrab_Mouse (Widget, Gdk.Event.Get_Time (Event));
          Cancel_Click (Widget);
          return True;
+      elsif States.Is_Move_Current (Widget) then
+         Ungrab_Mouse (Widget, Gdk.Event.Get_Time (Event));
+         Cancel_Move (Widget);
       end if;
 
       Relative_Click_Position := Vis.Absolute.Combine_Vector
@@ -532,25 +668,17 @@ package body Giant.Graph_Widgets.Callbacks is
                Location => Positioning.Get_Logic (Widget, Click_Position));
          else
             --  must handle click
-            Value := Gdk.Main.Pointer_Grab
-              (Window       => Get_Window (Widget),
-               Owner_Events => False,
-               Event_Mask   => Handled_Event_Mask,
-               Confine_To   => Gdk.Window.Null_Window,  --  do not capture
-               Cursor       => Gdk.Cursor.Null_Cursor,
-               Time         => Gdk.Event.Get_Time (Event));
-            --  Meaning of 'Value' is not documented in GtkAda! Therefore
-            --  we ignore it here.
-
             Node := Vis_Data.Get_Node_At (Widget.Manager, Click_Position);
             if Vis_Data."/=" (Node, null) then
                --  pressed on node
+               Grab_Mouse (Widget, Gdk.Event.Get_Time (Event));
                States.Begin_Click_On_Node
                  (Widget => Widget,
                   Point  => Click_Position,
                   Node   => Node);
             else
                Edge := Vis_Data.Get_Edge_At (Widget.Manager, Click_Position);
+               Grab_Mouse (Widget, Gdk.Event.Get_Time (Event));
                if Vis_Data."/=" (Edge, null) then
                   --  pressed on edge
                   States.Begin_Click_On_Edge
@@ -585,6 +713,8 @@ package body Giant.Graph_Widgets.Callbacks is
          return True;
       elsif (Glib."=" (Gdk.Event.Get_Button (Event), Middle_Button)) then
          --  middle button
+         Grab_Mouse (Widget, Gdk.Event.Get_Time (Event));
+         States.Begin_Move (Widget);
          return True;
       else
          return False;
@@ -599,11 +729,13 @@ package body Giant.Graph_Widgets.Callbacks is
       Modifiers : Gdk.Types.Gdk_Modifier_Type := Gdk.Event.Get_State (Event);
       Mode      : Selection_Modify_Type;
    begin
-      if (Glib."=" (Gdk.Event.Get_Button (Event), Left_Button)) then
-         Gdk.Main.Pointer_Ungrab (Gdk.Event.Get_Time (Event));
+      States.Set_Mouse_Modifiers (Widget, Modifiers);
+
+      if Glib."=" (Gdk.Event.Get_Button (Event), Left_Button) then
 
          if States.Is_Click_Current (Widget) then
             --  simple click
+            Ungrab_Mouse (Widget, Gdk.Event.Get_Time (Event));
             Mode := Interpret_Modifiers (Modifiers);
 
             Process_Mouse_Click (Widget, Mode);
@@ -611,11 +743,20 @@ package body Giant.Graph_Widgets.Callbacks is
             States.End_Click (Widget);
          elsif States.Is_Rectangle_Current (Widget) then
             --  user has finished opening a rectangle
-            States.End_Rectangle (Widget);
-            States.Changed_Temporary (Widget);
-            Redraw (Widget);
+            Ungrab_Mouse (Widget, Gdk.Event.Get_Time (Event));
+
+            Finish_Rectangle (Widget);
          elsif States.Is_Drag_Current (Widget) then
+            Ungrab_Mouse (Widget, Gdk.Event.Get_Time (Event));
+
             Drop (Widget);
+         end if;
+
+         return True;
+      elsif Glib."=" (Gdk.Event.Get_Button (Event), Middle_Button) then
+         if States.Is_Move_Current (Widget) then
+            Ungrab_Mouse (Widget, Gdk.Event.Get_Time (Event));
+            States.End_Move (Widget);
          end if;
 
          return True;
@@ -624,48 +765,178 @@ package body Giant.Graph_Widgets.Callbacks is
       end if;
    end On_Button_Release_Event;
 
-   function On_Motion_Notify_Event
-     (Widget : access Graph_Widget_Record'Class;
-      Event  : in     Gdk.Event.Gdk_Event_Motion)
-     return Boolean is
+   procedure Mouse_Pointer_Moved_To
+     (Widget          : access Graph_Widget_Record'Class;
+      Motion_Position : in     Vis.Absolute.Vector_2d) is
 
-      use Vis.Absolute;
+      use type Vis.Absolute.Vector_2d;
       Distance                 : Vis.Absolute.Vector_2d;
-      Relative_Motion_Position : Vis.Absolute.Vector_2d;
-      Motion_Position          : Vis.Absolute.Vector_2d;
-      Window_Origin            : Vis.Absolute.Vector_2d :=
-        Vis.Absolute.Get_Top_Left (Drawing.Get_Visible_Area (Widget));
+      Old_Rectangle            : Vis.Absolute.Rectangle_2d;
+      New_Rectangle            : Vis.Absolute.Rectangle_2d;
+      Add_Edge_Queue           : Vis_Edge_Lists.List;
+      Remove_Edge_Queue        : Vis_Edge_Lists.List;
+      Add_Node_Queue           : Vis_Node_Lists.List;
+      Remove_Node_Queue        : Vis_Node_Lists.List;
+      Lock                     : Lock_Type;
+      Mode                     : Selection_Modify_Type;
    begin
-      Relative_Motion_Position := Vis.Absolute.Combine_Vector
-        (X => Vis.Absolute_Int (Gdk.Event.Get_X (Event)),
-         Y => Vis.Absolute_Int (Gdk.Event.Get_Y (Event)));
-      Motion_Position := Vis.Absolute."+"
-        (Window_Origin, Relative_Motion_Position);
-
+      Old_Rectangle := Vis.Absolute.Combine_Rectangle
+        (X_1 => Vis.Absolute.Get_X (States.Get_Click_Point (Widget)),
+         Y_1 => Vis.Absolute.Get_Y (States.Get_Click_Point (Widget)),
+         X_2 => Vis.Absolute.Get_X (States.Get_Mouse_Position (Widget)),
+         Y_2 => Vis.Absolute.Get_Y (States.Get_Mouse_Position (Widget)));
       States.Set_Mouse_Position
         (Widget => Widget,
          Point  => Motion_Position);
+      Mode := Interpret_Modifiers (States.Get_Mouse_Modifiers (Widget));
 
       if States.Is_Click_Current (Widget) then
          Distance := States.Get_Mouse_Move_Distance (Widget);
          if Distance * Distance > Default_Click_Distance_Tolerance**2 then
             Begin_Mouse_Move_Action
               (Widget          => Widget,
-               Mode            => Interpret_Modifiers
-                                    (Gdk.Event.Get_State (Event)));
+               Mode            => Mode);
          end if;
-
-         return True;
       elsif States.Is_Rectangle_Current (Widget) then
+         if Mode = Change then
+            Mode := Add;
+         end if;
+         New_Rectangle := Vis.Absolute.Combine_Rectangle
+           (X_1 => Vis.Absolute.Get_X (States.Get_Click_Point (Widget)),
+            Y_1 => Vis.Absolute.Get_Y (States.Get_Click_Point (Widget)),
+            X_2 => Vis.Absolute.Get_X (States.Get_Mouse_Position (Widget)),
+            Y_2 => Vis.Absolute.Get_Y (States.Get_Mouse_Position (Widget)));
          States.Changed_Temporary (Widget);
-         return True;
+         Vis_Data.Update_Area_Content
+           (Manager      => Widget.Manager,
+            Old_Area     => Old_Rectangle,
+            New_Area     => New_Rectangle,
+            Add_Edges    => Add_Edge_Queue,
+            Remove_Edges => Remove_Edge_Queue,
+            Add_Nodes    => Add_Node_Queue,
+            Remove_Nodes => Remove_Node_Queue);
+         Lock_All_Content (Widget, Lock);
+         Modify_Selection
+           (Widget   => Widget,
+            Edges    => Remove_Edge_Queue,
+            Nodes    => Remove_Node_Queue,
+            Mode     => Toggle);
+         Modify_Selection
+           (Widget   => Widget,
+            Edges    => Add_Edge_Queue,
+            Nodes    => Add_Node_Queue,
+            Mode     => Mode);
+         Release_Lock (Widget, Lock);
       elsif States.Is_Drag_Current (Widget) then
          States.Changed_Temporary (Widget);
          Redraw (Widget);
-         return True;
-      else
-         return False;
+      elsif States.Is_Move_Current (Widget) then
+         null;
       end if;
+   end Mouse_Pointer_Moved_To;
+
+   function On_Motion_Notify_Event
+     (Widget : access Graph_Widget_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event_Motion)
+     return Boolean is
+
+      Window_Origin            : Vis.Absolute.Vector_2d :=
+        Vis.Absolute.Get_Top_Left (Drawing.Get_Visible_Area (Widget));
+      Relative_Motion_Position : Vis.Absolute.Vector_2d;
+      Motion_Position          : Vis.Absolute.Vector_2d;
+   begin
+      States.Set_Mouse_Modifiers (Widget, Gdk.Event.Get_State (Event));
+
+      Relative_Motion_Position := Vis.Absolute.Combine_Vector
+        (X => Vis.Absolute_Int (Gdk.Event.Get_X (Event)),
+         Y => Vis.Absolute_Int (Gdk.Event.Get_Y (Event)));
+      Motion_Position := Vis.Absolute."+"
+        (Window_Origin, Relative_Motion_Position);
+
+      Mouse_Pointer_Moved_To (Widget, Motion_Position);
+
+      return True;
    end On_Motion_Notify_Event;
+
+   function On_Enter_Notify_Event
+     (Widget : access Graph_Widget_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event_Crossing)
+     return Boolean is
+   begin
+      States.Set_Mouse_Modifiers (Widget, Gdk.Event.Get_State (Event));
+      if Widget.Callbacks.Auto_Scroll_Connected then
+         Gtk.Main.Timeout_Remove (Widget.Callbacks.Auto_Scroll_Handler);
+         Widget.Callbacks.Auto_Scroll_Connected := False;
+      end if;
+      return False;
+   end On_Enter_Notify_Event;
+
+   function On_Leave_Notify_Event
+     (Widget : access Graph_Widget_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event_Crossing)
+     return Boolean is
+   begin
+      States.Set_Mouse_Modifiers (Widget, Gdk.Event.Get_State (Event));
+      if States.Is_Auto_Scrolling (Widget) and
+        not Widget.Callbacks.Auto_Scroll_Connected then
+
+         Widget.Callbacks.Auto_Scroll_Handler := Graph_Widget_Timeouts.Add
+           (Interval => Default_Auto_Scroll_Delay,
+            Func     => On_Auto_Scroll_Timeout'Access,
+            D        => Graph_Widget (Widget));
+         Widget.Callbacks.Auto_Scroll_Connected := True;
+      end if;
+      return False;
+   end On_Leave_Notify_Event;
+
+   function On_Auto_Scroll_Timeout
+     (Widget : in     Graph_Widget)
+     return Boolean is
+
+      Area   : Vis.Absolute.Rectangle_2d;
+      Cursor : Vis.Absolute.Vector_2d;
+      X      : Vis.Absolute_Int;
+      Y      : Vis.Absolute_Int;
+   begin
+      if not States.Is_Auto_Scrolling (Widget) and
+        Widget.Callbacks.Auto_Scroll_Connected then
+
+         Gtk.Main.Timeout_Remove (Widget.Callbacks.Auto_Scroll_Handler);
+         Widget.Callbacks.Auto_Scroll_Connected := False;
+         return False;
+      else
+         Area := Drawing.Get_Visible_Area (Widget);
+         Cursor := States.Get_Mouse_Position (Widget);
+
+         if Vis.Absolute.Get_X (Cursor) < Vis.Absolute.Get_Left (Area) then
+            X := Vis.Absolute.Get_X (Cursor) - Vis.Absolute.Get_Left (Area);
+         elsif Vis.Absolute.Get_X (Cursor) > Vis.Absolute.Get_Right (Area) then
+            X := Vis.Absolute.Get_X (Cursor) - Vis.Absolute.Get_Right (Area);
+         else
+            X := 0;
+         end if;
+
+         if Vis.Absolute.Get_Y (Cursor) > Vis.Absolute.Get_Bottom (Area) then
+            Y := Vis.Absolute.Get_Y (Cursor) - Vis.Absolute.Get_Bottom (Area);
+         elsif Vis.Absolute.Get_Y (Cursor) < Vis.Absolute.Get_Top (Area) then
+            Y := Vis.Absolute.Get_Y (Cursor) - Vis.Absolute.Get_Top (Area);
+         else
+            Y := 0;
+         end if;
+
+         X := (X / Default_Auto_Scroll_Sensitivity) *
+           Default_Auto_Scroll_Acceleration;
+         Y := (Y / Default_Auto_Scroll_Sensitivity) *
+           Default_Auto_Scroll_Acceleration;
+
+         Set_Visible_Center
+           (Widget => Widget,
+            Center => Vis.Absolute."+"
+                        (Left  => Vis.Absolute.Get_Center (Area),
+                         Right => Vis.Absolute.Combine_Vector (X, Y)));
+
+         return True;
+      end if;
+   end On_Auto_Scroll_Timeout;
 
 end Giant.Graph_Widgets.Callbacks;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-notifications.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_widgets-notifications.adb,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/07/20 23:20:04 $
+--  $Date: 2003/08/02 16:27:43 $
 --
 ------------------------------------------------------------------------------
 
@@ -76,10 +76,10 @@ package body Giant.Graph_Widgets.Notifications is
       Action     : in     Selection_Change_Type;
       Difference : in     Graph_Lib.Selections.Selection) is
    begin
-      Notification_Logger.Debug
-        ("User has performed the command " &
-         Selection_Change_Type'Image (Action) & " on the current selection." &
-         " emitting ");
+      --  Notification_Logger.Debug
+      --    ("User has performed the command " &
+      --     Selection_Change_Type'Image (Action) & " on the current " &
+      --     "selection. emitting " & Handlers.Selection_Change_Signal);
       Handlers.Emit_Selection_Change_Signal
         (Widget     => Widget,
          Action     => Action,
@@ -101,9 +101,9 @@ package body Giant.Graph_Widgets.Notifications is
      (Widget : access Graph_Widget_Record'Class;
       Area   : in     Vis.Logic.Rectangle_2d) is
    begin
-      Notification_Logger.Debug
-        ("Logical area has changed. Emitting "
-         & Handlers.Logical_Area_Changed_Signal);
+      --  Notification_Logger.Debug
+      --    ("Logical area has changed. Emitting "
+      --     & Handlers.Logical_Area_Changed_Signal);
       Handlers.Emit_Logical_Area_Changed (Widget, Area);
    end Logical_Area_Changed;
 
@@ -111,9 +111,9 @@ package body Giant.Graph_Widgets.Notifications is
      (Widget : access Graph_Widget_Record'Class;
       Area   : in     Vis.Logic.Rectangle_2d) is
    begin
-      Notification_Logger.Debug
-        ("Visible area has changed. Emitting "
-         & Handlers.Visible_Area_Changed_Signal);
+      --  Notification_Logger.Debug
+      --    ("Visible area has changed. Emitting "
+      --     & Handlers.Visible_Area_Changed_Signal);
       Handlers.Emit_Visible_Area_Changed (Widget, Area);
    end Visible_Area_Changed;
 

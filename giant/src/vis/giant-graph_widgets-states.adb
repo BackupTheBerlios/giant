@@ -20,14 +20,13 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.11 $
 --  $Author: keulsn $
---  $Date: 2003/07/22 00:11:23 $
+--  $Date: 2003/08/02 16:27:43 $
 --
 ------------------------------------------------------------------------------
 
 
-with Gdk.Types;
 with Gdk.Window;
 
 package body Giant.Graph_Widgets.States is
@@ -302,12 +301,10 @@ package body Giant.Graph_Widgets.States is
      (Widget : access Graph_Widget_Record'Class;
       Point  : in     Vis.Absolute.Vector_2d) is
    begin
-      Widget.States.Mouse_Clicking := True;
+      Widget.States.Mouse_State := Clicking;
       Widget.States.Mouse_Origin := Point;
       Widget.States.Mouse_On_Edge := null;
       Widget.States.Mouse_On_Node := null;
-      Widget.States.Mouse_Dragging := False;
-      Widget.States.Mouse_Rectangle := False;
    end Begin_Click_On_Background;
 
    procedure Begin_Click_On_Edge
@@ -315,12 +312,10 @@ package body Giant.Graph_Widgets.States is
       Point  : in     Vis.Absolute.Vector_2d;
       Edge   : in     Vis_Data.Vis_Edge_Id) is
    begin
-      Widget.States.Mouse_Clicking := True;
+      Widget.States.Mouse_State := Clicking;
       Widget.States.Mouse_Origin := Point;
       Widget.States.Mouse_On_Edge := Edge;
       Widget.States.Mouse_On_Node := null;
-      Widget.States.Mouse_Dragging := False;
-      Widget.States.Mouse_Rectangle := False;
    end Begin_Click_On_Edge;
 
    procedure Begin_Click_On_Node
@@ -328,18 +323,16 @@ package body Giant.Graph_Widgets.States is
       Point  : in     Vis.Absolute.Vector_2d;
       Node   : in     Vis_Data.Vis_Node_Id) is
    begin
-      Widget.States.Mouse_Clicking := True;
+      Widget.States.Mouse_State := Clicking;
       Widget.States.Mouse_Origin := Point;
       Widget.States.Mouse_On_Edge := null;
       Widget.States.Mouse_On_Node := Node;
-      Widget.States.Mouse_Dragging := False;
-      Widget.States.Mouse_Rectangle := False;
    end Begin_Click_On_Node;
 
    procedure End_Click
      (Widget : access Graph_Widget_Record'Class) is
    begin
-      Widget.States.Mouse_Clicking := False;
+      Widget.States.Mouse_State := None;
       Widget.States.Mouse_On_Edge := null;
       Widget.States.Mouse_On_Node := null;
    end End_Click;
@@ -369,8 +362,22 @@ package body Giant.Graph_Widgets.States is
      (Widget : access Graph_Widget_Record'Class)
      return Boolean is
    begin
-      return Widget.States.Mouse_Clicking;
+      return Widget.States.Mouse_State = Clicking;
    end Is_Click_Current;
+
+   procedure Set_Mouse_Modifiers
+     (Widget    : access Graph_Widget_Record'Class;
+      Modifiers : in     Gdk.Types.Gdk_Modifier_Type) is
+   begin
+      Widget.States.Mouse_Modifiers := Modifiers;
+   end Set_Mouse_Modifiers;
+
+   function Get_Mouse_Modifiers
+     (Widget    : access Graph_Widget_Record'Class)
+     return Gdk.Types.Gdk_Modifier_Type is
+   begin
+      return Widget.States.Mouse_Modifiers;
+   end Get_Mouse_Modifiers;
 
    function Get_Mouse_Move_Distance
      (Widget : access Graph_Widget_Record'Class)
@@ -387,49 +394,93 @@ package body Giant.Graph_Widgets.States is
       Widget.States.Mouse_Position := Point;
    end Set_Mouse_Position;
 
+   function Get_Mouse_Position
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis.Absolute.Vector_2d is
+   begin
+      return Widget.States.Mouse_Position;
+   end Get_Mouse_Position;
+
 
    procedure Begin_Rectangle
      (Widget : access Graph_Widget_Record'Class) is
    begin
-      Widget.States.Mouse_Clicking := False;
-      Widget.States.Mouse_Dragging := False;
-      Widget.States.Mouse_Rectangle := True;
+      Widget.States.Mouse_State := Rectangling;
    end Begin_Rectangle;
 
    procedure End_Rectangle
      (Widget : access Graph_Widget_Record'Class) is
    begin
-      Widget.States.Mouse_Rectangle := False;
+      Widget.States.Mouse_State := None;
    end End_Rectangle;
 
    function Is_Rectangle_Current
      (Widget : access Graph_Widget_Record'Class)
      return Boolean is
    begin
-      return Widget.States.Mouse_Rectangle;
+      return Widget.States.Mouse_State = Rectangling;
    end Is_Rectangle_Current;
 
 
    procedure Begin_Drag
      (Widget : access Graph_Widget_Record'Class) is
    begin
-      Widget.States.Mouse_Clicking := False;
-      Widget.States.Mouse_Rectangle := False;
-      Widget.States.Mouse_Dragging := True;
+      Widget.States.Mouse_State := Dragging;
    end Begin_Drag;
 
    procedure End_Drag
      (Widget : access Graph_Widget_Record'Class) is
    begin
-      Widget.States.Mouse_Dragging := False;
+      Widget.States.Mouse_State := None;
    end End_Drag;
 
    function Is_Drag_Current
      (Widget : access Graph_Widget_Record'Class)
      return Boolean is
    begin
-      return Widget.States.Mouse_Dragging;
+      return Widget.States.Mouse_State = Dragging;
    end Is_Drag_Current;
+
+
+   procedure Begin_Move
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Widget.States.Mouse_State := Moving;
+   end Begin_Move;
+
+   procedure End_Move
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Widget.States.Mouse_State := None;
+   end End_Move;
+
+   function Is_Move_Current
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean is
+   begin
+      return Widget.States.Mouse_State = Moving;
+   end Is_Move_Current;
+
+
+
+   procedure Begin_Auto_Scrolling
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Widget.States.Auto_Scrolling := True;
+   end Begin_Auto_Scrolling;
+
+   procedure End_Auto_Scrolling
+     (Widget : access Graph_Widget_Record'Class) is
+   begin
+      Widget.States.Auto_Scrolling := False;
+   end End_Auto_Scrolling;
+
+   function Is_Auto_Scrolling
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean is
+   begin
+      return Widget.States.Auto_Scrolling;
+   end Is_Auto_Scrolling;
 
 
    ---------------------

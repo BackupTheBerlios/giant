@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.24 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.25 $
 --  $Author: keulsn $
---  $Date: 2003/07/22 18:21:33 $
+--  $Date: 2003/08/02 16:27:43 $
 --
 ------------------------------------------------------------------------------
 --
@@ -294,6 +294,13 @@ package Giant.Vis_Data is
       Point : in     Vis.Absolute.Vector_2d)
      return Boolean;
 
+   --  Does NOT consider arrowhead.
+   --  Does NOT consider thickness.
+   function Intersects
+     (Edge  : in     Vis_Edge_Id;
+      Area  : in     Vis.Absolute.Rectangle_2d)
+     return Boolean;
+
    function Is_Hidden
      (Edge : in     Vis_Edge_Id)
      return Boolean;
@@ -459,6 +466,11 @@ package Giant.Vis_Data is
       Point : in     Vis.Absolute.Vector_2d)
      return Boolean;
 
+   function Intersects
+     (Node  : in     Vis_Node_Id;
+      Area  : in     Vis.Absolute.Rectangle_2d)
+     return Boolean;
+
    ----------------------------------------------------------------------------
    --  Gets the layer 'Node' is inside. No other node must be in the same
    --  layer. The user must ensure this.
@@ -529,6 +541,11 @@ package Giant.Vis_Data is
      (Left  : in     Vis_Node_Id;
       Right : in     Vis_Node_Id)
      return Boolean;
+
+   ----------------------------------------------------------------------------
+   --  Linear list of 'Vis_Edge_Id's
+   package Vis_Node_Lists is new Lists
+     (ItemType   => Vis_Node_Id);
 
    ----------------------------------------------------------------------------
    --  Set of 'Vis_Node_Id's
@@ -723,6 +740,33 @@ package Giant.Vis_Data is
    procedure Pollute_Area
      (Manager : in out Region_Manager;
       Area    : in     Vis.Absolute.Rectangle_2d);
+
+   ----------------------------------------------------------------------------
+   --  Takes as input a rectangle and a set of nodes contained in or
+   --  intersecting that rectangle, returns lists of nodes to be added to
+   --  or removed from that set if the rectangle is changed to a different
+   --  rectangle
+   --
+   --  Parameters:
+   --    Manager      - The region manager
+   --    Old_Area     - A rectangle
+   --    New_Area     - A new rectangle
+   --    Add_Edges    -
+   --    Remove_Edges -
+   --    Add_Nodes    - List of nodes to be added to 'Content', so 'Content'
+   --                   will contain all nodes in or intersecting 'New_Area'.
+   --                   This list must be destroyed.
+   --    Remove_Nodes - List of nodes to be removed from 'Content', so
+   --                   'Content' will not contain any node not in or
+   --                   intersecting 'New_Area'. This list must be destroyed.
+   procedure Update_Area_Content
+     (Manager      : in     Region_Manager;
+      Old_Area     : in     Vis.Absolute.Rectangle_2d;
+      New_Area     : in     Vis.Absolute.Rectangle_2d;
+      Add_Edges    :    out Vis_Edge_Lists.List;
+      Remove_Edges :    out Vis_Edge_Lists.List;
+      Add_Nodes    :    out Vis_Node_Lists.List;
+      Remove_Nodes :    out Vis_Node_Lists.List);
 
    ----------------------------------------------------------------------------
    --  Command used to organize a buffer refresh for the content af a region
