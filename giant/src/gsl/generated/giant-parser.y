@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-parser.y,v $
 -- $Author: schulzgt $
--- $Date: 2003/05/27 13:46:44 $
+-- $Date: 2003/06/02 11:41:49 $
 --
 -- GSL Parser rules
 -- Use ayacc to generate code, needs scanner scanner.aflex
@@ -36,7 +36,11 @@
 {
   subtype YYSType is Syntax_Node;
 
-  Root_Node : Syntax_Node;
+  Root_Node       : Syntax_Node;
+  Literal_Boolean : Gsl_Boolean;
+  Literal_Natural : Gsl_Natural;
+  Literal_String  : Gsl_String;
+  Var_Reference   : Gsl_Var_Reference;
 }
 
 %start root 
@@ -91,40 +95,97 @@ sequence           : '[' ']'
 
 -- Literals
 literal            : FALSE_T
-                     { $$ := Create_Node (Literal, Null_Node, Null_Node);}
+                     { 
+                        $$ := Create_Node (Literal, Null_Node, Null_Node);
+                        Literal_Boolean := Create_Gsl_Boolean (false);
+                        Set_Literal ($$, Gsl_Type (Literal_Boolean));
+                     }
                    | TRUE_T
-                     { $$ := Create_Node (Literal, Null_Node, Null_Node);}
+                     { 
+                        $$ := Create_Node (Literal, Null_Node, Null_Node);
+                        Literal_Boolean := Create_Gsl_Boolean (true);
+                        Set_Literal ($$, Gsl_Type (Literal_Boolean));
+                     }
                    | INT_LITERAL_T
-                     { $$ := Create_Node (Literal, Null_Node, Null_Node);
-                       Put_Line (scanner_dfa.yytext); }
+                     { 
+                        $$ := Create_Node (Literal, Null_Node, Null_Node);
+                        Literal_Natural := Create_Gsl_Natural;
+                        Set_Value (Literal_Natural,
+                                   Natural'Value(scanner_dfa.yytext));
+                        Set_Literal ($$, Gsl_Type (Literal_Natural));
+                     }
                    | STRING_LITERAL_T
-                     { $$ := Create_Node (Literal, Null_Node, Null_Node);
-                       Put_Line (scanner_dfa.yytext
-                                 (2..scanner_dfa.yylength-1)); }
+                     { 
+                        $$ := Create_Node (Literal, Null_Node, Null_Node);
+                        Literal_String := Create_Gsl_String
+                          (scanner_dfa.yytext (2..scanner_dfa.yylength-1));
+                        Set_Literal ($$, Gsl_Type (Literal_String));
+
+                        Put_Line (scanner_dfa.yytext
+                                 (2..scanner_dfa.yylength-1));
+                     }
                    | NULL_T
-                     { $$ := Create_Node (Literal, Null_Node, Null_Node);};
+                     { 
+                        $$ := Create_Node (Literal, Null_Node, Null_Node);
+                        Set_Literal ($$, Gsl_Null);
+                     };
 
 -- Identifiers
 global_var         : SUBGRAPH_T '.' IDENTIFIER_T
-                     { $$ := Create_Node (Global_Var, Null_Node, Null_Node);}
+                     {
+                        $$ := Create_Node (Global_Var, Null_Node, Null_Node);
+                        Var_Reference := Create_Gsl_Var_Reference (Subgraph,
+                          (scanner_dfa.yytext));
+                        Set_Literal ($$, Gsl_Type (Var_Reference));
+                     }
                    | SELECTION_T '.' IDENTIFIER_T
-                     { $$ := Create_Node (Global_Var, Null_Node, Null_Node);};
+                     { 
+                        $$ := Create_Node (Global_Var, Null_Node, Null_Node);
+                        Var_Reference := Create_Gsl_Var_Reference (Selection,
+                          (scanner_dfa.yytext));
+                        Set_Literal ($$, Gsl_Type (Var_Reference));
+                     };
 global_ref         : VISIBLE_REF_T SUBGRAPH_T '.' IDENTIFIER_T
-                     { $$ := Create_Node (Global_Ref, Null_Node, Null_Node);}
+                     { 
+                        $$ := Create_Node (Global_Ref, Null_Node, Null_Node);
+                        Var_Reference := Create_Gsl_Var_Reference (Subgraph,
+                          (scanner_dfa.yytext));
+                        Set_Literal ($$, Gsl_Type (Var_Reference));
+                     }
                    | VISIBLE_REF_T SELECTION_T '.' IDENTIFIER_T
-                     { $$ := Create_Node (Global_Ref, Null_Node, Null_Node);};
+                     { 
+                        $$ := Create_Node (Global_Ref, Null_Node, Null_Node);
+                        Var_Reference := Create_Gsl_Var_Reference (Selection,
+                          (scanner_dfa.yytext));
+                        Set_Literal ($$, Gsl_Type (Var_Reference));
+                     };
 
 visible_var        : IDENTIFIER_T
-                     { $$ := Create_Node (Visible_Var, Null_Node, Null_Node);};
+                     { 
+                        $$ := Create_Node (Visible_Var, Null_Node, Null_Node);
+                        Var_Reference := Create_Gsl_Var_Reference (Var,
+                          (scanner_dfa.yytext));
+                        Set_Literal ($$, Gsl_Type (Var_Reference));
+                     };
 visible_ref        : VISIBLE_REF_T IDENTIFIER_T
-                     { $$ := Create_Node (Visible_Ref, Null_Node, Null_Node);};
+                     { 
+                        $$ := Create_Node (Visible_Ref, Null_Node, Null_Node);
+                        Var_Reference := Create_Gsl_Var_Reference (Var,
+                          (scanner_dfa.yytext));
+                        Set_Literal ($$, Gsl_Type (Var_Reference));
+                     };
 var_creation       : '+' IDENTIFIER_T
-                     { $$ := Create_Node (Var_Creation, Null_Node, Null_Node);};
+                     { 
+                        $$ := Create_Node (Var_Creation, Null_Node, Null_Node);
+                        Var_Reference := Create_Gsl_Var_Reference (Var,
+                          (scanner_dfa.yytext));
+                        Set_Literal ($$, Gsl_Type (Var_Reference));
+                     };
 
 
 %% -- next section will go before package statement in SPEC file
-with Giant.Syntax_Tree;
-use  Giant.Syntax_Tree;
+with Giant.Gsl, Giant.Gsl.Syntax_Tree, Giant.Gsl.Types;
+use  Giant.Gsl, Giant.Gsl.Syntax_Tree, Giant.Gsl.Types;
 
 ## -- next section will go after package statement in SPEC file  
 
