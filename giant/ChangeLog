@@ -1,5 +1,7 @@
 2003-10-06  Oliver Kopp  <koppor@studi.informatik.uni-stuttgart.de>
 
+	* src/gsl/giant-gsl-runtime.adb: fixed inconsistency with spec
+
 	* shared/gsl/generate_subgraph__only_parent_edges.gsl: added
 
 	* src/vis/giant-tree_layouts.adb: added Reverse_Edges,
