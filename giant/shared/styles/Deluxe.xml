@@ -155,7 +155,7 @@
   <!-- 10. OK -->  
   <node_class_specific_setting 
     icon         = "../icons/vis_deluxe/O_Node.xpm"
-    text_color   = "#000000"
+    text_color   = "#FFFFFF"
     border_color = "#000000"
     fill_color   = "#0000FF"> 
     
@@ -168,7 +168,7 @@
   <!-- 11. OK -->  
   <node_class_specific_setting 
     icon         = "../icons/vis_deluxe/OC_User_Type_Declaration.xpm"
-    text_color   = "#000000"
+    text_color   = "#FFFFFF"
     border_color = "#000000"
     fill_color   = "#000090"> 
     
@@ -202,10 +202,43 @@
   </node_class_specific_setting>
 
 
+  <!-- 13. OK -->  
+  <node_class_specific_setting 
+    icon         = "../icons/vis_deluxe/TC_Routine.xpm"
+    text_color   = "#000000"
+    border_color = "#000000"
+    fill_color   = "#FF9000"> 
+    
+    <node_attribute attribute_name  = "SLoc"/>  
+                         
+    <super_node_class   super_node_class_name = "TC_Routine"/> 
+  </node_class_specific_setting>
 
 
+  <!-- 14. OK -->  
+  <node_class_specific_setting 
+    icon         = "../icons/vis_deluxe/TC_Pointer.xpm"
+    text_color   = "#000000"
+    border_color = "#000000"
+    fill_color   = "#FFFF90"> 
+    
+    <node_attribute attribute_name  = "SLoc"/>  
+                         
+    <super_node_class   super_node_class_name = "TC_Pointer"/> 
+  </node_class_specific_setting>
 
 
+  <!-- 15. OK -->  
+  <node_class_specific_setting 
+    icon         = "../icons/vis_deluxe/TC_Record.xpm"
+    text_color   = "#000000"
+    border_color = "#000000"
+    fill_color   = "#FF90FF"> 
+    
+    <node_attribute attribute_name  = "SLoc"/>  
+                         
+    <super_node_class   super_node_class_name = "TC_Record"/> 
+  </node_class_specific_setting>
 
 
   <!-- 16. OK -->  
@@ -226,8 +259,8 @@
 
   <!-- ................................................................. -->
   <default_edge_setting
-    line_color = "#F4F4F4"     
-    text_color = "#F4F4F4"     
+    line_color = "#000000"     
+    text_color = "#000000"     
     line_style = "dotted_line"      
     show_label = "no" />  
     
