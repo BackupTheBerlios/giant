@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.3 $
+-- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.4 $
 -- $Author: schwiemn $
--- $Date: 2003/06/17 14:03:02 $
+-- $Date: 2003/07/01 21:42:55 $
 --
 with Giant.File_Management;  -- from GIANT
 with Giant.XML_File_Access;  -- from GIANT
@@ -86,7 +86,7 @@ package body Giant.Config.Class_Sets is
    ---------------------------------------------------------------------------
    -- Side Effect - Changed global variables:
    --   - Class_Sets_Map;
-   procedure Initialize_Class_Sets 
+   procedure Get_Class_Sets 
      (GIANT_Class_Sets_Directory : in String) is
 
       ------------------------------------------------------------------------
@@ -338,7 +338,7 @@ package body Giant.Config.Class_Sets is
       String_Lists.Destroy (File_List);
 
       ADO_Initialized := True;
-   end Initialize_Class_Sets;
+   end Get_Class_Sets;
 
    ---------------------------------------------------------------------------
    procedure Clear_Class_Sets is

@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.18 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.19 $
 -- $Author: schwiemn $
--- $Date: 2003/06/27 15:25:44 $
+-- $Date: 2003/07/01 21:42:55 $
 --
 --
 with Ada.Streams;
@@ -34,6 +34,7 @@ with GNAT.OS_Lib;
 
 
 package body Giant.File_Management is
+
    ---------------------------------------------------------------------------
    function Get_Filtered_Files_From_Directory
      (Path_To_Dir   : in String;
@@ -143,7 +144,43 @@ package body Giant.File_Management is
       GNAT.Directory_Operations.Close (GNAT_Directory);
       return File_Names_List;
    end Get_Filtered_Files_From_Directory;
+   
+   ---------------------------------------------------------------------------
+   function Locate_File_In_Directories
+     (Directory_List : in String_Lists.List;
+      File_Name      : in String)
+     return String is
 
+      Iter : String_Lists.ListIter;
+      -- A potential directory
+      Pot_Directory : Ada.Strings.Unbounded.Unbounded_String;      
+
+   begin
+   
+       Iter := String_Lists.MakeListIter (Directory_List);
+        
+       while String_Lists.More(Iter) loop
+       
+          String_Lists.Next (Iter, Pot_Directory);
+
+          -- ignore not existing / invalid directories
+          if GNAT.OS_Lib.Is_Directory 
+            (Ada.Strings.Unbounded.To_String (Pot_Directory)) then                 
+             begin                               
+                return Get_Absolute_Path_To_File_From_Relative
+                  (Ada.Strings.Unbounded.To_String (Pot_Directory),
+                   File_Name);            
+             exception
+                when File_Does_Not_Exist_Exception =>
+                  null;
+             end;            
+          end if; 
+       end loop;
+      
+       -- return empty String if no file could be located
+       return "";
+   end Locate_File_In_Directories;
+            
    ---------------------------------------------------------------------------
    procedure Delete_File (File_Name : in String) is
 
@@ -320,6 +357,53 @@ package body Giant.File_Management is
       when GNAT.Directory_Operations.Directory_Error =>
          raise Directory_Does_Not_Exist_Exception;
    end Get_Absolute_Path_To_Directory_From_Relative;
+
+   ---------------------------------------------------------------------------
+   function Get_Absolute_Path_From_Relative
+     (Start_Dir    : in String;
+      Rel_Path : in String) 
+     return String is
+
+      -- store "working directory for the execution environment"
+      Old_Exec_Dir : String := GNAT.Directory_Operations.Get_Current_Dir;
+
+      -- needed to calculate an absolute path
+      ADA_Text_IO_File : ADA.Text_IO.File_Type;
+
+      Abs_Path : Ada.Strings.Unbounded.Unbounded_String;
+
+   begin
+
+      if (GNAT.OS_Lib.Is_Directory (Start_Dir) = False) then
+
+         -- if an invalid start directory is passed the file 
+         -- obviously could not be found
+         raise Abs_Path_Could_Not_Be_Calculated_Exception;
+      end if;
+
+      GNAT.Directory_Operations.Change_Dir (Start_Dir);
+
+      ADA.Text_IO.Open
+        (File => ADA_Text_IO_File,
+         Mode => ADA.Text_IO.In_File,
+         Name => Rel_Path);
+
+      Abs_Path := Ada.Strings.Unbounded.To_Unbounded_String
+        (ADA.Text_IO.Name (ADA_Text_IO_File));
+
+      ADA.Text_IO.Close (ADA_Text_IO_File);
+
+      -- switch back to old
+      -- "working directory for the execution environment"
+      GNAT.Directory_Operations.Change_Dir (Old_Exec_Dir);
+
+      return Ada.Strings.Unbounded.To_String (Abs_Path);
+
+   exception
+      when others =>
+         GNAT.Directory_Operations.Change_Dir (Old_Exec_Dir);
+         raise Abs_Path_Could_Not_Be_Calculated_Exception;
+   end Get_Absolute_Path_From_Relative;
 
    ---------------------------------------------------------------------------
    procedure Set_Currunt_Working_Dir_To_Exec_Dir is

@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.12 $
--- $Author: squig $
--- $Date: 2003/06/27 14:34:55 $
+-- $RCSfile: giant-config_settings.adb,v $, $Revision: 1.13 $
+-- $Author: schwiemn $
+-- $Date: 2003/07/01 21:42:55 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Strings.Fixed;
@@ -45,6 +45,7 @@ with DOM.Core.Elements;  -- from xmlada
 with Giant.Logger;          -- from GIANT
 with Giant.XML_File_Access; -- from GIANT
 with Giant.File_Management; -- from GIANT
+with Giant.String_Split;    -- from GIANT
 
 package body Giant.Config_Settings is
 
@@ -474,12 +475,47 @@ package body Giant.Config_Settings is
    end Get_Setting_As_String;
 
    ---------------------------------------------------------------------------
+   function Internal_Try_Path_Expansion 
+     (Abs_Path_Root        : in String;
+      Abs_Config_File_Dir  : in String;
+      Unexpanded_Path      : in String)
+     return String is
+          
+      Abs_Path : Ada.Strings.Unbounded.Unbounded_String;
+   begin
+
+      -- 1. try expansion regarding abs_path_root
+      begin
+      
+         return File_Management.Get_Absolute_Path_From_Relative
+           (Abs_Path_Root,
+            Unexpanded_Path);
+      exception
+         when File_Management.Abs_Path_Could_Not_Be_Calculated_Exception =>
+            null;
+      end;
+
+      -- 2. try expansion regarding directory of config file
+      begin
+       
+          return File_Management.Get_Absolute_Path_From_Relative
+            (Abs_Config_File_Dir,
+             Unexpanded_Path);
+      exception
+          when File_Management.Abs_Path_Could_Not_Be_Calculated_Exception =>
+             null;
+      end;
+
+      -- 3. retrun empty string if nothing works
+      return "";    
+   end Internal_Try_Path_Expansion;
+
+   ---------------------------------------------------------------------------
    function Get_Setting_With_Path_Expanded (Name : in String) return String is
 
-      Abs_Path            : Ada.Strings.Unbounded.Unbounded_String;
+      Unexp_Path          : Ada.Strings.Unbounded.Unbounded_String;
       Source_Data         : Config_Data_Element;
       Found               : Boolean := False;
-      Directory_Separator : Character := GNAT.OS_Lib.Directory_Separator;
    begin
 
       if not ADO_Initialized then
@@ -497,97 +533,85 @@ package body Giant.Config_Settings is
          Source_Data := GIANT_Config;
       end if;
 
-      Abs_Path := Ada.Strings.Unbounded.To_Unbounded_String
+      Unexp_Path := Ada.Strings.Unbounded.To_Unbounded_String
         (Get_Setting_As_String_From_Data_Element
          (Source_Data, Name));
-
-      -- differ between directories and files
-      if Get_Setting_As_String_From_Data_Element (Source_Data, Name)
-        (Get_Setting_As_String_From_Data_Element
-         (Source_Data, Name)'Last) = Directory_Separator then
-         -- assume Abs_Path is a path to a directory
-
-         -- try expansion regarding  <absolute_path_root> node
-         begin
-            Abs_Path := Ada.Strings.Unbounded.To_Unbounded_String
-              (File_Management.Get_Absolute_Path_To_Directory_From_Relative
-               (Ada.Strings.Unbounded.To_String (Source_Data.Abs_Path_Root),
-                Ada.Strings.Unbounded.To_String (Abs_Path)));
-            Found := True;
-         exception
-            -- catch exception
-            when File_Management.Directory_Does_Not_Exist_Exception =>
-               Found := False;
-         end;
-
-         -- try expansion regarding directory of config file
-         if not Found then
-            begin
-               Abs_Path := Ada.Strings.Unbounded.To_Unbounded_String
-                 (File_Management.
-                  Get_Absolute_Path_To_Directory_From_Relative
-                  (File_Management.Return_Dir_Path_For_File_Path
-                   (Ada.Strings.Unbounded.To_String
-                    (Source_Data.Abs_Config_File_Path)),
-                   Ada.Strings.Unbounded.To_String (Abs_Path)));
-
-               Found := True;
-            exception
-               -- catch exception
-               when File_Management.Directory_Does_Not_Exist_Exception =>
-                  Found := False;
-            end;
-         end if;
-
-         if Found then
-            return Ada.Strings.Unbounded.To_String (Abs_Path);
-         else
-            -- retrun empty string if nothing works
-            return "";
-         end if;
-      else
-         -- asume Abs_Path is a path to file
-
-         -- try expansion regarding  <absolute_path_root> node
-         begin
-            Abs_Path := Ada.Strings.Unbounded.To_Unbounded_String
-              (File_Management.Get_Absolute_Path_To_File_From_Relative
-               (Ada.Strings.Unbounded.To_String (Source_Data.Abs_Path_Root),
-                Ada.Strings.Unbounded.To_String (Abs_Path)));
-            Found := True;
-         exception
-            -- catch exception
-            when File_Management.File_Does_Not_Exist_Exception =>
-               Found := False;
-         end;
-
-         -- try expansion regarding directory of config file
-         if not Found then
-            begin
-               Abs_Path := Ada.Strings.Unbounded.To_Unbounded_String
-                 (File_Management.Get_Absolute_Path_To_File_From_Relative
-                  (File_Management.Return_Dir_Path_For_File_Path
-                   (Ada.Strings.Unbounded.To_String
-                    (Source_Data.Abs_Config_File_Path)),
-                   Ada.Strings.Unbounded.To_String (Abs_Path)));
-
-               Found := True;
-            exception
-               -- catch exception
-               when File_Management.File_Does_Not_Exist_Exception =>
-                  Found := False;
-            end;
-         end if;
-
-         if Found then
-            return Ada.Strings.Unbounded.To_String (Abs_Path);
-         else
-            -- retrun empty string if nothing works
-            return "";
-         end if;
-      end if;
+                           
+      return Internal_Try_Path_Expansion 
+        (Ada.Strings.Unbounded.To_String (Source_Data.Abs_Path_Root),
+         File_Management.Return_Dir_Path_For_File_Path
+             (Ada.Strings.Unbounded.To_String
+               (Source_Data.Abs_Config_File_Path)),
+         Ada.Strings.Unbounded.To_String (Unexp_Path));           
    end Get_Setting_With_Path_Expanded;
+   
+   ---------------------------------------------------------------------------
+   function Get_Setting_As_Expanded_Path_List 
+     (Name : in String) 
+     return String_Lists.List is
+     
+     use Ada.Strings.Unbounded;
+     
+     Source_Data   : Config_Data_Element;
+     
+     Splitted_List      : String_Lists.List;   
+     Splitted_List_Iter : String_Lists.ListIter;  
+     Result_List   : String_Lists.List;         
+     Path_Sep      : String (1 .. 1) := (1 => GNAT.OS_Lib.Path_Separator); 
+     A_Pot_Path    : Ada.Strings.Unbounded.Unbounded_String; 
+     A_Exp_Path    : Ada.Strings.Unbounded.Unbounded_String;  
+   begin
+      
+      if not ADO_Initialized then
+         raise Config_Settings_ADO_Not_Initialized_Exception;
+      end if;
 
+      if not Does_Setting_Exist (Name) then
+         raise Config_Setting_Does_Not_Exist_Exception;
+      end if;
+      
+      -- first search User_Config !!!
+      if Does_Setting_Exist_In_Data_Element (User_Config, Name) then
+         Source_Data := User_Config;
+      else
+         Source_Data := GIANT_Config;
+      end if;
+                 
+      Result_List := String_Lists.Create;      
+      
+      Splitted_List := String_Split.Split_String
+        (Get_Setting_As_String_From_Data_Element (Source_Data, Name),
+         Path_Sep);
+
+      Splitted_List_Iter := String_Lists.MakeListIter (Splitted_List);
+      
+      while String_Lists.More (Splitted_List_Iter) loop     
+         
+         String_Lists.Next (Splitted_List_Iter, A_Pot_Path);
+         
+         if A_Pot_Path /= Ada.Strings.Unbounded.Null_Unbounded_String then
+         
+            A_Exp_Path := Ada.Strings.Unbounded.To_Unbounded_String
+              (Internal_Try_Path_Expansion 
+                (Ada.Strings.Unbounded.To_String 
+                  (Source_Data.Abs_Path_Root),
+                 File_Management.Return_Dir_Path_For_File_Path
+                   (Ada.Strings.Unbounded.To_String
+                     (Source_Data.Abs_Config_File_Path)),
+                 Ada.Strings.Unbounded.To_String (A_Pot_Path)));              
+                  
+            if A_Exp_Path /= Ada.Strings.Unbounded.Null_Unbounded_String then
+            
+               String_Lists.Attach (Result_List, A_Exp_Path);            
+            end if;         
+         end if;                          
+      end loop;
+
+      String_Lists.Destroy (Splitted_List);
+
+      return Result_List;
+   end Get_Setting_As_Expanded_Path_List;
+      
    ---------------------------------------------------------------------------
    function Get_Setting_As_Boolean (Name : in String)
                                    return Boolean is

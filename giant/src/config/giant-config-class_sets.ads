@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-class_sets.ads,v $, $Revision: 1.2 $
+-- $RCSfile: giant-config-class_sets.ads,v $, $Revision: 1.3 $
 -- $Author: schwiemn $
--- $Date: 2003/06/11 12:00:17 $
+-- $Date: 2003/07/01 21:42:55 $
 --
 -- ----------------
 -- This package provides the functionality needed to handle
@@ -168,7 +168,7 @@ package Giant.Config.Class_Sets is
    --     subprogram is called before "Initialize_Class_Sets"
    --   Class_Set_Does_Not_Exist_Exception - Raised if there is
    --     no class set with the name "Class_Set_Name".
-   function Initialize_Class_Set_Access (Class_Set_Name : in String)
+   function Get_Class_Set_Access (Class_Set_Name : in String)
      return Class_Set_Access;
 
 

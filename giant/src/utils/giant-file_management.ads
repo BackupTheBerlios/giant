@@ -20,10 +20,10 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.ads,v $, $Revision: 1.14 $
+-- $RCSfile: giant-file_management.ads,v $, $Revision: 1.15 $
 
 -- $Author: schwiemn $
--- $Date: 2003/06/27 19:44:01 $
+-- $Date: 2003/07/01 21:42:55 $
 --
 -- -----------------------------------------------
 --
@@ -46,9 +46,9 @@ package Giant.File_Management is
 
    ---------------------------------------------------------------------------
    -- Raised if an not existing of incorrect directory is passed
-   -- as parameter
+   -- as parameter.
    Invalid_Directory_Exception : exception;
-
+   
    ---------------------------------------------------------------------------
    -- Returns file names from a Directory.
    -- Each returned unbounded String in the list corresponds
@@ -97,7 +97,33 @@ package Giant.File_Management is
       Filter         : in Boolean;
       Filter_String  : in String)
      return String_Lists.List;
-
+             
+   ---------------------------------------------------------------------------
+   -- This function tries to locate a file in a passed list holding
+   -- absolute paths to directories (relative paths will be expanded
+   -- towards the working directory of the current execution
+   -- environment).
+   --
+   -- The Directory_List is traversed in sequential order from the
+   -- beginning. As soon as a file File_Name is found in a directory
+   -- it will be returned - the absolute path will be calculated on
+   -- "the first hit".
+   --
+   -- Invalid / not existing directories in Directory_List will be
+   -- ignored.
+   -- 
+   -- Parameters:
+   --   Directory_List - A list holding paths to directories. 
+   --   File_Name - The name of a file (incl. ending).
+   -- Returns:
+   --   An absolute path to the file File_Name if it is found in one
+   --   of the passed directories. If the file is not found, then
+   --   an empty String ("") will be returned.
+   function Locate_File_In_Directories
+      (Directory_List : in String_Lists.List;
+       File_Name      : in String)
+      return String;
+      
    ---------------------------------------------------------------------------
    -- Raised if a file does not exist
    File_Does_Not_Exist_Exception : exception;
@@ -115,6 +141,11 @@ package Giant.File_Management is
    -- Raised if an existing directory path could not be calculated out
    -- of a path to a file name.
    Directory_Could_Not_Be_Calculated_Exception : exception;
+   
+   ---------------------------------------------------------------------------
+   -- Raised if no exsiting absolute path (to file or dir) could be
+   -- calculated out of passed parameters.
+   Abs_Path_Could_Not_Be_Calculated_Exception : exception;
 
    ---------------------------------------------------------------------------
    -- Deletes a File.
@@ -168,7 +199,6 @@ package Giant.File_Management is
       Relative_Path_To_File : in String)
      return String;
 
-
    --------------------------------------------------------------------------
    -- Calculates an relative path out of an absolute path using a absolute
    -- path root.
@@ -215,7 +245,32 @@ package Giant.File_Management is
      (Start_Dir    : in String;
       Rel_Dir_Path : in String)
      return String;
-
+          
+   ----------------------------------------------------------------------------  
+   --  Tries to calculate absolute paths without differing between files
+   --  and directories.
+   --  
+   --  Directories are regarded as files by this subprogram therefore it
+   --  is not garanted that this will work for other operating systems
+   --  than Linux or Sun Solaris - use on your own risk.
+   --
+   --  Parameters: 
+   --    Start_Dir - The directory there the relative path
+   --      "Rel_Dir_Path" begins. "Start_Dir" may also
+   --      be a relative path - then the absolute path will
+   --      be calculated based on the "current working directory
+   --      of the execution environment".
+   --    Rel_Path - A relative path to a file or directory. 
+   --      If an absolute path is passed the path will not be changed.
+   --  Raises:
+   --    Abs_Path_Could_Not_Be_Calculated_Exception - Raised if
+   --      Start_Dir and Rel_Path together do not form a path to
+   --      an existing file or directory.
+   function Get_Absolute_Path_From_Relative
+     (Start_Dir    : in String;
+      Rel_Path : in String)
+     return String;  
+     
    ---------------------------------------------------------------------------
    -- This procedure changes the current working directory for the execution
    -- environment so that it matches the directory there the Executable

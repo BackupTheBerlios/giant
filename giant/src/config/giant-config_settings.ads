@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.13 $
+-- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.14 $
 -- $Author: schwiemn $
--- $Date: 2003/07/01 17:09:51 $
+-- $Date: 2003/07/01 21:42:55 $
 --
 -- -----
 -- This package holds the functionality needed to access and handle
@@ -35,12 +35,9 @@
 --
 with Ada.Strings.Unbounded;
 
-with Giant.Config_Settings_Validators;
+with String_Lists;  -- from Bauhaus Reuse.src
 
 package Giant.Config_Settings is
-
-   package Boolean_Settings is new Config_Settings_Validators
-     (Boolean);
 
    ---------------------------------------------------------------------------
    -- Used to identify a config file by the top level node (document node)
@@ -124,7 +121,12 @@ package Giant.Config_Settings is
 
        (To_UStr ("IML_Subgraph_Highlight_Color_3"),
         To_UStr ("RGB:AA/AA/AA"), null),
-
+        
+       -- You may enter a sequence of paths separated by the OS' 
+       -- path separator for environment variables
+       (To_UStr ("GSL.Include"),
+        To_UStr ("./"), null),        
+                
        (To_UStr ("Main_Window.Height"),
         To_UStr ("400"),
         Validate_Integer'Access),
@@ -137,13 +139,13 @@ package Giant.Config_Settings is
         To_UStr ("230"),
         Validate_Integer'Access),
 
-      (To_UStr ("Confirm.Delete"),
-       To_UStr ("True"),
-       null),
+       (To_UStr ("Confirm.Delete"),
+        To_UStr ("True"),
+        null),
 
-      (To_UStr ("Editor.Source"),
-       To_UStr ("/usr/bin/emacs +%l:%c %f"),
-       null)
+       (To_UStr ("Editor.Source"),
+        To_UStr ("/usr/bin/emacs +%l:%c %f"),
+        null)
       );
 
    ---------------------------------------------------------------------------
@@ -306,6 +308,34 @@ package Giant.Config_Settings is
    --   Config_Setting_Does_Not_Exist_Exception - raised if there is
    --     no config setting with the name "Name";
    function Get_Setting_With_Path_Expanded (Name : in String) return String;
+         
+   ---------------------------------------------------------------------------
+   -- Same functionality as Get_Setting_With_Path_Expanded - used for
+   -- settings that hold several paths to directories or files.
+   --
+   -- Splitts a setting holding several paths, each element of the list
+   -- will hold an expanded path. 
+   -- 
+   -- Not expandable paths will be ignored.
+   --
+   -- Paths have to be separated by the OS' 
+   -- path separator for environment variables.
+   --
+   -- Parameters:
+   --   Name - The unique identifier of a config setting.
+   -- Returns:
+   --   A list holding all expanded paths. May return an empty list
+   --   if no expan dable paths are found. You are responsible for
+   --   the deallocation of the result.
+   -- Raises:
+   --   Config_Settings_ADO_Not_Initialized_Exception -
+   --     raised if this subprogram is called before "
+   --     Initialize_Config_Settings".
+   --   Config_Setting_Does_Not_Exist_Exception - raised if there is
+   --     no config setting with the name "Name"; 
+   function Get_Setting_As_Expanded_Path_List 
+     (Name : in String) 
+     return String_Lists.List;
 
    ---------------------------------------------------------------------------
    -- This method returns a config setting as a boolean value.
