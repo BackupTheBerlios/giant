@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.10 $
 --  $Author: koppor $
---  $Date: 2003/07/08 10:16:20 $
+--  $Date: 2003/07/08 13:53:14 $
 --
 ------------------------------------------------------------------------------
 --  Variables are named according to the paper
@@ -95,10 +95,29 @@ package body Giant.Tree_Layouts is
             procedure Free_Node_Layout_Data is new Ada.Unchecked_Deallocation
               (Node_Layout_Data_Record, Node_Layout_Data);
 
+            Stack : Node_Layout_Data_Stacks.Stack;
+            Data  : Node_Layout_Data;
+            I     : Node_Layout_Data;
+
          begin
-            --  TBD: recusively process Tree_Root and remove content
-            --  out of the memory
-            null;
+            Stack := Node_Layout_Data_Stacks.Create;
+
+            Node_Layout_Data_Stacks.Push (Stack, Layout.Tree_Root);
+            while not Node_Layout_Data_Stacks.Is_Empty (Stack) loop
+               Node_Layout_Data_Stacks.Pop (Stack, Data);
+
+               --  Push children onto stack
+               I := Data.Leftmost_Child;
+               while I /= null loop
+                  Node_Layout_Data_Stacks.Push (Stack, I);
+                  I := I.Right_Silbling;
+               end loop;
+
+               --  free (self)
+               Free_Node_Layout_Data (Data);
+            end loop;
+
+            Node_Layout_Data_Stacks.Destroy (Stack);
          end Remove_Node_Layout_Data;
 
       begin
@@ -110,7 +129,7 @@ package body Giant.Tree_Layouts is
 
          Level_Mappings.Destroy (Layout.Level_Heights);
 
-         FirstWalk_Part_One_Stacks.Destroy (Layout.FirstWalk_Part_One_Stack);
+         Node_Layout_Data_Stacks.Destroy (Layout.FirstWalk_Part_One_Stack);
          FirstWalk_Part_Two_Stacks.Destroy (Layout.FirstWalk_Part_Two_Stack);
 
          SecondWalk_Stacks.Destroy (Layout.SecondWalk_Stack);
@@ -156,8 +175,9 @@ package body Giant.Tree_Layouts is
       ------------------------------------------------------------------------
       procedure Start_Matrix_Layout
       is
-         The_Matrix_Layout : Matrix_Layouts.Matrix_Layout;
-         The_Selection     : Graph_Lib.Selections.Selection;
+         The_Matrix_Layout      : Matrix_Layouts.Matrix_Layout;
+         The_Selection          : Graph_Lib.Selections.Selection;
+         Matrix_Target_Position : Vis.Logic.Vector_2d;
       begin
          --  Create selection used as parameter for the layout
          --  a speed-optimization could be done here
@@ -169,11 +189,16 @@ package body Giant.Tree_Layouts is
          Graph_Lib.Selections.Add_Node_Set
            (The_Selection, Layout.Nodes_To_Layout);
 
+         Matrix_Target_Position :=
+           Vis.Logic.Combine_Vector
+           (Layout.Max_X,
+            Vis.Logic.Get_Y (Layout.Target_Position));
+
          The_Matrix_Layout := Matrix_Layouts.Initialize
            (Layout.Widget,
             Layout.Widget_Lock,
             The_Selection,
-            Layout.Target_Position); --  TBD: modify to right corner of tree
+            Matrix_Target_Position);
 
          Graph_Lib.Selections.Destroy (The_Selection);
 
@@ -192,9 +217,9 @@ package body Giant.Tree_Layouts is
 
       begin
          while (Nodes_Processed <= Max_Nodes_In_One_Run) and
-           not FirstWalk_Part_One_Stacks.Is_Empty
+           not Node_Layout_Data_Stacks.Is_Empty
            (Layout.FirstWalk_Part_One_Stack) loop
-            FirstWalk_Part_One_Stacks.Pop
+            Node_Layout_Data_Stacks.Pop
               (Layout.FirstWalk_Part_One_Stack, V);
             if V.Leftmost_Child = null then
                --  V is a leaf
@@ -210,7 +235,7 @@ package body Giant.Tree_Layouts is
                --  Reverse processing gives a correct stack-ordering
                W := V.Rightmost_Child;
                while W /= null loop
-                  FirstWalk_Part_One_Stacks.Push
+                  Node_Layout_Data_Stacks.Push
                     (Layout.FirstWalk_Part_One_Stack, W);
 
                   Part_Two_Data.W := W;
@@ -233,7 +258,7 @@ package body Giant.Tree_Layouts is
 
          Evolutions.Advance_Progress (Layout, Nodes_Processed);
 
-         if FirstWalk_Part_One_Stacks.Is_Empty
+         if Node_Layout_Data_Stacks.Is_Empty
            (Layout.FirstWalk_Part_One_Stack) then
             Layout.State := FirstWalk_Run_Part_Two;
             Next_Action  := Evolutions.Run;
@@ -459,17 +484,23 @@ package body Giant.Tree_Layouts is
 
          New_Relative_Position : Vis.Logic.Vector_2d;
 
+         X                     : Vis.Logic_Float;
+
       begin
          while (Nodes_Processed <= Max_Nodes_In_One_Run) and
            not SecondWalk_Stacks.Is_Empty (Layout.SecondWalk_Stack) loop
             SecondWalk_Stacks.Pop
               (Layout.SecondWalk_Stack, SecondWalk_Data);
 
+            X := SecondWalk_Data.V.Prelim + SecondWalk_Data.M;
             New_Relative_Position := Vis.Logic.Combine_Vector
-              (X => SecondWalk_Data.V.Prelim + SecondWalk_Data.M,
+              (X => X,
                Y => Level_Mappings.Fetch
                (Layout.Level_Heights,
                 SecondWalk_Data.V.Level));
+            if Layout.Max_X < X then
+               Layout.Max_X := X;
+            end if;
 
             Graph_Widgets.Set_Top_Middle
               (Layout.Widget,
@@ -545,7 +576,7 @@ package body Giant.Tree_Layouts is
             Next_Action  := Evolutions.Run;
 
          when FirstWalk_Start =>
-            FirstWalk_Part_One_Stacks.Push
+            Node_Layout_Data_Stacks.Push
               (Layout.FirstWalk_Part_One_Stack, Layout.Tree_Root);
 
             Layout.State := FirstWalk_Run_Part_One;
@@ -567,6 +598,12 @@ package body Giant.Tree_Layouts is
                SecondWalk_Stacks.Push
                  (Layout.SecondWalk_Stack,
                   SecondWalk_Data);
+
+               --  Target_Position is a good start for Max_X, since
+               --    it is the middle of the tree
+               --  0.0 is not used here, since negative values could also
+               --    have been used as Target_Position
+               Layout.Max_X := Vis.Logic.Get_X (Layout.Target_Position);
             end;
 
             Layout.State := SecondWalk_Run;
@@ -679,7 +716,7 @@ package body Giant.Tree_Layouts is
          Layout.Level_Heights := Level_Mappings.Create;
          Adjust_Level_Height (Layout.Root_Node, 1);
 
-         Layout.FirstWalk_Part_One_Stack   := FirstWalk_Part_One_Stacks.Create;
+         Layout.FirstWalk_Part_One_Stack   := Node_Layout_Data_Stacks.Create;
          Layout.FirstWalk_Part_Two_Stack   := FirstWalk_Part_Two_Stacks.Create;
 
          Layout.SecondWalk_Stack := SecondWalk_Stacks.Create;
@@ -751,12 +788,15 @@ package body Giant.Tree_Layouts is
             Data              := null;
 
             for I in Outgoing_Edges'Range loop
-               --  TBD: add check for empty class set
-               if Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
+               if Config.Class_Sets.Is_Empty
+                 (Layout.Meta_Class_Set) or else
+                 Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
                  (Layout.Meta_Class_Set,
                   Graph_Lib.Get_Edge_Class_Id (Outgoing_Edges (I))) then
                   Node := Graph_Lib.Get_Target_Node (Outgoing_Edges (I));
-                  if Config.Class_Sets.Is_Node_Class_Element_Of_Class_Set
+                  if Config.Class_Sets.Is_Empty
+                    (Layout.Meta_Class_Set) or else
+                    Config.Class_Sets.Is_Node_Class_Element_Of_Class_Set
                     (Layout.Meta_Class_Set,
                      Graph_Lib.Get_Node_Class_Id (Node)) then
                      Graph_Lib.Node_Id_Sets.Remove_If_Exists
