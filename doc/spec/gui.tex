@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.51 $
-%  $Date: 2003/03/29 09:26:53 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.52 $
+%  $Date: 2003/03/29 16:39:28 $
 %  $Author: birdy $
 %
 %  Description: 
@@ -30,6 +30,12 @@ Jedes Untermenü (horizontal) heist MENÜNAME-UNTERMENÜNAME
 Jeder Eintag (vertikal) heißt MENÜNAME-UNTERMENÜNAME-EINTRAGSNAME
 
 \section {Main Window}
+
+\begin{figure}[!htbp]
+   \centering
+   \includegraphics[10cm,10cm][0,0]{Main_Window.png}
+   \caption{Modal-Progressbar}
+\end{figure}
 
 Im Hauptfenster (MAIN\_WINDOW), welches es nur einmal gleichzeitig
 gibt, werden vorhandene Anzeigefenster und vorhandene
@@ -479,20 +485,31 @@ Jede Progressbar ist mit \gq{Working, please wait.} beschriftet.
 
 \subsection{Progressbar-Runs}
 \label{Progressbar-Runs}
-     Anzeige eines Dialoges mit einem sich ständig leicht ändernden
+     Fenster mit Anzeige eines Dialoges mit einem sich ständig leicht ändernden
      Inhalt, so dass erkennbar ist, dass das System noch arbeitet.
 
 \subsection{Progressbar-Percent}  
 \label{Progressbar-Percent}   
-     Anzeige eines Progressbars, der darstellt, welcher Anteil der
+     Fenster Anzeige eines Progressbars, der darstellt, welcher Anteil der
      Gesamtberechnung in Prozent bereits erledigt ist.
 
-\subsection{Progressbar-Status}
+\subsection{Progressbar-Modale}
 \label{Progressbar-Status} 
-     Anzeige eines Progressbars, der über den aktuellen Fortschritt
+     Fenster mit Anzeige eines Progressbars, der über den aktuellen Fortschritt
      einer Berechnung informiert, ohne dabei den Gesamtaufwand zu 
      kennen. Dabei wird kontinuierlich die Anzahl der schon bearbeiteten
      Datensätze ausgegeben.
+     Während dieser Dialog sichtbar ist, ist der Rest der GUI von GIANT
+     gesperrt.
+     Im Fenster existiert ein Button \gq{Cancel Calculation} , der die momentane
+     Berechnung abbricht.
+     
+
+\begin{figure}[!htbp]
+   \centering
+   \includegraphics[10cm,10cm][0,0]{Modal-Progressbar.png}
+   \caption{Modal-Progressbar}
+\end{figure}
 
 %%% Local Variables: 
 %%% TeX-master: "spec"
