@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.5 $
+-- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.6 $
 -- $Author: schwiemn $
--- $Date: 2003/07/02 11:51:31 $
+-- $Date: 2003/07/02 15:45:18 $
 --
 with Giant.File_Management;  -- from GIANT
 with Giant.XML_File_Access;  -- from GIANT
@@ -348,7 +348,7 @@ package body Giant.Config.Class_Sets is
       Dealloc_Class_Set_Access : Class_Set_Access;
    begin
 
-      if (ADO_Initialized = False) then
+      if not ADO_Initialized then
          raise Class_Sets_ADO_Not_Initialized_Exception;
       end if;
 
@@ -387,10 +387,9 @@ package body Giant.Config.Class_Sets is
       Class_Sets_Iter : Class_Sets_Hashed_Mappings.Values_Iter;
 
       A_Class_Set_Access : Class_Set_Access;
-
    begin
 
-      if (ADO_Initialized = False) then
+      if not ADO_Initialized then
          raise Class_Sets_ADO_Not_Initialized_Exception;
       end if;
 
@@ -416,7 +415,7 @@ package body Giant.Config.Class_Sets is
 
    begin
 
-      if (ADO_Initialized = False) then
+      if not ADO_Initialized then
          raise Class_Sets_ADO_Not_Initialized_Exception;
       end if;
 
@@ -432,7 +431,7 @@ package body Giant.Config.Class_Sets is
 
    begin
 
-      if (ADO_Initialized = False) then
+      if not ADO_Initialized then
          raise Class_Sets_ADO_Not_Initialized_Exception;
       end if;
 
@@ -459,7 +458,7 @@ package body Giant.Config.Class_Sets is
 
    begin
 
-      if (ADO_Initialized = False) then
+      if not ADO_Initialized then
          raise Class_Sets_ADO_Not_Initialized_Exception;
       end if;
 
@@ -480,7 +479,7 @@ package body Giant.Config.Class_Sets is
 
    begin
 
-      if (ADO_Initialized = False) then
+      if not ADO_Initialized then
          raise Class_Sets_ADO_Not_Initialized_Exception;
       end if;
 
@@ -492,4 +491,92 @@ package body Giant.Config.Class_Sets is
         Edge_Class_Look_Up_Hashed_Mappings.Is_Bound
         (Class_Set.Edge_Classes, Edge_Class);
    end Is_Edge_Class_Element_Of_Class_Set;
+   
+   ---------------------------------------------------------------------------
+   -- F
+   -- Meta Class Sets
+   --------------------------------------------------------------------------- 
+   
+   ---------------------------------------------------------------------------
+   function Build (Elements : in Class_Set_Array) 
+     return Meta_Class_Set_Access is
+     
+      New_Meta        : Meta_Class_Set_Access;      
+      Node_Class_Iter : Node_Class_Look_Up_Hashed_Mappings.Values_Iter;
+      A_Node_Class    : Graph_Lib.Node_Class_Id;      
+      Edge_Class_Iter : Edge_Class_Look_Up_Hashed_Mappings.Values_Iter;     
+      A_Edge_Class    : Graph_Lib.Edge_Class_Id;
+   begin
+   
+      New_Meta := new Class_Set_Data;
+      New_Meta.Node_Classes := Node_Class_Look_Up_Hashed_Mappings.Create;
+      New_Meta.Edge_Classes := Edge_Class_Look_Up_Hashed_Mappings.Create;  
+          
+      for I in Elements'Range loop 
+           
+         if (Elements (I) /= null) then      
+                              
+            -- Process node classes
+            -----------------------      
+            Node_Class_Iter :=  
+              Node_Class_Look_Up_Hashed_Mappings.Make_Values_Iter 
+                (Elements (I).Node_Classes);
+    
+            while Node_Class_Look_Up_Hashed_Mappings.More 
+              (Node_Class_Iter) loop
+          
+               Node_Class_Look_Up_Hashed_Mappings.Next
+                 (Node_Class_Iter, A_Node_Class);                          
+                  
+               if not Node_Class_Look_Up_Hashed_Mappings.Is_Bound
+                 (New_Meta.Node_Classes, A_Node_Class) then
+                  
+                  Node_Class_Look_Up_Hashed_Mappings.Bind
+                    (New_Meta.Node_Classes,
+                     A_Node_Class,
+                     A_Node_Class);                 
+               end if;                                                  
+            end loop;
+             
+            -- Process edge classes
+            -----------------------
+            Edge_Class_Iter := 
+              Edge_Class_Look_Up_Hashed_Mappings.Make_Values_Iter 
+                (Elements (I).Edge_Classes);
+                
+            while Edge_Class_Look_Up_Hashed_Mappings.More 
+              (Edge_Class_Iter) loop
+          
+               Edge_Class_Look_Up_Hashed_Mappings.Next
+                 (Edge_Class_Iter, A_Edge_Class);                          
+                  
+               if not Edge_Class_Look_Up_Hashed_Mappings.Is_Bound
+                 (New_Meta.Edge_Classes, A_Edge_Class) then
+                  
+                  Edge_Class_Look_Up_Hashed_Mappings.Bind
+                    (New_Meta.Edge_Classes,
+                     A_Edge_Class,
+                     A_Edge_Class);                 
+               end if;                                                  
+            end loop;  
+                                                 
+         end if; -- end if (Elements (I) /= null)
+                            
+      end loop;       
+       
+      return New_Meta;           
+   end Build;
+ 
+   ---------------------------------------------------------------------------  
+   procedure Destroy (Target : in out Meta_Class_Set_Access) is
+   
+   begin
+   
+      if (Target = null) then
+         raise Class_Sets_Access_Not_Initialized_Exception;
+      end if;
+   
+      Deallocate_Class_Set (Target);
+   end Destroy;
+              
 end Giant.Config.Class_Sets;

@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-class_sets.ads,v $, $Revision: 1.4 $
+-- $RCSfile: giant-config-class_sets.ads,v $, $Revision: 1.5 $
 -- $Author: schwiemn $
--- $Date: 2003/07/02 11:51:31 $
+-- $Date: 2003/07/02 15:45:18 $
 --
 -- ----------------
 -- This package provides the functionality needed to handle
@@ -171,6 +171,7 @@ package Giant.Config.Class_Sets is
    function Get_Class_Set_Access (Class_Set_Name : in String)
      return Class_Set_Access;
      
+     
    ---------------------------------------------------------------------------
    -- D
    -- Queries to class sets.
@@ -216,8 +217,7 @@ package Giant.Config.Class_Sets is
       Edge_Class : in Graph_Lib.Edge_Class_Id)
      return Boolean;
      
-     
-     
+          
    ---------------------------------------------------------------------------
    -- F
    -- Meta Class Sets
@@ -229,17 +229,47 @@ package Giant.Config.Class_Sets is
    -- 1. Create a Meta_Class_Set over all needed Class Sets
    -- 2. Instead of asking each single class set ask the meta class set
    -- 3. Destroy the Meta Class set when it is now longer needed   
+   --
+   -- A Meta Class Set provides much faster access to its elements as
+   -- asking each single class set separately.
    ---------------------------------------------------------------------------   
-   
-   type Meta_Class_Set_Access is private;
-   
-   type Class_Set_Array is array (integer range <>) of Class_Set_Access;
-  
-  
-                 
-     
-     
 
+   ---------------------------------------------------------------------------
+   -- A class set holding the elements (node and edge classes of several
+   -- class sets).
+   subtype Meta_Class_Set_Access is Class_Set_Access;
+   
+   type Class_Set_Array is array (Integer range <>) of Class_Set_Access;
+      
+   ---------------------------------------------------------------------------
+   -- Builds a meta class set out of a collection of class sets.
+   --
+   -- Note:
+   --   Generates a "big class set" holding all elementes of the sub sets.
+   --   As therefore a deep copy is generated this will cost a certain
+   --   ammount of memory. Deallocation is up to you.
+   --
+   -- Parameters:
+   --   Elements - All class sets based on that the meta class set should be
+   --     built.   
+   -- Returns:
+   --   A "Meta Class Set" holding all Node Classes and Edge Classes
+   --   of the passed Class Sets. You are responsible for the deallocation
+   --   of the result.
+   function Build (Elements : in Class_Set_Array) 
+     return Meta_Class_Set_Access;
+   
+   ---------------------------------------------------------------------------
+   -- Deallocates all memory needed for a meta class set. Has no effect
+   -- on the class sets the meta class set was build out of.             
+   --
+   -- Parameters:
+   --   Target - The meta class set that should be destroyed.
+   -- Raises:
+   --   Class_Sets_Access_Not_Initialized_Exception - Raised if  
+   --     Target is not initialized.
+   procedure Destroy (Target : in out Meta_Class_Set_Access);
+      
 ------------------------------------------------------------------------------
 private
 
@@ -261,7 +291,5 @@ private
    end record;
 
    type Class_Set_Access is access Class_Set_Data;
-
-   type Meta_Class_Set_Access is new Class_Set_Access;
 
 end Giant.Config.Class_Sets;

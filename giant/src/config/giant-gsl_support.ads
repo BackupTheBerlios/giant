@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-gsl_support.ads,v $, $Revision: 1.2 $
--- $Author: schulzgt $
--- $Date: 2003/07/02 13:33:11 $
+-- $RCSfile: giant-gsl_support.ads,v $, $Revision: 1.3 $
+-- $Author: schwiemn $
+-- $Date: 2003/07/02 15:45:18 $
 --
 -- -----
 -- This Package offers support for GSL Include Files.
@@ -37,8 +37,7 @@ package Giant.GSL_Support is
 
    ---------------------------------------------------------------------------
    -- Raised if GSL Skript File could not be located in the include paths.
-   GSL_Skript_File_Does_Not_Exist_Exception : Exception;
-   --GSL_Script_Not_Found_Exception : Exception;
+   GSL_Script_Not_Found_Exception : Exception;
 
    ---------------------------------------------------------------------------
    -- Searches the GSL Include Paths (specified in the config file) and
@@ -55,11 +54,9 @@ package Giant.GSL_Support is
    -- Returns:
    --   An absolute path to a file.
    -- Raises:
-   --   GSL_Skript_File_Does_Not_Exist_Exception - Raised if no file 
+   --   GSL_Script_Not_Found_Exception - Raised if no file 
    --   "GSL_File_Name" could be located in any of the include paths for
    --   GSL Skript files.
-   function Locate_GSL_Include_File (GSL_File_Name : in String) return String;
-
-   --function Get_GSL_Include (GSL_File_Name : in String) return String;
+   function Get_GSL_Include (GSL_File_Name : in String) return String;
 
 end Giant.GSL_Support;

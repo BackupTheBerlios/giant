@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-gsl_support.adb,v $, $Revision: 1.1 $
+-- $RCSfile: giant-gsl_support.adb,v $, $Revision: 1.2 $
 -- $Author: schwiemn $
--- $Date: 2003/07/02 09:07:45 $
+-- $Date: 2003/07/02 15:45:18 $
 --
 with Ada.Strings.Unbounded;
 
@@ -40,7 +40,7 @@ package body Giant.GSL_Support is
    ---------------------------------------------------------------------------
  
    ---------------------------------------------------------------------------
-   function Locate_GSL_Include_File 
+   function Get_GSL_Include 
      (GSL_File_Name : in String) 
      return String is
      
@@ -61,11 +61,11 @@ package body Giant.GSL_Support is
       String_Lists.Destroy (Include_Path_List);
       
       if Abs_File_Path = Ada.Strings.Unbounded.Null_Unbounded_String then
-         raise GSL_Skript_File_Does_Not_Exist_Exception;
+         raise GSL_Script_Not_Found_Exception;
       else
       
          return Ada.Strings.Unbounded.To_String (Abs_File_Path);
       end if;   
-   end Locate_GSL_Include_File;            
+   end Get_GSL_Include;            
    
 end Giant.GSL_Support;
