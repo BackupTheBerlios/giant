@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-node_attribute_filters.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_lib-node_attribute_filters.adb,v $, $Revision: 1.4 $
 --  $Author: koppor $
---  $Date: 2003/06/13 01:25:18 $
+--  $Date: 2003/06/13 13:20:02 $
 --
 ------------------------------------------------------------------------------
 
@@ -48,14 +48,14 @@ package body Giant.Graph_Lib.Node_Attribute_Filters is
    end Destroy;
 
    ---------------------------------------------------------------------------
-   function MakeFilteredIter
+   function Make_Filtered_Iter
      (Node_Attribute_Filter : in Filter;
       Node                  : in Node_Id)
      return Filtered_Iterator
    is
    begin
-      return MakeFilteredIter (Node_Attribute_Filter, Node);
-   end MakeFilteredIter;
+      return Make_Filtered_Iter (Node_Attribute_Filter, Node);
+   end Make_Filtered_Iter;
 
    ---------------------------------------------------------------------------
    function More
