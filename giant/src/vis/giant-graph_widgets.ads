@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.9 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.10 $
 --  $Author: keulsn $
---  $Date: 2003/06/26 19:58:14 $
+--  $Date: 2003/06/26 20:20:24 $
 --
 ------------------------------------------------------------------------------
 --
@@ -65,6 +65,7 @@ with Gdk.Color;
 with Gdk.Cursor;
 with Gdk.Pixmap;
 with Gtk.Widget;
+pragma Elaborate_All (Gtk.Widget);
 
 with Bauhaus_IO;
 with Hashed_Mappings;
@@ -333,7 +334,7 @@ package Giant.Graph_Widgets is
    --  Enables action mode and sets cursor. During action mode the user can
    --  only move the visual area inside the graph widget an click onto the
    --  graph widget. After each such click the graph widget emits a signal.
-   --  See Giant.Graph_Widgets.Notifications for details.
+   --  See Giant.Graph_Widgets.Handlers for details.
    --
    --  Parameters:
    --    Widget - The graph widget

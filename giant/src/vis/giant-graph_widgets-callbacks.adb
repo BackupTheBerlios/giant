@@ -20,12 +20,16 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/06/26 19:59:04 $
+--  $Date: 2003/06/26 20:20:24 $
 --
 ------------------------------------------------------------------------------
 
+
+with Gdk.Types;
+with Gtk.Arguments;
+with Gtk.Handlers;
 
 package body Giant.Graph_Widgets.Callbacks is
 
@@ -125,6 +129,7 @@ package body Giant.Graph_Widgets.Callbacks is
    procedure After_Realize
      (Widget : access Graph_Widget_Record'Class) is
    begin
+      raise Unimplemented;
    end After_Realize;
 
    procedure On_Unrealize
@@ -159,6 +164,7 @@ package body Giant.Graph_Widgets.Callbacks is
      return Boolean is
    begin
       raise Unimplemented;
+      return False;
    end On_Expose_Event;
 
    function On_Button_Press_Event
@@ -167,6 +173,7 @@ package body Giant.Graph_Widgets.Callbacks is
      return Boolean is
    begin
       raise Unimplemented;
+      return False;
    end On_Button_Press_Event;
 
 end Giant.Graph_Widgets.Callbacks;

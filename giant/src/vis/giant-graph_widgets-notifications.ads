@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-notifications.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_widgets-notifications.ads,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/06/24 21:17:42 $
+--  $Date: 2003/06/26 20:20:24 $
 --
 ------------------------------------------------------------------------------
 --
@@ -32,6 +32,7 @@
 --
 
 
+with Gdk.Event;
 with Gtkada.Types;
 
 package Giant.Graph_Widgets.Notifications is
@@ -98,34 +99,28 @@ package Giant.Graph_Widgets.Notifications is
       Difference : in     Graph_Lib.Selections.Selection);
 
 
-   ----------------
-   -- Crosshairs --
-   ----------------
+   -----------------
+   -- Action Mode --
+   -----------------
 
    ----------------------------------------------------------------------------
-   --  Actions, user can perform when in crosshair mode
+   --  Emits the 'Graph_Widgets.Handlers.Action_Mode_Button_Press_Event'
+   --  to inform any listener that the user has performed a
+   --  "button_press_event" while the graph widget was in action mode.
    --
-   --  Enumeration Literals:
-   --    Cancel - The crosshair mode was canceled by the user
-   --    Fire   - The user has used the crosshair
-   type Crosshair_Action_Type is (Cancel, Fire);
-
-   ----------------------------------------------------------------------------
-   --  Informs the controller that the user has performed an action while
-   --  in crosshair-mode
+   --  Note that the graph widget remains in action mode after this signal.
+   --  If action mode should be canceled, call 'Cancel_Action_Mode'
    --
    --  Parameters:
    --    Widget   - The graph widget
-   --    Action   - The crosshair action the user has performed
-   --    Location - The location where the crosshair action was performed
-   --  Returns:
-   --    False if 'Widget' should remain in crosshair mode, True if crosshair
-   --    mode should be disabled.
-   function Crosshair_Action
+   --    Event    - The event obtained from GtkAda. See 'Gdk.Event' for
+   --               details.
+   --    Location - The location where the event happened in logical
+   --               coordinates.
+   procedure Action_Mode_Button_Press_Event
      (Widget   : access Graph_Widget_Record'Class;
-      Action   : in     Crosshair_Action_Type;
-      Location : in     Vis.Logic.Vector_2d)
-     return Boolean;
+      Event    : in     Gdk.Event.Gdk_Event_Button;
+      Location : in     Vis.Logic.Vector_2d);
 
 
    --------------------------

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-handlers.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-graph_widgets-handlers.ads,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/06/09 01:13:39 $
+--  $Date: 2003/06/26 20:20:24 $
 --
 ------------------------------------------------------------------------------
 --
@@ -60,6 +60,31 @@ package Giant.Graph_Widgets.Handlers is
      (Args : in Gtk.Arguments.Gtk_Args;
       Num  : in Natural)
      return Vis.Logic.Rectangle_2d;
+
+
+   --------------------------------------
+   -- "action_mode_button_press_event" --
+   --------------------------------------
+
+   ----------------------------------------------------------------------------
+   --  Emitted whenever the user has performed a
+   --  "button_press_event" while the graph widget was in action mode.
+   Action_Mode_Button_Press_Event : constant String :=
+     "action_mode_button_press_event";
+
+   ----------------------------------------------------------------------------
+   --  Type of handlers for signal Action_Mode_Button_Press_Event
+   --  Parameters:
+   --    Widget - The graph widget
+   --    Area   - The visible area inside 'Widget'
+   type Action_Mode_Button_Press_Event_Cb is access procedure
+     (Widget   : access Graph_Widget_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event_Button;
+      Location : in     Vis.Logic.Vector_2d);
+
+   ----------------------------------------------------------------------------
+   --  Package providing the 'Connect' subprograms
+   package Action_Mode_Cbs renames Graph_Widget_Callbacks;
 
 
    ----------------------------
