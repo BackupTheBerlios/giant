@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/16 14:13:53 $
+-- $Date: 2003/08/18 12:02:20 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -878,6 +878,34 @@ package body Giant.Gsl.Runtime is
       Param := Get_Value_At (Parameter, 1);
       return Gsl_Type (Create_Gsl_Boolean (Is_Gsl_Natural (Param)));
    end Runtime_Is_Natural;
+
+   ---------------------------------------------------------------------------
+   --
+   function Runtime_To_Natural
+     (Parameter : Gsl_List)
+      return Gsl_Type is
+
+      Obj : Gsl_Type;
+   begin
+      if Get_List_Size (Parameter) /= 1 then
+         Ada.Exceptions.Raise_Exception
+           (Gsl_Runtime_Error'Identity, "Script 'to_natural' requires " &
+             "1 parameter.");
+      end if;
+      Obj := Get_Value_At (Parameter, 1);
+      if Is_Gsl_String (Obj) then
+         return Gsl_Type (Create_Gsl_Natural (Natural'Value
+           (Get_Value (Gsl_String (Obj)))));
+      else
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'to_natural': Gsl_String expected.");
+      end if;
+
+      exception
+         when Constraint_Error =>
+            Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+              "Script 'to_natural': Bad value. Casting is not possible.");
+   end Runtime_To_Natural;
 
    ---------------------------------------------------------------------------
    --
