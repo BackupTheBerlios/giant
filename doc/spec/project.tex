@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: project.tex,v $, $Revision: 1.14 $
-%  $Date: 2003/02/18 15:21:04 $
+%  $RCSfile: project.tex,v $, $Revision: 1.15 $
+%  $Date: 2003/02/19 15:07:02 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -14,6 +14,10 @@
 GIANT speichert persistente Informationen in so genannten Projekten.
 \begin {enumerate}
 
+  \item 
+  Wird während des Betriebs von GIANT ein neues Projekt angelegt, so erhält 
+  es automatisch eine Projektdatei.
+  
   \item
   Ein Projekt besteht aus einem Verweis auf eine IML-Graph-Datei, auf die sich
   die gespeicherten Informationen beziehen, sowie aus den gespeicherten 
@@ -30,13 +34,21 @@ GIANT speichert persistente Informationen in so genannten Projekten.
   neuem Namen neu speichert). 
 
   \item
-  Der Benutzer kann beliebig viele Projekte erzeugen.
-
+  Der Benutzer kann beliebig viele Projekte anlegen.
+  
   \item
-  Während der Arbeit mit GIANT kann jederzeit ein Projekt geladen werden, 
-  wobei immer nur ein Projekt gleichzeitig geöffnet sein darf. 
+  In GIANT darf immer nur ein Projekt gleichzeitig geöffnet sein. 
+  
+  \item
+  Während der Arbeit mit GIANT kann jederzeit ein Projekt geladen oder ein
+  neues Projekt angelegt werden. 
   Voraussetzung hierfür ist allerdings, dass dies 
   in der Reflektion zum IML-Graphen unterstützt wird.
+  
+  \item
+  GIANT weiß nicht, ob ein geladenes Projekt gegenüber den für das Projekt
+  in der Projektdatei und in den Verwaltungssdateien gespeicherten 
+  Informationen modifiziert wurde oder nicht.
 
 \end {enumerate}
 
@@ -49,8 +61,8 @@ GIANT speichert persistente Informationen in so genannten Projekten.
     befinden sich per Default in diesem Verzeichnis. 
 
     \item
-    In einem Projektverzeichnis können mehrere Projekte abgelegt werden.
-
+    In einem Projektverzeichnis darf nur ein Projekt abgelegt werden.
+    
   \end {enumerate}    
 
 
@@ -151,11 +163,13 @@ GIANT speichert persistente Informationen in so genannten Projekten.
 \section {Grundlegendes Verhalten von GIANT beim Speichern von Projekten} 
   
 
-  \subsection{\gq{Alles Speichern}}
-  Diese Funktionalität wird durch entsprechende UseCases dem Benutzer zur
-  Verfügung gestellt. Hierbei werden alle Anzeigefenster, IML-Teilgraphen 
+  \subsection{\gq{Alles Speichern}}\label{Alles Speichern}
+  Diese Funktionalität wird von entsprechenden UseCases genutzt. 
+  Hierbei werden alle Anzeigefenster, IML-Teilgraphen 
   und Knoten-Annotationen in die Verwaltungsdateien geschrieben, 
-  wobei alle Änderungen an noch offenen Anzeigefenstern berücksichtigt werden.
+  wobei alle Änderungen an noch offenen Anzeigefenstern berücksichtigt 
+  werden.\\
+ 
 
   %===
   \subsection {Persistenz von Anzeigefenstern}
@@ -164,8 +178,8 @@ GIANT speichert persistente Informationen in so genannten Projekten.
     \item
     Sämtliche dem Projekt bekannten Anzeigefenster (alle Anzeigefenster zu 
     denen es eine entsprechende Verwaltungsdatei gibt) werden auf der GUI in 
-    der Liste über die Anzeigefenster angezeigt, egal ob sie geöffnet oder 
-    nicht. 
+    der Liste über die Anzeigefenster angezeigt, egal ob sie geöffnet sind
+    oder nicht. 
 
     \item 
     Zu jedem Anzeigefenster eines Projektes gibt es eine Verwaltungsdatei,
@@ -237,7 +251,8 @@ GIANT speichert persistente Informationen in so genannten Projekten.
   
    \item
    Änderungen bestehender oder neu erzeugte Knoten-Annotationen werden nur
-   über \gq{alles Speichern} in die Verwaltungsdatei geschrieben.
+   über die Funktionaliät unter \gq{alles Speichern} in die 
+   Verwaltungsdatei geschrieben.
    
    \item
    Einmal erzeugte Knoten-Annotationen werden jedem IML-Knoten mit der 

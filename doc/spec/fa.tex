@@ -1,6 +1,6 @@
 % =============================================================================
-%  $RCSfile: fa.tex,v $, $Revision: 1.7 $
-%  $Date: 2003/02/19 10:55:17 $
+%  $RCSfile: fa.tex,v $, $Revision: 1.8 $
+%  $Date: 2003/02/19 15:07:02 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -41,12 +41,20 @@ Der Benutzer startet das Programm GIANT durch ausführen der entsprechenden
 Programmdatei. Hierbei hat er bezüglich eventueller Kommandozeilenparameter
 die folgenden Optionen. 
 
-  \subsubsection {Mögliche Parameter}
+  \subsection {Mögliche Parameter}
   \begin {enumerate}
     
     \item loadiml=''Pfad''\\
     Angabe des Pfades zu einer existierenden IML-Graph Datei.
-      
+    
+    \item newprojectfile=''Pfad''\\
+    Angabe des Pfades für die neu zu erstellenden Projektdatei 
+    (darf nicht bereits vorhanden sein, sonst Fehlermeldung).\\
+    Das Verzeichnis der Projektdatei ist automatisch Projektverzeichnis,
+    falls schon vorhanden darf darin keine weitere Projektdatei liegen
+    (sonst Fehlermeldung).\\
+    Existiert das Projektverzeichnis noch nicht, so wird es ebenfalls angelegt.
+    
     \item loadproject=''Pfad''\\
     Angabe des Pfades zu einer existierenden Projektdatei.
       
@@ -66,9 +74,10 @@ die folgenden Optionen.
     GIANT startet und ziegt das Main Window an. 
     Es ist noch kein Projekt geladen.
     
-    \item Eingabe von: <giant -loadiml=''my\_iml\_file''>\\
-    Neues Projekt (erhält einen Default-Namen) wird geöffnet.
-    Dieses Projekt ist noch nicht persistent gespeichert.
+    \item Eingabe von: \\
+    <giant -loadiml=''my\_iml\_file''\\
+    -newprojectfile=''/home/projektverzeichnis/projektdatei''>\\
+    Ein neues Projekt wird geöffnet und erhält den Namen der Projektdatei.
     \label{Kommandozeile_neus}
 
     \item Eingabe von: <giant -loadproject=''my\_project\_file''>\\
@@ -95,11 +104,20 @@ Ablauf:
 
 \begin {enumerate}
   \item Der Benutzer gibt das Kommando zum Beenden von GIANT.
-  \item GIANT fragt nach, ob das Projekt gespeichert werden soll.
-  (PROJEKT SPEICHERN) (ENTSPRCHENDER DIALOG MUSS IN DIE GUI)
+  \item 
+  Ist ein Projekt geöffnet, so fragt GIANT nach, ob das Projekt gespeichert
+  werden soll. Falls der Benutzer das Speichern ablehnt, so gehen alle
+  nicht gespeicherten Informationen verlohren.\\
+  Entscheidet er sich für speichern, so wird 
+  die unter \ref{Alles Speichern} beschriebene Funktionaliät 
+  ausgeführt.
+ 
+    
+  \item 
+  Das System GIANT wird beendet.
+    
 \end {enumerate}
   
-
 
 
 % =============================================================================

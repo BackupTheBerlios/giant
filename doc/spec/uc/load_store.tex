@@ -1,26 +1,30 @@
 % ==============================================================================
-%  $RCSfile: load_store.tex,v $, $Revision: 1.5 $
-%  $Date: 2003/02/13 21:57:01 $
-%  $Author: schulzgt $
+%  $RCSfile: load_store.tex,v $, $Revision: 1.6 $
+%  $Date: 2003/02/19 15:07:02 $
+%  $Author: schwiemn $
 %
 %  Description: Use-Cases für Lade- und Speicherfunktionalität
 %
 % ==============================================================================
 
 \begin{uc}[Neues Projekt]{UC: Neues Projekt}
-  Erstellt eines neuen GIANT Projekt. Ein eventuell vorhandenes Projekt wird 
-  dabei überladen, wobei Änderungen am bisherigen Projekt auf Nachfrage 
-  gespeichert werden.
+  Erstellt ein neues GIANT Projekt. Ein eventuell bereits geöffnetes
+  Projekt wird dabei geschlossen, wobei Änderungen wobei auf Nachfrage 
+  vorher gespeichert werden.
   
   \begin{precond}
-    \cond Das Programm ist gestartet
+    \cond Das Programm ist gestartet.
   \end{precond}
 
   \begin{postsuccess}
-    \cond Ein neues GIANT Projekt ist erstellt und geladen.
+    \cond Ein neues GIANT Projekt mit dem eingegebenen Namen 
+          ist erstellt und geladen.   
     \cond Eine IML-Datei ist geladen.
+    \cond Das angegebene Projektverzeichnis ist gegebenenfalls erstellt 
+          worden.
+    \cond Die Projektdatei liegt im Projektverzeichnis.
     \cond Änderungen an einem bisherigen Projekt sind gespeichert
-    oder verworfen.
+          oder verworfen.
   \end{postsuccess}
 
   \begin{postfail}
@@ -28,66 +32,208 @@
   \end{postfail}
   
   \begin{proc}
-    \step[1] Der Benutzer wählt in einem Dialog ein Verzeichnis und eine
-    IML-Datei aus und vergibt einen Projektnamen.
-    \step[2] Der Benutzer bestätigt seine Eingaben mit OK.
-    \step[3] Falls bereits ein Projekt geöffnet ist erscheint eine Abfrage
-    ob dieses gespeichert werden soll. Der Benutzer bestätigt mit SAVE.
-  \end{proc}
-
-  \begin{aproc}
-    \astep{2} Der Benutzer bricht die Verarbeitung mit Cancel ab.
-    \astep{3} Der Benutzer verwirft eventuelle Änderungen mit DISCARD.
-  \end{aproc}
-\end{uc}
-
-% ==============================================================================
-
-\begin{uc}[Projekt öffnen]{UC: Projekt öffnen}
-  Öffnet ein GIANT Projekt. Ein eventuell vorhandenes Projekt wird dabei 
-  überladen, wobei Änderungen am bisherigen Projekt auf Nachfrage gespeichert 
-  werden.
-
-  \begin{precond}
-    \cond Das Programm ist gestartet
-  \end{precond}
-
-  \begin{postsuccess}
-    \cond Ein vorhandenes GIANT Projekt ist geladen.
-    \cond Eine IML-Datei ist geladen.
-    \cond Änderungen an einem bisherigen Projekt sind gespeichert
-    oder verworfen.
-  \end{postsuccess}
-
-  \begin{postfail}
-    \cond Das System bleibt im bisherigen Zustand.
-  \end{postfail}
+    \step[1]
+    Der Benutzer startet den UseCase über das Hauptmenü.
+    !!!!!ENTSPRECHENDEN MENÜEINTAG NENNEN.
   
-  \begin{proc}
-    \step[1] Der Benutzer wählt in einem Dialog eine GIANT Projektdatei aus.
-    \step[2] Der Benutzer bestätigt seine Eingaben mit OK.
-    \step[3] Falls die dem Projekt zugeordnete IML-Datei nicht gefunden wird
-    wird der Benutzer in einem Dialog aufgefordert eine IML-Datei anzugeben.
-    Er bestätigt mit OK.
+    \step[2] Der Benutzer wählt im Standard-Filechooser-Dialog eine
+    IML-Datei aus und bestätigt seine Eingabe mit OK.
+    
+    \step[3] Der Benutzer gibt im Standard-Filechooser-Dialog den Pfad, das
+    Projektverzeichnis und den Namen für die Projektdatei vor. 
+    Der Name der Projektdatei ist automatisch
+    auch der Name für das Projekt.\\
+    Dann bestätigt er seine Eingabe mit OK.\\
+    Existiert die eingegbene Datei schon, erscheint eine Fehlermeldung.\\
+    Existiert in dem Projektverzeichnis bereits eine andere Projektdatei, so 
+    erscheint eine entsprechende Fehlermeldung.\\
+    Das Verzeichnis in dem die Projektdatei liegt, wird automatisch zum 
+    Projektverzeichnis (dort landen auch alle Verwaltungsdateien für das 
+    Projekt). 
+    
+    \step[4] Falls bereits ein Projekt geöffnet ist, erscheint eine Abfrage
+    ob dieses gespeichert werden soll. Lehnt der Benutzer dies ab, gehen
+    alle nicht gespeicherten Informationen verloren.\\
+    Entscheidet der Benutzer sich für Speichern, so wird
+    Die unter \ref{Alles Speichern} beschriebene Funktionalität 
+    ausgeführt.
+    
+    \step[5]
+    GIANT schließt das aktuell geöffnete Projekt und erstellt 
+    ein neues Projekt.
+       
   \end{proc}
 
   \begin{aproc}
-    \astep{2} Der Benutzer bricht die Verarbeitung mit Cancel ab.
+    \astep{2} Der Benutzer bricht die Verarbeitung mit Cancel ab.  
     \astep{3} Der Benutzer bricht die Verarbeitung mit Cancel ab.
   \end{aproc}
 \end{uc}
 
 % ==============================================================================
 
-\begin{uc}[Label]{UC: Projekt speichern}
+\begin{uc}[Projekt öffnen]{UC: Projekt öffnen}
+  Öffnet ein GIANT Projekt. Ein eventuell bereits vorhandenes 
+  Projekt wird dabei geschlossen, wobei Änderungen wobei auf Nachfrage 
+  vorher gespeichert werden.
+
+  \begin{precond}
+    \cond Das Programm ist gestartet.
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond Das gewünschte GIANT Projekt ist geladen.
+    \cond Die zugehörige IML-Datei ist geladen.
+    \cond Änderungen an einem bisherigen Projekt sind gespeichert
+    oder verworfen.
+  \end{postsuccess}
+
+  \begin{postfail}
+    \cond Das System bleibt im bisherigen Zustand.
+  \end{postfail}
+  
+  \begin{proc}    
+    \step[1]
+    Der Benutzer startet den UseCase über das Hauptmenü.
+    !!!!!ENTSPRECHENDEN MENÜEINTAG NENNEN.
+    
+    \step[2] 
+    Der Benutzer wählt aus dem Standard-Filechooser-Dialog 
+    eine vorhandene GIANT Projektdatei aus und bestätigt mit OK.
+    
+    \step[3] Falls bereits ein Projekt geöffnet ist, erscheint eine Abfrage
+    ob dieses gespeichert werden soll. Lehnt der Benutzer dies ab, gehen
+    alle nicht gespeicherten Informationen verloren.\\
+    Entscheidet der Benutzer sich für Speichern, so wird
+    die unter \ref{Alles Speichern} beschriebene Funktionalität 
+    ausgeführt.
+    
+    \step[4]
+    GIANT schließt das alte Projekt und lädt das angegebene Projekt.
+  \end{proc}
+
+  \begin{aproc}
+    \astep{2} Der Benutzer bricht die Verarbeitung mit Cancel ab.
+  \end{aproc}
 \end{uc}
 
 % ==============================================================================
 
+\begin{uc}[Projekt speichern]{UC: Projekt speichern}  
+
+  Speichert alle Änderungen an einem Projekt.
+
+  \begin{precond}
+    \cond Das Programm ist gestartet.
+    \cond Ein Projekt ist geöffnet (entweder ein neu erzeugtes oder ein
+    geladenes).
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond Die Informationen des Projekts 
+    (einschließlich aller möglichen Änderungen) sind persistent in die
+    Verwaltungsdateien geschrieben.
+ 
+  \end{postsuccess}
+
+  \begin{postfail}
+    \cond Das System bleibt im bisherigen Zustand.
+  \end{postfail}
+  
+  \begin{proc}    
+    \step[1]
+    Der Benutzer startet den UseCase über das Hauptmenü.
+    !!!!!ENTSPRECHENDEN MENÜEINTAG NENNEN.
+     
+    \step[2]
+    GIANT führt die unter \ref{Alles Speichern} beschriebene Funktionalität 
+    aus und speichert alle Informationen zu dem Projekt in der zugehörigen
+    Projektdatei.
+  \end{proc}
+
+
+\end{uc}
+
+
+
+% ==============================================================================
+
+\begin{uc}[Projekt speichern unter]{UC: Projekt speichern unter}
+Speichert alle Informationen zu einem Projekt in eine neue Projektdatei
+(entsprechende Verwaltungsdateien werden ebenfalls dupliziert).
+
+
+  \begin{precond}
+    \cond Das Programm ist gestartet.
+    \cond Ein Projekt ist geöffnet (entweder ein neu erzeugtes oder ein
+    geladenes).
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond Eine neue Projektdatei ist erzeugt.
+    \cond Das angegebene Projektverzeichnis ist gegebenenfalls erstellt 
+          worden.
+    \cond Die Informationen des Projekts sind persistent in die 
+          neuen Verwaltungsdateien im Projektverzeichnis 
+	  der neuen Projektdatei geschrieben.
+    \cond Das Projekt bleibt in GIANT geöffnet, zukünftiges Speichern
+          betrifft nur die Dateien im neu erzeugten Projektverzeichnis.
+    \cond Die alte Projektdatei (samt allen Verwaltungsdateien) bleibt
+          unverändert.
+    
+ 
+  \end{postsuccess}
+
+  \begin{postfail}
+    \cond Das System bleibt im bisherigen Zustand.
+  \end{postfail}
+  
+  \begin{proc}    
+    \step[1]
+    Der Benutzer startet den UseCase über das Hauptmenü.
+    !!!!!ENTSPRECHENDEN MENÜEINTAG NENNEN.
+     
+    \step[2] Der Benutzer gibt im Standard-Filechooser-Dialog den Pfad, das
+    neue Projektverzeichnis und den Namen für die neue Projektdatei vor. 
+    Der Name der Projektdatei ist automatisch auch der Name für das Projekt.\\
+    Dann bestätigt er seine Eingabe mit OK.\\
+    Existiert die eingegbene Datei schon, erscheint eine Fehlermeldung.\\
+    Existiert in dem Projektverzeichnis bereits eine andere Projektdatei, so 
+    erscheint eine entsprechende Fehlermeldung.\\
+    Das Verzeichnis in dem die Projektdatei liegt, wird automatisch zum 
+    Projektverzeichnis (dort landen auch alle Verwaltungsdateien für das 
+    Projekt). 
+  \end{proc}
+
+
+ \begin{aproc}
+    \astep{2} Der Benutzer bricht die Verarbeitung mit Cancel ab.  
+ \end{aproc}
+\end{uc}
+
+
+% ==============================================================================
+
 \begin{uc}[Label]{UC: Anzeigefenster importieren}
+>>>> Fällt weg. Kunde kann Anzeigefenster auch kopieren und den 
+Verweis innerhalb der XML-Projektdatei manuell ändern.
+
+
 \end{uc}
 
 % ==============================================================================
 
 \begin{uc}[Label]{UC: Anzeigefenster exportieren}
+>>>> Fällt weg. Kunde kann Anzeigefenster auch kopieren und den 
+Verweis innerhalb der XML-Projektdatei manuell ändern.
+
 \end{uc}
+
+
+
+
+
+
+
+
+
