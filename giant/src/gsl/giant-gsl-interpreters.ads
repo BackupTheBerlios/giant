@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/12 10:03:20 $
+-- $Date: 2003/08/14 14:35:46 $
 --
 -- This package implements the Gsl interpreter.
 --
@@ -66,6 +66,11 @@ package Giant.Gsl.Interpreters is
 
    ---------------------------------------------------------------------------
    --
+   function Get_Params
+      return Gsl_Params;
+
+   ---------------------------------------------------------------------------
+   --
    function Get_Execution_Stack
       return Execution_Stacks.Stack;
 
@@ -102,6 +107,23 @@ package Giant.Gsl.Interpreters is
 
    ---------------------------------------------------------------------------
    --
+   function Create_Parameter_List 
+      return Gsl_Params;
+
+   ---------------------------------------------------------------------------
+   --
+   procedure Add_Parameter
+     (List  : in out Gsl_Params;
+      Param : in     Graph_Lib.Node_Id);
+
+   ---------------------------------------------------------------------------
+   --
+   procedure Add_Parameter
+     (List  : in out Gsl_Params;
+      Param : in     Graph_Lib.Edge_Id);
+
+   ---------------------------------------------------------------------------
+   --
    procedure Execute_Script
      (Individual : Interpreter;
       Name       : String;
@@ -113,7 +135,7 @@ package Giant.Gsl.Interpreters is
      (Individual : Interpreter;
       Name       : String;
       Context    : String;
-      Param      : Gsl_Params);
+      Params     : Gsl_Params);
 
    ---------------------------------------------------------------------------
    --
@@ -189,6 +211,7 @@ private
       record
          Context                   : Unbounded_String;
          Script                    : Unbounded_String;
+         Params                    : Gsl_Params;
          Execution_Stack           : Execution_Stacks.Stack;
          Result_Stack              : Result_Stacks.Stack;
          Main_Activation_Record    : Activation_Record;

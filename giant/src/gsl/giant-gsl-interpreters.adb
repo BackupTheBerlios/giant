@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/12 10:03:20 $
+-- $Date: 2003/08/14 14:35:46 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -31,6 +31,8 @@ with Ada.Exceptions;
 with Ada.Real_Time;
 with Text_IO;
 with Unchecked_Deallocation;
+
+with Giant.Gsl_Support;
 
 with Giant.Controller;
 with Giant.Default_Logger;
@@ -72,6 +74,14 @@ package body Giant.Gsl.Interpreters is
    begin
       return Current_Interpreter.Current_Activation_Record;
    end Get_Current_Activation_Record;
+
+   ---------------------------------------------------------------------------
+   --
+   function Get_Params
+      return Gsl_Params is
+   begin
+      return Current_Interpreter.Params;
+   end Get_Params;
 
    -------------------------------------------------------------------------
    -- returns the execution stack of the current interpreter
@@ -139,10 +149,13 @@ package body Giant.Gsl.Interpreters is
       Current_Interpreter := Individual;
       Individual.Script   := To_Unbounded_String (Name);
       Individual.Context  := To_Unbounded_String (Context);
+
       -- initialize the result stack
       Individual.Result_Stack := Result_Stacks.Create;
+
       -- initialize the stack for all activation records
       Individual.Activation_Records := Activation_Record_Stacks.Create;
+
       -- create the main activation record and set it acitve
       Individual.Main_Activation_Record := Create_Activation_Record (null);
       Individual.Current_Activation_Record :=
@@ -217,6 +230,52 @@ package body Giant.Gsl.Interpreters is
    end Initialize_Interpreter;
 
    ---------------------------------------------------------------------------
+   --
+   function Create_Parameter_List 
+      return Gsl_Params is
+
+      Param : Gsl_Params;
+   begin
+      Param := Create_Gsl_List (0);
+      return Param;
+   end Create_Parameter_List;
+
+   ---------------------------------------------------------------------------
+   --
+   procedure Add_Parameter
+      (List  : in out Gsl_Params;
+       Param : Gsl_Type) is
+
+      Tmp_List : Gsl_Params;
+   begin
+      Tmp_List := Create_Gsl_List (Get_List_Size (List) + 1);
+      for i in 1 .. Get_List_Size (List) loop
+         Set_Value_At (Tmp_List, i, Copy (Get_Value_At (List, i)));
+      end loop;
+      Set_Value_At (Tmp_List, Get_List_Size (Tmp_List), Param);
+      Destroy_Gsl_Type (Gsl_Type (List));
+      List := Tmp_List;
+   end Add_Parameter;
+
+   ---------------------------------------------------------------------------
+   --
+   procedure Add_Parameter
+     (List  : in out Gsl_Params;
+      Param : in     Graph_Lib.Node_Id) is
+   begin
+      Add_Parameter (List, Gsl_Type (Create_Gsl_Node_Id (Param)));
+   end Add_Parameter;
+
+   ---------------------------------------------------------------------------
+   --
+   procedure Add_Parameter
+     (List  : in out Gsl_Params;
+      Param : in     Graph_Lib.Edge_Id) is
+   begin
+      Add_Parameter (List, Gsl_Type (Create_Gsl_Edge_Id (Param)));
+   end Add_Parameter;
+
+   ---------------------------------------------------------------------------
    -- initilizes the gsl interpreter for evolution
    procedure Execute_Script
      (Individual : Interpreter;
@@ -226,6 +285,7 @@ package body Giant.Gsl.Interpreters is
    begin
       -- initialize the basics
       Initialize_Interpreter (Individual, Name, Context);
+      Individual.Params := Gsl_Params (Gsl_Null);
 
       -- initialize the execution stack
       Individual.Execution_Stack := Gsl.Compilers.Get_Execution_Stack
@@ -252,15 +312,20 @@ package body Giant.Gsl.Interpreters is
      (Individual : Interpreter;
       Name       : String;
       Context    : String;
-      Param      : Gsl_Params) is
+      Params     : Gsl_Params) is
 
       use Gsl.Compilers;
       use Gsl.Syntax_Tree;
-      Script : Gsl_Type;
-      Params : Gsl_List;
+      Script    : Gsl_Type;
+      Param_Run : Gsl_List;
    begin
       -- initialize the basics
-      Initialize_Interpreter (Individual, Name, Context);
+      Initialize_Interpreter
+        (Individual,
+         Gsl_Support.Get_Gsl_Include (Name & ".gsl"),
+         Context);
+
+      Individual.Params := Params;
 
       -- initialize the execution and the result stack with 
       -- the following layout
@@ -269,7 +334,7 @@ package body Giant.Gsl.Interpreters is
       -- | Script_Activation   ->   Gsl_List (Name)              |
       -- |                          Gsl_Script_Reference ("run") |
       -- | Param_Fetch         ->   Gsl_List (Param)             |
-      -- | Script_Activation   ->   Gsl_Script_Reference (Name)  |
+      -- | Script_Activation   ->   Gsl_Script_Reference         |
       -- | Sequence                                              |
       -- |                                                       |
       --
@@ -285,9 +350,12 @@ package body Giant.Gsl.Interpreters is
         (Individual.Gsl_Compiler, Create_Node
           (Script_Activation, Null_Node, Null_Node)));
 
-      -- result stack
-      -- Result_Stacks.Push (Script);
-      -- Result_Stacks.Push (Gsl_Type (Params));
+      -- result stack for the activation of "run"
+      Script := Get_Var ("run");
+      Param_Run := Create_Gsl_List (1);
+      Set_Value_At (Param_Run, 1, Gsl_Type (Create_Gsl_String (Name)));
+      Result_Stacks.Push (Individual.Result_Stack, Script);
+      Result_Stacks.Push (Individual.Result_Stack, Gsl_Type (Param_Run));
 
       -- set gsl time (used for performance measurement)
       Individual.Gsl_Time := Ada.Real_Time.Clock;

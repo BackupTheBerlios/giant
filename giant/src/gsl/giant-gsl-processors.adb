@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-processors.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/12 10:03:20 $
+-- $Date: 2003/08/14 14:35:46 $
 --
 
 with Ada.Exceptions;
@@ -200,7 +200,8 @@ package body Giant.Gsl.Processors is
          ---------------------------------------------------------------------
          --
          when Param_Fetch =>
-            null;
+            Res_List := Gsl_List (Gsl.Interpreters.Get_Params);
+            Result_Stacks.Push (Result_Stack, Gsl_Type (Res_List));
 
       end case;
    end Execute;
