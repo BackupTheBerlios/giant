@@ -1,10 +1,11 @@
 % =============================================================================
-%  $RCSfile: gsl.tex,v $ $Revision: 1.16 $
-%  $Date: 2003/09/02 13:35:03 $
+%  $RCSfile: gsl.tex,v $ $Revision: 1.17 $
+%  $Date: 2003/09/21 18:43:04 $
 %  $Author: keulsn $
 %
 %  Description: Spezifikation der GIANT Scripting Language
 %
+%  First Author: Steffen Keul
 %
 % =============================================================================
 
@@ -42,7 +43,7 @@
 % subsubsections nummerieren
 \setcounter{secnumdepth}{3}
 
-\newcommand\version{Version 1.4\xspace}
+\newcommand\version{Version 1.5\xspace}
 %\newcommand\version{\today\xspace}
 
 % header
@@ -1435,7 +1436,8 @@ dessen Wert vom Type \tnodeset oder \tedgeset ist}
 \sresult{\tnodeid oder \tedgeid}{Ein Element $e$ mit is\_in (set,
 $e$)}
 \saction{Hat als Ergebnis ein (von der Implementierung willkürlich
-gewähltes)  Element aus der Menge}
+gewähltes)  Element aus der Menge. Es ist ein Laufzeitfehler, falls
+die Menge leer ist.}
 \end{scriptdef}
 
 %%% is_in
@@ -1770,16 +1772,20 @@ ein solches noch nicht existiert. Öffnet das neue Anzeigefenster.}
 %%% insert_into_window
 \begin{scriptdef}{insert\_into\_window}
 \sparam{window\_name}{\tstring}{Name eines Anzeigefensters}
+\sparam{selection\_name}{\tstring}{Name einer Selektion}
+\sparam{add\_content}{\tobjectset}{Einzufügender IML-Teilgraph}
 \sparam{layout\_algo}{\tstring}{Name eines Layoutalgorithmus}
 \sparam{parameters}{\tstring}{Parameter für den Layoutalgorithmus}
-\sparam{add\_content}{\tobjectset}{Einzufügender IML-Teilgraph}
-\sresult{\tnatural}{Anzahl der eingefügten IML-Knoten und IML-Kanten}
+\sresult{\toknull}{}
 \saction{Bildet die größte Teilmenge $G$ von add\_content, so dass jede
 IML-Kante in $G$ zu genau zwei IML-Knoten in $G$ inzident ist und $G$ alle
 IML-Knoten aus add\_content enthält.
 Wendet den Layoutalgorithmus layout\_algo auf content an. Übergibt
 parameters als Parameter an den Layoutalgorithmus. Fügt das Resultat
-in das Anzeigefenster mit Name window\_name ein.
+in das Anzeigefenster mit Name window\_name ein. Verändert außerdem
+die Selektion mit name selection\_name in dem Anzeigefenster
+window\_name, so dass diese Selektion genau add\_content enthält und
+sonst nichts. Falls die Selektion noch nicht existierte, so wird sie erzeugt.
 
 Es ist ein Laufzeitfehler, falls layout\_algo kein Name eine bekannten
 Layoutalgorithmus ist.
