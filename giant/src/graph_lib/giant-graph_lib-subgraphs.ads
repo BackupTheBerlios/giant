@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.3 $
---  $Author: koppor $
---  $Date: 2003/06/10 09:24:52 $
+--  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.4 $
+--  $Author: schwiemn $
+--  $Date: 2003/06/11 16:46:18 $
 --
 ------------------------------------------------------------------------------
 --
@@ -108,8 +108,8 @@ package Giant.Graph_Lib.Subgraphs is
 
    --  -----------------------------------------------------------------------
    procedure Subgraph_Read
-      (Stream            : in Bauhaus_Io.In_Stream_Type;
-       Subgraph_To_Read  : in Subgraph);
+      (Stream            : in     Bauhaus_Io.In_Stream_Type;
+       Subgraph_To_Read  :    out Subgraph);
 
    --  ***********************************************************************
    --  Routines to add

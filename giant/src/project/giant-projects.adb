@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.2 $
 --  $Author: schwiemn $
---  $Date: 2003/06/11 16:06:54 $
+--  $Date: 2003/06/11 16:46:18 $
 --
 with Bauhaus_IO; -- from Bauhaus IML "Reuse.src"
 
@@ -64,9 +64,60 @@ package body Giant.Projects is
         Subgraph_Highlight_Status'Pos (Element.Highlight_Status);   
       Bauhaus_IO.Write_Integer (Stream, Highlight_Integer_Id);
    end Subgraph_Data_Elemet_Read;
- 
+   
+   ---------------------------------------------------------------------------
+   -- A
+   -- General Project Management
+   ---------------------------------------------------------------------------
 
- 
+   ---------------------------------------------------------------------------
+   function Does_Project_Exist
+     (Project_Name : in Valid_Names.Standard_Name;
+      Project_Directory : in String)
+     return Boolean is
+      
+      use Ada.Strings.Unbounded.Unbounded_String;
+            
+      Absolute_Project_Path      : Ada.Strings.Unbounded.To_Unbounded_String;
+      Absolute_Project_File_Name : Ada.Strings.Unbounded.To_Unbounded_String;
+      
+      A_File : Ada.Text_IO.File_Type;     
+      
+      Project_Exists : False;
+   begin
+   
+      -- Check whether the directory exists       
+      if (GNAT.OS_Lib.Is_Directory (Start_Dir) = False) then
+         raise Invalid_Project_Directory_Excpetion;
+      end if;
+
+      -- calculate absolute path for dir based on the current execution
+      -- environment directory.
+      -- Does no changes if "Project_Directory" already is an absolute path.
+      Absolute_Project_Path := 
+        File_Management.Get_Absolute_Path_To_File_From_Relative
+          (NAT.Directory_Operations.Get_Current_Dir,
+           Project_Directory);
+       
+      -- build file name 
+      Absolute_Project_File_Name := Absolute_Project_Path 
+        & Valid.Names.To_String (Project_Name)
+        & ".xml";
+           
+      -- check whether file may be accessed or not      
+      begin
+         Ada.Text_IO.Open 
+           (A_File, Ada.Text_IO.In_File, Absolute_Project_File_Name);
+                    
+         Project_Exists := True;
+         Ada.Text_IO.Close (A_File);
+      exception
+         when others =>
+            Project_Exists := False;
+      end;
+          
+      return  Project_Exists;      
+   end Does_Project_Exist;
  
  
  

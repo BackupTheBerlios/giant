@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.5 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.6 $
 -- $Author: schwiemn $
--- $Date: 2003/06/11 16:06:55 $
+-- $Date: 2003/06/11 16:46:18 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -82,7 +82,7 @@ package Giant.Projects is
    Directory_Holds_Already_A_Project_File_Exception : exception;
 
    ---------------------------------------------------------------------------
-   -- Raised if a passed directory is not found.
+   -- Raised if a passed directory is not found or could not be accessed
    Invalid_Project_Directory_Excpetion : exception;
 
    ---------------------------------------------------------------------------
@@ -100,17 +100,18 @@ package Giant.Projects is
    --
    -- Parameters:
    --   Project_Name - The name of a project.
-   --   Project_Directory - The directory of the project.
+   --   Project_Directory - The directory of the project. Only absolute paths
+   --     should be passed.
    -- Retruns:
    --   True, if a project file with name "Project_Name" is loacted
    --   in the directory "Project_Directory"; False, otherwise.
    -- Raises:
    --   Invalid_Project_Directory_Excpetion - Raised if the passed directory
-   --     "Project_Directory" is not found.
+   --     "Project_Directory" is not found or could not be accessed.
    function Does_Project_Exist
      (Project_Name : in Valid_Names.Standard_Name;
       Project_Directory : in String)
-      return boolean;
+      return Boolean;
 
    ---------------------------------------------------------------------------
    -- Determines whether a given directory already holds a project file
@@ -124,7 +125,7 @@ package Giant.Projects is
    --   False, otherwise.
    -- Raises:
    --   Invalid_Project_Directory_Excpetion - Raised if the passed directory
-   --     "Project_Directory" is not found.
+   --     "Project_Directory" is not found or could not be accessed.
    function Is_Already_A_Project_File_In_Directory
       Project_Directory : in String)
       return boolean;
@@ -139,7 +140,7 @@ package Giant.Projects is
    -- Parameters:
    --   Project_Name - The name of a project.
    --   Project_Directory - The directory where the project is located
-   --     (project directory).
+   --     (project directory). Only absolute paths should be passed.
    --   Bauhaus_IML_Graph_File - The file of the Bauhaus IML-Graph
    --   Bauhaus_IML_Graph_File_Checksum - A checksum that may be used
    --     to check whether "Bauhaus_IML_Graph_File" holds the
@@ -148,7 +149,7 @@ package Giant.Projects is
    --   Project_Does_Not_Exist_Exception - Raised if the project
    --     "Project_Name" is not found in the given directory.
    --   Invalid_Project_Directory_Excpetion - Raised if the passed directory
-   --     "Project_Directory" is not found.
+   --     "Project_Directory" is not found or could not be accessed.
    Get_Bauhaus_IML_Graph_Data
      (Project_Name           : in     Valid_Names.Standard_Name;
       Project_Directory      : in     String
@@ -175,7 +176,7 @@ package Giant.Projects is
    -- Parameters:
    --   Project_Name - The name of a project.
    --   Project_Directory - The directory where the project is loacted
-   --     (project directory).
+   --     (project directory). Only absolute paths should be passed.
    -- Returns:
    --   A pointer to a new instance of the ADT describing a project.
    -- Raises:
