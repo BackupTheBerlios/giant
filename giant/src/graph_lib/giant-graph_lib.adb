@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.17 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.18 $
 --  $Author: koppor $
---  $Date: 2003/06/23 12:28:47 $
+--  $Date: 2003/06/24 17:13:17 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -1054,6 +1054,32 @@ package body Giant.Graph_Lib is
             return False;
       end;
    end Does_Node_Id_Exist;
+
+   ---------------------------------------------------------------------------
+   function Get_All_Edges
+     return Edge_Id_Set
+   is
+      All_Nodes : Node_Id_Sets.Set;
+      Iter      : Node_Id_Sets.Iterator;
+      Cur_Node  : Node_Id;
+      Result    : Edge_Id_Sets.Set;
+   begin
+      Result := Edge_Id_Sets.Empty_Set;
+
+      All_Nodes := Get_All_Nodes;
+
+      Iter := Node_Id_Sets.Make_Iterator (All_Nodes);
+
+      while Node_Id_Sets.More (Iter) loop
+         Node_Id_Sets.Next (Iter, Cur_Node);
+
+         Edge_Id_Sets.Union (Result, Get_Outgoing_Edges (Cur_Node));
+      end loop;
+
+      Node_Id_Sets.Destroy (All_Nodes);
+
+      return Result;
+   end Get_All_Edges;
 
    ---------------------------------------------------------------------------
    function Get_All_Edge_Class_Ids_For_Node_Attribute

@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.13 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.14 $
 --  $Author: koppor $
---  $Date: 2003/06/23 12:28:35 $
+--  $Date: 2003/06/24 17:13:07 $
 --
 
 --  Bauhaus / IML
@@ -433,12 +433,18 @@ package Giant.Graph_Lib is
    --  Returns:
    --    All nodes in the IML-Graph
    function Get_All_Nodes
-      return Node_Id_Set;
+     return Node_Id_Set;
 
    ---------------------------------------------------------------------------
    --  Returns:
    --    All known node_class Ids
    function Get_All_Node_Class_Ids return Node_Class_Id_Set;
+
+   ---------------------------------------------------------------------------
+   --  Returns:
+   --    All eges in the IML-Graph
+   function Get_All_Edges
+     return Edge_Id_Set;
 
    ---------------------------------------------------------------------------
    --  Returns:
