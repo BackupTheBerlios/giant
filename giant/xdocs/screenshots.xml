@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+  <document>
+        
+        <properties>
+          <title>Screenshots</title>
+        </properties>
+        
+        <body>
+
+          <section name="Screenshots">
+                
+                <p>
+                  Here are some screenshots of GIANT 1.1.0 running on
+                  Linux.
+                </p>
+                  
+                <table>
+                  <tr>
+                        <td>
+                          <a href="images/graph-window.png"><img
+                                  src="images/graph-window-thumb.png"/></a>
+                        </td>
+                        <td>
+                          Graph Window
+                        </td>
+                  </tr>
+                </table>
+             </section>
+          </body>
+   </document>
