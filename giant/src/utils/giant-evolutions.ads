@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.ads,v $, $Revision: 1.4 $
+--  $RCSfile: giant-evolutions.ads,v $, $Revision: 1.5 $
 --  $Author: keulsn $
---  $Date: 2003/06/03 13:26:32 $
+--  $Date: 2003/06/04 10:25:48 $
 --
 ------------------------------------------------------------------------------
 --
@@ -268,18 +268,17 @@ package Giant.Evolutions is
    --  complexity of 'Individual' is known. Should be overwritten by
    --  descendants to show a more meaningful text.
    --
-   --  MUST be implemented to be accessed from several concurrent tasks,
-   --  if possible without blocking. Usually a constant String should be
-   --  returned.
+   --  MUST be able to be reentrant from different tasks.
    --
    --  The following Texts can be replaced inside the String:
-   --    %p - Natural'Image (Get_Progress_Count (Individual))
-   --    %c - Natural'Image (Get_Complexity (Individual))
+   --    %v - Natural'Image (Get_Progress_Count (Individual))
+   --    %u - Natural'Image (Get_Complexity (Individual))
+   --    %p - current progress percentage
    --
    --  Precondition
    --    Get_Complexity (Individual) > 0
    --  Returns:
-   --    -"Items processed:%p of%c"
+   --    -"Items processed:%v of%u"
    function Get_Progress_Text_Showing_Complexity
      (Individual : access Evolution)
      return String;
@@ -289,17 +288,15 @@ package Giant.Evolutions is
    --  complexity of 'Individual' is unknown. Should be overwritten by
    --  descendants to show a more meaningful text.
    --
-   --  MUST be implemented to be accessed from several concurrent tasks,
-   --  if possible without blocking. Usually a constant String should be
-   --  returned.
+   --  MUST be able to be reentrant from different tasks.
    --
    --  The following Texts can be replaced inside the String:
-   --    %p - Natural'Image (Get_Progress_Count (Individual))
+   --    %v - Natural'Image (Get_Progress_Count (Individual))
    --
    --  Precondition
    --    Get_Complexity (Individual) = 0
    --  Returns:
-   --    -"Items processed:%p"
+   --    -"Items processed:%v"
    function Get_Progress_Text_Unknown_Complexity
      (Individual : access Evolution)
      return String;
@@ -640,6 +637,14 @@ private                       -- Private Part --
       Cancel_Handler  => 0);
 
 
+   ------------------
+   -- Visual Modes --
+   ------------------
+
+   type Visual_Mode_Type is
+     (Uninitialized, Showing_Counter, Showing_Percentage);
+
+
    ----------------------------------
    -- Type declaration completions --
    ----------------------------------
@@ -647,19 +652,21 @@ private                       -- Private Part --
    type Evolution is abstract tagged limited
       record
          --  Number of items processed
-         Progress_Count   : Natural;
+         Progress_Count   : Natural                           := 0;
          --  Estimate of the maximum value 'Progress_Count' will ever reach.
          --  Does not need to be precise, 0 if unknown
-         Complexity       : Natural;
+         Complexity       : Natural                           := 0;
          --  Number of items processed in sub-calculations
-         Child_Progress   : Natural;
+         Child_Progress   : Natural                           := 0;
          --  next action this evolution needs to perform. Must be set
          --  via 'Set_Next_Action'.
-         Next_Action      : Evolution_Action := Cancel;
+         Next_Action      : Evolution_Action                  := Cancel;
          --  Parent evolution to be continued after this has finished or null
-         Parent           : Evolution_Class_Access;
+         Parent           : Evolution_Class_Access            := null;
          --  Child evolution to be evolved before this can continue or null
-         Child            : Evolution_Class_Access;
+         Child            : Evolution_Class_Access            := null;
+         --  Stores in which mode the progress is visualized
+         Visual_Mode      : Visual_Mode_Type                  := Uninitialized;
       end record;
 
    type Concurrent_Evolution is abstract new Evolution with null record;

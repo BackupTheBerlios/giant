@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.6 $
 --  $Author: keulsn $
---  $Date: 2003/06/03 13:26:32 $
+--  $Date: 2003/06/04 10:25:48 $
 --
 ------------------------------------------------------------------------------
 
@@ -157,6 +157,7 @@ package body Giant.Evolutions is
       Individual.Child_Progress := 0;
       Individual.Next_Action := Run;
       Individual.Parent := null;
+      Individual.Visual_Mode := Uninitialized;
    end Initialize;
 
    procedure Synchronized_Step
@@ -230,7 +231,7 @@ package body Giant.Evolutions is
       Complexity_Known : Boolean := True;
       Complexity       : Natural := 0;
       Step_Count       : Natural := 0;
-      Progress         : Float;
+      --  Progress         : Float;
    begin
       if Progress_Dialog."/=" (Dialog, null) then
          loop
@@ -246,15 +247,21 @@ package body Giant.Evolutions is
          end loop;
 
          if Complexity_Known then
-            Progress := Float (Step_Count) / Float (Complexity));
-            Progress_Dialog.Set_Percentage (Dialog, Progress);
-            Progress_Dialog.Set_Progress_Text
-              (Dialog,
-               Natural'Image (Step_Count) -" of" Natural'Image (Complexity));
+            --  Progress := Float (Step_Count) / Float (Complexity));
+            if Individual.Visual_Mode /= Showing_Percentage then
+               Progress_Dialog.Set_Progress_Text
+                 (Dialog, Get_Progress_Text_Showing_Complexity (Individual));
+               Individual.Visual_Mode := Showing_Percentage;
+            end if;
+            Progress_Dialog.Set_Upper (Dialog, Float (Complexity));
+            Progress_Dialog.Set_Value (Dialog, Float (Step_Count));
          else
-            Progress_Dialog.Set_Progress_Text
-              (Dialog,
-               );
+            if Individual.Visual_Mode /= Showing_Counter then
+               Progress_Dialog.Set_Progress_Text
+                 (Dialog, Get_Progress_Text_Unknown_Complexity (Individual));
+               Individual.Visual_Mode := Showing_Counter;
+            end if;
+            Progress_Dialog.Set_Value (Dialog, Float (Step_Count));
          end if;
       end if;
    end Update_Visuals;
@@ -681,6 +688,7 @@ package body Giant.Evolutions is
                Marsh     => Driver_Dialog_Cb.To_Marshaller
                               (Cancel_Callback'Access),
                User_Data => Driver_Id);
+            Progress_Dialog.Set_Lower (Dialog, 0.0);
             Progress_Dialog.Show_All (Dialog);
          end if;
       end Initialize_Driver;
@@ -994,6 +1002,7 @@ package body Giant.Evolutions is
                               (Iterative_Cancel_Callback'Access));
 
             Progress_Dialog.Set_Modal (Driver_State.Dialog);
+            Progress_Dialog.Set_Lower (Driver_State.Dialog, 0.0);
             Progress_Dialog.Show_All (Driver_State.Dialog);
          end if;
          Idle_Handler := Gtk.Main.Idle_Add
