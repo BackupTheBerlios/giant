@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.20 $
---  $Author: squig $
---  $Date: 2003/07/10 16:26:36 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.21 $
+--  $Author: keulsn $
+--  $Date: 2003/07/10 23:36:39 $
 --
 ------------------------------------------------------------------------------
 
@@ -1171,17 +1171,16 @@ package body Giant.Vis_Data is
    begin
       if Vis.Absolute.Get_X (Start_Point) = Vis.Absolute.Get_X (End_Point) then
          --  Vertical line can be treated as rectangle
-         Vis.Absolute.Set_Left
-           (Area, Vis.Absolute.Get_X (Start_Point) - (Thickness + 1) / 2);
-         Vis.Absolute.Set_Right
-           (Area, Vis.Absolute.Get_X (Start_Point) + (Thickness + 1) / 2);
          Set_Min_Max
            (Value_1 => Vis.Absolute.Get_Y (Start_Point),
             Value_2 => Vis.Absolute.Get_Y (End_Point),
             Min     => Min_Y,
             Max     => Max_Y);
-         Vis.Absolute.Set_Top (Area, Min_Y - (Thickness + 1) / 2);
-         Vis.Absolute.Set_Bottom (Area, Max_Y + (Thickness + 1) / 2);
+         Area := Vis.Absolute.Combine_Rectangle
+           (X_1 => Vis.Absolute.Get_X (Start_Point) - (Thickness + 1) / 2,
+            X_2 => Vis.Absolute.Get_X (Start_Point) + (Thickness + 1) / 2,
+            Y_1 => Min_Y - (Thickness + 1) / 2,
+            Y_2 => Max_Y + (Thickness + 1) / 2);
 
          Pool := Create_Position_Pool_From_Area
            (Manager,
@@ -1334,10 +1333,6 @@ package body Giant.Vis_Data is
       Region : Region_Id;
    begin
       while not Region_Lists.IsEmpty (Node.Regions) loop
-         Remove_Node_From_Region
-           (Region_Lists.FirstValue (Node.Regions), Node);
-         Region_Lists.DeleteHead
-           (Node.Regions);
          Region := Region_Lists.FirstValue (Node.Regions);
          Remove_Node_From_Region (Region, Node);
          Add_Background_Pollution (Region);

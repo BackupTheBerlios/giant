@@ -20,13 +20,14 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.15 $
+--  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.16 $
 --  $Author: keulsn $
---  $Date: 2003/06/23 01:11:07 $
+--  $Date: 2003/07/10 23:36:39 $
 --
 ------------------------------------------------------------------------------
 
 
+with Ada.Exceptions;
 with Ada.Unchecked_Deallocation;
 with Ada.Tags;
 
@@ -603,6 +604,17 @@ package body Giant.Evolutions is
             end Synchronize;
          end if;
       end loop;
+   exception
+      when Occurrence : others =>
+         Evolution_Logger.Fatal
+           ("Exception raised in concurrent driver. Currently evolving: " &
+            Logging_Name (Individual) & ". Recovery not implemented, " &
+            "shutting down driver immediately. Exception Name = " &
+            Ada.Exceptions.Exception_Name
+              (Ada.Exceptions.Exception_Identity (Occurrence)) &
+            " Information: " & Ada.Exceptions.Exception_Information
+              (Occurrence));
+         Driver_Controller.Driver_Died (Id);
    end Concurrent_Driver;
 
 

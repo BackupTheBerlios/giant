@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.adb,v $, $Revision: 1.12 $
---  $Author: squig $
---  $Date: 2003/07/10 16:26:36 $
+--  $RCSfile: giant-vectors.adb,v $, $Revision: 1.13 $
+--  $Author: keulsn $
+--  $Date: 2003/07/10 23:36:39 $
 --
 ------------------------------------------------------------------------------
 
@@ -392,8 +392,7 @@ package body Giant.Vectors is
      (Rectangle : in out Rectangle_2d;
       Top       : in     Coordinate_Type) is
    begin
-      -- FIX
-      --pragma Assert (Coord_Less_Equal (Top, Get_Bottom (Rectangle)));
+      pragma Assert (Coord_Less_Equal (Top, Get_Bottom (Rectangle)));
       Rectangle.Top := Top;
    end Set_Top;
    pragma Inline (Set_Top);

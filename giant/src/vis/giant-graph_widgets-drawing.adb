@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.11 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.12 $
 --  $Author: keulsn $
---  $Date: 2003/07/10 16:05:51 $
+--  $Date: 2003/07/10 23:36:39 $
 --
 ------------------------------------------------------------------------------
 
@@ -773,7 +773,8 @@ package body Giant.Graph_Widgets.Drawing is
          end if;
 
          Icons_Bottom := Get_Top (Draw_Rect) + Vis.Absolute_Int'Max
-           (Vis.Absolute_Int (Icons_Height), Get_Height (Font));
+           (Vis.Absolute_Int (Icons_Height),
+            Default_Text_Spacing + Get_Height (Font));
 
          Shrink (Draw_Rect, Default_Text_Spacing);
 

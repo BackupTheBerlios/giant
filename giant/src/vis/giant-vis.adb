@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-vis.adb,v $, $Revision: 1.9 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 03:35:59 $
+--  $Date: 2003/07/10 23:36:39 $
 --
 ------------------------------------------------------------------------------
 
@@ -52,6 +52,7 @@ package body Giant.Vis is
       Aft_Int        : Integer;
    begin
       if Logic_Float (Integer'Last) < Trunc then
+
          if Print_Minus then
             return "-???";
          else

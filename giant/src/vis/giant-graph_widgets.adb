@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.20 $
---  $Author: squig $
---  $Date: 2003/07/10 21:01:40 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.21 $
+--  $Author: keulsn $
+--  $Date: 2003/07/10 23:36:39 $
 --
 ------------------------------------------------------------------------------
 
@@ -399,7 +399,18 @@ package body Giant.Graph_Widgets is
 
       Vis_Node : Vis_Data.Vis_Node_Id;
    begin
+      pragma Assert
+        (Vis.Logic_Float'Safe_First <= Vis.Logic.Get_X (Location) and
+         Vis.Logic.Get_X (Location) <= Vis.Logic_Float'Safe_Last);
+      pragma Assert
+        (Vis.Logic_Float'Safe_First <= Vis.Logic.Get_Y (Location) and
+         Vis.Logic.Get_Y (Location) <= Vis.Logic_Float'Safe_Last);
+
       if States.Is_Locked (Widget) then
+         Graph_Widget_Logger.Debug
+           ("Set_Top_Middle: Node =" &
+            Graph_Lib.Node_Id_Image (Node) &
+            ", Location = " & Vis.Logic.Image (Location));
          pragma Assert (States.Is_Valid_Lock (Widget, Lock));
          Vis_Node := Look_Up (Widget, Node);
          if Vis_Node /= null then
