@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.15 $
 --  $Author: keulsn $
---  $Date: 2003/07/10 16:05:51 $
+--  $Date: 2003/07/11 19:39:15 $
 --
 ------------------------------------------------------------------------------
 
@@ -685,7 +685,6 @@ package body Giant.Graph_Widgets.Settings is
          Width  : Glib.Gint := 0;
          Height : Glib.Gint := 0;
       begin
-         Settings_Logger.Debug ("Icon loaded: " & File_Name);
          Gdk.Pixmap.Create_From_Xpm
            (Pixmap      => Pixmap,
             Window      => Get_Window (Widget),
@@ -694,9 +693,14 @@ package body Giant.Graph_Widgets.Settings is
             Filename    => File_Name);
          if Gdk."/=" (Mask, Gdk.Bitmap.Null_Bitmap) then
             Gdk.Bitmap.Unref (Mask);
+            Settings_Logger.Debug ("Discarded Bitmap");
          end if;
          if Gdk."/=" (Pixmap, Gdk.Pixmap.Null_Pixmap) then
+            Settings_Logger.Debug ("Icon loaded: " & File_Name);
             Gdk.Window.Get_Size (Pixmap, Width, Height);
+         else
+            Settings_Logger.Error
+              ("Failed to load icon from file """ & File_Name & """.");
          end if;
          return (Pixmap, Width, Height);
       end Load_Icon;
@@ -722,8 +726,10 @@ package body Giant.Graph_Widgets.Settings is
          Icons := new Icon_Array_Type'
            (Files'First .. Files'Last + 1 =>
               (Gdk.Pixmap.Null_Pixmap, 0, 0));
+         Settings_Logger.Debug ("Load annotation Icon...");
          Icons (Icons'Last) := Load_Icon
            (Widget, Config.Global_Data.Get_Node_Annotations_Icon);
+         Settings_Logger.Debug ("Load node icons");
          for I in Files'Range loop
             Icons (I) := Load_Icon
               (Widget, Ada.Strings.Unbounded.To_String (Files (I)));
@@ -737,11 +743,7 @@ package body Giant.Graph_Widgets.Settings is
          Width  :    out Glib.Gint;
          Height :    out Glib.Gint) is
       begin
-         Settings_Logger.Debug
-           ("Get_Icon (" & Integer'Image (Index) & " ), Range = (" &
-            Integer'Image (Icons'First) & " -" & Integer'Image (Icons'Last) &
-            " )");
-         if False then --Index in Icons'Range then
+         if Index in Icons'Range then
             Icon := Icons (Index).Icon;
             Width := Icons (Index).Width;
             Height := Icons (Index).Height;
@@ -758,10 +760,9 @@ package body Giant.Graph_Widgets.Settings is
          Width  :    out Glib.Gint;
          Height :    out Glib.Gint) is
       begin
-         Get_Icon (Widget, 0, Icon, Width, Height);
---         Icon := Icons (Icons'Last).Icon;
---         Width := Icons (Icons'Last).Width;
---         Height := Icons (Icons'Last).Height;
+         Icon := Icons (Icons'Last).Icon;
+         Width := Icons (Icons'Last).Width;
+         Height := Icons (Icons'Last).Height;
       end Get_Annotation_Icon;
 
       procedure Shut_Down_Icon_Array

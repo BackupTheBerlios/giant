@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.15 $
 --  $Author: keulsn $
---  $Date: 2003/07/11 17:34:16 $
+--  $Date: 2003/07/11 19:39:14 $
 --
 ------------------------------------------------------------------------------
 
@@ -781,11 +781,7 @@ package body Giant.Graph_Widgets.Drawing is
             X_2 => Get_Right (Draw_Rect),
             Y_2 => Icons_Bottom + Default_Text_Spacing + Get_Height (Font));
 
-         Drawing_Logger.Debug ("... class name?");
          if Settings.Show_Node_Class_Name (Widget, Node) then
-            Drawing_Logger.Debug
-              ("... class name " & Vis.Absolute.Image (Class_Name_Rect) &
-               " """ & Graph_Lib.Get_Node_Class_Tag (Graph_Node_Class) & '"');
             Draw_Text
               (Buffer => Buffer,
                Font   => Font,
@@ -832,9 +828,7 @@ package body Giant.Graph_Widgets.Drawing is
 
       Inner_Rect : Vis.Absolute.Rectangle_2d;
    begin
-      Drawing_Logger.Debug ("Draw_Node");
       if Vis_Data.Is_Hidden (Node) then
-         Drawing_Logger.Debug ("Hidden.");
          return;
       end if;
 
@@ -856,9 +850,6 @@ package body Giant.Graph_Widgets.Drawing is
       Origin           : Vis.Absolute.Vector_2d :=
         Get_Top_Left (Widget.Drawing.Buffer_Area);
    begin
-      Drawing_Logger.Debug
-        ("Update_Buffer_Edges, Origin = " & Vis.Absolute.Image (Origin));
-
       while Iterators.Has_More (Edges) loop
          Current_Edge := Iterators.Get_Current (Edges);
          Current_Layer := Vis_Data.Get_Layer (Current_Edge);
@@ -869,10 +860,6 @@ package body Giant.Graph_Widgets.Drawing is
             Current_Clipping := Clipping_Queues.Get_Head (Clipping.all);
             exit when Vis_Data.Is_Below
               (Current_Layer, Current_Clipping.Height);
-            Drawing_Logger.Debug
-              ("... open clipping: " &
-               Vis.Absolute.Image (Current_Clipping.Area) & ", Origin: " &
-               Vis.Absolute.Image (Origin));
             Copy_Ready_Into_Normal_Buffer
               (Widget => Widget,
                Area   => Current_Clipping.Area,
@@ -880,15 +867,11 @@ package body Giant.Graph_Widgets.Drawing is
             Clipping_Queues.Remove_Head (Clipping.all);
          end loop;
 
-         Drawing_Logger.Debug
-           ("... Draw_Edge, Text area = " &
-            Vis.Absolute.Image (Vis_Data.Get_Text_Area (Current_Edge)));
          Draw_Edge
            (Widget, Widget.Drawing.Buffer, Current_Edge, Origin);
 
          Iterators.Forward (Edges);
       end loop;
-      Drawing_Logger.Debug ("... Edges done.");
    end Update_Buffer_Edges;
 
    procedure Update_Buffer_Nodes
@@ -905,9 +888,6 @@ package body Giant.Graph_Widgets.Drawing is
       Origin           : Vis.Absolute.Vector_2d :=
         Get_Top_Left (Widget.Drawing.Buffer_Area);
    begin
-      Drawing_Logger.Debug
-        ("Update_Buffer_Nodes, Origin = " & Vis.Absolute.Image (Origin));
-
       while Iterators.Has_More (Nodes) loop
          Current_Node := Iterators.Get_Current (Nodes);
          Current_Layer := Vis_Data.Get_Layer (Current_Node);
@@ -918,10 +898,6 @@ package body Giant.Graph_Widgets.Drawing is
             Current_Clipping := Clipping_Queues.Get_Head (Clipping.all);
             exit when Vis_Data.Is_Below
               (Current_Layer, Current_Clipping.Height);
-            Drawing_Logger.Debug
-              ("... open clipping: " &
-               Vis.Absolute.Image (Current_Clipping.Area) & ", Origin: " &
-               Vis.Absolute.Image (Origin));
             Copy_Ready_Into_Normal_Buffer
               (Widget => Widget,
                Area   => Current_Clipping.Area,
@@ -929,15 +905,11 @@ package body Giant.Graph_Widgets.Drawing is
             Clipping_Queues.Remove_Head (Clipping.all);
          end loop;
 
-         Drawing_Logger.Debug
-           ("... Draw_Node: " &
-            Vis.Absolute.Image (Vis_Data.Get_Extent (Current_Node)));
          Draw_Node
            (Widget, Widget.Drawing.Buffer, Current_Node, Origin);
 
          Iterators.Forward (Nodes);
       end loop;
-      Drawing_Logger.Debug ("... Nodes done.");
    end Update_Buffer_Nodes;
 
 
@@ -1305,19 +1277,21 @@ package body Giant.Graph_Widgets.Drawing is
          Window => Window,
          Width  => Width,
          Height => Height);
-      Drawing_Logger.Debug
-        ("Display size = " & Vis.Absolute.Image
-         (Vis.Absolute.Combine_Vector
-          (Vis.Absolute_Int (Width), Vis.Absolute_Int (Height))));
 
-      Buffer_Size := Calculate_Buffer_Size (Widget);
-      Vis.To_Gdk (Buffer_Size, Width, Height);
-      --  Buffer area, centered on (0, 0)
+      --  Buffer size must be at least window size
+      Gdk.Window.Get_Size
+        (Get_Window (Widget), Width, Height);
+      --  Buffer area, optimized for region manager
       Widget.Drawing.Buffer_Area := Combine_Rectangle
         (Top_Left     => Vis.Absolute.Zero_2d,
-         Bottom_Right => Buffer_Size - Combine_Vector (1, 1));
-      Set_Center (Widget.Drawing.Buffer_Area, Zero_2d);
+         Bottom_Right => Combine_Vector
+                           (Vis.Absolute_Int (Width) - 1,
+                            Vis.Absolute_Int (Height) - 1));
+      Vis_Data.Optimize_Drawing_Area
+        (Manager => Widget.Manager,
+         Area    => Widget.Drawing.Buffer_Area);
       --  Buffer
+      Vis.To_Gdk (Get_Size (Widget.Drawing.Buffer_Area), Width, Height);
       Gdk.Pixmap.Gdk_New
         (Pixmap => Widget.Drawing.Buffer,
          Window => Window,
@@ -1333,7 +1307,7 @@ package body Giant.Graph_Widgets.Drawing is
       Set_Up_Edge_Gcs (Widget);
       Set_Up_Node_Gcs (Widget);
 
---      Clear (Widget.Drawing.Background, Widget.Drawing.Display);
+      Clear (Widget.Drawing.Background, Widget.Drawing.Display);
       Clear (Widget.Drawing.Background, Widget.Drawing.Ready_Buffer);
 
       --  Set Display as background pixmap

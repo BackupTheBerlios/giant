@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.23 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.24 $
 --  $Author: keulsn $
---  $Date: 2003/07/11 17:34:16 $
+--  $Date: 2003/07/11 19:39:15 $
 --
 ------------------------------------------------------------------------------
 
@@ -1315,8 +1315,6 @@ package body Giant.Vis_Data is
       Iterator : Position_Iterator;
       Region   : Region_Id;
    begin
-      Vis_Data_Logger.Debug
-        ("Insert_Node: " & Vis.Absolute.Image (Get_Extent (Node)));
       Pool := Create_Position_Pool_From_Area (Manager, Get_Extent (Node));
       Make_Position_Iterator (Pool, Iterator);
       while Has_More (Iterator) loop
@@ -1325,9 +1323,6 @@ package body Giant.Vis_Data is
             Position => Get_Current (Iterator),
             Region   => Region);
          Next (Iterator);
-         Vis_Data_Logger.Debug
-           ("... into Region: " &
-            Vis.Absolute.Image (Get_Region_Extent (Region)));
          Region_Lists.Attach (Region, Node.Regions);
          Add_Node_To_Region (Region, Node);
          Add_Node_Pollution (Region, Node);
@@ -1656,7 +1651,6 @@ package body Giant.Vis_Data is
                                          (Manager, Display_Area);
       Region_Count  : Natural       := Get_Position_Pool_Size (Pool);
    begin
-      Vis_Data_Logger.Debug ("Start_Node_Refresh");
       Clipping := new Clipping_Queues.Queue_Type (Region_Count);
       Nodes := new Node_Update_Iterators.Merger_Type (Region_Count);
 
@@ -1667,17 +1661,10 @@ package body Giant.Vis_Data is
          Region := Get_Region_If_Exists (Manager, Position);
          if Region /= null then
 
-            Vis_Data_Logger.Debug
-              ("Testing region " & Vis.Absolute.Image
-               (Get_Region_Extent (Region)));
-
             Node_Iterator := Get_Polluted_Nodes (Region);
 
             if Vis_Node_Sets.More (Node_Iterator) then
                First_Node := Vis_Node_Sets.Current (Node_Iterator);
-               Vis_Data_Logger.Debug
-                 ("... First node = " &
-                  Vis.Absolute.Image (Get_Extent (First_Node)));
 
                Clipping_Queues.Insert
                  (Queue => Clipping.all,
@@ -1688,8 +1675,6 @@ package body Giant.Vis_Data is
                Node_Update_Iterators.Add_Iterator
                  (Merger   => Nodes.all,
                   Iterator => Node_Iterator);
-            else
-               Vis_Data_Logger.Debug ("... no Nodes to be updated.");
             end if;
 
             Vis_Node_Sets.Destroy (Node_Iterator);
@@ -1701,7 +1686,6 @@ package body Giant.Vis_Data is
       end loop;
 
       Node_Update_Iterators.Start_Iteration (Nodes.all);
-      Vis_Data_Logger.Debug ("... Start_Node_Refresh done.");
    end Start_Node_Refresh;
 
    procedure End_Node_Refresh
