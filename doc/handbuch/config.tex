@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.8 $
-%  $Date: 2003/08/04 10:19:41 $
+%  $RCSfile: config.tex,v $, $Revision: 1.9 $
+%  $Date: 2003/08/05 13:40:46 $
 %  $Author: birdy $
 %
 %  Description:
@@ -74,67 +74,67 @@ von GIANT mit allen Unterverzeichnissen befindet.
 Wird dieses weggelassen, wird das Verzeichnis, in dem sich der Nutzer
 in der Shell des Betriebssystemes bei Aufruf von GIANT befindet, verwendet.
 
-\hspace{10mm}<absolute\_path\_root root\_directory  = "." />
+°<absolute_path_root root_directory  = "." />°
 
 Das folgende Directory gibt an, in welchem Verzeichnis die Bilder von GIANT
 gesucht werden, wenn andere Erweiterungen (Expansionen) fehlschlagen:
 
-\hspace{10mm}<setting name = "Resources\_Directory" value="." />
+°<setting name = "Resources_Directory" value="." />°
 
 Das folgende Icon wird verwendet, graphisch um anzuzeigen, daß ein Knoten annotiert ist:
 
-\hspace{10mm}<setting name = "Icon\_For\_Node\_Annotations" value="my\_icon.xpm" />
+°<setting name = "Icon_For_Node_Annotations" value="my_icon.xpm" />°
 
 Die Farbe der aktuellen Selektion:
 
-\hspace{10mm}<setting name = "Current\_Selection\_Highlight\_Color" value="RGB:AA/AA/AA" />
+°<setting name = "Current_Selection_Highlight_Color" value="RGB:AA/AA/AA" />°
 
 Die Farbe Nr. 1 für die Hervorhebung von Selektionen:
 
-\hspace{10mm}<setting name = "Selection\_Highlight\_Color\_1" value="RGB:AA/AA/AA" />
+°<setting name = "Selection\_Highlight_Color_1" value="RGB:AA/AA/AA" />°
 
 Die Farbe Nr. 2 für die Hervorhebung von Selektionen:
 
-\hspace{10mm}<setting name = "Selection\_Highlight\_Color\_2" value="RGB:AA/AA/AA" />
+°<setting name = "Selection_Highlight_Color_2" value="RGB:AA/AA/AA" />°
 
 Die Farbe Nr. 3 für die Hervorhebung von Selektionen:
 
-\hspace{10mm}<setting name = "Selection\_Highlight\_Color\_3" value="RGB:AA/AA/AA" />
+°<setting name = "Selection_Highlight_Color_3" value="RGB:AA/AA/AA" />°
 
 Die Farbe Nr. 1 für die Hervorhebung von IML-Teilgraphen:
 
-\hspace{10mm}<setting name = "IML\_Subgraph\_Highlight\_Color\_1" value="RGB:AA/AA/AA" />
+°<setting name = "IML_Subgraph_Highlight_Color_1" value="RGB:AA/AA/AA" />°
 
 Die Farbe Nr. 2 für die Hervorhebung von IML-Teilgraphen:
 
-\hspace{10mm}<setting name = "IML\_Subgraph\_Highlight\_Color\_2" value="RGB:AA/AA/AA" />
+°<setting name = "IML_Subgraph_Highlight_Color_2" value="RGB:AA/AA/AA" />°
 
 Die Farbe Nr. 3 für die Hervorhebung von IML-Teilgraphen:
 
-\hspace{10mm}<setting name = "IML\_Subgraph\_Highlight\_Color\_3" value="RGB:AA/AA/AA" />
+°<setting name = "IML_Subgraph_Highlight_Color_3" value="RGB:AA/AA/AA" />°
          
 Hier kann eine Menge von Pfaden, ggf. getrennt durch den Path Seperator des
 Betriebssystems, angegeben werden: (****** Wofür dieser Pfad?)
 
-\hspace{10mm}<setting name = "GSL.Include\_Paths" value="." />
+°<setting name = "GSL.Include_Paths" value="." />°
                 
 Hier kann die Höhe des Hauptfensters angegeben werden:
 		
-\hspace{10mm}<setting name = "Main\_Window.Height" value="400" />
+°<setting name = "Main_Window.Height" value="400" />°
 
 Hier kann die Breite des Hauptfensters angegeben werden:
 
-\hspace{10mm}<setting name = "Main\_Window.Width" value="200" />
+°<setting name = "Main_Window.Width" value="200" />°
 
 Hier kann angegeben werden, nach wieviel Pixeln der
 untere Bereich des Hauptfensters mit der unteren Liste anfängt:
 
-\hspace{10mm}<setting name = "Main\_Window.Separator" value="230" />
+°<setting name = "Main_Window.Separator" value="230" />°
 
 Hier kann festgelegt werden, ob bei Löschoperationen eine
 Sicherheitsabfrage erfolgen soll (***** welche Löschoperationen genau?)
 
-\hspace{10mm}<setting name = "Confirm.Delete" value="true" />
+°<setting name = "Confirm.Delete" value="true" />°
 
 Hier kann der Editor zum Anzeigen der Quelltexte angegeben werden,
 mit seinem Aufruf. \%l wird dabei durch die Zeilennummer ersetzt,
@@ -144,7 +144,7 @@ werden, daß durch den Aufruf die Datei geladen wird und der Editor
 mit dem Cursor an die richtige Stelle in der Datei springt.
 GIANT spawned einen neuen Prozeß, in dem der Editor abläuft.
 
-\hspace{10mm}<setting name = "Editor.Source" value="/usr/bin/emacs +\%l:\%c \%f" />\\
+°<setting name = "Editor.Source" value="/usr/bin/emacs +%l:%c %f" />°\\
 
 
 
@@ -319,6 +319,8 @@ Hier ein konkretes Beispiel einer solchen Datei (Beispiel 1):
 
 %***\verbatiminput{test_vis_style_4_edges.xml}
 
+°<!--  Beginn des Beispiels 1 -->°\\
+
 In jeder Datei wird die Hintergrundfarbe durch \\
 °<global_settings vis_window_background_color="RGB:20/20/20"/>°\\
 festgelegt.\\
@@ -373,9 +375,9 @@ Knotenklassennamens:\\
 °  <node_class     node_class_name = "TC_Boolean"/>°\\
 
 Mittels\\
-°<super_node_class super_node_class_name = "T_Node"/>°\\
+°  <super_node_class super_node_class_name = "T_Node"/>°\\
 können alle Knoten, die im IML-Baum unterhalb des angegebenen
-Knoten liegen, in die Auswahl mit aufgenommen werden.
+Knoten liegen (und der Knotentyp selbst), in die Auswahl mit aufgenommen werden.
 Hierdurch kann u.U. das File kurz und übersichtlich gehalten werden.\\
 
 Nun ist der <node\_class\_specific\_setting> Block zuende und
@@ -434,6 +436,7 @@ je nach Kantentyp, abweichend von default\_edge\_setting.
 °     start_node_class = "*"°\\
 °     attribute_name   = "CF_Next" />°\\            
 °</edge_class_specific_setting>°\\
+°<!--  Ende des Beispiels 1 -->°
 
 Durch diesen Block werden mit den oben angegebenen Farben
 und Stil alle Kanten ausgehend von Routine\_Call Knoten
@@ -441,7 +444,7 @@ angezeigt, ausserdem alle Kanten des Typs CF\_Next.\\
 
 Es gibt folgende Möglichkeiten, Kanten festzulegen:\\
 
-Das im o.G. Beispiel verwendete\\
+Das im o.G. Beispiel innerhalb eines <edge\_class\_specific\_setting> Blocks verwendete Konstrukt\\
 
 °<edge_class°\\
 °     start_node_class = "Example1"°\\
@@ -451,7 +454,9 @@ Inkludiert alle Kanten, die von den genannten Knoten ausgehen
 und genanntes Attribut haben. Dabei ist bei einem der beiden
 Parameter auch das Zeichen * erlaubt, dies wählt damit alle
 Knotenklassen bzw. Kantennamen, die dieses Attribut besitzen
-bzw. von diesem Knoten ausgehen, aus.
+bzw. von diesem Knoten ausgehen, aus.\\
+
+Auch die Verwendung von Vererbung ist möglich:
 
 °<super_edge_class°\\
 °     super_start_node_class = "Example3"°\\
@@ -468,13 +473,97 @@ mit dem angegebenen attribute\_name existieren würde.
 Durch dieses Konstrukt können also ggf. Einträge in der Datei
 gespart werden.
 
-Beispiel 2:
+Beispiel 2:\\
 
+Hier nun noch ein zweites Beispiel, die einzelnen Elemente wurden schon
+im ersten Beispiel erklärt.
 
 \verbatiminput{test_vis_style_5_inheritance.xml}
 
+\subsection{Config-Dateien für Class-Sets}
 
+Ein Class Set ist eine durch ein XML-File festgelegte Menge von Knotenklassen
+und Kantenklassen. Der Dateiname des XML-Files gibt den Namen des Class
+Sets an.\\
+
+Hier das giant\_class\_set\_file.dtd File:\\
+
+\verbatiminput{giant_class_set_file.dtd}
   
+Hier ein Beispiel eines GIANT Class Set Files:\\
+
+Zunächst der Header:
+
+
+°<?xml version="1.0" encoding="ISO-8859-1" ?>°\\
+°<!DOCTYPE giant_class_set_file°\\
+°  SYSTEM "giant_class_set_file.dtd">°\\
+
+°<giant_class_set_file>°\\
+
+Nun werden der Menge Knotenklassen hinzugefügt. Knotenklassen
+werden anhand ihres Namens im IML-Baum identifiziert.\\
+
+°  <!-- All node classes being a member of the class set -->°\\
+°  <associated_node_classes>°
+  
+  
+In den folgenden zwei Zeilen wird die Knotenklasse T\_Node
+hinzugefügt mittels node\_class , außerdem mittels
+super\_node\_class alle Knoten unterhalb der Klasse
+Prog\_Unit im IML-Baum (und Prog\_Unit selbst).  
+  
+°    <node_class           node_class_name="T_Node" />°\\                      
+°    <super_node_class     super_node_class_name = "Prog_Unit"/>°\\  
+
+°  </associated_node_classes>°
+  
+Danach werden Kantenklassen hinzugefügt. Eine Kantenklasse ist
+festgelegt durch ihren Namen (attribute\_name) und die Knotenklasse,
+von der sie ausgeht (start\_node\_class).\\
+  
+°  <!-- All edge classes being a member of the class set -->°\\
+°  <associated_edge_classes>°\\
+
+Hier wird die Kantenklasse Parent, abgehend von T\_Node Knoten,
+hinzugefügt.
+
+°    <edge_class start_node_class="T_Node"°\\
+°      attribute_name="Parent" />°
+
+Hier werden alle Kanten, auf die die Wildcard zutrifft, abgehend
+von der Knotenklasse O\_Node hinzugefügt.
+
+°    <edge_class°\\
+°      start_node_class="O_Node"°\\ 
+°      attribute_name="*" />°	
+
+Hier werden alle Kanten mit Namen Its\_Type abgehend von allen Knotenklassen,
+die eine solche Kante haben, hinzugefügt.
+
+°    <edge_class°\\
+°      start_node_class="*"°\\ 
+°      attribute_name="Its_Type" />°	    
+    
+Bei Verwendung von super\_edge\_class werden außer der bezeichneten Kante
+des bezeichneten Knoten auch alle gleichnamigen Kanten von Knoten, die sich
+in der IML-Hierarchie unter dem bezeichneten Knoten befinden, aufgenommen.     
+    
+°    <super_edge_class°\\
+°      super_start_node_class = "Prog_Unit"°\\
+°      attribute_name         = "Subunits" />°  
+
+Wird bei attribute\_name eine Wildcard verwendet, so werden alle Kanten,
+die zutreffen, vom bezeichneten Knotentyp und von allen Knotentypen
+in der IML-Hierarchie darunter ausgewählt.
+      
+°    <super_edge_class°\\
+°      super_start_node_class = "Op"°\\
+°      attribute_name         = "*" />°\\ 	
+°  </associated_edge_classes>°
+ 
+°</giant_class_set_file>°
+
 \section {Skript-Dateien} 
 \label {Config Anfrage-Dateien}
 \index{GSL!Skriptdateien} \index{Skriptdateien}
