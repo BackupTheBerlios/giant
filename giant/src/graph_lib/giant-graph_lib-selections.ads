@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.5 $
---  $Author: schwiemn $
---  $Date: 2003/06/10 15:00:21 $
+--  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.6 $
+--  $Author: koppor $
+--  $Date: 2003/06/14 08:33:07 $
 --
 ------------------------------------------------------------------------------
 --
@@ -44,6 +44,7 @@ package Giant.Graph_Lib.Selections is
    ---------------------------------------------------------------------------
    --  Creates a new selection,
    --    which has to be destroyed afterwards
+   --  Name is converted to a String and not used during the run
    function Create
       (Name : in    Valid_Names.Standard_Name)
       return Selection;
@@ -70,6 +71,8 @@ package Giant.Graph_Lib.Selections is
       return String;
 
    ---------------------------------------------------------------------------
+   --  Don't know about the semantic
+   --  Returns randomly true or false
    function "<"
       (Left  : in Selection;
        Right : in Selection)
@@ -88,8 +91,8 @@ package Giant.Graph_Lib.Selections is
 
    ---------------------------------------------------------------------------
    procedure Selection_Read
-      (Stream            : in Bauhaus_Io.In_Stream_Type;
-       Selection_To_Read : out Selection);
+      (Stream            : in     Bauhaus_Io.In_Stream_Type;
+       Selection_To_Read :    out Selection);
 
 
    -----------------------
@@ -125,25 +128,42 @@ package Giant.Graph_Lib.Selections is
    --------------------------
 
    ---------------------------------------------------------------------------
-   --  Adds given Node to the given Selection
+   --  Removes given Node from given selection
+   --
+   --  Raises:
+   --    Node_Does_Not_Exist - if given node is not contained in
+   --      given selection
    procedure Remove_Node
       (Selection_To_Modify : in out Selection;
        Node                : in     Node_Id);
 
    ---------------------------------------------------------------------------
-   --  Adds all nodes in given set to the Selection
+   --  Removes all nodes in given set from given selection
+   --
+   --  Raises:
+   --    Node_Does_Not_Exist - if a node of the given set is not contained in
+   --      given selection
    procedure Remove_Node_Set
       (Selection_To_Modify : in out Selection;
        Node_Set            : in     Node_Id_Set);
 
    ---------------------------------------------------------------------------
-   --  Adds given Edge to the given Selection
+   --  Removes given edge from given selection
+   --
+   --  Raises:
+   --    Edge_Does_Not_Exist - if given edge is not contained in
+   --      given selection
    procedure Remove_Edge
       (Selection_To_Modify : in out Selection;
        Edge                : in     Edge_Id);
 
    ---------------------------------------------------------------------------
-   --  Adds all edges in given set to the Selection
+   --  Removes all edges in given set from given selection
+   --
+   --
+   --  Raises:
+   --    Edge_Does_Not_Exist - if an edge of the given set is not contained in
+   --      given selection
    procedure Remove_Edge_Set
       (Selection_To_Modify : in out Selection;
        Edge_Set            : in     Edge_Id_Set);
@@ -174,7 +194,11 @@ package Giant.Graph_Lib.Selections is
       return Selection;
 
 private
-   type Selection_Record is null record;
+   type Selection_Record (Name_Length : Positive) is record
+      Name  : String (1..Name_Length);
+      Nodes : Node_Id_Set;
+      Edges : Edge_Id_Set;
+   end record;
 
    type Selection is access Selection_Record;
 
