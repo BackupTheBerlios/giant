@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.5 $
 --  $Author: schwiemn $
---  $Date: 2003/06/05 17:15:59 $
+--  $Date: 2003/06/06 16:17:53 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -52,10 +52,10 @@ package body Giant.Vis_Window_Management is
      (Vis_Window_Name : in Valid_Names.Standard_Name)
      return Vis_Window_Data_Access is
      
-      New_Window_Ac    : Vis_Window_Data_Access;      
-      New_Standard_Sel : Graph_Lib.Selections.Selection;
-      New_Graph_Widget : Graph_Widgets.Graph_Widget;
-      
+      New_Window_Ac     : Vis_Window_Data_Access;      
+      New_Standard_Sel  : Graph_Lib.Selections.Selection;
+      New_Graph_Widget  : Graph_Widgets.Graph_Widget;      
+      Standard_Sel_Data : Selection_Data_Elemet;
    begin
    
       New_Window_Ac := new Visual_Window_Element;      
@@ -66,18 +66,18 @@ package body Giant.Vis_Window_Management is
       New_Window_Ac.Set_Of_All_Pins := Pin_Sets.Empty_Set;      
       New_Window_Ac.All_Managed_Selections := Selection_Data_Sets.Empty_Set;
       
-      -- Initialize new Graph_Widget
+      --  Initialize new Graph_Widget
       Graph_Widgets.Create (New_Graph_Widget);
       
-      -- Increases the GTK Reference Counter - needed to keep the graph
-      -- widget persistent in this data structure
+      --  Increases the GTK Reference Counter - needed to keep the graph
+      --  widget persistent in this data structure
       Gtk.Object.Ref (New_Graph_Widget);
             
       New_Window_Ac.The_Graph_Widget := New_Graph_Widget; 
                         
-      -- Create empty standard selection and make it to the current selection
-      -- -> this behaviour is demanded by the Specification
-      -- (see Spec 3.4.2. Standard-Selektion).
+      --  Create empty standard selection and make it to the current selection
+      --  -> this behaviour is demanded by the Specification
+      --  (see Spec 3.4.2. Standard-Selektion).
       New_Standard_Sel := 
         Graph_Lib.Selections.Create (Standard_Selection_Name); 
                                  
@@ -89,8 +89,16 @@ package body Giant.Vis_Window_Management is
         Ada.Strings.Unbounded.To_Unbounded_String
           (Graph_Lib.Selections.Get_Name (New_Standard_Sel));      
       
-      Add_Selection (New_Window_Ac, New_Standard_Sel);
-      
+      --  Build management data for selection
+      Standard_Sel_Data.The_Selection := New_Standard_Sel;    
+      Standard_Sel_Data.Selection_Highlight_Status := None;
+      Standard_Sel_Data.Is_Faded_Out := False;
+
+      -- Insert selection
+      Selection_Data_Sets.Insert
+        (New_Window_Ac.All_Managed_Selections, Standard_Sel_Data);  
+
+      return New_Window_Ac;
    end Create_New_Empty_Vis_Window;
 
    ---------------------------------------------------------------------------
@@ -100,8 +108,10 @@ package body Giant.Vis_Window_Management is
    begin
    
       
-      GRAPH_LIB;
-      !!!!!!!!!!
+    --  GRAPH_LIB; TODO
+    --  !!!!!!!!!!
+      
+    null;  
       
    end Vis_Window_Data_Access_Read;
        
@@ -111,9 +121,10 @@ package body Giant.Vis_Window_Management is
       Item   : in Vis_Window_Data_Access) is   
    begin
    
-      GRAPH_LIB;
-      !!!!!!!!!!
+    --  GRAPH_LIB; TODO
+    --  !!!!!!!!!!
    
+    null;
    end Vis_Window_Data_Access_Write;
 
    ---------------------------------------------------------------------------
@@ -229,8 +240,9 @@ package body Giant.Vis_Window_Management is
       Selection_Name : in Valid_Names.Standard_Name)
      return Boolean is
      
-     Dummy_Selection : Graph_Lib.Selections.Selection;
-     Found : Boolean : False;
+     Dummy_Selection    : Graph_Lib.Selections.Selection;
+     Dummy_Data_Element : Selection_Data_Elemet;
+     Found              : Boolean := False;
      
    begin
 
@@ -239,15 +251,16 @@ package body Giant.Vis_Window_Management is
        end if;
        
        Dummy_Selection := Graph_Lib.Selections.Create (Selection_Name);
+       Dummy_Data_Element.The_Selection := Dummy_Selection;
        
        if Selection_Data_Sets.Is_Member
-         (Vis_Window.All_Managed_Selections, Dummy_Selection) then
+         (Vis_Window.All_Managed_Selections, Dummy_Data_Element) then
           Found := True;
        end if;
 
        Graph_Lib.Selections.Destroy (Dummy_Selection);
        
-       return False;       
+       return Found;       
    end Does_Selection_Exist;
 
    ---------------------------------------------------------------------------
@@ -256,8 +269,9 @@ package body Giant.Vis_Window_Management is
       Selection_Name : in Valid_Names.Standard_Name) 
       return Graph_Lib.Selections.Selection_Access is
       
-      Dummy_Selection : Graph_Lib.Selections.Selection;
-      Return_Selection :  Graph_Lib.Selections.Selection;
+      Dummy_Selection     : Graph_Lib.Selections.Selection;
+      Dummy_Data_Element  : Selection_Data_Elemet;
+      Return_Data_Element : Selection_Data_Elemet;
     
    begin
 
@@ -269,12 +283,14 @@ package body Giant.Vis_Window_Management is
           raise Selection_With_Passed_Name_Not_Found_Exception;
        end if;
        
-       Dummy_Selection := Graph_Lib.Selections.Create (Selection_Name);              
-       Return_Selection := Selection_Data_Sets.Get
-         (Vis_Window.All_Managed_Selections, Dummy_Selection);   
+       Dummy_Selection := Graph_Lib.Selections.Create (Selection_Name);  
+       Dummy_Data_Element.The_Selection := Dummy_Selection;
+                   
+       Return_Data_Element := Selection_Data_Sets.Get
+         (Vis_Window.All_Managed_Selections, Dummy_Data_Element);   
        Graph_Lib.Selections.Destroy (Dummy_Selection);
       
-       return Return_Selection;
+       return Return_Data_Element.The_Selection;
    end Get_Selection;
 
    ---------------------------------------------------------------------------
@@ -282,9 +298,10 @@ package body Giant.Vis_Window_Management is
      (Vis_Window : in Visual_Window_Data_Access)      
      return String_Lists.List is 
           
-      The_List : String_Lists.List;      
-      Set_Iter : Selection_Data_Sets.Iterator;
-     
+      The_List                 : String_Lists.List;      
+      Set_Iter                 : Selection_Data_Sets.Iterator;
+      A_Selection_Data_Element : Selection_Data_Elemet;
+      
    begin
     
        if Vis_Window = null then      
@@ -294,63 +311,232 @@ package body Giant.Vis_Window_Management is
        The_List := String_Lists.Create;       
        Set_Iter := Selection_Data_Sets.Make_Iterator;
        
+       -- append standard selection
+       String_Lists.Append (The_List, Standard_Selection);
+              
+       while Selection_Data_Sets.More (Set_Iter) loop
        
-       String_Lists.Append (The_List, 
-       
-       
-       
-       
-       
+          Selection_Data_Sets.Next (Set_Iter, A_Selection_Data_Element);
+          
+          -- do not append standard selection once again
+          if not Ada.Strings.Unbounded."=" 
+            (Graph_Lib.Selections.Get_Name 
+              (A_Selection_Data_Element.The_Selection), Standard_Selection)
+            then
+            
+            String_Lists.Append 
+              (The_List, Ada.Strings.Unbounded.To_Unbounded_String 
+                (Graph_Lib.Selections.Get_Name 
+                  (A_Selection_Data_Element.The_Selection)));
+           end if;      
+       end loop;
+             
        Selection_Data_Sets.Destroy (Set_Iter);
        
        return The_List;
    end Get_All_Selections;
      
-
-
    ---------------------------------------------------------------------------
-   function Add_Selection
+   procedure Add_Selection
      (Vis_Window : in Visual_Window_Data_Access;
-      Selection  : in Graph_Lib.Selections.Selection_Access);
+      Selection  : in Graph_Lib.Selections.Selection) is
+      
+      New_Sel_Data_Element : Selection_Data_Elemet;
+      
+   begin
+    
+      if Vis_Window = null then      
+         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+      end if; 
+       
+      if (Does_Selection_Exist 
+        (Vis_Window, Valid_Names.To_Standard_Name 
+          (Graph_Lib.Selections.Get_Name (Selection))) = True) then       
+         raise Selection_Is_Already_Part_Of_Window_Exception;
+      end if;
+
+      -- Build management data for new selection
+      New_Sel_Data_Element.The_Selection := Selection;
+      Selection_Highlight_Status := None;
+      Is_Faded_Out := False;
+
+      Selection_Data_Sets.Insert
+        (Vis_Window.All_Managed_Selections, New_Sel_Data_Element);      
+   end if;
 
    ---------------------------------------------------------------------------
-   function Remove_Selection_From_Vis_Window
-      (Vis_Window     : in Visual_Window_Data_Access;
-       Selection_Name : in Valid_Names.Standard_Name);
-
+   procedure Remove_Selection_From_Vis_Window
+     (Vis_Window     : in Visual_Window_Data_Access;
+      Selection_Name : in Valid_Names.Standard_Name) is
+       
+     Dummy_Selection    : Graph_Lib.Selections.Selection;
+     Dummy_Data_Element : Selection_Data_Elemet;
+                      
+   begin
+   
+      if Vis_Window = null then      
+         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+      end if;
+       
+      if (Does_Selection_Exist (Vis_Window, Selection_Name) = False) then
+         raise Selection_With_Passed_Name_Not_Found_Exception;
+      end if;
+       
+      if Ada.Strings.Unbounded."=" 
+        (Selection_Name, Vis_Window.Standard_Selection) then
+         raise Standard_Selection_May_Not_Be_Removed_Exception;
+      end if;
+              
+      Dummy_Selection := Graph_Lib.Selections.Create (Selection_Name);  
+      Dummy_Data_Element.The_Selection := Dummy_Selection;
+             
+      Selection_Data_Sets.Remove
+        (Vis_Window.All_Managed_Selections, Dummy_Data_Element);
+    
+      Graph_Lib.Selections.Destroy (Dummy_Selection);
+             
+      --  on removal of current selection the standard selection becomes
+      --  the current selection
+      if Ada.Strings.Unbounded."=" (Selection_Name, Current_Selection) then
+         Vis_Window.Current_Selection := Vis_Window.Standard_Selection;
+      end if;     
+   end Remove_Selection_From_Vis_Window;
+          
    ---------------------------------------------------------------------------
    function Get_Current_Selection
      (Vis_Window : in Visual_Window_Data_Access)
-     return String;
+     return String is 
+   begin
+     
+      if Vis_Window = null then      
+         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+      end if;
+          
+      return Ada.Strings.Unbounded.To_String (Vis_Window.Current_Selection);
+   end Get_Current_Selection;
 
    ---------------------------------------------------------------------------
    procedure Set_Current_Selection
      (Vis_Window     : in Visual_Window_Accsess;
-      Selection_Name : in Valid_Names.Standard_Name);
-
+      Selection_Name : in Valid_Names.Standard_Name) is
+   begin
+   
+      if Vis_Window = null then      
+         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+      end if;
+       
+      if (Does_Selection_Exist (Vis_Window, Selection_Name) = False) then
+         raise Selection_With_Passed_Name_Not_Found_Exception;
+      end if;
+      
+      if Is_Faded_Out (Vis_Window, Selection_Name) = True then 
+         raise Illegal_Current_Selection_Exception;
+      end if;
+   
+      Vis_Window.Current_Selection := Selection_Name;      
+   end Set_Current_Selection;  
+      
    ---------------------------------------------------------------------------
    function Get_Standard_Selection
-     (Vis_Window : in Visual_Window_Data_Access)
-     return String;
+     (Vis_Window : in Visual_Window_Data_Access) 
+     return String is 
+   begin  
+                  
+      if Vis_Window = null then      
+         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+      end if;
+     
+      return Ada.Strings.Unbounded.To_String (Vis_Window.Standard_Selection);          
+   end Get_Standard_Selection;
 
    ---------------------------------------------------------------------------
-   function Get_Highlight_Status_Of_Selection
-     (Vis_Window : in Visual_Window_Accsess;
-      Selection  : in Graph_Lib.Selections.Selection_Access)
-     return Highlight_Status;
+   function Get_Highlight_Status
+     (Vis_Window     : in Visual_Window_Access;
+      Selection_Name : in Valid_Names.Standard_Name);
+     return Highlight_Status is
+         
+      Dummy_Selection     : Graph_Lib.Selections.Selection;
+      Dummy_Data_Element  : Selection_Data_Elemet;
+      Return_Data_Element : Selection_Data_Elemet;
+    
+   begin
+
+       if Vis_Window = null then      
+          raise Vis_Window_Data_Access_Not_Initialized_Exception;
+       end if;
+       
+       if (Does_Selection_Exist (Vis_Window, Selection_Name) = False) then
+          raise Selection_With_Passed_Name_Not_Found_Exception;
+       end if;
+       
+       Dummy_Selection := Graph_Lib.Selections.Create (Selection_Name);  
+       Dummy_Data_Element.The_Selection := Dummy_Selection;
+                   
+       Return_Data_Element := Selection_Data_Sets.Get
+         (Vis_Window.All_Managed_Selections, Dummy_Data_Element); 
+           
+       Graph_Lib.Selections.Destroy (Dummy_Selection);
+      
+       return Return_Data_Element.Selection_Highlight_Status;          
+   end Get_Highlight_Status;
 
    ---------------------------------------------------------------------------
-   function May_Selection_Highlight_Status_Be_Changed
-     (Vis_Window           : in Visual_Window_Accsess;
-      Selection            : in Graph_Lib.Selections.Selection_Access); 
-     return Boolean;
+   function May_Highlight_Status_Be_Changed
+     (Vis_Window     : in Visual_Window_Access;
+      Selection_Name : in Valid_Names.Standard_Name); 
+     return Boolean is      
+   begin
+   
+      if Vis_Window = null then      
+         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+      end if;
+       
+      if (Does_Selection_Exist (Vis_Window, Selection_Name) = False) then
+         raise Selection_With_Passed_Name_Not_Found_Exception;
+      end if;
+   
+      -- check
+      if Ada.Strings.Unbounded."=" 
+        (Vis_Window.Current_Selection, Selection_Name) then
+         return False;
+      end if;
+               
+      return True;
+   end May_Highlight_Status_Be_Changed;
 
    ---------------------------------------------------------------------------  
-   procedure Set_Highlight_Color_Of_Selection
+   procedure Set_Highlight_Status
      (Vis_Window           : in Visual_Window_Accsess;
-      Selection            : in Graph_Lib.Selections.Selection_Access;
-      New_Highlight_Status : in Highlight_Status);
-
+      Selection_Name       : in Valid_Names.Standard_Name;
+      New_Highlight_Status : in Highlight_Status) is
+                 
+      Dummy_Selection     : Graph_Lib.Selections.Selection;
+      Dummy_Data_Element  : Selection_Data_Elemet;
+      Change_Data_Element : Selection_Data_Elemet;            
+   begin
+  
+      if Vis_Window = null then      
+         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+      end if;
+       
+      if (Does_Selection_Exist (Vis_Window, Selection_Name) = False) then
+         raise Selection_With_Passed_Name_Not_Found_Exception;
+      end if;
+      
+      if May_Highlight_Status_Be_Changed (Vis_Window, Selection_Name) then
+         raise Highlight_Status_Of_Selection_May_Not_Be_Changed_Exception;
+      end if;
+                   
+      Dummy_Selection := Graph_Lib.Selections.Create (Selection_Name);  
+      Dummy_Data_Element.The_Selection := Dummy_Selection;
+                   
+      Change_Data_Element := Selection_Data_Sets.Get
+        (Vis_Window.All_Managed_Selections, Dummy_Data_Element); 
+                     
+      Change_Data_Element.Selection_Highlight_Status := New_Highlight_Status;
+           
+      Graph_Lib.Selections.Destroy (Dummy_Selection);   
+   end Set_Highlight_Status;
 
    --------------------------------------------------------------------------
    -- D
@@ -358,26 +544,126 @@ package body Giant.Vis_Window_Management is
    --------------------------------------------------------------------------
    
    --------------------------------------------------------------------------
-   function  May_Selection_Be_Faded_Out
-     (Vis_Window : in Visual_Window_Accsess;
-      Selection  : in Graph_Lib.Selections.Selection_Access)
-     return Boolean;
+   function May_Be_Faded_Out
+     (Vis_Window     : in Visual_Window_Accsess;
+      Selection_Name : in Valid_Names.Standard_Name)
+     return Boolean is
+   begin
+   
+      if Vis_Window = null then      
+         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+      end if;
+       
+      if (Does_Selection_Exist (Vis_Window, Selection_Name) = False) then
+         raise Selection_With_Passed_Name_Not_Found_Exception;
+      end if;
+   
+      -- check
+      if Ada.Strings.Unbounded."=" 
+        (Vis_Window.Current_Selection, Selection_Name) then
+         return False;
+      end if;
+   
+      if Ada.Strings.Unbounded."=" 
+        (Vis_Window.Standard_Selection, Selection_Name) then
+         return False;
+      end if;
+   
+      return True;
+   end May_Be_Faded_Out;
 
    --------------------------------------------------------------------------
-   function Is_Selection_Faded_Out
-     (Vis_Window : in Visual_Window_Accsess;
-      Selection  : in Graph_Lib.Selections.Selection_Access)
-     return Boolean;
+   function Is_Faded_Out
+     (Vis_Window     : in Visual_Window_Accsess;
+      Selection_Name : in Valid_Names.Standard_Name)
+     return Boolean is   
+                 
+      Dummy_Selection     : Graph_Lib.Selections.Selection;
+      Dummy_Data_Element  : Selection_Data_Elemet;
+      Return_Data_Element : Selection_Data_Elemet;
+       
+   begin
+
+      if Vis_Window = null then      
+         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+      end if;
+          
+      if (Does_Selection_Exist (Vis_Window, Selection_Name) = False) then
+         raise Selection_With_Passed_Name_Not_Found_Exception;
+      end if;
+          
+      Dummy_Selection := Graph_Lib.Selections.Create (Selection_Name);  
+      Dummy_Data_Element.The_Selection := Dummy_Selection;
+                    
+      Return_Data_Element := Selection_Data_Sets.Get
+        (Vis_Window.All_Managed_Selections, Dummy_Data_Element); 
+              
+      Graph_Lib.Selections.Destroy (Dummy_Selection);
+         
+      return Return_Data_Element.Is_Faded_Out;          
+   end Is_Faded_Out;
 
    --------------------------------------------------------------------------
    procedure Fade_Out_Selection
-     (Vis_Window : in Visual_Window_Accsess;
-      Selection  : in Graph_Lib.Selections.Selection_Access));
+     (Vis_Window     : in Visual_Window_Accsess;
+      Selection_Name : in Valid_Names.Standard_Name) is
+      
+      Dummy_Selection     : Graph_Lib.Selections.Selection;
+      Dummy_Data_Element  : Selection_Data_Elemet;
+      Change_Data_Element : Selection_Data_Elemet;    
+      
+   begin
+   
+      if Vis_Window = null then      
+         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+      end if;
+          
+      if (Does_Selection_Exist (Vis_Window, Selection_Name) = False) then
+         raise Selection_With_Passed_Name_Not_Found_Exception;
+      end if;
+      
+      if (May_Be_Faded_Out (Vis_Window, Selection_Name) = False) then 
+         raise Selection_May_Not_Be_Faded_Out_Exception;
+      end if;
+      
+      Dummy_Selection := Graph_Lib.Selections.Create (Selection_Name);  
+      Dummy_Data_Element.The_Selection := Dummy_Selection;                   
+      Change_Data_Element := Selection_Data_Sets.Get
+        (Vis_Window.All_Managed_Selections, Dummy_Data_Element);                     
+      Change_Data_Element.Is_Faded_Out := True;           
+      Graph_Lib.Selections.Destroy (Dummy_Selection);      
+   end Fade_Out_Selection;
 
    --------------------------------------------------------------------------
    procedure Fade_In_Selection
-     (Vis_Window : in Visual_Window_Accsess;
-      Selection  : in Graph_Lib.Selections.Selection_Access));
+     (Vis_Window     : in Visual_Window_Accsess;
+      Selection_Name : in Valid_Names.Standard_Name) is
+      
+      Dummy_Selection     : Graph_Lib.Selections.Selection;
+      Dummy_Data_Element  : Selection_Data_Elemet;
+      Change_Data_Element : Selection_Data_Elemet;    
+      
+   begin
+   
+      if Vis_Window = null then      
+         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+      end if;
+          
+      if (Does_Selection_Exist (Vis_Window, Selection_Name) = False) then
+         raise Selection_With_Passed_Name_Not_Found_Exception;
+      end if;
+      
+      if (Is_Faded_Out (Vis_Window, Selection_Name) = False) then 
+         raise Selection_Is_Not_Faded_Out_Exception;
+      end if;
+      
+      Dummy_Selection := Graph_Lib.Selections.Create (Selection_Name);  
+      Dummy_Data_Element.The_Selection := Dummy_Selection;                   
+      Change_Data_Element := Selection_Data_Sets.Get
+        (Vis_Window.All_Managed_Selections, Dummy_Data_Element);                     
+      Change_Data_Element.Is_Faded_Out := False;           
+      Graph_Lib.Selections.Destroy (Dummy_Selection);     
+   end Fade_In_Selection;      
 
 
    --------------------------------------------------------------------------
@@ -386,35 +672,142 @@ package body Giant.Vis_Window_Management is
    --------------------------------------------------------------------------
 
    --------------------------------------------------------------------------
-   function Does_Pin_Exist
+   function Does_Exist
      (Vis_Window : in Visual_Window_Data_Access;
       Pin_Name   : in Valid_Names.Standard_Name)
-     return Boolean;
-
-   --------------------------------------------------------------------------
-   function Get_Pin_Data
-     (Vis_Window : in Visual_Window_Data_Access;
-      Pin_Name   : in Valid_Names.Standard_Name)
-     return Vector;
-    
-   --------------------------------------------------------------------------
-   function Get_All_Pin_Names_Sorted
-     (Vis_Window : in Visual_Window_Data_Access)
-     return String_Lists.List;
+     return Boolean is
      
-   ---------------------------------------------------------------------------  
-   function Add_Pin
-     (Vis_Window : in Visual_Window_Data_Access;
-      Pin_Name   : in Valid_Names.Standard_Name;
-      Pin_Data   : in Vector);
-      
-   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   Vektortyp von Steffen K.
+      Dummy_Pin : Pin;
+   begin
+   
+      if Vis_Window = null then      
+         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+      end if;
+   
+      Dummy_Pin.Pin_Name := Pin_Name;                         
+      if Pin_Sets.Is_Member
+        (Vis_Window.Set_Of_All_Pins, Dummy_Pin) then          
+         return True;
+      end if;
 
+      return False;   
+   end Does_Pin_Exist;
+
+   --------------------------------------------------------------------------
+   function Get_Position
+     (Vis_Window : in Visual_Window_Data_Access;
+      Pin_Name   : in Valid_Names.Standard_Name)
+     return Vis.Logic.Vector_2d is
+     
+     Dummy_Pin  : Pin;
+     Return_Pin : Pin;
+   begin
+   
+      if Vis_Window = null then      
+         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+      end if;
+   
+      if (Does_Exist (Vis_Window, Pin_Name) = False) then
+         raise Pin_With_Passed_Name_Not_Found_Exception;
+      end if;
+   
+      Dummy_Pin.Pin_Name := Pin_Name;                         
+      
+      Return_Pin := Pin_Sets.Get
+        (Vis_Window.Set_Of_All_Pins, Dummy_Pin);  
+        
+      return Return_Pin.Pin_Pos; 
+   end Get_Position;
+   
+   --------------------------------------------------------------------------
+   function Get_Zoom
+     (Vis_Window : in Visual_Window_Data_Access;
+      Pin_Name   : in Valid_Names.Standard_Name)
+     return Vis.Zoom_Level is
+     
+     Dummy_Pin  : Pin;
+     Return_Pin : Pin;
+   begin
+   
+      if Vis_Window = null then      
+         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+      end if;
+   
+      if (Does_Exist (Vis_Window, Pin_Name) = False) then
+         raise Pin_With_Passed_Name_Not_Found_Exception;
+      end if;
+   
+      Dummy_Pin.Pin_Name := Pin_Name;                         
+      
+      Return_Pin := Pin_Sets.Get
+        (Vis_Window.Set_Of_All_Pins, Dummy_Pin);  
+        
+      return Return_Pin.Pin_Zoom; 
+   end Get_Zoom;  
+            
+   --------------------------------------------------------------------------
+   function Get_All_Pins
+     (Vis_Window : in Visual_Window_Data_Access)
+     return String_Lists.List is
+     
+      The_List     : String_Lists.List;      
+      Pin_Set_Iter : Pin_Sets.Iterator;
+      A_Pin        : Pin;
+     
+   begin
+     
+      if Vis_Window = null then      
+         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+      end if;
+  
+      The_List := String_Lists.Create;       
+      Pin_Set_Iter := Pin_Sets.Make_Iterator;
+        
+      while Pin_Sets.More (Pin_Set_Iter) loop      
+         Pin_Sets.Next (Pin_Set_Iter, A_Pin);              
+         String_Lists.Append (The_List, A_Pin.Pin_Name);               
+      end loop;   
+                
+      Pin_Sets.Destroy (Pin_Set_Iter);
+       
+      return The_List;   
+   end Get_All_Pins;
+   
+   ---------------------------------------------------------------------------  
+   procedure Add_Pin
+     (Vis_Window : in Visual_Window_Data_Access;
+      Name       : in Valid_Names.Standard_Name;
+      Position   : in Vis.Logic.Vector_2d
+      Zoom_Level : in Vis.Zoom_Level) is
+      
+      New_Pin : Pin;
+   begin
+   
+      if Vis_Window = null then      
+         raise Vis_Window_Data_Access_Not_Initialized_Exception;
+      end if;
+      
+      if (Does_Exist (Vis_Window, Pin_Name) = True) then
+         raise Pin_Does_Already_Exist_Exception;
+      end if;
+      
+      New_Pin.Pin_Name : Name;
+      New_Pin.Pin_Pos  : Position;
+      New_Pin.Pin_Zoom : Zoom_Level;
+      
+      Pin_Sets.Insert
+        (Vis_Window.Set_Of_All_Pins, New_Pin);              
+   end Add_Pin;
+      
    ---------------------------------------------------------------------------
    function Remove_Pin_From_Vis_Window
       (Vis_Window : in Visual_Window_Data_Access;
-       Pin_Name   : in Valid_Names.Standard_Name);
+       Pin_Name   : in Valid_Names.Standard_Name) is
+       
+   begin
+   
+   
+   end Remove_Pin_From_Vis_Window;
 
 
    ---------------------------------------------------------------------------

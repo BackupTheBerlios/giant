@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.5 $
+--  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.6 $
 --  $Author: schwiemn $
---  $Date: 2003/06/05 17:15:59 $
+--  $Date: 2003/06/06 16:17:53 $
 --
 --  ----------------
 --  This package realizes a container that administrates the components
@@ -54,75 +54,75 @@ with Giant.Graph_Lib.Selection_Sets; -- from GIANT
 package Giant.Vis_Window_Management is
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!
-   -- Dummy
+   --  Dummy
    type Graph_Widget is Integer;
 
    ---------------------------------------------------------------------------
-   -- The ADT offered by this package.
-   -- A Pointer to a data object that describes a visual window
+   --  The ADT offered by this package.
+   --  A Pointer to a data object that describes a visual window
    type Visual_Window_Data_Access is private;
 
    ---------------------------------------------------------------------------
-   -- This type describes the colors that may be used to highlight all
-   -- selections except the current selection.
+   --  This type describes the colors that may be used to highlight all
+   --  selections except the current selection.
    type Selection_Highlight_Status is (None, Color_1, Color_2, Color_3);
 
   ----------------------------------------------------------------------------
-   -- This exception is raised if a not initialized instance of the
-   -- ADT "Visual_Window_Data_Access" is passed as parameter to one
-   -- of the subprograms in this package.
+   --  This exception is raised if a not initialized instance of the
+   --  ADT "Visual_Window_Data_Access" is passed as parameter to one
+   --  of the subprograms in this package.
    Vis_Window_Data_Access_Not_Initialized_Exception : exception;
 
 
    ---------------------------------------------------------------------------
-   -- A
-   -- Initialisation, Finalisation and Persistence
+   --  A
+   --  Initialisation, Finalisation and Persistence
    ---------------------------------------------------------------------------
 
    ---------------------------------------------------------------------------
-   -- This subprogram initializes the ADT Vis_Window_Data_Access
-   -- by creating a new empty instance of the data model for
-   -- visualisation windows.
+   --  This subprogram initializes the ADT Vis_Window_Data_Access
+   --  by creating a new empty instance of the data model for
+   --  visualisation windows.
    --
-   -- An empty standard selection will be created too, this will also 
-   -- become the current selection.
+   --  An empty standard selection will be created too, this will also 
+   --  become the current selection.
    --
-   -- Parameters:
-   --   Vis_Window_Name - The name of the visualisation window.
-   -- Returns:
-   --   A pointer that points to a new data object describing a
-   --   visualisation window
+   --  Parameters:
+   --    Vis_Window_Name - The name of the visualisation window.
+   --  Returns:
+   --    A pointer that points to a new data object describing a
+   --    visualisation window
    function Create_New
      (Vis_Window_Name     : in Valid_Names.Standard_Name)
      return Vis_Window_Data_Access;
 
    ---------------------------------------------------------------------------
-   -- This subprogram initializes the ADT by creating a new instance
-   -- based on the data read from the stream.
+   --  This subprogram initializes the ADT by creating a new instance
+   --  based on the data read from the stream.
    --
-   -- Uses platform independent streams from Bauhaus_IO;                               
+   --  Uses platform independent streams from Bauhaus_IO;                               
    --
-   -- Parameters:
-   --   Stream - the stream where the data is read.
-   --   Item - the new Instance of the ADT.
+   --  Parameters:
+   --    Stream - the stream where the data is read.
+   --    Item - the new Instance of the ADT.
    procedure Vis_Window_Data_Access_Read
      (Stream : in  Bauhaus_IO.In_Stream_Type;
       Item   : out Vis_Window_Data_Access);
       
    ---------------------------------------------------------------------------
-   -- This subprogram writes the Container including all its components
-   -- into a stream.
+   --  This subprogram writes the Container including all its components
+   --  into a stream.
    --
-   -- Uses platform independent streams from Bauhaus_IO;   
+   --  Uses platform independent streams from Bauhaus_IO;   
    --
-   -- Parameters:
-   --   Stream - the stream into that the data should be written.
-   --   Item - the Instance of the ADT that should be written into
-   --     a stream.
-   -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Vis_Window_Data_Access" is passed
-   --     as parameter.
+   --  Parameters:
+   --    Stream - the stream into that the data should be written.
+   --    Item - the Instance of the ADT that should be written into
+   --      a stream.
+   --  Raises:
+   --    Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
+   --      initialized instance of "Vis_Window_Data_Access" is passed
+   --      as parameter.
    procedure Vis_Window_Data_Access_Write
      (Stream : in Bauhaus_IO.In_Stream_Type;
       Item   : in Vis_Window_Data_Access);
@@ -153,360 +153,383 @@ package Giant.Vis_Window_Management is
      
      
    ---------------------------------------------------------------------------
-   -- B
-   -- General access on Visual_Window_Access
+   --  B
+   --  General access on Visual_Window_Access
    ---------------------------------------------------------------------------     
      
    ---------------------------------------------------------------------------
-   -- Returns the name of a visualisation window.
+   --  Returns the name of a visualisation window.
    --
-   -- Parameters:
-   --   Visual_Window - The instance of the ADT whose name should
-   --     be returned.
-   -- Returns:
-   --   The name of the visualisation window as a unbounded string.
-   -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Vis_Window_Data_Access" is passed
-   --     as parameter.
+   --  Parameters:
+   --    Visual_Window - The instance of the ADT whose name should
+   --      be returned.
+   --  Returns:
+   --    The name of the visualisation window as a unbounded string.
+   --  Raises:
+   --    Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
+   --      initialized instance of "Vis_Window_Data_Access" is passed
+   --      as parameter.
    function Get_Vis_Window_Name
      (Vis_Window : in Visual_Window_Accsess)
      return String;
 
    ---------------------------------------------------------------------------
-   -- Equal function - to instances of the ADT having the
-   -- same name are regarded as equal. This is necessary because of the
-   -- fact, that each visualisation window of a project must have a
-   -- unique name.
+   --  Equal function - to instances of the ADT having the
+   --  same name are regarded as equal. This is necessary because of the
+   --  fact, that each visualisation window of a project must have a
+   --  unique name.
    --
-   -- It is garanted that:
-   -- (Equal (Vis_Window_A, Vis_Window_B) = TRUE) if and only if
-   -- (Get_Vis_Window_Name(Vis_Window_A) = Get_Vis_Window_Name(Vis_Window_B))
+   --  It is garanted that:
+   --  (Equal (Vis_Window_A, Vis_Window_B) = TRUE) if and only if
+   --  (Get_Vis_Window_Name(Vis_Window_A) = Get_Vis_Window_Name(Vis_Window_B))
    --
-   -- Parameters:
-   --   Left : An instance of the ADT.
-   --   Right: An instance of the ADT:
-   -- Returns:
-   --   True, if the two instances are equal; False, otherwise.
-   -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Vis_Window_Data_Access" is passed
-   --     as parameter.
+   --  Parameters:
+   --    Left : An instance of the ADT.
+   --    Right: An instance of the ADT:
+   --  Returns:
+   --    True, if the two instances are equal; False, otherwise.
+   --  Raises:
+   --    Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
+   --      initialized instance of "Vis_Window_Data_Access" is passed
+   --      as parameter.
    function Is_Equal
      (Left  : in Visual_Window_Data_Access;
       Right : in Visual_Window_Data_Access)
      return Boolean;
 
    ---------------------------------------------------------------------------
-   -- A Hash Function for the ADT.
+   --  A Hash Function for the ADT. The Hash Value is calculated based on
+   --  the name of "Vis_Window".
    --
-   -- It is garanted that if
-   --   Equal (Window_A, Window_B)  -> 
-   --     (Get_Hash_Value (Window_A) = Get_Hash_Value (Window_B));
+   --  It is garanted that if
+   --    Equal (Window_A, Window_B)  -> 
+   --      (Get_Hash_Value (Window_A) = Get_Hash_Value (Window_B));
    --
-   -- Parameters:
-   --   Vis_Window : An instance of the ADT for that an hash value should
-   --     be calculated.
-   -- Returns:
-   --   A hash value for "Vis_Window".
-   -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Vis_Window_Data_Access" is passed
-   --     as parameter.
+   --  Parameters:
+   --    Vis_Window : An instance of the ADT for that an hash value should
+   --      be calculated.
+   --  Returns:
+   --    A hash value for "Vis_Window".
+   --  Raises:
+   --    Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
+   --      initialized instance of "Vis_Window_Data_Access" is passed
+   --      as parameter.
    function Get_Hash_Value
      (Vis_Window  : in Visual_Window_Data_Access;
      return Integer;
 
 
    ---------------------------------------------------------------------------
-   -- C
-   -- Management of the Selections that belong to a visualisation window
+   --  C
+   --  Management of the Selections that belong to a visualisation window
    ---------------------------------------------------------------------------
 
    ---------------------------------------------------------------------------
-   -- This exception is raised if a selection with a passed name is not found.
+   --  This exception is raised if a selection with a passed name is not found.
    Selection_With_Passed_Name_Not_Found_Exception : exception;
 
    ---------------------------------------------------------------------------
-   -- This exception is raised if a selection
-   -- (Graph_Lib.Selections.Selection_Access) is not found.
-   Selection_Not_Found_Exception : exception;
-
-   ---------------------------------------------------------------------------
-   -- Each selection must have a unique name - this exception is raised
-   -- if subprogram call will violate this principle.
+   --  Each selection must have a unique name - this exception is raised
+   --  if subprogram call will violate this principle.
    Selection_Is_Already_Part_Of_Window_Exception : exception;
 
    ---------------------------------------------------------------------------
-   -- Raised on trial to remove the standard selection
+   --  Raised on trial to remove the standard selection
    Standard_Selection_May_Not_Be_Removed_Exception : exception;
    
    ---------------------------------------------------------------------------
-   -- Raised on Trial to change the Highlight-Status of a selection if
-   -- that is not allowed.
+   --  Raised on Trial to change the Highlight-Status of a selection if
+   --  that is not allowed.
    Highlight_Status_Of_Selection_May_Not_Be_Changed_Exception : exception;
+     
+   ---------------------------------------------------------------------------
+   --  Raised on attempt to make a selection to current selection that
+   --  is faded out.
+   Illegal_Current_Selection_Exception : exception;
    
    ---------------------------------------------------------------------------
-   -- Raised on attempt to fade out a selection that can not be faded out.
-   Selection_May_Not_Be_Faded_Out_Exception : exception;
-   
-   ---------------------------------------------------------------------------
-   -- Raised on attempt to fade in a selection that is not faded out.
-   Selection_Is_Not_Faded_Out_Exception : exception;
-   
-   ---------------------------------------------------------------------------
-   -- Checks whether the data model vor a visualisation window has a
-   -- selection with the given name.
+   --  Checks whether the data model vor a visualisation window has a
+   --  selection with the given name.
    --
-   -- Parameters:
-   --   Visual_Window - An instance of the ADT.
-   --   Selection_Name - The name of a selection.
-   -- Returns:
-   --   True, if "Vis_Window" has a selection with the given name
-   --   "Selection_Name"; False, otherwise.
-   -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Vis_Window_Data_Access" is passed
-   --     as parameter
+   --  Parameters:
+   --    Visual_Window - An instance of the ADT.
+   --    Selection_Name - The name of a selection.
+   --  Returns:
+   --    True, if "Vis_Window" has a selection with the given name
+   --    "Selection_Name"; False, otherwise.
+   --  Raises:
+   --    Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
+   --      initialized instance of "Vis_Window_Data_Access" is passed
+   --      as parameter.
    function Does_Selection_Exist
      (Vis_Window     : in Visual_Window_Data_Access;
       Selection_Name : in Valid_Names.Standard_Name)
      return Boolean;
 
    ---------------------------------------------------------------------------
-   -- This function returns a selection. 
+   --  This function returns a selection. 
    --
-   -- Note
-   --   As only a pointer to a "selection data object" is returned
-   --   several calls of this function with the same parameters will
-   --   cause aliases.
+   --  Note
+   --    As only a pointer to a "selection data object" is returned
+   --    several calls of this function with the same parameters will
+   --    cause aliases.
    --
-   --   You may NOT DEALLOCATE the returned Selection
-   --   before it is removed from the Visualisation Window
-   --   by calling "Remove_Selection_From_Vis_Window".
+   --    You may NOT DEALLOCATE the returned Selection
+   --    before it is removed from the Visualisation Window
+   --    by calling "Remove_Selection_From_Vis_Window".
    --
-   -- Parameters:
-   --   Vis_Window - The "model" for visual window to that the selection
-   --     belongs.
-   --   Selection_Name - The name of the searched selection.
-   -- Returns:
-   --   The selection with the given name.
-   -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Vis_Window_Data_Access" is passed
-   --     as parameter.
-   --   Selection_With_Passed_Name_Not_Found_Exception - Raise if
-   --     "Vis_Window" has no selection with the name "Selection_Name".
+   --  Parameters:
+   --    Vis_Window - The "model" for visual window to that the selection
+   --      belongs.
+   --    Selection_Name - The name of the searched selection.
+   --  Returns:
+   --    The selection with the given name.
+   --  Raises:
+   --    Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
+   --      initialized instance of "Vis_Window_Data_Access" is passed
+   --      as parameter.
+   --    Selection_With_Passed_Name_Not_Found_Exception - Raised if
+   --      "Vis_Window" has no selection with the name "Selection_Name".
    function Get_Selection
      (Vis_Window     : in Visual_Window_Access;
       Selection_Name : in Valid_Names.Standard_Name)
      return Graph_Lib.Selections.Selection_Access;
 
    ---------------------------------------------------------------------------
-   -- Returns a list (not sorted in any way) holding the names
-   -- of a all selections that belong to "Vis_Window".
-   -- The standard selection is the first selection in this list.
+   --  Returns a list (not sorted in any way) holding the names
+   --  of a all selections that belong to "Vis_Window".
+   --  The standard selection is the first selection in this list.
    --
-   -- Parameters:
-   --   Vis_Window - The "model" for a visualisation window.
-   -- Returns:
-   --   A list holding the names of all known selctions.
-   -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Vis_Window_Data_Access" is passed
-   --     as parameter.
+   --  Parameters:
+   --    Vis_Window - The "model" for a visualisation window.
+   --  Returns:
+   --    A list holding the names of all known selctions.
+   --  Raises:
+   --    Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
+   --      initialized instance of "Vis_Window_Data_Access" is passed
+   --      as parameter.
    function Get_All_Selections
      (Vis_Window : in Visual_Window_Data_Access)
      return String_Lists.List;
 
    ---------------------------------------------------------------------------
-   -- Adds a Selection to the visualisation window.
+   --  Adds a Selection to the visualisation window.
    --
-   -- Parameters:
-   --   Vis_Window - The "model" for visual window.
-   --   Selection  - The selection that should be added.
-   -- Returns:
-   --   A list about all selections.
-   -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Vis_Window_Data_Access" is passed
-   --     as parameter.
-   --   Selection_Is_Already_Part_Of_Window_Exception - Raised if there
-   --     is already a selection with the same name in "Vis_Window".
-   function Add_Selection
+   --  The passed Selection Selection "Selection" must be initialized
+   --  else the bahaviour of this procedure us not defined.
+   --
+   --  The added selection is regarded as:
+   --    - not as the current selection
+   --    - not as the standard selection
+   --    - not as faded out
+   --    - not as highlighted.
+   --
+   --  Parameters:
+   --    Vis_Window - The "model" for visual window.
+   --    Selection  - The selection that should be added.
+   --  Returns:
+   --    A list about all selections.
+   --  Raises:
+   --    Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
+   --      initialized instance of "Vis_Window_Data_Access" is passed
+   --      as parameter.
+   --    Selection_Is_Already_Part_Of_Window_Exception - Raised if there
+   --      is already a selection with the same name in "Vis_Window".
+   procedure Add_Selection
      (Vis_Window : in Visual_Window_Data_Access;
-      Selection  : in Graph_Lib.Selections.Selection_Access);
+      Selection  : in Graph_Lib.Selections.Selection);
 
    ---------------------------------------------------------------------------
-   -- Removes a selection.
-   -- Selection is only removed from the visualisation window
-   -- NO DEALLOCATION is done for the selection.
-   -- After the call of that subprogram a selection may be deallocated
-   -- without affecting the ADT Vis_Window.
+   --  Removes a selection with the passed name.
    --
-   -- The Standard Selection may not be removed.
-   -- If the Current Selection is removed, the standard selection will
-   -- become the current selection.
+   --  The Selection is only removed from the visualisation window
+   --  NO DEALLOCATION is done for the selection.
+   --  After the call of that subprogram a selection may be deallocated
+   --  without affecting the ADT Vis_Window.
    --
-   -- Parameters:
-   --   Vis_Window - The "model" for a visualisation window.
-   --   Selection_Name  - The name of the selection that should be removed.
-   -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Vis_Window_Data_Access" is passed
-   --     as parameter.
-   --   Selection_With_Passed_Name_Not_Found_Exception - Raise if
-   --     "Vis_Window" has no selection with the name "Selection_Name".
-   --   Standard_Selection_May_Not_Be_Removed_Exception - Raised on Trail
-   --     to remove the standard selection.
-   --   Selection_With_Passed_Name_Not_Found_Exception - Raised if a
-   --     selection with the name "Selection_Name" is not part of 
-   --     "Visual_Window_Data_Access".
-   function Remove_Selection_From_Vis_Window
+   --  The Standard Selection may not be removed.
+   --  If the Current Selection is removed, the standard selection will
+   --  become the current selection.
+   --
+   --  Parameters:
+   --    Vis_Window - The "model" for a visualisation window.
+   --    Selection_Name  - The name of the selection that should be removed.
+   --  Raises:
+   --    Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
+   --      initialized instance of "Vis_Window_Data_Access" is passed
+   --      as parameter.
+   --    Selection_With_Passed_Name_Not_Found_Exception - Raised if
+   --      "Vis_Window" has no selection with the name "Selection_Name".
+   --    Standard_Selection_May_Not_Be_Removed_Exception - Raised on Trail
+   --      to remove the standard selection.
+   --    Selection_With_Passed_Name_Not_Found_Exception - Raised if a
+   --      selection with the name "Selection_Name" is not part of 
+   --      "Visual_Window_Data_Access".
+   procedure Remove_Selection_From_Vis_Window
       (Vis_Window     : in Visual_Window_Data_Access;
        Selection_Name : in Valid_Names.Standard_Name);
 
    ---------------------------------------------------------------------------
-   -- Returns the name of the current selection.
-   -- There is always a current selection.
+   --  Returns the name of the current selection.
+   --  There is always a current selection.
    --
-   -- Parameters:
-   --   Vis_Window - The "model" for a visualisation window whose current
-   --     selection should be returned.
-   -- Returns:
-   --   The name of the current seclection.
-   -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Vis_Window_Data_Access" is passed
-   --     as parameter.
+   --  Parameters:
+   --    Vis_Window - The "model" for a visualisation window whose current
+   --      selection should be returned.
+   --  Returns:
+   --    The name of the current seclection.
+   --  Raises:
+   --    Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
+   --      initialized instance of "Vis_Window_Data_Access" is passed
+   --      as parameter.
    function Get_Current_Selection
      (Vis_Window : in Visual_Window_Data_Access)
      return String;
 
    ---------------------------------------------------------------------------
-   -- Sets the current selection.
-   -- The old current Selection will loose the status "current selection"
+   --  Sets the current selection.
+   --  The old current Selection will loose the status "current selection"
    --
-   -- Parameters:
-   --   Vis_Window - The "model" for a visualisation window whose current
-   --     selection should be changed.
-   --   Selection_Name  - The selection that should be the new current selection.
-   -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Vis_Window_Data_Access" is passed
-   --     as parameter.
-   --   Selection_With_Passed_Name_Not_Found_Exception - Raised if a
-   --     selection with the name "Selection_Name" is not part of 
-   --     "Visual_Window_Data_Access"
+   --  Parameters:
+   --    Vis_Window - The "model" for a visualisation window whose current
+   --      selection should be changed.
+   --    Selection_Name  - The name of the selection 
+   --      that should become the new current selection.
+   --  Raises:
+   --    Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
+   --      initialized instance of "Vis_Window_Data_Access" is passed
+   --      as parameter.
+   --    Selection_With_Passed_Name_Not_Found_Exception - Raised if a
+   --      selection with the name "Selection_Name" is not part of 
+   --      "Visual_Window_Data_Access".
+   --    Illegal_Current_Selection_Exception - Raised if a selection
+   --      that is faded out should be made to the current selection.
    procedure Set_Current_Selection
      (Vis_Window     : in Visual_Window_Accsess;
       Selection_Name : in Valid_Names.Standard_Name);
 
    ---------------------------------------------------------------------------
-   -- Returns the standard selection.
-   -- There is always a standard selection.
+   --  Returns the name of the standard selection.
+   --  There is always a standard selection.
    --
-   -- Parameters:
-   --   Vis_Window - The "model" for a visualisation window whose standard
-   --     selection should be returned.
-   -- Returns:
-   --   The standard selection.
-   -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Vis_Window_Data_Access" is passed
-   --     as parameter.
+   --  Parameters:
+   --    Vis_Window - The "model" for a visualisation window whose standard
+   --      selection should be returned.
+   --  Returns:
+   --    The name of the standard selection.
+   --  Raises:
+   --    Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
+   --      initialized instance of "Vis_Window_Data_Access" is passed
+   --      as parameter.
    function Get_Standard_Selection
      (Vis_Window : in Visual_Window_Data_Access)
      return Graph_Lib.Selections.Selection_Access;
 
    ---------------------------------------------------------------------------
-   -- Returns the Highlight-Status of a selection.
+   --  Returns the Highlight-Status of a selection.
    --
-   -- Parameters:
-   --   Vis_Window - The "model" for a visualisation window.
-   --   Selection_Name - The name of the selection 
-   --     whose "Highlight-Status" is returned.
-   -- Returns:
-   --   The highlight status.
-   -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Vis_Window_Data_Access" is passed
-   --     as parameter.
-   --   Selection_With_Passed_Name_Not_Found_Exception - Raised if a
-   --     selection with the name "Selection_Name" is not part of 
-   --     "Visual_Window_Data_Access"
-   function Get_Highlight_Status_Of_Selection
-     (Vis_Window : in Visual_Window_Accsess;
+   --  Parameters:
+   --    Vis_Window - The "model" for a visualisation window.
+   --    Selection_Name - The name of the selection 
+   --      whose "Highlight-Status" should be returned.
+   --  Returns:
+   --    The highlight status.
+   --  Raises:
+   --    Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
+   --      initialized instance of "Vis_Window_Data_Access" is passed
+   --      as parameter.
+   --    Selection_With_Passed_Name_Not_Found_Exception - Raised if a
+   --      selection with the name "Selection_Name" is not part of 
+   --      "Visual_Window_Data_Access"
+   function Get_Highlight_Status
+     (Vis_Window     : in Visual_Window_Access;
       Selection_Name : in Valid_Names.Standard_Name);
      return Highlight_Status;
 
    ---------------------------------------------------------------------------
-   -- Determines whether the "Highlight-Status" of a selection may be changed.
-   -- This is necessary as you are not allowed to change the highlight status
-   -- of the current selection.
+   --  Determines whether the "Highlight-Status" of a selection may be 
+   --  changed.
+   --  This is necessary as you are not allowed to change the highlight status
+   --  of the current selection.
    --
-   -- Parameters:   
-   --   Vis_Window - The "model" for a visualisation window.
-   --   Selection - The selection whose "Highlight-Status" should be
-   --     changed.
-   -- Returns: 
-   --   True, if the "Highlight-Status" may be changed; False, otherwise.
-   -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Vis_Window_Data_Access" is passed
-   --     as parameter.
-   --   Selection_Not_Found_Exceptionv - Raised if the passed selection
-   --     is not part of "Vis_Window".
-   function May_Selection_Highlight_Status_Be_Changed
-     (Vis_Window           : in Visual_Window_Accsess;
-      Selection            : in Graph_Lib.Selections.Selection_Access); 
+   --  Parameters:   
+   --    Vis_Window - The "model" for a visualisation window.
+   --    Selection_Name - The name of the selection whose 
+   --      "Highlight-Status" should be changed.
+   --  Returns: 
+   --    True, if the "Highlight-Status" may be changed; False, otherwise.
+   --  Raises:
+   --    Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
+   --      initialized instance of "Vis_Window_Data_Access" is passed
+   --      as parameter.
+   --    Selection_With_Passed_Name_Not_Found_Exception - Raised if a
+   --      selection with the name "Selection_Name" is not part of 
+   --      "Visual_Window_Data_Access"
+   function May_Highlight_Status_Be_Changed
+     (Vis_Window     : in Visual_Window_Access;
+      Selection_Name : in Valid_Names.Standard_Name); 
      return Boolean;
 
    ---------------------------------------------------------------------------
-   -- Changes the "Higlight-Status" of a selection.
+   --  Changes the "Higlight-Status" of a selection.
    --
-   -- Parameters:
-   --   Vis_Window - The "model" for a visualisation window.
-   --   Selection - The selection whose "Highlight-Status" is
-   --     changed.
-   --   New_Highlight_Status - The new Highlight-Status for the "Selection".
-   -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Vis_Window_Data_Access" is passed
-   --     as parameter.
-   --   Selection_Not_Found_Exceptionv - Raised if the passed selection
-   --     is not part of "Vis_Window".
-   --   Highlight_Status_Of_Selection_May_Not_Be_Changed_Exception - raised
-   --     if it is not allowed to change the Highlight-Status of
-   --     "Selection".   
-   procedure Set_Highlight_Color_Of_Selection
+   --  Parameters:
+   --    Vis_Window - The "model" for a visualisation window.
+   --    Selection_Name - The name of the selection whose "Highlight-Status" 
+   --      is changed.
+   --    New_Highlight_Status - The new Highlight-Status for the "Selection".
+   --  Raises:
+   --    Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
+   --      initialized instance of "Vis_Window_Data_Access" is passed
+   --      as parameter.
+   --    Selection_With_Passed_Name_Not_Found_Exception - Raised if a
+   --      selection with the name "Selection_Name" is not part of 
+   --      "Visual_Window_Data_Access"
+   --    Highlight_Status_Of_Selection_May_Not_Be_Changed_Exception - raised
+   --      if it is not allowed to change the Highlight-Status of
+   --      "Selection".   
+   procedure Set_Highlight_Status
      (Vis_Window           : in Visual_Window_Accsess;
-      Selection            : in Graph_Lib.Selections.Selection_Access;
+      Selection_Name       : in Valid_Names.Standard_Name;
       New_Highlight_Status : in Highlight_Status);
 
 
-   --------------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    -- D
    -- Filters
-   --------------------------------------------------------------------------
+   ---------------------------------------------------------------------------
+         
+   ---------------------------------------------------------------------------
+   --  Raised on attempt to fade out a selection that can not be faded out.
+   Selection_May_Not_Be_Faded_Out_Exception : exception;
    
-   --------------------------------------------------------------------------
-   -- Determines whether it is possible to fade out a selection.
+   ---------------------------------------------------------------------------
+   --  Raised on attemot to fade in a selection that is not faded out.
+   Selection_Is_Not_Faded_Out_Exception : exception:
+   
+   ---------------------------------------------------------------------------
+   --  Determines whether it is possible to fade out a selection
+   --  (for further information see GIANT Spec 
+   --  "7.1. UC: Selektionen ausblenden").
    --
-   -- Parameters:
-   --   Vis_Window - The "model" for a visualisation window.
-   --   Selection - A selection.
-   -- Returns:
-   --   True, if the selection may be faded out; False, otherwise.
-   -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Vis_Window_Data_Access" is passed
-   --     as parameter.
-   --   Selection_Not_Found_Exceptionv - Raised if the passed selection
-   --     is not part of "Vis_Window".
-   function  May_Selection_Be_Faded_Out
-     (Vis_Window : in Visual_Window_Accsess;
-      Selection  : in Graph_Lib.Selections.Selection_Access)
+   --  The current selection and the standard selection may not be faded 
+   --  out.
+   --
+   --  Parameters:
+   --    Vis_Window - The "model" for a visualisation window.
+   --    Selection_Name - The name of a selection.
+   --  Returns:
+   --    True, if the selection may be faded out; False, otherwise.
+   --  Raises:
+   --    Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
+   --      initialized instance of "Vis_Window_Data_Access" is passed
+   --      as parameter.
+   --    Selection_With_Passed_Name_Not_Found_Exception - Raised if a
+   --      selection with the name "Selection_Name" is not part of 
+   --      "Visual_Window_Data_Access"
+   function May_Be_Faded_Out
+     (Vis_Window     : in Visual_Window_Accsess;
+      Selection_Name : in Valid_Names.Standard_Name)
      return Boolean;
 
    --------------------------------------------------------------------------
@@ -514,55 +537,63 @@ package Giant.Vis_Window_Management is
    --
    -- Parameters:
    --   Vis_Window - The "model" for a visualisation window.
-   --   Selection - A selection.
+   --   Selection_Name - The name of a selection.
    -- Returns:
    --   True, if the selection is faded out; False, otherwise. 
    -- Raises:
    --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
-   --   Selection_Not_Found_Exception - Raised if the passed selection
-   --     is not part of "Vis_Window".
-   function Is_Selection_Faded_Out
-     (Vis_Window : in Visual_Window_Accsess;
-      Selection  : in Graph_Lib.Selections.Selection_Access)
+   --   Selection_With_Passed_Name_Not_Found_Exception - Raised if a
+   --     selection with the name "Selection_Name" is not part of 
+   --     "Visual_Window_Data_Access"
+   function Is_Faded_Out
+     (Vis_Window     : in Visual_Window_Accsess;
+      Selection_Name : in Valid_Names.Standard_Name)
      return Boolean;
 
    --------------------------------------------------------------------------
-   -- Fades a selection out.
+   --  Fades a selection out.
    --
-   -- Parameters:
-   --   Vis_Window - The "model" for a visualisation window.
-   --   Selection - A selection.
-   -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
-   --     initialized instance of "Vis_Window_Data_Access" is passed
-   --     as parameter.
-   --   Selection_Not_Found_Exception - Raised if the passed selection
-   --     is not part of "Vis_Window".
-   --  Selection_May_Not_Be_Faded_Out_Exception - Raised if "Selection"
-   --    may not be faded out.
+   --  You are not allowed to fade out the current selection and
+   --  the standard selection.
+   --
+   --  Parameters:
+   --    Vis_Window - The "model" for a visualisation window.
+   --    Selection_Name - The name of the selection that should be
+   --      faded out.
+   --  Raises:
+   --    Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
+   --      initialized instance of "Vis_Window_Data_Access" is passed
+   --      as parameter.
+   --    Selection_With_Passed_Name_Not_Found_Exception - Raised if a
+   --      selection with the name "Selection_Name" is not part of 
+   --      "Visual_Window_Data_Access"
+   --    Selection_May_Not_Be_Faded_Out_Exception - Raised if the Selection
+   --     may not be faded out.
    procedure Fade_Out_Selection
-     (Vis_Window : in Visual_Window_Accsess;
-      Selection  : in Graph_Lib.Selections.Selection_Access));
+     (Vis_Window     : in Visual_Window_Accsess;
+      Selection_Name : in Valid_Names.Standard_Name);
 
    --------------------------------------------------------------------------
    -- Fades in a selection (only selections that are currently faded out).
    --
    -- Parameters:
    --   Vis_Window - The "model" for a visualisation window.
-   --   Selection - A selection.
+   --   Selection_Name - The name of the selection that should be
+   --     faded in.
    -- Raises:
    --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
-   --   Selection_Not_Found_Exception - Raised if the passed selection
-   --     is not part of "Vis_Window".
-   --   Selection_Is_Not_Faded_Out_Exception - Raised if "Selection" is
+   --   Selection_With_Passed_Name_Not_Found_Exception - Raised if a
+   --     selection with the name "Selection_Name" is not part of 
+   --     "Visual_Window_Data_Access".
+   --   Selection_Is_Not_Faded_Out_Exception - Raised if the Selection is
    --     currently not faded out.
    procedure Fade_In_Selection
-     (Vis_Window : in Visual_Window_Accsess;
-      Selection  : in Graph_Lib.Selections.Selection_Access));
+     (Vis_Window     : in Visual_Window_Accsess;
+      Selection_Name : in Valid_Names.Standard_Name);
 
 
    --------------------------------------------------------------------------
@@ -580,7 +611,7 @@ package Giant.Vis_Window_Management is
    Pin_Does_Already_Exist_Exception : exception;
 
    --------------------------------------------------------------------------
-   -- Determines whether a Pin with the given name exists.
+   -- Determines whether a Pin with the passed name exists.
    --
    -- Parameters:
    --   Vis_Window - The "model" for a visualisation window.
@@ -591,19 +622,20 @@ package Giant.Vis_Window_Management is
    --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
-   function Does_Pin_Exist
+   function Does_Exist
      (Vis_Window : in Visual_Window_Data_Access;
       Pin_Name   : in Valid_Names.Standard_Name)
      return Boolean;
 
    --------------------------------------------------------------------------
-   -- Returns a Pin.
+   -- Returns the data describing the position of the visible window
+   -- content.
    --
    -- Parameters:
    --   Vis_Window - The "model" for a visualisation window.
    --   Pin_Name - The name of a pin.
    -- Returns:
-   --   The Data for the position of the visual window content
+   --   The data for the position of the visual window content
    --   stored in a pin.
    -- Raises
    --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
@@ -611,14 +643,30 @@ package Giant.Vis_Window_Management is
    --     as parameter.
    --   Pin_With_Passed_Name_Not_Found_Exception - Raised if the
    --     pin "Pin_Name" is not found.
-   function Get_Pin_Data
+   function Get_Position
      (Vis_Window : in Visual_Window_Data_Access;
       Pin_Name   : in Valid_Names.Standard_Name)
-     return Vector;
-    
-    
-   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   Vektortyp von Steffen K.
+     return Vis.Logic.Vector_2d;
+
+   --------------------------------------------------------------------------
+   -- Returns the data describing the zoom level of the visible window
+   -- content.
+   --
+   -- Parameters:
+   --   Vis_Window - The "model" for a visualisation window.
+   --   Pin_Name - The name of a pin.
+   -- Returns:
+   --   A variable describing the zoomlevel stored in the pin.
+   -- Raises
+   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
+   --     initialized instance of "Vis_Window_Data_Access" is passed
+   --     as parameter.
+   --   Pin_With_Passed_Name_Not_Found_Exception - Raised if the
+   --     pin "Pin_Name" is not found.
+   function Get_Zoom
+     (Vis_Window : in Visual_Window_Data_Access;
+      Pin_Name   : in Valid_Names.Standard_Name)
+     return Vis.Zoom_Level;
      
    --------------------------------------------------------------------------
    --  Returns all Pins of a visualisation window.
@@ -626,13 +674,12 @@ package Giant.Vis_Window_Management is
    --  Parameters:
    --    Vis_Window - The "model" for a visualisation window.
    --  Returns:
-   --    The names of all pins sorted in ascending alphabetical
-   --    order.
+   --    The names of all pins. The list is not sorted in any way.
    --  Raises:
    --    Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
-   function Get_All_Pin_Names_Sorted
+   function Get_All_Pins
      (Vis_Window : in Visual_Window_Data_Access)
      return String_Lists.List;
      
@@ -641,22 +688,23 @@ package Giant.Vis_Window_Management is
    --  
    -- Parameters:
    --   Vis_Window - The "model" for a visualisation window.
-   --   Pin_Name - The name of the new pin.
-   --   Pin_Data - The data describing the new pin.
+   --   Name - The name of the new pin.
+   --   Position - The data describing the position a visible window
+   --     content
+   --   Zoom_Level - The data describing the zoom level of a visible
+   --     window content.   
    -- Raises:
    --   Vis_Window_Data_Access_Not_Initialized - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
    --   Pin_Does_Already_Exist_Exception - raised if "Pin_Name" does
    --     already exist.
-   function Add_Pin
+   procedure Add_Pin
      (Vis_Window : in Visual_Window_Data_Access;
-      Pin_Name   : in Valid_Names.Standard_Name;
-      Pin_Data   : in Vector);
+      Name       : in Valid_Names.Standard_Name;
+      Position   : in Vis.Logic.Vector_2d
+      Zoom_Level : in Vis.Zoom_Level);
       
-   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   Vektortyp von Steffen K.
-
    ---------------------------------------------------------------------------
    -- Removes a pin from a visualisation window.
    --
@@ -733,12 +781,14 @@ private
    ---------------------------------------------------------------------------
    type Pin is record
      Pin_Name : Ada.Strings.Unbounded_String;
-     Pin_Data : Vis.Logic.Vector_2d;
+     Pin_Pos  : Vis.Logic.Vector_2d;
+     Pin_Zoom : Vis.Zoom_Level;
    end record
    
-   
+   -- pins are only compared based on "Pin_Name"
    Pin_Equal (Left : in Pin; Right : in Pin) return Boolean;
    
+   -- pins are only compared based on "Pin_Name"
    Pin_Less_Than (Left : in Pin; Right : in Pin) return Boolean;
    
    package Pin_Sets is new
@@ -754,8 +804,6 @@ private
      The_Selection : Graph_Lib.Selections.Selection;
      Selection_Highlight_Status : Highlight_Status;
      Is_Faded_Out : boolean;
-     Is_Current_Selection : boolean;
-     Is_Standard_Selection : boolean;
    end record;
 
    function Selection_Data_Equal
