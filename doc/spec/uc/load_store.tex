@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: load_store.tex,v $, $Revision: 1.15 $
-%  $Date: 2003/04/05 11:08:45 $
+%  $RCSfile: load_store.tex,v $, $Revision: 1.16 $
+%  $Date: 2003/04/05 12:41:57 $
 %  $Author: squig $
 %
 %  Description: UseCases für Lade- und Speicherfunktionalität
@@ -37,7 +37,7 @@
     \cond Die Projektdatei (siehe \ref{Project Die Projektdatei})
           liegt im Projektverzeichnis.
  
-    \cond Ein zuvor geöffnetes Projekt ist geschlossen.
+    \cond Ein eventuell zuvor geöffnetes Projekt ist geschlossen.
     
     \cond Änderungen an einem zuvor geöffneten Projekt sind gespeichert
           oder verworfen.
@@ -113,7 +113,7 @@
   \begin{postsuccess}
     \cond Das gewünschte GIANT Projekt ist geladen.
     \cond Die zugehörige IML-Datei ist geladen.
-    \cond Änderungen an einem bisherigen Projekt sind gespeichert
+    \cond Änderungen an einem zuvor geöffneten Projekt sind gespeichert
     oder verworfen.
   \end{postsuccess}
 
@@ -124,7 +124,7 @@
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase über das Hauptmenü. 
-    (\ref{Main-Window-File} Menü) \gq{Load Project}
+    (siehe \ref{Main-Window-File} Menü) \gq{Load Project}
     
     \step[2] 
     Der Benutzer wählt aus dem Standard-Filechooser-Dialog (siehe 

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: selection.tex,v $, $Revision: 1.15 $
-%  $Date: 2003/04/05 11:08:45 $
+%  $RCSfile: selection.tex,v $, $Revision: 1.16 $
+%  $Date: 2003/04/05 12:41:57 $
 %  $Author: squig $
 %
 %  Description: UseCases für die Selektionen
@@ -44,34 +44,38 @@ modifiziert werden kann (siehe auch \ref{Aktuelle Selektion vs Selektionen}).
 
 
 % ==============================================================================
-\begin{uc}[Aktuelle Selektion zurück stufen]
-          {UC: Aktuelle Selektion zurück stufen}
+% \begin{uc}[Aktuelle Selektion zurück stufen]
+%           {UC: Aktuelle Selektion zurück stufen}
+
+%
+% Gestrichen nach Beschluss vom Meeting am 2003-04-04.
+%
           
-Mit diesem UseCase kann
-eine aktuelle Selektion auf den Status einer \gq{normalen} Selektion
-zurückgestuft werden (siehe auch \ref{Aktuelle Selektion vs Selektionen}). 
+% Mit diesem UseCase kann
+% eine aktuelle Selektion auf den Status einer \gq{normalen} Selektion
+% zurückgestuft werden (siehe auch \ref{Aktuelle Selektion vs Selektionen}). 
          
-  \begin{precond}
-    \cond Es gibt ein Anzeigefenster mit einer aktuellen Selektion.
-  \end{precond}
+%   \begin{precond}
+%     \cond Es gibt ein Anzeigefenster mit einer aktuellen Selektion.
+%   \end{precond}
 
-  \begin{postsuccess}
-    \cond Es gibt keine aktuelle Selektion mehr.
+%   \begin{postsuccess}
+%     \cond Es gibt keine aktuelle Selektion mehr.
     
-  \end{postsuccess}
+%   \end{postsuccess}
  
-  \begin{proc}    
-    \step[1]
-    Der Benutzer führt mit der linken Maustaste einen Doppelklick 
-    auf die aktuelle Selektion in der Selektionsauswahlliste
-    (siehe \ref{Selektionsauswahlliste}) durch..
+%   \begin{proc}    
+%     \step[1]
+%     Der Benutzer führt mit der linken Maustaste einen Doppelklick 
+%     auf die aktuelle Selektion in der Selektionsauswahlliste
+%     (siehe \ref{Selektionsauswahlliste}) durch..
 
-    \step[2]
-    GIANT stuft die aktuelle Selektion auf den Status einer \gq{normalen}
-    Selektion zurück.
-  \end{proc}
+%     \step[2]
+%     GIANT stuft die aktuelle Selektion auf den Status einer \gq{normalen}
+%     Selektion zurück.
+%   \end{proc}
     
-\end{uc}
+% \end{uc}
 
 
 % ==============================================================================
@@ -178,7 +182,7 @@ Mit diesem UseCase können neue, leere Selektionen angelegt werden.
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase mit Rechtsklick auf die
-    Selektionsauswahlliste (siehe \ref{Selektionsauswahlliste}
+    Selektionsauswahlliste (siehe \ref{Selektionsauswahlliste})
     und wählt im Popup-Menü den Eintrag
     \gq{New Selection} aus.
     
@@ -190,7 +194,7 @@ Mit diesem UseCase können neue, leere Selektionen angelegt werden.
     Der Benutzer gibt dort einen zulässigen Namen für die neue Selektion 
     ein und bestätigt mit OK (siehe \ref{afa Zulaessige Namen}). \\
     Hat bereits eine andere Selektion innerhalb des Anzeigefensters den selben
-    Namen erscheint eine Fehlermeldung.
+    Namen, erscheint eine Fehlermeldung.
     
     \step[4]
     GIANT erzeugt die neue Selektion.
@@ -207,7 +211,7 @@ Mit diesem UseCase können neue, leere Selektionen angelegt werden.
 %===============================================================================
 \begin{uc}[Selektion kopieren]{UC: Selektion kopieren}
 Dieser UseCase dient zum Kopieren von Selektionen innerhalb eines 
-Anzeigefensters (nicht zum Kopieren in ein anderes Anzeigefenster).
+Anzeigefensters.
 
   \begin{precond}
     \cond Es gibt ein geöffnetes Anzeigefenster mit einer Selektion.
@@ -231,7 +235,7 @@ Anzeigefensters (nicht zum Kopieren in ein anderes Anzeigefenster).
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase durch Rechtsklick auf die zu kopierende
-    Selektion in der Selektionsauswahlliste (\ref{Selektionsauswahlliste})
+    Selektion in der Selektionsauswahlliste (siehe \ref{Selektionsauswahlliste})
     und wählt aus dem Popup-Menü den Eintrag \gq{Copy Selection}.
     
     \step[2] 
@@ -290,8 +294,9 @@ unverändert.
     \step[1]
     Der Benutzer startet den UseCase durch Rechtsklick auf die zu löschende
     Selektion in der Selektionsauswahlliste \ref{Selektionsauswahlliste}
-    und wählt aus dem Popup-Menü den Eintrag \gq{Delete Selection} aus.
-
+    und wählt aus dem Popup-Menü den Eintrag \gq{Delete Selection}
+    aus. Falls der Benutzer die Standard-Selektion ausgewählt hat ist
+    der Eintrag \gq{Delete Selection} deaktiviert.
       
     \step[2]
     GIANT löscht die entsprechende Selektion.
@@ -381,13 +386,11 @@ Leitet eine Selektion aus einem IML-Teilgraphen ab
     den Eintrag \gq{Create Window Selection from IML Subgraph} aus.
      
     \step[2]
-    GIANT zeigt den allgemeinen Texteingabedialog \ref{DIALOG-WINDOW}.
+    GIANT zeigt den allgemeinen Texteingabedialog (siehe \ref{DIALOG-WINDOW}).
             
-    \step[3]
-    Der Benutzer gibt einen Namen für die neu zu erstellende Selektion ein
-    und bestätigt mit OK (gültige Namen siehe \ref{afa Zulaessige Namen}).
-    Gibt der Benutzer hier keinen Namen ein, so vergibt GIANT automatisch 
-    einen Namen.
+    \step[3] Der Benutzer gibt einen Namen (siehe auch \ref{afa
+      Zulaessige Namen}) für die neu zu erstellende Selektion ein und
+    bestätigt mit OK.
     
     \step[4]
     Die Statuszeile im Hauptfenster zeigt an \gq{Please select window for

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: additional.tex,v $, $Revision: 1.11 $
-%  $Date: 2003/04/05 11:08:45 $
+%  $RCSfile: additional.tex,v $, $Revision: 1.12 $
+%  $Date: 2003/04/05 12:41:57 $
 %  $Author: squig $
 %
 %  Description: Sonstige UseCases
@@ -45,14 +45,12 @@ Die verfügbaren Layoutalgorithmen sind im Kapitel
   \end{postfail}
   
   \begin{proc}
-
-    \step[1]
-    Der Benutzer wählt aus der
-    Selektionsauswahlliste (SELECTION\_LIST -- siehe 
+    
+    \step[1] Der Benutzer wählt aus der Selektionsauswahlliste (siehe
     \ref{Selektionsauswahlliste}) die Selektion aus, deren
-    Fenster-Knoten layoutet werden sollen. Hierzu führt er
-    einen Rechtsklick auf die Selektion durch und wählt im
-    Popup-Menü den Eintrag \gq{Layout Selection} aus.
+    Fenster-Knoten layoutet werden sollen. Hierzu führt er einen
+    Rechtsklick auf die Selektion durch und wählt im Popup-Menü den
+    Eintrag \gq{Layout Selection} aus.
 
     \step[2]
     GIANT zeigt einen Dialog zur Auswahl und Konfiguration des
@@ -73,9 +71,9 @@ Die verfügbaren Layoutalgorithmen sind im Kapitel
     Der Benutzer bestätigt seine Eingaben mit OK.
 
     \step[6]
-    GIANT berechnet das Layout und zeigt einen Progressbar (\ref{Progressbar-Modale}) an. 
-    Während der Berechnung des Layouts kann der Benutzer keinerlei
-    Aktionen durchführen (GUI von GIANT ist gesperrt).
+    GIANT berechnet das Layout und zeigt einen Progress-Dialog (siehe \ref{Progressbar-Modale}) an. 
+    Während der Berechnung des Layouts ist die GUI mit Ausnahme des
+    Progress-Dialogs gesperrt.
          
   \end{proc}
 
@@ -83,10 +81,9 @@ Die verfügbaren Layoutalgorithmen sind im Kapitel
     \astep{3} Der Benutzer bricht die Verarbeitung mit Cancel ab.  
     \astep{4} Der Benutzer bricht die Verarbeitung mit Cancel ab.
 
-    \astep{6} Der Benutzer kann die Berechnung eines Layouts jederzeit durch
-    Drücken des \gq{Cancel Buttons} (\ref{Progressbar-Modale-Cancel}) auf dem Progressbar abbrechen.
+    \astep{6} Der Benutzer kann die Berechnung eines Layouts jederzeit mit
+    Cancel (siehe \ref{Progressbar-Modale-Cancel}) abbrechen.
   \end{aproc}
-
 
 \end{uc}
 
@@ -114,6 +111,9 @@ kann der Benutzer beliebig viele Knoten-Informationsfenster
 
   \end{postsuccess}
 
+  \begin{postfail}
+    \cond Das System bleibt im bisherigen Zustand.      
+  \end{postfail}
   
   \begin{proc}    
 
@@ -130,6 +130,10 @@ kann der Benutzer beliebig viele Knoten-Informationsfenster
     Verfügbaren Informationen zu dem IML-Knoten an.
     
   \end{proc}
+
+  \begin{aproc}
+    \astep{3} Der Benutzer bricht die Verarbeitung mit einem Rechtsklick ab.  
+  \end{aproc}
 
 \end{uc}
 
@@ -227,7 +231,7 @@ Quellcode innerhalb eines Editors zur Anzeige gebracht werden.
 
     \step[2]
     GIANT öffnet die Quellcode Datei für den IML-Knoten in
-    einem Editor (z.B. vi oder Emacs) und hebt den zum IML-Knoten
+    einem Editor und hebt den zum IML-Knoten
     korrespondierenden Text hervor.
     
   \end{proc}
@@ -268,7 +272,7 @@ den sichtbaren Anzeigeinhalt scrollen.
     Punkt auf der Minimap.
 
     \step[2]
-    GIANT setzt den sichtbaren Anzeigeinhalt des Anzeigefensters 
+    GIANT zentriert den sichtbaren Anzeigeinhalt des Anzeigefensters 
     auf den vorgegebenen Punkt.
     
   \end{proc}

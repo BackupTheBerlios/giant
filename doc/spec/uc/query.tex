@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: query.tex,v $, $Revision: 1.10 $
-%  $Date: 2003/04/05 11:08:45 $
+%  $RCSfile: query.tex,v $, $Revision: 1.11 $
+%  $Date: 2003/04/05 12:41:57 $
 %  $Author: squig $
 %
 %  Description: UseCases für die Anfragen
@@ -10,11 +10,11 @@
 % ==============================================================================
 
 % ==============================================================================
-\begin{uc}[Anfrage ausführen]{UC: Neue Anfrage ausführen}
-\index{Anfragen!ausführen}
-Mit diesem UseCase kann eine Anfrage über den Anfragedialog
+\begin{uc}[Anfrage ausführen]{UC: Neues Skript ausführen}
+\index{Skript!ausführen}
+Mit diesem UseCase kann eine Skript über den Skriptdialog
 (siehe \ref{GUI Anfragedialog}) eingegeben werden.
-Die Möglichkeiten der GQSL sind im Detail unter Kapitel
+Die Möglichkeiten der GQSL sind im Detail in Kapitel
 \ref {GIANT Query Skripting Language} beschrieben.
 
 
@@ -23,7 +23,7 @@ Die Möglichkeiten der GQSL sind im Detail unter Kapitel
   \end{precond}
 
   \begin{postsuccess}
-    \cond Die Anfrage wurde ausgeführt. Alle Ergebnisse liegen vor.
+    \cond Das Skript wurde ausgeführt. Alle Ergebnisse liegen vor.
       
   \end{postsuccess}
 
@@ -31,7 +31,7 @@ Die Möglichkeiten der GQSL sind im Detail unter Kapitel
     \cond Das System bleibt im bisherigen Zustand.
 
     \cond Wurde der UseCase während der Berechnung des
-          Anfrageergebnisses durch GIANT abgebrochen, so
+          abgebrochen, so
           gehen sämtliche bereits fertig gestellten Teilergebnisse
           verloren. 
   \end{postfail}
@@ -39,14 +39,14 @@ Die Möglichkeiten der GQSL sind im Detail unter Kapitel
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase durch Auswahl des Eintrags 
-    \gq{Tools -- Execute GQSL Query} im Hauptmenü  
+    \gq{Tools -- Execute GQSL Script} im Hauptmenü  
     (siehe \ref{Main-Window-Tools}).
       
     \step[2] 
-    GIANT öffnet den Anfragedialog (siehe \ref{GUI Anfragedialog}).
+    GIANT öffnet den Skriptdialog (siehe \ref{GUI Anfragedialog}).
       
     \step[3]
-    Der Benutzer gibt dort im dafür vorgesehenen Textfeld die GQSL Anfrage 
+    Der Benutzer gibt dort im dafür vorgesehenen Textfeld das GQSL Skript
     (siehe auch \ref {GIANT Query Skripting Language}) ein und bestätigt 
     mit \gq {Start Query}.
 
@@ -58,19 +58,19 @@ Die Möglichkeiten der GQSL sind im Detail unter Kapitel
     und das System kehrt zu Schritt 3 des UseCase zurück.
         
     \step[5]    
-    GIANT berechnet die Anfrage und teilt dem Benutzer
-    den Fortschritt mittels eines Progressbars (\ref{Progressbar-Modale}) mit.
-    Während der Abarbeitung der Anfrage ist das System nicht bedienbar.\\
+    GIANT führt das Skript aus und teilt dem Benutzer
+    den Fortschritt mittels eines Progress-Dialogs (\ref{Progressbar-Modale}) mit.
+    Während der Ausführung des Skripts ist das System mit Ausnahme des
+    Progress-Dialogs gesperrt.\\
     
   
   \end{proc}
 
   \begin{aproc}
     \astep{3} Der Benutzer bricht mit Cancel ab.
-
-    \astep{5} Die laufende Berechnung des Anfrageergebnisses 
-    kann vom Benutzer jeder Zeit durch Betätigen des
-    Buttons \gq{Cancel Calculation} (\ref{Progressbar-Modale-Cancel}) abgebrochen werden.
+    
+    \astep{5} Die laufende Ausführung des Skripts wird vom Benutzer
+    mit Cancel abgebrochen werden.
 
   \end{aproc}
 
@@ -78,26 +78,24 @@ Die Möglichkeiten der GQSL sind im Detail unter Kapitel
 
 
 % ==============================================================================
-\begin{uc}[UC Anfrage laden]{UC: Anfrage laden}
+\begin{uc}[UC Anfrage laden]{UC: Skript laden}
 \index{Anfragen!aus Datei laden}
-Der Benutzer kann zusätzlich zur manuellen Eingabe von GQSL Anfragen
-(siehe \ref{Anfrage ausführen}) auch gespeicherte Anfragen aus 
-einer Anfragedatei (siehe \ref {Config Anfrage-Dateien}) laden.
+Der Benutzer kann zusätzlich zur manuellen Eingabe von GQSL Skripten
+(siehe \ref{Anfrage ausführen}) auch gespeicherte Skripte aus 
+einer Datei (siehe \ref {Config Anfrage-Dateien}) laden.
 
   \begin{precond}
     \cond Ein Projekt ist geladen.
   \end{precond}
 
   \begin{postsuccess}
-    \cond Die Anfrage wurde ausgeführt. Alle Ergebnisse liegen vor.
-      
+    \cond Das Skript wurde ausgeführt. Alle Ergebnisse liegen vor.
   \end{postsuccess}
 
   \begin{postfail}
     \cond Das System bleibt im bisherigen Zustand.
 
-    \cond Wurde der UseCase während der Berechnung des
-          Anfrageergebnisses durch GIANT abgebrochen, so
+    \cond Wurde der UseCase während der Berechnung abgebrochen, so
           gehen sämtliche bereits fertig gestellten Teilergebnisse
           verloren. 
   \end{postfail}
@@ -105,34 +103,33 @@ einer Anfragedatei (siehe \ref {Config Anfrage-Dateien}) laden.
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase durch Auswahl des Eintrags 
-    \gq{Tools -- Execute GQSL Query} im Hauptmenü  
+    \gq{Tools -- Execute GQSL Script} im Hauptmenü  
     (siehe \ref{Main-Window-Tools}).
       
     \step[2] 
-    GIANT öffnet den Anfragedialog (siehe \ref{GUI Anfragedialog}).
+    GIANT öffnet den Skriptdialog (siehe \ref{GUI Anfragedialog}).
       
     \step[3] 
-    Der Benutzer betätigt im Dialog den Button \gq{Load Query}.
+    Der Benutzer betätigt im Dialog den Button \gq{Open...}.
 
     \step[4]
     Daraufhin zeigt GIANT den Standard-Filechooser-Dialog 
     (siehe \ref {Standard-Filechooser-Dialog}).
-
-    \step[5]
-    Der Benutzer wählt die gewünschte Anfragedatei (siehe 
-    \ref {Config Anfrage-Dateien}) aus.
+    
+    \step[5] Der Benutzer wählt die Datei (siehe \ref {Config
+      Anfrage-Dateien}) aus.
         
     \step[6]
-    GIANT zeigt das aus der Anfragedatei geladene GQSL Skript 
+    GIANT zeigt das aus der Datei geladene GQSL Skript 
     (siehe \ref {GIANT Query Skripting Language}) im Textfeld
-    des Anfragedialoges an.
+    des Skriptdialogs an.
 
     \step[7]
     Falls gewünscht kann der Benutzer das GQSL Skript im Textfeld
     noch manuell weiter modifizieren.
     
     \step[8]
-    Der Benutzer startet die Berechnung der Anfrage durch Betätigung
+    Der Benutzer startet die Berechnung des Skripts durch Betätigung
     des \gq{Start Query} im Anfragedialog (siehe \ref{GUI Anfragedialog}).
 
     \step[9]
@@ -142,10 +139,11 @@ einer Anfragedatei (siehe \ref {Config Anfrage-Dateien}) laden.
     eine Fehlermeldung (siehe \ref {afa Fehlerverhalten})
     und das System kehrt zu Schritt 7 des UseCase zurück.
 
-    \step[10]
-    GIANT berechnet die Anfrage und teilt dem Benutzer
-    den Fortschritt mittels eines Progressbars (\ref{Progressbar-Modale}) mit.
-    Während der Abarbeitung der Anfrage ist das System nicht bedienbar.\\
+    \step[10]    
+    GIANT führt das Skript aus und teilt dem Benutzer
+    den Fortschritt mittels eines Progress-Dialogs (\ref{Progressbar-Modale}) mit.
+    Während der Ausführung des Skripts ist das System mit Ausnahme des
+    Progress-Dialogs gesperrt.\\
 
   \end{proc}
 
@@ -156,11 +154,8 @@ einer Anfragedatei (siehe \ref {Config Anfrage-Dateien}) laden.
               Abarbeitung des UseCase zurück.
     \astep{6} Der Benutzer bricht den UseCase mit Cancel ab.
 
-    \astep{10} Die laufende Berechnung des Anfrageergebnisses 
-    kann vom Benutzer jeder Zeit durch Betätigen des
-    Buttons \gq{Cancel Calculation} (\ref{Progressbar-Modale-Cancel})abgebrochen werden.
-
-
+    \astep{10} Die laufende Ausführung des Skripts wird vom Benutzer
+    mit Cancel abgebrochen werden.
   \end{aproc}
 
 \end{uc}
@@ -169,11 +164,11 @@ einer Anfragedatei (siehe \ref {Config Anfrage-Dateien}) laden.
 \begin{uc}[Anfrage speichern]{UC: Anfrage speichern}
 \index{Anfragen!in eine Datei speichern}
 Mit diesem UseCase kann der Benutzer GQSL Skripte aus dem 
-Anfragedialog (siehe \ref{GUI Anfragedialog}) in Anfragedateien 
+Skriptdialog (siehe \ref{GUI Anfragedialog}) in Dateien 
 (siehe \ref {Config Anfrage-Dateien}) speichern.
 
   \begin{precond}
-    \cond Der Anfragedialog (siehe \ref{GUI Anfragedialog}) ist
+    \cond Der Skriptdialog (siehe \ref{GUI Anfragedialog}) ist
           geöffnet und enthält in dem dafür vorgesehenen Textfeld
           entweder ein manuell eingegebenes oder ein aus einer
           Datei geladenes und eventuell modifiziertes GQSL Skript.
@@ -190,8 +185,8 @@ Anfragedialog (siehe \ref{GUI Anfragedialog}) in Anfragedateien
 
   \begin{postfail}
     \cond Das System bleibt im bisherigen Zustand.
-    \cond Es wurde keine Anfragedatei erzeugt
-    \cond GIANT zeigt weiterhin den  Anfragedialog 
+    \cond Es wurde keine Datei erzeugt
+    \cond GIANT zeigt weiterhin den Skriptdialog an
           (siehe \ref{GUI Anfragedialog}) und alle dort getätigten
           Eingaben (insbesondere das GQSL Skript im Textfeld des
           Dialoges) bleiben erhalten.
@@ -202,12 +197,12 @@ Anfragedialog (siehe \ref{GUI Anfragedialog}) in Anfragedateien
 
     \step[1]
     Der Benutzer betätigt im Anfragedialog (siehe \ref{GUI Anfragedialog})
-    den Button \gq{Save Query}.
+    den Button \gq{Save As...}.
     
     \step[2]
     GIANT prüft ob das GQSL Skript im Textfeld des Anfragedialoges den
     Vorgaben der Grammatik (siehe \ref {GIANT Query Skripting Language} 
-    entspricht. Falls nein erscheint eine Fehlermeldung 
+    entspricht. Falls nicht, erscheint eine Fehlermeldung 
     (siehe \ref {afa Fehlerverhalten})
     und das System kehrt zu Schritt 1 des UseCase zurück.
 

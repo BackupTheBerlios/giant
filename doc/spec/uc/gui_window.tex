@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.31 $
-%  $Date: 2003/04/05 11:08:45 $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.32 $
+%  $Date: 2003/04/05 12:41:57 $
 %  $Author: squig $
 %
 %  Description: UseCases für die Fensterfunktionalität der GUI
@@ -59,10 +59,6 @@ Dient zum Öffnen eines Anzeigefensters des Projektes.
     \cond Das Anzeigefenster ist geöffnet.
   \end{postsuccess}
 
-  \begin{postfail}
-    \cond Es sind keine Fehlerfälle vorgesehen.
-  \end{postfail}
-
   \begin{proc}    
     \step[1]
     Der Benutzer führt einen Doppelklick auf ein nicht geöffnetes
@@ -74,9 +70,6 @@ Dient zum Öffnen eines Anzeigefensters des Projektes.
     GIANT öffnet das entsprechende Anzeigefenster.
   \end{proc}  
 
-  \begin{aproc}
-    \ageneral Es sind keine alternativen Abläufe vorgesehen.
-  \end{aproc}
 \end{uc}
 
 % ==============================================================================
@@ -166,7 +159,7 @@ Näheres zur Persistenz von Anzeigefenstern ist unter Abschnitt
 
 Mit diesem UseCase wird ein geöffnetes Anzeigefenster geschlossen.
 Näheres zur Persistenz von Anzeigefenstern ist unter Abschnitt
-\ref{Project Verwaltungsdateien für Anzeigefenster} spezifiziert.
+\ref{Persistenz!Anzeigefenster} spezifiziert.
 
   \begin{precond}
     \cond Ein Projekt mit mindestens einem Anzeigefenster ist geladen.
@@ -368,8 +361,8 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
           {UC: Selektion in Anzeigefenster einfügen}
 \index{Selektionen!in Anzeigefenster einfügen}
           
-Mit diesem UseCase kann eine Selektion aus einem Anzeigefenster in ein
-anderes Anzeigefenster unter Beibehaltung des Layouts kopiert werden
+Mit diesem UseCase kann eine Selektion aus einem Quell-Anzeigefenster in ein
+Ziel-Anzeigefenster unter Beibehaltung des Layouts kopiert werden
 (siehe \ref{Verhalten beim Einfügen von IML-Teilgraphen und
   Selektionen in Anzeigefenster} und \ref{Einfügen von Selektionen in
   Anzeigefenster}).
@@ -384,21 +377,19 @@ anderes Anzeigefenster unter Beibehaltung des Layouts kopiert werden
 
   \begin{postsuccess}
     
-    \cond 
-    Alle Fenster-Knoten und Fenster-Kanten der \gq{Quell-Selektion} 
-    sind auch im \gq{Ziel-Anzeigefenster} unter Beibehaltung des
-    Layouts der Quell-Selektion vorhanden.
-    
     \cond
-    Das Layout von Fenster-Knoten, die vor dem Einfügen bereits im
+    Das Position von Fenster-Knoten, die vor dem Einfügen bereits im
     Ziel-Anzeigefenster vorhanden waren, bleibt 
     je nach Wahl des Benutzers unverändert oder wird ebenfalls geändert.
     
     \cond
-    Die kopierte Quell-Selektion existiert auch im \gq{Ziel-Anzeigefenster}
-    als Selektion und trägt dort ebenfalls den Namen der Quell-Selektion. 
+    Die kopierte Selektion existiert auch im Ziel-Anzeigefenster
+    als Ziel-Selektion und trägt dort ebenfalls den Namen der Selektion. 
 
-   
+    \cond
+    Im Ziel-Anzeigefenster gibt es keine Knoten mit der selben ID
+    mehrfach. 
+
   \end{postsuccess}
 
  
@@ -409,35 +400,35 @@ anderes Anzeigefenster unter Beibehaltung des Layouts kopiert werden
     Durch Auswahl eines der beiden Menüeinträge 
     \gq{Copy Selection keep existing layout} oder 
     \gq{Copy Selection change existing layout}.
-    Hierdurch wird automatisch die Quell-Selektion bestimmt (immer
+    Hierdurch wird automatisch die Selektion bestimmt (immer
     die Selektion, auf der der Rechtsklick ausgeführt wurde).
     
     \step[2] 
     Der Benutzer wählt das entsprechende Ziel-Anzeigefenster aus.
-    Das Ziel-Anzeigefenster darf nicht das Quell-Anzeigefenster sein.
+    Das Ziel-Anzeigefenster darf nicht das Quell-Anzeigefenster sein,
+    sonst wird eine Fehlermeldung ausgegeben.
     GIANT zeigt in der Statuszeile im Hauptfenster 
     \gq{Select Position in Display Window
-    for Insertion of copied IML Subgraph}
+    for Insertion of copied IML Subgraph}.
     Der Benutzer gibt über das Fadenkreuz die Position vor, 
     an der die neuen Fenster-Knoten und Fenster-Kanten eingefügt werden 
     sollen (siehe auch \ref{Fadenkreuzcursor}).
-    Die Statuszeile im Hauptfenster schaltet danach auf Normalmodus zurück.
     
     \step[3]
     GIANT kopiert die Knoten und Kanten der 
-    Quell-Selektion in das Ziel-Anzeigefenster.
+    Selektion in das Ziel-Anzeigefenster.
     Je nachdem, welchen Eintrag der Benutzer im Popup-Menü ausgewählt hat,
     geschieht mit den bereits im Ziel-Anzeigefenster vorhandenen 
-    Fenster-Knoten der Quell-Selektion folgendes:
+    Fenster-Knoten der Selektion folgendes:
     \begin {enumerate}
        \item
-       Falls \gq{Copy Selection keep existing layout} gewählt wurde, wird
+       Falls \gq{Copy Selection keeping existing layout} gewählt wurde, wird
        ihre Position im Ziel-Anzeigefenster nicht verändert.
        
        \item 
-       Falls \gq{Copy Selection change existing layout} gewählt wurde,
+       Falls \gq{Copy Selection changing existing layout} gewählt wurde,
        ihre Position im Zielanzeigefenster gemäß dem Layout der
-       Quell-Selektion verändert.
+       Selektion verändert.
         
     \end {enumerate}
       
@@ -486,7 +477,7 @@ Fenster-Kanten}).
   \end{postsuccess}
 
   \begin{postfail}
-    \cond Hat der Benutzer den UseCase an irgendeinem Punkt abgebrochen,
+    \cond Hat der Benutzer den UseCase abgebrochen,
     kehrt das System zu dem Zustand zurück, in dem es vor dem Start des
     UseCase war.
   \end{postfail}
@@ -539,7 +530,7 @@ Visualisierungsstile ändern (siehe auch \ref{Config Visualisierungsstile}).
     Es gibt ein geöffnetes Anzeigefenster.    
    
     \cond
-    Es gibt mindestens einen vom Benutzer definierten Visualisierungsstil
+    Es gibt mindestens einen definierten Visualisierungsstil
     (siehe auch \ref{Config Visualisierungsstile}). 
        
   \end{precond}
@@ -601,16 +592,14 @@ Verändert die Position des sichtbaren Anzeigeinhaltes.
     \begin {enumerate}
       \item
       Der Benutzer scrollt den sichtbaren Anzeigefokus mittels der horizontalen
-      und vertikalen Bildlaufleisten des Anzeigefensters (siehe    
+      oder vertikalen Bildlaufleisten des Anzeigefensters (siehe    
       \ref{Scrolleisten}). Dies geschieht mittels
-      der Maus gemäß der gängigen Konventionen von GTK/Ada für Bildlaufleisten.
+      der Maus gemäß der Konventionen von GTK/Ada für Bildlaufleisten.
       
       \item
-      Gemäß der gängigen Konventionen kann auch 
-      mittels der Cursortasten gescrollt werden.\\
+      Es kann auch mittels der Cursortasten gescrollt werden.\\
       Das Drücken der linken Cursortaste führt z.B.\ dazu, dass der sichtbare
-      Anzeigeinhalt des Anzeigefensters, welches innerhalb des Windowmanagers
-      den Fokus hat, nach links verschoben wird.
+      Anzeigeinhalt des aktiven Anzeigefensters nach links verschoben wird.
       
     \end {enumerate}
         
@@ -623,7 +612,7 @@ Verändert die Position des sichtbaren Anzeigeinhaltes.
 \begin{uc}[Anzeigefenster zoomen]{UC: Anzeigefenster zoomen}
 \index{Anzeigefenster!zoomen}
 \index{zoomen}
-Verändert den Maßstab der Darstellung von Knoten und Kanten (relativ).
+Verändert den Maßstab der Darstellung von Knoten und Kanten.
 
   \begin{precond}
     \cond 
@@ -653,10 +642,6 @@ Verändert den Maßstab der Darstellung von Knoten und Kanten (relativ).
       ändert den Zoomwert in festgelegten Schritten mit den Zoom+ oder 
       Zoom- Buttons. 
       
-      \item
-      Der Benutzer klickt auf den Button \gq{Display} der Zoomkontrolle
-      (siehe \ref{GUI Zoom-Kontrolle}).
-      
     \end {enumerate}
     
     \step[2]
@@ -668,12 +653,12 @@ Verändert den Maßstab der Darstellung von Knoten und Kanten (relativ).
 \end{uc}
 
 % ==============================================================================
-\begin{uc}[Zoomen auf eine gesamte Selektion]{UC: Zoomen auf eine gesamte Selektion}
+\begin{uc}[Zoomen auf eine Selektion]{UC: Zoomen auf eine gesamte Selektion}
 \index{zoomen auf Selektion}
 
 Wählt die passende Zoomstufe \index{Zoomstufe} 
 und scrollt den sichtbaren Anzeigeinhalt so, 
-dass eine gesamte Selektion im Anzeigefenster 
+dass eine Selektion im Anzeigefenster vollständig
 sichtbar ist.
 
   \begin{precond}
@@ -684,13 +669,11 @@ sichtbar ist.
 
   \begin{postsuccess}
     
-    \cond
-    Der angezeigte Bereich des sichtbaren Anzeigeinhalts wurde so
-    vergrößert oder verkleinert, dass die gesamte ausgewählte Selektion 
-    sichtbar
-    ist, ggf. wurde auch entsprechend gescrollt.
-    Die Detailstufe (siehe \ref{Visualization Detailstufen})
-    wurde ggf. automatisch angepasst.
+    \cond Der sichtbare Anzeigeinhalts wurde
+    mittels Zoomen und Scrollen so verändert, dass die
+    ausgewählte Selektion vollständig sichtbar ist. Die Detailstufe (siehe
+    \ref{Visualization Detailstufen}) wurde ggf. automatisch
+    angepasst.
         
   \end{postsuccess}
 
@@ -709,10 +692,11 @@ sichtbar ist.
 \end{uc}
 
 % ==============================================================================
-\begin{uc}[Zoomen auf gesamten Inhalt eines Anzeigefensters]{UC: Zoomen auf gesamten Inhalt eines Anzeigefensters}
+\begin{uc}[Zoomen auf den Anzeigeinhalt]{UC: Zoomen auf gesamten Inhalt eines Anzeigefensters}
 \index{zoomen auf gesamten Anzeigeinhalt}
 Wählt die passende Zoomstufe und scrollt den sichtbaren Anzeigeinhalt so, 
-dass der gesamte Fensterinhalt im Anzeigefenster sichtbar ist.
+dass der Anzeigeinhalt vollständig im sichtbaren Anzeigeinhalt
+dargestellt wird.
 
   \begin{precond}
     \cond 
@@ -721,13 +705,12 @@ dass der gesamte Fensterinhalt im Anzeigefenster sichtbar ist.
   \end{precond}
 
   \begin{postsuccess}
-    
-    \cond
-    Der angezeigte Bereich des sichtbaren Anzeigeinhalts wurde so
-    vergrößert oder verkleinert, dass der gesamte Anzeigeinhalt im sichtbaren
-    Anzeigeinhalt dargestellt ist, ggf. wurde auch entsprechend gescrollt.
-    Die Detailstufe (siehe \ref{Visualization Detailstufen}) 
-    wurde ggf. automatisch angepasst.
+
+    \cond Der sichtbare Anzeigeinhalts wurde
+    mittels Zoomen und Scrollen so verändert, dass der
+    Anzeigeinhalt vollständig sichtbar ist. Die Detailstufe (siehe
+    \ref{Visualization Detailstufen}) wurde ggf. automatisch
+    angepasst.
     
   \end{postsuccess}
 
@@ -748,9 +731,9 @@ dass der gesamte Fensterinhalt im Anzeigefenster sichtbar ist.
 \begin{uc}[Zoomen auf eine Kante]{UC: Zoomen auf eine Kante}
 \index{zoomen auf eine Kante}
 
-Wählt die passende Zoomstufe für den sichtbaren Anzeigeinhalt und scrollt so, 
-dass eine bestimmte Kante komplett im 
-sichtbaren Anzeigeinhalt liegt.
+Wählt die passende Zoomstufe und scrollt den sichtbaren Anzeigeinhalt
+so, dass eine Kante mit ihren Start- und Ziel-Fenster-Knoten komplett
+im sichtbaren Anzeigeinhalt liegt.
 
   \begin{precond}
     \cond 
@@ -762,25 +745,26 @@ sichtbaren Anzeigeinhalt liegt.
 
   \begin{postsuccess}
     
-    \cond
-    Der angezeigte Bereich des sichtbaren Anzeigeinhalts wurde so
-    vergrößert oder verkleinert, dass die gewünschte Kante komplett
-    sichtbar ist, ggf. wurde auch entsprechend gescrollt.
-    Die Detailstufen wurde ggf. automatisch angepasst.
+    \cond Der sichtbare Anzeigeinhalts wurde mittels Zoomen und
+    Scrollen so verändert, dass die ausgewählte Kante und ihre Start-
+    und Ziel-Fenster-Knoten vollständig sichtbar ist. Die Detailstufe
+    (siehe \ref{Visualization Detailstufen}) wurde ggf. automatisch
+    angepasst.
     
   \end{postsuccess}
 
 
   \begin{postfail}
     \cond Hat der Benutzer den UseCase abgebrochen,
-          so werden keine Änderungen an der Zoomstufe vorgenommen.
+    kehrt das System zu dem Zustand zurück, in dem es vor dem Start des
+    UseCase war.
   \end{postfail}
 
 
   \begin{proc}    
   
     \step[1]
-    Der Benutzer Klickt den Button \gq{Zoom Edge} in der Zoomkontrolle
+    Der Benutzer Klickt den Button \gq{Pick Edge} in der Zoomkontrolle
     (siehe \ref{GUI Zoom-Kontrolle}).
    
     \step[2] 
@@ -806,8 +790,7 @@ sichtbaren Anzeigeinhalt liegt.
   \begin{aproc}
 
     \astep{3} Der Benutzer kann den UseCase abbrechen, indem er
-    auf eine beliebige Stelle -- halt nicht auf eine Kante --
-    klickt oder einen Rechtsklick mit der Maus ausführt.
+    auf eine einen Rechtsklick mit der Maus ausführt.
   
   \end{aproc}
 
@@ -866,27 +849,23 @@ Anzeigeinhalt verschoben werden. Dieses Verschieben geschieht mittels
       \gq{Move Node} auswählt.
 
     \end{enumerate}
-
-    \step[2]
-    GIANT geht in den den \gq{Paste Modus} über und zeigt dies in 
-    der Statusleiste (siehe \ref{Statuszeile}) des Hauptfensters an.
-    Der Cursor wird, falls er über den Anzeigeinhalt eines Anzeigefensters
-    bewegt wird, zum Fadenkreuz (siehe \ref{Fadenkreuzcursor}).
-    Die Funktionalität zum Zoomen und Scrollen des Anzeigefensters mittels
-    der beiden UseCases \ref{Anzeigefenster scrollen} und
-    \ref{Anzeigefenster zoomen} bleibt weiterhin verfügbar, die übrige
-    Funktionalität von GIANT wird gesperrt. 
-    Der Benutzer kann insbesondere das aktuelle Anzeigefenster 
-    (in welchem er den UseCase gestartet -- also \gq{Cut} ausgeführt hat --
-    nicht verlassen).
-
-    \step[3]
-    Der Benutzer klickt mit dem Fadenkreuz-Cursor (linke Maustaste)
-    an eine beliebige Stelle innerhalb des sichtbaren Anzeigeinhaltes
-    des Anzeigefensters.
+    
+    \step[2] GIANT geht in den den \gq{Paste Modus} über und zeigt
+    dies in der Statusleiste (siehe \ref{Statuszeile}) des
+    Hauptfensters an.  Der Cursor wird, falls er über den sichtbaren
+    Anzeigeinhalt eines Anzeigefensters bewegt wird, zum Fadenkreuz
+    (siehe \ref{Fadenkreuzcursor}).  Die Funktionalität zum Zoomen und
+    Scrollen des Anzeigefensters mittels der beiden UseCases
+    \ref{Anzeigefenster scrollen} und \ref{Anzeigefenster zoomen}
+    bleibt weiterhin verfügbar, die übrige Funktionalität von GIANT
+    wird gesperrt.
+    
+    \step[3] Der Benutzer klickt mit der linken Maustaste an eine
+    beliebige Stelle innerhalb des sichtbaren Anzeigeinhaltes des
+    Anzeigefensters.
 
     \step[4]
-    GIANT verschiebt die betroffenen Fenster-Knoten an die gewünschte
+    GIANT verschiebt die ausgewählten Fenster-Knoten an die gewünschte
     Stelle.
       
   \end{proc}
@@ -894,8 +873,7 @@ Anzeigeinhalt verschoben werden. Dieses Verschieben geschieht mittels
   \begin{aproc}
 
     \astep{3} Der Benutzer kann den UseCase abbrechen, indem er
-              einen Rechtsklick mit der Maus auf eine beliebige Stelle 
-              durchführt.
+    einen Rechtsklick mit der Maus im sichtbaren Anzeigeinhalt durchführt.
   \end{aproc}
 
 
@@ -933,13 +911,8 @@ Drop auf dem sichtbaren Anzeigeinhalt verschoben werden.
     Der Benutzer bewegt den Mauscursor über den zu verschiebenden
     Fenster-Knoten und drückt die linke Maustaste (\gq{Drag}), dann bewegt
     er den Fenster-Knoten an eine beliebige andere Stelle innerhalb des
-    Anzeigeinhaltes und lässt die linke Maustaste los (\gq{Drop}.\\
-    Während ein Knoten sich im Zustand \gq{Dragged} befindet kann
-    der sichtbare Anzeigeinhalt ausschließlich mit den Cursortasten 
-    analog zu UseCase \ref{Anzeigefenster scrollen} gescrollt werden.
-    Jede andere Funktionalität (auch Zoomen) ist während des \gq{Drag and
-    Drop} Vorgangs gesperrt.
-         
+    Anzeigeinhaltes und lässt die linke Maustaste los (\gq{Drop}).\\
+
   \end{proc}
 
 \end{uc}
@@ -986,7 +959,7 @@ Siehe auch Abschnitt \ref{Auseinanderschieben von Fenster-Knoten}.
   
   \begin{proc}    
     \step[1]
-    Der Benutzer führt einen Linksklick auf eine beliebige Stelle
+    Der Benutzer führt einen Rechtsklick auf eine beliebige Stelle
     des sichtbaren Anzeigeinhaltes durch und wählt im
     daraufhin erscheinenden Popup-Menü (siehe \ref{Empty Vis Pane Right click})
     dem Eintrag \gq{Make Room} aus.
@@ -1033,7 +1006,7 @@ Siehe auch Abschnitt \ref{Auseinanderschieben von Fenster-Knoten}.
 \index{Pins!anlegen}
 
 Mit diesem UseCase kann ein neuer Pin 
-(siehe auch \index{Pins}) erzeugt werden.
+(siehe auch \ref{Pins}) erzeugt werden.
 
  \begin{precond}
     \cond Es gibt ein geöffnetes Anzeigefenster.
@@ -1054,10 +1027,10 @@ Mit diesem UseCase kann ein neuer Pin
   \begin{proc}    
     \step[1]
     
-    Der Benutzer führt einen Rechtklick auf den Anzeigeinhalt eines
+    Der Benutzer führt einen Rechtsklick auf den Anzeigeinhalt eines
     Anzeigefensters durch und wählt aus dem Popup-Menü 
     (siehe \ref{Empty Vis Pane Right click}) den Eintrag \gq{New Pin} aus.
-    Der später erstellte Pin verweist dann auf die Stelle im Anzeigeinhalt
+    Der später erstellte Pin verweist dann auf die Stelle im Anzeigeinhalt,
     auf die der Rechtklick durchgeführt wurde.
  
 
@@ -1088,7 +1061,7 @@ Mit diesem UseCase kann ein neuer Pin
 \begin{uc}[Pin anspringen]{UC: Pin anspringen}
 \index{Pins!anspringen}
 
-Stellt die im Pin (siehe auch \index{Pins}) gespeicherte 
+Stellt die im Pin (siehe auch \ref{Pins}) gespeicherte 
 Position des sichtbaren Anzeigeinhaltes wieder her.
 
  \begin{precond}
@@ -1107,7 +1080,7 @@ Position des sichtbaren Anzeigeinhaltes wieder her.
   \begin{proc}    
     \step[1]
    
-    Das \gq{Anspringen} des Pins kann über die folgenden beiden
+    Das Anspringen des Pins kann über die folgenden beiden
     Möglichkeiten geschehen:
     \begin{enumerate}
     
@@ -1125,8 +1098,7 @@ Position des sichtbaren Anzeigeinhaltes wieder her.
     
           
     \step[2]
-    GIANT \gq{springt den Pin an} und setzt den sichtbaren 
-    Anzeigeinhalt gemäß den im Pin gespeicherten
+    GIANT setzt den sichtbaren Anzeigeinhalt gemäß den im Pin gespeicherten
     Informationen.
   
   \end{proc}
@@ -1140,7 +1112,7 @@ Position des sichtbaren Anzeigeinhaltes wieder her.
 \begin{uc}[Pin löschen]{UC: Pin löschen}
 \index{Pins!löschen}
 
-Löscht einen Pin (siehe auch \index{Pins}).
+Löscht einen Pin (siehe auch \ref{Pins}).
 
  \begin{precond}
     \cond Es gibt ein geöffnetes Anzeigefenster mit mindestens 
@@ -1156,9 +1128,8 @@ Löscht einen Pin (siehe auch \index{Pins}).
   
   \begin{proc}    
     \step[1]
-    Der Benutzer öffnet das  Popup-Menü der Pinliste (siehe \ref{VIS-PANE-Pins}  
+    Der Benutzer öffnet das  Popup-Menü der Pinliste (siehe \ref{VIS-PANE-Pins})
     durch Rechtsklick auf den Pin  und wählt den Eintrag \gq{Delete Pin} aus.
-
      
     \step[2]
     GIANT löscht den Pin.
