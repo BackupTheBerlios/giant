@@ -1,6 +1,6 @@
 % ==============================================================================
 %  $RCSfile: non_functionals.tex,v $ 
-%  $Date: 2003/02/10 18:32:53 $
+%  $Date: 2003/02/12 11:16:33 $
 %  $Author: schwiemn $ 
 %
 %  Description: Non Functional Requirements für die Spezifikation
@@ -13,36 +13,35 @@ Da der zu visualisierende IML-Graph selbst schon recht groß ist und für die graf
 zusätzlich Speicherplatz benötigt wird, sollte die Plattform, auf der der IML-Browser ausgeführt werden soll, 
 möglichst über 256 oder mehr MB an Hauptspeicher verfügen. 
 
-\subsection {Rechenleistung}
+  \subsection {Rechenleistung}
 Auch sollte der Rechner, auf dem das System IML-Browser flüssig laufen soll, mindestens über eine mit einem Pentium II 
 (Taktfrequenz 200 MHz oder mehr) vergleichbare Performance verfügen.
 
-\subsection {Grafik}
+  \subsection {Grafik}
 Die für die Anzeige genutzte Plattform muss über eine Mindestauflösung von 800*600 Pixel bei mindestens 
 8 Bit Farbtiefe verfügen.
 
 
 \section {Anforderungen an die Entwicklung}
 
-\subsection {Compiler und Bibliotheken}
-
+  \subsection {Compiler und Bibliotheken}
 Das System soll in der Sprache Ada95 mit GNAT 3.14 entwickelt werden, wobei GTK/ADA 1.2.12 als grafische
 GUI-Bibliothek eingesetzte werden soll. Das System baut auf der vom Kunden bereit gestellten IML-Graph-Bibliothek auf 
 und soll des weiteren zur Unterstützung der Wartbarkeit möglichst auch die vom Kunden zur Verfügung gestellten 
 Datenstrukturen (wie z.B. Hashtables aus Bauhaus/reuse/src) nutzen.
 
-\subsection {Plattformunabhängigkeit}
+  \subsection {Plattformunabhängigkeit}
 Das Produkt soll ein hohes Maß an Plattformunabhängigkeit, wie sie sich aus der eingesetzten Entwicklungsumgebung ergibt, 
 verfügen (also alle Systeme auf denen GTK/ADA 1.2.12 lauffähig ist). Explizit während der Entwicklung getestet 
 werden kann dies aber nur für Sun Solaris und Linux.
 
-\subsection {Wartbarkeit}
+  \subsection {Wartbarkeit}
 Das System soll sich durch ein hohes Maß an Wartbarkeit und Erweiterbarkeit auszeichnen.
 12.3.1  Wartbarkeit und Erweiterbarkeit gehen über Performance
 Entsprechende Kapselung und Strukturierung des Entwurfes (Informationhiding, hohe Lokalität, 
 strikte Trennung von GUI und Funktionalität etc.).
 
-\subsection {Robustheit gegenüber Änderungen der IML-Graph-Spezifikation}
+  \subsection {Robustheit gegenüber Änderungen der IML-Graph-Spezifikation}
 Das System soll so an Bauhaus angebunden werden, dass Änderungen in der Spezifikation des IML-Graphen 
 möglichst keine Wartungsarbeiten erfordern. Besonders soll dies für die verschiedenen Attribute, 
 Knoten- und Kantenklassen des Bauhaus-IML-Graphen gelten, da diese sich oft ändern können.
@@ -50,7 +49,7 @@ Die Klassen und Attribute der Bauhaus-IML-Graph Bibliothek werden durch den IML-
 dass neu hinzukommende Attribute automatisch mit erfasst und damit angezeigt werden können.
 
 
-\section {Mengengerüst}
+  \section {Mengengerüst}
 Ein explizites Mengengerüst, z.B. hinsichtlich der minimalen und maximalen Anzahl von darstellbaren Knoten, 
 gibt es nicht. Größenbeschränkungen (z.B. Größe der zu ladenden IML-Graph-Datei, Anzahl Knoten in einem Anzeigefenster ...) 
 sollen sich alleine aus dem verfügbaren Arbeitsspeicher ergeben. Falls der verfügbare Arbeitsspeicher erschöpft ist, 
@@ -58,7 +57,7 @@ soll das System nicht abstützen, sondern vielmehr die entsprechende Aktion kontr
 ein Weiterarbeiten ermöglichen.
 
 
-\section {Unterstützung paralleler Rechner}
+  \section {Unterstützung paralleler Rechner}
 Layoutalgorithmen werden zur Unterstützung paralleler Rechner in separaten Threads ausgeführt. 
 Die einzelnen Layoutalgorithmen sind nicht parallel. In einem Anzeigefenster kann immer nur ein es können 
 aber mehrere Layoutalgorithmen in verschiedenen Anzeigefenstern gleichzeitig laufen.
