@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.15 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.16 $
 -- $Author: schwiemn $
--- $Date: 2003/06/26 17:18:46 $
+-- $Date: 2003/06/27 08:51:47 $
 --
 --
 with Ada.Streams;
@@ -446,6 +446,7 @@ package body Giant.File_Management is
       end if;
    end Append_Dir_Separator_If_necessary;
 
+   ---------------------------------------------------------------------------
    function Get_User_Config_Path
      return String
    is
@@ -488,14 +489,68 @@ package body Giant.File_Management is
 
 null;
    end Execute;
+   
+   ---------------------------------------------------------------------------
+   procedure Deallocate_Argument_List 
+     (The_Arg_List : in out GNAT.OS_Lib.Argument_List) is 
+   
+   begin
+   
+      for I In The_Arg_List'Range loop
+      
+         GNAT.OS_Lib.Free (The_Arg_List (I));            
+      end loop;
+   end Deallocate_Argument_List;   
+   
+   ---------------------------------------------------------------------------
+   function Substitute_Sub_Strings
+     (Source : in String;
+      Needle : in String;
+      Fork   : in String) 
+     return String is                 
+      
+      use Ada.Strings.Unbounded;
+            
+      Result : Ada.Strings.Unbounded.Unbounded_String;      
+      Pos    : Integer;
+   begin
+   
+      if (Source'Length >= Needle'Length) then
+      
+         Result     := Ada.Strings.Unbounded.Null_Unbounded_String;
+         Pos := Source'First;
+         
+         loop            
+            exit when not (Pos <= (Source'Last));
+               
+            if Source (Pos .. (Pos + Needle'Length - 1)) = Needle then         
+               -- Substitution
+               Ada.Strings.Unbounded.Append (Result, Fork);
+               Pos := Pos + Needle'Length;                                         
+            else              
+               Ada.Strings.Unbounded.Append (Result, Source (Pos));                                
+               Pos := Pos + 1;
+            end if;
+         end loop;
+         
+         return Ada.Strings.Unbounded.To_String (Result);      
+      else
+      
+        return Source;
+      end if;
+   end Substitute_Sub_Strings;
+   
 
    ---------------------------------------------------------------------------
-  procedure Execute_External_Editor
+   procedure Execute_External_Editor
      (Command  : in String;
       Filename : in String;
       Line     : in Natural;
-      Column   : in Natural)
-   is
+      Column   : in Natural) is
+   
+
+
+
 --            function Substitute
 --        (Name : String; File : String; Line : Natural) return String
 --      is
