@@ -1,3 +1,7 @@
+2003-10-06  Oliver Kopp  <koppor@studi.informatik.uni-stuttgart.de>
+
+	* handbuch/gsl.tex: added parameters for treelayout
+
 2003-09-21  Steffen Keul  <keulsn@studi.informatik.uni-stuttgart.de>
 
 	* spec/gsl/gsl.tex Updated version number to 1.5
