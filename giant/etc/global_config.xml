@@ -22,7 +22,9 @@
   <setting name="IML_Subgraph_Highlight_Color_2" value="#FF00FF" />
   <setting name="IML_Subgraph_Highlight_Color_3" value="#FFFF00" />
 
-  <setting name="Editor.Source" value="/usr/bin/emacs +%l:%c %f" />
+  <setting name="Editor.Source" value="/usr/bin/emacs +%l %f" />
+  <!-- This setting only works for emacs 21 -->
+  <!-- <setting name="Editor.Source" value="/usr/bin/emacs +%l:%c %f" /> -->
 
   <setting name="GSL.Include_Path" value="../shared/gsl" />
 
