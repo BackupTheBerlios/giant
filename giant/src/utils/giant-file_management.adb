@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.34 $
--- $Author: squig $
--- $Date: 2003/09/24 15:57:36 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.35 $
+-- $Author: koppor $
+-- $Date: 2003/10/01 23:00:06 $
 --
 --
 
@@ -100,30 +100,29 @@ package body Giant.File_Management is
            (File_Name => Potential_File_Name_String(1 .. Last_Character_Pos),
             Path      => Path_To_Dir);
 
-         -- Filter File_Names with wrong ending
+         -- Filter ("remove") File_Names with not matching ending
          -- GNAT_File_Name_String_Acces.all must end with the
          -- character sequence of Filter_String
-         if (Filter = True) and then
-           GNAT.OS_Lib."/="(GNAT_File_Name_String_Access, null)
-           and then
-           ( (GNAT_File_Name_String_Access.all'Length < Filter_String'Length)
+         --
+         -- deallocates file names that are not needed according
+         -- to the filter criterion
+         if Filter
+           and then GNAT.OS_Lib."/="(GNAT_File_Name_String_Access, null) then
+            --  Filtering is active and a filename was read
+            if
+              (GNAT_File_Name_String_Access.all'Length < Filter_String'Length)
              or else
-             (GNAT_File_Name_String_Access.all
-              (GNAT_File_Name_String_Access.all'Last
-               - Filter_String'Length + 1
-               ..
-               GNAT_File_Name_String_Access.all'Last)
-
-              /= Filter_String(Filter_String'First .. Filter_String'Last)
-              ) ) then
-
-            -- deallocates file names that are not needed according
-            -- to the filter criterion
-            GNAT.OS_Lib.Free(GNAT_File_Name_String_Access);
-
+              (GNAT_File_Name_String_Access.all
+               (GNAT_File_Name_String_Access.all'Last
+                - Filter_String'Length + 1
+                ..
+                GNAT_File_Name_String_Access.all'Last) /= Filter_String) then
+               GNAT.OS_Lib.Free(GNAT_File_Name_String_Access);
+            end if;
          end if;
 
-         -- calculate full path and put result into list
+         --  calculate full path and put result into list
+         --  "expand to full path"
          if GNAT.OS_Lib."/="(GNAT_File_Name_String_Access, null) then
 
             -- calculate "real" file name including path
@@ -148,7 +147,6 @@ package body Giant.File_Management is
 
             -- deallocates file name object
             GNAT.OS_Lib.Free(GNAT_File_Name_String_Access);
-
          end if;
 
       end loop;
