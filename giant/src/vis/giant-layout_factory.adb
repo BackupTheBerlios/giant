@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.19 $
---  $Author: keulsn $
---  $Date: 2003/09/12 20:30:13 $
+--  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.20 $
+--  $Author: koppor $
+--  $Date: 2003/10/02 10:21:58 $
 --
 
 with Ada.Exceptions;
@@ -244,25 +244,20 @@ package body Giant.Layout_Factory is
                        (Meta_Class_Set,
                         Graph_Lib.Get_Edge_Class_Id (Current_Edge)) then
                         Node := Graph_Lib.Get_Source_Node (Current_Edge);
-                        if Config.Class_Sets.Is_Empty (Meta_Class_Set) or else
-                          Config.Class_Sets.Is_Node_Class_Element_Of_Class_Set
-                          (Meta_Class_Set,
-                           Graph_Lib.Get_Node_Class_Id (Node)) then
+                        if Graph_Lib.Node_Id_Sets.Is_Member
+                          (Graph_Lib.Selections.Get_All_Nodes
+                           (Selection_To_Layout), Node) then
+                           Predecessor_Found := True;
+
+                           Current_Node := Node;
+
                            if Graph_Lib.Node_Id_Sets.Is_Member
-                             (Graph_Lib.Selections.Get_All_Nodes
-                              (Selection_To_Layout), Node) then
-                              Predecessor_Found := True;
-
-                              Current_Node := Node;
-
-                              if Graph_Lib.Node_Id_Sets.Is_Member
-                                (Seen, Node) then
-                                 --  there is a circle in the graph.
-                                 Root_Found := True;
-                              else
-                                 Graph_Lib.Node_Id_Sets.Insert (Seen, Node);
-                                 Root_Found := False;
-                              end if;
+                             (Seen, Node) then
+                              --  there is a circle in the graph.
+                              Root_Found := True;
+                           else
+                              Graph_Lib.Node_Id_Sets.Insert (Seen, Node);
+                              Root_Found := False;
                            end if;
                         end if;
                      end if;

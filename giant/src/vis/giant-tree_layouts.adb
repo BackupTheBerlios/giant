@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.26 $
+--  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.27 $
 --  $Author: koppor $
---  $Date: 2003/09/23 18:08:17 $
+--  $Date: 2003/10/02 10:21:58 $
 --
 ------------------------------------------------------------------------------
 --  Variables are named according to the paper
@@ -198,10 +198,11 @@ package body Giant.Tree_Layouts is
 
          Matrix_Target_Position :=
            Vis.Logic.Combine_Vector
-           (Layout.Max_X + Layout.X_Distance,
+           (Layout.Max_X + 2.0 * Layout.X_Distance,
             Vis.Logic.Get_Y (Layout.Target_Position));
+         --  2.0 * Layout.X_Distance is used to see, exactly, where the tree
+         --  ends
 
-         --  TBD: Matrix Layout may NOT release lock!
          The_Matrix_Layout := Matrix_Layouts.Initialize
            (Widget              => Layout.Widget,
             Widget_Lock         => Layout.Widget_Lock,
@@ -681,46 +682,40 @@ package body Giant.Tree_Layouts is
                  (Layout.Meta_Class_Set,
                   Graph_Lib.Get_Edge_Class_Id (Outgoing_Edges (I))) then
                   Node := Graph_Lib.Get_Target_Node (Outgoing_Edges (I));
-                  if Config.Class_Sets.Is_Empty
-                    (Layout.Meta_Class_Set) or else
-                    Config.Class_Sets.Is_Node_Class_Element_Of_Class_Set
-                    (Layout.Meta_Class_Set,
-                     Graph_Lib.Get_Node_Class_Id (Node)) then
-                     Graph_Lib.Node_Id_Sets.Remove_If_Exists
-                       (Layout.Nodes_To_Layout, Node, Found);
-                     if Found then
-                        --  node is reachable, via a valid edge
-                        --  is member of the class sets and is to be layouted
+                  Graph_Lib.Node_Id_Sets.Remove_If_Exists
+                    (Layout.Nodes_To_Layout, Node, Found);
+                  if Found then
+                     --  node is reachable, via a valid edge
+                     --  is member of the class sets and is to be layouted
 
-                        Silbling_Count := Silbling_Count + 1;
+                     Silbling_Count := Silbling_Count + 1;
 
-                        Adjust_Level_Height
-                          (Node, Parent_Data.Level + 1);
+                     Adjust_Level_Height
+                       (Node, Parent_Data.Level + 1);
 
-                        Data := Generate_Node_Layout_Data
-                          (Node              => Node,
-                           Level             => Parent_Data.Level + 1,
-                           Leftmost_Silbling => Leftmost_Silbling,
-                           Parent            => Parent_Data);
+                     Data := Generate_Node_Layout_Data
+                       (Node              => Node,
+                        Level             => Parent_Data.Level + 1,
+                        Leftmost_Silbling => Leftmost_Silbling,
+                        Parent            => Parent_Data);
 
-                        Data.Silbling_Number := Silbling_Count;
+                     Data.Silbling_Number := Silbling_Count;
 
-                        if Silbling_Count = 1 then
-                           --  Data is the first child of the node
-                           Leftmost_Silbling := Data;
-                           Data.Leftmost_Silbling := Data;
-                        else
-                           Last_Silbling.Right_Silbling := Data;
-                           Data.Left_Silbling := Last_Silbling;
-                        end if;
-
-                        Last_Silbling := Data;
-
-                        --  the children of Data have to be created, too
-                        --  --> append Data to queue
-                        Append_To_Queue (Data);
-
+                     if Silbling_Count = 1 then
+                        --  Data is the first child of the node
+                        Leftmost_Silbling := Data;
+                        Data.Leftmost_Silbling := Data;
+                     else
+                        Last_Silbling.Right_Silbling := Data;
+                        Data.Left_Silbling := Last_Silbling;
                      end if;
+
+                     Last_Silbling := Data;
+
+                     --  the children of Data have to be created, too
+                     --  --> append Data to queue
+                     Append_To_Queue (Data);
+
                   end if;
                end if;
             end loop;
