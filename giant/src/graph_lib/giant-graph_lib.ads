@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.45 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.46 $
 --  $Author: koppor $
---  $Date: 2003/09/18 17:08:27 $
+--  $Date: 2003/10/01 22:59:33 $
 --
 --  TBD:
 --    * Write into comment, when the routine may be used
@@ -643,6 +643,21 @@ package Giant.Graph_Lib is
    --  Routines for an immutable ids                 --
    --  Idea is like Integer'Value and Integer'Image  --
    ----------------------------------------------------
+
+   ---------------------------------------------------------------------------
+   --  The generated string is unique and invariant over multiple runs of
+   --    GIANT
+   --
+   --  Returns:
+   --    String-representation of given Node_Id
+   --    "n/a" if Node = Invalid_Node_Id
+   --
+   --  This routine is only needed at dump_iml_data, which is independent
+   --    from the main executable
+   --  There is no Edge_Id_Value, since it is not needed
+   function Edge_Id_Image
+     (Edge : in Edge_Id)
+     return String;
 
    ---------------------------------------------------------------------------
    --  The generated string is unique and invariant over multiple runs of
