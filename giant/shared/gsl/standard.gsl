@@ -1,6 +1,6 @@
 // ===========================================================================
-//  $RCSfile: standard.gsl,v $ $Revision: 1.4 $
-//  $Date: 2003/09/17 14:09:07 $
+//  $RCSfile: standard.gsl,v $ $Revision: 1.5 $
+//  $Date: 2003/09/17 15:06:30 $
 //  $Author: koppor $
 //
 //  File:         GSL-Library standard.gsl
@@ -14,7 +14,7 @@
 // ===========================================================================
 
 [
-  // Logical Negation
+  // logical negation
   set
    (+not,
     { (+a)
@@ -24,14 +24,20 @@
         true)
     });
 
-  // Logical And
+  // logical and
   set
    (+and_then,
     { (+a, +b)
-      if
-       (a,
-        b,
-        false)
+      [
+        if
+         (is_script (a),
+          {() set ('a, a ())},
+          null);
+        if 
+         (a,
+          b,
+          false);
+       ]
     });
 
   set
@@ -42,25 +48,35 @@
          (is_script (a),
           {() set ('a, a ())},
           null);
+
+	// Sicherstellen, dass b auf jeden Fall aktiviert wird
         if
          (is_script (b),
           {() set ('b, b ())},
           null);
+
         if 
          (a,
-          {() b},
+          b,
           false);
       ]
     });
 
-  // Logisches Oder
+  // logical or
   set
    (+or_else,
     { (+a, +b)
-      if
-       (a,
-        true,
-        b)
+      [
+        if
+         (is_script (a),
+          {() set ('a, a ())},
+          null);
+
+        if
+         (a,
+          true,
+          b)
+      ]
     });
 
   set
@@ -78,11 +94,11 @@
         if
          (a,
           true,
-          {() b});
+          b);
       ]
     });
 
-  // Schleifen
+  // loops
   set
    (+while,
     { (+b, +c)
@@ -99,7 +115,7 @@
     });
 
 
-  // Sets
+  // sets
   set
    (+union, add);
 
@@ -108,17 +124,22 @@
     { (+A, +B)
       [
         +result;
+        set
+          (+a_is_a_node_set, is_node_set (A));
         if
-         (is_node_set (A),
+         (a_is_a_node_set,
           {() set ('result, empty_node_set ())},
           {() set ('result, empty_edge_set ())});
         for_each
          (A,
           { (+e)
-            if
-             (is_in (B, e),
-              {() add ('result, e)},
-              null)
+            [ 
+              set (+e_is_in_B, is_in (B, e));
+              if
+               (e_is_in_B,
+                {() add ('result, e)},
+                null);
+            ]
           });
         result;
       ]
@@ -137,10 +158,13 @@
            for_each
             (from,
              { (+n)
-               if
-                (node_predicate (n),
-                 {() add ('node_set, n)},
-                 null)
+	       [
+                 set (+predicate_true, node_predicate (n));
+                 if 
+                  (predicate_true,
+                   {() add ('node_set, n)},
+                   null);
+               ]
              });
         node_set;
       ]
@@ -158,14 +182,17 @@
               [
                 set
                  (+n, get_source (e));
-                if
-                 (node_predicate (n),
+                set (+predicate_true, node_predicate (n));
+                if 
+                 (predicate_true,
                   {() add ('node_set, n)},
                   null);
+
                 set
                  ('n, get_target (e));
-                if
-                 (node_predicate (n),
+                set (+predicate_true, node_predicate (n));
+                if 
+                 (predicate_true,
                   {() add ('node_set, n)},
                   null);
               ]
@@ -179,8 +206,9 @@
     { (+a_set, +action)
       [
         set (+count, size_of ('a_set));
-         if
-          (less (count, 1),
+        set (+is_empty_set, less (count, 1));
+        if
+          (is_empty_set,
            null,
            { ()
              [
