@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.67 $
---  $Author: squig $
---  $Date: 2003/09/21 22:48:32 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.68 $
+--  $Author: koppor $
+--  $Date: 2003/10/06 18:56:20 $
 --
 
 with Ada.Exceptions;
@@ -507,6 +507,14 @@ package body Giant.Main_Window is
       return True;
    end Validate_Subgraph_Name;
 
+   procedure On_Subgraph_Generate_New_Subgraph
+     (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
+   is
+   begin
+      On_Help_About (Source);
+      --  insert got subgraph into subgraph-list
+   end On_Subgraph_Generate_New_Subgraph;
+
    procedure On_Subgraph_List_Highlight
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class;
       Status : in Projects.Subgraph_Highlight_Status)
@@ -822,6 +830,9 @@ package body Giant.Main_Window is
       Gtk.Menu.Append (Subgraph_List_Menu,
                        New_Menu_Item (-"Set Operation...",
                                       On_Subgraph_Set_Operation'Access));
+      Gtk.Menu.Append (Subgraph_List_Menu,
+                       New_Menu_Item (-"Generate new subgraph...",
+                                      On_Subgraph_Generate_New_Subgraph'Access));
       Gtk.Menu.Append (Subgraph_List_Menu,
                        New_Menu_Item (-"Insert As Selection...",
                                       On_Subgraph_List_Create_Selection'Access));
