@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-projects-test.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-projects-test.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/16 15:55:36 $
+--  $Date: 2003/06/17 15:05:37 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -36,9 +36,8 @@ package body Giant.Projects.Test is
    procedure Test_Init (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
    begin
-      Assert (Projects.Does_Project_Exist
-			  (Valid_Names.To_Standard_Name ("Test"), "."),
-			  "Does_Project_Exist");
+      Assert (Projects.Does_Project_Exist ("Test", "."),
+              "Does_Project_Exist");
    end;
 
    function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is

@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-valid_names.ads,v $, $Revision: 1.4 $
--- $Author: schwiemn $
--- $Date: 2003/06/17 14:03:02 $
+-- $RCSfile: giant-valid_names.ads,v $, $Revision: 1.5 $
+-- $Author: squig $
+-- $Date: 2003/06/17 15:05:37 $
 --
 -- -----------------------
 -- This package provides the functionality needed
@@ -51,6 +51,16 @@ pragma Elaborate_Body;
    -- of "Standard Name" (see GIANT Specification
    -- "3.3.1.1. Der String "STANDARD NAME").
    No_Correct_Standard_Name_Exception : exception;
+
+   ---------------------------------------------------------------------------
+   -- Checks if String_Value is a valid "Standard Name".
+   --
+   -- Raises
+   --   No_Correct_Standard_Name_Exception - Raised if the passed String
+   --   "String_Value" may not be converted to "standard name" as it does
+   --   not correspond to the requirements for "standard name"
+   procedure Verify_Standard_Name
+     (String_Value : in String);
 
    ---------------------------------------------------------------------------
    -- Determines whether a string corresponds to the requirements of

@@ -20,13 +20,22 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-valid_names.adb,v $, $Revision: 1.4 $
--- $Author: schwiemn $
--- $Date: 2003/06/17 14:03:02 $
+-- $RCSfile: giant-valid_names.adb,v $, $Revision: 1.5 $
+-- $Author: squig $
+-- $Date: 2003/06/17 15:05:37 $
 --
 with GNAT.OS_Lib;
 
 package body Giant.Valid_Names is
+
+   procedure Verify_Standard_Name
+     (String_Value : in String)
+   is
+   begin
+      if (not Is_Standard_Name (String_Value)) then
+         raise No_Correct_Standard_Name_Exception;
+      end if;
+   end Verify_Standard_Name;
 
    ---------------------------------------------------------------------------
    function Is_Standard_Name

@@ -21,9 +21,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/06/16 21:48:30 $
+--  $Date: 2003/06/17 15:05:37 $
 --
 
 with Giant.Graph_Lib;
@@ -47,10 +47,11 @@ package body Giant.Controller is
       -- create graph
       Giant.Graph_Lib.Create (IML_Graph_File);
 
+      Valid_Names.Verify_Standard_Name (Name);
+
       -- create project
       Current_Project := Projects.Create_Empty_Project
-        (Valid_Names.To_Standard_Name (Name), Project_Directory,
-         IML_Graph_File, Checksum);
+        (Name, Project_Directory, IML_Graph_File, Checksum);
    end Create_Project;
 
    function Get_Project
@@ -61,8 +62,7 @@ package body Giant.Controller is
    end;
 
    procedure Create_Window
-     (Name : in Valid_Names.Standard_Name
-        := Valid_Names.To_Standard_Name ("Unknown"))
+     (Name : in String := "Unknown")
    is
       Window : Vis_Windows.Visual_Window_Access;
    begin

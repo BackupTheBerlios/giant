@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.7 $
 --  $Author: squig $
---  $Date: 2003/06/16 21:48:30 $
+--  $Date: 2003/06/17 15:05:37 $
 --
 
 with Ada.Strings.Unbounded;
@@ -193,6 +193,9 @@ package body Giant.Main_Window is
       Row_Data : Gtkada.Types.Chars_Ptr_Array (0 .. 1);
       Row : Glib.Gint;
    begin
+      for I in Row_Data'Range loop
+         Row_Data (I) := Interfaces.C.Strings.New_String ("");
+      end loop;
       Row := Gtk.Clist.Append (Window_List, Row_Data);
       Window_List_Data.Data.Set (Window_List, Row, Window_Name);
       Update_Window (Row);
