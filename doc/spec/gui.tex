@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.50 $
-%  $Date: 2003/03/29 09:14:51 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.51 $
+%  $Date: 2003/03/29 09:26:53 $
 %  $Author: birdy $
 %
 %  Description: 
@@ -227,7 +227,6 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     Auf der Pinliste sind folgende Menüpunkte eines Popup-Menüs aktivierbar:
     
     \begin{enumerate}
-       %  \item New Pin (PIN\_NEW)  gestichen von Martin
       \item Focus Pin (PIN\_JUMP) % OK
       \item Delete Pin (PIN\_DELETE) % OK
     \end{enumerate}
@@ -261,6 +260,9 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
       \item Copy Selection change existing layout % OK
       \item Delete Selection % OK
       \item Selection Set Operation (Union/Difference/Intersection) % OK
+      
+      \item Set Layout Algorithm for Selection
+      
     \end{enumerate}    
 
 
@@ -309,7 +311,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     
     \subsection{Liste ATTRIBUTES}
 
-      Die Liste ATTRIBUTES enthält alle Attribute des Knotens, hat zwei Spalten:
+      Die Liste ATTRIBUTES enthält alle Attribute des Knotens und hat zwei Spalten:
     
       \begin{enumerate}
         \item ATTRIBUTE (Attribute Name)
@@ -323,7 +325,6 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     
     \begin{enumerate}
       \item EDGE\_TYPE (Typ der abgehenden Kante: Edge Type)
-      \item NODE\_TYPE (Typ des Knotens: Node Type)
       \item NODE\_ID (ID des Knotens, zu dem sie führt: Node ID)
     \end{enumerate}    
 
@@ -334,7 +335,6 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
 
       \begin{enumerate}
         \item EDGE\_TYPE (Typ der ankommenden Kante: Edge Type)
-        \item NODE\_TYPE (Typ des Knotens: Node Type)
         \item NODE\_ID (ID des Knotens, von dem sie kommt: Node ID)
       \end{enumerate}
 
@@ -358,8 +358,7 @@ Unter QUERY\_TEXT befinden sich folgende Elemente:
 Ein allgemeiner Texteingabedialog ist ein Fenster DIALOG\_WINDOW mit dem
 Titel \gq{GIANT Dialog}. Im Fenster ist ein einzeiliges Textfeld TEXT\_FIELD
 mit einem Prompt-Text TEXT\_LABEL davor, zwei Buttons OK\_BUTTON und CANCEL\_BUTTON
-mit den Beschriftungen OK\_LABEL und CANCEL\_LABEL.
-Defaultmäßig sind die Buttons mit \gq{OK} und \gq{Cancel} beschriftet.
+mit den Beschriftungen \gq{OK} und \gq{Cancel}.
 
 
 
@@ -376,10 +375,13 @@ Bestandteile des Dialoges sind:
 \begin {enumerate}
 
  \item LEFT\_SOURCE Combobox\\
- Soll eine Mengenoperation für Selektionen ausgeführt werden, so werden hier
- alle Selektionen des entsprechenden Anzeigefensters angezeigt.\\
+ Soll eine Mengenoperation für Selektionen ausgeführt werden, so können hier
+ alle Selektionen des entsprechenden Anzeigefensters ausgewählt werden.\\
  Bei einer Mengenoperation über IML-Teilgraphen, werden alle IML-Teilgraphen
  des Projektes angezeigt.
+ 
+ \item <OP>\\
+ Mengenoperation, die ausgeführt werden soll: Union, Difference oder Intersection.
  
  \item TARGET Textfield\\
  Name der neuen Selektion oder des neuen IML-Teilgraphen als Ergebnis
@@ -403,8 +405,6 @@ Der Dialog Layoutalgorithmen bietet folgende Möglichkeiten:
  \item Eingabe der zu berücksichtigenden Kanten bei semantischen Layouts
  \item OK Button
  \item Cancel Button
- \item Textfeld zur Eingabe des Namens für die Selektion (in dem Anzeigefenster wo sie 
-       eingefügt wurde)
 \end {enumerate}
 
 
@@ -454,7 +454,8 @@ mit \gq{No}.
   \subsection {Der \gq{Standard-Filechooser-Dialog}}
   \label {Standard-Filechooser-Dialog}
   Die Auswahl von Dateien (Laden/Speichern) passiert bei GIANT mittels
-  des von GTK/ADA bereit gestellten Filechooser-Dialogs.
+  des Standard Filechooser-Dialogs. Filter mit Wildcards für Dateinamen
+  werden dabei von GIANT gesetzt.
 
 
 \section{Fadenkreuzcursor}
@@ -476,18 +477,18 @@ mit \gq{No}.
 Es gibt in GIANT drei Möglichkeiten zur Fortschrittsanzeige während laufender Berechnungen.
 Jede Progressbar ist mit \gq{Working, please wait.} beschriftet.
 
-\subsection{Progressbar-1}
-\label{Progressbar-1}
+\subsection{Progressbar-Runs}
+\label{Progressbar-Runs}
      Anzeige eines Dialoges mit einem sich ständig leicht ändernden
      Inhalt, so dass erkennbar ist, dass das System noch arbeitet.
 
-\subsection{Progressbar-2}  
-\label{Progressbar-2}   
+\subsection{Progressbar-Percent}  
+\label{Progressbar-Percent}   
      Anzeige eines Progressbars, der darstellt, welcher Anteil der
      Gesamtberechnung in Prozent bereits erledigt ist.
 
-\subsection{Progressbar-3}
-\label{Progressbar-3} 
+\subsection{Progressbar-Status}
+\label{Progressbar-Status} 
      Anzeige eines Progressbars, der über den aktuellen Fortschritt
      einer Berechnung informiert, ohne dabei den Gesamtaufwand zu 
      kennen. Dabei wird kontinuierlich die Anzahl der schon bearbeiteten
