@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.28 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.29 $
 --  $Author: koppor $
---  $Date: 2003/06/26 16:02:25 $
+--  $Date: 2003/06/27 16:49:38 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -56,203 +56,6 @@ package body Giant.Graph_Lib is
    --  Created in "Create"
    --  Destroyed in "Destroy"
    IML_Graph : IML_Graphs.IML_Graph;
-
-   package body Edge_Id_Locator is
-
-      ------------------------------------------------------------------------
-      --  Natural'Identity doesn't exist - TBD: maybe there's one!
-      function Identity (N : Natural) return Natural
-      is
-      begin
-         return N;
-      end Identity;
-
-      ------------------------------------------------------------------------
-      --  don't know, how to create a dynamic array, therefore the hashtable
-      --    is used
-      package Attribute_Element_Number_Hashed_Mappings is
-         new Hashed_Mappings
-        (Key_Type   => Natural,
-         Value_Type => Edge_Id,    --  here is the edge_id, we search for
-         Hash       => Identity);
-
-      ------------------------------------------------------------------------
-      package Attribute_Hashed_Mappings is
-         new Hashed_Mappings
-        (Key_Type   => Node_Attribute_ID,
-         Value_Type => Attribute_Element_Number_Hashed_Mappings.Mapping,
-         Hash       => Node_Attribute_Id_Hash_Functions.Integer_Hash);
-
-      ------------------------------------------------------------------------
-      package Target_Node_Hashed_Mappings is
-         new Hashed_Mappings
-        (Key_Type   => Node_Id,
-         Value_Type => Attribute_Hashed_Mappings.Mapping,
-         Hash       => Hash_Node_Id);
-
-      ------------------------------------------------------------------------
-      package Source_Node_Hashed_Mappings is
-         new Hashed_Mappings
-        (Key_Type   => Node_Id,
-         Value_Type => Target_Node_Hashed_Mappings.Mapping,
-         Hash       => Hash_Node_Id);
-
-      Source_Node_Mapping : Source_Node_Hashed_Mappings.Mapping;
-
-      ------------------------------------------------------------------------
-      procedure Initialize
-      is
-         All_Edges    : Edge_Id_Set;
-         Iter         : Edge_Id_Sets.Iterator;
-         Current_Edge : Edge_Id;
-
-         Target_Node_Mapping  : Target_Node_Hashed_Mappings.Mapping;
-         Attribute_Mapping    : Attribute_Hashed_Mappings.Mapping;
-         Attribute_Element_Number_Mapping :
-           Attribute_Element_Number_Hashed_Mappings.Mapping;
-      begin
-         Source_Node_Mapping := Source_Node_Hashed_Mappings.Create;
-
-         All_Edges := Get_All_Edges;
-         Iter := Edge_Id_Sets.Make_Iterator (All_Edges);
-
-         while Edge_Id_Sets.More (Iter) loop
-            Edge_Id_Sets.Next (Iter, Current_Edge);
-
-            --  insert source node
-            if Source_Node_Hashed_Mappings.Is_Bound
-              (Source_Node_Mapping,
-               Current_Edge.Source_Node) then
-               Target_Node_Mapping := Source_Node_Hashed_Mappings.Fetch
-                 (Source_Node_Mapping,
-                  Current_Edge.Source_Node);
-            else
-               Target_Node_Mapping := Target_Node_Hashed_Mappings.Create;
-               Source_Node_Hashed_Mappings.Bind
-                 (Source_Node_Mapping,
-                  Current_Edge.Source_Node,
-                  Target_Node_Mapping);
-            end if;
-
-            --  insert target node
-            if Target_Node_Hashed_Mappings.Is_Bound
-              (Target_Node_Mapping,
-               Current_Edge.Target_Node) then
-               Attribute_Mapping := Target_Node_Hashed_Mappings.Fetch
-                 (Target_Node_Mapping,
-                  Current_Edge.Target_Node);
-            else
-               Attribute_Mapping := Attribute_Hashed_Mappings.Create;
-               Target_Node_Hashed_Mappings.Bind
-                 (Target_Node_Mapping,
-                  Current_Edge.Target_Node,
-                  Attribute_Mapping);
-            end if;
-
-            --  insert attribute
-            if Attribute_Hashed_Mappings.Is_Bound
-              (Attribute_Mapping,
-               Current_Edge.Attribute) then
-               Attribute_Element_Number_Mapping :=
-                 Attribute_Hashed_Mappings.Fetch
-                 (Attribute_Mapping,
-                  Current_Edge.Attribute);
-            else
-               Attribute_Element_Number_Mapping :=
-                 Attribute_Element_Number_Hashed_Mappings.Create;
-               Attribute_Hashed_Mappings.Bind
-                 (Attribute_Mapping,
-                  Current_Edge.Attribute,
-                  Attribute_Element_Number_Mapping);
-            end if;
-
-            --  insert edge_id
-            if Attribute_Element_Number_Hashed_Mappings.Is_Bound
-              (Attribute_Element_Number_Mapping,
-               Current_Edge.Attribute_Element_Number) then
-               raise Duplicate_Edge;
-            else
-               Attribute_Element_Number_Hashed_Mappings.Bind
-                 (Attribute_Element_Number_Mapping,
-                  Current_Edge.Attribute_Element_Number,
-                  Current_Edge);
-            end if;
-
-         end loop;
-
-         Edge_Id_Sets.Destroy (All_Edges);
-
-         Edge_Id_Sets.Destroy (All_Edges);
-      end Initialize;
-
-      ------------------------------------------------------------------------
-      function Locate
-        (Source_Node              : in Node_Id;
-         Target_Node              : in Node_Id;
-         Attribute                : in Node_Attribute_Id;
-         Attribute_Element_Number : in Natural)
-        return Edge_Id
-      is
-         Target_Node_Mapping  : Target_Node_Hashed_Mappings.Mapping;
-         Attribute_Mapping    : Attribute_Hashed_Mappings.Mapping;
-         Attribute_Element_Number_Mapping :
-           Attribute_Element_Number_Hashed_Mappings.Mapping;
-      begin
-         --  look for source node
-         if Source_Node_Hashed_Mappings.Is_Bound
-           (Source_Node_Mapping,
-            Source_Node) then
-            Target_Node_Mapping := Source_Node_Hashed_Mappings.Fetch
-              (Source_Node_Mapping,
-               Source_Node);
-         else
-            raise No_Edge_Found;
-         end if;
-
-         --  look for target node
-         if Target_Node_Hashed_Mappings.Is_Bound
-           (Target_Node_Mapping,
-            Target_Node) then
-            Attribute_Mapping := Target_Node_Hashed_Mappings.Fetch
-              (Target_Node_Mapping,
-               Target_Node);
-         else
-            raise No_Edge_Found;
-         end if;
-
-         --  look for attribute
-         if Attribute_Hashed_Mappings.Is_Bound
-           (Attribute_Mapping,
-            Attribute) then
-            Attribute_Element_Number_Mapping :=
-              Attribute_Hashed_Mappings.Fetch
-              (Attribute_Mapping,
-               Attribute);
-         else
-            raise No_Edge_Found;
-         end if;
-
-         --  look for edge_id
-         if Attribute_Element_Number_Hashed_Mappings.Is_Bound
-           (Attribute_Element_Number_Mapping,
-            Attribute_Element_Number) then
-            return Attribute_Element_Number_Hashed_Mappings.Fetch
-              (Attribute_Element_Number_Mapping,
-               Attribute_Element_Number);
-         else
-            raise No_Edge_Found;
-         end if;
-      end Locate;
-
-      ------------------------------------------------------------------------
-      procedure Destroy
-      is
-      begin
-         --  TBD: Deep-destroy
-         null;
-      end Destroy;
-
-   end Edge_Id_Locator;
 
    --------------------------------------
    --  Hashing for Node_Attribute_Ids  --
@@ -606,11 +409,11 @@ package body Giant.Graph_Lib is
             Internal_Node : Node_Id;
          end record;
 
-         --  Creates an edge in the internal structure
+         --  Creates an edge in the package-internal structure
          procedure Create_Edge
-           (Edge_Source : in Node_Access;
-            Edge_Target : in Node_Access;
-            Attribute   : in Node_Attribute_Id;
+           (Edge_Source              : in Node_Access;
+            Edge_Target              : in Node_Access;
+            Attribute                : in Node_Attribute_Id;
             Attribute_Element_Number : in Natural);
 
          --  Creates a node in the internal structure
@@ -639,11 +442,13 @@ package body Giant.Graph_Lib is
 
             Edge : Edge_Access := new Edge_Record;
          begin
-            Edge.Source := Edge_Source;
-            Edge.Target := Edge_Target;
-            Edge.Attribute := Attribute;
+            --  initialize edge
+            Edge.Source      := Edge_Source;
+            Edge.Target      := Edge_Target;
+            Edge.Attribute   := Attribute;
             Edge.Attribute_Element_Number := Attribute_Element_Number;
 
+            --  make it known to connected nodes
             Edge_Lists.Attach (Edge_Target.Edges_In, Edge);
             Edge_Lists.Attach (Edge_Source.Edges_Out, Edge);
          end Create_Edge;
@@ -892,8 +697,11 @@ package body Giant.Graph_Lib is
       --
       --  Parameters:
       --    Queue: Queue containing all nodes in temporary structure
-      procedure ConvertTempStructureToUsedStructure
+      procedure Convert_Temp_Structure_To_Used_Structure
         (Queue : in Load_Nodes.Node_Queue) is
+
+         Last_Internal_Id : Integer            := 0;
+         All_Edges_Set    : Edge_Id_Sets.Set;
 
          --  Precondition:
          --    Size of TargtArray == Length(SourceList)
@@ -919,14 +727,44 @@ package body Giant.Graph_Lib is
             for I in TargetArray'Range loop
                Load_Nodes.Edge_Lists.Next (EdgeIter, CurEdge);
 
+               --  Every new edge gets a higher id
+               Last_Internal_Id := Last_Internal_Id + 1;
+
                TargetArray (I) := new Edge_Record;
+               TargetArray (I).Internal_Id := Last_Internal_Id;
                TargetArray (I).Source_Node := CurEdge.Source.Internal_Node;
                TargetArray (I).Target_Node := CurEdge.Target.Internal_Node;
                TargetArray (I).Attribute   := CurEdge.Attribute;
                TargetArray (I).Attribute_Element_Number :=
                  CurEdge.Attribute_Element_Number;
+
+               --  add it to procedure-internal set holding all edges
+               --  of the graph
+               Edge_Id_Sets.Insert (All_Edges_Set, TargetArray (I));
             end loop;
          end Convert_Edges;
+
+         ----------------------------------------------------------------------
+         --  Convert set containing all edges to an array of all edges
+         procedure Convert_Edge_Set_To_Edge_Array is
+
+            Current_Edge_Index : Natural := 0;
+
+            procedure Execute (Edge : Edge_Id)
+            is
+            begin
+               Current_Edge_Index := Current_Edge_Index + 1;
+               All_Edges (Current_Edge_Index) := Edge;
+            end Execute;
+
+            procedure Apply is new Edge_Id_Sets.Apply
+              (Execute => Execute);
+
+         begin
+            All_Edges := new Edge_Id_Array
+              (1..Edge_Id_Sets.Size (All_Edges_Set));
+            Apply (All_Edges_Set);
+         end Convert_Edge_Set_To_Edge_Array;
 
          NodeIter : Load_Nodes.Node_Queues.ListIter;
          CurNode  : Load_Nodes.Node_Access; --  of the temporary structure
@@ -961,6 +799,9 @@ package body Giant.Graph_Lib is
 
          --  Convert edges
          --  Has to be done in a second loop, because now all nodes exist
+
+         All_Edges_Set := Edge_Id_Sets.Empty_Set;
+
          NodeIter := Load_Nodes.Node_Queues.MakeListIter (Queue);
          while Load_Nodes.Node_Queues.More (NodeIter) loop
             Load_Nodes.Node_Queues.Next (NodeIter, CurNode);
@@ -975,7 +816,11 @@ package body Giant.Graph_Lib is
             Convert_Edges( CurNode.Edges_Out, NewNode.Outgoing_Edges);
          end loop;
 
-      end ConvertTempStructureToUsedStructure;
+         Convert_Edge_Set_To_Edge_Array;
+
+         Edge_Id_Sets.Destroy (All_Edges_Set);
+
+      end Convert_Temp_Structure_To_Used_Structure;
 
       -------------------------------------------------------------------------
       --  Destroys the temporary structure,
@@ -1012,13 +857,11 @@ package body Giant.Graph_Lib is
          Queue : Load_Nodes.Node_Queue;
       begin
          ConvertIMLGraphToTempStructure (Queue);
-         ConvertTempStructureToUsedStructure (Queue);
+         Convert_Temp_Structure_To_Used_Structure (Queue);
          DestroyTempStructure (Queue);
       end;
 
       Iml_Node_Mapper.Destroy;
-
-      --  TBD: FIXME: raises storage_error: Edge_Id_Locator.Initialize;
    end Load;
 
    ---------------------------------------------------------------------------
@@ -1059,8 +902,6 @@ package body Giant.Graph_Lib is
       end DestroyAllNodes;
 
    begin
-      --  TBD: FIXME: Init doesn't work Edge_Id_Locator.Destroy;
-
       DestroyAllNodes;
 
       IML_Node_ID_Hashed_Mappings.Destroy (IML_Node_ID_Mapping);
@@ -1242,34 +1083,16 @@ package body Giant.Graph_Lib is
    end Does_Node_Id_Exist;
 
    ---------------------------------------------------------------------------
-   --  Could be implemented more efficient
-   --    a) traverse All_Nodes "by hand"
-   --         don't use function Get_All_Nodes, but travel thourgh the hashmap
-   --         directly
-   --    b) build set at creation of graph and return a copy here
    function Get_All_Edges
      return Edge_Id_Set
    is
-      All_Nodes : Node_Id_Sets.Set;
-      Iter      : Node_Id_Sets.Iterator;
-      Cur_Node  : Node_Id;
-      Result    : Edge_Id_Sets.Set;
+      Res : Edge_Id_Sets.Set;
    begin
-      Result := Edge_Id_Sets.Empty_Set;
-
-      All_Nodes := Get_All_Nodes;
-
-      Iter := Node_Id_Sets.Make_Iterator (All_Nodes);
-
-      while Node_Id_Sets.More (Iter) loop
-         Node_Id_Sets.Next (Iter, Cur_Node);
-
-         Edge_Id_Sets.Union (Result, Get_Outgoing_Edges (Cur_Node));
+      Res := Edge_Id_Sets.Empty_Set;
+      for I in All_Edges'Range loop
+         Edge_Id_Sets.Insert (Res, All_Edges (I));
       end loop;
-
-      Node_Id_Sets.Destroy (All_Nodes);
-
-      return Result;
+      return Res;
    end Get_All_Edges;
 
    ---------------------------------------------------------------------------
