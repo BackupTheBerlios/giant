@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-node_annotations-test.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-node_annotations-test.adb,v $, $Revision: 1.4 $
 --  $Author: squig $
---  $Date: 2003/07/09 16:22:35 $
+--  $Date: 2003/07/14 14:13:53 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -44,6 +44,12 @@ package body Giant.Node_Annotations.Test is
 
    package Logger is new Giant.Logger("Giant.Node_Annotations.Test");
 
+   procedure Test_Init
+     (R : in out AUnit.Test_Cases.Test_Case'Class) is
+   begin
+      Logger.Warn ("=== Running Node Annotaions Tests ===");
+   end Test_Init;
+
    ---------------------------------------------------------------------------
    procedure Test_Memory_Leacks_XML
      (R : in out AUnit.Test_Cases.Test_Case'Class) is
@@ -53,7 +59,6 @@ package body Giant.Node_Annotations.Test is
 
       My_Annotations : Giant.Node_Annotations.Node_Annotation_Access;
    begin
-
       for i in 1 .. 1 loop
          Giant.XML_File_Access.Load_XML_File_Validated
            ("./resources/node_annotations/node_annotations.xml",
@@ -359,6 +364,7 @@ package body Giant.Node_Annotations.Test is
 
    procedure Register_Tests (T : in out Test_Case) is
    begin
+      Register_Routine (T, Test_Init'Access, "Test_Init");
 
       --  Register_Routine
       --    (T, Test_Memory_Leacks_XML'Access, "Test_Memory_Leacks_XML");

@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory-test.adb,v $, $Revision: 1.3 $
---  $Author: koppor $
---  $Date: 2003/07/13 00:00:18 $
+--  $RCSfile: giant-layout_factory-test.adb,v $, $Revision: 1.4 $
+--  $Author: squig $
+--  $Date: 2003/07/14 14:13:53 $
 --
 
 with Ada.Text_IO;
@@ -36,18 +36,18 @@ with Giant.Logger;
 package body Giant.Layout_Factory.Test is
 
    --------------------------------------------------------------------------
-   package Logger is new Giant.Logger("T:layout-factory");
+   package Logger is new Giant.Logger("layout_factory.test");
 
    -----------------
    --  Testcases  --
    -----------------
 
    ---------------------------------------------------------------------------
-   procedure Init (R : in out AUnit.Test_Cases.Test_Case'Class)
+   procedure Test_Init (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
    begin
-      null;
-   end Init;
+      Logger.Warn ("=== Running Layout Factory ===");
+   end Test_Init;
 
    procedure Done (R : in out AUnit.Test_Cases.Test_Case'Class)
    is
@@ -66,7 +66,7 @@ package body Giant.Layout_Factory.Test is
 
    procedure Register_Tests (T : in out Test_Case) is
    begin
-      Register_Routine (T, Init'Access, "Init");
+      Register_Routine (T, Test_Init'Access, "Init");
       Register_Routine (T, Done'Access, "Done");
    end Register_Tests;
 

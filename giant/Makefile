@@ -33,7 +33,8 @@ LIBS            = $(shell gtkada-config)
 
 CFLAGS          = -g 
 #-O2 -funroll-loops
-GNAT_FLAGS      = -j2 -gnatX -gnata -gnatf -gnatwl -gnato -fstack-check
+GNAT_FLAGS      = -j2 -gnatX -gnata -gnatf -gnatwl -gnato -fstack-check \
+                  -fprofile-arcs -ftest-coverage
                   #-gnaty3abcefhiklmprt #-gnatys 
 ALL_CFLAGS      = $(CFLAGS) $(TARGET_CFLAGS) $(GNAT_FLAGS) $(INCLUDES) $(CUSTOM_CFLAGS)
 ALL_LFLAGS      = $(LFLAGS) $(TARGET_LFLAGS) $(LIBS)

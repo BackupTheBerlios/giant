@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: giant 1.0(cvs)\n"
-"PO-Revision-Date: 2003-06-30 19:30+0200\n"
+"PO-Revision-Date: 2003-07-14 12:32+0200\n"
 "Last-Translator: Steffen Pingel <squig@studi.informatik.uni-stuttgart.de>\n"
 "Language-Team: German <codefabrik@droste.informatik.uni-stuttgart.de>\n"
 "MIME-Version: 1.0\n"
@@ -263,10 +263,10 @@ msgid  "Project saved"
 msgstr "Project saved"
 
 msgid  "Quit"
-msgstr "Quit"
+msgstr "Schliessen"
 
 msgid  "Rename..."
-msgstr "Rename..."
+msgstr "Umbenennen..."
 
 msgid  "Save"
 msgstr "Save"
