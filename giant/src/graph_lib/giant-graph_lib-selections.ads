@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.4 $
---  $Author: koppor $
---  $Date: 2003/06/10 09:25:22 $
+--  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.5 $
+--  $Author: schwiemn $
+--  $Date: 2003/06/10 15:00:21 $
 --
 ------------------------------------------------------------------------------
 --
@@ -89,7 +89,7 @@ package Giant.Graph_Lib.Selections is
    ---------------------------------------------------------------------------
    procedure Selection_Read
       (Stream            : in Bauhaus_Io.In_Stream_Type;
-       Selection_To_Read : in Selection);
+       Selection_To_Read : out Selection);
 
 
    -----------------------

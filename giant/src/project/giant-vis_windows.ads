@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.8 $
+--  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.9 $
 --  $Author: schwiemn $
---  $Date: 2003/06/10 12:34:47 $
+--  $Date: 2003/06/10 15:00:22 $
 --
 --  ----------------
 --  This package realizes a container that administrates the components
@@ -790,6 +790,7 @@ package Giant.Vis_Windows is
 ------------------------------------------------------------------------------
 private
 
+
    ---------------------------------------------------------------------------
    --  Management of the pins of a visualisation window.
    ---------------------------------------------------------------------------
@@ -806,15 +807,11 @@ private
    function Pin_Less_Than (Left : in Pin; Right : in Pin) return Boolean;
    
    package Pin_Sets is new
-   Ordered_Sets (Item_Type => Pin,
-                 "="       => Pin_Equal,
-                 "<"       => Pin_Less_Than);
+     Ordered_Sets (Item_Type => Pin,
+                   "="       => Pin_Equal,
+                   "<"       => Pin_Less_Than);
 						
-                  
-                  
-   -- !!!!!!! TODO
---   Streaming for Pins needed
-   
+                    
    ---------------------------------------------------------------------------		
    --  Management of Selections inside a visualisation window
    ---------------------------------------------------------------------------
@@ -825,50 +822,30 @@ private
      Is_Faded_Out : boolean;
    end record;
 
-   -- selections are only compared based on the name
+   --  selections are only compared based on the name
    function Selection_Data_Equal
      (Left  : in Selection_Data_Elemet;
       Right : in Selection_Data_Elemet)
      return Boolean;
 
-   -- selections are only compared based on the name
+   --  selections are only compared based on the name
    function Selection_Data_Less_Than 
      (Left  : in Selection_Data_Elemet;
       Right : in Selection_Data_Elemet)
      return Boolean;
 
-
--- !!!!!!!!!!!!!!!!!
-   --  needed for persistence
---   procedure Selection_Data_Elemet_Write
---     (Stream    : access Root_Stream_Type'Class;
---      Selection : in Selection_Data_Elemet);
-
-   --  needed for persistence
---   procedure Selection_Data_Elemet_Read
---     (Stream    : access Root_Stream_Type'Class;
---      Selection : out Selection_Data_Elemet);
-
-
-
    package Selection_Data_Sets is new Ordered_Sets 
      (Item_Type => Selection_Data_Elemet,
       "="       => Selection_Data_Equal,
       "<"       => Selection_Data_Less_Than);
- --     Write     => Selection_Data_Elemet_Write,
- --     Read      => Selection_Data_Elemet_Read);
-      
-  -- TODO  
-  -- !!!!!!!!!!!!!!! STREAMING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  -- generische Pakete instantiiren
+     
    
-
    ---------------------------------------------------------------------------
    --  The data model for a visualisation window
    ---------------------------------------------------------------------------
    
    type Visual_Window_Element;
-
+ 
    type Visual_Window_Access is access Visual_Window_Element;
 
    type Visual_Window_Element is record

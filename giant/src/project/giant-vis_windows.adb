@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.8 $
 --  $Author: schwiemn $
---  $Date: 2003/06/10 12:34:47 $
+--  $Date: 2003/06/10 15:00:21 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -42,6 +42,64 @@ package body Giant.Vis_Windows is
    Standard_Selection_Name : constant Valid_Names.Standard_Name :=
      Valid_Names.To_Standard_Name ("Standard_Selection");
 
+
+   ---------------------------------------------------------------------------
+   --  0.1
+   --  Internal subprograms
+   --------------------------------------------------------------------------- 
+
+   --  needed for platformindependent persistence
+   --------------------------------------------------------------------------- 
+   procedure Selection_Data_Elemet_Read
+     (Stream  : in  Bauhaus_IO.In_Stream_Type;
+      Element : out Selection_Data_Elemet) is             
+      
+      Highlight_Integer_Id : Integer;    
+   begin
+      
+      --  Read the Selection
+      Graph_Lib.Selections.Selection_Read (Stream, Element.The_Selection);
+      
+      --  Read Highlight Status
+      Bauhaus_IO.Read_Integer (Stream, Highlight_Integer_Id);
+      Element.Highlight_Status := 
+        Selection_Highlight_Status'Val (Highlight_Integer_Id);
+        
+      --  Read fading status
+      Bauhaus_IO.Read_Boolean (Stream, Element.Is_Faded_Out);
+            
+   end Selection_Data_Elemet_Read;
+
+   ---------------------------------------------------------------------------   
+   procedure Selection_Data_Set_Read is new Selection_Data_Sets.Read_Set
+     (Read_Element => Selection_Data_Elemet_Read);
+     
+   --  needed for platformindependent persistence 
+   ---------------------------------------------------------------------------
+   procedure Selection_Data_Elemet_Write
+     (Stream  : in  Bauhaus_IO.Out_Stream_Type;
+      Element : in  Selection_Data_Elemet) is
+   
+      Highlight_Integer_Id : Integer;      
+   begin
+         
+      --  Stream the selection
+      Graph_Lib.Selections.Selection_Write (Stream, Element.The_Selection);
+      
+      --  Stream the enumeration type via conversion to integer
+      Highlight_Integer_Id := 
+        Selection_Highlight_Status'Pos (Element.Highlight_Status);   
+      Bauhaus_IO.Write_Integer (Stream, Highlight_Integer_Id);
+      
+      -- Stream fading status flag
+      Bauhaus_IO.Write_Boolean (Stream, Element.Is_Faded_Out);
+  
+   end Selection_Data_Elemet_Write;
+   
+   ---------------------------------------------------------------------------   
+   procedure Selection_Data_Set_Write is new Selection_Data_Sets.Write_Set
+     (Write_Element => Selection_Data_Elemet_Write);
+      
 
    ---------------------------------------------------------------------------
    --  A
@@ -113,7 +171,25 @@ package body Giant.Vis_Windows is
    procedure Visual_Window_Access_Read
      (Stream : in  Bauhaus_IO.In_Stream_Type;
       Item   : out Visual_Window_Access) is
+                
    begin
+    
+      Item := new Visual_Window_Element;
+    
+      --  Read Vis_Window_Name
+      Bauhaus_IO.Read_Unbounded_String (Stream, Item.Vis_Window_Name);
+    
+      --  Read The_Visualisation_Style
+      Bauhaus_IO.Read_Unbounded_String (Stream, Item.The_Visualisation_Style); 
+      
+      --  Read The_Graph_Widget
+       
+   
+   
+   
+   
+   
+   
    
       
     --  GRAPH_LIB; TODO
