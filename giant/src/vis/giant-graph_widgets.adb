@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/06/23 23:37:17 $
+--  $Date: 2003/06/25 13:42:50 $
 --
 ------------------------------------------------------------------------------
 
@@ -242,7 +242,7 @@ package body Giant.Graph_Widgets is
    procedure Add_Local_Highlighting
      (Widget     : access Graph_Widget_Record'Class;
       Selection  : access Graph_Lib.Selections.Selection;
-      Color      : in     Config.Selection_High_Light_ID) is
+      Color      : in     Config.Global_Data.Selection_High_Light_ID) is
    begin
       raise Unimplemented;
    end Add_Local_Highlighting;
@@ -250,7 +250,7 @@ package body Giant.Graph_Widgets is
    procedure Remove_Local_Highlighting
      (Widget     : access Graph_Widget_Record'Class;
       Selection  : access Graph_Lib.Selections.Selection;
-      Color      : in     Config.Selection_High_Light_ID) is
+      Color      : in     Config.Global_Data.Selection_High_Light_ID) is
    begin
       raise Unimplemented;
    end Remove_Local_Highlighting;
@@ -258,7 +258,7 @@ package body Giant.Graph_Widgets is
    procedure Add_Global_Highlighting
      (Widget     : access Graph_Widget_Record'Class;
       Subgraph   : access Graph_Lib.Subgraphs.Subgraph;
-      Color      : in     Config.Subgraph_High_Light_ID) is
+      Color      : in     Config.Global_Data.Subgraph_High_Light_ID) is
    begin
       raise Unimplemented;
    end Add_Global_Highlighting;
@@ -266,7 +266,7 @@ package body Giant.Graph_Widgets is
    procedure Remove_Global_Highlighting
      (Widget     : access Graph_Widget_Record'Class;
       Subgraph   : access Graph_Lib.Subgraphs.Subgraph;
-      Color      : in     Config.Subgraph_High_Light_ID) is
+      Color      : in     Config.Global_Data.Subgraph_High_Light_ID) is
    begin
       raise Unimplemented;
    end Remove_Global_Highlighting;

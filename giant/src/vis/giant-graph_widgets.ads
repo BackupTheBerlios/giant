@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.7 $
---  $Author: squig $
---  $Date: 2003/06/23 19:19:34 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.8 $
+--  $Author: keulsn $
+--  $Date: 2003/06/25 13:42:50 $
 --
 ------------------------------------------------------------------------------
 --
@@ -70,6 +70,7 @@ with Hashed_Mappings;
 pragma Elaborate_All (Hashed_Mappings);
 
 with Giant.Config;
+with Giant.Config.Global_Data;
 with Giant.Config.Vis_Styles;
 with Giant.Graph_Lib;
 with Giant.Graph_Lib.Selections;
@@ -471,7 +472,7 @@ package Giant.Graph_Widgets is
    procedure Add_Local_Highlighting
      (Widget     : access Graph_Widget_Record'Class;
       Selection  : access Graph_Lib.Selections.Selection;
-      Color      : in     Config.Selection_High_Light_ID);
+      Color      : in     Config.Global_Data.Selection_High_Light_ID);
 
    ----------------------------------------------------------------------------
    --  Remove a highlight color from all edges and nodes in a selection.
@@ -483,7 +484,7 @@ package Giant.Graph_Widgets is
    procedure Remove_Local_Highlighting
      (Widget     : access Graph_Widget_Record'Class;
       Selection  : access Graph_Lib.Selections.Selection;
-      Color      : in     Config.Selection_High_Light_ID);
+      Color      : in     Config.Global_Data.Selection_High_Light_ID);
 
    ----------------------------------------------------------------------------
    --  Add a highlight color to all edges and nodes in a subgraph.
@@ -501,7 +502,7 @@ package Giant.Graph_Widgets is
    procedure Add_Global_Highlighting
      (Widget     : access Graph_Widget_Record'Class;
       Subgraph   : access Graph_Lib.Subgraphs.Subgraph;
-      Color      : in     Config.Subgraph_High_Light_ID);
+      Color      : in     Config.Global_Data.Subgraph_High_Light_ID);
 
    ----------------------------------------------------------------------------
    --  Removes a highlight color from all the edges and nodes in a subgraph.
@@ -513,7 +514,7 @@ package Giant.Graph_Widgets is
    procedure Remove_Global_Highlighting
      (Widget     : access Graph_Widget_Record'Class;
       Subgraph   : access Graph_Lib.Subgraphs.Subgraph;
-      Color      : in     Config.Subgraph_High_Light_ID);
+      Color      : in     Config.Global_Data.Subgraph_High_Light_ID);
 
    ----------------------------------------------------------------------------
    --  Deletes all highlight colors from all the edges and all nodes in
