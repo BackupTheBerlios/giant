@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.16 $
+--  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.17 $
 --  $Author: keulsn $
---  $Date: 2003/08/04 03:40:02 $
+--  $Date: 2003/08/16 17:08:18 $
 --
 ------------------------------------------------------------------------------
 
@@ -531,6 +531,7 @@ package body Giant.Graph_Widgets.Callbacks is
    procedure On_Destroy
      (Widget : access Graph_Widget_Record'Class) is
    begin
+      Callbacks_Logger.Debug ("Destroy Graph_Widget");
       Shut_Down_Graph_Widget (Widget);
    end On_Destroy;
 

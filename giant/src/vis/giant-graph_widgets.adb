@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.43 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.44 $
 --  $Author: keulsn $
---  $Date: 2003/08/12 14:30:31 $
+--  $Date: 2003/08/16 17:08:18 $
 --
 ------------------------------------------------------------------------------
 
@@ -293,12 +293,14 @@ package body Giant.Graph_Widgets is
          Edge_Id_Mappings.Next (Edges, Edge);
          Vis_Data.Destroy (Edge);
       end loop;
+      Edge_Id_Mappings.Destroy (Widget.Edge_Map);
 
       Nodes := Node_Id_Mappings.Make_Values_Iter (Widget.Node_Map);
       while Node_Id_Mappings.More (Nodes) loop
          Node_Id_Mappings.Next (Nodes, Node);
          Vis_Data.Destroy (Node);
       end loop;
+      Node_Id_Mappings.Destroy (Widget.Node_Map);
 
       Vis_Node_Lists.Destroy (Widget.Locked_Nodes);
       Vis_Node_Lists.Destroy (Widget.Unsized_Nodes);
@@ -370,11 +372,6 @@ package body Giant.Graph_Widgets is
    begin
       Create (Widget, Style, Annotations);
       Bauhaus_IO.Read_Integer (Stream, Version_Number);
-
-      --  FIX remove
-      pragma Assert (Version_Number = Current_Version_Number);
-      return;
-      --  FIX end
 
       Lock_All_Content (Widget, Lock);
       case Version_Number is
@@ -452,10 +449,6 @@ package body Giant.Graph_Widgets is
 
    begin
       Bauhaus_IO.Write_Integer (Stream, Current_Version_Number);
-
-      --  FIX remove
-      return;
-      --  FIX end
 
       Vis.Logic.Write_Vector (Stream, Get_Location (Widget));
       Vis.Write_Zoom_Level (Stream, Get_Zoom_Level (Widget));
