@@ -1,13 +1,63 @@
-% ==============================================================================
-%  $RCSfile: fa.tex,v $, $Revision: 1.2 $
-%  $Date: 2003/02/13 04:23:25 $
-%  $Author: schulzgt $
+% =============================================================================
+%  $RCSfile: fa.tex,v $, $Revision: 1.3 $
+%  $Date: 2003/02/17 15:50:58 $
+%  $Author: schwiemn $
 %
 %  Description:
 %
-% ==============================================================================
+% =============================================================================
 
-\section{Der Aktor ``Benutzer''}
+\section{Der Aktor \gq{Benutzer}}
+Aktor im Sinne der anschließend spezifizierten UseCases ist immmer die 
+menschliche Person, die den IML-Browser GIANT gerade benutzt, also der 
+\gq{Benutzer}. Da GIANT keinen Mehrbenutzerbetrieb vorsieht, ist dies immer 
+eine einzige Person. 
+Neben dem \gq{Benutzer} sind keine weiteren Aktoren vorgesehen.\\
+
+
+  \subsection{Kenntnissstand des Aktors \gq{Benutzer}}
+  GIANT ist eine Profi-Werkzeug. Weder das System noch das Handbuch richten 
+  sich an unerfahrene Benutzer. Zur Bedienung muss der Benutzer daher 
+  zwingend über die folgenden Kenntnisse verfügen:
+
+  \begin{itemize}
+    \item Erfahrung im Umgang mit grafischen GUIs und 
+          dem entsprechenden Betriebssystem.
+  
+    \item Grundkenntnisse in XML.
+
+    \item Erfahrung im Bereich Reengineering.
+
+    \item Kenntnisse über Struktur und Aufbau des IML-Graphen. 
+
+  \end{itemize}
+
+
+% =============================================================================
+\section{Starten von GIANT}
+STARTVORGANG ohne Übergabe von Kommandozeilenparameter
+
+\section{Starten von GIANT mit Kommandozeilenparametern}
+Erläuterung der Kommandozeilenparameter.
+
+
+% ==============================================================================
+\section{Beenden von GIANT}
+Giant kann durch Schließen des HAUPTFENSTERS oder durch Auswahl 
+des entsprechenden Eintages im Hauptmenü oder durch ALT+F4 beendet werden.\\
+Ablauf:
+
+\begin {enumerate}
+  \item Der Benutzer gibt das Kommando zum Beenden von GIANT.
+  \item GIANT fragt nach, ob das Projekt gespeichert werden soll.
+  (PROJEKT SPEICHERN) (ENTSPRCHENDER DIALOG MUSS IN DIE GUI)
+\end {enumerate}
+  
+
+
+
+% =============================================================================
+% Use Cases
   
 \input{uc/load_store}
 \input{uc/gui_window}

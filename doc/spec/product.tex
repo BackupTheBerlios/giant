@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: product.tex,v $, $Revision: 1.6 $
-%  $Date: 2003/02/14 17:03:26 $
-%  $Author: schulzgt $
+%  $RCSfile: product.tex,v $, $Revision: 1.7 $
+%  $Date: 2003/02/17 15:50:58 $
+%  $Author: schwiemn $
 %
 %  Description: Beschreibung des Produktes. Übersicht über die Funktionen
 %  und allgemeine Bedienkonzepte.
@@ -17,16 +17,11 @@ Erläuterungen zu Projekten.
 % ==============================================================================
 \section{IML-Teilgraphen und Selektionen}
 Hinsichtlich der logischen Zusammenfassung von Knoten und Kanten unterscheidet
-GIANT mit den IML-Teilgraphen und den Selektionen ein globales Modell
-(unabhängig von Anzeigefenstern) und ein lokales Modell, welches an ein
-bestimtes Anzeigefenster gebunden ist.\\
-Diese IML-Teilgraphen und Selektionen können natürlich ineinander umgewandelt
-werden.
+GIANT IML-Teilgraphen Selektionen.
 
   \subsection{IML-Teilgraphen}
-  Ein IML-Teilgraph beschreibt eine Knoten und Kantenmenge aus dem IML-Graph,
-  welche einen wirklichen Teilgraphen des IML-Graphen darstellt, d.h. jede
-  Kante hat einen Start- und einen Zielknoten.\\
+  Ein IML-Teilgraph beschreibt eine Knoten und Kantenmenge aus dem IML-Graphen,
+  bei der jede Kante hat einen Start- und einen Zielknoten hat.\\
   Die Knoten und Kanten von IML-Teilgraphen können in Anzeigefenstern
   hervorgehoben werden, des weiteren können die Knoten und Kanten von
   IML-Teilgraphen in Anzeigefenstern layouted und dargestellt werden.\\
@@ -50,31 +45,33 @@ haben.
 
   \subsection{Pins}
   Da selten alle zu einem Anzeigeinhalt gehörenden Knoten und Kanten insgesamt
-  sichtbar dargestellt werden können (da es zu viele sind) kann sich der
+  sichtbar dargestellt werden können (da es zu viele sind), kann sich der
   Benutzer zu jedem Anzeigefenster eine Liste von Pins anlegen. In den Pins wird
   jeweils die Position des sichtbaren Anzeigeinhaltes und die Zoomstufe
   gespeichert, so dass zu beliebigen Zeitpunkten der jeweilige sichtbare
   Anzeigeinahlt rekonstruiert werden kann.
 
   \subsection{Visualisierungsstiele}
-  Mittels sogenannter Visualisierungsstiele kann der Benutzer zur Laufzeit von
-  GIANT die Darstellung von Knoten und Kanten jeder Zeit flexibel beeinflussen.
-
+  Mittels sogenannter Visualisierungsstiele kann der Benutzer die Darstellung
+  von 
 % ==============================================================================
 \section{Anfragen}
 Eine vielseitige Anfragesprache stellt nahezu die gesamte Funktionalität
 von GIANT zur Verfügung und kann insbesondere auch zum Aufruf via Kommandozeile
-genutzt werden.
+genutzt werden. Die drei Schritte des anschließend beschriebenen 
+\gq{Drei-Stufen-Konzeptes} können können über diese Anfragesprache auch \gq{auf 
+einen Schlag} erledigt werden.
+
 
 % ==============================================================================
 \section{Drei-Stufen-Konzept}
 
 Die im Folgenden beschriebenen drei Schritte sollen dem Benutzer die Möglichkeit
 bieten, von den Knoten und Kanten des IML-Graphen ausgehend geeignete
-Teilgraphen in Anzeigefenstern zu visualisieren. Rein logisch und von der
+Teilgraphen in Anzeigefenstern zu visualisieren. Von der
 Gestaltung der UseCases her, werden diese drei Schritte sequentiell nacheinander
-ausgeführt. Die komplexe Anfragesprache erlaubt es aber, diese Schritte 
-quasi \gq{auf einen Schlag} durchzuführen.
+ausgeführt, dies ist aber nicht zwingend nötig.
+
 
 \begin {enumerate}
   \item Erzeugen geeigneter IML-Teilgraphen, d.h Auswahl geeignter Knoten und
@@ -88,27 +85,69 @@ quasi \gq{auf einen Schlag} durchzuführen.
   IML-Teilgraph dann als Selektion weiterhin greifbar.
 \end {enumerate}
 
-% ==============================================================================
+% =============================================================================
+% EVENTUELL EIGENES KAPITEL
+% DIREKT VOR USECASES UND NACH GUI
 \section{Fehlerverhalten}
-EVENTEULL EIGENES KAPITEL, WELCHES ALLES DAZU BEHANDELT; SO DASS MAN DIES
-NICHT BEI DEN USE CASES KLÄREN MUSS.
-SOLLTE UNEBDINGT UNMITTELBAR VOR DER USECASE BESCHREIBUNG STEHEN
 
-% ==============================================================================
-\section{Starten von GIANT}
-NORMALER STARTVORGANG ohne Übergabe von Kommandozeilenparameter
+GIANT soll sich bezüglich der Fehlerbehandlung konsistent verhalten.
+Das im folgenden beschriebene Fehlervarhalten gilt daher pauschal für
+das gesamte System, Abweichungen von diesem Verhalten werden
+gegebenenfalls an der entsprechenden Stelle (z.B.\ bei dem jeweiligen
+UseCase) explizit spezifiziert.\\
+Fehlermeldungen werden grundsätzlich über den STANDARD-FEHLERDIOLOG
+ausgegeben. Ist dies nicht möglich, wird eine entsprechende Fehlermeldung
+über Kommandozeile ausgegeben.
 
-  \subsection{GIANT Kommandozeilenparametern}
-  Erläuterung der Kommandozeilenparameter.
+  \subsection {Ungültige oder unvollständige Eingaben bei Dialogen}
+  Eingaben in Dialoge etc. werden immer dann geprüft, wenn der Benutzer
+  die Eingaben in dem gesamten Dialogfenster z.B. durch klicken auf einen
+  \gq{OK-Button} bestätigt.\\ 
+  Stellt das System dann eine unzulässige oder fehlende Eingabe fest, so
+  erscheint der STANDARD-FEHLERDIALOG mit einer entsprechenden Mitteilung
+  zur Fehlerursache.\\
+  Nach Schließen des STANDARD-FEHLERDIALOGES kehrt das System zu Stelle
+  im Ablauf zurück, die dem Zustand vor der Fehlerprüfung entspricht, also
+  typischerweise zu dem Dialog in dem die fehlerhafte Eingabe getätigt 
+  wurde.\\
+  Die zuvor in den entsprechenden Dialogen getätigten Eingaben des Benutzers
+  (die Eingaben die den Fehler verursacht haben) bleiben erhalten.
 
-% ==============================================================================
-\section{Beenden von GIANT}
-Durch Schließen des HAUPTFENSTERS oder durch Auswah des entsprechenden Eintages im Hauptmenü
-oder durch ALT+F4 kann GIANT beendet werden.\\
-Ablauf:
+  \subsection {Ungültige oder unvollständige Eingaben bei Kommandozeilenaufruf}
+  Der Start von GIANT wird abgeborchen. Auf der Kommandozeile wird eine
+  entsprechende Meldung mit Hinweisen zur Fehlerursache ausgegeben.
 
-\begin {enumerate}
-  \item Der Benutzer gibt das Kommando zum Beenden von GIANT.
-  \item GIANT fragt nach, ob das Projekt gespeichert werden soll.
-  (PROJEKT SPEICHERN) (ENTSPRCHENDER DIALOG MUSS IN DIE GUI)
-\end {enumerate}
+  \subsection {Fehler beim Einlesen von Dateien}
+  Aufgrund der Vielzahl der hierbei möglichen Fehlern (technische Defekte etc.)
+  kann das Verhalten grundsätlich nicht spezifiziert werden.
+  Generell ist folgendes Verhalten angestrebt:
+  
+  \begin{enumerate}
+    \item Können zum Betrieb von GIANT nötige Dateien nicht an der 
+          dafür vorgesehenen Position gefunden werden, so wird das 
+          System mit einer entsprechenden Fehlermeldung beendet.
+
+  \end{enumerate} 
+
+  Ein anderes Verhalten (z.B. die Eingabemöglichkeit für einen alternativen
+  Pfad) wird gegebenenfalls an entsprechender Stelle explizit spezifiziert.
+
+
+
+  \subsection {Einlesen unzulässiger Daten über Dateien}
+
+  \begin {enumerate}
+    \item
+    Falls nicht für die entsprechenden Dateien explizit spezifiziert, 
+    verfügt GIANT über keine Mechanismen, die speziell darauf
+    ausgelegt sind, die Korrektheit von Daten, die aus Dateien gelesen werden,
+    zu prüfen.
+    \item
+
+
+    bricht wird das
+    System mit einer entsprechenden Fehlermeldung ab
+
+  \end {enumerate}
+
+

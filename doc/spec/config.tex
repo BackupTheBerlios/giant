@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.4 $
-%  $Date: 2003/02/14 17:20:54 $
+%  $RCSfile: config.tex,v $, $Revision: 1.5 $
+%  $Date: 2003/02/17 15:50:58 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -11,9 +11,9 @@
 \section {Allgemeines}
 
 Sämtliche konfigurierbaren Einstellungen werden in XML-Dateien vorgenommen.
-Es gibt genau eine \gq{globale Konfigurationsdatei}. Zudem kann es beliebig viele weitere 
-XML-Dateien zur Konfiguration der weiter unten beschriebenen Visualisierungsstiele
-geben.
+Es gibt genau eine \gq{globale Konfigurationsdatei}. Zudem kann es beliebig 
+viele weitere XML-Dateien zur Konfiguration der weiter unten beschriebenen 
+Visualisierungsstiele geben.
 
 \section {Die globale Konfigurationsdatei}
 Diese Datei ist in XML verfasst und existiert genau ein mal. In ihr werden 
@@ -25,29 +25,33 @@ die anschließend beschriebenen Einstellungen vorgenommen.
   auf die Datei, welche den Makro enthält, spezifiziert.
 
   \subsection {Farbe von Hervorhebungen}
-  Einstellung der Farben mittels derer Selektionen oder IML-Teilgraphen hervorgehoben werden.
+  Einstellung der Farben mittels derer Selektionen oder IML-Teilgraphen 
+  hervorgehoben werden.
   \begin {itemize}
     \item Eine beliebige Farbe für die aktuelle Selektion.
-    \item Drei beliebige (sinnvoll wären verschiedene) Farben für das Hervorheben weiterer Selektionen.
-    \item Vier beliebige (sinnvoll wären verschiedene) farben für das Hervorheben von IML-Teilgraphen.
+    \item Drei beliebige (sinnvoll wären verschiedene) Farben für das
+          Hervorheben weiterer Selektionen.
+    \item Vier beliebige (sinnvoll wären verschiedene) farben für das 
+          Hervorheben von IML-Teilgraphen.
   \end {itemize}
 
 
-  \subsection {Verweise auf Visualisierungsstiele}
-  EVENTUELL -> KLÄREN OB DIE XML DATEI, DIE EINEN VISUALISIERUNGSTIEL ENTHÄLT HIER REFERENZIERT WERDEN
-  MUSS ODER OB MAN NICH PAUSCHAL ALLE XML-DATEIEN MIT VISUALISIERUNGSSTIELEN IN EIN 
-  VORGEGEBENES VERZEICHNIS KOPIEREN SOLL.
-
 \section {Visualisierungsstiele}
-Für jeden Visualisierungsstiel muss es eine entsprechende XML-Datei geben. Ein Visualisierungsstiel 
-beschreibt wie die Knoten und Kanten des IML-Graphen innerhalb eines Anzeigefensters grafisch dargestellt 
+Für jeden Visualisierungsstiel muss es eine entsprechende XML-Datei geben. 
+Ein Visualisierungsstiel beschreibt wie die Knoten und Kanten des 
+IML-Graphen innerhalb eines Anzeigefensters grafisch dargestellt 
 werden können.\\
-In einem Visualisierungsstiel können klassenspezifische Einstellungen vorgenommen werden,
-die nur für Knoten und Kanten gelten, die zu den entsprechenden Klassen gehören. Bei jeder 
-klassenspezifischen Einstellung für Knoten und Kanten kann daher eine Liste der betroffenen
-Knoten- und Kantenklassen angegeben werden, für die diese Einstellungen gelten sollen.\\
-Wird eine Kanten- oder eine Knotenklasse innerhalb eines Visualisierungsstieles mehreren 
-klassenspezifischen Einstellungen zugeordnet, führt dies zu keinem Fehler, es bleibt aber
+In einem Visualisierungsstiel können klassenspezifische Einstellungen 
+vorgenommen werden,
+die nur für Knoten und Kanten gelten, die zu den entsprechenden Klassen gehören.
+Bei jeder klassenspezifischen Einstellung für Knoten und Kanten kann daher 
+eine Liste der betroffenen
+Knoten- und Kantenklassen angegeben werden, für die diese Einstellungen 
+gelten sollen.\\
+Wird eine Kanten- oder eine Knotenklasse innerhalb eines Visualisierungsstieles 
+mehreren 
+klassenspezifischen Einstellungen zugeordnet, führt dies zu keinem Fehler, 
+es bleibt aber
 unspezifiziert, welche Einstellung tatsächlich genommen wird.
 
   \subsection {Name des Visualisierungsstiels}
@@ -65,11 +69,14 @@ unspezifiziert, welche Einstellung tatsächlich genommen wird.
         \subitem Am Startknoten.
         \subitem Am Zielknoten.
       \item Wann Kanten im sichtbaren Anzeigeinhalt angezeigt werden sollen.
-  >>>>>>>>>>>>>>>>>>>>>>>      ACHTUNG - ES KANN AUCH SCHLEIFEN GEBEN
-        \subitem Nur falls Start- und Zielknoten ebenfalls im sichtbaren Anzeigeinhalt.
-        \subitem Auch anzeigen falls nur Startknoten im sichtbaren Anzeigeinhalt.
+      >>>>>>>>>>>>>>>>>>>>>>>      ACHTUNG - ES KANN AUCH SCHLEIFEN GEBEN
+        \subitem Nur falls Start- und Zielknoten ebenfalls im sichtbaren 
+                 Anzeigeinhalt.
+        \subitem Auch anzeigen falls nur Startknoten im sichtbaren 
+                 Anzeigeinhalt.
         \subitem Auch anzeigen falls nur Zielknoten im sichtbaren Anzeigeinhalt.
-        \subitem Auch anzeigen falls weder Start- und Zielknoten im sichtbaren Anzeigeinhalt. 
+        \subitem Auch anzeigen falls weder Start- und Zielknoten im sichtbaren 
+                 Anzeigeinhalt. 
     \end{itemize}
 
 
@@ -78,14 +85,18 @@ unspezifiziert, welche Einstellung tatsächlich genommen wird.
   Des weiteren muss eine DEFAULT-Einstellung erstellt werden, die für alle
   Knotenklassen angewendet wird, für die nichts anderes definiert ist.
   \begin{itemize}  
-    \item Ein Icon für die Knotenklasse (Verweis auf eine entsprechende Bilddatei).  
->>>>>>>>>>>>>>>>>> DATEIFORMAT UND ABMESSUNGEN SPEZIFIZIEREN (z.B.32*32 Pixel)
-    \item Eine Liste der Attribute der Knotenklasse, welche dirket innerhalb des
-          Anzeigefensters in dem \gq(Viereck) für den Knoten dargestellt werden sollen.
-    \item Die Füllfarbe des \gq{Vierecks} in welchem die Attribute zu dem Knoten dargestellt werden.
-    \item Die Farbe des Rahmens für das \gq{Viereck} in welchem die Attribute zu dem Knoten dargestellt werden.
-    \item EVENTUELL MUSS DIE MAXIMALE GRÖSSE (Breite und Länge) DES VIERECKS AUCH DEFINIERT WERDEN KÖNNEN
-    \item Ob die ID eines Knotens im Anzeigefenster angezeigt werden soll oder nicht.
+    \item Ein Icon für die Knotenklasse (Verweis auf eine entsprechende 
+          Bilddatei). Das Icon muss im Pixmap Format bei 32*32 Pixel
+          vorliegen.
+
+    \item Eine Liste der Attribute der Knotenklasse, welche dirket innerhalb 
+          des Anzeigefensters in dem \gq(Viereck) für den Knoten dargestellt 
+          werden sollen.
+    \item Die Füllfarbe des \gq{Vierecks} in welchem die Attribute zu dem 
+          Knoten dargestellt werden.
+    \item Die Farbe des Rahmens für das \gq{Viereck} in welchem die 
+          Attribute zu dem Knoten dargestellt werden.
+
   \end{itemize}
 
   
@@ -96,5 +107,18 @@ unspezifiziert, welche Einstellung tatsächlich genommen wird.
   \begin{itemize}
     \item Die Farbe der Kante.
     \item Die Art der Linie der Kante (normal, gestrichelt).
-    \item Ob die Kante mit ihrer Kantenklasse beschriftet werden soll oder nicht.
+    \item Ob die Kante mit ihrer Kantenklasse beschriftet werden soll oder 
+          nicht.
   \end{itemize}
+
+
+
+\section {Anfrage-Dateien}
+Eine Textdatei, die genau eine Anfrage enthält - also genau ein gemäß der 
+Grammitk für die Anfragesprache zulässiges Wort. 
+Auf diese Art und Weise können komplexe Anfragen gespeichert und 
+wiederverwendet werden.\\
+Erstellt werden können solche Anfrage-Dateien entweder manuell oder
+automatisch aus einer im ENTSPRECHENDEN DIALOG eingegebenen Anfrage.\\
+Geldaden werden können solche Dateien beim Kommandozeilenaufruf
+oder im entsprechenden Dialog zur Eingabe einer Anfrage.
