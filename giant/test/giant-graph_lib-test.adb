@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.16 $
+--  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.17 $
 --  $Author: koppor $
---  $Date: 2003/07/14 17:50:28 $
+--  $Date: 2003/07/22 09:34:41 $
 --
 
 with Ada.Text_IO;
@@ -245,7 +245,77 @@ package body Giant.Graph_Lib.Test is
    end Edge_Set_Test;
 
    ---------------------------------------------------------------------------
-   --  Could be implemented more efficient
+   --  Tests if source and target of all edges are valid
+   procedure Edge_Properties (R : in out AUnit.Test_Cases.Test_Case'Class)
+   is
+      All_Graph_Edges    : Edge_Id_Set;
+      All_Incoming_Edges : Edge_Id_Set;
+      All_Outgoing_Edges : Edge_Id_Set;
+
+      procedure Execute_Incoming (Node : in Node_Id)
+      is
+         Incoming_Edges : Edge_Id_Array := Get_Incoming_Edges (Node);
+      begin
+         for I in Incoming_Edges'Range loop
+            Assert (Get_Target_Node (Incoming_Edges (I)) = Node,
+                    "Target node does not match");
+            Edge_Id_Sets.Remove (All_Graph_Edges, Incoming_Edges (I));
+            Edge_Id_Sets.Insert (All_Incoming_Edges, Incoming_Edges (I));
+         end loop;
+      end Execute_Incoming;
+
+      procedure Apply_Incoming is new Node_Id_Sets.Apply
+        (Execute => Execute_Incoming);
+
+      procedure Execute_Outgoing (Node : in Node_Id)
+      is
+         Outgoing_Edges : Edge_Id_Array := Get_Outgoing_Edges (Node);
+      begin
+         for I in Outgoing_Edges'Range loop
+            Assert (Get_Source_Node (Outgoing_Edges (I)) = Node,
+                    "Source node does not match");
+            Edge_Id_Sets.Remove (All_Incoming_Edges, Outgoing_Edges (I));
+            Edge_Id_Sets.Insert (All_Outgoing_Edges, Outgoing_Edges (I));
+         end loop;
+      end Execute_Outgoing;
+
+      procedure Apply_Outgoing is new Node_Id_Sets.Apply
+        (Execute => Execute_Outgoing);
+
+      All_Nodes             : Node_Id_Set;
+      All_Graph_Edges_Count : Natural;
+   begin
+      All_Nodes := Get_All_Nodes;
+      All_Graph_Edges := Get_All_Edges;
+      All_Incoming_Edges := Edge_Id_Sets.Empty_Set;
+      All_Outgoing_Edges := Edge_Id_Sets.Empty_Set;
+
+      All_Graph_Edges_Count := Edge_Id_Sets.Size (All_Graph_Edges);
+
+      Apply_Incoming (All_Nodes);
+
+      --  All_Graph_Edges has to be empty, since all edges were moved
+      --    to All_Incoming_Edges
+      Assert (Edge_Id_Sets.Is_Empty (All_Graph_Edges),
+              "Not all edges are incoming edges");
+
+      Apply_Outgoing (All_Nodes);
+
+      --  All_Incoming_Edges has to be empty, since all edges were moved
+      --    to All_Outgoing_Edges
+      Assert (Edge_Id_Sets.Is_Empty (All_Incoming_Edges),
+              "Not all incoming edges are outgoing");
+      Assert (Edge_Id_Sets.Size (All_Outgoing_Edges) = All_Graph_Edges_Count,
+              "Not all graph-edges are outgoing edges");
+
+      Node_Id_Sets.Destroy (All_Nodes);
+      Edge_Id_Sets.Destroy (All_Graph_Edges);
+      Edge_Id_Sets.Destroy (All_Incoming_Edges);
+      Edge_Id_Sets.Destroy (All_Outgoing_Edges);
+   end Edge_Properties;
+
+   ---------------------------------------------------------------------------
+   --  Could be implemented more efficiently
    --    a) traverse All_Nodes "by hand"
    --         don't use function Get_All_Nodes, but travel through the hashmap
    --         directly
@@ -381,6 +451,7 @@ package body Giant.Graph_Lib.Test is
       Register_Routine (T, Enums'Access, "Enums");
       Register_Routine (T, Check_Counts'Access, "Check_Counts");
       Register_Routine (T, Edge_Set_Test'Access, "Edge_Set_Test");
+      Register_Routine (T, Edge_Properties'Access, "Edge_Properties");
       Register_Routine (T, All_Edges_Test'Access, "All Edges Test");
       Register_Routine (T, Edge_Id_Null_Test'Access, "Edge_Id = null Test");
       Register_Routine (T, Check_All_Node_Classes_Consistency'Access,
