@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.12 $
--- $Author: keulsn $
--- $Date: 2003/09/24 12:37:05 $
+-- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.13 $
+-- $Author: koppor $
+-- $Date: 2003/10/01 22:59:09 $
 --
 with Giant.File_Management;             -- from GIANT
 with Giant.XML_File_Access;             -- from GIANT
@@ -81,8 +81,8 @@ package body Giant.Config.Class_Sets is
       -- deallocate class set itself
       Free_Class_Set_Access (Class_Set);
    end Deallocate_Class_Set;
-   
-   
+
+
    ------------------------------------------------------------------------
    -- insert all edge classes from a edge class id set into the class set
    procedure Insert_Edge_Class_Id_Set_Into_Class_Set
@@ -111,7 +111,7 @@ package body Giant.Config.Class_Sets is
 
       Add_All_Elements_To_Class_Set (Edge_Class_Id_Set);
    end Insert_Edge_Class_Id_Set_Into_Class_Set;
-   
+
    ------------------------------------------------------------------------
    -- insert all node classes from a edge class id set into the class set
    procedure Insert_Node_Class_Id_Set_Into_Class_Set
@@ -151,7 +151,7 @@ package body Giant.Config.Class_Sets is
    ---------------------------------------------------------------------------
    -- Side Effect - Changed global variables:
    --   - Class_Sets_Map;
-   procedure Initialize_Class_Sets 
+   procedure Initialize_Class_Sets
      (GIANT_Class_Sets_Directory : in String) is
 
       -- needed to insert new class sets
@@ -177,7 +177,7 @@ package body Giant.Config.Class_Sets is
       File_List : String_Lists.List;
       File_List_Iter : String_Lists.ListIter;
       A_File_Name : Ada.Strings.Unbounded.Unbounded_String;
-      
+
       -- needed to determine which files should be ignored
       Ignore_File : Boolean := False;
 
@@ -197,20 +197,21 @@ package body Giant.Config.Class_Sets is
       -- Load each class set into internal datastructure
       File_List_Iter := String_Lists.MakeListIter (File_List);
 
-      -- INITIALISATION
+      -- INITIALIZATION
       -- Create new empty top level hash map holding all class sets and
       -- initializes the ADO
       Class_Sets_Map := Class_Sets_Hashed_Mappings.Create;
 
       -- Begin: Processing all xml files for class sets
       while String_Lists.More (File_List_Iter) loop
-
-         -- Think positive - process files until security check says 
+         -- Think positive - process files until security check says
          -- something else
          Ignore_File := False;
 
          -- get a file to process
          String_Lists.Next (File_List_Iter, A_File_Name);
+
+         --  Logger.Debug (Ada.Strings.Unbounded.To_String (A_File_Name));
 
          -- ignore not readable xml files
          begin
@@ -218,25 +219,29 @@ package body Giant.Config.Class_Sets is
               (Ada.Strings.Unbounded.To_String (A_File_Name),
                The_Tree_Reader,
                The_XML_Document);
-               
          exception
             when XML_File_Access.XML_File_Access_Error_Exception =>
-               Ignore_File := True;   
+               Logger.Error ("XML_File_Access_Error_Exception");
+               Ignore_File := True;
             when XML_File_Access.XML_File_Parse_Fatal_Error_Exception =>
-               Ignore_File := True;   
+               Logger.Error ("XML_File_Parse_Fatal_Error_Exception");
+               Ignore_File := True;
          end;
-         
+
+         --  Logger.Debug (Boolean'Image (Ignore_File));
+
          -- ignore files that do not describe a class set
-         if ( (Ignore_File = False) and then
-            (XML_File_Access.Does_XML_Document_Belong_To_Type
-              ("giant_class_set_file", The_XML_Document) = False) ) then
-
+         if not Ignore_File and then
+            not (XML_File_Access.Does_XML_Document_Belong_To_Type
+                 ("giant_class_set_file", The_XML_Document)) then
+            Logger.Info ("XML-File does not belong to giant_class_set_file");
             Tree_Readers.Free (The_Tree_Reader);
-            Ignore_File := True; 
+            Ignore_File := True;
          end if;
-                  
-         if (Ignore_File = False) then
 
+         --  Logger.Debug (Boolean'Image (Ignore_File));
+
+         if not Ignore_File then
             -- create a new class set with existing data
             ---------------------------------------------
             New_Class_Set_Access := new Class_Set_Data;
@@ -244,23 +249,20 @@ package body Giant.Config.Class_Sets is
               Node_Class_Look_Up_Hashed_Mappings.Create;
             New_Class_Set_Access.Edge_Classes :=
               Edge_Class_Look_Up_Hashed_Mappings.Create;
-     
+
             -- get name of class_set (the file name without ending and path)
             -- file name: "\class_sets\my_set.xml" -->
             -- name of class set: "my_set";
-            -- an already existing class set with the same name will be 
+            -- an already existing class set with the same name will be
             --  replaced.
             New_Class_Set_Access.Class_Set_Name :=
               Ada.Strings.Unbounded.To_Unbounded_String
                 (File_Management.Calculate_Name_For_File
                    (Ada.Strings.Unbounded.To_String (A_File_Name)));
-         end if;   
-
-         if (Ignore_File = False) then
 
             -- process node classes
             ------------------------------------------------------------------
-            
+
             -- Get_All_Node_Classes (only one class)
             XML_Nodes_List :=
               DOM.Core.Documents.Get_Elements_By_Tag_Name
@@ -270,17 +272,17 @@ package body Giant.Config.Class_Sets is
 
                XML_Node := DOM.Core.Nodes.Item (XML_Nodes_List, I);
 
-               -- IGNORE node classes not known by the IML Reflection
-               Logger.Debug ("Actual Node: "
-                 & """" 
+               Logger.Debug ("current node: "
+                 & """"
                  & DOM.Core.Elements.Get_Attribute
                      (XML_Node, "node_class_name")
                  & """");
-               
+
+               -- IGNORE node classes not known by the IML Reflection
                if Graph_Lib.Does_Node_Class_Exist
                  (DOM.Core.Elements.Get_Attribute
                   (XML_Node, "node_class_name")) then
-              
+
                   -- Calculate node class ID
                   A_Node_Class_ID := Graph_Lib.Convert_Node_Class_Name_To_Id
                     (DOM.Core.Elements.Get_Attribute
@@ -298,10 +300,10 @@ package body Giant.Config.Class_Sets is
 
                   end if;
                end if;
-            end loop;            
+            end loop;
 
             DOM.Core.Free (XML_Nodes_List);
-            
+
             -- Get_All_Node_Classes regarding inheritance hierarchy
             XML_Nodes_List :=
               DOM.Core.Documents.Get_Elements_By_Tag_Name
@@ -315,36 +317,36 @@ package body Giant.Config.Class_Sets is
                if Graph_Lib.Does_Node_Class_Exist
                  (DOM.Core.Elements.Get_Attribute
                   (XML_Node, "super_node_class_name")) then
-             
+
                   -- get all inheriting sub classes incl. the super class
-                  A_Node_Class_ID_Set := 
+                  A_Node_Class_ID_Set :=
                     IML_Class_Inheritance_Proc.Get_All_Sub_Node_Classes
                       (XML_Node);
-                     
+
                   -- check whether returned set is empty
                   if Graph_Lib.Node_Class_Id_Sets.Is_Empty
                     (A_Node_Class_ID_Set) then
-                    
-                     Graph_Lib.Edge_Class_Id_Sets.Destroy 
+
+                     Graph_Lib.Edge_Class_Id_Sets.Destroy
                        (A_Edge_Class_ID_Set);
-              
-                  else  
-                     -- insert all node class id's from the calculated set 
+
+                  else
+                     -- insert all node class id's from the calculated set
                      -- into the class set
                      Insert_Node_Class_Id_Set_Into_Class_Set
                        (New_Class_Set_Access, A_Node_Class_ID_Set);
 
                      -- deallocate returned node class id set
-                     Graph_Lib.Node_Class_Id_Sets.Destroy 
-                       (A_Node_Class_ID_Set);    
+                     Graph_Lib.Node_Class_Id_Sets.Destroy
+                       (A_Node_Class_ID_Set);
                   end if;
                end if;
-            end loop;            
+            end loop;
 
             DOM.Core.Free (XML_Nodes_List);
-            
-  
-            -- process edge classes 
+
+
+            -- process edge classes
             ------------------------------------------------------------------
             -- get all entries for edge classes (no inheritance)
             XML_Nodes_List :=
@@ -357,16 +359,16 @@ package body Giant.Config.Class_Sets is
                XML_Node := DOM.Core.Nodes.Item (XML_Nodes_List, I);
 
                -- calculate set of edge classes specified by this node
-               A_Edge_Class_ID_Set := 
+               A_Edge_Class_ID_Set :=
                  Edge_Class_Proc.Process_Edge_Class_Entry (XML_Node);
 
                -- check whether returned set is empty
                if Graph_Lib.Edge_Class_Id_Sets.Is_Empty
                  (A_Edge_Class_ID_Set) then
 
-                  Graph_Lib.Edge_Class_Id_Sets.Destroy 
+                  Graph_Lib.Edge_Class_Id_Sets.Destroy
                     (A_Edge_Class_ID_Set);
-              
+
                else
 
                   -- insert all edge class id's from the calculated set into
@@ -375,15 +377,15 @@ package body Giant.Config.Class_Sets is
                     (New_Class_Set_Access, A_Edge_Class_ID_Set);
 
                   -- deallocate returned edge class id set
-                  Graph_Lib.Edge_Class_Id_Sets.Destroy 
+                  Graph_Lib.Edge_Class_Id_Sets.Destroy
                     (A_Edge_Class_ID_Set);
-                 
-               end if;    
-                
+
+               end if;
+
             end loop;
 
             DOM.Core.Free (XML_Nodes_List);
-            
+
             -- get all entries for edge classes regarding inheritance
             XML_Nodes_List :=
               DOM.Core.Documents.Get_Elements_By_Tag_Name
@@ -394,7 +396,7 @@ package body Giant.Config.Class_Sets is
                XML_Node := DOM.Core.Nodes.Item (XML_Nodes_List, I);
 
                -- calculate set of edge classes specified by this node
-               A_Edge_Class_ID_Set := 
+               A_Edge_Class_ID_Set :=
                  IML_Class_Inheritance_Proc.
                    Get_All_Sub_Edge_Classes (XML_Node);
 
@@ -402,24 +404,22 @@ package body Giant.Config.Class_Sets is
                if Graph_Lib.Edge_Class_Id_Sets.Is_Empty
                  (A_Edge_Class_ID_Set) then
 
-                  Graph_Lib.Edge_Class_Id_Sets.Destroy 
-                    (A_Edge_Class_ID_Set);              
+                  Graph_Lib.Edge_Class_Id_Sets.Destroy
+                    (A_Edge_Class_ID_Set);
                else
-
                   -- insert all edge class id's from the calculated set into
                   -- the class set
                   Insert_Edge_Class_Id_Set_Into_Class_Set
                     (New_Class_Set_Access, A_Edge_Class_ID_Set);
 
                   -- deallocate returned edge class id set
-                  Graph_Lib.Edge_Class_Id_Sets.Destroy 
-                    (A_Edge_Class_ID_Set);                 
-               end if;    
-                
+                  Graph_Lib.Edge_Class_Id_Sets.Destroy
+                    (A_Edge_Class_ID_Set);
+               end if;
+
             end loop;
 
-            DOM.Core.Free (XML_Nodes_List);            
-            
+            DOM.Core.Free (XML_Nodes_List);
 
             -- Free memory needed for the xml dom tree
             Tree_Readers.Free(The_Tree_Reader);
@@ -427,7 +427,7 @@ package body Giant.Config.Class_Sets is
             -- Insert the complete new class set into the ADO's data structure
             ------------------------------------------------------------------
 
-            -- Check whether the new Class_Set_Name already exists and 
+            -- Check whether the new Class_Set_Name already exists and
             -- remove the old one then necessary.
             if (Class_Sets_Hashed_Mappings.Is_Bound
                 (Class_Sets_Map, New_Class_Set_Access.Class_Set_Name)) then
@@ -443,17 +443,15 @@ package body Giant.Config.Class_Sets is
 
                -- deallocate old class set
                Deallocate_Class_Set (Remove_Class_Set_Access);
-
             end if;
 
-               -- insert new class set
-               Class_Sets_Hashed_Mappings.Bind
-                 (Class_Sets_Map,
-                  New_Class_Set_Access.Class_Set_Name,
-                  New_Class_Set_Access);
+            -- insert new class set
+            Class_Sets_Hashed_Mappings.Bind
+              (Class_Sets_Map,
+               New_Class_Set_Access.Class_Set_Name,
+               New_Class_Set_Access);
+         end if; -- if (not Ignore_File)
 
-         end if; -- if (Ignore_File = False) 
-         
       end loop; -- End: Processing all xml files for class sets
 
       -- Deallocate File_List
@@ -613,127 +611,127 @@ package body Giant.Config.Class_Sets is
         Edge_Class_Look_Up_Hashed_Mappings.Is_Bound
         (Class_Set.Edge_Classes, Edge_Class);
    end Is_Edge_Class_Element_Of_Class_Set;
-   
+
    ---------------------------------------------------------------------------
    -- F
    -- Meta Class Sets
-   --------------------------------------------------------------------------- 
-   
+   ---------------------------------------------------------------------------
+
    ---------------------------------------------------------------------------
    function Is_Empty (Meta : Meta_Class_Set_Access) return Boolean is
 
    begin
-      if Node_Class_Look_Up_Hashed_Mappings.Is_Empty 
-        (Meta.Node_Classes) 
+      if Node_Class_Look_Up_Hashed_Mappings.Is_Empty
+        (Meta.Node_Classes)
         and Edge_Class_Look_Up_Hashed_Mappings.Is_Empty
         (Meta.Edge_Classes) then
-        
+
         return True;
-      else 
-      
-         return False;        
+      else
+
+         return False;
       end if;
-      
+
    end Is_Empty;
-            
+
    ---------------------------------------------------------------------------
-   function Build (Elements : in Class_Set_Array) 
+   function Build (Elements : in Class_Set_Array)
      return Meta_Class_Set_Access is
-     
-      New_Meta        : Meta_Class_Set_Access;      
+
+      New_Meta        : Meta_Class_Set_Access;
       Node_Class_Iter : Node_Class_Look_Up_Hashed_Mappings.Values_Iter;
-      A_Node_Class    : Graph_Lib.Node_Class_Id;      
-      Edge_Class_Iter : Edge_Class_Look_Up_Hashed_Mappings.Values_Iter;     
+      A_Node_Class    : Graph_Lib.Node_Class_Id;
+      Edge_Class_Iter : Edge_Class_Look_Up_Hashed_Mappings.Values_Iter;
       A_Edge_Class    : Graph_Lib.Edge_Class_Id;
    begin
-   
+
       New_Meta := new Class_Set_Data;
       New_Meta.Node_Classes := Node_Class_Look_Up_Hashed_Mappings.Create;
-      New_Meta.Edge_Classes := Edge_Class_Look_Up_Hashed_Mappings.Create;  
-          
-      for I in Elements'Range loop 
-           
-         if (Elements (I) /= null) then      
-                              
+      New_Meta.Edge_Classes := Edge_Class_Look_Up_Hashed_Mappings.Create;
+
+      for I in Elements'Range loop
+
+         if (Elements (I) /= null) then
+
             -- Process node classes
-            -----------------------      
-            Node_Class_Iter :=  
-              Node_Class_Look_Up_Hashed_Mappings.Make_Values_Iter 
+            -----------------------
+            Node_Class_Iter :=
+              Node_Class_Look_Up_Hashed_Mappings.Make_Values_Iter
                 (Elements (I).Node_Classes);
-    
-            while Node_Class_Look_Up_Hashed_Mappings.More 
+
+            while Node_Class_Look_Up_Hashed_Mappings.More
               (Node_Class_Iter) loop
-          
+
                Node_Class_Look_Up_Hashed_Mappings.Next
-                 (Node_Class_Iter, A_Node_Class);                          
-                  
+                 (Node_Class_Iter, A_Node_Class);
+
                if not Node_Class_Look_Up_Hashed_Mappings.Is_Bound
                  (New_Meta.Node_Classes, A_Node_Class) then
-                  
+
                   Node_Class_Look_Up_Hashed_Mappings.Bind
                     (New_Meta.Node_Classes,
                      A_Node_Class,
-                     A_Node_Class);                 
-               end if;                                                  
+                     A_Node_Class);
+               end if;
             end loop;
-             
+
             -- Process edge classes
             -----------------------
-            Edge_Class_Iter := 
-              Edge_Class_Look_Up_Hashed_Mappings.Make_Values_Iter 
+            Edge_Class_Iter :=
+              Edge_Class_Look_Up_Hashed_Mappings.Make_Values_Iter
                 (Elements (I).Edge_Classes);
-                
-            while Edge_Class_Look_Up_Hashed_Mappings.More 
+
+            while Edge_Class_Look_Up_Hashed_Mappings.More
               (Edge_Class_Iter) loop
-          
+
                Edge_Class_Look_Up_Hashed_Mappings.Next
-                 (Edge_Class_Iter, A_Edge_Class);                          
-                  
+                 (Edge_Class_Iter, A_Edge_Class);
+
                if not Edge_Class_Look_Up_Hashed_Mappings.Is_Bound
                  (New_Meta.Edge_Classes, A_Edge_Class) then
-                  
+
                   Edge_Class_Look_Up_Hashed_Mappings.Bind
                     (New_Meta.Edge_Classes,
                      A_Edge_Class,
-                     A_Edge_Class);                 
-               end if;                                                  
-            end loop;  
-                                                             
-         end if; -- end if (Elements (I) /= null)  
-                                   
-      end loop;       
-       
-      return New_Meta;           
+                     A_Edge_Class);
+               end if;
+            end loop;
+
+         end if; -- end if (Elements (I) /= null)
+
+      end loop;
+
+      return New_Meta;
    end Build;
-      
+
    ---------------------------------------------------------------------------
-   function Build (Elements : in Class_Sets_Lists.List) 
+   function Build (Elements : in Class_Sets_Lists.List)
      return Meta_Class_Set_Access is
-     
+
       Class_Sets_Array : Class_Set_Array
         (1..Class_Sets_Lists.Length (Elements));
       Iter             : Class_Sets_Lists.ListIter;
    begin
-   
+
       Iter := Class_Sets_Lists.MakeListIter (Elements);
-      
+
       for I in Class_Sets_Array'Range loop
         Class_Sets_Lists.Next (Iter, Class_Sets_Array (I));
       end loop;
 
       return Build (Class_Sets_Array);
    end Build;
- 
-   ---------------------------------------------------------------------------  
+
+   ---------------------------------------------------------------------------
    procedure Destroy (Target : in out Meta_Class_Set_Access) is
-   
+
    begin
-   
+
       if (Target = null) then
          raise Class_Sets_Access_Not_Initialized_Exception;
       end if;
-   
+
       Deallocate_Class_Set (Target);
    end Destroy;
-              
+
 end Giant.Config.Class_Sets;
