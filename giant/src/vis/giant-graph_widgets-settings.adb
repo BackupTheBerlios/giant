@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/06/23 16:18:36 $
+--  $Date: 2003/06/23 23:52:30 $
 --
 ------------------------------------------------------------------------------
 
@@ -35,6 +35,7 @@ with Gtkada.Types;
 with Untagged_Ptr_Hash;
 pragma Elaborate_All (Untagged_Ptr_Hash);
 
+with Giant.Controller;
 with Giant.Logger;
 
 package body Giant.Graph_Widgets.Settings is
@@ -349,7 +350,7 @@ package body Giant.Graph_Widgets.Settings is
       Node         : in     Vis_Data.Vis_Node_Id)
      return Boolean is
    begin
-      return False;
+      return Controller.Is_Node_Annotated (Vis_Data.Get_Graph_Node (Node));
    end Is_Annotated;
 
    function Get_Annotation_Icon
