@@ -4,6 +4,14 @@ This file contains short descriptions of what has changed between
 GIANT releases. Only major changes are included here, see ChangeLog
 in the source directory for details.
 
+Version 1.1.1 (2003-09-)
+
+ * Fixed activation record of loop body (Bug #924)
+ * Fixed get_first call (Bug #925)
+ * Decreased intensity of gsl logging (Bug #926) 
+ * Fixed cancel button in save window dialog (Bug #929)
+ * Fixed condition evaluation of repeat loop (Bug #931)
+
 Version 1.1.0 (2003-09-15)
 
  * Ported GUI code to Gtk2 Fixed elaboration code for compilation with

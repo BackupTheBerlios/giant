@@ -1,7 +1,7 @@
 2003-09-17  Oliver Kopp  <koppor@gspc54.informatik.uni-stuttgart.de>
 
-	* shared/gsl/standard.gsl: fixed while & repeat (Bug #931)
-	fixed ifs containing a script_reference	
+	* shared/gsl/standard.gsl: Fixed while & repeat (Bug #931)
+	fixed ifs containing a script_reference.
 
 2003-09-17  Steffen Pingel  <squig@users.sourceforge.net>
 
