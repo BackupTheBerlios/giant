@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.10 $
+--  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.11 $
 --  $Author: koppor $
---  $Date: 2003/07/08 13:53:14 $
+--  $Date: 2003/07/10 17:09:08 $
 --
 ------------------------------------------------------------------------------
 --  Variables are named according to the paper
@@ -227,7 +227,7 @@ package body Giant.Tree_Layouts is
                W := V.Left_Silbling;
                if W /= null then
                   --  V has a left silbling W
-                  V.Prelim := W.Prelim + Layout.Distance;
+                  V.Prelim := W.Prelim + Layout.X_Distance;
                else
                   V.Prelim := 0.0;
                end if;
@@ -303,7 +303,7 @@ package body Giant.Tree_Layouts is
               (V.Leftmost_Child.Prelim + V.Rightmost_Child.Prelim) / 2.0;
             W := V.Left_Silbling;
             if W /= null then
-               V.Prelim := W.Prelim + Layout.Distance;
+               V.Prelim := W.Prelim + Layout.X_Distance;
                V.Modf   := V.Prelim - MidPoint;
             else
                V.Prelim := MidPoint;
@@ -397,7 +397,7 @@ package body Giant.Tree_Layouts is
                   VOP := NextRight (VOP);
                   VOP.Ancestor := V;
                   Shift := (VIM.Prelim + SIM) - (VIP.Prelim + SIP)
-                    + Layout.Distance;
+                    + Layout.X_Distance;
                   if Shift > 0.0 then
                      MoveSubtree
                        (Ancestor (VIM, V, DefaultAncestor),
@@ -425,6 +425,33 @@ package body Giant.Tree_Layouts is
             end if;
          end Apportion;
 
+         ----------------------------------------------------------------------
+         --  Adjust DefaultAncestor of next item of the stack
+         --  And adjust values of parent if necessary
+         --
+         --  Pre:
+         --    Not Is_Empty (Stack)
+         procedure Adjust_Default_Ancestor
+           (Part_Two_Data : in     FirstWalk_Part_Two_Data_Record;
+            Stack         : in out FirstWalk_Part_Two_Stacks.Stack)
+         is
+            Part_Two_Next_Data : FirstWalk_Part_Two_Data_Record;
+         begin
+            FirstWalk_Part_Two_Stacks.Pop
+              (Stack, Part_Two_Next_Data);
+
+            if Part_Two_Next_Data.DefaultAncestor = null then
+               Part_Two_Next_Data.DefaultAncestor :=
+                 Part_Two_Data.DefaultAncestor;
+            else
+               --  next element are children of another parent
+               Part_After_Apportion (Part_Two_Data.W.Parent);
+            end if;
+
+            FirstWalk_Part_Two_Stacks.Push
+              (Stack, Part_Two_Next_Data);
+         end Adjust_Default_Ancestor;
+
          Nodes_Processed    : Natural := 0;
          Part_Two_Data      : FirstWalk_Part_Two_Data_Record;
 
@@ -439,25 +466,11 @@ package body Giant.Tree_Layouts is
             Apportion (Part_Two_Data.W,
                        Part_Two_Data.DefaultAncestor);
 
-            --  Adjust DefaultAncestor of next item of the stack
-            --  And adjust values of parent if necessary
-            declare
-               Part_Two_Next_Data : FirstWalk_Part_Two_Data_Record;
-            begin
-               FirstWalk_Part_Two_Stacks.Pop
-                 (Layout.FirstWalk_Part_Two_Stack, Part_Two_Next_Data);
-
-               if Part_Two_Next_Data.DefaultAncestor = null then
-                  Part_Two_Next_Data.DefaultAncestor :=
-                    Part_Two_Data.DefaultAncestor;
-               else
-                  --  next element are children of another parent
-                  Part_After_Apportion (Part_Two_Data.W.Parent);
-               end if;
-
-               FirstWalk_Part_Two_Stacks.Push
-                 (Layout.FirstWalk_Part_Two_Stack, Part_Two_Next_Data);
-            end;
+            if not FirstWalk_Part_Two_Stacks.Is_Empty
+              (Layout.FirstWalk_Part_Two_Stack) then
+               Adjust_Default_Ancestor
+                 (Part_Two_Data, Layout.FirstWalk_Part_Two_Stack);
+            end if;
 
             Nodes_Processed := Nodes_Processed + 1;
          end loop;
@@ -613,6 +626,7 @@ package body Giant.Tree_Layouts is
             SecondWalk;
 
          when Matrix =>
+            --  TBD: seems to crash here
             Start_Matrix_Layout;
       end case;
    end Step;
@@ -721,8 +735,9 @@ package body Giant.Tree_Layouts is
 
          Layout.SecondWalk_Stack := SecondWalk_Stacks.Create;
 
-         Layout.Distance :=
-           Graph_Widgets.Get_Current_Maximum_Node_Width (Layout.Widget) * 1.1;
+         Layout.X_Distance :=
+           Graph_Widgets.Get_Current_Maximum_Node_Width (Layout.Widget) *
+           (X_Distance);
 
          --  next step is the "normal" initialize of the treelayout
          Layout.State := Init_Run_Part_One;
