@@ -18,13 +18,14 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.57 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.58 $
 --  $Author: koppor $
---  $Date: 2003/07/22 09:35:34 $
+--  $Date: 2003/07/24 15:35:50 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
 with Ada.Strings.Unbounded;
+with Ada.Tags;
 
 --  from Bauhaus
 with Tagged_Ptr_Hash;
@@ -152,6 +153,32 @@ package body Giant.Graph_Lib is
    begin
       return IML_Reflection."=" (Left, Right);
    end "=";
+
+   ---------------------------------------------------------------------------
+   function Convert_Node_Attribute_Class_Id_To_Name
+     (Node_Attribute_Class : in Node_Attribute_Class_Id)
+     return String
+   is
+   begin
+      case Node_Attribute_Class is
+         when Class_Node_Id =>
+           return "Node_Id";
+         when Class_Node_Id_List =>
+           return "Node_Id_List";
+         when Class_Node_Id_Set =>
+           return "Node_Id_Set";
+         when Class_String =>
+           return "String";
+         when Class_SLoc =>
+           return "SLoc";
+         when Class_Boolean =>
+           return "Boolean";
+         when Class_Natural =>
+            return "Natural";
+         when Class_Invalid =>
+            return "INVALID";
+      end case;
+   end Convert_Node_Attribute_Class_Id_To_Name;
 
    ---------------------------------------------------------------------------
    function Convert_Node_Attribute_Id_To_Name
@@ -1571,9 +1598,11 @@ package body Giant.Graph_Lib is
       elsif Node_Attribute.all in IML_Reflection.Enumerator_Field'Class then
          return Class_String;
       else
-         Logger.Error (Node_Attribute.Name);
-         Logger.Error ("Class for Node_Attribute could not be found");
-         return Class_Natural;
+         Logger.Error ("Class " &
+                       Ada.Tags.External_Tag (Node_Attribute.all'Tag) &
+                       " for Node_Attribute """ & Node_Attribute.Name &
+                       """ could not be found");
+         return Class_Invalid;
       end if;
    end Get_Node_Attribute_Class_Id;
 
@@ -1891,10 +1920,13 @@ package body Giant.Graph_Lib is
          when Class_String =>
             return Get_Node_Attribute_String_Value (Node, Attribute);
 
+         when Class_Invalid =>
+            return "* invalid attribute class *";
+
          when others =>
             Logger.Fatal ("Unknown Attribute-Class in " &
                           "Get_Node_Attribute_Value_As_String");
-            return "* unkown *";
+            return "* unknown *";
       end case;
    end Get_Node_Attribute_Value_As_String;
 
