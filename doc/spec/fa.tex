@@ -1,6 +1,6 @@
 % =============================================================================
-%  $RCSfile: fa.tex,v $, $Revision: 1.6 $
-%  $Date: 2003/02/19 09:41:20 $
+%  $RCSfile: fa.tex,v $, $Revision: 1.7 $
+%  $Date: 2003/02/19 10:55:17 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -35,44 +35,58 @@ Neben dem \gq{Benutzer} sind keine weiteren Aktoren vorgesehen.\\
 
 
 % =============================================================================
-\section{Starten von GIANT ohne Kommandozeilenparameter}
-\begin {enumerate}
+\section{Starten von GIANT}
 
-  \item
-  Der Benutzer startet das Programm GIANT durch ausführen der entsprechenden
-  Programmdatei.
+Der Benutzer startet das Programm GIANT durch ausführen der entsprechenden
+Programmdatei. Hierbei hat er bezüglich eventueller Kommandozeilenparameter
+die folgenden Optionen. 
+
+  \subsubsection {Mögliche Parameter}
+  \begin {enumerate}
+    
+    \item loadiml=''Pfad''\\
+    Angabe des Pfades zu einer existierenden IML-Graph Datei.
+      
+    \item loadproject=''Pfad''\\
+    Angabe des Pfades zu einer existierenden Projektdatei.
+      
+    \item executequery=''Anfrage''\\
+    Eingabe eines Wortes der Anfragespreche als String.
+     
+    \item loadquery=''Pfad''\\
+    Pfad zu einer Datei in der ein Wort der Anfragespreche gespeichert ist.
+      
+  \end {enumerate}
+      
+  \subsection {Mögliche Aufrufe}
+
+  \begin {enumerate}
   
-  \item
-  GIANT startet und ziegt das Main Window an. Es ist noch kein Projekt geladen.
-
-\end {enumerate}
-
-
-\section{Starten von GIANT mit Kommandozeilenparametern}
-\begin {enumerate}
-
-  \item
-  Der Benutzer startet das Programm GIANT durch aufruf der entsprechenden
-  Programmdatei aus der Kommandozeile. Als Kommandozeilenparameter übergibt
-  er hierbei entweder:
+    \item Eingabe von: <giant>\\
+    GIANT startet und ziegt das Main Window an. 
+    Es ist noch kein Projekt geladen.
     
-    \subitem
-    Einen Pfad zu einer existierenden Anfrage-Datei.
+    \item Eingabe von: <giant -loadiml=''my\_iml\_file''>\\
+    Neues Projekt (erhält einen Default-Namen) wird geöffnet.
+    Dieses Projekt ist noch nicht persistent gespeichert.
+    \label{Kommandozeile_neus}
+
+    \item Eingabe von: <giant -loadproject=''my\_project\_file''>\\
+    Das angegebene Projekt wird geöffnet.
+    \label{Kommandozeile_altes}
     
-    \subitem
-    Oder 
-    
-    
-  \item
-  GIANT arbeitet die entsprechende Anfrage ab und zeigt alle gewünschten
-  Informationen an.
+    \item
+    Bei \ref{Kommandozeile_neus} und \ref{Kommandozeile_altes}
+    kann zusätzlich entweder der Parameter\\
+    <... -executequery''my\_query\_string''> oder der Parameter\\
+    <... -loadquery''my\_query\_file''> eingegeben werden.\\
+    In diesem Falle wird dann die übergebene Anfrage ausgeführt.
+    Die Ergebnisse werden dem neuen oder dem bestehenden Projekt 
+    hinzugefügt, sind aber noch nicht persistent gespeichert.
 
 
-\end {enumerate}
-
-Erläuterung der Kommandozeilenparameter.
-
-
+  \end {enumerate}
+  
 % ==============================================================================
 \section{Beenden von GIANT}
 Giant kann durch Schließen des HAUPTFENSTERS oder durch Auswahl 
