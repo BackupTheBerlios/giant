@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.60 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.61 $
 --  $Author: koppor $
---  $Date: 2003/08/12 09:39:26 $
+--  $Date: 2003/08/12 09:59:55 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -1941,8 +1941,19 @@ package body Giant.Graph_Lib is
                                   (Node, Attribute));
 
          when Class_Node_Id =>
-            return Node_Id_Image (Get_Node_Attribute_Node_Id_Value
-                                  (Node, Attribute));
+            --  special case for identifiers
+            --    they are edges, but the target is out of IML, i.e.
+            --    the target is "null"
+            --    i.e. (Get_Node_Attribute_Node_Id_Value returns null)
+            --    Therefore this case has to be catched before
+            --      the call to Get_Node_Attribute_Node_Id_Value
+            if Attribute.all in IML_Reflection.Identifier_Field then
+               return IML_Reflection.Identifier_Field
+                 (Attribute.all).Get_Name (Node.IML_Node);
+            else
+               return Node_Id_Image (Get_Node_Attribute_Node_Id_Value
+                                     (Node, Attribute));
+            end if;
 
          when Class_Node_Id_List =>
             return Convert_Node_Id_List_To_String
