@@ -4,6 +4,10 @@ This file contains short descriptions of what has changed between
 GIANT releases. Only major changes are included here, see ChangeLog
 in the source directory for details.
 
+Version 1.1.3 (2003-12-04)
+
+ * Replaced license header
+
 Version 1.1.2 (2003-11-24)
 
  * Ported to IML-lib 20030923
