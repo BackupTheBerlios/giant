@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.39 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.40 $
 --  $Author: squig $
---  $Date: 2003/07/04 20:41:28 $
+--  $Date: 2003/07/04 22:45:46 $
 --
 
 with Ada.Strings.Unbounded;
@@ -122,11 +122,12 @@ package body Giant.Controller is
                              Target_Position => Position,
                              Additional_Parameters =>
                                Additional_Parameters,
-                             Layout_Evolution =>Evolution);
-      Evolutions.Start_Calculation (Evolution, Started,
+                             Layout_Evolution => Evolution);
+      Evolutions.Start_Calculation (Evolution,
                                     Gui_Manager.Create_Progress_Dialog
                                     (-"Applying Layout",
-                                     -"Layout is calculated..."));
+                                     -"Layout is calculated..."),
+                                    Started);
    end Apply_Layout;
 
    ---------------------------------------------------------------------------

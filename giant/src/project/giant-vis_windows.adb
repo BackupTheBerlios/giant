@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.28 $
---  $Author: schwiemn $
---  $Date: 2003/07/03 13:15:39 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.29 $
+--  $Author: squig $
+--  $Date: 2003/07/04 22:45:46 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -129,7 +129,7 @@ package body Giant.Vis_Windows is
    ---------
    procedure Pin_Sets_Write is new Pin_Sets.Write_Set
      (Write_Element => Pin_Write);
-     
+
    ---------------------------------------------------------------------------
    -- for internal use
    procedure Internal_Set_Highlight_Status_Unchecked
@@ -158,7 +158,7 @@ package body Giant.Vis_Windows is
 
       Graph_Lib.Selections.Destroy (Dummy_Selection);
    end Internal_Set_Highlight_Status_Unchecked;
-   
+
 
    ---------------------------------------------------------------------------
    --  A
@@ -191,13 +191,13 @@ package body Giant.Vis_Windows is
       New_Window_Ac.All_Managed_Selections := Selection_Data_Sets.Empty_Set;
 
       --  Initialize new Graph_Widget
-   -- FIX  Graph_Widgets.Create (New_Graph_Widget);
+      Graph_Widgets.Create (New_Graph_Widget);
 
       --  Increases the GTK Reference Counter - needed to keep the graph
       --  widget persistent in this data structure
-   -- FIX   Graph_Widgets.Ref (New_Graph_Widget);
+      Graph_Widgets.Ref (New_Graph_Widget);
 
-   -- FIX   New_Window_Ac.The_Graph_Widget := New_Graph_Widget;
+      New_Window_Ac.The_Graph_Widget := New_Graph_Widget;
 
       --  Create empty standard selection and make it to the current selection
       --  -> this behaviour is demanded by the Specification
@@ -652,8 +652,8 @@ package body Giant.Vis_Windows is
       --  the current selection
       if Ada.Strings.Unbounded."="
         (Selection_Name, Vis_Window.Current_Selection) then
-         Set_Current_Selection 
-           (Vis_Window, 
+         Set_Current_Selection
+           (Vis_Window,
             Ada.Strings.Unbounded.To_String
              (Vis_Window.Standard_Selection));
       end if;
@@ -676,7 +676,7 @@ package body Giant.Vis_Windows is
    procedure Set_Current_Selection
      (Vis_Window     : in Visual_Window_Access;
       Selection_Name : in String) is
-      
+
       Dummy_Selection     : Graph_Lib.Selections.Selection;
       Dummy_Data_Element  : Selection_Data_Elemet;
       Change_Data_Element : Selection_Data_Elemet;
@@ -698,22 +698,22 @@ package body Giant.Vis_Windows is
       if Get_Highlight_Status (Vis_Window, Selection_Name) /= None then
          raise Illegal_Current_Selection_Exception;
       end if;
-      
+
       --  reset highlight status of former current selection
       Internal_Set_Highlight_Status_Unchecked
         (Vis_Window,
          Ada.Strings.Unbounded.To_String (Vis_Window.Current_Selection),
          Selection_Highlight_Status'(None));
-            
+
       Vis_Window.Current_Selection :=
         Ada.Strings.Unbounded.To_Unbounded_String (Selection_Name);
-                
+
       --  update highlight status of current selection
       Internal_Set_Highlight_Status_Unchecked
         (Vis_Window,
          Selection_Name,
          Selection_Highlight_Status'(Current_Selection));
-                 
+
    end Set_Current_Selection;
 
    ---------------------------------------------------------------------------
@@ -803,7 +803,7 @@ package body Giant.Vis_Windows is
          raise Highlight_Status_Of_Selection_May_Not_Be_Changed_Exception;
       end if;
 
-      Internal_Set_Highlight_Status_Unchecked 
+      Internal_Set_Highlight_Status_Unchecked
         (Vis_Window, Selection_Name, New_Highlight_Status);
    end Set_Highlight_Status;
 

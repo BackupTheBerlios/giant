@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.19 $
---  $Author: keulsn $
---  $Date: 2003/07/04 14:37:50 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.20 $
+--  $Author: squig $
+--  $Date: 2003/07/04 22:45:46 $
 --
 ------------------------------------------------------------------------------
 --
@@ -406,7 +406,7 @@ package Giant.Graph_Widgets is
    --    * Unknown_Node_Id if Precondition not satisfied
    procedure Lock_Selection
      (Widget    : access Graph_Widget_Record'Class;
-      Selection : access Graph_Lib.Selections.Selection;
+      Selection : in     Graph_Lib.Selections.Selection;
       Lock      :    out Lock_Type);
 
    ----------------------------------------------------------------------------

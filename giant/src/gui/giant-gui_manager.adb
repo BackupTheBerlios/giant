@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.27 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.28 $
 --  $Author: squig $
---  $Date: 2003/07/04 20:41:28 $
+--  $Date: 2003/07/04 22:45:46 $
 --
 
 with Ada.Strings.Unbounded;
@@ -202,7 +202,7 @@ package body Giant.Gui_Manager is
       Giant.Progress_Dialog.Create (Dialog, Title, Message);
 
       return Dialog;
-   end Create_Gsl_Progress_Dialog;
+   end Create_Progress_Dialog;
 
    procedure Initialize_Project
    is

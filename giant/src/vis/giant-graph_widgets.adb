@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.10 $
---  $Author: keulsn $
---  $Date: 2003/07/04 14:37:50 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.11 $
+--  $Author: squig $
+--  $Date: 2003/07/04 22:45:46 $
 --
 ------------------------------------------------------------------------------
 
@@ -200,8 +200,9 @@ package body Giant.Graph_Widgets is
 
    procedure Lock_Selection
      (Widget    : access Graph_Widget_Record'Class;
-      Selection : access Graph_Lib.Selections.Selection;
-      Lock      :    out Lock_Type) is
+      Selection : in     Graph_Lib.Selections.Selection;
+      Lock      :    out Lock_Type)
+   is
    begin
       raise Unimplemented;
    end Lock_Selection;

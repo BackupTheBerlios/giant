@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.44 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.45 $
 --  $Author: squig $
---  $Date: 2003/07/03 18:41:20 $
+--  $Date: 2003/07/04 22:45:46 $
 --
 
 with Ada.Exceptions;
@@ -242,7 +242,9 @@ package body Giant.Main_Window is
       begin
          if (Project_Filename /= "") then
             if (Projects.Does_Project_Exist_File (Project_Filename)) then
-               raise Projects.Directory_Holds_Already_A_Project_File_Exception;
+               --  check this not to avoid graph file selection
+               Dialogs.Show_Error_Dialog (-"The project could not be created. The directory already contains a project.");
+               return;
             end if;
 
             declare
