@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.57 $
---  $Author: keulsn $
---  $Date: 2003/07/16 12:54:21 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.58 $
+--  $Author: squig $
+--  $Date: 2003/07/17 11:16:52 $
 --
 
 with Ada.Strings.Unbounded;
@@ -666,7 +666,8 @@ package body Giant.Controller is
       Selection : Graph_Lib.Selections.Selection
         := Get_Selection (Window_Name, Name);
    begin
-      if (Vis_Windows.Get_Standard_Selection (Window) = Name) then
+      if (Vis_Windows.Get_Standard_Selection (Window) = Name
+          or else Vis_Windows.Get_Current_Selection (Window) = Name) then
          --  we need to raise this before Gui_Manager.Remove_Selection
          --  is called, otherwise we loose gui consistency
          raise Vis_Windows.Standard_Selection_May_Not_Be_Removed_Exception;

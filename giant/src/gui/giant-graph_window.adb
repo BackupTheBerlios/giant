@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.35 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.36 $
 --  $Author: squig $
---  $Date: 2003/07/15 11:50:26 $
+--  $Date: 2003/07/17 11:16:52 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -290,7 +290,7 @@ package body Giant.Graph_Window is
          Remove_Content => False, Ask_For_Confirmation => True);
    exception
       when Vis_Windows.Standard_Selection_May_Not_Be_Removed_Exception =>
-         Dialogs.Show_Error_Dialog ("The default selection can not be removed.");
+         Dialogs.Show_Error_Dialog ("The default or active selection can not be removed.");
    end On_Selection_List_Delete;
 
    procedure On_Selection_List_Delete_With_Content
@@ -304,7 +304,7 @@ package body Giant.Graph_Window is
          Remove_Content => True, Ask_For_Confirmation => True);
    exception
       when Vis_Windows.Standard_Selection_May_Not_Be_Removed_Exception =>
-         Dialogs.Show_Error_Dialog ("The default selection can not be removed.");
+         Dialogs.Show_Error_Dialog ("The default or active selection can not be removed.");
    end On_Selection_List_Delete_With_Content;
 
    procedure On_Selection_List_Duplicate
