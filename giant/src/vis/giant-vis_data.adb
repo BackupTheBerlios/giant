@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.22 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.23 $
 --  $Author: keulsn $
---  $Date: 2003/07/11 16:09:07 $
+--  $Date: 2003/07/11 17:34:16 $
 --
 ------------------------------------------------------------------------------
 
@@ -957,9 +957,6 @@ package body Giant.Vis_Data is
       Y : Vis.Absolute_Int := Vis.Absolute.Get_Y
         (Vis.Absolute.Vector_2d (Position));
    begin
-      Vis_Data_Logger.Debug
-        ("Get_Region_Extent X =" & Integer'Image (X) & " Y =" &
-         Integer'Image (Y));
       return Vis.Absolute.Combine_Rectangle
         (X * Manager.Region_Width,
          Y * Manager.Region_Height,

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.13 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.14 $
 --  $Author: keulsn $
---  $Date: 2003/07/11 02:26:39 $
+--  $Date: 2003/07/11 17:34:16 $
 --
 ------------------------------------------------------------------------------
 
@@ -963,6 +963,18 @@ package body Giant.Graph_Widgets.Drawing is
             Gc        => Widget.Drawing.Background,
             Rectangle => Area,
             Origin    => Buffer_Origin);
+         Draw_Border
+           (Drawable  => Widget.Drawing.Buffer,
+            Gc        => Widget.Drawing.Debug_Gc,
+            Rectangle => Area,
+            Origin    => Buffer_Origin);
+         Draw_Text
+           (Buffer => Widget.Drawing.Buffer,
+            Font   => Settings.Get_Node_Font (Widget),
+            Gc     => Widget.Drawing.Debug_Gc,
+            Area   => Area,
+            Origin => Buffer_Origin,
+            Text   => Vis.Absolute.Image (Area));
       end loop;
 
       Drawing_Logger.Debug ("... Background done.");
@@ -1154,7 +1166,7 @@ package body Giant.Graph_Widgets.Drawing is
 
          Widget.Drawing.Buffer_Area := New_Area;
 
-         Vis_Data.Pollute_Area (Widget.Manager, New_Area);
+--         Vis_Data.Pollute_Area (Widget.Manager, New_Area);
          --  If size of buffer is smaller in any coordinate then must
          --  add pollution. If size has increased then pollution must be
          --  set already
@@ -1210,6 +1222,10 @@ package body Giant.Graph_Widgets.Drawing is
 
       Window : Gdk.Window.Gdk_Window := Get_Window (Widget);
    begin
+      Gdk.GC.Gdk_New (Widget.Drawing.Debug_Gc, Window);
+      Gdk.GC.Set_Foreground
+        (Widget.Drawing.Debug_Gc,
+         Gdk.Color.White (Get_Colormap (Widget)));
       Gdk.GC.Gdk_New (Widget.Drawing.Background, Window);
       Gdk.GC.Set_Foreground
         (Widget.Drawing.Background, Settings.Get_Background_Color (Widget));
@@ -1335,6 +1351,7 @@ package body Giant.Graph_Widgets.Drawing is
    begin
       States.Disable_Drawing (Widget);
 
+      Gdk.GC.Destroy (Widget.Drawing.Debug_Gc);
       Gdk.GC.Destroy (Widget.Drawing.Background);
 
       Gdk.GC.Destroy (Widget.Drawing.Node_Border);

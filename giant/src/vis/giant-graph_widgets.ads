@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.26 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.27 $
 --  $Author: keulsn $
---  $Date: 2003/07/11 16:09:07 $
+--  $Date: 2003/07/11 17:34:16 $
 --
 ------------------------------------------------------------------------------
 --
@@ -1067,6 +1067,8 @@ private                    -- private part --
          Buffer_Area  : Vis.Absolute.Rectangle_2d;
          Ready_Buffer : Gdk.Pixmap.Gdk_Pixmap;
          Display      : Gdk.Pixmap.Gdk_Pixmap;
+
+         Debug_Gc     : Gdk.GC.Gdk_GC;
 
          Background   : Gdk.GC.Gdk_GC;
 
