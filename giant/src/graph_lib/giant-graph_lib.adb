@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.64 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.65 $
 --  $Author: koppor $
---  $Date: 2003/08/31 12:04:36 $
+--  $Date: 2003/09/02 08:54:48 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -754,7 +754,8 @@ package body Giant.Graph_Lib is
          begin
             Logger.Debug ("Begin: Convert_Nodes");
 
-            IML_Node_ID_Mapping := IML_Node_ID_Hashed_Mappings.Create;
+            --  Mapping's initial size is about 4 million nodes
+            IML_Node_ID_Mapping := IML_Node_ID_Hashed_Mappings.Create (21);
 
             Node_Iter := Load_Nodes.Node_Queues.MakeListIter (Queue);
             while Load_Nodes.Node_Queues.More (Node_Iter) loop
