@@ -18,11 +18,11 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  First Author: Steffen Pingel
+--  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory-test.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-layout_factory-test.adb,v $, $Revision: 1.2 $
 --  $Author: koppor $
---  $Date: 2003/07/01 21:53:35 $
+--  $Date: 2003/07/07 11:21:38 $
 --
 
 with Ada.Text_IO;
@@ -36,8 +36,7 @@ with Giant.Logger;
 package body Giant.Layout_Factory.Test is
 
    --------------------------------------------------------------------------
-
-   package Logger is new Giant.Logger("T:graph_lib");
+   package Logger is new Giant.Logger("T:layout-factory");
 
    -----------------
    --  Testcases  --
