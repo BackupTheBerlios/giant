@@ -42,8 +42,8 @@ LIBS            = -largs $(IMLLIB_LIBS) $(shell $(GTKADA_CONFIG) --libs)
 
 CFLAGS          =  -s -O3 -funroll-loops
 #-g
-GNAT_FLAGS      = -gnatn -gnatp -gnatX
-#-gnatX -gnata -gnatf -gnatwl -gnato 
+GNAT_FLAGS      = -gnatX -gnata -gnatf -gnatwl -gnato 
+#-gnatn -gnatp -gnatX
 #-fstack-check
 #-fprofile-arcs -ftest-coverage
 #-gnaty3abcefhiklmprt #-gnatys 
