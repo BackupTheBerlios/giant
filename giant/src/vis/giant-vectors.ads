@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.ads,v $, $Revision: 1.8 $
+--  $RCSfile: giant-vectors.ads,v $, $Revision: 1.9 $
 --  $Author: keulsn $
---  $Date: 2003/06/30 02:55:18 $
+--  $Date: 2003/07/02 12:44:50 $
 --
 ------------------------------------------------------------------------------
 
@@ -62,6 +62,13 @@ generic
    with function Image
      (A : in Coordinate_Type)
      return String;
+
+   --  Coordinate_Type version of String
+   --  Must raise 'Constraint_Error' if 'A' is not a correct
+   --  string-representation.
+   with function Value
+     (A : in String)
+     return Coordinate_Type;
 
    --  <= on Coordinate_Type
    with function Coord_Less_Equal
@@ -178,6 +185,18 @@ package Giant.Vectors is
    function Image
      (Vector : in     Vector_2d)
      return String;
+
+   --  Returns the value for 'Image' if 'Image' is a correct String-
+   --  representation of a Vector_2d, othewise raises 'Constraint_Error'.
+   --  Correct string-representations are (regular expression)
+   --  s*(s*<Coord>s*,s*<Coord>s*)s*
+   --  where s = ' ', <Coord> is the value of any Image (C) where C is a value
+   --  of type Coordinate_Type.
+   --  Raises:
+   --    Constraint_Error if Image incorrect.
+   function Value
+     (Image  : in     String)
+     return Vector_2d;
 
    --  Read from Stream
    procedure Read_Vector

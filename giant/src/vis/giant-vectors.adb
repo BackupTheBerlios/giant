@@ -20,12 +20,15 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-vectors.adb,v $, $Revision: 1.9 $
 --  $Author: keulsn $
---  $Date: 2003/06/30 02:55:18 $
+--  $Date: 2003/07/02 12:44:50 $
 --
 ------------------------------------------------------------------------------
 
+
+with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Strings.Fixed;
 
 package body Giant.Vectors is
 
@@ -134,6 +137,37 @@ package body Giant.Vectors is
       return "(" & Image (Get_X (Vector)) & ", "
         & Image (Get_Y (Vector)) & ")";
    end Image;
+
+   function Value
+     (Image  : in     String)
+     return Vector_2d is
+
+      Trimmed_Image   : String := Ada.Strings.Fixed.Trim
+        (Source => Image,
+         Side   => Ada.Strings.Both);
+      Separator_Index : Natural;
+      X               : Coordinate_Type;
+      Y               : Coordinate_Type;
+   begin
+      Put_Line (Image);
+      Put_Line (Trimmed_Image);
+      if Trimmed_Image (Trimmed_Image'First) /= '('
+        or Trimmed_Image (Trimmed_Image'Last) /= ')' then
+
+         raise Constraint_Error;
+      end if;
+      Separator_Index := Ada.Strings.Fixed.Index
+        (Source  => Trimmed_Image,
+         Pattern => ",");
+      --  If "," not contained in Trimmed_Image then Separator_Index = 0
+      --  In this case the following call must raise Constraint_Error.
+      --  It is not necessary to raise explicitely.
+      X := Value (Trimmed_Image
+                   (Trimmed_Image'First + 1 .. Separator_Index - 1));
+      Y := Value (Trimmed_Image
+                   (Separator_Index + 1 .. Trimmed_Image'Last - 1));
+      return Combine_Vector (X, Y);
+   end Value;
 
    procedure Read_Vector
      (Stream : in     Bauhaus_IO.In_Stream_Type;
