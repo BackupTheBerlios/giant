@@ -20,10 +20,13 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.25 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.26 $
 --  $Author: koppor $
---  $Date: 2003/06/30 18:55:02 $
+--  $Date: 2003/07/02 23:21:24 $
 --
+--  TBD:
+--    Write into comment, when the routine may be used
+--      after create / load, not after unload / destroy
 
 with Giant.Constant_Ptr_Hashs;
 
