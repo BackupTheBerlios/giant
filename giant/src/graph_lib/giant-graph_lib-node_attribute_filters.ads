@@ -20,13 +20,16 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-node_attribute_filters.ads,v $, $Revision: 1.8 $
+--  $RCSfile: giant-graph_lib-node_attribute_filters.ads,v $, $Revision: 1.9 $
 --  $Author: koppor $
---  $Date: 2003/06/28 18:15:07 $
+--  $Date: 2003/07/14 18:50:06 $
 --
 ------------------------------------------------------------------------------
 --
 --  Offers filtering used for visulaization
+--
+
+with Ada.Unchecked_Deallocation;
 
 --  from Bauhaus
 with String_Lists;
@@ -42,7 +45,9 @@ package Giant.Graph_Lib.Node_Attribute_Filters is
 
    ---------------------------------------------------------------------------
    --  If a given attribute does not exist in Node_Class of the given filter,
-   --    it is ignored
+   --    it is IGNORED
+   --  It is implemented like that to simplify implementation at the
+   --    project-management
    --
    --  Params:
    --    Node_Class:                The node class the filter created for
@@ -103,7 +108,12 @@ private
       Current_Position : Positive;
    end record;
 
+   ---------------------------------------------------------------------------
+   procedure Free_Filter is new Ada.Unchecked_Deallocation
+     (Filter_Type, Filter);
+
    --  taken from mail from keulsn, 20030426
+   --  Ideas how to deal and use some ADA-specialities
    --
    --  [...Zoom_Level... not to be implemented, 13-06-2003 keulsn]
    --  type Attribute_Filter_Type is array (Positive range <>) of Boolean;
