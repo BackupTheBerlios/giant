@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.22 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.23 $
 --  $Author: squig $
---  $Date: 2003/06/30 19:50:46 $
+--  $Date: 2003/06/30 19:59:13 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -717,7 +717,7 @@ package body Giant.Graph_Window is
          Widget_Callback.To_Marshaller (On_Zoom_Level_Selected'Access),
          Window);
       Widget_Callback.Object_Connect
-           (Window.Zoom_Entry, "activate",
+           (Gtk.Combo.Get_Entry (Window.Zoom_Combo), "activate",
             Widget_Callback.To_Marshaller (On_Zoom_Level_Selected'Access),
             Window);
 
@@ -901,7 +901,6 @@ package body Giant.Graph_Window is
    is
       Item : Gtk.List_Item.Gtk_List_Item;
    begin
-      Logger.Info ("adding: " & Name);
       Gtk.List_Item.Gtk_New (Item, Name);
       Gtk.List_Item.Show (Item);
       Gtk.List.Add (Gtk.Combo.Get_List (Window.Vis_Style_Combo), Item);
