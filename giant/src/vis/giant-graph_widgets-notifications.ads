@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-notifications.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-graph_widgets-notifications.ads,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/06/09 01:13:39 $
+--  $Date: 2003/06/24 21:17:42 $
 --
 ------------------------------------------------------------------------------
 --
@@ -31,6 +31,8 @@
 --  subprograms then forward the notifications to the graph widget's clients.
 --
 
+
+with Gtkada.Types;
 
 package Giant.Graph_Widgets.Notifications is
 
@@ -152,5 +154,14 @@ package Giant.Graph_Widgets.Notifications is
    procedure Visible_Area_Changed
      (Widget : access Graph_Widget_Record'Class;
       Area   : in     Vis.Logic.Rectangle_2d);
+
+
+   -------------
+   -- Signals --
+   -------------
+
+   function Get_Signal_Array
+     return Gtkada.Types.Chars_Ptr_Array;
+
 
 end Giant.Graph_Widgets.Notifications;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.12 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.13 $
 --  $Author: keulsn $
---  $Date: 2003/06/24 18:15:55 $
+--  $Date: 2003/06/24 21:17:42 $
 --
 ------------------------------------------------------------------------------
 --
@@ -32,6 +32,7 @@
 
 
 with Ada.Finalization;
+with Ada.Unchecked_Deallocation;
 
 with Hashed_Mappings;
 pragma Elaborate_All (Hashed_Mappings);
@@ -41,6 +42,7 @@ pragma Elaborate_All (Lists);
 
 with Giant.Graph_Lib;
 with Giant.Merging_Iterators;
+with Giant.Simple_Priority_Queues;
 with Giant.Vis;
 
 package Giant.Vis_Data is
@@ -149,16 +151,21 @@ package Giant.Vis_Data is
          Area   : Vis.Absolute.Rectangle_2d;
       end record;
 
+   type Layer_Clipping_Access is access Layer_Clipping_Type;
+
+   procedure Free
+     (Clipping : in out Layer_Clipping_Access);
+
    function Is_Below
-     (Left  : in     Layer_Clipping_Type;
-      Right : in     Layer_Clipping_Type)
+     (Left  : in     Layer_Clipping_Access;
+      Right : in     Layer_Clipping_Access)
      return Boolean;
 
    package Clipping_Queues is new Simple_Priority_Queues
-     (Item_Type           => Layer_Clipping_Type;
+     (Item_Type           => Layer_Clipping_Access,
       Has_Higher_Priority => Is_Below);
 
-   type Clipping_Queue_Access is access Clipping_Queues.Queue;
+   type Clipping_Queue_Access is access Clipping_Queues.Queue_Type;
 
 
    -----------
@@ -175,9 +182,6 @@ package Giant.Vis_Data is
 
    subtype Highlight_Type is
      Flags_Enumeration_Type range Current_Local .. Third_Global;
-
-   type Highlight_Array is array (Highlight_Type) of Boolean;
-   pragma Pack (Highlight_Array);
 
    subtype Local_Highlight_Type is
      Highlight_Type range Current_Local .. Third_Local;
@@ -293,7 +297,6 @@ package Giant.Vis_Data is
    -- Nodes --
    -----------
 
-
    ----------------------------------------------------------------------------
    --  Gets the node for the visual representation
    function Get_Graph_Node
@@ -405,7 +408,7 @@ package Giant.Vis_Data is
    --    Size            - Estimate of the size of the display region
    --    Number_Of_Nodes - Estimate of the number of nodes managed
    procedure Init_Region_Manager
-     (Manager         :    out Region_Manager;
+     (Manager         : in out Region_Manager;
       Size            : in     Vis.Absolute.Vector_2d;
       Number_Of_Nodes : in     Natural);
 
@@ -525,42 +528,30 @@ package Giant.Vis_Data is
      (Refresh_Area : in out Rectangle_2d_Lists.List);
 
    ----------------------------------------------------------------------------
-   --  Determines how to refresh the visual representation. Receives as input
-   --  an area that will be displayed. If the contents within that
-   --  area have been polluted, then all edges and nodes within that are
-   --  need to be refreshed.
-   --  This procedure produces as output the area that should be refreshed.
-   --  This might be smaller than or equal to the input area. Produces also
-   --  an iterator of edges and an iterator of nodes to be drawn in that area.
+   --  Determines which edges to refresh in the visual representation.
+   --  Receives as input an area to be displayed. If the contents in that
+   --  area have been polluted then produces as output an iterator
+   --  over all edges to be redrawn. Also provides a set of clipping
+   --  instructions to be respected during drawing.
+   --
+   --  The data structures returned by this subprogram must be destroyed
+   --  by a call to 'End_Edge_Refresh'.
+   --  If (and only if) Items are removed from 'Clipping' than those items
+   --  must be destroyed by a call to 'Free'.
    --
    --  Parameters:
    --    Manager         - The region manager
-   --    Display_Area    - The area that will be drawn
-   --    Refresh_Area    - The part of 'Display_Area' that needs to be
-   --                      refreshed
-   --    Edges           - Iterator of all edges that need to be drawn
-   --    Nodes           - Iterator of all nodes that need to be drawn
-   --    Refresh_Pending - If set to True, then all pollution is cleaned from
-   --                      Refresh_Area, else 'Manager' remains unchanged.
-   --  Notes:
-   --    * The Area 'Display_Area' minus 'Refresh_Area' can be non-empty.
-   --      In that case the old content must be remembered. If the old
-   --      content is forgotten then 'Pollute_Area' must be called on
-   --      'Display_Area' before the call to 'Start_Refresh_Foreground'
-   --    * During the drawing no point outside of 'Refresh_Area' must be
-   --      modified. GtkAda provides filters to ensure this.
-   --    * Before drawing begins, the background must be refreshed according
-   --      to the data provided by 'Start_Refresh_Background'
-   --    * 'End_Refresh_Operation' must be called after the refresh operation
-   --      is done to deallocate storage.
-   procedure Start_Refresh_Foreground
-     (Manager         : in out Region_Manager;
-      Display_Area    : in     Vis.Absolute.Rectangle_2d;
-      Refresh_Area    :    out Rectangle_2d_Lists.List;
-      Edges           :    out Edge_Update_Iterators.Merger_Access;
-      Nodes           :    out Node_Update_Iterators.Merger_Access;
-      Refresh_Pending : in     Boolean);
-
+   --    Display_Area    - The area that will be displayed to the user. This
+   --                      subprogram can decide to have an area redrawn that
+   --                      is actually greater than 'Display_Area'. See
+   --                      'Clipping'
+   --    Clipping        - Height-ordered queue of clipping instructions. Each
+   --                      such instruction must be honored when drawing of
+   --                      edges comes to its layer.
+   --    Edges           - Edges to be drawn. Ordered from lower to higher
+   --                      layers
+   --    Refresh_Pending - If set to True then pollution will be removed
+   --                      from 'Edges'
    procedure Start_Edge_Refresh
      (Manager         : in out Region_Manager;
       Display_Area    : in     Vis.Absolute.Rectangle_2d;
@@ -568,42 +559,58 @@ package Giant.Vis_Data is
       Edges           :    out Edge_Update_Iterators.Merger_Access;
       Refresh_Pending : in     Boolean);
 
+   ----------------------------------------------------------------------------
+   --  Destroys data structures obtained by a call to 'Start_Edge_Refresh'
+   --
+   --  Parameters:
+   --    Clipping - The out-parameter from 'Start_Edge_Refresh'
+   --    Edges    - The out-parameter from 'Start_Edge_Refresh'
    procedure End_Edge_Refresh
      (Clipping        : in out Clipping_Queue_Access;
-      Edges           : in out Edge_Update_Queues.Queue_Access);
+      Edges           : in out Edge_Update_Iterators.Merger_Access);
 
-
+   ----------------------------------------------------------------------------
+   --  Determines which nodes to refresh in the visual representation.
+   --  Receives as input an area to be displayed. If the contents in that
+   --  area have been polluted then produces as output an iterator
+   --  over all nodes to be redrawn. Also provides a set of clipping
+   --  instructions to be respected during drawing.
+   --
+   --  The data structures returned by this subprogram must be destroyed
+   --  by a call to 'End_Node_Refresh'.
+   --  If (and only if) Items are removed from 'Clipping' than those items
+   --  must be destroyed by a call to 'Free'.
+   --
+   --  Parameters:
+   --    Manager         - The region manager
+   --    Display_Area    - The area that will be displayed to the user. This
+   --                      subprogram can decide to have an area redrawn that
+   --                      is actually greater than 'Display_Area'. See
+   --                      'Clipping'
+   --    Clipping        - Height-ordered queue of clipping instructions. Each
+   --                      such instruction must be honored when drawing of
+   --                      nodes comes to its layer.
+   --    Nodes           - Nodes to be drawn. Ordered from lower to higher
+   --                      layers
+   --    Refresh_Pending - If set to True then pollution will be removed
+   --                      from 'Nodes'
    procedure Start_Node_Refresh
      (Manager         : in out Region_Manager;
       Display_Area    : in     Vis.Absolute.Rectangle_2d;
       Clipping        :    out Clipping_Queue_Access;
-      Nodes           :    out Node_Update_Queues.Merger_Access;
+      Nodes           :    out Node_Update_Iterators.Merger_Access;
       Refresh_Pending : in     Boolean);
 
-   procedure End_Node_Refresh
-     (Clipping        : in out Clipping_Queue_Access;
-      Nodes           : in out Node_Update_Queues.Queue_Access);
-
-
    ----------------------------------------------------------------------------
-   --  Deallocates the storage used by 'Start_Refresh_Foreground'. This
-   --  procedure should be called to deallocate storage after a refresh
-   --  operation has finished.
+   --  Destroys data structures obtained by a call to 'Start_Node_Refresh'
    --
    --  Parameters:
-   --    Refresh_Area - Variable obtained by 'Start_Refresh_Foreground'
-   --    Edges        - Variable obtained by 'Start_Refresh_Foreground'
-   --    Nodes        - Variable obtained by 'Start_Refresh_Foreground'
-   --  Precondition:
-   --    'Refresh_Area', 'Edges' and 'Nodes' were obtained through a call
-   --    to 'Start_Refresh_Foreground'
-   --  Postcondition:
-   --    'Refresh_Area' contains an invalid List,
-   --    'Edges' = null, 'Nodes' = null
-   procedure End_Refresh_Foreground
-     (Refresh_Area : in out Rectangle_2d_Lists.List;
-      Edges        : in out Edge_Update_Iterators.Merger_Access;
-      Nodes        : in out Node_Update_Iterators.Merger_Access);
+   --    Clipping - The out-parameter from 'Start_Node_Refresh'
+   --    Nodes    - The out-parameter from 'Start_Node_Refresh'
+   procedure End_Node_Refresh
+     (Clipping        : in out Clipping_Queue_Access;
+      Nodes           : in out Node_Update_Iterators.Merger_Access);
+
 
 private
 
@@ -618,6 +625,12 @@ private
 
    Bottom_Layer : constant Layer_Pool := Layer_Pool'First;
    Top_Layer    : constant Layer_Pool := Layer_Pool'Last;
+
+
+   ----------------------------------------------------------------------------
+   --  Frees all items and frees clipping queue
+   procedure Destroy_Clipping_Queue
+     (Queue : in out Clipping_Queue_Access);
 
 
    ----------------------------------------------------------------------------
@@ -684,6 +697,10 @@ private
      (Manager      : in     Region_Manager;
       Pool         : in     Position_Pool)
      return Vis.Absolute.Rectangle_2d;
+
+   function Get_Position_Pool_Size
+     (Pool         : in     Position_Pool)
+     return Natural;
 
    ----------------------------------------------------------------------------
    --  Allows iteration over all 'Region_Position's in a 'Position_Pool'

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.10 $
 --  $Author: keulsn $
---  $Date: 2003/06/24 18:15:55 $
+--  $Date: 2003/06/24 21:17:42 $
 --
 ------------------------------------------------------------------------------
 
@@ -73,6 +73,15 @@ package body Giant.Vis_Data is
       return Low <= High;
    end Is_Below_Or_Equal;
 
+   procedure Free
+     (Clipping : in out Layer_Clipping_Access) is
+
+      procedure Deallocate is new Ada.Unchecked_Deallocation
+        (Object => Layer_Clipping_Type,
+         Name   => Layer_Clipping_Access);
+   begin
+      Deallocate (Clipping);
+   end Free;
 
    -----------------
    -- Layer_Pools --
@@ -102,6 +111,38 @@ package body Giant.Vis_Data is
    begin
       Pool := Pool - 1;
    end Shrink_Pool;
+
+
+   --------------
+   -- Clipping --
+   --------------
+
+   function Is_Below
+     (Left  : in     Layer_Clipping_Access;
+      Right : in     Layer_Clipping_Access)
+     return Boolean is
+   begin
+      return Is_Below (Left.Height, Right.Height);
+   end Is_Below;
+
+   procedure Destroy_Clipping_Queue
+     (Queue : in out Clipping_Queue_Access) is
+
+      procedure Free_Queue is new Ada.Unchecked_Deallocation
+        (Object => Clipping_Queues.Queue_Type,
+         Name   => Clipping_Queue_Access);
+
+      Clipping : Layer_Clipping_Access;
+   begin
+      if Queue /= null then
+         while not Clipping_Queues.Is_Empty (Queue.all) loop
+            Clipping := Clipping_Queues.Get_Head (Queue.all);
+            Clipping_Queues.Remove_Head (Queue.all);
+            Free (Clipping);
+         end loop;
+         Free_Queue (Queue);
+      end if;
+   end Destroy_Clipping_Queue;
 
 
    -----------
@@ -578,7 +619,7 @@ package body Giant.Vis_Data is
    ---------------------
 
    procedure Init_Region_Manager
-     (Manager         :    out Region_Manager;
+     (Manager         : in out Region_Manager;
       Size            : in     Vis.Absolute.Vector_2d;
       Number_Of_Nodes : in     Natural) is
    begin
@@ -624,7 +665,6 @@ package body Giant.Vis_Data is
       Point   : in     Vis.Absolute.Vector_2d)
      return Region_Position is
 
-      Position   : Region_Position;
       Point_X    : Vis.Absolute_Int := Vis.Absolute.Get_X (Point);
       Point_Y    : Vis.Absolute_Int := Vis.Absolute.Get_Y (Point);
       Position_X : Vis.Absolute_Int := Get_Position_X_At_X (Manager, Point_X);
@@ -1095,64 +1135,6 @@ package body Giant.Vis_Data is
       Rectangle_2d_Lists.Destroy (Refresh_Area);
    end End_Refresh_Background;
 
-   procedure Start_Refresh_Foreground
-     (Manager         : in out Region_Manager;
-      Display_Area    : in     Vis.Absolute.Rectangle_2d;
-      Refresh_Area    :    out Rectangle_2d_Lists.List;
-      Edges           :    out Edge_Update_Iterators.Merger_Access;
-      Nodes           :    out Node_Update_Iterators.Merger_Access;
-      Refresh_Pending : in     Boolean) is
-
-      package Node_Iterator_Lists renames
-        Node_Update_Iterators.Iterator_Lists;
-      Pool           : Position_Pool;
-      Iterator       : Position_Iterator;
-      Position       : Region_Position;
-      Region         : Region_Id;
-      Edge_Iterators : Edge_Iterator_Lists.List;
-      Node_Iterators : Node_Iterator_Lists.List;
-   begin
-      Refresh_Area := Rectangle_2d_Lists.Create;
-      Edge_Iterators := Edge_Iterator_Lists.Create;
-      Node_Iterators := Node_Iterator_Lists.Create;
-
-      Pool := Create_Position_Pool_From_Area (Manager, Display_Area);
-      Make_Position_Iterator (Pool, Iterator);
-      while Has_More (Iterator) loop
-         Position := Get_Current (Iterator);
-         Next (Iterator);
-         Region := Get_Region_If_Exists (Manager, Position);
-         if Region /= null then
-            Rectangle_2d_Lists.Attach
-              (Get_Region_Extent (Region),
-               Refresh_Area);
-            Edge_Iterator_Lists.Attach
-              (Get_Polluted_Edges (Region),
-               Edge_Iterators);
-            Node_Iterator_Lists.Attach
-              (Get_Polluted_Nodes (Region),
-               Node_Iterators);
-            if Refresh_Pending then
-               Remove_Foreground_Pollution (Region);
-            end if;
-         end if;
-      end loop;
-
-      Edges := Edge_Update_Iterators.Create (Edge_Iterators);
-      Nodes := Node_Update_Iterators.Create (Node_Iterators);
-      Edge_Iterator_Lists.Destroy (Edge_Iterators);
-      Node_Iterator_Lists.Destroy (Node_Iterators);
-   end Start_Refresh_Foreground;
-
-   procedure End_Refresh_Foreground
-     (Refresh_Area : in out Rectangle_2d_Lists.List;
-      Edges        : in out Edge_Update_Iterators.Merger_Access;
-      Nodes        : in out Node_Update_Iterators.Merger_Access) is
-   begin
-      Rectangle_2d_Lists.Destroy (Refresh_Area);
-      Edge_Update_Iterators.Destroy (Edges);
-      Node_Update_Iterators.Destroy (Nodes);
-   end End_Refresh_Foreground;
 
    procedure Start_Edge_Refresh
      (Manager         : in out Region_Manager;
@@ -1161,18 +1143,16 @@ package body Giant.Vis_Data is
       Edges           :    out Edge_Update_Iterators.Merger_Access;
       Refresh_Pending : in     Boolean) is
 
-      package Edge_Iterator_Lists renames
-        Edge_Update_Iterators.Iterator_Lists;
-      Region_Count  : Natural;
-      Pool          : Position_Pool;
       Iterator      : Position_Iterator;
       Edge_Iterator : Vis_Edge_Sets.Iterator;
+      First_Edge    : Vis_Edge_Id;
+      Position      : Region_Position;
       Region        : Region_Id;
-      Region_Clip   : Layer_Clipping_Type;
+      Pool          : Position_Pool := Create_Position_Pool_From_Area
+                                         (Manager, Display_Area);
+      Region_Count  : Natural       := Get_Position_Pool_Size (Pool);
    begin
-      Pool := Create_Position_Pool_From_Area (Manager, Display_Area);
-      Region_Count := Get_Size (Pool);
-      Clipping := new Clipping_Queues.Queue (Region_Count);
+      Clipping := new Clipping_Queues.Queue_Type (Region_Count);
       Edges := new Edge_Update_Iterators.Merger_Type (Region_Count);
 
       Make_Position_Iterator (Pool, Iterator);
@@ -1186,16 +1166,20 @@ package body Giant.Vis_Data is
 
             if Vis_Edge_Sets.More (Edge_Iterator) then
                First_Edge := Vis_Edge_Sets.Current (Edge_Iterator);
-               Region_Clip :=
-                 (Height => Get_Layer (First_Edge),
-                  Action => Add,
-                  Area   => Get_Region_Extent (Region));
-               Clipping_Queues.Insert (Clipping.all, Region_Clip);
+
+               Clipping_Queues.Insert
+                 (Queue => Clipping.all,
+                  Item  => new Layer_Clipping_Type'
+                                (Height => Get_Layer (First_Edge),
+                                 Action => Add,
+                                 Area   => Get_Region_Extent (Region)));
+
+               Edge_Update_Iterators.Add_Iterator
+                 (Merger   => Edges.all,
+                  Iterator => Edge_Iterator);
             end if;
 
-            Edge_Update_Iterators.Add_Iterator
-              (Merger   => Edges.all,
-               Iterator => Edge_Iterator);
+            Vis_Edge_Sets.Destroy (Edge_Iterator);
 
             if Refresh_Pending then
                Remove_Edge_Pollution (Region);
@@ -1207,10 +1191,10 @@ package body Giant.Vis_Data is
 
    procedure End_Edge_Refresh
      (Clipping        : in out Clipping_Queue_Access;
-      Edges           : in out Edge_Update_Queues.Queue_Access) is
+      Edges           : in out Edge_Update_Iterators.Merger_Access) is
    begin
-      Free (Clipping);
-      Free (Edges);
+      Destroy_Clipping_Queue (Clipping);
+      Edge_Update_Iterators.Destroy (Edges);
    end End_Edge_Refresh;
 
 
@@ -1218,15 +1202,60 @@ package body Giant.Vis_Data is
      (Manager         : in out Region_Manager;
       Display_Area    : in     Vis.Absolute.Rectangle_2d;
       Clipping        :    out Clipping_Queue_Access;
-      Nodes           :    out Node_Update_Queues.Merger_Access;
+      Nodes           :    out Node_Update_Iterators.Merger_Access;
       Refresh_Pending : in     Boolean) is
+
+      Iterator      : Position_Iterator;
+      Node_Iterator : Vis_Node_Sets.Iterator;
+      First_Node    : Vis_Node_Id;
+      Position      : Region_Position;
+      Region        : Region_Id;
+      Pool          : Position_Pool := Create_Position_Pool_From_Area
+                                         (Manager, Display_Area);
+      Region_Count  : Natural       := Get_Position_Pool_Size (Pool);
    begin
+      Clipping := new Clipping_Queues.Queue_Type (Region_Count);
+      Nodes := new Node_Update_Iterators.Merger_Type (Region_Count);
+
+      Make_Position_Iterator (Pool, Iterator);
+      while Has_More (Iterator) loop
+         Position := Get_Current (Iterator);
+         Next (Iterator);
+         Region := Get_Region_If_Exists (Manager, Position);
+         if Region /= null then
+
+            Node_Iterator := Get_Polluted_Nodes (Region);
+
+            if Vis_Node_Sets.More (Node_Iterator) then
+               First_Node := Vis_Node_Sets.Current (Node_Iterator);
+
+               Clipping_Queues.Insert
+                 (Queue => Clipping.all,
+                  Item  => new Layer_Clipping_Type'
+                                (Height => Get_Layer (First_Node),
+                                 Action => Add,
+                                 Area   => Get_Region_Extent (Region)));
+
+               Node_Update_Iterators.Add_Iterator
+                 (Merger   => Nodes.all,
+                  Iterator => Node_Iterator);
+            end if;
+
+            Vis_Node_Sets.Destroy (Node_Iterator);
+
+            if Refresh_Pending then
+               Remove_Node_Pollution (Region);
+            end if;
+         end if;
+      end loop;
    end Start_Node_Refresh;
 
    procedure End_Node_Refresh
      (Clipping        : in out Clipping_Queue_Access;
-      Nodes           : in out Node_Update_Queues.Queue_Access) is
+      Nodes           : in out Node_Update_Iterators.Merger_Access) is
    begin
+      Destroy_Clipping_Queue (Clipping);
+      Node_Update_Iterators.Destroy (Nodes);
    end End_Node_Refresh;
 
 
@@ -1293,6 +1322,14 @@ package body Giant.Vis_Data is
          Bottom_Right => Vis.Absolute.Get_Bottom_Right
            (Get_Region_Extent (Manager, Bottom_Right_Position)));
    end Get_Position_Pool_Area;
+
+   function Get_Position_Pool_Size
+     (Pool         : in     Position_Pool)
+     return Natural is
+   begin
+      return Vis.Absolute.Get_Width (Vis.Absolute.Rectangle_2d (Pool)) *
+        Vis.Absolute.Get_Height (Vis.Absolute.Rectangle_2d (Pool));
+   end Get_Position_Pool_Size;
 
    procedure Make_Position_Iterator
      (Pool     : in     Position_Pool;

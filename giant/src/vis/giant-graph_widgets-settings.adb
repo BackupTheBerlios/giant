@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/06/24 10:55:04 $
+--  $Date: 2003/06/24 21:17:42 $
 --
 ------------------------------------------------------------------------------
 
@@ -393,19 +393,19 @@ package body Giant.Graph_Widgets.Settings is
       begin
          Highlight_Colors :=
            (Vis_Data.Current_Local =>
-              Config.Return_Highlight_Color_For_Actual_Selection,
+              Config.Get_Current_Selection_Highlight_Color,
             Vis_Data.First_Local   =>
-              Config.Return_Highlight_Color_For_Selection (Config.Color_1),
+              Config.Get_Selection_Highlight_Color (Config.Color_1),
             Vis_Data.Second_Local  =>
-              Config.Return_Highlight_Color_For_Selection (Config.Color_2),
+              Config.Get_Selection_Highlight_Color (Config.Color_2),
             Vis_Data.Third_Local   =>
-              Config.Return_Highlight_Color_For_Selection (Config.Color_3),
+              Config.Get_Selection_Highlight_Color (Config.Color_3),
             Vis_Data.First_Global  =>
-              Config.Return_Highlight_Color_For_IML_Subgraph (Config.Color_1),
+              Config.Get_Subgraph_Highlight_Color (Config.Color_1),
             Vis_Data.Second_Global =>
-              Config.Return_Highlight_Color_For_IML_Subgraph (Config.Color_2),
+              Config.Get_Subgraph_Highlight_Color (Config.Color_2),
             Vis_Data.Third_Global  =>
-              Config.Return_Highlight_Color_For_IML_Subgraph (Config.Color_3));
+              Config.Get_Subgraph_Highlight_Color (Config.Color_3));
          Highlight_Colors_Initialized := True;
       end Initialize;
 
