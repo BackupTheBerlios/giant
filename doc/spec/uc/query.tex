@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: query.tex,v $, $Revision: 1.14 $
-%  $Date: 2003/04/08 13:28:24 $
-%  $Author: squig $
+%  $RCSfile: query.tex,v $, $Revision: 1.15 $
+%  $Date: 2003/04/17 15:37:43 $
+%  $Author: schwiemn $
 %
 %  Description: UseCases für die Anfragen
 %
@@ -12,7 +12,7 @@
 % ==============================================================================
 \begin{uc}[Anfrage ausführen]{UC: Neues Skript ausführen}
 \index{Skript!ausführen}
-Mit diesem UseCase kann eine Skript über den Skriptdialog
+Mit diesem UseCase kann ein Skript über den Skriptdialog
 (siehe \ref{GUI Anfragedialog}) eingegeben werden.
 Die Möglichkeiten der GQSL sind im Detail in Kapitel
 \ref {GIANT Query Skripting Language} beschrieben.
@@ -28,12 +28,14 @@ Die Möglichkeiten der GQSL sind im Detail in Kapitel
   \end{postsuccess}
 
   \begin{postfail}
-    \cond Das System bleibt im bisherigen Zustand.
+    \cond Wurde der UseCase vor Beginn der Berechnung des Skriptes
+          abgebrochen, bleibt das System im bisherigen Zustand.
 
-    \cond Wurde der UseCase während der Berechnung des
-          abgebrochen, so
-          gehen sämtliche bereits fertig gestellten Teilergebnisse
-          verloren. 
+    \cond Wurde der UseCase während der Berechnung des Skriptes 
+          abgebrochen, so werden bereits ausgeführte Aktionen
+          (wie z.B. das Einfügen neuer Fenster-Knoten in Anzeigefenster)
+          nicht wieder rückgängig gemacht.
+
   \end{postfail}
   
   \begin{proc}    
@@ -47,8 +49,8 @@ Die Möglichkeiten der GQSL sind im Detail in Kapitel
       
     \step[3]
     Der Benutzer gibt dort im dafür vorgesehenen Textfeld das GQSL Skript
-    (siehe auch Kapitel \ref{GIANT Query Skripting Language}) ein und bestätigt 
-    mit \gq {Start Query}.
+    (siehe auch Kapitel \ref{GIANT Query Skripting Language}) ein und 
+    bestätigt mit \gq {OK}.
 
     \step[4]
     GIANT prüft das eingegebene GQSL Skript. Sollte das Skript
@@ -59,7 +61,8 @@ Die Möglichkeiten der GQSL sind im Detail in Kapitel
         
     \step[5]    
     GIANT führt das Skript aus und teilt dem Benutzer
-    den Fortschritt mittels eines Progress-Dialogs (siehe \ref{Progressbar-Modale}) mit.
+    den Fortschritt mittels eines Progress-Dialogs 
+    (siehe \ref{Progressbar-Modale}) mit.
     Während der Ausführung des Skripts ist das System mit Ausnahme des
     Progress-Dialogs gesperrt.\\
     
@@ -69,7 +72,7 @@ Die Möglichkeiten der GQSL sind im Detail in Kapitel
   \begin{aproc}
     \astep{3} Der Benutzer bricht mit Cancel ab.
     
-    \astep{5} Die laufende Ausführung des Skripts wird vom Benutzer
+    \astep{5} Die laufende Ausführung des Skripts kann vom Benutzer
     mit Cancel abgebrochen werden.
 
   \end{aproc}
@@ -93,11 +96,15 @@ einer Datei (siehe \ref {Config Anfrage-Dateien}) laden.
   \end{postsuccess}
 
   \begin{postfail}
-    \cond Das System bleibt im bisherigen Zustand.
 
-    \cond Wurde der UseCase während der Berechnung abgebrochen, so
-          gehen sämtliche bereits fertig gestellten Teilergebnisse
-          verloren. 
+     \cond Wurde der UseCase vor Beginn der Berechnung des Skriptes
+          abgebrochen, bleibt das System im bisherigen Zustand.
+
+    \cond Wurde der UseCase während der Berechnung des Skriptes 
+          abgebrochen, so werden bereits ausgeführte Aktionen
+          (wie z.B. das Einfügen neuer Fenster-Knoten in Anzeigefenster)
+          nicht wieder rückgängig gemacht.
+
   \end{postfail}
   
   \begin{proc}    
@@ -141,7 +148,8 @@ einer Datei (siehe \ref {Config Anfrage-Dateien}) laden.
 
     \step[10]    
     GIANT führt das Skript aus und teilt dem Benutzer
-    den Fortschritt mittels eines Progress-Dialogs (siehe \ref{Progressbar-Modale}) mit.
+    den Fortschritt mittels eines Progress-Dialogs 
+    (siehe \ref{Progressbar-Modale}) mit.
     Während der Ausführung des Skripts ist das System mit Ausnahme des
     Progress-Dialogs gesperrt.
 
@@ -154,7 +162,7 @@ einer Datei (siehe \ref {Config Anfrage-Dateien}) laden.
               Abarbeitung des UseCase zurück.
     \astep{6} Der Benutzer bricht den UseCase mit Cancel ab.
 
-    \astep{10} Die laufende Ausführung des Skripts wird vom Benutzer
+    \astep{10} Die laufende Berechnung des Skripts kann vom Benutzer
     mit Cancel abgebrochen werden.
   \end{aproc}
 

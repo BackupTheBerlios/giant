@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: subgraph.tex,v $, $Revision: 1.15 $
-%  $Date: 2003/04/08 13:28:24 $
-%  $Author: squig $
+%  $RCSfile: subgraph.tex,v $, $Revision: 1.16 $
+%  $Date: 2003/04/17 15:37:43 $
+%  $Author: schwiemn $
 %
 %  Description: UseCases für IML-Teilgraphen
 %
@@ -24,11 +24,17 @@ Anzeigefenster (siehe auch \ref {hervorheben von Knoten und Kanten}).
     \cond 
     Der IML-Teilgraph ist in jedem geöffneten Anzeigefenster entsprechend
     hervorgehoben.
-    
+      
     \cond
     Der IML-Teilgraph, welcher vorher mit der gleichen Farbe 
     hervorgehoben war, ist nicht mehr hervorgehoben.
  
+    \cond
+    Fenster-Knoten und Fenster-Kanten, die als Graph-Knoten bzw. Graph-Kanten
+    Bestandteil eines hervorgehobenen IML-Teilgraphen sind, werden,
+    auch wenn sie erst nach der Hervorhebung des IML-Teilgraphen in ein
+    Anzeigefenster eingefügt werden, ebenfalls automatisch hervorgehoben.
+
     
   \end{postsuccess}
  
@@ -61,7 +67,7 @@ aufgehoben werden.
 
   \begin{precond}
     \cond 
-    Es gibt einen hervorgehobenen IML-Teilgraphen.
+    Es gibt mindestens einen hervorgehobenen IML-Teilgraphen.
    
   \end{precond}
 
@@ -100,7 +106,7 @@ aufgehoben werden.
 
   \begin{precond}
      \cond 
-     Es gibt ein geöffnetes Anzeigefenster.
+     Es gibt mindestens ein geöffnetes Anzeigefenster.
      
      \cond
      Es gibt mindestens eine Selektion.
@@ -234,6 +240,11 @@ davon unberührt.
     \cond 
     Der IML-Teilgraph wurde aus der Liste über die IML-Teilgraphen
     gelöscht (siehe \ref{GUI Subgraph List}).
+    
+    \cond
+    War der gelöschte IML-Teilgraph hervorgehoben, so wurde die
+    Hervorhebung der zugehörigen Fenster-Knoten und Fenster-Kanten
+    aufgehoben.
 
   \end{postsuccess}
   
@@ -291,12 +302,18 @@ analog zu dem UseCase \ref{Mengenoperationen auf 2 Selektionen}.
     \cond
     Im Falle einer Mengendifferenz umfasst der neue IML-Teilgraph TARGET alle
     Knoten und Kanten aus dem LEFT\_SOURCE IML-Teilgraphen, die nicht 
-    Bestandteil des RIGHT\_SOURCE IML-Teilgraphen sind.
+    Bestandteil des RIGHT\_SOURCE IML-Teilgraphen sind.\\
 
     \cond
     Im Falle eines Mengenschnitts umfasst der neue IML-Teilgraph TARGET alle
     Knoten und Kanten, die sowohl dem LEFT\_SOURCE IML-Teilgraphen als auch 
     dem RIGHT\_SOURCE IML-Teilgraphen angehören.
+
+    \cond
+    Hätte der IML-Teilgraph Target nach der Mengenoperation Graph-Kanten 
+    ohne zugehörigen Start- und Zielknoten, so
+    sind diese Graph-Kanten aus dem IML-Teilgraphen TARGET entfernt worden
+    (dieser Fall kann bei Mengenschnitt und Mengendifferenz eintreten).
 
   \end{postsuccess}
 
