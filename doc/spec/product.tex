@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: product.tex,v $, $Revision: 1.20 $
-%  $Date: 2003/02/21 12:51:36 $
+%  $RCSfile: product.tex,v $, $Revision: 1.21 $
+%  $Date: 2003/02/21 15:33:38 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung des Produktes. Übersicht über die Funktionen
@@ -406,7 +406,8 @@ in Anzeigefenster}
      \item
      Die Position von Knoten der einzufügenden Selektion, 
      die bereits in dem Anzeigefenster visualisiert sind,
-     bleibt unverändert.
+     bleibt falls nicht an entsprechender Stelle anders
+     spezifiziert unverändert.
      
      \item
      Kanten der Selektion werden nur eingefügt, falls ihr Start- und Zielknoten
@@ -441,10 +442,13 @@ in Anzeigefenster}
    \end{enumerate} 
   
   
+% ==============================================================================  
 \section {Verhalten bei Umwandeln von Selektionen und IML-Teilgraphen}
   \label{Verhalten bei Umwandeln von Selektionen und IML-Teilgraphen}
   
   \subsection {Selektion aus IML-Teilgraphen ableiten}
+    \label{Selektion aus IML-Teilgraphen ableiten}
+  
   \begin {enumerate}
   
     \item
@@ -465,6 +469,7 @@ in Anzeigefenster}
   
   
   \subsection {IML-Teilgraph aus Selektion ableiten}
+    \label{IML-Teilgraphen aus Selektion ableiten}.
   
   \begin {enumerate}
   
@@ -508,6 +513,30 @@ in Anzeigefenster}
   \end{enumerate}
 
 
+
+
+\section {Auseinanderschieben von Fenster-Knoten}
+  \label {Auseinanderschieben von Fenster-Knoten}
+  
+Sollen Fenster-Knoten auf dem Anzeigeinhalt automatisch
+auseinandergeschoben werden, so geschieht dies nach dem folgenden
+Modus (keine zentrische Streckung).
+
+\begin {enumerate}
+
+  \item
+  Es gibt einen fixen Punkt von dem aus alle Fenster-Knoten weggeschoben
+  werden.
+  
+  \item 
+  Die Fenster-Knoten werden immer eintlang einer Strecke von diesem
+  Punkt durch den jeweiligen Fensterknoten verschoben.
+  
+  \item
+  Jeder Fenster-Knoten wird um einen konstanten Betrag (kann vom Benutzer 
+  eingegeben werden) von dem Punkt weggeschoben.
+ 
+\end {enumerate}
 
 
 

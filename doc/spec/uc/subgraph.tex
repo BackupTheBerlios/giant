@@ -1,41 +1,372 @@
 % ==============================================================================
-%  $RCSfile: subgraph.tex,v $, $Revision: 1.2 $
-%  $Date: 2003/02/05 14:01:12 $
-%  $Author: schulzgt $
+%  $RCSfile: subgraph.tex,v $, $Revision: 1.3 $
+%  $Date: 2003/02/21 15:33:38 $
+%  $Author: schwiemn $
 %
 %  Description: Use-Cases für IML-Teilgraphen
 %
 % ==============================================================================
 
-\begin{uc}[Label]{UC: Graphisch hervorheben}
+\begin{uc}[IML-Teilgraph graphisch hervorheben]
+      {UC: IML-Teilgraph graphisch hervorheben}
+	  
+Dieser UseCase dient zum Hervorheben von IML-Teilgraphen innerhalb der
+Anzeigefenster.
+
+  \begin{precond}
+    \cond Es gibt mindestens einen IML-Teilgraphen.
+   
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond 
+    Der IML-Teilgraph ist in jedem geöffneten Anzeigefenster entsprechend
+    hervorgehoben.
+    
+    \cond
+    Der IML-Teilgraph, welcher vorher mit der gleichen Farbe 
+    hervorgehoben war, ist nicht mehr hervorgehoben.
+ 
+    
+  \end{postsuccess}
+ 
+  \begin{proc}    
+    \step[1]
+    Der Benutzer startet den UseCase über das PopUp Menü
+    >>> POP UP IN LISTE DER IML-TEILGRAPHEN<<<<<<
+    >>>    Dort gibt es drei Eintäge für jede definierbare Farbe
+    d.h. drei ver. Farben - für jede Farbe einen Menüeintrag
+     >>>>>>>>>>>>>>>>>>>
+            
+    \step[2]
+    GIANT hebt den IML-Teilgraphen in allen geöffneten Anzeigefenstern
+    mit der entsprechenden Farbe hervor.
+    
+  \end{proc}
+
+
 \end{uc}
 
-\begin{uc}[Label]{UC: Graphische Hervorhebung aufheben}
+
+
+% ==============================================================================
+\begin{uc}[Graphische Hervorhebung von IML-Teilgraphen aufheben]
+      {UC: Graphische Hervorhebung von IML-Teilgraphen aufheben}
+
+Mit diesem UseCase kann die grafische Hervorhebung von IML-Teilgraphen 
+aufgehoben werden.
+
+  \begin{precond}
+    \cond 
+    Es gibt einen hervorgehobenen IML-Teilgraphen.
+   
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond 
+    Der IML-Teilgraph ist in den
+ 
+  \end{postsuccess}
+
+  
+  \begin{proc}    
+    \step[1]
+    Der Benutzer startet den UseCase durch Rechtklick auf den
+    entsprechenden IML-Teilgraphen in der Liste <<<< VERWEIS GUI>>>>
+    
+    über das PopUp Menü:
+    \\<<<<<<<<<VERWEIS   GUI  - Menüeintrag hervorhebung aufheben>>>>>>>>>>>>>>>>
+    
+
+    \step[2]
+    GIANT setzt die Hervorhebung des IML-Teilgraphen zurück.
+    
+  \end{proc} 
+
+
 \end{uc}
 
-\begin{uc}[Label]{UC: IML-Teilgraph aus einer Selektion erzeugen}
+
+% ==============================================================================
+\begin{uc}[ML-Teilgraph aus einer Selektion erzeugen]
+      {UC: IML-Teilgraph aus einer Selektion erzeugen}
+
+Leitet einen neuen IML-Teilgraphen aus einer Quell-Selektion ab.
+Siehe hierzu \ref{IML-Teilgraphen aus Selektion ableiten}.
+
+
+  \begin{precond}
+     \cond 
+     Es gibt ein geöffnetes Anzeigefenster.
+     
+     \cond
+     Es gibt mindestens eine Selektion.
+     
+   \end{precond}
+
+
+  \begin{postsuccess}
+    \cond 
+    Es wurde ein neuer IML-Teilgraph mit entsprechendem Namen erzeugt.
+    
+  \end{postsuccess}
+  
+  \begin{postfail}
+    \cond Das System bleibt im bisherigen Zustand.
+  \end{postfail}
+  
+  \begin{proc} 
+     
+    \step[1]
+    Der Benutzer führt einen Rechtsklick auf die Quell-Selektion aus
+    und wählt im PopUp Menü den Eintrag <<<<<<<<<<< VERWEIS GUI >>>>>>
+     
+    \step[2]
+    GIANT zeigt den allgemeinen Texteingabediolog <<<<<<<<<VERWEIS GUI>>>>>
+      	    
+    \step[3]
+    Der Benutzer gibt einen Namen für den neu zu erstellenden IML-Teilgraphen
+    ein und bestätigt mit OK.\\
+    Gibt der Benutzer hier keinen Namen ein, so vergibt GIANT automatisch 
+    einen Namen.
+       
+    \step[4]
+    GIANT erzeugt gemäß der unter
+    \ref{{IML-Teilgraphen aus Selektion ableiten}}
+    beschriebenen Konvention im Ziel-Anzeigefenster eine neue Selektion als 
+    Ableitung aus dem Quell-IML-Teilgraphen.
+
+  \end{proc}
+  
+  \begin{aproc}
+    \astep{3} Der Benutzer bricht den UseCase mit Cancel ab.
+  \end{aproc}
+
 \end{uc}
 
-\begin{uc}[Label]{UC: IML-Teilgraph kopieren}
+
+
+% ==============================================================================
+\begin{uc}[IML-Teilgraph kopieren]
+      {UC: IML-Teilgraph kopieren}
+      
+ Kopiert einen Quell-IML-Teilgraphen in einen neuen IML-Teilgraphen.
+ Bestehende IML-Teilgraphen können nicht überschrieben werden.
+
+  \begin{precond}
+     
+     \cond
+     Es gibt mindestens einen IML-Teilgraphen.
+     
+   \end{precond}
+
+
+  \begin{postsuccess}
+    \cond 
+    Es wurde ein neuer IML-Teilgraph mit entsprechendem Namen erzeugt.
+    
+    \cond
+    Der neue IML-Teilgraph hat alle Graph-Knoten und Graph-Kanten des
+    Quell-IML-Teilgraphen.
+    
+  \end{postsuccess}
+  
+  \begin{postfail}
+    \cond Das System bleibt im bisherigen Zustand.
+  \end{postfail}
+  
+  \begin{proc} 
+     
+    \step[1]
+    Der Benutzer führt einen Rechtsklick auf den zu kopierenden 
+    Quell-IML-Teilgraphen aus und wählt im PopUp Menü den Eintrag
+    <<<<<<<<<<< VERWEIS GUI - Eintag: kopieren >>>>>> aus.
+     
+    \step[2]
+    GIANT zeigt den allgemeinen Texteingabediolog <<<<<<<<<VERWEIS GUI>>>>>
+      	    
+    \step[3]
+    Der Benutzer gibt einen Namen für den neu zu erstellenden IML-Teilgraphen
+    ein und bestätigt mit OK.\\
+    Gibt der Benutzer hier keinen Namen ein, so vergibt GIANT automatisch 
+    einen Namen.\\
+    Gibt der Benutzer den Namen eines bereits vorhandenen IML-Teilgraphen
+    ein, so erscheint eine Fehlermeldung.
+       
+    \step[4]
+    GIANT kopiert den Quell-IML-Teilgraphen in einen neuen Teilgraphen.
+
+  \end{proc}
+  
+  \begin{aproc}
+    \astep{3} Der Benutzer bricht den UseCase mit Cancel ab.
+  \end{aproc}
+
 \end{uc}
 
+
+% ==============================================================================
 \begin{uc}[Label]{UC: IML-Teilgraph umbenennen}
+>>>> WEG LASSEN, KANN ER AUCH Über Kopieren und Löschen machen
+
 \end{uc}
 
+% ==============================================================================
 \begin{uc}[Label]{UC: IML-Teilgraph löschen}
+Dieser UseCase löscht den entsprechenden IML-Teilgraphen.
+
+  \begin{precond}
+     
+     \cond
+     Es gibt mindestens einen IML-Teilgraphen.
+     
+   \end{precond}
+
+
+  \begin{postsuccess}
+    \cond 
+    Es wurde ein neuer IML-Teilgraph mit entsprechendem Namen erzeugt.
+    
+    \cond
+    Der neue IML-Teilgraph hat alle Graph-Knoten und Graph-Kanten des
+    Quell-IML-Teilgraphen.
+    
+  \end{postsuccess}
+  
+  \begin{postfail}
+    \cond Das System bleibt im bisherigen Zustand.
+  \end{postfail}
+  
+  \begin{proc} 
+     
+    \step[1]
+    Der Benutzer führt einen Rechtsklick auf den zu kopierenden 
+    Quell-IML-Teilgraphen aus und wählt im PopUp Menü den Eintrag
+    <<<<<<<<<<< VERWEIS GUI - Eintag: kopieren >>>>>> aus.
+     
+    \step[2]
+    GIANT zeigt den allgemeinen Texteingabediolog <<<<<<<<<VERWEIS GUI>>>>>
+      	    
+    \step[3]
+    Der Benutzer gibt einen Namen für den neu zu erstellenden IML-Teilgraphen
+    ein und bestätigt mit OK.\\
+    Gibt der Benutzer hier keinen Namen ein, so vergibt GIANT automatisch 
+    einen Namen.\\
+    Gibt der Benutzer den Namen eines bereits vorhandenen IML-Teilgraphen
+    ein, so erscheint eine Fehlermeldung.
+       
+    \step[4]
+    GIANT kopiert den Quell-IML-Teilgraphen in einen neuen Teilgraphen.
+
+  \end{proc}
+  
+  \begin{aproc}
+    \astep{3} Der Benutzer bricht den UseCase mit Cancel ab.
+  \end{aproc}
+
 \end{uc}
 
-\begin{uc}[Label]{UC: Mengenvereinigung von 2 IML-Teilgraphen}
+
+% ==============================================================================
+\begin{uc}[Mengenoperationen auf 2 IML-Teilgraphen]
+      {UC: Mengenoperationen auf 2 IML-Teilgraphen}
+
+Ergänzend zu den Möglichkeiten der Anfragesprache kann der Benutzer
+die gängigen Mengenoperationen, wie Mengenvereinigung, 
+Schnitt und Differenz, auch direkt über einen entsprechenden Dialog 
+ausführen.
+Beschreibung des Dialoges siehe \ref{Common-Set-Operation-Dialog}.
+Vorgehen analog zu \ref{Mengenoperationen auf 2 Selektionen}
+
+
+
+  \begin{precond}
+    \cond Es gibt mindestens zwei IML-Teilgraphen.
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond 
+    Eine neuer IML-Teilgraph mit entsprechendem Namen 
+    (im Dialog eingegeben unter TARGET) ist angelegt 
+    und erscheint in der Liste über alle IML-Teilgraphen des Projektes.
+       
+    \cond
+    Im Falle einer Mengenvereinigung umfasst, die neue Selektion TARGET alle
+    Knoten und Kanten aus der LEFT\_SOURCE Selektion und der 
+    RIGHT\_SOURCE Selektion.
+    
+    \cond
+    Im Falle einer Mengendifferenz umfasst, die neue Selektion TARGET alle
+    Knoten und Kanten aus der LEFT\_SOURCE Selektion, die nicht 
+    Bestandteil der 
+    RIGHT\_SOURCE Selektion sind.
+
+    \cond
+    Im Falle eines Mengenschnitts umfasst, die neue Selektion TARGET alle
+    Knoten und Kanten, die sowohl der LEFT\_SOURCE Selektion und der 
+    RIGHT\_SOURCE Selektion.
+
+  \end{postsuccess}
+
+  \begin{postfail}
+    \cond Das System bleibt im bisherigen Zustand.
+  \end{postfail}
+  
+  \begin{proc}    
+    \step[1]
+    Der Benutzer startet den UseCase über durch Auswahl aus dem PopUp Menü 
+    !!!!!ENTSPRECHENDEN MENÜEINTAG NENNEN.
+    
+    \step[2] 
+    GIANT öffnet den Common\_Set\_Operation\_Dialog 
+    (siehe \ref{Common-Set-Operation-Dialog}).
+    
+    
+    \step[3] 
+    Der Benutzer wählt dort die beiden Quellselektionen (LEFT\_SOURCE und 
+    RIGHT\_SOURCE)
+    aus und gibt unter TARGET den Namen der neue zu erzeugenden Selektion 
+    ein.\\
+       
+    \step[4]
+    GIANT führt die Mengenoperation aus.
+  
+  \end{proc}
+
+  \begin{aproc}
+    \ageneral Der Benutzer bricht die Eingabe der Daten mit Cancel ab.
+  \end{aproc}
+
+
 \end{uc}
 
+
+
+
+
+% ==============================================================================
 \begin{uc}[Label]{UC: Mengendifferenz von 2 IML-Teilgraphen}
+>>>> Oben abgedeckt, kann entfallen
+
+
 \end{uc}
 
+
+
+% ==============================================================================
 \begin{uc}[Label]{UC: Mengenschnitt von 2 IML-Teilgraphen}
+>>>> Oben abgedeckt, kann entfallen
+
 \end{uc}
 
+
+
+
+% ==============================================================================
 \begin{uc}[Label]{UC: Teilgraph exportieren}
 \end{uc}
 
+
+% ==============================================================================
 \begin{uc}[Label]{UC: Teilgraph importieren}
 \end{uc}

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.7 $
-%  $Date: 2003/02/21 12:51:36 $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.8 $
+%  $Date: 2003/02/21 15:33:38 $
 %  $Author: schwiemn $
 %
 %  Description: Use-Cases für die Fensterfunktionalität der GUI
@@ -287,7 +287,7 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
 	  
 Mit diesem UseCase kann eine Selektion aus einem Anzeigefenster
 in ein anderes Anziegefenster unter Beibehaltung des Layouts
-kopiert werden. 
+der Quell-Selektion kopiert werden. 
 Siehe hierzu  
 \ref{Verhalten beim Einfügen von IML-Teilgraphen und Selektionen 
 in Anzeigefenster},
@@ -307,11 +307,12 @@ insbesondere \ref{Einfügen von Selektionen in Anzeigefenster}.
     \cond 
     Alle Fenster-Knoten und Fenster-Kanten der \gq{Quell-Selektion} 
     sind auch in der \gq{Ziel-Anzeigefenster} unter Beibehaltung des
-    Layouts vorhanden.
+    Layouts der Quell-Selektion vorhanden.
     
     \cond
     Das Layout von Fenster-Knoten, die vor dem Einfügen bereits im
-    Ziel-Anziegefenster vorhanden waren, bleibt unverändert.
+    Ziel-Anzeigefenster vorhanden waren, bleibt 
+    je nach Wahl des Benutzers unverändert oder wird ebenfalls geändert.
     
     \cond
     Die kopierte Quell-Selektion existiert auch im \gq{Ziel-Anzeigefenster}
@@ -324,7 +325,11 @@ insbesondere \ref{Einfügen von Selektionen in Anzeigefenster}.
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase über das PopUp Menü
-    >>>>>>>>>>>>>>>VERWEIS PopUp Menüs für IML-Teilgraphen <<<<
+    >>>>>>>>>>>>>>>VERWEIS PopUp Menüs für IML-Teilgraphen \\
+    ES GIBT ZWEI MENÜEINTÄGE \\
+    - KOPIEREN UNTER BEIBEHLATUNG des Layouts bereits vorhandenen Knoten\\
+    - Kopieren bei voller Übernahme des Layouts
+    <<<<
     Hierdurch wird automatisch die Quell-Selektion bestimmt (immer
     die Selektion), auf der der Rechtsklick ausgeführt wurde.
     
@@ -335,7 +340,20 @@ insbesondere \ref{Einfügen von Selektionen in Anzeigefenster}.
     >>>>>>>>>>>>>>>>> VERWEIS AUF BESCHREIBUNG des FADENKREUZES in GUI
     
     \step[3]
-    GIANT kopiert die Quell-Selektion in das Ziel-Anzeigefenster.
+    GIANT kopiert die Knoten und Kanten der 
+    Quell-Selektion in das Ziel-Anzeigefenster.
+    Je nachdem welchen Eintrag der Benutzer im PopUp Menü ausgewählt hat,
+    geschieht mit den bereits im Ziel-Anzeigefenster vorhandenen Knoten
+    der Quell-Selektion folgendes:
+    \begin {enumerate}
+       \item
+       Ihre Position wird im Ziel-Anzeigefenster nicht verändert.
+       
+       \item
+       Ihre Position wird im Zielanzeigefenster gemäß den dem Layout der
+       Quell-Selektion verändert.
+        
+    \end {enumerate}
    
      
   \end{proc}
@@ -387,9 +405,10 @@ Siehe auch
   \begin{proc}    
   
     \step[1]
-    Der UseCase führt einen Rechtsklick auf die entsprechende Selektion aus
-    <<<<VERWEIS GUI>>>>> und wählt im entsprechenden PopUp Menü den Eintrag
-    >>>>>>>>>>Verweis GUI   - Lösche Selektion - >>>>>>>>> aus.
+    Der UseCase führt einen Rechtsklick auf die entsprechende Selektion durch
+    <<<<VERWEIS GUI - Liste der Selektionen>>>>> und wählt im 
+    entsprechenden PopUp Menü den Eintrag
+      >>>>>>>>>>Verweis GUI   - Lösche Selektion - >>>>>>>>> aus.
     
     \step[2]
     GIANT zeigt die Sicherheitsabfrage (siehe \ref{Sicherheitsabfrage}) 
@@ -402,8 +421,7 @@ Siehe auch
     \step[4]
     GIANT löscht die Selektion samt allen zugehörigen Fenster-Knoten und
     Fenster-Kanten aus dem entsprechenden Anzeigefenster.
-    
-   
+      
   
   \end{proc}
 
@@ -419,9 +437,35 @@ Siehe auch
 \end{uc}
 
 % ==============================================================================
-\begin{uc}[Label]{UC: Anzeigefensters scrollen}
-unbegrenzt, Scrollbar, Tastatur, Maus (Adobe-Hand)
+\begin{uc}[Anzeigefensters scrollen]{UC: Anzeigefensters scrollen}
+Verändert die Position des sichtbaren Anzeigeinhaltes.
+
+  \begin{precond}
+    \cond 
+    Ein Projekt mit mindestens einem geöffneten Anzeigefenster ist geladen.
+       
+  \end{precond}
+
+  \begin{postsuccess}
+    
+    \cond
+    Die Position des sichtbaren Anzeigeinhalts wurde entsprechend abgeändert.
+    
+  \end{postsuccess}
+
+  \begin{proc}    
+  
+    \step[1]
+    Der Benutzer scrollt den sichtbaren Anzeigefokus mittels der horizontalen
+    und vertikalen Scrollleisten des Anzeigefensterts. Dies geschieht
+    gemäß der gängigen Konventionen aus GTK/Ada für Scrollleisten.
+    <<<<<<<<<<<<<<<<VERWEIS GUI>>>>>>>>>>>>>>>>>>
+    <<<<<<<<<<<<<SCROLLLEISTEN IN DER GUI Berücksichtigen>>>>>>>>>>>>>>
+        
+  \end{proc}
+
 \end{uc}
+
 
 % ==============================================================================
 \begin{uc}[Label]{UC: Anzeigefenster zoomen}
@@ -446,12 +490,72 @@ Kantenknickpunkte, Knoten, Selektionen (jeweils die aktuelle Selektion),
 Drag and Drop, Cut and Paste
 \end{uc}
 
+
+% ==============================================================================
 \begin{uc}[Label]{UC: Platz schaffen}
+
+Dieser UseCase wir benötigt, um Fenster-Knoten auseinander schieben zu 
+können. So kann der Benutzer an einer bliebigen Stelle des Anzeigefensters
+genügend Platz zum Einfügen neuer Fenster-Knoten und Fenster-Kanten schaffen.
+Siehe hierzu auch \ref{Auseinanderschieben von Fenster-Knoten}.
+
+
+  \begin{precond}
+    \cond Ein Projekt mit mindestens einem geöffneten 
+          Anzeigefenster ist geladen.
+      
+  \end{precond}
+
+  \begin{postsuccess}
+    
+    \cond 
+    Alle Fenster-Knoten und Fenster-Kanten des Anzeigefensters sind
+    um den entsprechenden Betrag vom vorgegebenen Punkt innerhalb
+    des Anzeigeigeihaltes weggeschoben worden.
+    An der entsprechenden Stelle im Anzeigeinhalt ist eine freie Fläche
+    ohne Knoten und Kanten geschaffen worden.
+    
+    \cond
+    Das Layout der betroffenen Fenster-Knoten und Fenster-Kanten bleibt
+    weitgehend unverändert.
+ 
+   
+  \end{postsuccess}
+
+ 
+  \begin{proc}    
+    \step[1]
+    Der Benutzer startet den UseCase über das PopUp Menü
+    >>>>>>>>>>>>>>>VERWEIS PopUp Menü welches beim Rechtsklick
+    innerhalb eines ANzeigefensters erscheint <<<< >>>Verweis auf
+    entsprechenden Menüeintrag >>>>>>>>>>>>>>>>>>>>>>>
+    
+    \step[2]
+    Der Benutzer gibt den Punkt um den herum die Fenster-Knoten (und damit
+    automatisch auch die Fenster-Kanten) auseinander geschoben werden
+    sollen über das Fadenkreuz vor.
+    >>>>VERWEIS GUI Fadenkreuz>>>>>
+     
+    \step[3] 
+    GIANT zeigt einen Dialog an, in dem der Benutzer auswählt, um welchen 
+    Betrag die Fenster-Knoten auseinander geschoben werden sollen.
+        >>> DIALOG ZUR EINGABE DES BETRGES UM DEN GESCHOBEN WERDEN SOLL MUSS
+    NOCH IN GUI BESCHREIBUNG >>>>>>>>>>>>>>>>>>.
+   
+    \step[4]
+    Der Benutzer wählt einen geeigneten Betrag aus.
+    
+    \step[5]
+    GINAT schiebt die Knoten entsprechend auseinander
+    (siehe \ref{Auseinanderschieben von Fenster-Knoten}).
+    
+  \end{proc}
+
+
 \end{uc}
 
-\begin{uc}[Label]{UC: Knoten beschriften}
-verhandeln
-\end{uc}
+
+
 
 \begin{uc}[Label]{UC: Pin anlegen}
 wird benannt
