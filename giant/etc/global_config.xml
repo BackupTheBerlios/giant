@@ -8,7 +8,7 @@
   			
   <!-- Required Config Settings -->  
   
-  <setting name="Resources_Directory" value="shared" />
+  <setting name="Resources_Directory" value="../shared" />
   
   <setting name  = "Icon_For_Node_Annotations" value = "annotation.xpm" />
   
