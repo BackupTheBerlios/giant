@@ -84,8 +84,8 @@ tags :
 
 fetch-iml :
 	mkdir -p $(TMP_PATH)
-	scp droste.informatik.uni-stuttgart.de:/home/bauhaus/imbphase/iml_browser_030606.tar.gz $(TMP_PATH)
-	tar -C $(TMP_PATH) -xzvf $(TMP_PATH)/iml_browser_030606.tar.gz
+	scp droste.informatik.uni-stuttgart.de:/home/bauhaus/imbphase/iml_browser_030825.tar.gz $(TMP_PATH)
+	tar -C $(TMP_PATH) -xzvf $(TMP_PATH)/iml_browser_030825.tar.gz
 
 sloc :
 	PATH=/home/stsopra/giant/sloccount-2.22:$(PATH) sloccount src/
