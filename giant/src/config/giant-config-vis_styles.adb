@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.4 $
--- $Author: schwiemn $
--- $Date: 2003/06/17 14:03:02 $
+-- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.5 $
+-- $Author: squig $
+-- $Date: 2003/06/17 16:08:41 $
 --
 with Unbounded_String_Hash; -- from Bauhaus IML "Reuse.src"
 
@@ -1310,7 +1310,8 @@ package body Giant.Config.Vis_Styles is
    begin
 
       if (ADO_Initialized = False) then
-         raise Config_Vis_Styles_Not_Initialized_Exception;
+--FIX:         raise Config_Vis_Styles_Not_Initialized_Exception;
+         return Ada.Strings.Unbounded.To_Unbounded_String ("Default");
       end if;
 
       if (Vis_Style = null) then
@@ -1326,7 +1327,8 @@ package body Giant.Config.Vis_Styles is
    begin
 
       if (ADO_Initialized = False) then
-         raise Config_Vis_Styles_Not_Initialized_Exception;
+--FIX:         raise Config_Vis_Styles_Not_Initialized_Exception;
+         return null;
       end if;
 
       return Initialize_Vis_Style_By_Name

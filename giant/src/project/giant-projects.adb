@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.11 $
---  $Author: schwiemn $
---  $Date: 2003/06/17 15:41:14 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.12 $
+--  $Author: squig $
+--  $Date: 2003/06/17 16:08:41 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -233,18 +233,18 @@ package body Giant.Projects is
       Ada_Stream         : Ada.Streams.Stream_IO.Stream_Access;
       Bauhaus_Out_Stream : Bauhaus_IO.Out_Stream_Type;
    begin
-   
-      -- check if file exists, create new one if necessary   
+
+      -- check if file exists, create new one if necessary
       if (GNAT.OS_Lib.Is_Writable_File (File_Path) = True) then
-      
+
          Ada.Streams.Stream_IO.Create
            (Stream_File,
             Ada.Streams.Stream_IO.Out_File,
             File_Path);
-            
-         Ada.Streams.Stream_IO.Close (Stream_File);    
-      end if;       
-      
+
+         Ada.Streams.Stream_IO.Close (Stream_File);
+      end if;
+
       Ada.Streams.Stream_IO.Open
         (Stream_File,
          Ada.Streams.Stream_IO.Out_File,
@@ -260,7 +260,7 @@ package body Giant.Projects is
       Bauhaus_IO.Release (Bauhaus_Out_Stream);
       Ada.Streams.Stream_IO.Close (Stream_File);
    end Write_Vis_Window_To_File;
-   
+
    ---------------------------------------------------------------------------
    function Load_Sub_Graph_Data_Into_Main_Memory (File_Path : String)
         return Subgraph_Data_Elemet is
@@ -304,18 +304,18 @@ package body Giant.Projects is
       Bauhaus_Out_Stream : Bauhaus_IO.Out_Stream_Type;
 
    begin
-   
-      -- check if file exists, create new one if necessary   
+
+      -- check if file exists, create new one if necessary
       if (GNAT.OS_Lib.Is_Writable_File (File_Path) = True) then
-      
+
          Ada.Streams.Stream_IO.Create
            (Stream_File,
             Ada.Streams.Stream_IO.Out_File,
             File_Path);
-            
-         Ada.Streams.Stream_IO.Close (Stream_File);    
-      end if;  
-   
+
+         Ada.Streams.Stream_IO.Close (Stream_File);
+      end if;
+
       Ada.Streams.Stream_IO.Open
         (Stream_File,
          Ada.Streams.Stream_IO.Out_File,
@@ -895,7 +895,7 @@ package body Giant.Projects is
 
       Known_Vis_Iter            : Known_Vis_Windows_Hashs.Values_Iter;
       A_Vis_Window_Data_Element : Vis_Window_Data_Element;
-            
+
       Subgraphs_Iter : Subgraph_Data_Hashs.Values_Iter;
       A_Subgraph_Data_Elemet : Subgraph_Data_Elemet;
       Subgraph_File_Name : Ada.Strings.Unbounded.Unbounded_String;
@@ -917,17 +917,9 @@ package body Giant.Projects is
           (Project.All_Project_Vis_Windows);
 
       while Known_Vis_Windows_Hashs.More (Known_Vis_Iter) loop
-      
+
          Known_Vis_Windows_Hashs.Next
            (Known_Vis_Iter, A_Vis_Window_Data_Element);
-           
-
-
- A_Vis_Window_Data_Element
-
-
-         Write_Vis_Window_To_File
-
 
       end loop;
 
@@ -1301,7 +1293,7 @@ package body Giant.Projects is
       if (Does_Vis_Window_Exist
         (Project,
          Vis_Windows.Get_Name (Vis_Window)) = True) then
-         
+
          raise Visualisation_Window_Is_Already_Part_Of_Project_Exception;
       end if;
 
@@ -1453,7 +1445,7 @@ package body Giant.Projects is
       if (Does_Subgraph_Exist (Project, Subgraph_Name) = False) then
          raise Subgraph_Is_Not_Part_Of_Project_Exception;
       end if;
- 
+
       A_Subgraph_Data_Element := Subgraph_Data_Hashs.Fetch
         (Project.All_Subgraphs,
          Ada.Strings.Unbounded.To_Unbounded_String (Subgraph_Name));
