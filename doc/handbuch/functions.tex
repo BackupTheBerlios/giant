@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: functions.tex,v $, $Revision: 1.1 $
-%  $Date: 2003/06/30 15:22:06 $
+%  $RCSfile: functions.tex,v $, $Revision: 1.2 $
+%  $Date: 2003/06/30 17:11:25 $
 %  $Author: birdy $
 %
 %  Description: 
@@ -51,16 +51,72 @@ Subgraph List (4 Spalten).
 
     \subsubsection {Untermenü Project} \label{Main-Window-Project}
       \begin{enumerate}
-         \item {New Project} % OK
-         \item {Load Project}
+         \item {New Project}\\
+	 
+	 Hiermit wird ein neues Projekt angelegt. Ein eventuell bereits geöffnetes
+	 Projekt wird dabei geschlossen, wobei Änderungen auf Nachfrage 
+         vorher gespeichert werden.
+
+	 \begin{itemize}
+	 
+    \item{GIANT zeigt den Standard-Filechooser-Dialog und fordert den
+    Benutzer auf, eine vorhandene IML-Graph Datei auszuwählen.}
+    
+    \item{GIANT zeigt erneut den Standard-Filechooser-Dialog und fordert den
+    Benutzer zur Eingabe des Namens der Projektdatei auf. Die Dateiendung wird später
+    von GIANT automatisch gesetzt.}
+    
+    \item {Der Name der Projektdatei ist
+    automatisch auch der Name für das Projekt. Das Verzeichnis der
+    Projektdatei wird automatisch zum Projektverzeichnis. Existiert die eingegebene Projektdatei bereits, 
+    erscheint eine Fehlermeldung.
+    Existiert in dem Projektverzeichnis bereits eine andere Projektdatei, so 
+    erscheint ebenfalls eine Fehlermeldung.}
+    	\end{itemize}
+    
+         \item {Load Project}\\
+	 
+	 Öffnet ein GIANT Projekt. Ein eventuell bereits geöffnetes
+         Projekt wird dabei geschlossen, wobei Änderungen auf Nachfrage 
+         vorher gespeichert werden.
+	 \begin{itemize}
+	   \item {War vorher bereits ein Projekt offen, erscheint vorher eine
+	   Abfrage, ob dieses gespeichert werden soll.}
+	   \item {GIANT zeigt den Standard-Filechooser-Dialog und fordert
+           den Benutzer zur Auswahl einer vorhandenen GIANT-Projektdatei auf.}
+	 \end{itemize}
          \item {Save Project}
+	 
+	 Speichert ein Projekt in die Verwaltungsdateien im Projektverzeichnis
+	 der neuen Projektdatei.
+	 
          \item {Save Project As...}
+	 
+	 Speichert ein Projekt in die Verwaltungsdateien im Projektverzeichnis
+	 der neuen Projektdatei unter neuem Namen.
+	 
+	 \begin{itemize}
+	  \item{Der Benutzer gibt im Standard-Filechooser-Dialog 
+             das neue Projektverzeichnis 
+             und den Namen für die neue Projektdatei ein, die Dateiendung 
+             wird später von GIANT automatisch gesetzt.}
+	 \end{itemize}
+	 
          \item {Quit}
+	 
+	 Beendet das Programm GIANT.
+	 
       \end{enumerate}    
       
      \subsubsection {Untermenü Tools}  \label{Main-Window-Tools}
        \begin{enumerate}
           \item {Delete Unreferenced Annotations}
+	  
+	  Es werden alle
+          bestehenden Knoten-Annotationen des Projektes, für die es in
+          Anzeigefenstern und IML-Teilgraphen keine Fenster-Knoten und
+          Graph-Knoten gibt, gelöscht.
+	  
           \item {Execute GSL Script}
         \end{enumerate}
         
