@@ -20,15 +20,14 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.1 $
+-- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.2 $
 -- $Author: schwiemn $
--- $Date: 2003/05/27 07:50:13 $
+-- $Date: 2003/06/11 12:00:17 $
 --
-with Ada.Unchecked_Deallocation;
-
 with Giant.File_Management;  -- from GIANT
 with Giant.Valid_Names;      -- from GIANT
 with Giant.XML_File_Access;  -- from GIANT
+with Giant.Edge_Class_Proc;  -- from GIANT
 
 with Unbounded_String_Hash; -- from Bauhaus IML "Reuse.src"
 
@@ -112,7 +111,7 @@ package body Giant.Config.Class_Sets is
          end Process_Element;
 
          procedure Add_All_Elements_To_Class_Set is new
-           Graph_Lib.Edge_Class_Id_Set_Package.Apply
+           Graph_Lib.Edge_Class_Id_Sets.Apply
            (Execute => Process_Element);
 
       begin
@@ -137,7 +136,6 @@ package body Giant.Config.Class_Sets is
       XML_Node : DOM.Core.Node;
 
       A_Node_Class_ID : Graph_Lib.Node_Class_Id;
-      A_Edge_Class_ID : Graph_Lib.Edge_Class_Id;
 
       A_Edge_Class_ID_Set : Graph_Lib.Edge_Class_Id_Set;
 
@@ -293,13 +291,13 @@ package body Giant.Config.Class_Sets is
 
                -- calculate set of edge classes specified by this node
                A_Edge_Class_ID_Set := 
-                 Config.Process_Edge_Class_Entry (XML_Node);
+                 Edge_Class_Proc.Process_Edge_Class_Entry (XML_Node);
 
                -- check whether returned set is empty
-               if Graph_Lib.Edge_Class_Id_Set_Package.Is_Empty
+               if Graph_Lib.Edge_Class_Id_Sets.Is_Empty
                  (A_Edge_Class_ID_Set) then
 
-                  Graph_Lib.Edge_Class_Id_Set_Package.Destroy 
+                  Graph_Lib.Edge_Class_Id_Sets.Destroy 
                     (A_Edge_Class_ID_Set);
               
                else
@@ -310,7 +308,7 @@ package body Giant.Config.Class_Sets is
                     (New_Class_Set_Access, A_Edge_Class_ID_Set);
 
                   -- deallocate returned edge class id set
-                  Graph_Lib.Edge_Class_Id_Set_Package.Destroy 
+                  Graph_Lib.Edge_Class_Id_Sets.Destroy 
                     (A_Edge_Class_ID_Set);
                  
                end if;    

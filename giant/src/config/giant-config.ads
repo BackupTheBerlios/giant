@@ -20,10 +20,11 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config.ads,v $, $Revision: 1.1 $
+-- $RCSfile: giant-config.ads,v $, $Revision: 1.2 $
 -- $Author: schwiemn $
--- $Date: 2003/05/27 07:50:13 $
+-- $Date: 2003/06/11 12:00:17 $
 --
+-- -----
 -- This package holds the functionality needed to access the
 -- data stored in the global configuration file
 -- (see GIANT Specification "13.2 Die globale Konfigurationsdatei").
@@ -34,10 +35,6 @@ with Ada.Strings.Unbounded;
 with Ada.Unchecked_Deallocation;
 
 with Gtkada.Types; -- from GTK
-
-with Giant.Graph_Lib; -- from GIANT
-
-with DOM.Core; -- from xmlada
 
 package Giant.Config is
 
@@ -404,20 +401,5 @@ private
    --   "procedure Free (A : in out Chars_Ptr_Array)"
    procedure Free_Chars_Ptr_Array_Access is new Ada.Unchecked_Deallocation
      (Gtkada.Types.Chars_Ptr_Array, Chars_Ptr_Array_Access);
-
-   ---------------------------------------------------------------------------
-   -- Needed by subpackages for the processing of edge class entries in
-   -- xml files.
-   -- Conventions for the nodes :
-   --   <edge_class Start_Node_Class="Value" Attribute_Name="Value" />
-   --   <edge_class Start_Node_Class="Value" Attribute_Name="*" />
-   --   <edge_class Start_Node_Class="*" Attribute_Name="Value" />
-   --
-   --   "Value" means one single value, "*" is a vildcard.
-   --
-   -- Returns an empty set if no appropriate edge class is known
-   -- by the iml reflection.
-   function Process_Edge_Class_Entry (XML_Node : in DOM.Core.Node) return
-     Graph_Lib.Edge_Class_Id_Set;
 
 end Giant.Config;

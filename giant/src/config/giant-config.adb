@@ -20,25 +20,22 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config.adb,v $, $Revision: 1.1 $
+-- $RCSfile: giant-config.adb,v $, $Revision: 1.2 $
 -- $Author: schwiemn $
--- $Date: 2003/05/27 07:50:13 $
+-- $Date: 2003/06/11 12:00:17 $
 --
 with Ada.Unchecked_Deallocation;
 
-with String_Lists; -- from Bauhaus IML "Reuse.src"
 with Ordered_Sets; -- from Bauhaus IML "Reuse.src"
 
 with Giant.Ptr_Normal_Hashs; -- from GIANT
+pragma Elaborate_All (Giant.Ptr_Normal_Hashs);
 with Giant.XML_File_Access;  -- from GIANT
 with Giant.XPM_File_Access;  -- from GIANT
 with Giant.File_Management;  -- from GIANT
-with Giant.Graph_Lib;        -- from GIANT
 
-with Input_Sources.File; -- from xmlada
 with Tree_Readers;       -- from xmlada
-with Sax.Readers;        -- from xmlada
-
+with DOM.Core;           -- from xmlada
 with DOM.Core.Nodes;     -- from xmlada
 with DOM.Core.Documents; -- from xmlada
 with DOM.Core.Elements;  -- from xmlada
@@ -105,11 +102,9 @@ package body Giant.Config is
    ADO_Free_Defined_Settings_Set : Setting_Data_Sets.Set :=
      Setting_Data_Sets.Empty_Set;
 
-
    -- Holds the icon used to show that a window node
    -- is annotated.
    Node_Annotation_Icon : Chars_Ptr_Array_Access;
-
 
    -- Highlight colors for selections
    Actual_Selection_Highlight_Color : Color_Access := null;
@@ -140,100 +135,6 @@ package body Giant.Config is
       return False;
    end Is_Config_ADO_Initialized;
 
-   ---------------------------------------------------------------------------
-   -- Needed by subpackages for the processing of edge class entries in
-   -- xml files.
-   -- Passed node must have the following attributes specified in DTD:
-   --
-   -- May return an empty set.
-   --
-   -- <!ATTLIST edge_class
-   --   start_node_class CDATA #REQUIRED
-   --   attribute_name   CDATA #REQUIRED
-   -- >
-   --
-   function Process_Edge_Class_Entry (XML_Node : in DOM.Core.Node) return
-     Graph_Lib.Edge_Class_Id_Set is
-
-      New_Edge_Class_Set : Graph_Lib.Edge_Class_Id_Set :=
-        Graph_Lib.Edge_Class_Id_Set_Package.Empty_Set;
-
-      A_Node_Class_ID : Graph_Lib.Node_Class_Id;
-      A_Node_Attribute_ID : Graph_Lib.Node_Attribute_Id;
-
-      A_Edge_Class_ID : Graph_Lib.Edge_Class_Id;
-   begin
-
-      -- Case 1 - one single edge class specified by the xml node
-      if (DOM.Core.Elements.Get_Attribute
-          (XML_Node, "start_node_class") /="*") and
-        (DOM.Core.Elements.Get_Attribute
-         (XML_Node, "attribute_name") /="*") then
-
-         -- check whether edge class and node class name
-         -- do exist
-         if Graph_Lib.Does_Node_Class_Exist
-           (DOM.Core.Elements.Get_Attribute (XML_Node, "start_node_class"))
-           and Graph_Lib.Does_Node_Attribute_Exist
-           (DOM.Core.Elements.Get_Attribute (XML_Node, "start_node_class"),
-            DOM.Core.Elements.Get_Attribute (XML_Node, "attribute_name")) then
-
-            A_Node_Class_ID := Graph_Lib.Convert_Node_Class_Name_To_Id
-              (DOM.Core.Elements.Get_Attribute
-                (XML_Node, "start_node_class"));
-
-            A_Node_Attribute_ID := Graph_Lib.Convert_Node_Attribute_Name_To_Id
-              (DOM.Core.Elements.Get_Attribute (XML_Node, "start_node_class"),
-               DOM.Core.Elements.Get_Attribute (XML_Node, "attribute_name"));
-
-
-            -- Check whether this attribute is an edge
-            if Graph_Lib.Does_Edge_Class_Exist
-              (A_Node_Class_ID, A_Node_Attribute_ID) then
-
-               A_Edge_Class_ID :=
-                 Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
-                 (A_Node_Class_ID, A_Node_Attribute_ID);
-
-               Graph_Lib.Edge_Class_Id_Set_Package.Insert
-                 (New_Edge_Class_Set, A_Edge_Class_ID);
-
-               -- Holds one edge class id
-               return New_Edge_Class_Set;
-            end if;
-         end if;
-
-         -- Case 2 - one node class, vildcard for attributes
-      elsif (DOM.Core.Elements.Get_Attribute
-             (XML_Node, "start_node_class") /="*") and
-        (DOM.Core.Elements.Get_Attribute
-         (XML_Node, "attribute_name") ="*") then
-
-         if Graph_Lib.Does_Node_Class_Exist
-           (DOM.Core.Elements.Get_Attribute (XML_Node, "start_node_class"))
-         then
-
-            A_Node_Class_ID := Graph_Lib.Convert_Node_Class_Name_To_Id
-              (DOM.Core.Elements.Get_Attribute (XML_Node, "start_node_class"));
-
-            return Graph_Lib.Get_All_Edge_Class_Ids_For_Node_Class
-              (A_Node_Class_ID);
-         end if;
-
-         -- Case 3 - vildcard for node classes, one single attribute.
-      elsif (DOM.Core.Elements.Get_Attribute
-             (XML_Node, "start_node_class") ="*") and
-        (DOM.Core.Elements.Get_Attribute
-         (XML_Node, "attribute_name") /="*") then
-
-            return Graph_Lib.Get_All_Edge_Class_Ids_For_Node_Attribute
-              (DOM.Core.Elements.Get_Attribute (XML_Node, "attribute_name"));
-      end if;
-
-      -- Return an empty set
-      -- (statement only reachable if an empty set is returned).
-      return New_Edge_Class_Set;
-   end Process_Edge_Class_Entry;
 
    ---------------------------------------------------------------------------
    -- A
@@ -414,7 +315,6 @@ package body Giant.Config is
          -- check for correct type
          if (XML_File_Access.Does_XML_Document_Belong_To_Type
              ("giant_global_config_file", The_XML_Document) = False) then
-
             raise Config_File_Not_Correct_Exception;
          end if;
 
@@ -629,12 +529,10 @@ package body Giant.Config is
    begin
 
       if (Is_Config_ADO_Initialized = False) then
-
          raise Config_ADO_Not_Initialized_Exception;
       end if;
 
       if (Does_Setting_Exist(Name_Of_Setting) = False) then
-
          raise Config_Setting_Does_Not_Exist_Exception;
       end if;
 
@@ -662,7 +560,6 @@ package body Giant.Config is
      return Color_Access is
    begin
       if (Is_Config_ADO_Initialized = False) then
-
          raise Config_ADO_Not_Initialized_Exception;
       end if;
 
@@ -676,7 +573,6 @@ package body Giant.Config is
 
    begin
       if (Is_Config_ADO_Initialized = False) then
-
          raise Config_ADO_Not_Initialized_Exception;
       end if;
 
@@ -689,7 +585,6 @@ package body Giant.Config is
      return Color_Access is
    begin
       if (Is_Config_ADO_Initialized = False) then
-
          raise Config_ADO_Not_Initialized_Exception;
       end if;
 
@@ -702,7 +597,6 @@ package body Giant.Config is
 
    begin
       if (Is_Config_ADO_Initialized = False) then
-
          raise Config_ADO_Not_Initialized_Exception;
       end if;
 

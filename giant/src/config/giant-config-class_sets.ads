@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-class_sets.ads,v $, $Revision: 1.1 $
+-- $RCSfile: giant-config-class_sets.ads,v $, $Revision: 1.2 $
 -- $Author: schwiemn $
--- $Date: 2003/05/27 07:50:13 $
+-- $Date: 2003/06/11 12:00:17 $
 --
 -- ----------------
 -- This package provides the functionality needed to handle
@@ -34,8 +34,9 @@
 --
 with String_Lists;     -- from Bauhaus IML "Reuse.src"
 with Hashed_Mappings;  -- from Bauhaus IML "Reuse.src"
+pragma Elaborate_All (Hashed_Mappings);
 
-with Giant.Config.Graph_Lib; -- from GIANT
+with Giant.Graph_Lib; -- from GIANT
 
 package Giant.Config.Class_Sets is
 

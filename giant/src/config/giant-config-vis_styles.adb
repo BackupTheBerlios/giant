@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.1 $
+-- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.2 $
 -- $Author: schwiemn $
--- $Date: 2003/05/27 07:50:13 $
+-- $Date: 2003/06/11 12:00:17 $
 --
 with Unbounded_String_Hash; -- from Bauhaus IML "Reuse.src"
 
@@ -35,6 +35,7 @@ with Giant.XML_File_Access; -- from GIANT
 with Giant.XPM_File_Access; -- from GIANT
 with Giant.File_Management; -- from GIANT
 with Giant.Valid_Names;     -- from GIANT
+with GIANT.Edge_Class_Proc; -- from GIANT
 
 package body Giant.Config.Vis_Styles is
 
@@ -421,7 +422,7 @@ package body Giant.Config.Vis_Styles is
          end Process_Element;
 
          procedure Add_All_Element_Settings_To_Hash_Map is new
-           Graph_Lib.Edge_Class_Id_Set_Package.Apply
+           Graph_Lib.Edge_Class_Id_Sets.Apply
            (Execute => Process_Element);
 
       begin
@@ -459,12 +460,12 @@ package body Giant.Config.Vis_Styles is
       -- describes a set of node classes
       A_Node_Class_Id_Set : Graph_Lib.Node_Class_Id_Set;
       A_Node_Class_Id_SetIter :
-        Graph_Lib.Node_Class_Id_Set_Package.Iterator;
+        Graph_Lib.Node_Class_Id_Sets.Iterator;
 
       -- sets of edge classes
       A_Edge_Class_Id_Set : Graph_Lib.Edge_Class_Id_Set;
       A_Edge_Class_Id_SetIter :
-        Graph_Lib.Edge_Class_Id_Set_Package.Iterator;
+        Graph_Lib.Edge_Class_Id_Sets.Iterator;
 
       A_Edge_Class_Id : Graph_Lib.Edge_Class_Id;
 
@@ -534,16 +535,16 @@ package body Giant.Config.Vis_Styles is
       -- create the filter for each node class and insert the setting
 
       A_Node_Class_Id_SetIter :=
-        Graph_Lib.Node_Class_Id_Set_Package.Make_Iterator
+        Graph_Lib.Node_Class_Id_Sets.Make_Iterator
         (A_Node_Class_Id_Set);
 
       -- iterate over all node classes of the iml
       -- create filter and insert data into the vis style inernal
       -- data model.
-      while Graph_Lib.Node_Class_Id_Set_Package.More
+      while Graph_Lib.Node_Class_Id_Sets.More
         (A_Node_Class_Id_SetIter) loop
 
-         Graph_Lib.Node_Class_Id_Set_Package.Next
+         Graph_Lib.Node_Class_Id_Sets.Next
            (A_Node_Class_Id_SetIter, A_Node_Class_Id);
 
          -- Create Filter - for actaul node class id
@@ -567,8 +568,8 @@ package body Giant.Config.Vis_Styles is
 
       -- deallocation
       String_Lists.Destroy (Attribute_Names_List);
-      Graph_Lib.Node_Class_Id_Set_Package.Destroy (A_Node_Class_Id_SetIter);
-      Graph_Lib.Node_Class_Id_Set_Package.Destroy (A_Node_Class_Id_Set);
+      Graph_Lib.Node_Class_Id_Sets.Destroy (A_Node_Class_Id_SetIter);
+      Graph_Lib.Node_Class_Id_Sets.Destroy (A_Node_Class_Id_Set);
       DOM.Core.Free (XML_Nodes_List_Top_Level);
 
 
@@ -684,16 +685,16 @@ package body Giant.Config.Vis_Styles is
       A_Edge_Class_Id_Set := Graph_Lib.Get_All_Edge_Class_Ids;
 
       A_Edge_Class_Id_SetIter :=
-        Graph_Lib.Edge_Class_Id_Set_Package.Make_Iterator
+        Graph_Lib.Edge_Class_Id_Sets.Make_Iterator
         (A_Edge_Class_Id_Set);
 
       -- iterate over all edge classes of the iml
       -- and insert setting data into the vis style inernal
       -- data model.
-      while Graph_Lib.Edge_Class_Id_Set_Package.More
+      while Graph_Lib.Edge_Class_Id_Sets.More
         (A_Edge_Class_Id_SetIter) loop
 
-         Graph_Lib.Edge_Class_Id_Set_Package.Next
+         Graph_Lib.Edge_Class_Id_Sets.Next
            (A_Edge_Class_Id_SetIter, A_Edge_Class_Id);
 
          -- add setting to hash_map
@@ -705,8 +706,8 @@ package body Giant.Config.Vis_Styles is
       end loop;
 
       -- deallocation
-      Graph_Lib.Edge_Class_Id_Set_Package.Destroy (A_Edge_Class_Id_Set);
-      Graph_Lib.Edge_Class_Id_Set_Package.Destroy (A_Edge_Class_Id_SetIter);
+      Graph_Lib.Edge_Class_Id_Sets.Destroy (A_Edge_Class_Id_Set);
+      Graph_Lib.Edge_Class_Id_Sets.Destroy (A_Edge_Class_Id_SetIter);
       DOM.Core.Free (XML_Nodes_List_Top_Level);
 
       -- Step 4 process all edge class specific settings
@@ -744,13 +745,13 @@ package body Giant.Config.Vis_Styles is
 
             -- calculate set of edge classes specified by this node
             A_Edge_Class_ID_Set :=
-              Config.Process_Edge_Class_Entry (XML_Node_Edge_Class);
+              Edge_Class_Proc.Process_Edge_Class_Entry (XML_Node_Edge_Class);
 
             -- check whether returned set is empty
-            if Graph_Lib.Edge_Class_Id_Set_Package.Is_Empty
+            if Graph_Lib.Edge_Class_Id_Sets.Is_Empty
               (A_Edge_Class_ID_Set) then
 
-               Graph_Lib.Edge_Class_Id_Set_Package.Destroy
+               Graph_Lib.Edge_Class_Id_Sets.Destroy
                  (A_Edge_Class_ID_Set);
             else
             
@@ -761,7 +762,7 @@ package body Giant.Config.Vis_Styles is
                  (New_Vis_Style_Access, A_Edge_Class_Id_Set, Edge_Setting);
 
                -- deallocate returned edge class id set
-               Graph_Lib.Edge_Class_Id_Set_Package.Destroy
+               Graph_Lib.Edge_Class_Id_Sets.Destroy
                  (A_Edge_Class_ID_Set);
             end if;
          end loop;  -- end for

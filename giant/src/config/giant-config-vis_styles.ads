@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.ads,v $, $Revision: 1.2 $
+-- $RCSfile: giant-config-vis_styles.ads,v $, $Revision: 1.3 $
 -- $Author: schwiemn $
--- $Date: 2003/06/06 17:29:27 $
+-- $Date: 2003/06/11 12:00:17 $
 --
 -- ----------------
 -- This package provides the functionality needed to manage
@@ -97,12 +97,13 @@
 -- So it is guaranteed that the same icon file is only loaded
 -- once into the main memory.
 --
-with Ada.Strings.Unbounded;
+--with Ada.Strings.Unbounded;
 
 with String_Lists;    -- from Bauhaus IML "Reuse.src"
 with Hashed_Mappings; -- from Bauhaus IML "Reuse.src"
 pragma Elaborate_All (Hashed_Mappings);
 
+with Giant.Graph_Lib; -- from GIANT
 with Giant.Graph_Lib.Node_Attribute_Filters; -- from GIANT
 
 package Giant.Config.Vis_Styles is
