@@ -1,5 +1,9 @@
 2003-09-12  Steffen Pingel  <squig@users.sourceforge.net>
 
+	* src/gui/giant-progress_dialog.ads: Added Set_Cancel_Enabled to
+	disable cancel button for non interruptable operations.
+	Changed Float to Glib.Gdouble.
+
 	* src/gui/giant-main_window.ads: Resize columns after project has
 	been loaded.
 
@@ -11,6 +15,8 @@
 
 2003-09-11  Steffen Pingel  <squig@users.sourceforge.net>
 
+	* src/gui/giant-main_window.adb: Added giant logo as icon.
+
 	* src/gui/giant-input_dialog.adb: Close dialog when enter is
 	pressed in text widget.
 
@@ -19,7 +25,7 @@
 
 	* src/utils/giant-basic_evolutions.adb: Added basic package for
 	canceable operations.
-
+	
 2003-09-10  Steffen Pingel  <squig@users.sourceforge.net>
 
 	* src/reuse/bauhaus-os.adb: Removed realpath dependency. Would

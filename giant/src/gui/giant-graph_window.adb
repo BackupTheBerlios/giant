@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.60 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.61 $
 --  $Author: squig $
---  $Date: 2003/09/12 00:18:24 $
+--  $Date: 2003/09/12 14:12:29 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -896,11 +896,6 @@ package body Giant.Graph_Window is
             Widget_Callback.To_Marshaller (On_Vis_Style_Selected'Access),
             Window);
 
---        Gtk.Box.Pack_Start (Hbox,
---                            New_Button (-"OK", On_Vis_Style_Selected'Access,
---                                        Window),
---                            Expand => False, Fill => False, Padding => 0);
-
       --  zoom
       Gtk.Box.Gtk_New_Hbox (Hbox, Homogeneous => False,
                             Spacing => DEFAULT_SPACING);
@@ -909,9 +904,6 @@ package body Giant.Graph_Window is
                           Expand => False, Fill => True, Padding => 0);
 
       --  zoom selection
---        Gtk.Box.Gtk_New_Hbox (Hbox, Homogeneous => False, Spacing => 0);
---        Gtk.Box.Pack_Start (Vbox, Hbox,
---                            Expand => False, Fill => False, Padding => 0);
       Button := New_Button (" - ", On_Zoom_Out_Clicked'Access, Window);
       Gtk.Box.Pack_Start (Hbox, Button, Expand => False, Fill => False,
                           Padding => 0);

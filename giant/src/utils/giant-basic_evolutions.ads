@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-basic_evolutions.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-basic_evolutions.ads,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/09/12 00:18:24 $
+--  $Date: 2003/09/12 14:12:29 $
 --
 ------------------------------------------------------------------------------
 --
@@ -60,6 +60,10 @@ package Giant.Basic_Evolutions is
      (Individual       : in Basic_Evolution_Access;
       Delta_Complexity : in Natural                := 1)
      return Boolean;
+
+   procedure Set_Cancel_Enabled
+     (Individual : in Basic_Evolution_Access;
+      Enabled    : in Boolean);
 
    function Set_Percentage
      (Individual : in Basic_Evolution_Access;

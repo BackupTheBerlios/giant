@@ -20,12 +20,11 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.18 $
+--  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.19 $
 --  $Author: squig $
---  $Date: 2003/09/09 15:31:24 $
+--  $Date: 2003/09/12 14:12:29 $
 --
 ------------------------------------------------------------------------------
-
 
 with Ada.Exceptions;
 with Ada.Unchecked_Deallocation;
@@ -277,15 +276,15 @@ package body Giant.Evolutions is
                Progress_Dialog.Set_Progress_Text
                  (Dialog, Get_Progress_Text_Showing_Complexity (Individual));
             end if;
-            Progress_Dialog.Set_Upper (Dialog, Float (Complexity));
-            Progress_Dialog.Set_Value (Dialog, Float (Step_Count));
+            Progress_Dialog.Set_Upper (Dialog, Glib.Gdouble (Complexity));
+            Progress_Dialog.Set_Value (Dialog, Glib.Gdouble (Step_Count));
          else
             if not Progress_Dialog.Get_Activity_Mode (Dialog) then
                Progress_Dialog.Set_Activity_Mode (Dialog, True);
                Progress_Dialog.Set_Progress_Text
                  (Dialog, Get_Progress_Text_Unknown_Complexity (Individual));
             end if;
-            Progress_Dialog.Set_Value (Dialog, Float (Step_Count));
+            Progress_Dialog.Set_Value (Dialog, Glib.Gdouble (Step_Count));
          end if;
       end if;
    end Update_Visuals;

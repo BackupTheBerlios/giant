@@ -20,14 +20,15 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-basic_evolutions.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-basic_evolutions.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/09/12 00:18:24 $
+--  $Date: 2003/09/12 14:12:29 $
 --
 ------------------------------------------------------------------------------
 
 with Ada.Unchecked_Deallocation;
 
+with Glib;
 with Gtk.Main;
 
 with Giant.Logger;
@@ -99,7 +100,7 @@ package body Giant.Basic_Evolutions is
                   + Ada.Real_Time.Milliseconds (1000))) then
         while Gtk.Main.Events_Pending loop
            Dead := Gtk.Main.Main_Iteration;
-           pragma Assert (not Dead);
+           exit when Dead;
         end loop;
         Individual.Last_Main_Iteration := Ada.Real_Time.Clock;
      end if;
@@ -120,11 +121,25 @@ package body Giant.Basic_Evolutions is
       Individual.Complexity := Individual.Complexity + Delta_Complexity;
       if (Individual.Dialog /= null) then
          Progress_Dialog.Set_Value (Individual.Dialog,
-                                    Float (Individual.Complexity));
+                                    Glib.Gdouble (Individual.Complexity));
       end if;
 
       return Iterate_Main (Individual, Force_Update => False);
    end Step;
+
+   procedure Set_Cancel_Enabled
+     (Individual : in Basic_Evolution_Access;
+      Enabled    : in Boolean)
+   is
+   begin
+      if (Individual = null) then
+         return;
+      end if;
+
+      if (Individual.Dialog /= null) then
+         Progress_Dialog.Set_Cancel_Enabled (Individual.Dialog, Enabled);
+      end if;
+   end Set_Cancel_Enabled;
 
    function Set_Percentage
      (Individual : in Basic_Evolution_Access;
@@ -138,7 +153,8 @@ package body Giant.Basic_Evolutions is
       end if;
 
       if (Individual.Dialog /= null) then
-         Progress_Dialog.Set_Percentage (Individual.Dialog, Percentage);
+         Progress_Dialog.Set_Percentage (Individual.Dialog,
+                                         Glib.Gdouble (Percentage));
          Progress_Dialog.Set_Activity_Mode (Individual.Dialog, False);
          Progress_Dialog.Set_Progress_Text (Individual.Dialog, Text);
       end if;
@@ -172,7 +188,8 @@ package body Giant.Basic_Evolutions is
 
       Individual.Complexity := 0;
       if (Individual.Dialog /= null) then
-         Progress_Dialog.Set_Upper (Individual.Dialog, Float (Total_Complexity));
+         Progress_Dialog.Set_Upper (Individual.Dialog,
+                                    Glib.Gdouble (Total_Complexity));
          Progress_Dialog.Set_Activity_Mode
            (Individual.Dialog, Total_Complexity = 0);
       end if;

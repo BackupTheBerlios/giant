@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.67 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.68 $
 --  $Author: squig $
---  $Date: 2003/09/12 00:18:23 $
+--  $Date: 2003/09/12 14:12:28 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -693,10 +693,6 @@ package body Giant.Graph_Lib is
 
             Queue_Tail := Queue;
 
-            Basic_Evolutions.Set_Total_Complexity
-              (Individual, Node_Count);
-            Basic_Evolutions.Set_Text (Individual, -"Processing Node %v of %u");
-
             while Load_Nodes.Node_Queues.More (Iter) loop
                Node := Load_Nodes.Node_Queues.CellValue (Iter);
 
@@ -718,7 +714,6 @@ package body Giant.Graph_Lib is
 
                end if;
                Load_Nodes.Node_Queues.Forward (Iter);
-               Cancel := Basic_Evolutions.Step (Individual);
             end loop;
          end Process_Queue;
 
@@ -769,8 +764,7 @@ package body Giant.Graph_Lib is
             --  Mapping's initial size is about 4 million nodes
             IML_Node_ID_Mapping := IML_Node_ID_Hashed_Mappings.Create (21);
 
-            Basic_Evolutions.Set_Total_Complexity
-              (Individual, Node_Count);
+            Basic_Evolutions.Set_Total_Complexity (Individual, Node_Count);
             Basic_Evolutions.Set_Text (Individual, -"Converting Node %v of %u");
 
             Node_Iter := Load_Nodes.Node_Queues.MakeListIter (Queue);
@@ -869,8 +863,7 @@ package body Giant.Graph_Lib is
 
             All_Edges_Set := Edge_Id_Sets.Empty_Set;
 
-            Basic_Evolutions.Set_Total_Complexity
-              (Individual, Node_Count);
+            Basic_Evolutions.Set_Total_Complexity (Individual, Node_Count);
             Basic_Evolutions.Set_Text
               (Individual, -"Converting Outgoing Edge %v of %u");
 
@@ -925,8 +918,7 @@ package body Giant.Graph_Lib is
          begin
             Logger.Debug ("Begin: Convert_Outgoing_Edges");
 
-            Basic_Evolutions.Set_Total_Complexity
-              (Individual, Node_Count);
+            Basic_Evolutions.Set_Total_Complexity (Individual, Node_Count);
             Basic_Evolutions.Set_Text
               (Individual, -"Converting Incoming Edge %v of %u");
 
@@ -1030,7 +1022,8 @@ package body Giant.Graph_Lib is
    begin
       --  Load Graph into memory
       Cancel := Basic_Evolutions.Set_Percentage
-        (Individual, 0.0, "Loading IML file");
+        (Individual, 0.1, "Loading IML file");
+      Basic_Evolutions.Set_Cancel_Enabled (Individual, False);
       begin
          IML_Graph := IML.IO.Load (Path_To_IML_File);
       exception

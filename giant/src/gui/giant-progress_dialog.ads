@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-progress_dialog.ads,v $, $Revision: 1.6 $
+--  $RCSfile: giant-progress_dialog.ads,v $, $Revision: 1.7 $
 --  $Author: squig $
---  $Date: 2003/09/12 00:18:24 $
+--  $Date: 2003/09/12 14:12:29 $
 --
 ------------------------------------------------------------------------------
 --
@@ -31,9 +31,12 @@
 -- Emits the "cancelled" callback when the cancel button is pressed.
 --
 
+with Glib;
 with Gtk.Adjustment;
+with Gtk.Button;
 with Gtk.Label;
 with Gtk.Progress_Bar;
+
 with Gtk.Window;
 
 with Giant.Default_Dialog;
@@ -67,9 +70,13 @@ package Giant.Progress_Dialog is
      (Dialog        : access Progress_Dialog_Record;
       Activity_Mode : in     Boolean);
 
+   procedure Set_Cancel_Enabled
+     (Dialog  : access Progress_Dialog_Record;
+      Enabled : in     Boolean);
+
    procedure Set_Lower
      (Dialog : access Progress_Dialog_Record;
-      Lower  : in     Float);
+      Lower  : in     Glib.Gdouble);
 
    -------------------------------------------------------------------------
    --  Sets the message that is displayed above the progress bar.
@@ -79,7 +86,7 @@ package Giant.Progress_Dialog is
 
    procedure Set_Percentage
      (Dialog     : access Progress_Dialog_Record;
-      Percentage : in     Float);
+      Percentage : in     Glib.Gdouble);
 
    -------------------------------------------------------------------------
    --  Sets a format string used to display text indicating the
@@ -97,17 +104,18 @@ package Giant.Progress_Dialog is
       Text   : in     String);
 
    procedure Set_Upper (Dialog : access Progress_Dialog_Record;
-                        Upper  : in     Float);
+                        Upper  : in     Glib.Gdouble);
 
    -------------------------------------------------------------------------
    --  Sets the current value. If value is higher than upper_bound,
    --  value mod upper_bound is set.
    procedure Set_Value (Dialog : access Progress_Dialog_Record;
-                        Value  : in     Float);
+                        Value  : in     Glib.Gdouble);
 
 private
    type Progress_Dialog_Record is
      new Default_Dialog.Default_Dialog_Record with record
+        Cancel_Button : Gtk.Button.Gtk_Button;
         Progress_Bar : Gtk.Progress_Bar.Gtk_Progress_Bar;
         Progress_Bar_Adjustment : Gtk.Adjustment.Gtk_Adjustment;
         Progress_Label : Gtk.Label.Gtk_Label;

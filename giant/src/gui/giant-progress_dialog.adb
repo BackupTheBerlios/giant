@@ -20,26 +20,27 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-progress_dialog.adb,v $, $Revision: 1.12 $
+--  $RCSfile: giant-progress_dialog.adb,v $, $Revision: 1.13 $
 --  $Author: squig $
---  $Date: 2003/09/12 00:18:24 $
+--  $Date: 2003/09/12 14:12:29 $
 --
 
 with Interfaces.C.Strings;
 with System;
 
-with Glib;
 with Glib.Object;
 with Gtk.Box;
 with Gtk.Enums; use Gtk.Enums;
 with Gtk.Handlers;
 with Gtk.Object;
 with Gtk.Progress_Bar;
+with Gtk.Stock;
+with Gtk.Widget;
 with Gtk.Window;
 with Gtkada.Types;
 
 with Giant.Default_Dialog;
-with Giant.Gui_Utils; use Giant.Gui_Utils;
+with Giant.Gui_Utils;
 
 package body Giant.Progress_Dialog is
 
@@ -50,6 +51,13 @@ package body Giant.Progress_Dialog is
 
    package Progress_Dialog_Callback is new
      Gtk.Handlers.Callback (Progress_Dialog_Record);
+
+   procedure On_Cancel_Button_Clicked
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+   begin
+      Default_Dialog.Hide (Source, Default_Dialog.Response_Cancel);
+   end On_Cancel_Button_Clicked;
 
    procedure Create
      (Dialog  :    out Progress_Dialog_Access;
@@ -69,7 +77,7 @@ package body Giant.Progress_Dialog is
    is
       Box : Gtk.Box.Gtk_Vbox;
    begin
-      Default_Dialog.Initialize (Dialog, Title, Default_Dialog.Button_Cancel);
+      Default_Dialog.Initialize (Dialog, Title, Default_Dialog.Button_None);
       Set_Modal (Dialog, True);
 
       --  provide signals
@@ -83,12 +91,18 @@ package body Giant.Progress_Dialog is
 
       Gtk.Label.Gtk_New (Dialog.Progress_Label, Message);
       Gtk.Box.Pack_Start (Box, Dialog.Progress_Label, Expand => False,
-                          Fill => False, Padding => DEFAULT_SPACING);
+                          Fill => False, Padding => Gui_Utils.DEFAULT_SPACING);
 
       Gtk.Adjustment.Gtk_New (Dialog.Progress_Bar_Adjustment,
                               Value => 0.0, Lower => 0.0,
                               Upper => 100.0, Step_Increment => 1.0,
                               Page_Increment => 1.0, Page_Size => 1.0);
+
+      Dialog.Cancel_Button := Gui_Utils.New_Stock_Button
+        (Gtk.Stock.Stock_Cancel,
+         On_Cancel_Button_Clicked'Access,
+         Dialog);
+      Add_Button (Dialog, Dialog.Cancel_Button);
 
       Gtk.Progress_Bar.Gtk_New (Dialog.Progress_Bar);
       Gtk.Progress_Bar.Set_Adjustment
@@ -96,7 +110,7 @@ package body Giant.Progress_Dialog is
          Dialog.Progress_Bar_Adjustment);
       Gtk.Progress_Bar.Set_Pulse_Step (Dialog.Progress_Bar, Glib.Gdouble (0.01));
       Gtk.Box.Pack_Start (Box, Dialog.Progress_Bar, Expand => False,
-                          Fill => False, Padding => DEFAULT_SPACING);
+                          Fill => False, Padding => Gui_Utils.DEFAULT_SPACING);
    end;
 
    function Can_Hide
@@ -134,9 +148,17 @@ package body Giant.Progress_Dialog is
       Gtk.Progress_Bar.Set_Activity_Mode (Dialog.Progress_Bar, Activity_Mode);
    end Set_Activity_Mode;
 
+   procedure Set_Cancel_Enabled
+     (Dialog  : access Progress_Dialog_Record;
+      Enabled : in     Boolean)
+   is
+   begin
+      Gtk.Button.Set_Sensitive (Dialog.Cancel_Button, Enabled);
+   end Set_Cancel_Enabled;
+
    procedure Set_Lower
      (Dialog : access Progress_Dialog_Record;
-      Lower  : in     Float)
+      Lower  : in     Glib.Gdouble)
    is
    begin
       Gtk.Adjustment.Set_Lower (Dialog.Progress_Bar_Adjustment,
@@ -153,7 +175,7 @@ package body Giant.Progress_Dialog is
 
    procedure Set_Percentage
      (Dialog     : access Progress_Dialog_Record;
-      Percentage : in     Float)
+      Percentage : in     Glib.Gdouble)
    is
    begin
       Gtk.Progress_Bar.Set_Percentage (Dialog.Progress_Bar,
@@ -170,7 +192,7 @@ package body Giant.Progress_Dialog is
    end Set_Progress_Text;
 
    procedure Set_Upper (Dialog : access Progress_Dialog_Record;
-                        Upper  : in     Float)
+                        Upper  : in     Glib.Gdouble)
    is
    begin
       Gtk.Adjustment.Set_Upper (Dialog.Progress_Bar_Adjustment,
@@ -178,24 +200,24 @@ package body Giant.Progress_Dialog is
    end Set_Upper;
 
    procedure Set_Value (Dialog : access Progress_Dialog_Record;
-                        Value  : in     Float)
+                        Value  : in     Glib.Gdouble)
    is
-      Upper_Bound : Float;
-      Mod_Value : Float := Value;
+      use type Glib.Gdouble;
+      Upper_Bound : Glib.Gdouble;
+      Mod_Value : Glib.Gdouble := Value;
    begin
       --  adjust value
-      Upper_Bound := abs Float (Gtk.Adjustment.Get_Upper
-                                (Dialog.Progress_Bar_Adjustment));
-      if (Upper_Bound = Float(0)) then
-         Gtk.Adjustment.Set_Value (Dialog.Progress_Bar_Adjustment,
-                                   Glib.Gdouble (0));
+      Upper_Bound := abs Gtk.Adjustment.Get_Upper
+        (Dialog.Progress_Bar_Adjustment);
+      if (Upper_Bound = 0.0) then
+         Gtk.Adjustment.Set_Value (Dialog.Progress_Bar_Adjustment, 0.0);
       else
+         -- map value to bounds
          while (Mod_Value > Upper_Bound) loop
             Mod_Value := Mod_Value - Upper_Bound;
          end loop;
 
-         Gtk.Adjustment.Set_Value (Dialog.Progress_Bar_Adjustment,
-                                   Glib.Gdouble (Mod_Value));
+         Gtk.Adjustment.Set_Value (Dialog.Progress_Bar_Adjustment, Mod_Value);
       end if;
    end Set_Value;
 
