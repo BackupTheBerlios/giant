@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts-test.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-tree_layouts-test.adb,v $, $Revision: 1.5 $
 --  $Author: koppor $
---  $Date: 2003/09/21 00:06:31 $
+--  $Date: 2003/10/07 09:37:48 $
 --
 
 with Ada.Text_IO;
@@ -118,7 +118,8 @@ package body Giant.Tree_Layouts.Test is
          --  q&d -- a destroy of this empty class_set should be called
          Meta_Class_Set_To_Layout =>
            Config.Class_Sets.Build
-         (Config.Class_Sets.Class_Sets_Lists.Create));
+         (Config.Class_Sets.Class_Sets_Lists.Create),
+         Process_Edges_Reverse => False);
 
       Evolutions.Start_Calculation_Blocked (Layout);
 
