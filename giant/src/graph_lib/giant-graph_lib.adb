@@ -18,22 +18,20 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.18 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.19 $
 --  $Author: koppor $
---  $Date: 2003/06/24 17:13:17 $
+--  $Date: 2003/06/24 17:53:28 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
 
 --  from Bauhaus
-with Hashed_Mappings;
 with Tagged_Ptr_Hash;
 with SLocs;
 with Storables;
 with IML_Classes;
 with IML_Graphs;
 with IML.IO;
-with IML_Node_IDs;
 with IML_Reflection;
 with IML_Roots;
 with Lists;
@@ -45,7 +43,6 @@ with Giant.Logger;
 
 pragma Elaborate_All (Giant.Constant_Ptr_Hashs);
 pragma Elaborate_All (Giant.Ptr_Normal_Hashs);
-pragma Elaborate_All (Hashed_Mappings);
 pragma Elaborate_All (Tagged_Ptr_Hash);
 
 package body Giant.Graph_Lib is
@@ -120,20 +117,6 @@ package body Giant.Graph_Lib is
 
    ---------------------------------------------------------------------------
    Node_Class_Id_Mapping : Node_Class_Id_Hashed_Mappings.Mapping;
-
-   ----------------------------------
-   --  Hashing for IML_Node_IDs    --
-   --    needed for Node_Id_Value  --
-   ----------------------------------
-
-   ---------------------------------------------------------------------------
-   package IML_Node_ID_Hashed_Mappings is
-      new Hashed_Mappings
-     (Key_Type   => IML_Node_IDs.Node_ID,
-      Value_Type => Node_Id,
-      Hash       => IML_Node_IDs.Hash);
-
-   IML_Node_ID_Mapping : IML_Node_ID_Hashed_Mappings.Mapping;
 
    ---------------------
    --  Miscellaneous  --
@@ -598,8 +581,9 @@ package body Giant.Graph_Lib is
                        (IML_Roots.IML_Root (IML_Node));
                      if Storables."/=" (Target, null) then
                         Process_Edge (Node, Target, Attribute, 0);
-                     else
-                        My_Logger.Info ("Edge_Field with null target ignored");
+                        --  else
+                        --    My_Logger.Info
+                        --      ("Edge_Field with null target ignored");
                      end if;
                   end;
                elsif Attribute.all in IML_Reflection.List_Field'Class then
@@ -1056,6 +1040,11 @@ package body Giant.Graph_Lib is
    end Does_Node_Id_Exist;
 
    ---------------------------------------------------------------------------
+   --  Could be implemented more efficient
+   --    a) traverse All_Nodes "by hand"
+   --         don't use function Get_All_Nodes, but travel thourgh the hashmap
+   --         directly
+   --    b) build set at creation of graph and return a copy here
    function Get_All_Edges
      return Edge_Id_Set
    is
@@ -1259,7 +1248,7 @@ package body Giant.Graph_Lib is
       Set := Edge_Id_Sets.Empty_Set;
 
       for I in Node.Outgoing_Edges'Range loop
-         Edge_Id_Sets.Insert (Set, Node.Incoming_Edges (I));
+         Edge_Id_Sets.Insert (Set, Node.Outgoing_Edges (I));
       end loop;
 
       return Set;
