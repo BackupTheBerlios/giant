@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.9 $
 --  $Author: schwiemn $
---  $Date: 2003/06/10 15:00:21 $
+--  $Date: 2003/06/10 16:21:53 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -34,8 +34,8 @@ with Giant.Graph_Lib;         -- from GIANT
 package body Giant.Vis_Windows is
 
    ---------------------------------------------------------------------------
-   --  The default name used for standard selections
-   --  Name must correspond Giant.Valid_Names.Standard_Name
+   --  The default name used for standard selections. The
+   --  Name must correspond Giant.Valid_Names.Standard_Name.
    --  This constant is used to determine the name for a new standard 
    --  selection that has to be created during the execution of 
    --  "function Create_New ...".
@@ -48,7 +48,7 @@ package body Giant.Vis_Windows is
    --  Internal subprograms
    --------------------------------------------------------------------------- 
 
-   --  needed for platformindependent persistence
+   --  needed for platform independent persistence
    --------------------------------------------------------------------------- 
    procedure Selection_Data_Elemet_Read
      (Stream  : in  Bauhaus_IO.In_Stream_Type;
@@ -66,19 +66,19 @@ package body Giant.Vis_Windows is
         Selection_Highlight_Status'Val (Highlight_Integer_Id);
         
       --  Read fading status
-      Bauhaus_IO.Read_Boolean (Stream, Element.Is_Faded_Out);
-            
+      Bauhaus_IO.Read_Boolean (Stream, Element.Is_Faded_Out);          
    end Selection_Data_Elemet_Read;
 
-   ---------------------------------------------------------------------------   
-   procedure Selection_Data_Set_Read is new Selection_Data_Sets.Read_Set
+   ---------   
+   procedure Selection_Data_Sets_Read is new Selection_Data_Sets.Read_Set
      (Read_Element => Selection_Data_Elemet_Read);
      
-   --  needed for platformindependent persistence 
+     
+   --  needed for platform independent persistence 
    ---------------------------------------------------------------------------
    procedure Selection_Data_Elemet_Write
-     (Stream  : in  Bauhaus_IO.Out_Stream_Type;
-      Element : in  Selection_Data_Elemet) is
+     (Stream  : in Bauhaus_IO.Out_Stream_Type;
+      Element : in Selection_Data_Elemet) is
    
       Highlight_Integer_Id : Integer;      
    begin
@@ -92,15 +92,46 @@ package body Giant.Vis_Windows is
       Bauhaus_IO.Write_Integer (Stream, Highlight_Integer_Id);
       
       -- Stream fading status flag
-      Bauhaus_IO.Write_Boolean (Stream, Element.Is_Faded_Out);
-  
+      Bauhaus_IO.Write_Boolean (Stream, Element.Is_Faded_Out);  
    end Selection_Data_Elemet_Write;
    
-   ---------------------------------------------------------------------------   
-   procedure Selection_Data_Set_Write is new Selection_Data_Sets.Write_Set
+   ---------
+   procedure Selection_Data_Sets_Write is new Selection_Data_Sets.Write_Set
      (Write_Element => Selection_Data_Elemet_Write);
+     
+   
+   --  needed for platform independent persistence
+   --------------------------------------------------------------------------- 
+   procedure Pin_Read
+     (Stream  : in  Bauhaus_IO.In_Stream_Type;
+      Element : out Pin) is                  
+   begin           
+      Bauhaus_IO.Read_Unbounded_String (Stream, Element.Pin_Name);
+      Vis.Logic.Read_Vector (Stream, Element.Pin_Pos);           
+      Bauhaus_IO.Read_Float (Stream, Element.Pin_Zoom);
+   end Pin_Read;
+   
+   ---------
+   procedure Pin_Sets_Read is new Pin_Sets.Read_Set
+     (Read_Element => Pin_Read);
       
+      
+   --  needed for platform independent persistence
+   --------------------------------------------------------------------------- 
+   procedure Pin_Write
+     (Stream  : in Bauhaus_IO.Out_Stream_Type;
+      Element : in Pin) is                   
+   begin           
+      Bauhaus_IO.Write_Unbounded_String (Stream, Element.Pin_Name);
+      Vis.Logic.Write_Vector (Stream, Element.Pin_Pos);           
+      Bauhaus_IO.Write_Float (Stream, Element.Pin_Zoom);
+   end Pin_Write;
+         
+   ---------
+   procedure Pin_Sets_Write is new Pin_Sets.Write_Set
+     (Write_Element => Pin_Write);
 
+     
    ---------------------------------------------------------------------------
    --  A
    --  Initialisation, Finalisation and Persistence
@@ -169,55 +200,75 @@ package body Giant.Vis_Windows is
 
    ---------------------------------------------------------------------------
    procedure Visual_Window_Access_Read
-     (Stream : in  Bauhaus_IO.In_Stream_Type;
-      Item   : out Visual_Window_Access) is
-                
+     (Stream     : in  Bauhaus_IO.In_Stream_Type;
+      Vis_Window : out Visual_Window_Access) is                
    begin
     
       Item := new Visual_Window_Element;
     
       --  Read Vis_Window_Name
-      Bauhaus_IO.Read_Unbounded_String (Stream, Item.Vis_Window_Name);
+      Bauhaus_IO.Read_Unbounded_String (Stream, Vis_Window.Vis_Window_Name);
     
-      --  Read The_Visualisation_Style
-      Bauhaus_IO.Read_Unbounded_String (Stream, Item.The_Visualisation_Style); 
+      --  Read the_Visualisation_Style (name only)
+      Bauhaus_IO.Read_Unbounded_String 
+        (Stream, Vis_Window.The_Visualisation_Style); 
       
-      --  Read The_Graph_Widget
-       
-   
-   
-   
-   
-   
-   
-   
-      
-    --  GRAPH_LIB; TODO
-    --  !!!!!!!!!!
-    
+      --  Read the_Graph_Widget 
+      Graph_Widgets.Read_Graph_Widget (Stream, Vis_Window.The_Graph_Widget);
 
--- ONLY IF STORED STYLE NOT FOUND
---          -- set default visualisation style
---      New_Window_Ac.The_Visualisation_Style :=       
---        Config.Vis_Styles.Get_Name_Of_Vis_Style
---          (Config.Vis_Styles.Get_Default_Vis_Style);
-    
-    
+      --  Read the Set of all Pins
+      Pin_Sets_Read (Stream, Vis_Window.Set_Of_All_Pins);
+   
+      --  Read the Standard_Selection
+      Bauhaus_IO.Read_Unbounded_String 
+        (Stream, Vis_Window.Standard_Selection);
+
+      --  Read the Current_Selection
+      Bauhaus_IO.Read_Unbounded_String (Stream, Vis_Window.Current_Selection);
       
-    null;  
+      --  Read the set of All_Managed_Selections
+      Selection_Data_Sets_Read (Stream, Vis_Window.All_Managed_Selections);
+
+      --  Check whether there is a visualisation style with the read name,
+      --  else take the default vis style.
+      if not Config.Vis_Styles.Does_Vis_Style_Exist 
+        (Ada.Strings.Unbounded.To_String 
+          (Vis_Window.The_Visualisation_Style)) then
       
+        Vis_Window.The_Visualisation_Style := 
+          Config.Vis_Styles.Get_Name_Of_Vis_Style 
+            (Config.Vis_Styles.Get_Default_Vis_Style);
+      end if;
    end Visual_Window_Access_Read;
        
    ---------------------------------------------------------------------------
    procedure Visual_Window_Access_Write
-     (Stream : in Bauhaus_IO.In_Stream_Type;
-      Item   : in Visual_Window_Access) is   
+     (Stream     : in Bauhaus_IO.In_Stream_Type;
+      Vis_Window : in Visual_Window_Access) is   
    begin
+      
+      --  Write Vis_Window_Name
+      Bauhaus_IO.Write_Unbounded_String (Stream, Vis_Window.Vis_Window_Name);
+    
+      --  Write the_Visualisation_Style (name only)
+      Bauhaus_IO.Write_Unbounded_String 
+        (Stream, Vis_Window.The_Visualisation_Style); 
+      
+      --  Write the_Graph_Widget 
+      Graph_Widgets.Write_Graph_Widget (Stream, Vis_Window.The_Graph_Widget);
+
+      --  Write the Set of all Pins
+      Pin_Sets_Write (Stream, Vis_Window.Set_Of_All_Pins);
    
-    --  GRAPH_LIB; TODO
-    --  !!!!!!!!!!
-   
-    null;
+      --  Write the Standard_Selection
+      Bauhaus_IO.Write_Unbounded_String 
+        (Stream, Vis_Window.Standard_Selection);
+
+      --  Write the Current_Selection
+      Bauhaus_IO.Write_Unbounded_String (Stream, Vis_Window.Current_Selection);
+      
+      --  Write the set of All_Managed_Selections
+      Selection_Data_Sets_Write (Stream, Vis_Window.All_Managed_Selections);
    end Visual_Window_Access_Write;
 
    ---------------------------------------------------------------------------
