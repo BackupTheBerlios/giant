@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: product.tex,v $, $Revision: 1.10 $
-%  $Date: 2003/02/18 12:49:49 $
+%  $RCSfile: product.tex,v $, $Revision: 1.11 $
+%  $Date: 2003/02/18 15:21:04 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung des Produktes. Übersicht über die Funktionen
@@ -67,6 +67,12 @@ haben.
   Visualisierungsstiele definiert werden können, kann GIANT so
   an spezifische Problemstellungen angepasst werden. Die Visualisierungsstiele
   sind natürlich beliebig austauschbar.
+
+
+\section{Knoten-Annotationen}
+Jeder Knoten kann mit einer textuellen Annotation versehen werden. Diese
+Annotation kann in einem entsprechenden Fenster außerhalb des Anzeigefensters
+zur Anzeige gebracht und bearbeitet werden.
 
 
 % ==============================================================================
@@ -186,7 +192,9 @@ ausgeführt, dies ist aber nicht zwingend nötig.
    \begin {enumerate}
    
      \item 
-     
+     Anzeige eines Dialoges mit einem sich stängig leicht ändernden
+     Inhalt, so dass erkennbar ist, dass das System noch nicht abgestürzt
+     ist.
      
      \item
      Anzeige eines Progressbars, der darstellt, welcher Anteil der
@@ -200,22 +208,16 @@ ausgeführt, dies ist aber nicht zwingend nötig.
      Anfrage geschehen.
      
      
-    \end {enumerate}
+   \end {enumerate}
 
 
-
-
-
-
-
->>>>>>>>>> WOLLEN / SOLLEN WIR SO WAS MACHEN ????
->>>>>>>>> Eventuell bei der Spez. der ANfrage
->>>>>>>>> Checken ob machbar
   \subsection {Ergebnisbericht bei Anfragen}
   Nach Abarbeitung einer Anfrage wird der Benutzer durch grafische Ausgabe 
   eines Protokolls über die Ergebnisse der Anfrage unterrichtet.
   
-  
+  >>>>>>>>>> WOLLEN / SOLLEN WIR SO WAS MACHEN ????
+>>>>>>>>> Eventuell bei der Spez. der ANfrage
+>>>>>>>>> Checken ob machbar
   \begin {enumerate}
   
     \item
@@ -225,7 +227,8 @@ ausgeführt, dies ist aber nicht zwingend nötig.
     Angabe aller neu geöffneten Anzeigefenster.
     
     \item 
-    Angabe aller 
+    Angabe aller neu erzeugten Selektionen (mit entsprechendem 
+    Anzeigefenster).
   
   
   \end {enumerate}

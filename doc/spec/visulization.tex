@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: visulization.tex,v $, $Revision: 1.7 $
-%  $Date: 2003/02/18 06:45:46 $
+%  $RCSfile: visulization.tex,v $, $Revision: 1.8 $
+%  $Date: 2003/02/18 15:21:04 $
 %  $Author: schwiemn $
 %
 %  Description:
@@ -62,6 +62,13 @@ stark von der aktuellen Zoomstufe und dem gewählten Visualisierungsstiel ab.
   Jeder Knoten kann über ein vordefiniertes Icon verfügen, 
   welches im linken oberen Eck des Knoten-Rechtecks dargestellt wird. 
   Alle Knoten für die kein Icon definiert wurde, haben ein \gq{Default-Icon}.
+  
+  
+  \subsection {Icon für Knoten-Annotationen}
+  Der Benutzer kann Knoten annotieren. Jeder Knoten, für den so eine Annotation
+  verfasst wurde, zeigt dies über ein entsprechendes Icon rechts oben im
+  Knoten-Rechteck an.
+  
 
   \subsection {Klassenname und ID}
   Die ID eines Knotens wird innerhalb des Knoten-Rechtecks rechts oben 
@@ -85,14 +92,14 @@ stark von der aktuellen Zoomstufe und dem gewählten Visualisierungsstiel ab.
   (z.B. gestrichelt oder durchgezogen) unterscheiden.
 
   \item
-  Der IML-Graph kennt auch Schleifen, solche Kanten werden durch 
-  zwei Kantenknickpunkte umgelenkt.
+  Der IML-Graph kennt auch Schleifen, solche Kanten werden als Polygonzug
+  vom Start-Knoten über zwei Knickpunkte zurück zum Start-Knoten dargestellt.
+  
 \end {enumerate}
 
   \subsection{Kantenknickpunkte}
-  Der Benutzer kann bei jeder Kante manuell beliebig viele Kantenknickpunkte 
-  hinzufügen. Die Kante selbst besteht dann aus mehreren geraden Linien vom 
-  Startknoten über beliebig viele Kantenknickpunkt hinweg zum Zielknoten.\\
+  >>>>>>>>>>>>>>>>>>>>>>>>>>>> EVENTUELL GANZ WEG LASSEN
+  Kantenknickpunkte sind vorerst nicht vorgesehen.
 
   \subsection{Vorhandene Kanten nicht anzeigen}
   In den Konfigurationsdateien kann genau eingestellt werden, wann eine Kante 
@@ -218,9 +225,7 @@ Es wird in etwa die folgenden Detailstufen geben.
   Bei sehr geringer bis hin zur minimalen Zoomstufe.\\
   Die Knoten-Rechtecke werden immer kleiner gezeichnet, 
   bis sie ihre minimale Größe erreicht haben.
-
-
-
+    
 \section{Minimap}
 Zu jedem Anzeigefenster gibt es genau eine Minimap, welche den gesamten 
 Anzeigeinhalt stark abstrahiert darstellt.\\
