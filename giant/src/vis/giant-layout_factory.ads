@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.ads,v $, $Revision: 1.4 $
---  $Author: squig $
---  $Date: 2003/07/02 17:06:58 $
+--  $RCSfile: giant-layout_factory.ads,v $, $Revision: 1.5 $
+--  $Author: koppor $
+--  $Date: 2003/07/03 01:12:17 $
 --
 ------------------------------------------------------------------------------
 --
@@ -38,9 +38,10 @@ with Giant.Graph_Lib.Selections;
 
 package Giant.Layout_Factory is
 
-   Unknown_Algorithm          : exception;
    Additonal_Parameters_Error : exception;
+   Invalid_Format             : exception;
    Other_Error                : exception;
+   Unknown_Algorithm          : exception;
 
    ----------------------------------------------------------------------------
    --  Initialises an layout-algorithm
@@ -76,25 +77,26 @@ package Giant.Layout_Factory is
    --       algorithm for itself is responsible
    --       to parse them.
    --
-   --    Additonal_Parameters_Error':
-   --       If there was an error parsing the additonal parameters,
-   --       this string contains an verbose error message
-   --
    --    Layout_Evolution':
    --       Access to an Initialized Evolution-Object
    --       which does the layout null if unsuccessful
    --
    --
+   --  Raises:
+   --    Invalid_Format - if the string couldn't be parsed properly
+   --                     The description of the exception contains the
+   --                     error description
+   --
    --  Currently implemented algorithms with their additional parameters:
    --
-   --  Matrix:
+   --  "matrix":
    --    Format:  <Target_Position>
    --    Example: "(2,2)"
    --
    --    Meaning:
    --      <Target_Position>  upper left corner of matrix
    --
-   --  Tree:
+   --  "tree":
    --     Format:  <Root_Node_ID>; <Target_Position>; <List_Of_Class_Set_Names>
    --     Example: "5; (2,5); ("Aber", "Hallo")"
    --              It is not possible to use " or ; in a classsetname!
@@ -112,7 +114,6 @@ package Giant.Layout_Factory is
       Widget_Lock           : in     Graph_Widgets.Lock_Type;
       Additional_Parameters : in     String;
       Layout_Evolution      :    out Evolutions.Evolution_Class_Access);
---    Additional_Parameters_Verbose_Error :    out String;
 
 private
 
