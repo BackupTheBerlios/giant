@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.10 $
+--  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.11 $
 --  $Author: koppor $
---  $Date: 2003/06/24 18:27:28 $
+--  $Date: 2003/06/26 15:56:23 $
 --
 ------------------------------------------------------------------------------
 --
@@ -235,9 +235,15 @@ private
    type Subgraph is new Selections.Selection;
 
    ---------------------------------------------------------------------------
+   --  removes given edge if it has no source or no target in the given
+   --  graph
+   procedure Ensure_Graph_Edge_Properties
+     (Graph : in out Subgraph;
+      Edge  : in     Edge_Id);
+
+   ---------------------------------------------------------------------------
    --  removes all edges which have no source or no target
-   procedure Ensure_Graph_Edge_Properties (Graph : in out Subgraph);
+   procedure Ensure_Graph_Edge_Properties
+     (Graph : in out Subgraph);
 
 end Giant.Graph_Lib.Subgraphs;
-
-
