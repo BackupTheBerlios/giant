@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/06/01 22:06:52 $
+--  $Date: 2003/06/02 00:23:10 $
 --
 ------------------------------------------------------------------------------
 
@@ -292,8 +292,10 @@ package body Giant.Evolutions is
          T_Ptr => Evolution_Class_Access);
 
    begin
-      --  If bound checks are disabled then Next_Action may be out of
-      --  range.
+      --  'Next_Action' may be out of range if the out-Parameter was not
+      --  assigned any value in the last call to 'Step' or
+      --  'Synchronized_Step'. Since this error should be quite hard to
+      --  find, we provide checking.
       if Next_Action in Evolution_Action then
          Individual.Next_Action := Next_Action;
       else
@@ -523,6 +525,7 @@ package body Giant.Evolutions is
 
          --  perform the action
          if Perform_Action = Run then
+            Next_Action := Cancel;
             Step (Individual, Next_Action);
             --  memorize next action to be performed on 'Individual'
             Set_Next_Action (Individual, Next_Action);
@@ -538,6 +541,7 @@ package body Giant.Evolutions is
 
                case Perform_Action is
                   when Synchronize =>
+                     Next_Action := Cancel;
                      Synchronized_Step (Individual, Next_Action);
                      Set_Next_Action (Individual, Next_Action);
 
@@ -937,11 +941,13 @@ package body Giant.Evolutions is
       --  perform the action
       case Perform_Action is
          when Run =>
+            Next_Action := Cancel;
             Step (Driver_State.Individual, Next_Action);
             --  memorize next action to be performed on 'Individual'
             Set_Next_Action (Driver_State.Individual, Next_Action);
 
          when Synchronize =>
+            Next_Action := Cancel;
             Synchronized_Step (Driver_State.Individual, Next_Action);
             --  memorize next action to be performed on 'Individual'
             Set_Next_Action (Driver_State.Individual, Next_Action);
