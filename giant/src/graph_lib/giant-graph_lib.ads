@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.19 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.20 $
 --  $Author: koppor $
---  $Date: 2003/06/25 18:52:21 $
+--  $Date: 2003/06/26 14:05:28 $
 --
 
 with Giant.Constant_Ptr_Hashs;
@@ -745,6 +745,41 @@ package Giant.Graph_Lib is
 
    ---------------------------------------------------------------------------
    function Hash_Edge_Class_Id (Key : in Edge_Class_Id) return Integer;
+
+   --------------------------------------------
+   --  Edge_Id_Locator                       --
+   --    Hashed mapping to speed up reading  --
+   --------------------------------------------
+
+   package Edge_Id_Locator is
+
+      ------------------------------------------------------------------------
+      --  Has to be called after Giant.Graph_Lib.Load
+      --    and before any use of Selection_Read
+      procedure Initialize;
+
+      ------------------------------------------------------------------------
+      --  Raises:
+      --    No_Edge_Found - if belonging edge can't be located
+      function Locate
+        (Source_Node              : in Node_Id;
+         Target_Node              : in Node_Id;
+         Attribute                : in Node_Attribute_Id;
+         Attribute_Element_Number : in Natural)
+        return Edge_Id;
+
+      ------------------------------------------------------------------------
+      --  Has to be called before Giant.Graph_Lib.Destroy
+      --    and after any use of Selection_Read
+      procedure Destroy;
+
+      ------------------------------------------------------------------------
+      --  Risen, if duplicate edges have to be inserted
+      Duplicate_Edge : exception;
+
+      No_Edge_Found  : exception;
+
+   end Edge_Id_Locator;
 
 private
 
