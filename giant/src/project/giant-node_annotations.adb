@@ -20,15 +20,16 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-node_annotations.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-node_annotations.adb,v $, $Revision: 1.9 $
 --  $Author: schwiemn $
---  $Date: 2003/06/10 12:34:46 $
+--  $Date: 2003/06/30 14:57:37 $
 --
 with Ada.Text_IO;
 with Ada.Unchecked_Deallocation;
 
 with GIANT.File_Management; --  from GIANT
 with GIANT.XML_File_Access; --  from GIANT
+with GIANT.Logger;          --  from GIANT
 
 with Tree_Readers;       --  from xmlada
 with DOM.Core;           --  from xmlada
@@ -37,6 +38,9 @@ with DOM.Core.Nodes;     --  from xmlada
 with DOM.Core.Elements;  --  from xmlada
 
 package body Giant.Node_Annotations is
+
+   -- logging functionality
+   package Logger is new Giant.Logger ("Giant.Node_Annotations");
 
 
    ---------------------------------------------------------------------------
@@ -171,6 +175,19 @@ package body Giant.Node_Annotations is
                A_Node_Id,
                Ada.Strings.Unbounded.To_Unbounded_String
                  (DOM.Core.Nodes.Node_Value (XML_Annotation_Text_Node)));
+         else
+         
+           Logger.Warn 
+             ("Node annotations file: """ 
+              & Node_Annotations_File 
+              & """ "
+              & "holds an annoation for Node Id: """
+              & DOM.Core.Elements.Get_Attribute
+                  (XML_Annotation_Node, "node_id")
+              & """ "
+              & "as this node is not known by the loaded iml graph, it "
+              & "will be ignored.");
+         
          end if;
       end loop;
 

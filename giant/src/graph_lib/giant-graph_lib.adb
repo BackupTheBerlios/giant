@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.34 $
---  $Author: koppor $
---  $Date: 2003/06/30 08:00:41 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.35 $
+--  $Author: schwiemn $
+--  $Date: 2003/06/30 14:57:37 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -1142,6 +1142,15 @@ package body Giant.Graph_Lib is
       end;
 
       IML_Node_ID := IML_Node_IDs.Make_Node_ID (P);
+      
+      --  Fixed by Martin: ensures that "Node_Does_Not_Exist" will be raised
+      --  if the node id is not part of the hash map.      
+      if not IML_Node_ID_Hashed_Mappings.Is_Bound
+        (IML_Node_ID_Mapping,
+         IML_Node_ID) then
+         
+         raise Node_Does_Not_Exist;
+      end if;
 
       Value :=
         IML_Node_ID_Hashed_Mappings.Fetch
