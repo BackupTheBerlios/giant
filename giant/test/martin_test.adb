@@ -20,24 +20,24 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: martin_test.adb,v $, $Revision: 1.24 $
+--  $RCSfile: martin_test.adb,v $, $Revision: 1.25 $
 --  $Author: koppor $
---  $Date: 2003/10/01 21:46:13 $
+--  $Date: 2003/10/01 22:57:00 $
 --
 with AUnit.Test_Suites; use AUnit.Test_Suites;
 with AUnit.Test_Runner;
 
 with Giant.Config.Class_Sets.Test;
 with Giant.Config.Global_Data.Test;
---with Giant.Config.Vis_Styles.Test;
---with Giant.File_Management.Test;
---with Giant.GSL_Support.Test;
---with Giant.Node_Annotations.Test;
---with Giant.Projects.Test;
---with Giant.Vis_Windows.Test;
---with Giant.XML_File_Access.Test;
+with Giant.Config.Vis_Styles.Test;
+with Giant.File_Management.Test;
+with Giant.GSL_Support.Test;
+with Giant.Node_Annotations.Test;
+with Giant.Projects.Test;
+with Giant.Vis_Windows.Test;
+with Giant.XML_File_Access.Test;
 
---with Hashed_Mappings_Lazy_Init_Test;
+--  with Hashed_Mappings_Lazy_Init_Test;
 
 with Giant.Default_Logger;
 
@@ -46,34 +46,23 @@ procedure Martin_Test is
    function Suite return Access_Test_Suite is
       Result : Access_Test_Suite := new Test_Suite;
    begin
-
-
-   -- Add_Test (Result, new Giant.Vis_Windows.Test.Test_Case);
-
-   -- Add_Test (Result, new Giant.Projects.Test.Test_Case);
-
-   -- Add_Test (Result, new Hashed_Mappings_Lazy_Init_Test.Test_Case);
-
-   -- Add_Test (Result, new Giant.Config.Vis_Styles.Test.Test_Case);
-
-   Add_Test (Result, new Giant.Config.Class_Sets.Test.Test_Case);
-
-   -- Add_Test (Result, new Giant.XML_File_Access.Test.Test_Case);
-
-   -- Add_Test (Result, new Giant.File_Management.Test.Test_Case);
-
-   -- Add_Test (Result, new Giant.Node_Annotations.Test.Test_Case);
-
-   -- Add_Test (Result, new Giant.GSL_Support.Test.Test_Case);
-
-   -- Add_Test (Result, new Giant.Config.Global_Data.Test.Test_Case);
+      --  Add_Test (Result, new Hashed_Mappings_Lazy_Init_Test.Test_Case);
+      Add_Test (Result, new Giant.Config.Class_Sets.Test.Test_Case);
+      --  Add_Test (Result, new Giant.Config.Global_Data.Test.Test_Case);
+      --  Add_Test (Result, new Giant.Config.Vis_Styles.Test.Test_Case);
+      --  Add_Test (Result, new Giant.File_Management.Test.Test_Case);
+      --  Add_Test (Result, new Giant.GSL_Support.Test.Test_Case);
+      --  Add_Test (Result, new Giant.Node_Annotations.Test.Test_Case);
+      --  Add_Test (Result, new Giant.Projects.Test.Test_Case);
+      --  Add_Test (Result, new Giant.Vis_Windows.Test.Test_Case);
+      --  Add_Test (Result, new Giant.XML_File_Access.Test.Test_Case);
       return Result;
    end Suite;
 
    procedure Run is new AUnit.Test_Runner (Suite);
 
 begin
-   Giant.Default_Logger.Init ("a_martin_test.log");
+   Giant.Default_Logger.Init ("the_martins_test.log");
    Giant.Default_Logger.Debug ("Starting Test...");
 
    Run;
