@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-positioning.adb,v $, $Revision: 1.11 $
+--  $RCSfile: giant-graph_widgets-positioning.adb,v $, $Revision: 1.12 $
 --  $Author: keulsn $
---  $Date: 2003/09/16 23:17:56 $
+--  $Date: 2003/09/22 01:40:13 $
 --
 ------------------------------------------------------------------------------
 
@@ -184,7 +184,7 @@ package body Giant.Graph_Widgets.Positioning is
       Calculate_Edge_Circle
         (Edge    => Edge,
          Center  => Get_Bottom_Right (Vis_Data.Get_Extent (Source)),
-         Spacing => Dock_Spacing,
+         Spacing => Default_Dock_Spacing,
          Radius  => Radius);
    end Update_Loop_Position;
 
@@ -403,8 +403,8 @@ package body Giant.Graph_Widgets.Positioning is
      (Widget : access Graph_Widget_Record'Class;
       Edge   : in     Vis_Data.Vis_Edge_Id) is
 
-      Dock_Spacing  : Vis.Absolute_Natural :=
-        Default_Dock_Spacing + (Vis_Data.Get_Thickness (Edge) + 1) / 2;
+      --  Dock_Spacing  : Vis.Absolute_Natural :=
+      --    Default_Dock_Spacing + (Vis_Data.Get_Thickness (Edge) + 1) / 2;
       Source        : Vis_Data.Vis_Node_Id;
       Target        : Vis_Data.Vis_Node_Id;
       Source_Extent : Vis.Absolute.Rectangle_2d;
@@ -416,7 +416,7 @@ package body Giant.Graph_Widgets.Positioning is
       End_Point     : Vis.Absolute.Vector_2d;
    begin
       if Vis_Data.Is_Loop (Edge) then
-         Update_Loop_Position (Edge, Dock_Spacing);
+         Update_Loop_Position (Edge, Default_Dock_Spacing);
       else
          Source := Vis_Data.Get_Source (Edge);
          Target := Vis_Data.Get_Target (Edge);
@@ -431,28 +431,28 @@ package body Giant.Graph_Widgets.Positioning is
               (Direction    => Direction,
                Reversing    => False,
                Extent       => Source_Extent,
-               Spacing      => Dock_Spacing,
+               Spacing      => Default_Dock_Spacing,
                Displacement => Calculate_Source_Displacement (Edge));
 
             End_Point := Calculate_Docking_Point_Not_Vertical
               (Direction    => Direction,
                Reversing    => True,
                Extent       => Target_Extent,
-               Spacing      => Dock_Spacing,
+               Spacing      => Default_Dock_Spacing,
                Displacement => Calculate_Target_Displacement (Edge));
          else
             Start_Point := Calculate_Docking_Point_Vertical
               (Direction    => Direction,
                Reversing    => False,
                Extent       => Source_Extent,
-               Spacing      => Dock_Spacing,
+               Spacing      => Default_Dock_Spacing,
                Displacement => Calculate_Source_Displacement (Edge));
 
             End_Point := Calculate_Docking_Point_Vertical
               (Direction    => Direction,
                Reversing    => True,
                Extent       => Target_Extent,
-               Spacing      => Dock_Spacing,
+               Spacing      => Default_Dock_Spacing,
                Displacement => Calculate_Target_Displacement (Edge));
          end if;
 

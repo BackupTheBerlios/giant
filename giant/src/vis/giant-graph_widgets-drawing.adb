@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.33 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.34 $
 --  $Author: keulsn $
---  $Date: 2003/09/16 22:04:25 $
+--  $Date: 2003/09/22 01:40:13 $
 --
 ------------------------------------------------------------------------------
 
@@ -59,6 +59,14 @@ package body Giant.Graph_Widgets.Drawing is
       return Vis.Absolute_Int (Gdk.Font.Get_Ascent (Font)) +
         Vis.Absolute_Int (Gdk.Font.Get_Descent (Font));
    end Get_Height;
+
+   function Get_Maximum_Number_Of_Lights
+     return Natural is
+   begin
+      return Vis_Data.Highlight_Type'Pos (Vis_Data.Highlight_Type'Last) -
+        Vis_Data.Highlight_Type'Pos (Vis_Data.Highlight_Type'First) + 1;
+   end Get_Maximum_Number_Of_Lights;
+
 
    function Get_Maximum_Number_Of_Global_Lights
      return Natural is
@@ -299,6 +307,14 @@ package body Giant.Graph_Widgets.Drawing is
          Height   => Glib.Gint (Get_Height (Area)));
    end Copy_Ready_Into_Normal_Buffer;
    pragma Inline (Copy_Ready_Into_Normal_Buffer);
+
+   --  NOTE: Must be synced with 'Draw_Edge'
+   function Get_Maximum_Edge_Highlight_Width
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis.Absolute_Natural is
+   begin
+      return Get_Maximum_Number_Of_Lights * Default_Edge_Light_Thickness;
+   end Get_Maximum_Edge_Highlight_Width;
 
    --  NOTE: Must be synced with 'Draw_Edge'
    procedure Update_Edge_Size

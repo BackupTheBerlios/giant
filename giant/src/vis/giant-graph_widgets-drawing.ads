@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.ads,v $, $Revision: 1.10 $
+--  $RCSfile: giant-graph_widgets-drawing.ads,v $, $Revision: 1.11 $
 --  $Author: keulsn $
---  $Date: 2003/08/07 20:01:59 $
+--  $Date: 2003/09/22 01:40:13 $
 --
 ------------------------------------------------------------------------------
 --
@@ -71,6 +71,13 @@ package Giant.Graph_Widgets.Drawing is
       Edge   : in     Vis_Data.Vis_Edge_Id);
 
    ----------------------------------------------------------------------------
+   --  Returns the maximum number of points drawn around an edge
+   --  if that edge is highlighted in all colors.
+   function Get_Maximum_Edge_Highlight_Width
+     (Widget : access Graph_Widget_Record'Class)
+     return Vis.Absolute_Natural;
+
+   ----------------------------------------------------------------------------
    --  Updates the size of a node and sets the values. Uses the 'Settings'
    --  package. Usually 'Node' should be dropped from the region manager,
    --  then 'Settings' should be updated if necessary, then this procedure
@@ -85,7 +92,7 @@ package Giant.Graph_Widgets.Drawing is
 
    ----------------------------------------------------------------------------
    --  Returns the maximum number of points drawn around the node rectangle
-   --  if a node is highlighted in all colors.
+   --  if that node is highlighted in all colors.
    function Get_Maximum_Node_Highlight_Width
      (Widget : access Graph_Widget_Record'Class)
      return Vis.Absolute_Natural;

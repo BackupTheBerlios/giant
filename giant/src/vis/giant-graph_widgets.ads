@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.47 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.48 $
 --  $Author: keulsn $
---  $Date: 2003/09/16 22:04:25 $
+--  $Date: 2003/09/22 01:40:13 $
 --
 ------------------------------------------------------------------------------
 --
@@ -1169,10 +1169,19 @@ private                    -- private part --
      (Widget : access Graph_Widget_Record'Class;
       Node   : in     Vis_Data.Vis_Node_Id);
 
+
    ----------------------------------------------------------------------------
    --  Selection modifications can be: add items, toggle selection state of
-   --  an item or change the selection to contain only specified items
-   type Selection_Modify_Type is (Add, Toggle, Change);
+   --  an item or change the selection to contain only specified items. This
+   --  type is used for program logic
+   type Internal_Selection_Modify_Type is (Add, Toggle, Change, Remove);
+
+   ----------------------------------------------------------------------------
+   --  Selection modifications for user actions can be: add items, toggle
+   --  selection state of an item or change the selection to contain only
+   --  specified items
+   subtype Selection_Modify_Type is
+     Internal_Selection_Modify_Type range Add .. Change;
 
    --  Postcondition:
    --    Edges is destroyed
@@ -1184,7 +1193,7 @@ private                    -- private part --
      (Widget : access Graph_Widget_Record'Class;
       Edges  : in out Vis_Edge_Lists.List;
       Nodes  : in out Vis_Node_Lists.List;
-      Mode   : in     Selection_Modify_Type);
+      Mode   : in     Internal_Selection_Modify_Type);
 
    --  Note:
    --    Adjusts highlighting
@@ -1413,12 +1422,16 @@ private                    -- private part --
 
    ----------------------------------------------------------------------------
    --  Default size of a graph widget
-   Default_Width      : constant := 300;
-   Default_Height     : constant := 200;
+   Default_Width                : constant := 300;
+   Default_Height               : constant := 200;
    --  Default zoom level
-   Default_Zoom_Level : constant := 1.0;
+   Default_Zoom_Level           : constant := 1.0;
+   --  Minimum zoom level for that node size is calculated into the logical
+   --  area. For smaller zoom levels only one point is considered per node.
+   Default_Minimum_Precise_Zoom : constant := 10.0;
    --  Default width of a node displayed at 'Default_Zoom_Level'
-   Default_Node_Width : constant := 150;
+   Default_Node_Width           : constant := 150;
+
 
    ----------------------------------------------------------------------------
    --  Hashmap that maps Graph_Lib.Edge_Id to Vis_Data.Vis_Edge_Id

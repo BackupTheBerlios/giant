@@ -1,3 +1,14 @@
+2003-09-22  Steffen Keul  <keulsn@studi.informatik.uni-stuttgart.de>
+
+	* src/vis/giant-graph_widgets-callbacks.adb: Mini map is now
+	updated on changing of window size. Window does not scroll for no
+	reason anymore when resized.
+
+	* src/vis/giant-graph_widgets-positioning.adb: Made Dock_Spacing
+	constant to avoid Bug #911. Performance seems more important than
+	a decent docking space, so the selection algorithm will not be
+	modified.
+
 2003-09-22  Steffen Pingel  <squig@users.sourceforge.net>
 
 	* src/gui/giant-graph_window.adb: Trimmed zoom level.
@@ -8,6 +19,16 @@
 
 	* src/gui/giant-main_window.adb: Made script menu
 	tear-off-able (Bug #955). Removed scripts menu.
+
+2003-09-21  Steffen Keul  <keulsn@studi.informatik.uni-stuttgart.de>
+
+	* src/vis/giant-graph_widgets.ads,
+	  src/vis/giant-graph_widgets.adb: Fixed handling of zoom level
+	  0.0. At small zoom levels (smaller than
+	  Default_Minimum_Precise_Zoom_Level the extent of a node is not
+	  calculated into the size of the logical area anymore.
+	
+	* shared/gsl/Search For Routine.gsl: Enabled cancellation of input.
 
 2003-09-20  Steffen Pingel  <squig@users.sourceforge.net>
 

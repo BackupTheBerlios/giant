@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.23 $
+--  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.24 $
 --  $Author: keulsn $
---  $Date: 2003/09/16 22:04:25 $
+--  $Date: 2003/09/22 01:40:13 $
 --
 ------------------------------------------------------------------------------
 
@@ -90,6 +90,8 @@ package body Giant.Graph_Widgets.Callbacks is
       if Widget.Callbacks.Accept_Scrolling /= 0 then
          return;
       end if;
+      Widget.Callbacks.Accept_Scrolling :=
+        Widget.Callbacks.Accept_Scrolling + 1;
       Logic := Get_Logical_Area (Widget);
       Visible := Get_Visible_Area (Widget);
       Area := Get_Surrounding (Logic, Visible);
@@ -143,6 +145,8 @@ package body Giant.Graph_Widgets.Callbacks is
            (Widget.Callbacks.Vertical_Adjustment,
             Glib.Gdouble (Get_Top (Visible)));
       end if;
+      Widget.Callbacks.Accept_Scrolling :=
+        Widget.Callbacks.Accept_Scrolling - 1;
    end Update_Scrollbars;
 
    procedure On_Horizontal_Scroll
@@ -980,6 +984,7 @@ package body Giant.Graph_Widgets.Callbacks is
          while Vis_Edge_Sets.More (Iterator) loop
             Vis_Edge_Sets.Next (Iterator, Edge);
             if Vis_Data.Intersects (Edge, Rectangle) then
+
                Vis_Edge_Lists.Attach (Edge, Add_Edge_Queue);
             end if;
          end loop;
@@ -1049,7 +1054,7 @@ package body Giant.Graph_Widgets.Callbacks is
            (Widget   => Widget,
             Edges    => Remove_Edge_Queue,
             Nodes    => Remove_Node_Queue,
-            Mode     => Toggle);
+            Mode     => Remove);
          Modify_Selection
            (Widget   => Widget,
             Edges    => Add_Edge_Queue,

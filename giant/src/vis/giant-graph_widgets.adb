@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.53 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.54 $
 --  $Author: keulsn $
---  $Date: 2003/09/16 22:04:25 $
+--  $Date: 2003/09/22 01:40:13 $
 --
 ------------------------------------------------------------------------------
 
@@ -2051,9 +2051,9 @@ package body Giant.Graph_Widgets is
      (Widget : access Graph_Widget_Record'Class;
       Edges  : in out Vis_Edge_Lists.List;
       Nodes  : in out Vis_Node_Lists.List;
-      Mode   : in     Selection_Modify_Type) is
+      Mode   : in     Internal_Selection_Modify_Type) is
 
-      Actual_Mode   : Selection_Modify_Type := Mode;
+      Actual_Mode   : Internal_Selection_Modify_Type := Mode;
       Lock          : Lock_Type;
       Current_Edge  : Vis_Data.Vis_Edge_Id;
       Current_Node  : Vis_Data.Vis_Node_Id;
@@ -2067,8 +2067,9 @@ package body Giant.Graph_Widgets is
       while not Vis_Edge_Lists.IsEmpty (Edges) loop
          Current_Edge := Vis_Edge_Lists.FirstValue (Edges);
          Vis_Edge_Lists.DeleteHead (Edges);
-         if Actual_Mode = Toggle and then
-           Is_Edge_In_Selection (Widget, Current_Edge) then
+         if Actual_Mode = Remove or else
+           (Actual_Mode = Toggle and then
+            Is_Edge_In_Selection (Widget, Current_Edge)) then
 
             Remove_Edge_From_Selection (Widget, Current_Edge);
             Remove_Edge_Highlighting
@@ -2088,8 +2089,9 @@ package body Giant.Graph_Widgets is
       while not Vis_Node_Lists.IsEmpty (Nodes) loop
          Current_Node := Vis_Node_Lists.FirstValue (Nodes);
          Vis_Node_Lists.DeleteHead (Nodes);
-         if Actual_Mode = Toggle and then
-           Is_Node_In_Selection (Widget, Current_Node) then
+         if Actual_Mode = Remove or else
+           (Actual_Mode = Toggle and then
+            Is_Node_In_Selection (Widget, Current_Node)) then
 
             Remove_Node_From_Selection (Widget, Current_Node);
             Remove_Node_Highlighting
@@ -2760,33 +2762,35 @@ package body Giant.Graph_Widgets is
       Y       : Vis.Logic_Float;
       Changed : Boolean := False;
    begin
-      if Is_Empty (Widget.Logic_Area) then
-         Changed := True;
-         Widget.Logic_Area := Rectangle;
-      else
-         X := Vis.Logic.Get_Left (Rectangle);
-         if X < Vis.Logic.Get_Left (Widget.Logic_Area) then
+      if Get_Zoom_Level (Widget) >= Default_Minimum_Precise_Zoom then
+         if Is_Empty (Widget.Logic_Area) then
             Changed := True;
-            Vis.Logic.Set_Left (Widget.Logic_Area, X);
+            Widget.Logic_Area := Rectangle;
+         else
+            X := Vis.Logic.Get_Left (Rectangle);
+            if X < Vis.Logic.Get_Left (Widget.Logic_Area) then
+               Changed := True;
+               Vis.Logic.Set_Left (Widget.Logic_Area, X);
+            end if;
+            X := Vis.Logic.Get_Right (Rectangle);
+            if X > Vis.Logic.Get_Right (Widget.Logic_Area) then
+               Changed := True;
+               Vis.Logic.Set_Right (Widget.Logic_Area, X);
+            end if;
+            Y := Vis.Logic.Get_Top (Rectangle);
+            if Y < Vis.Logic.Get_Top (Widget.Logic_Area) then
+               Changed := True;
+               Vis.Logic.Set_Top (Widget.Logic_Area, Y);
+            end if;
+            Y := Vis.Logic.Get_Bottom (Rectangle);
+            if Y > Vis.Logic.Get_Bottom (Widget.Logic_Area) then
+               Changed := True;
+               Vis.Logic.Set_Bottom (Widget.Logic_Area, Y);
+            end if;
          end if;
-         X := Vis.Logic.Get_Right (Rectangle);
-         if X > Vis.Logic.Get_Right (Widget.Logic_Area) then
-            Changed := True;
-            Vis.Logic.Set_Right (Widget.Logic_Area, X);
+         if Changed then
+            States.Logic_Area_Changed (Widget);
          end if;
-         Y := Vis.Logic.Get_Top (Rectangle);
-         if Y < Vis.Logic.Get_Top (Widget.Logic_Area) then
-            Changed := True;
-            Vis.Logic.Set_Top (Widget.Logic_Area, Y);
-         end if;
-         Y := Vis.Logic.Get_Bottom (Rectangle);
-         if Y > Vis.Logic.Get_Bottom (Widget.Logic_Area) then
-            Changed := True;
-            Vis.Logic.Set_Bottom (Widget.Logic_Area, Y);
-         end if;
-      end if;
-      if Changed then
-         States.Logic_Area_Changed (Widget);
       end if;
    end Add_Logic_Area_Rectangle;
 
@@ -2800,6 +2804,7 @@ package body Giant.Graph_Widgets is
       Drawing.Resize_Display (Widget);
       Make_Edges_Appear (Widget, Old_Area);
       Callbacks.Update_Scrollbars (Widget);
+      Notifications.Visible_Area_Changed (Widget, Get_Visible_Area (Widget));
    end Resize_Graph_Widget;
 
    procedure Find_Or_Create
