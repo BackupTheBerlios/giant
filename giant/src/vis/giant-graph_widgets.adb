@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.34 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.35 $
 --  $Author: keulsn $
---  $Date: 2003/07/15 20:09:52 $
+--  $Date: 2003/07/18 12:38:48 $
 --
 ------------------------------------------------------------------------------
 
@@ -811,8 +811,8 @@ package body Giant.Graph_Widgets is
       Lock : Lock_Type;
    begin
       Lock_All_Content (Widget, Lock);
---      Move_All_Nodes_To_Unsized (Widget);
---      Move_All_Edges_To_Unsized (Widget);
+      Move_All_Nodes_To_Unsized (Widget);
+      Move_All_Edges_To_Unsized (Widget);
       Settings.Set_Style (Widget, Style);
       Release_Lock (Widget, Lock);
    end Set_Vis_Style;
@@ -1185,9 +1185,8 @@ package body Giant.Graph_Widgets is
       Lock : Lock_Type;
    begin
       Lock_All_Content (Widget, Lock);
-      ------------------------------------------------------ something missing
-      --  Shift everything to Unsized_Nodes
-      --  Shift everything to Unsited_Edges
+      Move_All_Nodes_To_Unsized (Widget);
+      Move_All_Edges_To_Unsized (Widget);
       Positioning.Set_Zoom (Widget, Zoom);
       Release_Lock (Widget, Lock);
    end Set_Zoom_Level;
@@ -1366,6 +1365,32 @@ package body Giant.Graph_Widgets is
       Vis_Data.Make_Incoming_Iterator (Node, Edge_Iterator);
       Move_Edges_To_Unsized (Widget, Edge_Iterator);
    end Move_Node_To_Unsized;
+
+   procedure Move_All_Edges_To_Unsized
+     (Widget : access Graph_Widget_Record'Class) is
+
+      Edge     : Vis_Data.Vis_Edge_Id;
+      Iterator : Edge_Id_Mappings.Values_Iter :=
+        Edge_Id_Mappings.Make_Values_Iter (Widget.Edge_Map);
+   begin
+      while Edge_Id_Mappings.More (Iterator) loop
+         Edge_Id_Mappings.Next (Iterator, Edge);
+         Move_Edge_To_Unsized (Widget, Edge);
+      end loop;
+   end Move_All_Edges_To_Unsized;
+
+   procedure Move_All_Nodes_To_Unsized
+     (Widget : access Graph_Widget_Record'Class) is
+
+      Node     : Vis_Data.Vis_Node_Id;
+      Iterator : Node_Id_Mappings.Values_Iter :=
+        Node_Id_Mappings.Make_Values_Iter (Widget.Node_Map);
+   begin
+      while Node_Id_Mappings.More (Iterator) loop
+         Node_Id_Mappings.Next (Iterator, Node);
+         Move_Node_To_Unsized (Widget, Node);
+      end loop;
+   end Move_All_Nodes_To_Unsized;
 
    procedure Add_Logic_Position
      (Widget   : access Graph_Widget_Record'Class;

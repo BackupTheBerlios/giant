@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.33 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.34 $
 --  $Author: keulsn $
---  $Date: 2003/07/15 20:09:52 $
+--  $Date: 2003/07/18 12:38:48 $
 --
 ------------------------------------------------------------------------------
 --
@@ -1017,6 +1017,12 @@ private                    -- private part --
    procedure Move_Node_To_Unsized
      (Widget : access Graph_Widget_Record'Class;
       Node   : in     Vis_Data.Vis_Node_Id);
+
+   procedure Move_All_Edges_To_Unsized
+     (Widget : access Graph_Widget_Record'Class);
+
+   procedure Move_All_Nodes_To_Unsized
+     (Widget : access Graph_Widget_Record'Class);
 
    --  looks up an existing edge or creates a new one if necessary.
    --  if the nodes incident cannot be looked up, then sets 'Edge' to null.
