@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-gsl_support.adb,v $, $Revision: 1.2 $
--- $Author: schwiemn $
--- $Date: 2003/07/02 15:45:18 $
+-- $RCSfile: giant-gsl_support.adb,v $, $Revision: 1.3 $
+-- $Author: schulzgt $
+-- $Date: 2003/07/03 13:16:07 $
 --
 with Ada.Strings.Unbounded;
 
@@ -52,7 +52,7 @@ package body Giant.GSL_Support is
       
       
       Include_Path_List := Config_Settings.Get_Setting_As_Expanded_Path_List 
-        ("GSL.Include_Paths");  
+        ("GSL.Include_Path");  
         
       Abs_File_Path :=  Ada.Strings.Unbounded.To_Unbounded_String
         (File_Management.Locate_File_In_Directories
@@ -63,7 +63,6 @@ package body Giant.GSL_Support is
       if Abs_File_Path = Ada.Strings.Unbounded.Null_Unbounded_String then
          raise GSL_Script_Not_Found_Exception;
       else
-      
          return Ada.Strings.Unbounded.To_String (Abs_File_Path);
       end if;   
    end Get_GSL_Include;            
