@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: load_store.tex,v $, $Revision: 1.2 $
-%  $Date: 2003/02/05 14:01:12 $
+%  $RCSfile: load_store.tex,v $, $Revision: 1.3 $
+%  $Date: 2003/02/10 00:00:33 $
 %  $Author: schulzgt $
 %
 %  Description: Use-Cases für Lade- und Speicherfunktionalität
@@ -16,6 +16,34 @@ Durchführung einer Suche, mit Layout etc.
 \end{uc}
 
 \begin{uc}[Label]{UC: Neues Projekt}
+  Erstellen eines neuen GIANT Projekts.
+
+  \begin{precond}
+    \cond Das Programm ist gestartet
+  \end{precond}
+
+  \begin{postcond}
+    \cond Ein neues GIANT Projekt ist erstellt und geöffnet.
+  \end{postcond}
+
+  \begin{actors}
+    \actor{Benutzer}
+  \end{actors}
+  
+  \begin{proc}
+    \step[1] Der Benutzer wählt in einem Dialog ein Verzeichnis und eine
+    IML-Datei aus und vergibt einen Projektnamen.
+    \step[2] Der Benutzer bestätigt seine Eingaben mit OK.
+  \end{proc}
+
+  \begin{eproc}
+    \estep{1} Umbennen eines Verzeichnis
+  \end{eproc}
+
+  \begin{aproc}
+    \astep{2} Der Benutzer bricht die Verarbeitung mit Cancel ab.
+  \end{aproc}
+
 \end{uc}
 
 \begin{uc}[Label]{UC: Projekt laden}

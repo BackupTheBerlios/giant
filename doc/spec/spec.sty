@@ -40,9 +40,9 @@
 {\clearpage\section{#2}\ifx#1\undefined\else\label{#1}\fi}
 {}
 
-% Aktoren
+% Akteure
 \newenvironment{actors}
-{\subsection{Aktor(en)}\begin{itemize}}
+{\subsection{Akteure}\begin{itemize}}
 {\end{itemize}}
 
 \newcommand{\actor}{\item }
@@ -54,7 +54,7 @@
 
 % Ablauf
 \newenvironment{proc}
-{\subsection{Ablauf}\begin{enumerate}}
+{\subsection{Beschreibung}\begin{enumerate}}
 {\end{enumerate}}
 
 % Unterpunkte fuer Ablauf
@@ -66,20 +66,27 @@
 
 \newcommand{\step}[1][]{\item \ifx#1\undefined\else\label{#1}\fi}
 
-% Alternativer Ablauf
+% Erweiterungen
+\newenvironment{eproc}
+{\subsection{Erweiterungen}\begin{itemize}}
+{\end{itemize}}
+
+\newcommand{\estep}[1]{\item Bei Punkt \ref{#1}:\\}
+
+% Alternativen
 \newenvironment{aproc}
-{\subsection{Alternative Abläufe}\begin{itemize}}
+{\subsection{Alternativen}\begin{itemize}}
 {\end{itemize}}
 
 \newcommand{\astep}[1]{\item Bei Punkt \ref{#1}:\\}
 
 % Vor- und Nachbedingungen als enumeration
 \newenvironment{precond}
-{\subsection{Vorbedingungen}\begin{enumerate}}
+{\subsection{Vorbedingung}\begin{enumerate}}
 {\end{enumerate}}
 
 \newenvironment{postcond}
-{\subsection{Nachbedingungen}\begin{enumerate}}
+{\subsection{Nachbedingung}\begin{enumerate}}
 {\end{enumerate}}
 
 % Bedingung
