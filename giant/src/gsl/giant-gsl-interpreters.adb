@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/23 14:29:24 $
+-- $Date: 2003/06/25 16:10:25 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -150,9 +150,11 @@ package body Giant.Gsl.Interpreters is
             when Script_Decl =>
                Lit := Giant.Gsl.Syntax_Tree.Get_Literal (Cmd);
                Lit := Copy (Lit);
+               -- Set_Activation_Record (Gsl_Script_Reference (Lit),
+               --  Create_Activation_Record
+               --    (Current_Interpreter.Current_Activation_Record));
                Set_Activation_Record (Gsl_Script_Reference (Lit),
-                 Create_Activation_Record
-                   (Current_Interpreter.Current_Activation_Record));
+                 Current_Interpreter.Current_Activation_Record);
                Result_Stacks.Push (Current_Interpreter.Result_Stack, Lit);
 
             when List =>
@@ -226,8 +228,11 @@ package body Giant.Gsl.Interpreters is
                   Default_Logger.Debug
                     ("Interpreter: --- GSL Script ---", "Giant.Gsl");
                   -- set the new Activation Record 
+                  --Current_Interpreter.Current_Activation_Record :=
+                  --  Get_Activation_Record (Gsl_Script_Reference (Script));
                   Current_Interpreter.Current_Activation_Record :=
-                    Get_Activation_Record (Gsl_Script_Reference (Script));
+                    Create_Activation_Record
+                      (Get_Activation_Record (Gsl_Script_Reference (Script)));
 
                   Execution_Stacks.Push (Current_Interpreter.Execution_Stack,
                     Giant.Gsl.Compilers.Get_Execution_Stack
