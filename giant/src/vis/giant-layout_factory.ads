@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.ads,v $, $Revision: 1.9 $
+--  $RCSfile: giant-layout_factory.ads,v $, $Revision: 1.10 $
 --  $Author: koppor $
---  $Date: 2003/08/25 10:27:46 $
+--  $Date: 2003/10/06 14:33:43 $
 --
 ------------------------------------------------------------------------------
 --
@@ -101,7 +101,7 @@ package Giant.Layout_Factory is
    --     Format:  [<Root_Node_ID>]; <List_Of_Class_Set_Names>
    --     Example: "5; Aber, Hallo"
    --              "; Ja, genau"
-   --              It is not possible to use " or ; or , in a classsetname!
+   --              It is not possible to use " or ; or , in a classsetname.
    --              Brackets are possible.
    --
    --     Meaning:
