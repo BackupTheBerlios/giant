@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.30 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.31 $
 -- $Author: schwiemn $
--- $Date: 2003/09/15 19:05:25 $
+-- $Date: 2003/09/15 19:10:29 $
 --
 --
 
@@ -439,8 +439,9 @@ package body Giant.File_Management is
 
          ADA.Text_IO.Close(ADA_Text_IO_File_or_Dir);
       exception
-
+         
          when ADA.Text_IO.Name_Error =>
+           Logger.Debug ("Name_Error_Rised_by_File_IO");
            raise Abs_Path_Could_Not_Be_Calculated_Exception;
       end;
 
