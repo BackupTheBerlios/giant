@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.26 $
-%  $Date: 2003/02/24 18:58:10 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.27 $
+%  $Date: 2003/02/24 20:28:13 $
 %  $Author: birdy $
 %
 %  Description: Bis zu Revision 1.6 sind UseCase-artige Beschreibungen enthalten,
@@ -202,22 +202,28 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     
     >>>>>>>> hier fehlen noch Punkte
     \begin{enumerate}
-      \item Show Node Info Window
-      \item Hide Node
-      \item Show Parent
-      \item Show Children
-      
+      \item Show Node Info Window ???
+      \item Hide Node ????
+      \item Show Parent ????
+      \item Show Children ????
+    \end{enumerate}
+    Wenn in der VIS\_PANE, nicht auf einer Kante oder einem Knoten, die rechte
+    Maustaste geklickt wird, öffnet sich folgendes Kontextmenü:
+    \label{Empty Vis Pane Right click}
+    \begin{enumerate}
+      \item Make Room
+      \item New Pin
     \end{enumerate}
     
 
-  \subsection{Pins}
+  \subsection{Pins} \label{VIS-PANE-Pins}
 
     In der Pinliste (PIN\_LIST) können Pins festgelegt werden.
     Auf der Pinliste sind folgende Menüpunkte eines Popup-Menüs aktivierbar:
     
     \begin{enumerate}
       \item New Pin (PIN\_NEW)
-      \item Jump To Pin (PIN\_JUMP),
+      \item Focus Pin (PIN\_JUMP),
       \item Delete Pin (PIN\_DELETE).
     \end{enumerate}
 
@@ -237,7 +243,7 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
       \item Change highlighting color 
       \item Copy Selection
       \item Rename Selection
-      \item Delete Selection
+      \item Delete Selection \label{Delete Selection}
       \item Selection Set Operation (Union/Difference/Intersection)
       \item Export Selection
       \item Import Selection
@@ -264,6 +270,11 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
 
     Durch Klick auf den Ein- und Ausklappbutton (VIS\_PANE\_BUTTON) kann die VIS\_PANE
     ein- und ausgeblendet werden.
+    
+  \subsection{Scrolleisten}
+  \label{Scrolleisten}
+    An den beiden Scrolleisten (links/rechts und oben/unten) in jedem Anzeigefenster
+    kann der im Fenster sichtbare Bereich des Graphen verschoben werden.
 
 \section{Knoten-Informationsfenster}
 
@@ -393,10 +404,15 @@ Der Dialog Layoutalgorithmen bietet folgende Möglichkeiten:
 
 
 
-
-
 \section{Dateneingabe}
 Beschreibung von verschiedenen Textfeldtypen etc. zur Eingabe von Daten.
+
+\subsection{Platz Schaffen-Dialog}
+\label{Platz Schaffen-Dialog}
+
+Im Dialogfenster MAKE\_ROOM wird in einem Textfeld als Zahl angegeben, um wieviel
+Pixel die Knoten an der vorher markierten Stelle auseinandergeschoben werden sollen.
+Mit dem Button OK kann bestätigt werden, mit Button Cancel abgebrochen werden.
 
 \section{Ausgabe von Fehlermeldungen}
 

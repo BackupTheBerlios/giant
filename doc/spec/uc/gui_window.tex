@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.12 $
-%  $Date: 2003/02/24 18:58:50 $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.13 $
+%  $Date: 2003/02/24 20:27:57 $
 %  $Author: birdy $
 %
 %  Description: Use-Cases für die Fensterfunktionalität der GUI
@@ -401,9 +401,9 @@ Siehe auch
   
     \step[1]
     Der UseCase führt einen Rechtsklick auf die entsprechende Selektion durch
-    <<<<VERWEIS GUI - Liste der Selektionen>>>>> und wählt im 
-    entsprechenden PopUp Menü den Eintrag
-      >>>>>>>>>>Verweis GUI   - Lösche Selektion - >>>>>>>>> aus.
+    \ref{Selektionsauswahlliste} und wählt im 
+    entsprechenden PopUp Menü den Eintrag \ref{Delete Selection} (Delete Selection) aus.
+      
     
     \step[2]
     GIANT zeigt die Sicherheitsabfrage (siehe \ref{Sicherheitsabfrage}) 
@@ -456,8 +456,7 @@ Verändert die Position des sichtbaren Anzeigeinhaltes.
       Der Benutzer scrollt den sichtbaren Anzeigefokus mittels der horizontalen
       und vertikalen Scrollleisten des Anzeigefensterts. Dies geschieht mittels
       der Maus gemäß der gängigen Konventionen aus GTK/Ada für Scrollleisten.
-      <<<<<<<<<<<<<<<<VERWEIS GUI>>>>>>>>>>>>>>>>>>
-      <<<<<<<<<<<<<SCROLLLEISTEN IN DER GUI Berücksichtigen>>>>>>>>>>>>>>
+      \ref{Scrolleisten}
       
       \item
       Gemäß der gängigen intuitiven Konventionen kann auch 
@@ -513,7 +512,7 @@ Drag and Drop, Cut and Paste
 \begin{uc}[Label]{UC: Platz schaffen}
 
 Dieser UseCase wird benötigt, um Fenster-Knoten auseinander schieben zu 
-können. So kann der Benutzer an einer bliebigen Stelle des Anzeigefensters
+können. So kann der Benutzer an einer beliebigen Stelle des Anzeigefensters
 genügend Platz zum Einfügen neuer Fenster-Knoten und Fenster-Kanten schaffen.
 Siehe hierzu auch \ref{Auseinanderschieben von Fenster-Knoten}.
 
@@ -544,24 +543,21 @@ Siehe hierzu auch \ref{Auseinanderschieben von Fenster-Knoten}.
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase über das PopUp Menü
-    >>>>>>>>>>>>>>>VERWEIS PopUp Menü welches beim Rechtsklick
-    innerhalb eines ANzeigefensters erscheint <<<< >>>Verweis auf
-    entsprechenden Menüeintrag >>>>>>>>>>>>>>>>>>>>>>>
+    \ref{Empty Vis Pane Right click} beim Klick auf eine leere
+    Fläche in der VIS\_PANE und Auswahl von Make Room.
     
     \step[2]
     Der Benutzer gibt den Punkt um den herum die Fenster-Knoten (und damit
     automatisch auch die Fenster-Kanten) auseinander geschoben werden
-    sollen über das Fadenkreuz vor.
-    >>>>VERWEIS GUI Fadenkreuz>>>>>
+    sollen über das Fadenkreuz vor. \ref{Fadenkreuzcursor}
      
     \step[3] 
     GIANT zeigt einen Dialog an, in dem der Benutzer auswählt, um welchen 
     Betrag die Fenster-Knoten auseinander geschoben werden sollen.
-        >>> DIALOG ZUR EINGABE DES BETRGES UM DEN GESCHOBEN WERDEN SOLL MUSS
-    NOCH IN GUI BESCHREIBUNG >>>>>>>>>>>>>>>>>>.
+     \ref{Platz Schaffen-Dialog}
    
     \step[4]
-    Der Benutzer wählt einen geeigneten Betrag aus.
+    Der Benutzer wählt einen geeigneten Betrag aus und bestätigt mit OK.
     
     \step[5]
     GINAT schiebt die Knoten entsprechend auseinander
@@ -585,8 +581,7 @@ Mit diesem UseCase kann ein neuer Pin erzeugt werden.
   \begin{postsuccess}
     \cond 
     In der Liste über die Pins des Anzeigefensters
-     <<<<<VERWEIS GUI>>>> befindet sich
-    ein neuer Pin mit dem entsprechenden Namen.
+     \ref{VIS-PANE-Pins} befindet sich ein neuer Pin mit dem entsprechenden Namen.
 
   \end{postsuccess}
 
@@ -598,10 +593,10 @@ Mit diesem UseCase kann ein neuer Pin erzeugt werden.
     \step[1]
     Der Benutzer führt einen Rechtklick auf den Anziegeinhalt des
     entsprechenden Anzeigefensters durch und wählt aus dem PopUp
-    Menü den Eintrag \gq{Pin erstellen} aus <<<<<VERWEIS GUI>>>>>.
+    Menü \ref{Empty Vis Pane Right click} den Eintrag \gq{New Pin} aus.
       
     \step[2] 
-    GIANT öffnet den allgemeinen Texteingabedialog <<<<VERWEIS GUI>>>>.
+    GIANT öffnet den allgemeinen Texteingabedialog \ref{DIALOG-WINDOW}.
       
     \step[3] 
     Der Benutzer gibt dort einen zulässigen Namen für den neuen Pin
@@ -644,14 +639,13 @@ wieder her.
     
       \item
       Der Benutzer führt einen Doppelklick auf den entsprechenden Pin
-      in der Liste aus.
-      >>>>>VERWEIS GUI - LISTE DER PINS In den Anzeigefenstern<<<<<<
+      in der Liste \ref{VIS-PANE-Pins} aus.
+      
       
       \item
       Der Benutzer öffnet das entsprechende PopUp Menü durch
-      rechtsklick auf den Pin und wählt den Eintrag \gq{Fokus Pin}
-      aus.
-      <<<<<<<<<<<<<<VERWEIS GUI>>>>>>>>>>>>>>><
+      rechtsklick auf den Pin bei \ref{VIS-PANE-Pins}und wählt den Eintrag
+      \gq{Focus Pin} aus.
         
     \end {enumerate}
     
@@ -678,17 +672,17 @@ Löscht einen Pin.
 
   \begin{postsuccess}
     \cond 
-    Der Pin ist gelöscht und nicht mehr in der Liste des entsprechenden
+    Der Pin ist gelöscht und nicht mehr in der Liste \ref{VIS-PANE-Pins} des entsprechenden
     Anzeigefensters auswählbar.
-    <<<<<<<<<<<<<<<VERWEIS GUI>>>>>>>>>>>>>>>>>>>
+
     
   \end{postsuccess}
   
   \begin{proc}    
     \step[1]
     Der Benutzer öffnet das entsprechende PopUp Menü durch Rechtsklick
-    auf den Pin und wählt den Eintrag \gq{Pin löschen} aus.
-    <<<<<VERWEIS GUI>>>>>>>>>>>
+    auf den Pin in \ref{VIS-PANE-Pins} und wählt den Eintrag \gq{Pin löschen} aus.
+
      
     \step[2]
     GIANT löscht den entsprechenden Pin.
