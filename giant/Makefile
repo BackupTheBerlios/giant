@@ -36,7 +36,7 @@ endif
 all: 
 	test -x $(OUT_PATH) || mkdir $(OUT_PATH)
 	cd $(OUT_PATH) && \
-	gnatmake -m $(ALL_CFLAGS) $(GIANT_PATH)/$(MAIN) -o $(GIANT_PATH)/$(EXEC) $(GNATMAKE_FLAGS) -bargs -static -E -largs $(ALL_LFLAGS)
+	gnatmake -m $(ALL_CFLAGS) $(GIANT_PATH)/$(MAIN) -o $(GIANT_PATH)/$(EXEC) $(GNATMAKE_FLAGS) $(ALL_LFLAGS) -bargs -static -E -largs 
 
 static :
 	make LIBS="$(shell gtkada --static)" all
