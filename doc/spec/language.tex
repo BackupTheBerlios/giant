@@ -1,6 +1,6 @@
 % =============================================================================
-%  $RCSfile: language.tex,v $, $Revision: 1.5 $
-%  $Date: 2003/04/07 05:45:39 $
+%  $RCSfile: language.tex,v $, $Revision: 1.6 $
+%  $Date: 2003/04/08 05:24:52 $
 %  $Author: keulsn $
 %
 %  Description:
@@ -123,6 +123,15 @@
 \token{\toktype}{type}
 \token{\tokuntil}{until}
 
+
+In diesem Kapitel wird die GIANT Query and Scripting Language (GQSL) sowie
+Interpreter für die GQSL spezifiziert. GQSL ist eine Sprache mit deren
+Hilfe Anfragen an die IML-Bibliothek gestellt werden und auf den Resultaten
+Aktionen ausgeführt werden können.
+
+Hier wird zunächst die Struktur von IML-Graphen aus der Sicht
+von GIANT beschrieben und danach Syntax und Sematik von GQSL definiert.
+
 \section{IML-Graphen}
 
 Der Kunde stellt die Reflektion zur Verfügung. GIANT verwendet diese
@@ -144,6 +153,9 @@ genannt wird.
 
 \subsubsection{Attribute von IML-Knoten}
 
+Jeder IML-Knoten hat einen Typ. Für jeden Typ von IML-Knoten existiert ein
+String, der den Typ eineindeutig identifiziert.
+
 Jeder IML-Knoten verfügt über eine Folge von Attributen.
 Diese Folge definiert eine endliche Anzahl einzelner Attribute,
 die der IML-Knoten besitzt sowie eine Reihenfolge dieser Attribute.
@@ -158,9 +170,8 @@ Einige Attribute sind Verweise. Sie verweisen auf höchstens einen
 IML-Knoten. Es werden unterschieden:
 \begin{description}
 \item[genutzte Verweise] Verweise, die auf genau einen
-           IML-Knoten verweisen
-\item[ungenutzte Verweise] Verweise, die nicht auf einen
-           IML-Knoten verweisen
+           IML-Knoten verweisen.
+\item[ungenutzte Verweise] Verweise, die auf nichts verweisen.
 \end{description}
 
 Jedes Attribut eines IML-Knoten gehört genau einer der folgenden Klassen an:
@@ -169,22 +180,23 @@ Jedes Attribut eines IML-Knoten gehört genau einer der folgenden Klassen an:
            Mögliche Typen dieses Werts sind:
            \begin{enumerate}
            \item Source Location
-                 \begin{itemize}
-                 \item Zeilennummer
-                 \item Spaltennummer
-                 \item Filename
-                 \item Pfadname
-                 \end{itemize}
+                 \begin{enumerate}
+                 \item Zeilennummer (Natural)
+                 \item Spaltennummer (Natural)
+                 \item Filename (String)
+                 \item Pfadname (String)
+                 \end{enumerate}
            \item Boolean
            \item Natural
+           \item String
            \item Folge von Strings
            \end{enumerate}
-\item[Bezeichner-Attribut] Haben als Wert einen besonderen String
+\item[Bezeichner-Attribut] Haben als Wert einen String
 \item[Genutztes Verweis-Attribut] Ein genutzter Verweis
 \item[Ungenutztes Verweis-Attribut] Ein ungenutzter Verweis
-\item[Verweisfolgen-Attribut] Eine endliche, nicht leere Folge von
+\item[Verweisfolgen-Attribut] Eine endliche Folge von
            genutzten Verweisen
-\item[Verweismengen-Attribut] Eine endliche, nicht leere Menge
+\item[Verweismengen-Attribut] Eine endliche Menge
            von genutzten Verweisen
 \end{description}
 
@@ -200,7 +212,7 @@ Vorschrift:
 
 \begin{enumerate}
 \item
-Ein IML-Graph besitzt als Knotenmenge die Menge alle IML-Knoten des
+Ein IML-Graph besitzt als Knotenmenge die Menge aller IML-Knoten des
 zugrunde liegenden IML-Programms. Der IML-Graph besitzt keine
 weiteren Knoten.
 \item
@@ -213,14 +225,15 @@ genau dann, wenn eine der folgenden Bedingungen erfüllt ist:
    \begin{enumerate}
    \item $v$ besitzt ein Genutztes Verweis-Attribut, das auf $w$ verweist.
          $e$ besitzt als Annotation den Attribut-Namen des Genutzten
-         Verweis-Attributs.
+         Verweis-Attributs. Dieser Attribut-Name ist der Typ von $e$
    \item $v$ besitzt ein Verweisfolgen-Attribut $f$. Ein genutzter Verweis
          aus $f$ verweist auf $w$. $e$ besitzt als Annotation den
          Attribut-Namen von $f$ sowie die Nummer innerhalb der Folge
-         $f$ des genutzten Verweises auf $w$.
+         $f$ des genutzten Verweises auf $w$. Der Attribut-Name von $f$
+         ist der Typ von $e$.
    \item $v$ besitzt ein Verweismengen-Attribut $m$. Ein genutzter Verweis
          aus $m$ verweist auf $w$. $e$ besitzt als Annotation den
-         Attribut-Namen von $m$
+         Attribut-Namen von $m$. Der Attribut-Name von $m$ ist der Typ von $e$.
    \end{enumerate}
 \item
 Falls eine IML-Kante $e$ existiert, so hat $e$ keine Annotationen,
@@ -231,7 +244,7 @@ außer den in Punkt \ref{language_edge_spec} genannten.
 
 \section{GQSL}
 
-Die GIANT Query \& Skripting Language dient dazu, IML-Teilgraphen und
+Die GIANT Query \& Scripting Language dient dazu, IML-Teilgraphen und
 Selektionen aus einem IML-Graph anzufragen und auf diesen Aktionen
 auszuführen.
 
@@ -244,7 +257,7 @@ Die Sprache lässt sich in zwei zentrale Konstrukte gliedern:
 Als Aktion wird die Ausführung eines vordefinierten Scripts bezeichnet
 (siehe Kapitel \ref{language_gqsl_predef_env}).
 Aktionen können GIANT zu Reaktionen veranlassen, die für den Benutzer
-direkt sichtbar sind und für seine Arbeit nützlich sein können
+wahrnehmbar werden und für seine Arbeit nützlich sein können
 (z.B. Anzeigen eines IML-Teilgraphen in einem Anzeigefenster).
 
 
@@ -271,7 +284,7 @@ GQSL Queries Zugriff auf das Anzeigefenster haben, ohne den Namen des
 Anzeigefensters zu kennen.
 
 Der Zugriff auf das Anzeigefenster in dessen Kontext der GQSL Interpreter
-ausgeführt wird soll über spezielle vordefinierte Queries durchgeführt
+ausgeführt wird, soll über vordefinierte Queries durchgeführt
 werden.
 
 \subsubsection{Verhalten im Fehlerfall}
@@ -279,23 +292,23 @@ werden.
 Der GQSL Interpreter muss ein Script bzw. eine Query zurückweisen, falls eine
 Forderung der Sprachdefinition von diesem Script bzw. dieser Query verletzt
 wird. In diesem Fall muss der Interpreter dem Benutzer eine Fehlermeldung
-anzeigen, die folgede Anforderungen erfüllt:
+anzeigen, die folgende Anforderungen erfüllt:
 \begin{enumerate}
 \item Der Benutzer wird informiert, dass der Text des Scripts bzw. der Query
 fehlerhaft ist.
 \item Dem Benutzer wird die Art des Fehlers präzise erläutert.
 \item Dem Benutzer wird angezeigt an welcher Stelle in welchem Script bzw.
-in welcher Query der Fehler erkannt wurde.
+in welcher Query der Fehler erkannt oder verursacht wurde.
 \end{enumerate}
 Andernfalls startet der GQSL Interpreter die Ausführung.
 
 Der GQSL Interpreter muss die Ausführung sofort
-stoppen, sobald die erste \gqslexpression zu fehlerhaft ausgewertet wird
+stoppen, sobald die erste \gqslexpression fehlerhaft ausgewertet wird
 oder sobald ein \gqslstatement oder \gqslcomplexstatement fehlerhaft
 ausgeführt wird. Diese Ereignisse werden als Fehler angesehen.
 Der GQSL Interpreter
 darf die Ausführung bereits nach einem früheren Ausführungsschritt abbrechen,
-wenn sichergestellt ist, dass zu nach einem späteren Ausführungsschritt
+wenn sichergestellt ist, dass nach einem späteren Ausführungsschritt
 einer der genannten Fälle eintreten wird.
 
 Der GQSL Interpreter muss dem Benutzer unverzüglich eine
@@ -368,7 +381,7 @@ Wobei \gqslstringchar für ein von \tokquote verschiedenes Zeichen steht.
 Der Typ eines \gqslstringliteral ist \tokstring.
 
 \begin{EBNF}
-\item[\gqslintliteral] [ \tokplus|\tokminus ] \gqsldigit \{ \gqsldigit\}
+\item[\gqslintliteral] [ \tokplus | \tokminus ] \gqsldigit \{ \gqsldigit\}
 \end{EBNF}
 
 Der Typ eines \gqslintliteral ist \tokinteger
@@ -435,15 +448,16 @@ dieser Variablen einen Wert innerhalb des Wertebereichs ihres Typs. Der Wert
 ändert sich nur durch ein \gqslassignment an die Variable.
 \item Jede \gqsldeclaration deklariert genau eine Variable, die über ihren
 \gqslidentifier innerhalb des \gqslquerybody bzw. des \gqslscriptbody
-verwendet wird. Sie ist vom Typ \gqsltype.
+referenziert werden kann. Sie ist vom Typ \gqsltype.
 \item Keine zwei verschiedenen \gqsldeclaration dürfen den gleichen
 \gqslidentifier innerhalb des selben \gqsldeclarationpart verwenden.
 \item Keine \gqsldeclaration darf
 den gleichen \gqslidentifier verwenden wie eine \gqsldeclaration innerhalb
-einer \gqslparameterlist, deren Parameter im selben \gqslquerybody bzw.
-\gqslscriptbody sichtbar sind (siehe Kapitel \ref{language_parameter}).
+einer \gqslparameterlist, die der selben \gqslquery bzw. dem selben \gqslscript
+angehört (siehe Kapitel \ref{language_parameter}).
 \item Zum Zeitpunkt der Erzeugung nimmt eine Variable ihren Initialwert an.
-Der Initialwert einer Variable kann nicht spezifiziert werden. Es dürfen
+Der Initialwert einer Variable ist implementierungsabhängig und kann nicht
+explizit angegeben werden. Es dürfen
 keine Annahmen über den Initialwert getroffen werden.
 \end{enumerate}
 
@@ -463,8 +477,9 @@ definierten Typ (siehe Kapitel \ref{language_types}).
 
 \begin{enumerate}
 \item Wird eine \gqslquery oder ein \gqslscript aufgerufen, so werden alle
-Parameter erzeugt und mit einem durch den Aufruf spezifizierten Initialwert
-belegt.
+Parameter erzeugt und nehmen den  durch den Aufruf spezifizierten Initialwert
+an (siehe Kapitel \ref{language_query_call} bzw.
+\ref{language_complexstatement}).
 \item Alle Parameter werden zerstört, wenn die Ausführung der \gqslquery
 bzw. des \gqslscript endet.
 \item Zu jedem Zeitpunkt der Ausführung hat jeder Parameter einen Wert
@@ -472,18 +487,18 @@ innerhalb des Wertebereichs seines Typs. Der Wert eines Parameters ändert
 sich nur duch ein \gqslassignment an den Parameter.
 \item Jede \gqsldeclaration deklariert genau einen Parameter, der über seinen
 \gqslidentifier innerhalb des \gqslquerybody bzw. des \gqslscriptbody
-verwendet wird.
+referenziert werden kann.
 \item Keine zwei verschiedenen \gqsldeclaration dürfen den gleichen
 \gqslidentifier innerhalb der selben \gqslparameterlist verwenden.
 \item Keine \gqsldeclaration darf den gleichen \gqslidentifier verwenden wie
-eine \gqsldeclaration innerhalb eines \gqsldeclarationpart, deren Variablen
-in dem selben \gqslquerybody bzw. \gqslscriptbody sichtbar sind (siehe
-Kapitel \ref{language_variables}).
+eine \gqsldeclaration innerhalb eines \gqsldeclarationpart, der zu der
+selben \gqslquery bzw. dem selben \gqslscript gehört (siehe Kapitel
+\ref{language_variables}).
 \end{enumerate}
 
 
 %%%%%%%%%%%%%%%%%%%%
-\subsubsection{Queries}
+\subsubsection{Query}
 \label{language_queries}
 
 \begin{EBNF}
@@ -503,10 +518,10 @@ Kapitel \ref{language_variables}).
 jedem GQSL Script durch den \gqslidentifier aufgerufen werden kann.
 \item In dem \gqslquerybody und in der \gqslexpression sind alle Variablen
 aus dem \gqsldeclarationpart,
-alle Parameter aus der \gqslparameterlist, sowie alle dem System bekannten
+alle Parameter aus der \gqslparameterlist, sowie alle dem Interpreter bekannten
 GQSL Queries sichtbar. Sonst ist in dem \gqslquerybody nichts sichtbar.
-\item Nach einem Aufruf werden die Parameter der Query erzeugt und mit
-ihren Initialwerten belegt (siehe Kapitel \ref{language_parameter}), die
+\item Nach einem Aufruf werden die Parameter der Query erzeugt und nehmen
+ihre Initialwerte an (siehe Kapitel \ref{language_parameter}), die
 Variablen werden erzeugt (siehe Kapitel \ref{language_variables}) und
 schließlich wird der \gqslquerybody ausgeführt (siehe Kapitel
 \ref{language_querybody}).
@@ -522,7 +537,7 @@ Variablen und Parameter zerstört und die Ausführung der Query endet.
 
 
 %%%%%%%%%%%%%%%%%%%%
-\subsubsection{Scripts}
+\subsubsection{Script}
 \label{language_scripts}
 
 \begin{EBNF}
@@ -539,13 +554,12 @@ Variablen und Parameter zerstört und die Ausführung der Query endet.
 \item Definiert ein GQSL Script, das von jedem GQSL Script durch den
 \gqslidentifier aufgerufen werden kann. Das Script kann auch von einem
 GQSL Interpreter direkt ausgeführt werden.
-\item In dem \gqslquerybody und in der \gqslexpression sind alle Variablen
-aus dem \gqsldeclarationpart,
-alle Parameter aus der \gqslparameterlist, sowie alle dem System bekannten
-GQSL Queries und GQSL Scripts sichtbar. Sonst ist in dem \gqslquerybody und
-in der \gqslexpression nichts sichtbar.
-\item Nach einem Aufruf werden die Parameter des Scripts erzeugt und mit
-ihren Initialwerten belegt (siehe Kapitel \ref{language_parameter}), die
+\item In dem \gqslscriptbody sind alle Variablen aus dem \gqsldeclarationpart,
+alle Parameter aus der \gqslparameterlist, sowie alle dem Interpreter bekannten
+GQSL Queries und GQSL Scripts sichtbar. Sonst ist in dem \gqslscriptbody
+nichts sichtbar.
+\item Nach einem Aufruf werden die Parameter des Scripts erzeugt und nehmen
+ihren Initialwert an (siehe Kapitel \ref{language_parameter}), die
 Variablen werden erzeugt (siehe Kapitel \ref{language_variables}) und
 schließlich wird der \gqslscriptbody ausgeführt (siehe Kapitel
 \ref{language_scriptbody}).
@@ -569,10 +583,10 @@ Variablen und Parameter zerstört und die Ausführung des Scripts endet.
 
 \begin{enumerate}
 \item Ein \gqslquerybody hat eine bestimmte \emph{Sicht}. Die Sicht ist die
-Menge aller Object (genauer Variablen, Parameter, Queries und Scripts),
+Menge aller Objekte (genauer: Variablen, Parameter, Queries und Scripts),
 die in dem \gqslquerybody sichtbar sind
 (vgl. Kapitel \ref{language_queries}). Ein Objekt ist in dem \gqslquerybody
-sichtbar, genau dann wenn es in der Sicht enthalten ist.
+sichtbar, genau dann wenn es in dessen Sicht enthalten ist.
 \item Alle Nicht-Terminale, die aus dem \gqslquerybody abgeleitet sind
 (die in einem Ableitungsbaum unter dem Symbol \gqslquerybody angeordnet sind),
 haben die selbe Sicht wie der \gqslquerybody.
@@ -609,7 +623,7 @@ haben die selbe Sicht wie der \gqslscriptbody.
 \item Ein \gqslscriptbody wird ausgeführt, indem alle \gqslcomplexstatement
 in der Reihenfolge einer Linksableitung der Grammatik ausgeführt werden. Sobald
 ein \gqslcomplexstatement fehlerhaft ausgeführt wird, stoppt die Ausführung,
-es wird keines der nachfolgenden \gqslstatement ausgeführt und der
+es wird keines der nachfolgenden \gqslcomplexstatement ausgeführt und der
 \gqslscriptbody ist fehlerhaft ausgeführt.
 \item Der \gqslscriptbody ist erfolgreich ausgeführt, falls er entweder kein
 \gqslcomplexstatement enthält oder falls das letzte \gqslcomplexstatement
@@ -632,8 +646,8 @@ ausgeführt ist, oder fehlerhaft ausgeführt ist.
 sichtbaren Parameter bezeichnen. Diese/r Variable/Parameter wird $lhs$ genannt.
 \item Der Typ der \gqslexpression muss der selbe Typ sein wie der Typ von $lhs$
 \item Zur Ausführung des \gqslstatement wird die \gqslexpression ausgewertet.
-Falls die \gqslexpression erfolgreich ausgewertet wurde, so wird der Wert
-von $lhs$ auf das Ergebnis der \gqslexpression geändert. In diesem Fall ist
+Falls die \gqslexpression erfolgreich ausgewertet wurde, so nimmt
+$lhs$ den Wert der \gqslexpression an. In diesem Fall ist
 die Ausführung des \gqslstatement erfolgreich.
 \item Falls \gqslexpression fehlerhaft ausgewertet wurde, dann ist die
 Ausführung des \gqslstatement fehlerhaft.
@@ -651,10 +665,9 @@ Ausführung des \gqslstatement fehlerhaft.
 \end{EBNF}
 
 \begin{description}
-\item[\gqslstatement]
+\item[\gqslstatement] Jedes \gqslcomplexstatement enthält alle Möglichkeiten
+des \gqslstatement.
   \begin{enumerate}
-  \item Die Sicht des \gqslstatement ist die selbe wie die Sicht des
-  \gqslcomplexstatement
   \item Zum Ausführen des \gqslcomplexstatement wird das \gqslstatement
   ausgeführt.
   \item Das \gqslcomplexstatement ist erfogreich ausgeführt, falls das
@@ -662,31 +675,31 @@ Ausführung des \gqslstatement fehlerhaft.
   \item Das \gqslcomplexstatement ist fehlerhaft ausgeführt, falls das
   \gqslstatement fehlerhaft ausgeführt ist.
   \end{enumerate}
-\item[\gqslscriptcall]
+\item[\gqslscriptcall] Aufruf eines GQSL Scripts.
   \begin{enumerate}
   \item \gqslidentifier muss ein sichtbares GQSL Script $S$ bezeichnen.
   \item Falls $S$ keine \gqslparameterlist besitzt, so darf keine
   \gqslargumentlist angegeben sein.
-  \item Falls $S$ eine \gqslparameterlist besitzt, so müssen in der
+  \item Falls $S$ eine \gqslparameterlist besitzt, so muss eine
+  \gqslparameterlist angegeben sein und es müssen in der
   \gqslargumentlist genau so viele \gqslexpression angegeben sein, wie in der
   \gqslparameterlist \gqsldeclaration angegeben sind.
   \item Der Typ der $i$-ten \gqslexpression der \gqslargumentlist muss der
   selbe sein wie der Typ der $i$-ten \gqsldeclaration der \gqslparameterlist
   für alle $i$.
   \item Zum Ausführen des \gqslcomplexstatement werden alle \gqslexpression
-  in durch den Interpreter bestimmter Reihenfolge ausgewertet.
+  ausgewertet. Die Reihenfolge in der diese Auswirkung geschieht hat auf
+  das Ergebnis keinen Einfluss. Die Reihenfolge wird durch den Interpreter
+  gewählt.
   \item Falls eine der \gqslexpression fehlerhaft ausgewertet wird,
   so ist die Ausführung des \gqslcomplexstatement fehlerhaft. Andernfalls
-  wird $S$ aufgerufen. Der $i$-te Parameter wird mit dem Wert der $i$-ten
-  \gqslexpression initialisiert für alle $i$.
+  wird $S$ aufgerufen. Der $i$-te Parameter von $S$ nimmt den Wert der $i$-ten
+  \gqslexpression an für alle $i$.
   \item Falls $S$ erfolgreich ausgeführt wurde, so ist das
   \gqslcomplexstatement erfolgreich ausgeführt. Falls $S$ fehlerhaft
   ausgeführt wurde, so ist das \gqslcomplexstatement fehlerhaft ausgeführt.
   \end{enumerate}
 \end{description}
-
-Die Ausführung des \gqslcomplexstatement endet, sobald es entweder erfolgreich
-oder fehlerhaft ausgeführt ist.
 
 
 %%%%%%%%%%%%%%%%%%%%
@@ -738,12 +751,14 @@ Der Typ einer \gqslnodesetexpression ist \toknodeset.
   \item Der Typ von \gqslexpression muss \toknodeset, \toksubgraph oder
   \tokselection sein.
   \item Die Auswertung ist erfolgreich genau dann, wenn die Auswertung der
-  \gqslexpression erfolgreich ist. Andernfalls ist die Auswertung fehlerhaft.
+  \gqslexpression erfolgreich ist und die Vorbereitung des \gqslnodepredicate
+  erfolgreich ist falls dieses angegeben ist.
+  Andernfalls ist die Auswertung fehlerhaft.
   \item Ist die Auswertung erfolgreich, dann ist das Ergebnis die größte
   Menge $M$ von IML-Knoten, so dass $\forall v \in M$
     \begin{enumerate}
     \item $v$ ist in \gqslexpression enthalten.
-    \item $v$ erfüllt das \gqslnodepredicate, falls dieses angegeben ist
+    \item Falls ein \gqslnodepredicate angegeben ist, dann erfüllt $v$ es
     (siehe Kapitel \ref{language_node_predicate}).
     \end{enumerate}
   \end{enumerate}
@@ -753,7 +768,9 @@ Der Typ einer \gqslnodesetexpression ist \toknodeset.
   \begin{enumerate}
   \item Der Typ von \gqslexpression muss \tokedgeset sein.
   \item Die Auswertung ist erfolgreich genau dann, wenn die Auswertung von
-  \gqslexpression erfolgreich ist. Andernfalls ist die Auswertung fehlerhaft.
+  \gqslexpression erfolgreich ist und die Vorbereitung von \gqslnodepredicate
+  erfolgreich ist, falls ein \gqslnodepredicate angegeben ist.
+  Andernfalls ist die Auswertung fehlerhaft.
   \item Ist die Auswertung erfolgreich, dann ist das Ergebnis die größte
   Menge $M$ von IML-Knoten, so dass $\forall v \in M$
     \begin{enumerate}
@@ -797,13 +814,15 @@ Der Typ einer \gqsledgesetexpression ist \tokedgeset.
   \item Der Typ von \gqslexpression muss \tokedgeset, \toksubgraph oder
   \tokselection sein.
   \item Die Auswertung ist erfolgreich genau dann, wenn die Auswertung von
-  \gqslexpression erfolgreich ist. Andernfalls ist die Auswertung fehlerhaft.
+  \gqslexpression erfolgreich ist und das \gqsledgepredicate entweder nicht
+  angegeben ist oder seine Vorbereitung erfolgreich ist.
+  Andernfalls ist die Auswertung fehlerhaft.
   \item Falls die Auswertung erfolgreich ist, dann ist das Ergebnis die
   größte Menge von IML-Kanten $M$ mit $\forall e \in M$
     \begin{enumerate}
     \item $e$ ist in der Menge der IML-Kanten aus \gqslexpression enthalten.
-    \item $e$ erfüllt \gqsledgepredicate, falls das angegeben ist.
-    (siehe Kapitel \ref{language_edge_predicate})
+    \item Falls das \gqsledgepredicate angegebn ist, so wird es von $e$
+    erfüllt (siehe Kapitel \ref{language_edge_predicate})
     \end{enumerate}
   \end{enumerate}
 \item[build] Bildet eine Menge von IML-Kanten, die zwischen zwei Mengen
@@ -812,8 +831,9 @@ von IML-Knoten verlaufen.
   \item Beide \gqslexpression müssen -- sofern sie angegeben sind -- den
   Typ \toknodeset haben.
   \item Die Auswertung ist erfolgreich, falls alle angegebenen
-  \gqslexpression erfolgreich ausgewertet werden. Andernfalls ist die
-  Auswertung fehlerhaft.
+  \gqslexpression erfolgreich ausgewertet werden und das \gqsledgepredicate
+  entweder nicht angegebn ist oder erfolgreich vorbereitet wird. Andernfalls
+  ist die Auswertung fehlerhaft.
   \item Das Ergebnis ist die Menge $M$ aller IML-Kanten mit $\forall
   e \in M$
     \begin{enumerate}
@@ -822,7 +842,7 @@ von IML-Knoten verlaufen.
     enthalten, falls \tokfrom-\gqslexpression angegeben ist.
     \item Der Ziel-Knoten von $e$ ist in der \tokto-\gqslexpression
     enthalten, falls \tokto-\gqslexpression angegeben ist.
-    \item $e$ erfüllt das \gqsledgepredicate.
+    \item $e$ erfüllt das \gqsledgepredicate falls dieses angegeben ist.
     \end{enumerate}
   \end{enumerate}
 \end{description}
@@ -868,8 +888,11 @@ IML-Knoten.
   erfüllt sind:
     \begin{enumerate}
     \item Alle \gqslexpression werden erfolgreich ausgewertet.
-    \item Falls die zweite \gqslexpression angegeben ist, so ist ihr Wert
-    größer oder gleich 0.
+    \item Die Vorbereitung des \gqsledgepredicate muss erfolgreich sein.
+    \item Die Vorbereitung des \gqslnodepredicate muss erfolgreich sein,
+    falls es angegeben ist.
+    \item Falls die zweite \gqslexpression angegeben ist, so muss ihr Wert
+    größer oder gleich 0 sein.
     \end{enumerate}
   andernfalls ist die Auswertung fehlerhaft.
   \item Der Wert ergibt sich durch eine Breitensuche auf dem IML-Graph.
@@ -885,7 +908,7 @@ IML-Knoten.
   Wurde eine IML-Kante verfolgt, so wird sie zum Ergebnis hinzugefügt. Der
   erreichte IML-Knoten wird ebenfalls zum Ergebnis hinzugefügt. Die Menge
   aller so erreichten IML-Knoten bildet die Ausgangsmenge für den nächsten
-  Schritt. Sie ist eine Ebene höher. Die Suche bricht ab, wenn keine neuen
+  Schritt. Sie ist eine Ebene tiefer. Die Suche bricht ab, wenn keine neuen
   Kanten mehr aufgenommen werden.
   \end{enumerate}
 \end{description}
@@ -896,7 +919,8 @@ IML-Knoten.
 
 \begin{EBNF}
 \item[\gqslselectionexpression] \tokmake \tokselection \tokopenbracket
-                                   \gqslexpression \tokcomma \tokclosebracket
+                                   \gqslexpression \tokcomma \gqslexpression
+                                   \tokclosebracket
 \end{EBNF}
 
 \begin{enumerate}
@@ -918,11 +942,12 @@ sonst nichts enthält.
 \end{EBNF}
 
 \begin{enumerate}
-\item Der \gqslidentifier muss entweder eine sichtbare Variable oder einen
-sichtbaren Parameter $v$ bezeichnen.
-\item Der Typ der \gqslvariableinspection ist der Typ von $v$.
+\item Der \gqslidentifier muss entweder eine sichtbare Variable $v$ oder einen
+sichtbaren Parameter $p$ bezeichnen.
+\item Der Typ der \gqslvariableinspection ist der Typ von $v$ bzw. $p$.
 \item Eine \gqslvariableinspection wird stets erfolgreich ausgewertet.
-\item Der Wert der \gqslvariableinspection ist der Wert, den $v$ zum Zeitpunkt
+\item Der Wert der \gqslvariableinspection ist der Wert, den $v$ bzw. $p$
+zum Zeitpunkt
 der Auswertung hat.
 \end{enumerate}
 
@@ -938,6 +963,7 @@ Zeitpunkt ihrer Lebenszeit einen Wert. (vgl. Kapitel \ref{language_variables},
 
 %%%%%%%%%%%%%%%%%%%%
 \subsubsection{Query Call}
+\label{language_query_call}
 
 \begin{EBNF}
 \item[\gqslquerycall] \gqslidentifier [ \tokopenbracket \gqslargumentlist
@@ -950,21 +976,22 @@ Anmerkung: \gqslargumentlist siehe \ref{language_complexstatement}
 \item \gqslidentifier muss eine sichtbare GQSL Query $Q$ bezeichnen.
 \item Falls $Q$ keine \gqslparameterlist besitzt, so darf keine
 \gqslargumentlist angegeben sein.
-\item Falls $Q$ eine \gqslparameterlist besitzt, so müssen in der
-\gqslargumentlist genau so viele \gqslexpression angegeben sein, wie in der
+\item Falls $Q$ eine \gqslparameterlist besitzt, so muss eine
+\gqslargumentlist angegeben sein und darin müssen genau so viele
+\gqslexpression angegeben sein, wie in der
 \gqslparameterlist \gqsldeclaration angegeben sind.
 \item Der Typ der $i$-ten \gqslexpression der \gqslargumentlist muss
 der selbe sein wie der Typ der $i$-ten \gqsldeclaration der
 \gqslparameterlist für alle $i$.
-\item Der Typ des \gqslquerycall ist der Wert des Rückgabewerts von $Q$.
+\item Der Typ des \gqslquerycall ist der Typ des Rückgabewerts von $Q$.
 \item Zum Auswerten des \gqslquerycall werden alle \gqslexpression
 in durch den Interpreter willkürlich bestimmter Reihenfolge ausgewertet.
 \item Falls eine der \gqslexpression fehlerhaft ausgewertet wird,
 so ist die Auswertung des \gqslquerycall fehlerhaft. Andernfalls
-wird $Q$ aufgerufen. Der $i$-te Parameter wird mit dem Wert der $i$-ten
-\gqslexpression initialisiert für alle $i$.
+wird $Q$ aufgerufen. Der $i$-te Parameter nimmt den Wert der $i$-ten
+\gqslexpression an für alle $i$.
 \item Falls $Q$ erfolgreich ausgeführt wurde, so ist der
-\gqslquerycall erfolgreich ausgewertet. Falls $W$ fehlerhaft
+\gqslquerycall erfolgreich ausgewertet. Falls $Q$ fehlerhaft
 ausgeführt wurde, so ist der \gqslquerycall fehlerhaft ausgewertet.
 \item Falls der \gqslquerycall erfolgreich ausgewertet wurde, so ist
 sein Wert gleich dem Rückgabewert von $Q$.
@@ -990,7 +1017,7 @@ Aufzählung spezifiziert.
 \item Der Typ der \gqslcalculation ist der selbe Typ wie der der
 \gqslexpression.
 \item Die \gqslcalculation wird erfolgreich ausgewertet genau dann alle
-\gqslexpression korrekt ausgewertet werden und keine Einschränkung aus
+\gqslexpression erfolgreich ausgewertet werden und keine Einschränkung aus
 Punkt \ref{language_calc_validity} zutrifft. Sonst ist sie fehlerhaft
 ausgewertet.
 \item Die Operatoren \tokplus, \tokminus, \tokintersect haben alle eine
@@ -1063,7 +1090,7 @@ der gewählten Regel:
 Eine \gqslliteralexpression wird stets erfolgreich ausgewertet.
 \begin{description}
 \item[\gqslintliteral] Der Typ der \gqslliteralexpression ist \tokinteger.
-Der Wert der \gqslliteralexpression ist die Interpretation die
+Der Wert der \gqslliteralexpression ist die Interpretation der
 Ableitung des \gqslintliteral im 10er Zahlensystem. Falls dieser Wert den
 (implementationsabhängigen) Wertebereich überschreitet, so ist die
 \gqslliteralexpression nicht zulässig.
@@ -1088,12 +1115,12 @@ des \gqslstringliteral.
 
 \begin{enumerate}
 \item  Das \gqslnodepredicate bzw. das \gqsledgepredicate bzw. die
-\gqslattribexpr wird erfolgreich ausgewertet, falls auf der rechten Seite
+\gqslattribexpr wird erfolgreich vorbereitet, falls auf der rechten Seite
 der Regel sowohl das
 \gqslnodechoosingproduct bzw. das
 \gqsledgechoosingproduct bzw. das \gqslattribproduct und (falls angegeben) das
 \gqslnodepredicate bzw. das \gqsledgepredicate bzw. die \gqslattribexpr
-erfolgreich ausgewertet werden. Andernfalls wird fehlerhaft ausgewertet.
+erfolgreich vorbereitet werden. Andernfalls wird fehlerhaft vorbereitet.
 \item Das \gqslnodepredicate bzw. das \gqsledgepredicate bzw. die
 \gqslattribexpr wird erfüllt dann und nur dann, falls
 das \gqslnodechoosingproduct bzw. das \gqsledgechoosingproduct bzw.
@@ -1114,12 +1141,12 @@ angegeben ist und erfüllt wird.
 \begin{enumerate}
 \item Das \gqslnodechoosingproduct bzw. das \gqsledgechoosingproduct bzw.
 das \gqslattribproduct wird
-erfolgreich ausgewertet, falls auf der rechten Seite das
+erfolgreich vorbereitet, falls auf der rechten Seite das
 \gqslnodechoosingstatement bzw. das \gqsledgechoosingstatement bzw. das
 \gqslattribstatement und (falls angegeben) das 
 \gqslnodechoosingproduct bzw. das \gqsledgechoosingproduct bzw. das
 \gqslattribproduct erfolgreich
-ausgewertet werden. Andernfalls ist die Auswertung fehlerhaft.
+vorbereitet werden. Andernfalls ist die Vorbereitung fehlerhaft.
 \item Das \gqslnodechoosingproduct bzw. das \gqsledgechoosingproduct bzw.
 das \gqslattribproduct wird
 erfüllt genau dann, falls das \gqslnodechoosingstatement bzw. das
@@ -1149,10 +1176,10 @@ ist oder erfüllt wird.
 beeinflussen.
   \begin{enumerate}
   \item Das \gqslnodechoosingstatement bzw. das \gqsledgechoosingstatement
-  bzw. das \gqslattribstatement wird erfolgreich ausgewertet, falls auf der
+  bzw. das \gqslattribstatement wird erfolgreich vorbereitet, falls auf der
   rechten Seite das \gqslnodepredicate bzw. das \gqsledgepredicate bzw. die
-  \gqslattribexpr erfolgreich ausgewertet wird. Andernfalls ist die
-  Auswertung fehlerhaft.
+  \gqslattribexpr erfolgreich vorbereitet wird. Andernfalls ist die
+  Vorbereitung fehlerhaft.
   \item Das \gqslnodechoosingstatement bzw. das \gqsledgechoosingstatement
   bzw. das \gqslattribstatement wird erfüllt genau dann, falls das
   \gqslnodepredicate bzw. das \gqsledgepredicate bzw. die \gqslattribexpr
@@ -1161,11 +1188,11 @@ beeinflussen.
 \item[Negation] Logische Negation.
   \begin{enumerate}
   \item Das \gqslnodechoosingstatement bzw. das \gqsledgechoosingstatement
-  bzw. das \gqslattribstatement wird erfolgreich ausgewertet, falls auf der
+  bzw. das \gqslattribstatement wird erfolgreich vorbereitet, falls auf der
   rechten Seite das \gqslnodechoosingstatement bzw. das
   \gqsledgechoosingstatement bzw. das
-  \gqslattribstatement erfolgreich ausgewertet wird. Andernfalls ist die
-  Auswertung fehlerhaft.
+  \gqslattribstatement erfolgreich vorbereitet wird. Andernfalls ist die
+  Vorbereitung fehlerhaft.
   \item Das \gqslnodechoosingstatement bzw. das \gqsledgechoosingstatement
   bzw. das \gqslattribstatement wird erfüllt genau dann, falls auf der
   rechten Seite das \gqslnodechoosingstatement bzw. das
@@ -1174,11 +1201,10 @@ beeinflussen.
 \item[Simple Statement] Logische Aussage.
   \begin{enumerate}
   \item Das \gqslnodechoosingstatement bzw. das \gqsledgechoosingstatement
-  bzw. das \gqslattribstatement wird erfolgreich ausgewertet, falls auf der
+  bzw. das \gqslattribstatement wird erfolgreich vorbereitet, falls auf der
   rechten Seite der \gqslsimplenodechoice bzw. der \gqslsimpleedgechoice bzw.
-  das \gqslsimpleattribstatement erfolgreich ausgewertet wird.
-  Andernfalls ist die
-  Auswertung fehlerhaft.
+  das \gqslsimpleattribstatement erfolgreich vorbereitet wird.
+  Andernfalls ist die Vorbereitung fehlerhaft.
   \item Das \gqslnodechoosingstatement bzw. das \gqsledgechoosingstatement
   bzw. das \gqslattribstatement wird erfüllt genau dann, falls der
   \gqslsimplenodechoice bzw. der \gqslsimpleedgechoice bzw. das
@@ -1196,12 +1222,39 @@ beeinflussen.
                             | \toktype \gqslregexp
 \end{EBNF}
 
+\begin{description}
+\item[\tokhaving] Testet ob die Attribute eines IML-Knoten einen bestimmten
+logischen Ausdruck erfüllen.
+  \begin{enumerate}
+  \item Die Vorbereitung ist erfolgreich genau dann, wenn die
+  Vorbereitung der \gqslattribexpr erfolgreich ist. Andernfalls ist die
+  Vorbereitung fehlerhaft.
+  \item Der \gqslsimplenodechoice wird erfüllt genau dann, wenn die
+  \gqslattribexpr erfüllt wird. Andernfalls wird der \gqslsimplenodechoice
+  nicht erfüllt.
+  \end{enumerate}
+\item[\toktype] Testet ob ein IML-Knoten einen bestimmten Typ hat.
+  \begin{enumerate}
+  \item Die Vorbereitung ist erfolgreich.
+  \item Der \gqslsimplenodechoice wird erfüllt von einem IML-Knoten $N$,
+  falls der Name des Typs von $N$ in der Sprache von \gqslregexp enthalten ist.
+  Andernfalls wird der \gqslsimplenodechoice nicht erfüllt.
+  \end{enumerate}
+\end{description}
+
 %%%%%%%%%%%%%%%%%%%%
 \subsubsection{Simple Edge Choice}
 
 \begin{EBNF}
 \item[\gqslsimpleedgechoice] \toktype \gqslregexp
 \end{EBNF}
+
+\begin{enumerate}
+\item Die Vorbereitung ist erfolgreich.
+\item Der \gqslsimpleedgechoice wird erfüllt von einer IML-Kante $E$, falls der
+Name des Typs von $E$ in der Sprache von \gqslregexp enthalten ist.
+Andernfalls wird der \gqslsimpleedgechoice nicht erfüllt.
+\end{enumerate}
 
 
 %%%%%%%%%%%%%%%%%%%%
@@ -1301,8 +1354,8 @@ ein Genutzter Verweis in $a_f$ verweist.
 
 \begin{enumerate}
 \item Besitzt $N$ ein Genutztes Verweis-Attribut $a$ mit Namen \gqslidentifier,
-so wird \gqslattribatomicvalue auf dem Knoten $M$ ausgewertet, auf den $a$
-verweist.
+und verweist $a$ auf den IML-Knoten $M$, so wird \gqslattribatomicvalue auf
+$M$ ausgewertet.
 \item Die Auswertung ist erfolgreich, falls $a$ existiert und falls die
 Auswertung von \gqslattribatomicvalue auf $M$ erfolgreich ist.
 Sonst ist die Auswertung fehlerhaft.
@@ -1340,10 +1393,13 @@ von $a_m$ bzw. die Anzahl der Folgenglieder von $a_f$.
   ist, wenn $max$ die Anzahl der Folgenglieder in $a$ ist.
   \end{enumerate}
   Andernfalls ist die Auswertung fehlerhaft.
+\item Falls die Auswertung erfolgreich ist, so sei $M$ der IML-Knoten auf
+den das $i$-te Folgenglied in $a$ verweist. Es wird \gqslattribatomicvalue
+auf $M$ ausgewertet.
 \item Falls die Auswertung erfolgreich ist, so ist der Typ der Typ von
-\gqslattribatomicvalue.
+\gqslattribatomicvalue ausgewertet auf $M$.
 \item Falls die Auswertung erfolgreich ist, so ist der Wert der Wert der
-Auswertung von \gqslattribatomicvalue.
+Auswertung von \gqslattribatomicvalue ausgewertet auf $M$.
 \end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%
@@ -1357,24 +1413,26 @@ Auswertung von \gqslattribatomicvalue.
 \end{EBNF}
 
 \begin{enumerate}
-\item Das \gqslsimpleattribstatement wird erfolgreich ausgewertet, falls
-das \gqslattribatomicvalue erfolgreich ausgewertet wird und die
-\gqslexpression entweder nicht angegeben ist oder erfolgreich ausgewertet wird.
-Andernfalls wird das \gqslsimpleattribstatement fehlerhaft ausgewertet.
+\item Das \gqslsimpleattribstatement wird erfolgreich vorbereitet, falls
+die \gqslexpression entweder nicht angegeben ist oder erfolgreich ausgewertet
+wird.
+Andernfalls wird das \gqslsimpleattribstatement fehlerhaft vorbereitet.
 \item Es sind nur die nachfolgend genannten Kombinationen der Typen von
 \gqslattribatomicvalue, \gqslexpression und des \gqslcompop zulässig:
   \begin{description}
   \item[Boolean, ---] Es darf kein \gqslcompop und keine \gqslexpression
   angegeben sein. Das \gqslsimpleattribstatement wird erfüllt, falls das
-  \gqslattribatomicvalue den Wert true hat.
+  \gqslattribatomicvalue erfolgreich ausgewertet wird und den Wert true hat.
   Sonst wird das \gqslsimpleattribstatement nicht erfüllt.
   \item[Natural, \tokinteger] Zulässig sind alle Möglichkeiten für \gqslcompop.
-  Das \gqslsimpleattribstatement wird erfüllt, falls der Ausdruck nach der
-  mathematischen Definition korrekt ist.
+  Das \gqslsimpleattribstatement wird erfüllt, falls der
+  \gqslattribatomicvalue erfolgreich ausgewertet wird und der entstehende
+  Ausdruck nach der  mathematischen Definition korrekt ist.
   \item[String, \tokstring] Zulässig sind alle Möglichkeiten für \gqslcompop.
-  Das \gqslsimpleattribstatement wird erfüllt falls der entstehende Ausdruck
-  korrekt ist. Eine Zeichenfolge $a$ gilt als kleiner als eine Zeichenfolge
-  $b$, falls $a$ lexikographisch von $b$ kommt.
+  Das \gqslsimpleattribstatement wird erfüllt, falls das
+  \gqslattribatomicvalue erfolgreich ausgewertet wird und der entstehende
+  Ausdruck korrekt ist. Eine Zeichenfolge $a$ gilt als kleiner als eine
+  Zeichenfolge $b$, falls $a$ lexikographisch vor $b$ kommt.
   \end{description}
 \end{enumerate}
 
@@ -1383,13 +1441,11 @@ Andernfalls wird das \gqslsimpleattribstatement fehlerhaft ausgewertet.
 \end{EBNF}
 
 \begin{enumerate}
-\item Das \gqslsimpleattribstatement wird erfolgreich ausgewertet, falls
-das \gqslattribatomicvalue erfolgreich ausgewertet wird und vom Typ String
-ist.
-Andernfalls wird das \gqslsimpleattribstatement fehlerhaft ausgewertet.
-\item Das \gqslsimpleattribstatement wird erfüllt, falls
-\gqslattribatomicvalue in der durch \gqslregexp gegebenen Sprache enthalten
-ist. Andernfalls wird \gqslsimpleattribstatement nicht erfüllt.
+\item Das \gqslsimpleattribstatement wird stets erfolgreich vorbereitet.
+\item Das \gqslsimpleattribstatement wird erfüllt, falls das
+\gqslattribatomicvalue erfolgreich ausgewertet wird und in der durch
+\gqslregexp gegebenen Sprache enthalten ist. Andernfalls wird
+\gqslsimpleattribstatement nicht erfüllt.
 \end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1406,7 +1462,8 @@ Get_Current_Window
 
 Liefert als Ergebnis den Namen des Anzeigefensters, in dessen Kontext
 der GQSL Interpreter sich befindet. Befindet sich der GQSL Interpreter
-nicht im Kontext eines Anzeigefensters, so ist das Ergebnis undefiniert.
+nicht im Kontext eines Anzeigefensters, so wird die Query fehlerhaft
+ausgeführt.
 
 \begin{verbatim}
 Get_Current_Selection
@@ -1417,7 +1474,8 @@ Get_Current_Selection
 
 Erhält als Argument den Namen eines Anzeigefensters und liefert als
 Ergebnis die aktuelle Selektion in diesem Anzeigefenster.
-Kein Anzeigefenster dieses Namens existiert, ist das Ergebnis undefiniert.
+Existiert kein Anzeigefenster des übergebenen Namens, so wird die Query
+fehlerhaft ausgeführt.
 
 \begin{verbatim}
 Get_Selection
@@ -1431,7 +1489,7 @@ Erhält als erstes Argument den Namen eines Anzeigefensters, als zweites
 Argument den Namen einer Selektion in diesem Anzeigefenster. Liefert als
 Ergebnis die durch diese Namen gewählte Selektion. Existiert kein
 Anzeigefenster des gewählten Namens oder existiert in dem Anzeigefenster
-keine Selektion des gewählten Namens, so ist das Ergebnis undefiniert.
+keine Selektion des gewählten Namens, so wird die Query fehlerhaft ausgeführt.
 
 \begin{verbatim}
 Get_Subgraph
@@ -1442,7 +1500,7 @@ Get_Subgraph
 
 Erhält als Argument den Namen eines IML-Teilgraphen. Liefert als Ergebnis
 den IML-Teilgraphen des gewählten Namens. Existiert kein IML-Teilgraph
-dieses Namens, so ist das Ergebnis undefiniert.
+dieses Namens, so wird die Query fehlerhaft ausgeführt.
 
 \paragraph{Vordefinierte Scripts}
 
@@ -1456,7 +1514,7 @@ Create_Window
 
 Erzeugt ein neues Anzeigefenster mit dem Namen \texttt{Window\_Name}.
 Wendet den Layout-Algorithmus \texttt{Layout\_Algo} auf \texttt{Content}
-an und fügt die so erzeugte neue Selektion in das Anzeigefenster ein.
+an und fügt die so erzeugte neue Selektion in das neue Anzeigefenster ein.
 
 Falls \texttt{Window\_Name} keinen gültigen Namen für ein Anzeigefenster
 enthält oder falls bereits ein Anzeigefenster dieses Namens existiert,
@@ -1476,7 +1534,7 @@ Wendet den Layout-Algorithmus \texttt{Layout\_Algo} auf \texttt{Content}
 an und fügt die so erzeugte neue Selektion in das Anzeigefenster mit
 dem Namen \texttt{Window\_Name} ein.
 
-Falls  kein Anzeigefenster des Namens \texttt{Window\_Name} existiert,
+Falls kein Anzeigefenster des Namens \texttt{Window\_Name} existiert,
 so ist die Ausführung dieses Scripts fehlerhaft. Falls
 \texttt{Layout\_Algo} kein gültiger Layout-Algorithmus ist, so ist die
 Ausführung dieses Scripts fehlerhaft.
@@ -1494,7 +1552,8 @@ Name \texttt{Selection\_Name} existiert, dann erzeugt diese Selektion. Setzt
 den Inhalt der Selektion mit Name \texttt{Selection\_Name} im Anzeigefenster
 \texttt{Window\_Name} auf \texttt{Value}.
 
-Falls \texttt{Selection\_Name} kein gültiger Name für Selektionen ist,
+Falls kein Anzeigefenster mit Name \texttt{Window\_Name} existiert oder falls
+\texttt{Selection\_Name} kein gültiger Name für Selektionen ist,
 so ist die Ausführung dieses Scripts fehlerhaft.
 
 \begin{verbatim}
@@ -1505,7 +1564,7 @@ Set_Subgraph
 \end{verbatim}
 
 Falls noch kein IML-Teilgraph mit Name \texttt{Subgraph\_Name}
-Name existiert, dann erzeugt diesen IML-Teilgraphen. Setzt den Inhalt
+existiert, dann erzeugt diesen IML-Teilgraphen. Setzt den Inhalt
 des IML-Teilgraphen mit Name \texttt{Subgraph\_Name} auf \texttt{Value}.
 
 Falls \texttt{Subgraph\_Name} kein gültiger Name für IML-Teilgraphen ist,
