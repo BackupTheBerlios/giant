@@ -20,10 +20,12 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-matrix_layouts.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-matrix_layouts.adb,v $, $Revision: 1.3 $
 --  $Author: koppor $
---  $Date: 2003/07/01 23:18:47 $
+--  $Date: 2003/07/02 11:59:11 $
 --
+
+with Giant.Graph_Lib;
 
 package body Giant.Matrix_Layouts is
 
@@ -40,8 +42,11 @@ package body Giant.Matrix_Layouts is
       Res                 := new Matrix_Layout_Record;
       Res.Widget          := Widget;
       Res.Widget_Lock     := Widget_Lock;
-      Res.The_Selection   := Selection_To_Layout;
+      Res.Nodes_To_Layout := Graph_Lib.Node_Id_Sets.Copy
+        (Graph_Lib.Selections.Get_All_Nodes
+         (Selection_To_Layout));
       Res.Target_Position := Target_Position;
+      Res.State           := Init;
 
       --  Evolutions.Initialize
       Initialize (Res);
@@ -63,8 +68,30 @@ package body Giant.Matrix_Layouts is
      (Layout      : access Matrix_Layout_Record;
       Next_Action :    out Evolutions.Evolution_Action)
    is
+
+      procedure Set_Position_Of_Top_Node
+      is
+      begin
+         null;
+      end Set_Position_Of_Top_Node;
+
    begin
-      Next_Action := Evolutions.Finish;
+      case Layout.State is
+         when Init =>
+           if Graph_Lib.Node_Id_Sets.Size (Layout.Nodes_To_Layout) = 0 then
+              Next_Action := Evolutions.Finish;
+           elsif Graph_Lib.Node_Id_Sets.Size (Layout.Nodes_To_Layout) = 1 then
+              --  Set node-position to Target_Position
+              Next_Action := Evolutions.Finish;
+           else
+              --  real init
+              Layout.State := Calc;
+              Next_Action := Evolutions.Run;
+           end if;
+
+         when Calc =>
+            Next_Action := Evolutions.Finish;
+      end case;
    end Step;
 
 end Giant.Matrix_Layouts;
