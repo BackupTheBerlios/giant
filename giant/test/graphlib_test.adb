@@ -21,10 +21,12 @@
 --  Based on framework of: Steffen Pingel
 --  First Author:          Oliver Kopp
 --
---  $RCSfile: graphlib_test.adb,v $, $Revision: 1.7 $
+--  $RCSfile: graphlib_test.adb,v $, $Revision: 1.8 $
 --  $Author: koppor $
---  $Date: 2003/06/30 12:14:52 $
+--  $Date: 2003/07/01 16:51:51 $
 --
+
+with Ada.Text_Io;
 
 with AUnit.Test_Suites; use AUnit.Test_Suites;
 with AUnit.Test_Runner;
@@ -83,9 +85,16 @@ begin
    Giant.Default_Logger.Init;
    Giant.Default_Logger.Debug ("Starting Test...");
 
+   Ada.Text_Io.Put ("Run");
    Run;
+
+   Ada.Text_Io.Put ("Node_Attribute_Filters");
    Node_Attribute_Filters_Run;
+
+   Ada.Text_Io.Put ("Subgraphs");
    Subgraphs_Run;
+
+   Ada.Text_Io.Put ("Subgraphs: Atomic");
    Subgraphs_Atomic_Run;
 
    Giant.Default_Logger.Close;
