@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: selection.tex,v $, $Revision: 1.6 $
-%  $Date: 2003/02/21 15:33:38 $
+%  $RCSfile: selection.tex,v $, $Revision: 1.7 $
+%  $Date: 2003/02/21 17:08:30 $
 %  $Author: schwiemn $
 %
 %  Description: Use-Cases für die Selektionen
@@ -394,7 +394,7 @@ Siehe hierzu \ref{Selektion aus IML-Teilgraphen ableiten}.
 \begin{uc}[Mengenoperationen auf 2 Selektionen]
 {UC: Mengenoperationen auf 2 Selektionen}
 Zusätzlich zu den Möglichkeiten der Anfragesprache kann der Benutzer
-die gängigen Mengen Operationen, wie Mengenvereinigung, Schnitt und Differenz,
+die gängigen Mengenoperationen, wie Mengenvereinigung, Schnitt und Differenz,
 auch direkt über einen entsprechenden Dialog ausführen.
 Beschreibung des Dialoges siehe \ref{Common-Set-Operation-Dialog}.
 Vorgehen analog zu \ref{Mengenoperationen auf 2 IML-Teilgraphen}.
@@ -402,7 +402,8 @@ Vorgehen analog zu \ref{Mengenoperationen auf 2 IML-Teilgraphen}.
 
 
   \begin{precond}
-    \cond Es gibt ein geöffnetes Anzeigefenster mit mindestens zwei Selektionen.
+    \cond Es gibt ein geöffnetes Anzeigefenster mit mindestens zwei 
+          Selektionen.
   \end{precond}
 
   \begin{postsuccess}
@@ -424,8 +425,8 @@ Vorgehen analog zu \ref{Mengenoperationen auf 2 IML-Teilgraphen}.
 
     \cond
     Im Falle eines Mengenschnitts umfasst, die neue Selektion TARGET alle
-    Knoten und Kanten, die sowohl der LEFT\_SOURCE Selektion und der 
-    RIGHT\_SOURCE Selektion.
+    Knoten und Kanten, die der LEFT\_SOURCE Selektion und der 
+    RIGHT\_SOURCE Selektion gemeinsam angehören.
 
   \end{postsuccess}
 
@@ -436,7 +437,8 @@ Vorgehen analog zu \ref{Mengenoperationen auf 2 IML-Teilgraphen}.
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase über durch Auswahl aus dem PopUp Menü 
-    !!!!!ENTSPRECHENDEN MENÜEINTAG NENNEN.
+    <<<<<<<<<<<<<<!!!!!ENTSPRECHENDEN MENÜEINTAG NENNEN.
+    VERWEIS GUI>>>>>>>>>>>>>
     
     \step[2] 
     GIANT öffnet den Common\_Set\_Operation\_Dialog 
@@ -444,10 +446,12 @@ Vorgehen analog zu \ref{Mengenoperationen auf 2 IML-Teilgraphen}.
     
     
     \step[3] 
-    Der Benutzer wählt dort die beiden Quellselektionen (LEFT\_SOURCE und 
+    Der Benutzer wählt dort die beiden Quell-Selektionen (LEFT\_SOURCE und 
     RIGHT\_SOURCE)
-    aus und gibt unter TARGET den Namen der neue zu erzeugenden Selektion 
+    aus, bestimmt die durchzuführende Mengenoperation und gibt unter 
+    TARGET den Namen der neue zu erzeugenden Selektion 
     ein.\\
+    Dann bestätigt er die Eingabe mit OK.
        
     \step[4]
     GIANT führt die Mengenoperation aus.
@@ -457,8 +461,6 @@ Vorgehen analog zu \ref{Mengenoperationen auf 2 IML-Teilgraphen}.
   \begin{aproc}
     \ageneral Der Benutzer bricht die Eingabe der Daten mit Cancel ab.
   \end{aproc}
-
-
 
 
 

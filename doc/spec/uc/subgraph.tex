@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: subgraph.tex,v $, $Revision: 1.3 $
-%  $Date: 2003/02/21 15:33:38 $
+%  $RCSfile: subgraph.tex,v $, $Revision: 1.4 $
+%  $Date: 2003/02/21 17:08:30 $
 %  $Author: schwiemn $
 %
 %  Description: Use-Cases für IML-Teilgraphen
@@ -289,22 +289,22 @@ Vorgehen analog zu \ref{Mengenoperationen auf 2 Selektionen}
     Eine neuer IML-Teilgraph mit entsprechendem Namen 
     (im Dialog eingegeben unter TARGET) ist angelegt 
     und erscheint in der Liste über alle IML-Teilgraphen des Projektes.
+    <<<<<<<<<VERWEIS GUI >>>>>>>>>>>>>>>>>>>>>>>>>>>>><
        
     \cond
-    Im Falle einer Mengenvereinigung umfasst, die neue Selektion TARGET alle
-    Knoten und Kanten aus der LEFT\_SOURCE Selektion und der 
-    RIGHT\_SOURCE Selektion.
+    Im Falle einer Mengenvereinigung umfasst, der neue IML-Teilgraph TARGET alle
+    Knoten und Kanten aus dem LEFT\_SOURCE IML-Teilgraphen und dem 
+    RIGHT\_SOURCE IML-Teilgraphen.
     
     \cond
-    Im Falle einer Mengendifferenz umfasst, die neue Selektion TARGET alle
-    Knoten und Kanten aus der LEFT\_SOURCE Selektion, die nicht 
-    Bestandteil der 
-    RIGHT\_SOURCE Selektion sind.
+    Im Falle einer Mengendifferenz umfasst, der neue IML-Teilgraph TARGET alle
+    Knoten und Kanten aus dem LEFT\_SOURCE IML-Teilgraphen, die nicht 
+    Bestandteil des RIGHT\_SOURCE IML-Teilgraphen sind.
 
     \cond
-    Im Falle eines Mengenschnitts umfasst, die neue Selektion TARGET alle
-    Knoten und Kanten, die sowohl der LEFT\_SOURCE Selektion und der 
-    RIGHT\_SOURCE Selektion.
+    Im Falle eines Mengenschnitts umfasst, der neue IML-Teilgraph TARGET alle
+    Knoten und Kanten, die sowohl dem LEFT\_SOURCE IML-Teilgraphen als auch 
+    dem RIGHT\_SOURCE IML-Teilgraphen angehören.
 
   \end{postsuccess}
 
@@ -314,8 +314,8 @@ Vorgehen analog zu \ref{Mengenoperationen auf 2 Selektionen}
   
   \begin{proc}    
     \step[1]
-    Der Benutzer startet den UseCase über durch Auswahl aus dem PopUp Menü 
-    !!!!!ENTSPRECHENDEN MENÜEINTAG NENNEN.
+    Der Benutzer startet den UseCase über das PopUp Menü 
+    >>>>VERWEIS GUI - PopUp unter Liste der IML-Teilgraphen<<<<< 
     
     \step[2] 
     GIANT öffnet den Common\_Set\_Operation\_Dialog 
@@ -323,10 +323,13 @@ Vorgehen analog zu \ref{Mengenoperationen auf 2 Selektionen}
     
     
     \step[3] 
-    Der Benutzer wählt dort die beiden Quellselektionen (LEFT\_SOURCE und 
-    RIGHT\_SOURCE)
-    aus und gibt unter TARGET den Namen der neue zu erzeugenden Selektion 
-    ein.\\
+    Der Benutzer wählt dort die beiden Quell-IML-Teilgraphen 
+    (LEFT\_SOURCE und RIGHT\_SOURCE) aus, bestimmt die auszuführende
+    Mengenoperation und gibt unter TARGET den Namen 
+    des neu zu erzeugenden IML-Teilgraphen ein.\\
+    Er bestätigt mit OK.\\
+    Existiert bereits ein IML-Teilgraph mit dem unter Target eingegebenen 
+    Namen, so erscheint eine entsprechende Fehlermeldung.
        
     \step[4]
     GIANT führt die Mengenoperation aus.
@@ -334,7 +337,7 @@ Vorgehen analog zu \ref{Mengenoperationen auf 2 Selektionen}
   \end{proc}
 
   \begin{aproc}
-    \ageneral Der Benutzer bricht die Eingabe der Daten mit Cancel ab.
+    \astep[3] Der Benutzer bricht die Eingabe der Daten mit Cancel ab.
   \end{aproc}
 
 
@@ -342,31 +345,16 @@ Vorgehen analog zu \ref{Mengenoperationen auf 2 Selektionen}
 
 
 
-
-
-% ==============================================================================
-\begin{uc}[Label]{UC: Mengendifferenz von 2 IML-Teilgraphen}
->>>> Oben abgedeckt, kann entfallen
-
-
-\end{uc}
-
-
-
-% ==============================================================================
-\begin{uc}[Label]{UC: Mengenschnitt von 2 IML-Teilgraphen}
->>>> Oben abgedeckt, kann entfallen
-
-\end{uc}
-
-
-
-
 % ==============================================================================
 \begin{uc}[Label]{UC: Teilgraph exportieren}
+>>>> Würd' ich nicht anbieten, kann man auch manuell machen.
+
 \end{uc}
 
 
 % ==============================================================================
 \begin{uc}[Label]{UC: Teilgraph importieren}
+>>>> Würd' ich nicht anbieten, kann man auch manuelle machen.
+
+
 \end{uc}

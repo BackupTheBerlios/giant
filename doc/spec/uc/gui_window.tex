@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.8 $
-%  $Date: 2003/02/21 15:33:38 $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.9 $
+%  $Date: 2003/02/21 17:08:30 $
 %  $Author: schwiemn $
 %
 %  Description: Use-Cases für die Fensterfunktionalität der GUI
@@ -456,11 +456,22 @@ Verändert die Position des sichtbaren Anzeigeinhaltes.
   \begin{proc}    
   
     \step[1]
-    Der Benutzer scrollt den sichtbaren Anzeigefokus mittels der horizontalen
-    und vertikalen Scrollleisten des Anzeigefensterts. Dies geschieht
-    gemäß der gängigen Konventionen aus GTK/Ada für Scrollleisten.
-    <<<<<<<<<<<<<<<<VERWEIS GUI>>>>>>>>>>>>>>>>>>
-    <<<<<<<<<<<<<SCROLLLEISTEN IN DER GUI Berücksichtigen>>>>>>>>>>>>>>
+    \begin {enumerate}
+      \item
+      Der Benutzer scrollt den sichtbaren Anzeigefokus mittels der horizontalen
+      und vertikalen Scrollleisten des Anzeigefensterts. Dies geschieht mittels
+      der Maus gemäß der gängigen Konventionen aus GTK/Ada für Scrollleisten.
+      <<<<<<<<<<<<<<<<VERWEIS GUI>>>>>>>>>>>>>>>>>>
+      <<<<<<<<<<<<<SCROLLLEISTEN IN DER GUI Berücksichtigen>>>>>>>>>>>>>>
+      
+      \item
+      Gemäß der gängigen intuitiven Konventionen kann auch 
+      mittels der Cursortasten gescrollt werden.\\
+      Das Drücken der linken Cursortaste führt z.B.\ dazu, dass der sichtbare
+      Anzeigeinhalt des Anzeigefensters, welches innerhalb des Windowmanagers
+      den Fokus hat, nach links verschoben wird.
+      
+    \end {enumerate}
         
   \end{proc}
 
@@ -473,28 +484,40 @@ begranzter Bereich, anpassen der Detaillierung
 \end{uc}
 
 % ==============================================================================
-\begin{uc}[Label]{UC: Zoomen einer Selektion}
+\begin{uc}[Label]{UC: Zoomen auf eine gesamte Selektion}
+
+
+
 \end{uc}
 
 % ==============================================================================
 \begin{uc}[Label]{UC: Zoomen auf gesamten Inhalt eines Anzeigefensters}
 \end{uc}
 
+
 % ==============================================================================
-\begin{uc}[Label]{UC: Zoomen auf eine Kante}
+\begin{uc}[Zoomen auf eine Kante]{UC: Zoomen auf eine Kante}
+
 \end{uc}
+
 
 % ==============================================================================
 \begin{uc}[Label]{UC: Verschieben von Knoten, Selektionen, Kantenknickpunkten}
 Kantenknickpunkte, Knoten, Selektionen (jeweils die aktuelle Selektion),
 Drag and Drop, Cut and Paste
+
+
+
+
+
+
 \end{uc}
 
 
 % ==============================================================================
 \begin{uc}[Label]{UC: Platz schaffen}
 
-Dieser UseCase wir benötigt, um Fenster-Knoten auseinander schieben zu 
+Dieser UseCase wird benötigt, um Fenster-Knoten auseinander schieben zu 
 können. So kann der Benutzer an einer bliebigen Stelle des Anzeigefensters
 genügend Platz zum Einfügen neuer Fenster-Knoten und Fenster-Kanten schaffen.
 Siehe hierzu auch \ref{Auseinanderschieben von Fenster-Knoten}.
@@ -555,14 +578,126 @@ Siehe hierzu auch \ref{Auseinanderschieben von Fenster-Knoten}.
 \end{uc}
 
 
-
-
+% ==============================================================================
 \begin{uc}[Label]{UC: Pin anlegen}
-wird benannt
+
+Mit diesem UseCase kann ein neuer Pin erzeugt werden.
+
+ \begin{precond}
+    \cond Es gibt ein geöffnetes Anzeigefenster.
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond 
+    In der Liste über die Pins des Anzeigefensters
+     <<<<<VERWEIS GUI>>>> befindet sich
+    ein neuer Pin mit dem entsprechenden Namen.
+
+  \end{postsuccess}
+
+  \begin{postfail}
+    \cond Das System bleibt im bisherigen Zustand.
+  \end{postfail}
+  
+  \begin{proc}    
+    \step[1]
+    Der Benutzer führt einen Rechtklick auf den Anziegeinhalt des
+    entsprechenden Anzeigefensters durch und wählt aus dem PopUp
+    Menü den Eintrag \gq{Pin erstellen} aus <<<<<VERWEIS GUI>>>>>.
+      
+    \step[2] 
+    GIANT öffnet den allgemeinen Texteingabedialog <<<<VERWEIS GUI>>>>.
+      
+    \step[3] 
+    Der Benutzer gibt dort einen zulässigen Namen für den neuen Pin
+    ein und bestätigt mit OK.\\
+      
+    \step[4]
+    GIANT erzeugt den Pin.
+  
+  \end{proc}
+
+  \begin{aproc}
+    \astep{3} Der Benutzer bricht die Verarbeitung mit Cancel ab.
+  \end{aproc}
+
 \end{uc}
 
+
+% ==============================================================================
 \begin{uc}[Label]{UC: Pin anspringen}
+Stellt eine über den Pin gespeicherte Position des Anzeigefokus
+wieder her.
+
+ \begin{precond}
+    \cond Es gibt ein geöffnetes Anzeigefenster mit mindestens 
+    einem Pin.
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond 
+    Der sichtbare Anzeigefokus des Anzeigefensters ist auf die entsprechenden
+    Koordinaten und die entsprechende Zoomstufe, wie sie im ausgewählten
+    Pin hinterlegt waren, gesetzt.
+    
+  \end{postsuccess}
+  
+  \begin{proc}    
+    \step[1]
+    Zur Durchführung gibt es zwei Möglichkeiten:
+    \begin{enumerate}
+    
+      \item
+      Der Benutzer führt einen Doppelklick auf den entsprechenden Pin
+      in der Liste aus.
+      >>>>>VERWEIS GUI - LISTE DER PINS In den Anzeigefenstern<<<<<<
+      
+      \item
+      Der Benutzer öffnet das entsprechende PopUp Menü durch
+      rechtsklick auf den Pin und wählt den Eintrag \gq{Fokus Pin}
+      aus.
+      <<<<<<<<<<<<<<VERWEIS GUI>>>>>>>>>>>>>>><
+        
+    \end {enumerate}
+    
+          
+    \step[2]
+    GIANT setzt den sichtbaren Anzeigeinhalt gemäß den im Pin gespeicherten
+    Informationen.
+  
+  \end{proc}
+
+
+
 \end{uc}
 
+
+% ==============================================================================
 \begin{uc}[Label]{UC: Pin löschen}
+Löscht einen Pin.
+
+ \begin{precond}
+    \cond Es gibt ein geöffnetes Anzeigefenster mit mindestens 
+    einem Pin.
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond 
+    Der Pin ist gelöscht und nicht mehr in der Liste des entsprechenden
+    Anzeigefensters auswählbar.
+    <<<<<<<<<<<<<<<VERWEIS GUI>>>>>>>>>>>>>>>>>>>
+    
+  \end{postsuccess}
+  
+  \begin{proc}    
+    \step[1]
+    Der Benutzer öffnet das entsprechende PopUp Menü durch Rechtsklick
+    auf den Pin und wählt den Eintrag \gq{Pin löschen} aus.
+    <<<<<VERWEIS GUI>>>>>>>>>>>
+     
+    \step[2]
+    GIANT löscht den entsprechenden Pin.
+  
+  \end{proc}
+
 \end{uc}

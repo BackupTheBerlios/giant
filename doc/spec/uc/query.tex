@@ -1,26 +1,66 @@
 % ==============================================================================
-%  $RCSfile: query.tex,v $, $Revision: 1.1 $
-%  $Date: 2003/02/03 01:17:27 $
-%  $Author: schulzgt $
+%  $RCSfile: query.tex,v $, $Revision: 1.2 $
+%  $Date: 2003/02/21 17:08:30 $
+%  $Author: schwiemn $
 %
 %  Description: Use-Cases für die Anfragen
 %
 % ==============================================================================
 
-\begin{uc}[Label]{UC: Anfrage auf IML}
+% ==============================================================================
+\begin{uc}[Anfrage ausführen]{UC: Neue Anfrage ausführen}
+Mit diesem UseCase kann eine Anfrage über den Anfragedialog eingegeben werden.
+Die Möglichkeiten der Anfragesprache sind unter <<<<<<<<<<VERWEIS >>>>>>>>>><
+beschrieben.
+
+  \begin{precond}
+    \cond Ein Projekt ist geladen.
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond Die Anfrage wurde ausgeführt. Alle Ergebnisse liegen vor.
+
+  \end{postsuccess}
+
+  \begin{postfail}
+    \cond Das System bleibt im bisherigen Zustand.
+  \end{postfail}
+  
+  \begin{proc}    
+    \step[1]
+    Der Benutzer startet den UseCase durch Auswahl des Eintrages \gq{Anfrage
+    ausführen} aus dem Hauptmenü 
+    <<<<<<<<<<<<<<<<<<<<<<VERWEIS GUI>>>>>>>>>>>>>>>>>>>>>
+    
+    \step[2] 
+    GIANT öffnet den Anfragedialog <<<<VERWEIS GUI>>>>.
+      
+    \step[3] 
+    Der Benutzer gibt dort im dafür vorgesehenen Textfeld die Anfrage ein
+    und bestätigt mit OK.
+        
+    \step[4]
+    GIANT führt die entsprechende Anfrage aus.\\
+    Während der Abarbeitung der Anfrage ist das System nicht bedienbar.\\
+    Die Abarbeitung kann aber zu jeder Zeit abgebrochen werden.
+  
+  \end{proc}
+
+  \begin{aproc}
+    \astep{2} Der Benutzer bricht mit Cancel ab.
+  \end{aproc}
+
 \end{uc}
 
-\begin{uc}[Label]{UC: Anfrage auf IML Teilgraphen}
-\end{uc}
 
-\begin{uc}[Label]{UC: Anfrage auf Selektionen}
-\end{uc}
-
+% ==============================================================================
 \begin{uc}[Label]{UC: Anfrageverwaltung (History)}
 \end{uc}
 
+% ==============================================================================
 \begin{uc}[Label]{UC: Anfrage erstellen}
 \end{uc}
 
+% ==============================================================================
 \begin{uc}[Label]{UC: Anfrage löschen}
 \end{uc}
