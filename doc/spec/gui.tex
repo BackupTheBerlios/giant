@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.35 $
-%  $Date: 2003/02/28 11:46:59 $
-%  $Author: birdy $
+%  $RCSfile: gui.tex,v $, $Revision: 1.36 $
+%  $Date: 2003/03/18 23:28:07 $
+%  $Author: stupro $
 %
 %  Description: Bis zu Revision 1.6 sind UseCase-artige Beschreibungen enthalten,
 %  die für UseCases nützlich sein könnten. 
@@ -237,6 +237,8 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
       \item Highlight Selection  Color2 [gemäß Einstellung in Config Datei]   
       \item Highlight Selection  Color3 [gemäß Einstellung in Config Datei] 
       
+      \item Zoom to make selection fill window % OK
+      
       \item Unhighlight Selection
       \item Change highlighting color 
       \item Copy Selection
@@ -253,10 +255,11 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
     Die Zoom-Kontrolle besteht aus folgenden Elementen:
     
   \begin{enumerate}
-      \item ComboBox ZOOM\_CONTROL mit vorgefertigten Werten und Eingabemöglichkeit
-      \item Button \gq{Display} (ZOOM\_DISPLAY)
-      \item Button \gq{Zoom+} (ZOOM\_PLUS)
-      \item Button \gq{Zoom-} (ZOOM\_MINUS)
+      \item ComboBox ZOOM\_CONTROL mit vorgefertigten Werten und Eingabemöglichkeit % OK
+      \item Button \gq{Display} (ZOOM\_DISPLAY) % OK
+      \item Button \gq{Zoom+} (ZOOM\_PLUS) % OK
+      \item Button \gq{Zoom-} (ZOOM\_MINUS) % OK
+      \item Button \gq{Fill Window} (ZOOM\_FILL) % OK
   \end{enumerate}    
      
   \subsection{Stilauswahl-Combobox}
@@ -458,11 +461,12 @@ mit \gq{No}.
 \section{Fortschrittsanzeige}
 
 \label{Progressbar}
-Es gibt in GIANT drei Möglichkeiten zur Fortschrittsanzeige während laufender Berechnungen:
+Es gibt in GIANT drei Möglichkeiten zur Fortschrittsanzeige während laufender Berechnungen.
+Jede Progressbar ist mit \gq{Working, please wait.} beschriftet.
 
 \subsection{Progressbar-1}
 \label{Progressbar-1}
-     Anzeige eines Dialoges mit einem sich stängig leicht ändernden
+     Anzeige eines Dialoges mit einem sich ständig leicht ändernden
      Inhalt, so dass erkennbar ist, dass das System noch arbeitet.
 
 \subsection{Progressbar-2}  

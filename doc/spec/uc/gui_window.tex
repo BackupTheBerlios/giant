@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.15 $
-%  $Date: 2003/02/27 22:01:53 $
-%  $Author: birdy $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.16 $
+%  $Date: 2003/03/18 23:28:44 $
+%  $Author: stupro $
 %
 %  Description: Use-Cases für die Fensterfunktionalität der GUI
 %
@@ -230,7 +230,7 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase über das PopUp Menü \ref{SUBGRAPH-LIST-POPUP}
-    im Hauptfenster.
+    im Hauptfenster \gq{Insert IML Subgraph}.
     Hierdurch wird der einzufügende IML-Teilgraph bestimmt (immer
     der IML-Teilgraph, auf dem der Rechtsklick ausgeführt wurde).
     
@@ -277,7 +277,7 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
 
   \begin{aproc}
     \astep{6} Der Benutzer bricht die Eingabe mit Cancel ab.
-    \astep{7} Der Benutzer bricht die Berchnung des Layouts ab.  
+    \astep{7} Der Benutzer bricht die Berechnung des Layouts ab.  
   \end{aproc}
 
 
@@ -292,10 +292,8 @@ Mit diesem UseCase kann eine Selektion aus einem Anzeigefenster
 in ein anderes Anzeigefenster unter Beibehaltung des Layouts
 der Quell-Selektion kopiert werden. 
 Siehe hierzu  
-\ref{Verhalten beim Einfügen von IML-Teilgraphen und Selektionen 
-in Anzeigefenster},
-insbesondere \ref{Einfügen von Selektionen in Anzeigefenster}.
-<<<<<beide refs fehlen?>>>>>>	  
+\ref{Verhalten beim Einfügen von IML-Teilgraphen und Selektionen in Anzeigefenster},
+insbesondere \ref{Einfügen von Selektionen in Anzeigefenster}.  
 
   \begin{precond}
     \cond Ein Projekt mit mindestens zwei geöffneten 
@@ -485,23 +483,143 @@ Verändert die Position des sichtbaren Anzeigeinhaltes.
 
 % ==============================================================================
 \begin{uc}[Label]{UC: Anzeigefenster zoomen}
-begranzter Bereich, anpassen der Detaillierung
+Verändert den Maßstab der Darstellung von Knoten und Kanten (relativ)
+
+  \begin{precond}
+    \cond 
+    Ein Projekt mit mindestens einem geöffneten Anzeigefenster ist geladen.
+       
+  \end{precond}
+
+  \begin{postsuccess}
+    
+    \cond
+    Der angezeigte Bereich des sichtbaren Anzeigeinhalts wurde entsprechend
+    vergrößert oder verkleinert.
+    Der Detaillierungslevel wurde ggf. automatisch angepaßt.
+    
+  \end{postsuccess}
+
+  \begin{proc}    
+  
+    \step[1]
+    \begin {enumerate}
+      \item
+      Der Benutzer gibt in der Zoomkontroll-Combobox des Anzeigefensters einen
+      neuen Zoomwert ein, wählt darin einen der vorgefertigten Werte aus oder ändert
+      den Zoomwert in festgelegten Schritten mit den Zoom+ oder Zoom- Buttons.
+      
+      \item
+      Der Benutzer klickt auf den \gq{Display} - Button der Zoomkontrolle
+      
+    \end {enumerate}
+        
+  \end{proc}
 \end{uc}
 
 % ==============================================================================
 \begin{uc}[Label]{UC: Zoomen auf eine gesamte Selektion}
+Wählt die Zoomstufe und Scrollt so, daß eine gesamte Selektion im Fenster sichtbar ist
 
+  \begin{precond}
+    \cond 
+    Ein Projekt mit mindestens einem geöffneten Anzeigefenster ist geladen.
+       
+  \end{precond}
 
+  \begin{postsuccess}
+    
+    \cond
+    Der angezeigte Bereich des sichtbaren Anzeigeinhalts wurde so
+    vergrößert oder verkleinert, daß die gesamte ausgewählte Selektion sichtbar
+    ist, ggf. wurde auch entsprechend gescrollt.
+    Der Detaillierungslevel wurde ggf. automatisch angepaßt.
+    
+  \end{postsuccess}
 
+  \begin{proc}    
+  
+    \step[1]
+    \begin {enumerate}
+      \item
+      Der Benutzer klickt auf \gq{Zoom to make selection fill window} im Popup-Menü
+      der Selektionsauswahlliste \ref{Selektionsauswahlliste} auf der Selektion,
+      welche er sichtbar machen will.
+      
+    \end {enumerate}
+        
+  \end{proc}
 \end{uc}
 
 % ==============================================================================
 \begin{uc}[Label]{UC: Zoomen auf gesamten Inhalt eines Anzeigefensters}
-\end{uc}
 
+Wählt die Zoomstufe und Scrollt so, daß der gesamte Fensterinhalt im Fenster sichtbar ist
+
+  \begin{precond}
+    \cond 
+    Ein Projekt mit mindestens einem geöffneten Anzeigefenster ist geladen.
+       
+  \end{precond}
+
+  \begin{postsuccess}
+    
+    \cond
+    Der angezeigte Bereich des sichtbaren Anzeigeinhalts wurde so
+    vergrößert oder verkleinert, daß der gesamte Fensterinhalt sichtbar
+    ist, ggf. wurde auch entsprechend gescrollt.
+    Der Detaillierungslevel wurde ggf. automatisch angepaßt.
+    
+  \end{postsuccess}
+
+  \begin{proc}    
+  
+    \step[1]
+    \begin {enumerate}
+      \item
+      Der Benutzer klickt auf \gq{Fill window} in der Zoomkontrolle des
+      Fensters.
+      
+    \end {enumerate}
+        
+  \end{proc}
+
+\end{uc}
 
 % ==============================================================================
 \begin{uc}[Zoomen auf eine Kante]{UC: Zoomen auf eine Kante}
+
+
+Wählt die Zoomstufe und Scrollt so, eine bestimmte Kante komplett im Fenster sichtbar ist
+
+  \begin{precond}
+    \cond 
+    Ein Projekt mit mindestens einem geöffneten Anzeigefenster mit mindestens einer Kante
+    ist geladen.
+       
+  \end{precond}
+
+  \begin{postsuccess}
+    
+    \cond
+    Der angezeigte Bereich des sichtbaren Anzeigeinhalts wurde so
+    vergrößert oder verkleinert, daß die betreffende Kante komplett
+    sichtbar ist, ggf. wurde auch entsprechend gescrollt.
+    Der Detaillierungslevel wurde ggf. automatisch angepaßt.
+    
+  \end{postsuccess}
+
+  \begin{proc}    
+  
+    \step[1]
+    \begin {enumerate}
+      \item
+      Der Benutzer klickt auf \gq{Fill window} in der Zoomkontrolle des
+      Fensters.
+      
+    \end {enumerate}
+        
+  \end{proc}
 
 \end{uc}
 
