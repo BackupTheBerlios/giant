@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.13 $
+--  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.14 $
 --  $Author: koppor $
---  $Date: 2003/07/22 08:59:41 $
+--  $Date: 2003/07/22 10:18:40 $
 
 with Giant.Logger;
 
@@ -430,8 +430,8 @@ package body Giant.Graph_Lib.Subgraphs is
       procedure Execute (Edge : in Edge_Id)
       is
       begin
-         if Is_Member (The_Subgraph, Edge.Source_Node)
-           and Is_Member (The_Subgraph, Edge.Target_Node) then
+         if not Is_Member (The_Subgraph, Edge.Source_Node)
+           or not Is_Member (The_Subgraph, Edge.Target_Node) then
             Edge_Id_Sets.Insert (Edges_To_Remove, Edge);
          end if;
       end Execute;
@@ -439,17 +439,12 @@ package body Giant.Graph_Lib.Subgraphs is
       procedure Apply is new Edge_Id_Sets.Apply
         (Execute => Execute);
 
-      --  Pre:
-      --    Assumes, that Get_All_Nodes returns a reference and not a
-      --    copy
-      --  Notes:
-      --    Refactoring: Get_All_Edges is not needed anymore, since
-      --    Graph.Edges will work
-      Edges : Edge_Id_Set := Get_All_Edges (The_Subgraph);
-
    begin
-      Apply (Edges);
-      Edge_Id_Sets.Diff (Edges, Edges_To_Remove);
+      --  There is no need to destroy the result of Get_All_Edges,
+      --    therefore we can shorten the call like this (and not
+      --    use an own variable etc)
+      Apply (Get_All_Edges (The_Subgraph));
+      Remove_Edge_Set (The_Subgraph, Edges_To_Remove);
    end Ensure_Graph_Edge_Properties;
 
 end Giant.Graph_Lib.Subgraphs;
