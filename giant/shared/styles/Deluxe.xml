@@ -322,6 +322,8 @@
       start_node_class = "Entity_L_Value"
       attribute_name   = "*" />  
       
+  </edge_class_specific_setting>       
+      
       
   <!-- 5. OK -->
   <edge_class_specific_setting
