@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.13 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.14 $
 --  $Author: schwiemn $
---  $Date: 2003/06/17 16:29:30 $
+--  $Date: 2003/06/17 19:40:13 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -54,15 +54,15 @@ package body Giant.Projects is
    --  Ending of Management file for a visual window
    Const_Vis_Window_File_Ending : constant String := ".viswin";
 
-   --  Emergency files ending
-   Const_Vis_Window_Emergency_File_Ending : constant String := ".viswin~";
+   --  Security files ending
+   Const_Vis_Window_Security_File_Ending : constant String := ".viswin~";
 
    ---------------------------------------------------------------------------
    --  Ending of Management file for a subgraph
    Const_Subgraph_File_Ending : constant String := ".subgraph";
 
-   --  Emergency files ending
-   Const_Subgraph_Emergency_File_Ending : constant String := ".subgraph~";
+   --  Security files ending
+   Const_Subgraph_Security_File_Ending : constant String := ".subgraph~";
 
 
    ---------------------------------------------------------------------------
@@ -159,7 +159,7 @@ package body Giant.Projects is
    ---------------------------------------------------------------------------
    --  Deletes all files in the directory
    --  with the corresponding endings regardeless of the content.
-   procedure Kill_All_Emergency_Files (Directory : in String) is
+   procedure Kill_All_Security_Files (Directory : in String) is
 
       File_List      : String_Lists.List;
       File_List_Iter : String_Lists.ListIter;
@@ -168,21 +168,21 @@ package body Giant.Projects is
 
       File_List := String_Lists.Create;
 
-      -- Emergency Files for subgraphs
+      -- Security Files for subgraphs
       String_Lists.Attach
         (File_List,
          File_Management.Get_Filtered_Files_From_Directory
            (Directory,
             True,
-            Const_Subgraph_Emergency_File_Ending));
+            Const_Subgraph_Security_File_Ending));
 
-      -- Emergency Files for visualisation windows
+      -- Security Files for visualisation windows
       String_Lists.Attach
         (File_List,
          File_Management.Get_Filtered_Files_From_Directory
            (Directory,
             True,
-            Const_Vis_Window_Emergency_File_Ending));
+            Const_Vis_Window_Security_File_Ending));
 
       File_List_Iter := String_Lists.MakeListIter (File_List);
 
@@ -194,7 +194,7 @@ package body Giant.Projects is
       end loop;
 
       String_Lists.Destroy (File_List);
-   end Kill_All_Emergency_Files;
+   end Kill_All_Security_Files;
 
    ---------------------------------------------------------------------------
    function Load_Vis_Window_Into_Main_Memory (File_Path : String)
@@ -434,7 +434,7 @@ package body Giant.Projects is
    begin
 
       Abs_Project_File_Name := Create_Name_For_File
-        (Ada.Strings.Unbounded.To_String (The_Project.Abs_Project_Dirctory),
+        (Ada.Strings.Unbounded.To_String (The_Project.Abs_Project_Directory),
          Ada.Strings.Unbounded.To_String (The_Project.Project_Name),
          ".xml");
 
@@ -785,7 +785,7 @@ package body Giant.Projects is
         Ada.Strings.Unbounded.To_Unbounded_String (Project_Name);
 
       --  stored as an absolute path  (not written to the xml file)
-      New_Project_Access.Abs_Project_Dirctory := Abs_Project_Directory;
+      New_Project_Access.Abs_Project_Directory := Abs_Project_Directory;
 
       --  stored as an absolute path  (also written to the xml file)
       New_Project_Access.Abs_Bauhaus_IML_Graph_File :=
@@ -817,7 +817,7 @@ package body Giant.Projects is
       --  (a xml project file and a dtd).
       Write_DTD_To_Directory
         (Ada.Strings.Unbounded.To_String
-          (New_Project_Access.Abs_Project_Dirctory));
+          (New_Project_Access.Abs_Project_Directory));
       Write_Project_XML_File (New_Project_Access);
 
       --  write empty xml file for node annotations
@@ -887,170 +887,293 @@ package body Giant.Projects is
       ---------------------------------
       Free_Project_Access (Project);
    end;
+   
+   ---------------------------------------------------------------------------
+   -- Stores a whole project and optionally "migrates" the project to
+   -- a new project directory (incl. new project name).
+   --
+   -- Change_Project_Dir - determines whether the old Project should be 
+   --   stored (False) or if the Project should be stored under a new name
+   --   in a new directory (True)
+   --
+   -- New_Project_Directory - An absolute Path is required !!!
+   procedure General_Store_Hole_Project
+     (Project                   : in Project_Access;      
+      Change_Project_Files      : in Boolean;
+      New_Project_Name          : in String;
+      New_Abs_Project_Directory : in String) is
+
+      use Ada.Strings.Unbounded;
+           
+      ---------------------------- 
+      -- calculates file name and writes the file
+      -- used then project is saved unter a new project
+      -- new prject name and path must already have been set.
+      procedure Process_Vis_Window 
+        (P_Project         : in     Project_Access;
+         P_Vis_Window      : in     Vis_Windows.Visual_Window_Access;
+         P_Vis_Window_Key  : in     Ada.Strings.Unbounded.Unbounded_String;
+         P_Vis_Window_Data : in out Vis_Window_Data_Element) is
+         
+         P_Vis_Window_File_Name : Ada.Strings.Unbounded.Unbounded_String;
+      begin
+      
+          -- calculate new file name 
+          P_Vis_Window_File_Name :=    
+            Create_Name_For_File
+              (Ada.Strings.Unbounded.To_String 
+                 (P_Project.Abs_Project_Directory),
+               Ada.Strings.Unbounded.To_String
+                 (P_Vis_Window_Data.Vis_Window_Name),
+               Const_Vis_Window_File_Ending);  
+                                    
+          Write_Vis_Window_To_File
+            (Ada.Strings.Unbounded.To_String 
+               (P_Vis_Window_File_Name),
+             P_Vis_Window);
+
+          -- change vis window status
+          P_Vis_Window_Data.Is_File_Linked := True;  
+          P_Vis_Window_Data.Existing_Vis_Window_File :=
+             P_Vis_Window_File_Name;
+          Known_Vis_Windows_Hashs.Update_Value
+            (P_Project.All_Project_Vis_Windows,
+             P_Vis_Window_Key,
+             P_Vis_Window_Data);                         
+      end Process_Vis_Window;
+      
+      Abs_Node_Annotations_File : Ada.Strings.Unbounded.Unbounded_String;
+      
+      Known_Vis_Iter            : 
+        Known_Vis_Windows_Hashs.Bindings_Iter;
+      A_Vis_Window_Data_Element : Vis_Window_Data_Element;      
+      A_Vis_Window              : Vis_Windows.Visual_Window_Access;
+      A_Vis_Window_Key          : Ada.Strings.Unbounded.Unbounded_String;
+      A_Vis_Window_File_Name    : Ada.Strings.Unbounded.Unbounded_String;
+
+      Subgraphs_Iter : Subgraph_Data_Hashs.Bindings_Iter;
+      A_Subgraph_Data_Elemet : Subgraph_Data_Elemet;
+      A_Subgraph_Key : Ada.Strings.Unbounded.Unbounded_String;
+      A_Subgraph_File_Name   : Ada.Strings.Unbounded.Unbounded_String;
+      
+   begin
+
+      -- migrate project (must be done before anything else is migrated)
+      ------------------------------------------------------------------
+      if Change_Project_Files then
+      
+         --  change the new node annoations file
+         Abs_Node_Annotations_File := New_Abs_Project_Directory
+           & Ada.Strings.Unbounded.To_Unbounded_String
+             (Const_Node_Annotations_File_Name);           
+         Project.Node_Annotations_File := Abs_Node_Annotations_File;
+
+         --  "Migrate the project"
+         --  (must be done befor processing vis windows and subgraphs).
+         Project.Project_Name := 
+           Ada.Strings.Unbounded.To_Unbounded_String (New_Project_Name);
+
+         Project.Abs_Project_Directory := 
+           Ada.Strings.Unbounded.To_Unbounded_String 
+             (New_Abs_Project_Directory);             
+      end if;
+
+      --  Process visualisation windows
+      -----------------------------------------------
+      Known_Vis_Iter :=
+        Known_Vis_Windows_Hashs.Make_Bindings_Iter
+          (Project.All_Project_Vis_Windows);
+
+      while Known_Vis_Windows_Hashs.More (Known_Vis_Iter) loop
+
+         Known_Vis_Windows_Hashs.Next
+           (Known_Vis_Iter, A_Vis_Window_Key, A_Vis_Window_Data_Element);
+
+         --  migrate ALL (incl. not memory loaded) 
+         --  vis windows to new project directory
+         -----------------------------------------
+         if Change_Project_Files then
+            -- avoids loading of all not already loaded
+            -- vis windows into main memory at once
+            if not A_Vis_Window_Data_Element.Is_Memory_Loaded then
+
+               -- load window into memory
+               A_Vis_Window := Get_Visualisation_Window
+                 (Project,
+                  Ada.Strings.Unbounded.To_String
+                    (A_Vis_Window_Data_Element.Vis_Window_Name));
+            
+               Process_Vis_Window 
+                 (Project, 
+                  A_Vis_Window, 
+                  A_Vis_Window_Key, 
+                  A_Vis_Window_Data_Element);
+             
+               Close_Window_In_Project 
+                 (Project, 
+                  Ada.Strings.Unbounded.To_String 
+                    (A_Vis_Window_Data_Element.Vis_Window_Name));                 
+            else
+ 
+               --  window is already memory loaded
+               A_Vis_Window := Get_Visualisation_Window
+                 (Project,
+                  Ada.Strings.Unbounded.To_String
+                    (A_Vis_Window_Data_Element.Vis_Window_Name));
+
+               Process_Vis_Window 
+                 (Project, 
+                  A_Vis_Window, 
+                  A_Vis_Window_Key, 
+                  A_Vis_Window_Data_Element);
+            end if;
+         end if; -- end if Change_Project_Files 
+         
+         -- do not migrate vis windows into new project dir
+         --------------------------------------------------
+         if not Change_Project_Files then
+         
+            -- ignore not memory loaded windows
+            if A_Vis_Window_Data_Element.Is_Memory_Loaded then
+           
+               if A_Vis_Window_Data_Element.Is_File_Linked then           
+                  A_Vis_Window_File_Name :=
+                    A_Vis_Window_Data_Element.Existing_Vis_Window_File;
+               else
+         
+                  -- calculate new file name if window if not file linked
+                  A_Vis_Window_File_Name :=    
+                    Create_Name_For_File
+                      (Ada.Strings.Unbounded.To_String 
+                         (Project.Abs_Project_Directory),
+                       Ada.Strings.Unbounded.To_String
+                         (A_Vis_Window_Data_Element.Vis_Window_Name),
+                       Const_Vis_Window_File_Ending);  
+               end if;
+         
+               Write_Vis_Window_To_File
+                 (Ada.Strings.Unbounded.To_String 
+                    (A_Vis_Window_File_Name),
+                  Memory_Loaded_Vis_Window_Hashs.Fetch 
+                    (Project.All_Memory_Loaded_Vis_Windows,
+                     A_Vis_Window_Data_Element.Vis_Window_Name));
+
+               -- change vis window status
+               A_Vis_Window_Data_Element.Is_File_Linked := True;  
+               A_Vis_Window_Data_Element.Existing_Vis_Window_File :=
+                  A_Vis_Window_File_Name;
+               Known_Vis_Windows_Hashs.Update_Value
+                 (Project.All_Project_Vis_Windows,
+                  A_Vis_Window_Key,
+                  A_Vis_Window_Data_Element);
+            end if;         
+         end if; -- end if not Change_Project_Files   
+      end loop;
+
+      --  Process iml subgraphs (all subgraphs are  loaded into the
+      --  main memory)
+      --------------------------------------------------------------
+      Subgraphs_Iter := Subgraph_Data_Hashs.Make_Bindings_Iter
+        (Project.All_Subgraphs);
+
+      while Subgraph_Data_Hashs.More (Subgraphs_Iter) loop
+
+         Subgraph_Data_Hashs.Next 
+           (Subgraphs_Iter, A_Subgraph_Key, A_Subgraph_Data_Elemet);
+           
+         -- write not file linked subgraphs into the project dir
+         -- (as for migratation the project dir is already changed
+         -- there are no differences between saving to a new project
+         -- directory or to the old one).                  
+         if not A_Subgraph_Data_Elemet.Is_File_Linked then
+         
+            A_Subgraph_File_Name :=
+              Create_Name_For_File
+                (Ada.Strings.Unbounded.To_String 
+                  (Project.Abs_Project_Directory),
+                 Graph_Lib.Subgraphs.Get_Name
+                    (A_Subgraph_Data_Elemet.Subgraph),
+                 Const_Subgraph_File_Ending);                                              
+         end if;
+                          
+         -- Keep existing file (do not migrate)
+         if A_Subgraph_Data_Elemet.Is_File_Linked 
+           and not Change_Project_Files then
+         
+            A_Subgraph_File_Name :=
+              A_Subgraph_Data_Elemet.Existing_Subgraph_File;                    
+         end if;
+
+         Write_Sub_Graph_Data_To_File
+           (Ada.Strings.Unbounded.To_String 
+             (A_Subgraph_File_Name),
+            A_Subgraph_Data_Elemet);  
+                  
+         -- change subgraph status
+         A_Subgraph_Data_Elemet.Is_File_Linked := True;
+         A_Subgraph_Data_Elemet.Existing_Subgraph_File :=
+           A_Subgraph_File_Name;
+         
+         Subgraph_Data_Hashs.Update_Value
+            (Project.All_Subgraphs,
+             A_Subgraph_Key,
+             A_Subgraph_Data_Elemet);
+      end loop;
+
+      -- write dtd (overwritten if already exists)
+      Write_DTD_To_Directory
+        (Ada.Strings.Unbounded.To_String
+          (Project.Abs_Project_Directory));
+
+      -- Write Node_Annotations (file name has already be changed if project
+      -- is migrated).
+      -------------------------
+      Node_Annotations.Write_To_File
+        (Project.The_Node_Annotations,
+         Ada.Strings.Unbounded.To_String
+           (Project.Node_Annotations_File));
+           
+      -- Kill all Security save files (only if project is not migrated)
+      --------------------------------------
+      if not Change_Project_Files then
+         Kill_All_Security_Files 
+           (Ada.Strings.Unbounded.To_String
+             (Project.Abs_Project_Directory));
+      end if;
+
+      -- Update Project XML File (MUST happen at the end - not before)
+      ---------------------------
+      Write_Project_XML_File (Project);
+   end General_Store_Hole_Project;
+   
 
    ----------------------------------------------------------------------------
    procedure Store_Whole_Project (Project : in Project_Access) is
 
-      use Ada.Strings.Unbounded;
-
-      Known_Vis_Iter            : Known_Vis_Windows_Hashs.Bindings_Iter;
-      A_Vis_Window_Key          : Ada.Strings.Unbounded.Unbounded_String;
-      A_Vis_Window_Data_Element : Vis_Window_Data_Element;
-
-      Subgraphs_Iter : Subgraph_Data_Hashs.Values_Iter;
-      A_Subgraph_Data_Elemet : Subgraph_Data_Elemet;
-      Subgraph_File_Name : Ada.Strings.Unbounded.Unbounded_String;
-
-      Stream_File : Ada.Streams.Stream_IO.File_Type;
-      Ada_Stream : Ada.Streams.Stream_IO.Stream_Access;
-      Bauhaus_Out_Stream :Bauhaus_IO.Out_Stream_Type;
    begin
 
       if (Project = null) then
          raise Project_Access_Not_Initialized_Exception;
       end if;
 
-      -- write all memory loaded visualisation windows into management
-      -- files. All memory loaded vis windows will become "file linked".
-      -----------------------------------------------------------------
-      Known_Vis_Iter :=
-        Known_Vis_Windows_Hashs.Make_Bindings_Iter
-          (Project.All_Project_Vis_Windows);
-
-      while Known_Vis_Windows_Hashs.More (Known_Vis_Iter) loop
-      
-         Known_Vis_Windows_Hashs.Next
-           (Known_Vis_Iter, A_Vis_Window_Key, A_Vis_Window_Data_Element);
-           
-         A_Vis_Window_Data_Element.Is_File_Linked := True;
-           
-         Known_Vis_Windows_Hashs.Update_Value
-            (Project.All_Project_Vis_Windows,
-             A_Vis_Window_Key,
-             A_Vis_Window_Data_Element);
-
-         if A_Vis_Window_Data_Element.Is_File_Linked then
-
-           -- if window if already file linked write to existing file
-           Write_Vis_Window_To_File
-             (Ada.Strings.Unbounded.To_String 
-               (A_Vis_Window_Data_Element.Existing_Vis_Window_File),
-              Memory_Loaded_Vis_Window_Hashs.Fetch 
-                (Project.All_Memory_Loaded_Vis_Windows,
-                 A_Vis_Window_Data_Element.Existing_Vis_Window_File));
-         else
-         
-            -- calculate new file name if window if not file linked
-            Write_Vis_Window_To_File
-              (Ada.Strings.Unbounded.To_String
-                (Create_Name_For_File
-                  (Ada.Strings.Unbounded.To_String 
-                    (Project.Abs_Project_Dirctory),
-                   Ada.Strings.Unbounded.To_String
-                    (A_Vis_Window_Data_Element.Vis_Window_Name),
-                   Const_Vis_Window_File_Ending)),
-               Memory_Loaded_Vis_Window_Hashs.Fetch 
-                (Project.All_Memory_Loaded_Vis_Windows,
-                 A_Vis_Window_Data_Element.Existing_Vis_Window_File));      
-         end if;
-
-         -- change vis window status
-         A_Vis_Window_Data_Element.Is_File_Linked := True;          
-         Known_Vis_Windows_Hashs.Update_Value
-            (Project.All_Project_Vis_Windows,
-             A_Vis_Window_Key,
-             A_Vis_Window_Data_Element);
-      end loop;
-
-      -- Write all iml_subgraphs into the management files and adjust
-      -- status (make all of them file linked).
-      ---------------------------------------------------------------
-      Subgraphs_Iter := Subgraph_Data_Hashs.Make_Values_Iter
-        (Project.All_Subgraphs);
-
-      while Subgraph_Data_Hashs.More (Subgraphs_Iter) loop
-
-         Subgraph_Data_Hashs.Next (Subgraphs_Iter, A_Subgraph_Data_Elemet);
-
-         -- Create new management File if necessary (loacted in project
-         -- directory).
-         if (A_Subgraph_Data_Elemet.Is_File_Linked = False) then
-
-            -- Create Stream File
-            Subgraph_File_Name := Project.Abs_Project_Dirctory
-            & Graph_Lib.Subgraphs.Get_Name (A_Subgraph_Data_Elemet.Subgraph)
-            & ".xml";
-
-            -- just create the file
-            Ada.Streams.Stream_IO.Create
-              (Stream_File,
-               Ada.Streams.Stream_IO.Out_File,
-               Ada.Strings.Unbounded.To_String (Subgraph_File_Name));
-
-
-
-            Ada.Streams.Stream_IO.Close (Stream_File);
-
-            A_Subgraph_Data_Elemet.Is_File_Linked := True;
-            A_Subgraph_Data_Elemet.Existing_Subgraph_File :=
-              Subgraph_File_Name;
-         end if;
-
-         -- write Subgraph_Content into stream file
-         Subgraph_File_Name := A_Subgraph_Data_Elemet.Existing_Subgraph_File;
-         Ada.Streams.Stream_IO.Open
-           (Stream_File,
-            Ada.Streams.Stream_IO.Out_File,
-            Ada.Strings.Unbounded.To_String (Subgraph_File_Name));
-
-         Ada_Stream := Ada.Streams.Stream_IO.Stream (Stream_File);
-         Bauhaus_Out_Stream := Bauhaus_IO.Make_Internal (Ada_Stream);
-
-         -- stream the subgraph
-         Graph_Lib.Subgraphs.Subgraph_Write
-           (Bauhaus_Out_Stream, A_Subgraph_Data_Elemet.Subgraph);
-
-         -- close resources
-         Bauhaus_IO.Release (Bauhaus_Out_Stream);
-         Ada.Streams.Stream_IO.Close (Stream_File);
-
-      end loop;
-
-      -- Write Node_Annotations
-      -------------------------
-      Node_Annotations.Write_To_File
-        (Project.The_Node_Annotations,
-         Ada.Strings.Unbounded.To_String
-           (Project.Node_Annotations_File));
-
-      -- Update Project XML File (MUST happen at the end - not before)
-      ---------------------------
-      Write_Project_XML_File (Project);
+      -- do not migrate
+      General_Store_Hole_Project
+        (Project                   => Project,
+         Change_Project_Files      => False,
+         New_Project_Name          => "",
+         New_Abs_Project_Directory => "");
    end Store_Whole_Project;
 
    ---------------------------------------------------------------------------
-   --  Tricky Implementation working with status changes of visual window
-   --  data elements and subgraph data elements.
-
-
-   --    !!!TODO All Destroy Emergency Files (in old directory)
+   -- Change_Project_Dir determines whether the old Project should be stored
+   --   (False) or if the Project should be stored under a new name
+   --   in a new directory (True)
    procedure Store_Whole_Project_As
-     (Project           : in Project_Access;
-      Project_Name      : in String;
-      Project_Directory : in String) is
-
-      use Ada.Strings.Unbounded;
-
-      Abs_Project_Directory     : Ada.Strings.Unbounded.Unbounded_String;
-
-      Abs_Node_Annotations_File : Ada.Strings.Unbounded.Unbounded_String;
-
-      Known_Vis_Iter            : Known_Vis_Windows_Hashs.Values_Iter;
-      A_Vis_Window_Data_Element : Vis_Window_Data_Element;
-      A_Vis_Window              : Vis_Windows.Visual_Window_Access;
-
-      Subgraphs_Iter : Subgraph_Data_Hashs.Values_Iter;
-      A_Subgraph_Data_Elemet : Subgraph_Data_Elemet;
+     (Project               : in Project_Access;      
+      New_Project_Name      : in String;
+      New_Project_Directory : in String) is
+      
+      Abs_Project_Directory     : Ada.Strings.Unbounded.Unbounded_String;     
    begin
 
       -- Security checks
@@ -1058,11 +1181,11 @@ package body Giant.Projects is
          raise Project_Access_Not_Initialized_Exception;
       end if;
 
-      if (GNAT.OS_Lib.Is_Directory (Project_Directory) = False) then
+      if (GNAT.OS_Lib.Is_Directory (New_Project_Directory) = False) then
          raise Invalid_Project_Directory_Excpetion;
       end if;
 
-      if Is_Already_A_Project_File_In_Directory (Project_Directory) then
+      if Is_Already_A_Project_File_In_Directory (New_Project_Directory) then
          raise Directory_Holds_Already_A_Project_File_Exception;
       end if;
 
@@ -1070,109 +1193,20 @@ package body Giant.Projects is
       --  calculate absloute paths for new files
       Abs_Project_Directory := Ada.Strings.Unbounded.To_Unbounded_String
         (File_Management.Get_Absolute_Path_To_Directory_From_Relative
-          (GNAT.Directory_Operations.Get_Current_Dir, Project_Directory));
+          (GNAT.Directory_Operations.Get_Current_Dir, New_Project_Directory));
 
       Abs_Project_Directory := Ada.Strings.Unbounded.To_Unbounded_String
         (Append_Dir_Separator_If_Necessary
           (Ada.Strings.Unbounded.To_String (Abs_Project_Directory)));
-
-      --  the new node annoations file
-      Abs_Node_Annotations_File := Abs_Project_Directory
-        & Ada.Strings.Unbounded.To_Unbounded_String
-          (Const_Node_Annotations_File_Name);
-
-      --  "Migrate the project"
-      --  (must be done befor processing vis windows and subgraphs).
-      -------------------------
-      Project.Project_Name := Ada.Strings.Unbounded.To_Unbounded_String
-        (Project_Name);
-
-      Project.Abs_Project_Dirctory := Abs_Project_Directory;
-      Project.Node_Annotations_File := Abs_Node_Annotations_File;
-
-      --  change status of all visualisation windows
-      --  and move all of them into the new directory
-      -----------------------------------------------
-      Known_Vis_Iter :=
-        Known_Vis_Windows_Hashs.Make_Values_Iter
-          (Project.All_Project_Vis_Windows);
-
-      while Known_Vis_Windows_Hashs.More (Known_Vis_Iter) loop
-
-         Known_Vis_Windows_Hashs.Next
-           (Known_Vis_Iter, A_Vis_Window_Data_Element);
-
-         if (A_Vis_Window_Data_Element.Is_Memory_Loaded = False) then
-
-            -- load window into memory
-            A_Vis_Window := Get_Visualisation_Window
-              (Project,
-               Ada.Strings.Unbounded.To_String
-                 (A_Vis_Window_Data_Element.Vis_Window_Name));
-
-            A_Vis_Window_Data_Element.Is_File_Linked := False;
-              A_Vis_Window_Data_Element.Existing_Vis_Window_File :=
-                Ada.Strings.Unbounded.Null_Unbounded_String;
-
-            -- save window (as its status is "not file linked" a
-            -- new file in the new project directory will be created
-            -- (will change status to file linked)
-            Store_Single_Project_Visualisation_Window
-              (Project,
-               Ada.Strings.Unbounded.To_String
-                 (A_Vis_Window_Data_Element.Vis_Window_Name));
-
-            -- close vis window in project (does also deallocate)
-            Close_Window_In_Project
-              (Project,
-               Ada.Strings.Unbounded.To_String
-                 (A_Vis_Window_Data_Element.Vis_Window_Name));
-
-         else
-            --  window is already memory loaded
-            A_Vis_Window := Get_Visualisation_Window
-              (Project,
-               Ada.Strings.Unbounded.To_String
-                 (A_Vis_Window_Data_Element.Vis_Window_Name));
-
-            A_Vis_Window_Data_Element.Is_File_Linked := False;
-              A_Vis_Window_Data_Element.Existing_Vis_Window_File :=
-                Ada.Strings.Unbounded.Null_Unbounded_String;
-
-            -- save window (as its status is "not file linked" a
-            -- new file in the new project directory will be created
-            -- (will change status to file linked)
-            Store_Single_Project_Visualisation_Window
-              (Project,
-               Ada.Strings.Unbounded.To_String
-                 (A_Vis_Window_Data_Element.Vis_Window_Name));
-         end if;
-      end loop;
-
-      --  change status of all subgraphs
-      --  this will result in moving all management files to the new
-      --  project directory on the next "store whole project" order.
-      ---------------------------------------------------------------
-      Subgraphs_Iter := Subgraph_Data_Hashs.Make_Values_Iter
-        (Project.All_Subgraphs);
-
-      while Subgraph_Data_Hashs.More (Subgraphs_Iter) loop
-
-         Subgraph_Data_Hashs.Next (Subgraphs_Iter, A_Subgraph_Data_Elemet);
-         A_Subgraph_Data_Elemet.Is_File_Linked := False;
-      end loop;
-
-      -- write dtd
-      Write_DTD_To_Directory
-        (Ada.Strings.Unbounded.To_String
-          (Abs_Project_Directory));
-
-      -- Automatically writes the rest (xml file for
-      -- node anntoations, the project xml file and management files
-      -- for subgraphs) -
-      -- (and the opended vis windows once more - that is not really
-      --  necessary).
-      Store_Whole_Project (Project);
+          
+      -- migrate
+      General_Store_Hole_Project
+        (Project                   => Project,
+         Change_Project_Files      => True,
+         New_Project_Name          => New_Project_Name,
+         New_Abs_Project_Directory => 
+           Ada.Strings.Unbounded.To_String 
+             (Abs_Project_Directory));                                
    end Store_Whole_Project_As;
 
    ---------------------------------------------------------------------------
@@ -1201,7 +1235,7 @@ package body Giant.Projects is
       end if;
 
       return Ada.Strings.Unbounded.To_String
-        (Project.Abs_Project_Dirctory);
+        (Project.Abs_Project_Directory);
    end Get_Project_Directory;
 
 
@@ -1415,14 +1449,14 @@ package body Giant.Projects is
 
 
    ---------------------------------------------------------------------------
-   function Get_All_Sungraphs
+   function Get_All_Subgraphs
      (Project : in Project_Access)
      return String_Lists.List is
    begin
 
        -- DUMMY
       return String_Lists.Create;
-   end Get_All_Sungraphs;
+   end Get_All_Subgraphs;
 
    ---------------------------------------------------------------------------
    procedure Add_Subgraph

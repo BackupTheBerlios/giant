@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.14 $
+--  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.15 $
 --  $Author: schwiemn $
---  $Date: 2003/06/17 15:01:35 $
+--  $Date: 2003/06/17 19:40:13 $
 --
 --  ----------------
 --  This package realizes a container that administrates the components
@@ -581,7 +581,7 @@ package Giant.Vis_Windows is
    --      selection with the name "Selection_Name" is not part of
    --      "Visual_Window_Access"
    --    Selection_May_Not_Be_Faded_Out_Exception - Raised if the Selection
-   --     may not be faded out.
+   --      may not be faded out.
    procedure Fade_Out_Selection
      (Vis_Window     : in Visual_Window_Access;
       Selection_Name : in String);

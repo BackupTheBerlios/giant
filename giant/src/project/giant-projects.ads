@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.14 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.15 $
 -- $Author: schwiemn $
--- $Date: 2003/06/17 15:01:35 $
+-- $Date: 2003/06/17 19:40:13 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -253,6 +253,8 @@ package Giant.Projects is
    -- into the main memory) exactly corresponds to the state of
    -- the project files.
    --
+   -- All security_save_files will be deleted.
+   --
    -- Parameters:
    --   Project - The instance of the ADT that should be written into
    --     its project files.
@@ -288,8 +290,8 @@ package Giant.Projects is
    -- Parameters:
    --   Project - The instance of the ADT that should be written into
    --             new project files.
-   --   Project_Name - The new name of the project.
-   --   Project_Directory - The new project directory.
+   --   New_Project_Name - The new name of the project.
+   --   New_Project_Directory - The new project directory.
    -- Raises:
    --   Project_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Project_Access" is passed as
@@ -299,9 +301,9 @@ package Giant.Projects is
    --   Directory_Holds_Already_A_Project_File_Exception -- Raised if
    --     "Project_Directory" already holds a project file.
    procedure Store_Whole_Project_As
-      (Project           : in Project_Access;
-       Project_Name      : in String;
-       Project_Directory : in String);
+      (Project               : in Project_Access;
+       New_Project_Name      : in String;
+       New_Project_Directory : in String);
 
    ---------------------------------------------------------------------------
    -- Returns the name of a project
@@ -565,6 +567,10 @@ package Giant.Projects is
    --
    -- This method does NOT write the data used for a visualisation
    -- window into the management file for that window.
+   --  
+   -- A "Security Save File" (describing the actual status of the window)
+   -- will be created (this file will be removed on execution of
+   -- Store_Whole_Project).
    --
    -- Note !
    --   The heap memory needed for the visualisation window
@@ -579,7 +585,6 @@ package Giant.Projects is
    --   will be DANGLING POINTERS after the call of
    --
    --  >"Close_Window_In_Project(Project_A, My_Window_X)"
-   --
    --
    -- For a visualisation window that is not loaded into the
    -- main memory (Status: File_Linked) nothing will happen.
@@ -626,9 +631,9 @@ package Giant.Projects is
    --   If it exists the management file for this visualisation window
    --   is DELETED too.
    --
-   --   An "Emergency Save File" (describing the actual status of the window)
+   --   A "Security Save File" (describing the actual status of the window)
    --   will be created (this file will be removed on execution of
-   --   Store_Whole_Project or Store_Whole_Project_As).
+   --   Store_Whole_Project).
    --
    -- Parameters:
    --   Project - The instance of the ADT holding a project.
@@ -725,7 +730,7 @@ package Giant.Projects is
    --   Project_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Project_Access" is passed as
    --     parameter.
-   function Get_All_Sungraphs
+   function Get_All_Subgraphs
      (Project : in Project_Access)
      return String_Lists.List;
 
@@ -766,8 +771,12 @@ package Giant.Projects is
    --   deallocated).
    --   Beware of memory leacks!
    --
-   --   The management file for the subgraph is deallocated too
+   --   The management file for the subgraph is removed too
    --   (if one exists).
+   --   
+   --   A "Security Save File" (describing the actual status of the 
+   --   subgraph) will be created (this file will be removed on 
+   --   execution of Store_Whole_Project).
    --
    --   After the call of that subprogram you may do what ever you want
    --   with the removed subgraph without affecting the internal
@@ -941,7 +950,7 @@ private
     -- management file for node annatations) describing the
     -- whole project has to be located.
     -- Value not written to project xml file
-    Abs_Project_Dirctory : Ada.Strings.Unbounded.Unbounded_String;
+    Abs_Project_Directory : Ada.Strings.Unbounded.Unbounded_String;
 
     -- The file holding the Bauhaus IML-Graph
     Abs_Bauhaus_IML_Graph_File : Ada.Strings.Unbounded.Unbounded_String;
