@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.ads,v $, $Revision: 1.5 $
+--  $RCSfile: giant-default_dialog.ads,v $, $Revision: 1.6 $
 --  $Author: squig $
---  $Date: 2003/06/21 21:04:02 $
+--  $Date: 2003/06/22 21:54:21 $
 --
 ------------------------------------------------------------------------------
 --
@@ -51,8 +51,18 @@ package Giant.Default_Dialog is
 
    type Default_Dialog_Access is access all Default_Dialog_Record'Class;
 
-   procedure Add
-     (Dialog : access Default_Dialog_Record'Class;
+   procedure Create
+     (Dialog  :    out Default_Dialog_Access;
+      Title   : in     String;
+      Buttons : in     Button_Type);
+
+   procedure Initialize
+     (Dialog  : access Default_Dialog_Record'class;
+      Title   : in     String;
+      Buttons : in     Button_Type);
+
+   procedure Add_Button
+     (Dialog : access Default_Dialog_Record;
       Button : in     Gtk.Button.Gtk_Button);
 
    function Add_Icon_Box
@@ -78,42 +88,20 @@ package Giant.Default_Dialog is
      (Dialog : access Default_Dialog_Record)
      return Boolean;
 
-   procedure Create
-     (Dialog  :    out Default_Dialog_Access;
-      Title   : in     String;
-      Buttons : in     Button_Type);
-
    function Get_Center_Box
-     (Dialog : access Default_Dialog_Record'class)
+     (Dialog : access Default_Dialog_Record)
      return Gtk.Box.Gtk_Vbox;
 
    function Get_Response
-     (Dialog : access Default_Dialog_Record'class)
+     (Dialog : access Default_Dialog_Record)
      return Response_Type;
 
-   procedure Initialize
-     (Dialog  : access Default_Dialog_Record'class;
-      Title   : in     String;
-      Buttons : in     Button_Type);
-
    procedure Set_Center_Widget
-     (Dialog : access Default_Dialog_Record'Class;
+     (Dialog : access Default_Dialog_Record;
       Widget : access Gtk.Widget.Gtk_Widget_Record'Class);
 
-   function Show_Confirmation_Dialog
-     (Message : in String;
-      Buttons : in Button_Type := Button_Yes_No)
-      return Response_Type;
-
-   procedure Show_Error_Dialog
-     (Message : in String;
-      Title   : in String := -"Giant Error");
-
-   function Show_Input_Dialog
-     (Message       : in String;
-      Title         : in String := -"Giant Input";
-      Default_Input : in String := "")
-     return String;
+   procedure Show_Modal
+     (Dialog : access Default_Dialog_Record);
 
 private
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-default_dialog.adb,v $, $Revision: 1.10 $
 --  $Author: squig $
---  $Date: 2003/06/21 21:04:02 $
+--  $Date: 2003/06/22 21:54:21 $
 --
 
 with Ada.Text_Io; use Ada.Text_Io;
@@ -40,6 +40,12 @@ with Giant.Gui_Utils; use Giant.Gui_Utils;
 
 package body Giant.Default_Dialog is
 
+   ---------------------------------------------------------------------------
+   --  Helpers
+   ---------------------------------------------------------------------------
+
+   ---------------------------------------------------------------------------
+   --  Called by the button callbacks.
    procedure Hide
      (Source   : access Gtk.Widget.Gtk_Widget_Record'Class;
       Response : in     Response_Type)
@@ -56,6 +62,10 @@ package body Giant.Default_Dialog is
          end if;
       end if;
    end;
+
+   ---------------------------------------------------------------------------
+   --  Callbacks
+   ---------------------------------------------------------------------------
 
    procedure On_Cancel_Button_Clicked
      (Source : access Gtk.Button.Gtk_Button_Record'Class)
@@ -107,6 +117,10 @@ package body Giant.Default_Dialog is
       return True;
    end Can_Hide;
 
+   ---------------------------------------------------------------------------
+   --  Initializers
+   ---------------------------------------------------------------------------
+
    procedure Create
      (Dialog  :    out Default_Dialog_Access;
       Title   : in     String;
@@ -117,22 +131,6 @@ package body Giant.Default_Dialog is
       Initialize (Dialog, Title, Buttons);
    end Create;
 
-   function Get_Center_Box
-     (Dialog : access Default_Dialog_Record'class)
-     return Gtk.Box.Gtk_Vbox
-   is
-   begin
-      return Dialog.Center_Box;
-   end Get_Center_Box;
-
-   function Get_Response
-     (Dialog : access Default_Dialog_Record'class)
-     return Response_Type
-   is
-   begin
-      return Dialog.Response;
-   end Get_Response;
-
    procedure Initialize
      (Dialog  : access Default_Dialog_Record'class;
       Title   : in     String;
@@ -141,7 +139,6 @@ package body Giant.Default_Dialog is
       Button : Gtk.Button.Gtk_Button;
    begin
       Gtk.Window.Initialize (Dialog, Window_Toplevel);
-      Set_Modal (Dialog, Dialog.Is_Modal);
       Set_Title (Dialog, Title);
 
       --  center box
@@ -196,8 +193,12 @@ package body Giant.Default_Dialog is
          Widget_Return_Callback.To_Marshaller (On_Delete'Access));
    end Initialize;
 
-   procedure Add
-     (Dialog : access Default_Dialog_Record'Class;
+   ---------------------------------------------------------------------------
+   --  Public Methods
+   ---------------------------------------------------------------------------
+
+   procedure Add_Button
+     (Dialog : access Default_Dialog_Record;
       Button : in Gtk.Button.Gtk_Button)
    is
    begin
@@ -246,8 +247,24 @@ package body Giant.Default_Dialog is
       return Add_Icon_Box (Dialog, Icon_Filename, Label);
    end Add_Icon_Box;
 
+   function Get_Center_Box
+     (Dialog : access Default_Dialog_Record)
+     return Gtk.Box.Gtk_Vbox
+   is
+   begin
+      return Dialog.Center_Box;
+   end Get_Center_Box;
+
+   function Get_Response
+     (Dialog : access Default_Dialog_Record)
+     return Response_Type
+   is
+   begin
+      return Dialog.Response;
+   end Get_Response;
+
    procedure Set_Center_Widget
-     (Dialog : access Default_Dialog_Record'Class;
+     (Dialog : access Default_Dialog_Record;
       Widget : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
    begin
@@ -258,79 +275,14 @@ package body Giant.Default_Dialog is
    end Set_Center_Widget;
 
    procedure Show_Modal
-     (Dialog : access Default_Dialog_Record'Class)
+     (Dialog : access Default_Dialog_Record)
    is
    begin
       Dialog.Is_Modal := True;
+      Set_Modal (Dialog, Dialog.Is_Modal);
 
       Show_All (Dialog);
       Gtk.Main.Main;
    end Show_Modal;
-
-   function Show_Confirmation_Dialog
-     (Message : in String;
-      Buttons : in Button_Type := Button_Yes_No)
-     return Response_Type
-   is
-      Dialog : Default_Dialog_Access;
-      Box : Gtk.Box.Gtk_Hbox;
-   begin
-      Create (Dialog, -"Giant Question", Buttons);
-      Box := Add_Icon_Box (Dialog, "gnome-question.xpm", Message);
-
-      Show_Modal (Dialog);
-      Destroy (Dialog);
-
-      return Dialog.Response;
-   end Show_Confirmation_Dialog;
-
-   procedure Show_Error_Dialog
-     (Message : in String;
-      Title   : in String := -"Giant Error")
-   is
-      Dialog : Default_Dialog_Access;
-      Box : Gtk.Box.Gtk_Hbox;
-   begin
-      Create (Dialog, Title, Button_Close);
-      Box := Add_Icon_Box (Dialog, "gnome-error.xpm", Message);
-
-      Show_Modal (Dialog);
-      Destroy (Dialog);
-   end Show_Error_Dialog;
-
-
-   function Show_Input_Dialog
-     (Message       : in String;
-      Title         : in String := -"Giant Input";
-      Default_Input : in String := "")
-      return String
-   is
-      Dialog : Default_Dialog_Access;
-      Box : Gtk.Box.Gtk_Hbox;
-      Input : Gtk.Gentry.Gtk_Entry;
-   begin
-      Create (Dialog, Title, Button_Okay_Cancel);
-      Box := Add_Icon_Box (Dialog, "gnome-question.xpm", Message);
-      Gtk.Gentry.Gtk_New (Input);
-      Gtk.Gentry.Set_Text (Input, Default_Input);
-      Gtk.Box.Add (Box, Input);
-
-      Gtk.Gentry.Set_Flags (Input, Gtk.Widget.Can_Default);
-      Gtk.Gentry.Grab_Default (Input);
-
-      Show_Modal (Dialog);
-
-      if (Dialog.Response = Response_Okay) then
-         declare
-            S : constant String := Gtk.Gentry.Get_Text (Input);
-         begin
-            Destroy (Dialog);
-            return S;
-         end;
-      else
-         Destroy (Dialog);
-         return "";
-      end if;
-   end Show_Input_Dialog;
 
 end Giant.Default_Dialog;

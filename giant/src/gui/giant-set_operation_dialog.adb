@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-set_operation_dialog.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-set_operation_dialog.adb,v $, $Revision: 1.6 $
 --  $Author: squig $
---  $Date: 2003/06/20 16:47:35 $
+--  $Date: 2003/06/22 21:54:21 $
 --
 
 with Ada.Strings.Unbounded;
@@ -38,6 +38,7 @@ with String_Lists;
 
 with Giant.Controller;
 with Giant.Default_Dialog;
+with Giant.Dialogs;
 with Giant.Projects;
 with Giant.Gui_Utils; use Giant.Gui_Utils;
 
@@ -84,12 +85,11 @@ package body Giant.Set_Operation_Dialog is
       -- the reason for closing the dialog
       Response : Default_Dialog.Response_Type;
    begin
-      Response := Default_Dialog.Get_Response (Dialog);
+      Response := Get_Response (Dialog);
 
-      if (Default_Dialog.Get_Response (Dialog)
-          = Default_Dialog.Response_Okay) then
+      if (Get_Response (Dialog) = Default_Dialog.Response_Okay) then
          if (Get_Target (Dialog) = "") then
-            Default_Dialog.Show_Error_Dialog
+            Dialogs.Show_Error_Dialog
               (-"Please provide a name for the target.");
             return False;
          end if;
@@ -112,16 +112,15 @@ package body Giant.Set_Operation_Dialog is
                                           Get_Right_Source (Dialog),
                                           Get_Target (Dialog));
             else
-               Default_Dialog.Show_Error_Dialog (-"Please select a valid operation.");
+               Dialogs.Show_Error_Dialog (-"Please select a valid operation.");
                return False;
             end if;
          exception
             when Projects.Subgraph_Is_Not_Part_Of_Project_Exception =>
-               Default_Dialog.Show_Error_Dialog
-                 (-"Please select valid sources.");
+               Dialogs.Show_Error_Dialog (-"Please select valid sources.");
                return False;
             when Projects.Subgraph_Is_Already_Part_Of_Project_Exception =>
-               Default_Dialog.Show_Error_Dialog
+               Dialogs.Show_Error_Dialog
                  (-"The target name is already used. Please try a different name.");
                return False;
          end;
@@ -177,7 +176,7 @@ package body Giant.Set_Operation_Dialog is
       Gtk.Table.Gtk_New (Table, Rows => 5, Columns => 2, Homogeneous => False);
       Gtk.Table.Set_Row_Spacings (Table, Glib.Guint (DEFAULT_SPACING));
       Gtk.Table.Set_Col_Spacings (Table, Glib.Guint (DEFAULT_SPACING));
-      Default_Dialog.Set_Center_Widget (Dialog, Table);
+      Set_Center_Widget (Dialog, Table);
 
       --  left source
       Gtk.Combo.Gtk_New (Dialog.Left_Source);

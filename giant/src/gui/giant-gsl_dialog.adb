@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.6 $
 --  $Author: squig $
---  $Date: 2003/06/18 15:16:26 $
+--  $Date: 2003/06/22 21:54:21 $
 --
 
 with Ada.IO_Exceptions;
@@ -39,8 +39,8 @@ with Gtk.Text;
 with Gtk.Widget;
 
 with Giant.Controller;
-with Giant.Default_Dialog;
-with Giant.Gui_Utils; use Giant.Gui_Utils;
+with Giant.Dialogs;
+with Giant.Gui_Utils;
 
 package body Giant.Gsl_Dialog is
 
@@ -79,7 +79,7 @@ package body Giant.Gsl_Dialog is
       return True;
    exception
       when others =>
-         Default_Dialog.Show_Error_Dialog(-"Could not read file: " & Filename);
+         Dialogs.Show_Error_Dialog(-"Could not read file: " & Filename);
          return False;
    end Read;
 
@@ -109,7 +109,7 @@ package body Giant.Gsl_Dialog is
       return True;
    exception
       when others =>
-         Default_Dialog.Show_Error_Dialog(-"Could not write file: " & Filename);
+         Dialogs.Show_Error_Dialog(-"Could not write file: " & Filename);
          return False;
    end Write;
 
@@ -148,13 +148,13 @@ package body Giant.Gsl_Dialog is
      (Dialog : access Gsl_Dialog_Record'Class)
       return Boolean
    is
-      use Default_Dialog;
+      use type Default_Dialog.Response_Type;
       use Ada.Strings.Unbounded;
 
       Response : Default_Dialog.Response_Type;
    begin
       if (Dialog.Text_Has_Changed) then
-         Response := Default_Dialog.Show_Confirmation_Dialog
+         Response := Dialogs.Show_Confirmation_Dialog
            (-"The text has changed. Save changes?",
             Default_Dialog.Button_Yes_No_Cancel);
          if (Response = Default_Dialog.Response_Yes) then
@@ -230,14 +230,13 @@ package body Giant.Gsl_Dialog is
       Response : Default_Dialog.Response_Type;
       use Default_Dialog;
    begin
-      Response := Default_Dialog.Get_Response (Dialog);
+      Response := Get_Response (Dialog);
 
       if (not Save_Unchanged (Dialog)) then
          return False;
       end if;
 
-      if (Default_Dialog.Get_Response (Dialog)
-          = Default_Dialog.Response_Okay) then
+      if (Get_Response (Dialog) = Default_Dialog.Response_Okay) then
          -- the okay button was pressed
          declare
             Script : String := Gtk.Text.Get_Text (Dialog.Text_Area);
@@ -264,6 +263,8 @@ package body Giant.Gsl_Dialog is
    procedure Initialize
      (Dialog : access Gsl_Dialog_Record'class)
    is
+      use Giant.Gui_Utils;
+
       Scrolled_Window : Gtk.Scrolled_Window.Gtk_Scrolled_Window;
    begin
       Default_Dialog.Initialize (Dialog,
@@ -280,13 +281,12 @@ package body Giant.Gsl_Dialog is
                                       Policy_Always);
       Gtk.Scrolled_Window.Add (Scrolled_Window, Dialog.Text_Area);
 
-      Default_Dialog.Set_Center_Widget (Dialog, Scrolled_Window);
+      Set_Center_Widget (Dialog, Scrolled_Window);
 
       -- buttons
-      Default_Dialog.Add (Dialog, New_Button (-"Open...",
-                                              On_Open_Button_Clicked'Access));
-      Default_Dialog.Add (Dialog,
-                          New_Button (-"Save As...",
+      Add_Button (Dialog, New_Button (-"Open...",
+                                      On_Open_Button_Clicked'Access));
+      Add_Button (Dialog, New_Button (-"Save As...",
                                       On_Save_As_Button_Clicked'Access));
 
       Set_Default (Dialog, Dialog.Text_Area);

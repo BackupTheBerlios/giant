@@ -21,9 +21,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.13 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.14 $
 --  $Author: squig $
---  $Date: 2003/06/20 16:47:35 $
+--  $Date: 2003/06/22 21:54:21 $
 --
 
 with Ada.Strings.Unbounded;
@@ -216,8 +216,7 @@ package body Giant.Controller is
       Subgraph : Giant.Graph_Lib.Subgraphs.Subgraph
         := Projects.Get_Subgraph (Current_Project, Subgraph_Name);
       Selection : Giant.Graph_Lib.Selections.Selection
-        := Giant.Graph_Lib.Selections.Create (Name);
-      -- FIX: , Subgraph
+        := Giant.Graph_Lib.Subgraphs.Get_Selection (Subgraph);
    begin
       Vis_Windows.Add_Selection (Window, Selection);
       Gui_Manager.Add_Selection (Window_Name, Name);

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.8 $
 --  $Author: squig $
---  $Date: 2003/06/20 18:03:14 $
+--  $Date: 2003/06/22 21:54:21 $
 --
 
 with Glib;
@@ -35,6 +35,7 @@ with Gtk.Widget;
 with Giant.Clists;
 with Giant.Controller;
 with Giant.Default_Dialog;
+with Giant.Dialogs;
 with Giant.Gui_Utils; use Giant.Gui_Utils;
 
 package body Giant.Graph_Window is
@@ -275,12 +276,12 @@ package body Giant.Graph_Window is
      (Window : access Graph_Window_Record'Class)
      return Boolean
    is
-      use type Giant.Default_Dialog.Response_Type;
+      use type Default_Dialog.Response_Type;
 
       Response : Default_Dialog.Response_Type;
    begin
       if (Window.Is_Dirty) then
-         Response := Default_Dialog.Show_Confirmation_Dialog
+         Response := Dialogs.Show_Confirmation_Dialog
            (-"The content has changed. Save changes?",
             Default_Dialog.Button_Yes_No_Cancel);
          if (Response = Default_Dialog.Response_Yes) then

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-node_info_dialog.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-node_info_dialog.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/06/20 18:03:14 $
+--  $Date: 2003/06/22 21:54:21 $
 --
 
 with Interfaces.C.Strings;
@@ -86,7 +86,7 @@ package body Giant.Node_Info_Dialog is
                                  Default_Dialog.Button_Close);
 
       --  vbox
-      Center_Box := Default_Dialog.Get_Center_Box (Dialog);
+      Center_Box := Get_Center_Box (Dialog);
 
       --  node
       Gtk.Table.Gtk_New (Table, Rows => 2, Columns => 2, Homogeneous => False);
@@ -115,11 +115,10 @@ package body Giant.Node_Info_Dialog is
                           Padding => DEFAULT_SPACING);
 
       --  buttons
-      Default_Dialog.Add (Dialog, New_Button (-"Update",
-                                              On_Update_Button_Clicked'Access));
-      Default_Dialog.Add (Dialog, New_Button (-"Pick",
-                                              On_Pick_Button_Clicked'Access));
-
+      Add_Button (Dialog,
+                  New_Button (-"Update", On_Update_Button_Clicked'Access));
+      Add_Button (Dialog,
+                  New_Button (-"Pick", On_Pick_Button_Clicked'Access));
    end;
 
    ---------------------------------------------------------------------------

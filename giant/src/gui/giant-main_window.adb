@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.20 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.21 $
 --  $Author: squig $
---  $Date: 2003/06/21 21:04:02 $
+--  $Date: 2003/06/22 21:54:21 $
 --
 
 with Ada.Strings.Unbounded;
@@ -51,7 +51,7 @@ with Gtkada.Types;
 with Giant.About_Dialog;
 with Giant.Clists;
 with Giant.Controller;
-with Giant.Default_Dialog;
+with Giant.Dialogs;
 with Giant.Default_Logger;
 with Giant.Graph_Lib;
 with Giant.Graph_Lib.Subgraphs;
@@ -156,7 +156,7 @@ package body Giant.Main_Window is
       end;
    exception
       when Projects.Directory_Holds_Already_A_Project_File_Exception =>
-         Default_Dialog.Show_Error_Dialog (-"The project could not be created. The directory already contains a project.");
+         Dialogs.Show_Error_Dialog (-"The project could not be created. The directory already contains a project.");
    end On_Project_New;
 
    procedure On_Project_Open
@@ -175,7 +175,7 @@ package body Giant.Main_Window is
       end;
    exception
       when Projects.Project_Does_Not_Exist_Exception =>
-         Default_Dialog.Show_Error_Dialog (-"The project could not be opened. One or more project files are missing.");
+         Dialogs.Show_Error_Dialog (-"The project could not be opened. One or more project files are missing.");
    end On_Project_Open;
 
    procedure On_Project_Save
@@ -275,15 +275,30 @@ package body Giant.Main_Window is
       Closed := Controller.Close_Window (Get_Selected_Window);
    end On_Window_List_Close;
 
+   function Validate_Window_Name
+     (Name : in String)
+      return Boolean
+   is
+   begin
+      if (Projects.Does_Vis_Window_Exist (Controller.Get_Project, Name)) then
+         Dialogs.Show_Error_Dialog
+           (-"A window with this name already exists.");
+         return False;
+      end if;
+      return True;
+   end Validate_Window_Name;
+
    procedure On_Window_List_Rename
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
+
       Old_Name : String := Get_Selected_Window;
    begin
       declare
          New_Name : constant String
-           := Default_Dialog.Show_Input_Dialog (-"New name", -"Rename Window",
-                                                Old_Name);
+           := Dialogs.Show_Input_Dialog
+           (-"New name", -"Rename Window",
+            Old_Name, Validate_Window_Name'Access);
       begin
 
          if (New_Name /= "" and then New_Name /= Old_Name) then
@@ -332,6 +347,28 @@ package body Giant.Main_Window is
       null;
    end On_Subgraph_List_Highlight;
 
+   procedure On_Subgraph_List_Unhightlight
+     (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
+   is
+   begin
+      --Controller.Remove_Subgraph (Get_Selected_Subgraph);
+      null;
+   end On_Subgraph_List_Unhightlight;
+
+   procedure On_Subgraph_List_Create_Selection
+     (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
+   is
+   begin
+      null;
+   end On_Subgraph_List_Create_Selection;
+
+   procedure On_Subgraph_List_Duplicate
+     (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
+   is
+   begin
+      null;
+   end On_Subgraph_List_Duplicate;
+
    procedure On_Subgraph_List_Delete
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
@@ -340,6 +377,19 @@ package body Giant.Main_Window is
       Removed := Controller.Remove_Subgraph (Get_Selected_Subgraph);
    end On_Subgraph_List_Delete;
 
+   function Validate_Subgraph_Name
+     (Name : in String)
+      return Boolean
+   is
+   begin
+      if (Projects.Does_Subgraph_Exist (Controller.Get_Project, Name)) then
+         Dialogs.Show_Error_Dialog
+           (-"A subgraph with this name already exists.");
+         return False;
+      end if;
+      return True;
+   end Validate_Subgraph_Name;
+
    procedure On_Subgraph_List_Rename
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
@@ -347,9 +397,9 @@ package body Giant.Main_Window is
    begin
       declare
          New_Name : constant String
-           := Default_Dialog.Show_Input_Dialog (-"New name",
-                                                -"Rename Subgraph",
-                                                Old_Name);
+           := Dialogs.Show_Input_Dialog
+           (-"New name", -"Rename Subgraph",
+            Old_Name, Validate_Subgraph_Name'Access);
       begin
 
          if (New_Name /= "" and then New_Name /= Old_Name) then
@@ -485,6 +535,16 @@ package body Giant.Main_Window is
       Gtk.Menu.Append (Subgraph_List_Menu,
                        New_Menu_Item (-"Highlight",
                                       On_Subgraph_List_Highlight'Access));
+      Gtk.Menu.Append (Subgraph_List_Menu,
+                       New_Menu_Item (-"Unhighlight In All Windows",
+                                      On_Subgraph_List_Unhightlight'Access));
+      Gtk.Menu.Append (Subgraph_List_Menu, New_Menu_Separator);
+      Gtk.Menu.Append (Subgraph_List_Menu,
+                       New_Menu_Item (-"Duplicate...",
+                                      On_Subgraph_List_Duplicate'Access));
+      Gtk.Menu.Append (Subgraph_List_Menu,
+                       New_Menu_Item (-"Insert As Selection...",
+                                      On_Subgraph_List_Create_Selection'Access));
       Gtk.Menu.Append (Subgraph_List_Menu, New_Menu_Separator);
       Gtk.Menu.Append (Subgraph_List_Menu,
                        New_Menu_Item (-"Rename...",
