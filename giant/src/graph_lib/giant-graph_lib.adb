@@ -18,15 +18,18 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.20 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.21 $
 --  $Author: koppor $
---  $Date: 2003/06/25 11:37:42 $
+--  $Date: 2003/06/25 15:01:02 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
 
 --  from Bauhaus
 with Tagged_Ptr_Hash;
+with Tagged_Constant_Ptr_Ops;
+with Untagged_Ptr_Ops;
+
 with SLocs;
 with Storables;
 with IML_Classes;
@@ -128,11 +131,13 @@ package body Giant.Graph_Lib is
       Right : Node_Id)
      return Boolean
    is
+
+      package Compare is new Untagged_Ptr_Ops
+        (T     => Node_Record,
+         T_Ptr => Node_Id);
+
    begin
-      --  < cannot be used, since that would case an infinite recursion
-      --  therefore, we have to trick a bit :)
-      --  TBD: compare pointers
-      return Storables.Less (Left.Iml_Node, Right.Iml_Node);
+      return Compare.Less (Left, Right);
    end "<";
 
    ---------------------------------------------------------------------------
@@ -142,27 +147,28 @@ package body Giant.Graph_Lib is
       Right : Node_Class_Id)
       return Boolean
    is
+
+      package Compare is new Tagged_Constant_Ptr_Ops
+        (T     => IML_Reflection.Abstract_Class'Class,
+         T_Ptr => Node_Class_Id);
+
    begin
-      --  TBD: compare pointers
-      return (Left.Name < Right.Name);
+      return Compare.Less (Left, Right);
    end "<";
 
    ---------------------------------------------------------------------------
-   --  Maybe this routine has to be rewritten, since it contains a partial
-   --    ordering and not an absolute one. The latter could be achieved using
-   --    the pointer's value in the memory, but I currently do not know how
-   --    to do that in a clean way
    function "<"
      (Left  : Edge_Id;
       Right : Edge_Id)
       return Boolean
    is
+
+      package Compare is new Untagged_Ptr_Ops
+        (T     => Edge_Record,
+         T_Ptr => Edge_Id);
+
    begin
-      --  TBD: compare pointers
-      return
-        (Left.Source_Node    < Right.Source_Node) or
-        (Left.Target_Node    < Right.Target_Node) or
-        (Left.Attribute      < Right.Attribute);
+      return Compare.Less (Left, Right);
    end "<";
 
    ---------------------------------------------------------------------------
@@ -175,11 +181,13 @@ package body Giant.Graph_Lib is
       Right : Edge_Class_Id)
       return Boolean
    is
+
+      package Compare is new Untagged_Ptr_Ops
+        (T     => Edge_Class,
+         T_Ptr => Edge_Class_Id);
+
    begin
-      --  TBD: compare pointers
-      return
-        (Left.Source_Node_Class     < Right.Source_Node_Class) or
-        (Left.Source_Node_Attribute < Right.Source_Node_Attribute);
+      return Compare.Less (Left, Right);
    end "<";
 
    ---------------------------------------------------------------------------
@@ -188,9 +196,13 @@ package body Giant.Graph_Lib is
        Right : Node_Attribute_Id)
       return Boolean
    is
+
+      package Compare is new Tagged_Constant_Ptr_Ops
+        (T     => IML_Reflection.Field'Class,
+         T_Ptr => Node_Attribute_Id);
+
    begin
-      --  TBD: compare pointers
-      return (Left.Name < Right.Name);
+      return Compare.Less (Left, Right);
    end "<";
 
    ---------------------------------------------------------------------------
@@ -200,8 +212,7 @@ package body Giant.Graph_Lib is
       return Boolean
    is
    begin
-      --  TBD: compare pointers
-      return (Left.Name = Right.Name);
+      return IML_Reflection."=" (Left, Right);
    end "=";
 
    ---------------------------------------------------------------------------
