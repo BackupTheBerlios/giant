@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.29 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.30 $
 --  $Author: koppor $
---  $Date: 2003/07/05 16:31:56 $
+--  $Date: 2003/07/06 01:56:23 $
 --
 --  TBD:
 --    * Write into comment, when the routine may be used
@@ -35,6 +35,7 @@ with Giant.Constant_Ptr_Hashs;
 
 --  Bauhaus / IML
 with IML_Reflection;
+with IML_Roots;
 with Storables;
 with SLocs; --  used at private part
 
@@ -804,10 +805,14 @@ private
    type Node_Record
      (Number_Of_Incoming_Edges : Natural;
       Number_Of_Outgoing_Edges : Natural) is
-   limited record
-      IML_Node       : Storables.Storable;
-      Incoming_Edges : Edge_Id_Array (1 .. Number_Of_Incoming_Edges);
-      Outgoing_Edges : Edge_Id_Array (1 .. Number_Of_Outgoing_Edges);
+     limited record
+        --  changed in revision 1.30 (.adb: 1.44) from Storables.Storable
+        --    to IML_Roots_IML_Root, since graph_lib is able to handle
+        --    IML_Roots only
+        IML_Node       : IML_Roots.IML_Root;
+
+        Incoming_Edges : Edge_Id_Array (1 .. Number_Of_Incoming_Edges);
+        Outgoing_Edges : Edge_Id_Array (1 .. Number_Of_Outgoing_Edges);
    end record;
 
    ---------------------------------------------------------------------------
@@ -856,6 +861,9 @@ private
       return Boolean;
 
    ----------------------------------------------------------------------------
+   --  This function is private, since SLoc is split up in atomar elements
+   --     for the public
+   --
    --  Raises:
    --    Wrong_Attribute_Type
    --      if Get_Node_Attribute_Class_Id(Attribute) /= Class_SLoc
@@ -863,6 +871,17 @@ private
      (Node      : in     Node_Id;
       Attribute : in     Node_Attribute_Id)
      return SLocs.Sloc;
+
+   ---------------------------------------------------------------------------
+   --  null checking has to be done by caller
+   --  this signature doesn't allow any null-checking
+   --
+   --  Returns:
+   --    True  - if given storable belongs to IML_Root_Class
+   --    False - otherwise
+   function Is_IML_Root
+     (The_Storable : access Storables.Storable_Class'Class)
+     return Boolean;
 
    ---------------------------------------------------------------------------
    --  Following could also be in .adb, but is listed here, since it is needed
