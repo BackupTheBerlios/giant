@@ -22,15 +22,15 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/31 09:14:09 $
+-- $Date: 2003/08/02 20:43:09 $
 --
 -- This package implements the datatypes used in GSL.
 --
 
-with Text_IO;
-
 with Ada.Exceptions;
 with Ada.Real_Time;
+with Text_IO;
+with Unchecked_Deallocation;
 
 with Giant.Controller;
 with Giant.Default_Logger;
@@ -112,9 +112,14 @@ package body Giant.Gsl.Interpreters is
    --------------------------------------------------------------------------
    -- destroys a gsl interpreter
    procedure Destroy
-     (Gsl_Interpreter : Interpreter) is
+     (Gsl_Interpreter : in out Interpreter) is
+
+      procedure Free is new Unchecked_Deallocation
+        (Interpreter_Record, Interpreter_Access);
+
    begin
-      null;
+      Gsl.Compilers.Destroy_Compiler (Gsl_Interpreter.Gsl_Compiler);
+      Free (Interpreter_Access (Gsl_Interpreter));
    end Destroy;
 
    ------------------------------

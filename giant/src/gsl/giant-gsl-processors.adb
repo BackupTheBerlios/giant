@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-processors.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/31 09:11:39 $
+-- $Date: 2003/08/02 20:43:59 $
 --
 
 with Ada.Exceptions;
@@ -163,6 +163,8 @@ package body Giant.Gsl.Processors is
          when Script_Finish =>
             Gsl.Interpreters.Restore_Activation_Record;
 
+         ---------------------------------------------------------------------
+         --
          when Script_Loop =>
             Result_Stacks.Pop (Result_Stack, Res1);
             if Is_Gsl_Boolean (Res1) then
@@ -177,11 +179,16 @@ package body Giant.Gsl.Processors is
                   -- loop finished, restore the activation record
                   Gsl.Interpreters.Restore_Activation_Record;
                end if;
+               -- free memory
+               Destroy_Gsl_Type (Res1);
             else
+               Destroy_Gsl_Type (Res1);
                Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
                  "Script 'loop': Gsl_Boolean expected.");
             end if;
 
+         ---------------------------------------------------------------------
+         --
          when Result_Pop =>
             Result_Stacks.Pop (Result_Stack, Res1);
             Destroy_Gsl_Type (Res1);
@@ -220,8 +227,7 @@ package body Giant.Gsl.Processors is
                    Gsl.Syntax_Tree.Create_Node (Script_Exec,
                      Null_Node, Null_Node)));
 
-               -- push the code for the parameter list to the
-               -- execution stack
+               -- push the code for the parameter list to the execution stack
                -- (get the Syntax_Node from the Gsl_Script_Reference)
                Execution_Stacks.Push (Execution_Stack,
                  Get_Execution_Stack (Gsl_Compiler,
@@ -235,8 +241,9 @@ package body Giant.Gsl.Processors is
                Result_Stacks.Push (Result_Stack,
                  Get_Gsl_Runtime (Gsl_Script_Reference (Script))
                  (Gsl_List (Params)));
-               -- free the parameter
-               -- Destroy_Gsl_Type (Params);
+               -- free the memory 
+               --Destroy_Gsl_Type (Params);
+               Destroy_Gsl_Type (Script);
          end case;
       else
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
@@ -276,15 +283,14 @@ package body Giant.Gsl.Processors is
             if Is_Gsl_Var_Reference (Ref) then
                Gsl.Interpreters.Set_Var
                  (Get_Ref_Name (Gsl_Var_Reference (Ref)), 
-                  Get_Value_At (Gsl_List (Params), i));
+                  Copy (Get_Value_At (Gsl_List (Params), i)));
              else
                 Ada.Exceptions.Raise_Exception
                   (Gsl_Runtime_Error'Identity, "Gsl_Var_Reference expected.");
              end if;
          end loop;
-         -- free the parameter
-         -- Destroy_Gsl_Type (Params); 
-         -- destroy Activation Record when Script completed
+         -- push code to destroy restore the activation record 
+         -- when script execution is finished
          Execution_Stacks.Push (Execution_Stack,
            Get_Execution_Stack (Gsl_Compiler,
              Giant.Gsl.Syntax_Tree.Create_Node (Script_Finish,
@@ -294,6 +300,11 @@ package body Giant.Gsl.Processors is
          Execution_Stacks.Push (Execution_Stack,
            Get_Execution_Stack (Gsl_Compiler,
              Get_Script_Node (Gsl_Script_Reference (Script))));
+
+         -- free the memory (script reference)
+         Destroy_Gsl_Type (Formal);
+         Destroy_Gsl_Type (Params);
+         Destroy_Gsl_Type (Script);
       end if;
    end Script_Exec_Cmd;
 

@@ -20,9 +20,9 @@
 --
 -- First Author: Gerrit Schulz
 --
--- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.14 $
+-- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.15 $
 -- $Author: schulzgt $
--- $Date: 2003/07/31 09:12:46 $
+-- $Date: 2003/08/02 20:41:02 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Tags;
@@ -37,20 +37,37 @@ package body Giant.Gsl.Types is
    begin
       if Var = Gsl_Null then
          null;
+      
+      elsif Var'Tag = Gsl_Node_Id_Record'Tag then
+         Destroy (Gsl_Node_Id (Var));
+
+      elsif Var'Tag = Gsl_Edge_Id_Record'Tag then
+         Destroy (Gsl_Edge_Id (Var));
+
+      elsif Var'Tag = Gsl_Node_Set_Record'Tag then
+         Destroy (Gsl_Node_Set (Var));
+
+      elsif Var'Tag = Gsl_Edge_Set_Record'Tag then
+         Destroy (Gsl_Edge_Set (Var));
+
       elsif Var'Tag = Gsl_String_Record'Tag then
          Destroy (Gsl_String (Var));
+
       elsif Var'Tag = Gsl_Boolean_Record'Tag then
          Destroy (Gsl_Boolean (Var));
+
       elsif Var'Tag = Gsl_Natural_Record'Tag then
          Destroy (Gsl_Natural (Var));
+
       elsif Var'Tag = Gsl_List_Record'Tag then
          Destroy (Gsl_List (Var));
+
       elsif Var'Tag = Gsl_Var_Reference_Record'Tag then
          Destroy (Gsl_Var_Reference (Var));
+
       elsif Var'Tag = Gsl_Script_Reference_Record'Tag then
          Destroy (Gsl_Script_Reference (Var));
-      else
-         null;
+
       end if;
    end Destroy_Gsl_Type;
 

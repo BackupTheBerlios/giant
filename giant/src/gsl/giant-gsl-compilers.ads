@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-compilers.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/02 16:26:53 $
+-- $Date: 2003/08/02 20:42:44 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -64,7 +64,7 @@ package Giant.Gsl.Compilers is
    ---------------------------------------------------------------------------
    --
    procedure Destroy_Compiler
-     (Comp : Compiler);
+     (Comp : in out Compiler);
 
    ---------------------------------------------------------------------------
    --

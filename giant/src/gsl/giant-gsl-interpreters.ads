@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/31 09:14:09 $
+-- $Date: 2003/08/02 20:43:09 $
 --
 -- This package implements the Gsl interpreter.
 --
@@ -44,6 +44,7 @@ package Giant.Gsl.Interpreters is
      with private;
 
    type Interpreter is access all Interpreter_Record'Class;
+   type Interpreter_Access is access all Interpreter_Record;
 
    --------------------------------------------------------------------------
    --
@@ -87,7 +88,7 @@ package Giant.Gsl.Interpreters is
    --------------------------------------------------------------------------
    -- destroys a Gsl Interpreter
    procedure Destroy
-     (Gsl_Interpreter : Interpreter);
+     (Gsl_Interpreter : in out Interpreter);
 
    ---------------------------------------------------------------------------
    --

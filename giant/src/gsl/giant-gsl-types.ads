@@ -21,7 +21,7 @@
 --
 -- $RCSfile: giant-gsl-types.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/24 14:29:37 $
+-- $Date: 2003/08/02 20:41:03 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -38,8 +38,10 @@ package Giant.Gsl.Types is
    procedure Destroy_Gsl_Type 
      (Var : in out Gsl_Type);
 
-------------------------------------------------------------------------------
--- Gsl_Node_Id
+   ---------------------------------------------------------------------------
+   -- Gsl_Node_Id
+   ---------------------------------------------------------------------------
+
    type Gsl_Node_Id_Record is new Gsl_Type_Record with private;
    type Gsl_Node_Id is access all Gsl_Node_Id_Record;
 
@@ -82,8 +84,10 @@ package Giant.Gsl.Types is
    procedure Destroy
      (Object : in out Gsl_Node_Id);
 
-------------------------------------------------------------------------------
--- Gsl_Edge_Id
+   ---------------------------------------------------------------------------
+   -- Gsl_Edge_Id
+   ---------------------------------------------------------------------------
+
    type Gsl_Edge_Id_Record is new Gsl_Type_Record with private;
    type Gsl_Edge_Id is access all Gsl_Edge_Id_Record;
 
@@ -126,121 +130,178 @@ package Giant.Gsl.Types is
    procedure Destroy
      (Object : in out Gsl_Edge_Id);
 
-------------------------------------------------------------------------------
--- Gsl_Node_Set
+   ---------------------------------------------------------------------------
+   -- Gsl_Node_Set
+   ---------------------------------------------------------------------------
+
    type Gsl_Node_Set_Record is new Gsl_Type_Record with private;
    type Gsl_Node_Set is access all Gsl_Node_Set_Record;
 
+   ---------------------------------------------------------------------------
+   --
    function Create_Gsl_Node_Set
     (Value : Giant.Graph_Lib.Node_Id_Set)
      return Gsl_Node_Set;
 
+   ---------------------------------------------------------------------------
+   --
    function Is_Gsl_Node_Set
      (Var : Gsl_Type)
       return Boolean;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Value
      (Var : Gsl_Node_Set)
       return Giant.Graph_Lib.Node_Id_Set;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Set_Value
      (Var   : Gsl_Node_Set;
       Value : Giant.Graph_Lib.Node_Id_Set);
 
+   ---------------------------------------------------------------------------
+   --
    function Copy
      (Object : access Gsl_Node_Set_Record)
       return Gsl_Type;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Destroy
      (Object : in out Gsl_Node_Set);
 
    ---------------------------------------------------------------------------
    -- Gsl_Edge_Set
+   ---------------------------------------------------------------------------
+
    type Gsl_Edge_Set_Record is new Gsl_Type_Record with private;
    type Gsl_Edge_Set is access all Gsl_Edge_Set_Record;
 
+   ---------------------------------------------------------------------------
+   --
    function Create_Gsl_Edge_Set
      (Value : Giant.Graph_Lib.Edge_Id_Set)
       return Gsl_Edge_Set;
 
+   ---------------------------------------------------------------------------
+   --
    function Is_Gsl_Edge_Set
      (Var : Gsl_Type)
       return Boolean;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Value
      (Var : Gsl_Edge_Set)
       return Giant.Graph_Lib.Edge_Id_Set;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Set_Value
      (Var   : Gsl_Edge_Set;
       Value : Giant.Graph_Lib.Edge_Id_Set);
 
+   ---------------------------------------------------------------------------
+   --
    function Copy
      (Object : access Gsl_Edge_Set_Record)
       return Gsl_Type;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Destroy
      (Object : in out Gsl_Edge_Set);
 
    ---------------------------------------------------------------------------
    -- Gsl_String
+   ---------------------------------------------------------------------------
+
    type Gsl_String_Record (Size : Natural) is new 
      Gsl_Type_Record with private;
    type Gsl_String is access all Gsl_String_Record;
 
+   ---------------------------------------------------------------------------
+   --
    function Create_Gsl_String
      (Value : String) 
       return Gsl_String;
 
+   ---------------------------------------------------------------------------
+   --
    function Is_Gsl_String
      (Var : Gsl_Type)
       return Boolean;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Value
      (Var : Gsl_String)
       return String;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Set_Value
      (Var   : Gsl_String;
       Value : String);
 
+   ---------------------------------------------------------------------------
+   --
    function Copy
      (Object : access Gsl_String_Record)
       return Gsl_Type;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Destroy
      (Object : in out Gsl_String);
 
    ---------------------------------------------------------------------------
    -- Gsl_Boolean
+   ---------------------------------------------------------------------------
+
    type Gsl_Boolean_Record is new Gsl_Type_Record with private;
    type Gsl_Boolean is access all Gsl_Boolean_Record;
 
+   ---------------------------------------------------------------------------
+   --
    function Create_Gsl_Boolean
      (Value : Boolean)
       return Gsl_Boolean;
 
+   ---------------------------------------------------------------------------
+   --
    function Is_Gsl_Boolean
      (Var : Gsl_Type)
       return Boolean;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Value
      (Var : Gsl_Boolean)
       return Boolean;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Set_Value
      (Var   : Gsl_Boolean;
       Value : Boolean);
 
+   ---------------------------------------------------------------------------
+   --
    function Copy
      (Object : access Gsl_Boolean_Record)
       return Gsl_Type;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Destroy
      (Object : in out Gsl_Boolean);
 
-------------------------------------------------------------------------------
--- Gsl_Natural
+   ---------------------------------------------------------------------------
+   -- Gsl_Natural
+   ---------------------------------------------------------------------------
 
    type Gsl_Natural_Record is new Gsl_Type_Record with private;
    type Gsl_Natural is access all Gsl_Natural_Record;
@@ -284,8 +345,9 @@ package Giant.Gsl.Types is
    procedure Destroy
      (Object : in out Gsl_Natural);
 
-------------------------------------------------------------------------------
--- Gsl_List
+   ---------------------------------------------------------------------------
+   -- Gsl_List
+   ---------------------------------------------------------------------------
 
    type Gsl_List_Record (Size : Natural) is new Gsl_Type_Record with private;
    type Gsl_List is access all Gsl_List_Record;
@@ -333,9 +395,9 @@ package Giant.Gsl.Types is
    procedure Destroy
      (Object : in out Gsl_List);
 
-------------------------------------------------------------------------------
--- Gsl_Var_Reference
--- ("local" Var or "global" Subgraph, Selection)
+   ---------------------------------------------------------------------------
+   -- Gsl_Var_Reference ("local" Var or "global" Subgraph, Selection)
+   ---------------------------------------------------------------------------
 
    type Reference_Type is (Var, Subgraph, Selection);
    type Gsl_Var_Reference_Record (Size : Natural) is new 
@@ -384,8 +446,10 @@ package Giant.Gsl.Types is
    procedure Destroy
      (Object : in out Gsl_Var_Reference);
 
-------------------------------------------------------------------------------
--- Gsl_Script_Reference
+   ---------------------------------------------------------------------------
+   -- Gsl_Script_Reference
+   ---------------------------------------------------------------------------
+
    type Gsl_Script_Reference_Record is new Gsl_Type_Record with private;
    type Gsl_Script_Reference is access all Gsl_Script_Reference_Record;
 
@@ -466,8 +530,9 @@ package Giant.Gsl.Types is
    procedure Destroy
      (Object : in out Gsl_Script_Reference);
 
-------------------------------------------------------------------------------
---
+   ---------------------------------------------------------------------------
+   -- others
+   ---------------------------------------------------------------------------
    
    ---------------------------------------------------------------------------
    --   
@@ -475,8 +540,10 @@ package Giant.Gsl.Types is
      (Var : Gsl_Type)
       return Boolean;
 
-------------------------------------------------------------------------------
--- private part 
+   ---------------------------------------------------------------------------
+   -- private part
+   ---------------------------------------------------------------------------
+
 private
 
    ---------------------------------------------------------------------------
