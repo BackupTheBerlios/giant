@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.5 $
--- $Author: squig $
--- $Date: 2003/06/17 16:08:41 $
+-- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.6 $
+-- $Author: schwiemn $
+-- $Date: 2003/06/24 13:08:05 $
 --
 with Unbounded_String_Hash; -- from Bauhaus IML "Reuse.src"
 
@@ -35,8 +35,11 @@ with Giant.XML_File_Access; -- from GIANT
 with Giant.XPM_File_Access; -- from GIANT
 with Giant.File_Management; -- from GIANT
 with GIANT.Edge_Class_Proc; -- from GIANT
+with GIANT.Logger;          -- from GIANT
 
 package body Giant.Config.Vis_Styles is
+
+   package Logger is new Giant.Logger("Giant.Config.Vis_Styles");
 
    ---------------------------------------------------------------------------
    -- 0.1
@@ -405,13 +408,13 @@ package body Giant.Config.Vis_Styles is
          procedure Process_Element (Item : in Graph_Lib.Edge_Class_Id) is
 
          begin
-
+           
             -- Unbind must always be possible as each edge class
             -- has a default setting
             Edge_Class_Id_Hashed_Mappings.Unbind
               (The_Vis_Style_Access.Edge_Class_Specific_Vis,
                Item);
-
+               
             -- insert new config setting for edge class
             Edge_Class_Id_Hashed_Mappings.Bind
               (The_Vis_Style_Access.Edge_Class_Specific_Vis,
@@ -915,7 +918,7 @@ package body Giant.Config.Vis_Styles is
 
       -- check for correct type of xml file
       if (XML_File_Access.Does_XML_Document_Belong_To_Type
-          ("giant_visualisation_style_file",
+          ("giant_vis_style_file",
            Default_Vis_Style_XML_Document) = False) then
 
          Tree_Readers.Free(Default_Vis_Style_Tree_Reader);
@@ -1050,18 +1053,31 @@ package body Giant.Config.Vis_Styles is
 
       -- build default vis style
       -- this style must be correct
-      begin
+      
+      
+    --  begin
+      
+         Logger.Debug ("HI");
+         Logger.Debug 
+           (File_management.Return_Dir_Path_For_File_Path
+             (Default_Vis_Style_File));       
+         Logger.Debug (Ada.Strings.Unbounded.To_String
+           (Default_Vis_Style_Name));
+         
          New_Vis_Style := Process_XML_Vis_Style
            (Default_Vis_Style_XML_Document,
             Ada.Strings.Unbounded.To_Unbounded_String
             (File_management.Return_Dir_Path_For_File_Path
              (Default_Vis_Style_File)),
             Default_Vis_Style_Name);
-      exception
-         when others =>
+            
+         Logger.Debug ("HI-2");            
+            
+    --  exception
+    --     when others =>
 
-            raise Illegal_Default_Vis_Style_Exception;
-      end;
+      --      raise E; -- Illegal_Default_Vis_Style_Exception;
+   --   end;
 
       -- remove other vis style with same name if necessary
       if All_Vis_Styles_Hashed_Mappings.Is_Bound
