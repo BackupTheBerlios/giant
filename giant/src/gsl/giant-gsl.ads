@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/16 14:13:53 $
+-- $Date: 2003/08/29 14:27:10 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -41,63 +41,111 @@ with Giant.Default_Logger;
 
 package Giant.Gsl is
 
+
+   ---------------------------------------------------------------
+   -- Gsl exceptions, should be catched in the gsl interpreter) --
+   ---------------------------------------------------------------
+
+   ---------------------------------------------------------------------------
+   -- syntax errors and runtime errors should be catched in Gsl.Interpreters
    Gsl_Syntax_Error  : exception;
    Gsl_Runtime_Error : exception;
 
+
+   ---------------------------
+   -- general Gsl datatypes --
+   ---------------------------
+
    ---------------------------------------------------------------------------
-   -- Gsl_Type - parent class for all types in GSL defined in Gsl.Types
+   -- Gsl_Type - abstract parent class for all types defined in Gsl.Types
    type Gsl_Type_Record is abstract tagged private;
    type Gsl_Type is access all Gsl_Type_Record'Class;
-
-   function Copy
-     (Object : access Gsl_Type_Record)
-      return Gsl_Type is abstract;
-
-   procedure Destroy
-     (Object : out Gsl_Type) is abstract;
 
    ---------------------------------------------------------------------------
    -- represents the type Gsl_Null and works as null-pointer for Gsl_Type
    Gsl_Null : constant Gsl_Type;
 
    ---------------------------------------------------------------------------
-   -- possible types of Syntax_Nodes
+   -- copies a Gsl_Type, has to be implemented for all subclasses of Gsl_Type
+   --
+   -- Parameters:
+   --   Object - the object to copy
+   -- Returns:
+   --   a new instance of Gsl_Type
+   function Copy
+     (Object : access Gsl_Type_Record)
+      return Gsl_Type is abstract;
+
+   ---------------------------------------------------------------------------
+   -- destroys a Gsl_Type and frees the memory,
+   -- has to be implemented for all subclasses of Gsl_Type
+   --
+   -- Parameters:
+   --   Object - the object to destroy
+   procedure Destroy
+     (Object : out Gsl_Type) is abstract;
+
+   ---------------------------------------------------------------------------
+   -- creates a String-representation for a Gsl_Type
+   --
+   -- Parameters:
+   --   Object - the object
+   -- Returns:
+   --   String-representation of the object
+   function Gsl_Type_Image
+     (Object : Gsl_Type)
+      return String;   
+
+   ---------------------------------------------------------------------------
+   -- possible types of Syntax_Node
+   -- these types are equal to the Gsl commands used by Gsl.Processors
    type Node_Type is (Literal, Visible_Var, Global_Var, Visible_Ref,
                       Var_Creation, Global_Ref, Script_Decl, List, Sequence,
                       Script_Activation, Script_Exec, Script_Finish,
                       Script_Loop, Result_Pop, Param_Fetch);
 
    ---------------------------------------------------------------------------
-   -- Syntax_Node is the type used in the Syntax Tree and the Execution Stack
+   -- Syntax_Node is the type used in Gsl.Syntax_Tree and Gsl.Execution_Stacks
    type Syntax_Node_Record is private;
    type Syntax_Node is access all Syntax_Node_Record;
 
+   ---------------------------------------------------------------------------
+   -- works as null-pointer for Syntax_Node
    Null_Node : constant Syntax_Node;
 
-   procedure Log_Syntax_Node
-     (Node : Syntax_Node);
-
-   function Log_Syntax_Node
+   ---------------------------------------------------------------------------
+   -- creates a String-representation for a Syntax_Node
+   --
+   -- Parameters:
+   --   Node - the Syntax_Node
+   -- Returns:
+   --   String-representation of the Node
+   function Syntax_Node_Image
      (Node : Syntax_Node)
       return String;
 
-   function Log_Gsl_Type
-     (Var : Gsl_Type)
-      return String;
-
    ---------------------------------------------------------------------------
-   -- Activation Record used in the Gsl Interpreter
+   -- Activation_Record is used in Gsl.Interpreter
    type Activation_Record_Record is private;
    type Activation_Record is access all Activation_Record_Record;
 
+
+   -------------------------------------------------
+   -- intantiation of packages from Bauhaus.Reuse --
+   -------------------------------------------------
+
    ---------------------------------------------------------------------------
-   -- from Reuse
+   --
    package Execution_Stacks is new Stacks_Unbounded
      (Elem_Type => Syntax_Node);
 
+   ---------------------------------------------------------------------------
+   --
    package Result_Stacks is new Stacks_Unbounded
      (Elem_Type => Gsl_Type);
 
+   ---------------------------------------------------------------------------
+   --
    package Activation_Record_Stacks is new Stacks_Unbounded
      (Elem_Type => Activation_Record);
 
@@ -108,6 +156,8 @@ package Giant.Gsl is
      (K : Unbounded_String)
       return Integer;
 
+   ---------------------------------------------------------------------------
+   --
    package Gsl_Var_Hashed_Mappings is new Hashed_Mappings
      (Key_Type => Unbounded_String,
       Value_Type => Gsl_Type,

@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/26 13:59:04 $
+-- $Date: 2003/08/29 14:27:10 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -41,6 +41,8 @@ use  Giant.Gsl.Syntax_Tree;
 
 package body Giant.Gsl is
 
+   ---------------------------------------------------------------------------
+   --
    function Gsl_Var_Hash
      (K : Unbounded_String)
       return Integer is
@@ -48,93 +50,59 @@ package body Giant.Gsl is
       return String_Hash (To_String (K));
    end Gsl_Var_Hash;
 
-   procedure Log_Syntax_Node
-     (Node : Syntax_Node) is
+   ---------------------------------------------------------------------------
+   --
+   function Gsl_Type_Image
+     (Object : Gsl_Type)
+      return String is
 
-      L  : Gsl_Type;
-      LS : Gsl_String;
-      LN : Gsl_Natural;
-      LR : Gsl_Var_Reference;
+      use Giant.Graph_Lib.Node_Id_Sets;
+      use Giant.Graph_Lib.Edge_Id_Sets;
    begin
-      if Node /= Null_Node then
-         case Get_Node_Type (Node) is
-            when Literal =>
-               L := Get_Literal (Node);
-               if L = Gsl_Null then
-                  Default_Logger.Debug
-                    ("Syntax_Node LITERAL = Null", "Giant.Gsl");
-               else
-                  if L'Tag = Gsl_Boolean_Record'Tag then
-                     Default_Logger.Debug
-                       ("Syntax_Node LITERAL = Boolean", "Giant.Gsl");
-                  elsif L'Tag = Gsl_String_Record'Tag then
-                     Default_Logger.Debug
-                       ("Syntax_Node LITERAL = String", "Giant.Gsl");
-                     LS := Gsl_String (L);
-                     Default_Logger.Debug
-                       ("   String.Value = " & Get_Value (LS), "Giant.Gsl");
-                  elsif L'Tag = Gsl_Natural_Record'Tag then
-                     Default_Logger.Debug
-                       ("Syntax_Node LITERAL = Natural", "Giant.Gsl");
-                     LN := Gsl_Natural (L);
-                     Default_Logger.Debug
-                       ("   Natural.Value = " & Get_Value (LN)'Img, 
-                        "Giant.Gsl");
-                  end if;
-               end if;
+      if Object = Gsl_Null then
+         return "Gsl_Null";
 
-            when Visible_Var =>
-               Default_Logger.Debug
-                 ("Syntax_Node VISIBLE_VAR", "Giant.Gsl");
-               LR := Gsl_Var_Reference (Get_Literal (Node));
-               Default_Logger.Debug
-                 ("   Visible_Var.Ref_Name = " & Get_Ref_Name (LR), 
-                  "Giant.Gsl");
+      elsif Object'Tag = Gsl_Node_Id_Record'Tag then
+         return "Gsl_Node_Id - " &
+                Graph_Lib.Node_Id_Image (Get_Value (Gsl_Node_Id (Object)));
 
-            when Global_Var =>
-               Default_Logger.Debug
-                 ("Syntax_Node GLOBAL_VAR", "Giant.Gsl");
+      elsif Object'Tag = Gsl_Edge_Id_Record'Tag then
+         return "Gsl_Edge_Id";
 
-            when Visible_Ref =>
-               Default_Logger.Debug
-                 ("Syntax_Node VISIBLE_REF", "Giant.Gsl");
+      elsif Object'Tag = Gsl_Node_Set_Record'Tag then
+         return "Gsl_Node_Set - Size: " &
+                Size (Get_Value (Gsl_Node_Set (Object)))'Img;
 
-            when Var_Creation =>
-               Default_Logger.Debug
-                 ("Syntax_Node VAR_CREATION", "Giant.Gsl");
+      elsif Object'Tag = Gsl_Edge_Set_Record'Tag then
+         return "Gsl_Edge_Set - Size: " &
+                Size (Get_Value (Gsl_Edge_Set (Object)))'Img;
 
-            when Global_Ref =>
-               Default_Logger.Debug
-                 ("Syntax_Node GLOBAL_REF", "Giant.Gsl");
+      elsif Object'Tag = Gsl_String_Record'Tag then
+         return "Gsl_String - " & Get_Value (Gsl_String (Object));
 
-            when Script_Decl =>
-               Default_Logger.Debug
-                 ("Syntax_Node SCRIPT_DECL", "Giant.Gsl");
+      elsif Object'Tag = Gsl_Boolean_Record'Tag then
+         return "Gsl_Boolean - " & Get_Value (Gsl_Boolean (Object))'Img;
 
-            when List =>
-               Default_Logger.Debug
-                 ("Syntax_Node LIST Size = " & Get_Size (Node)'Img,
-                  "Giant.Gsl");
+      elsif Object'Tag = Gsl_Natural_Record'Tag then
+         return "Gsl_Natural - " & Get_Value (Gsl_Natural (Object))'Img;
 
-            when Sequence =>
-               Default_Logger.Debug
-                 ("Syntax_Node SEQUENCE Size =" & Get_Size (Node)'Img,
-                  "Giant.Gsl");
+      elsif Object'Tag = Gsl_List_Record'Tag then
+         return "Gsl_List";
 
-            when Script_Activation =>
-               Default_Logger.Debug
-                 ("Syntax_Node SCRIPT_ACTIVATION", "Giant.Gsl");
+      elsif Object'Tag = Gsl_Var_Reference_Record'Tag then
+         return "Gsl_Var_Reference";
 
-            when others =>
-               Default_Logger.Debug
-                 ("Syntax_Node UNKNOWN", "Giant.Gsl");
-         end case;
+      elsif Object'Tag = Gsl_Script_Reference_Record'Tag then
+         return "Gsl_Script_Reference";
+
+      else
+         return "Unknown Type";
       end if;
-   end Log_Syntax_Node;
+   end Gsl_Type_Image;
 
    ---------------------------------------------------------------------------
    --
-   function Log_Syntax_Node
+   function Syntax_Node_Image
      (Node : Syntax_Node)
       return String is
 
@@ -159,56 +127,6 @@ package body Giant.Gsl is
          end case;
       end if;
       return "Null_Node";
-   end Log_Syntax_Node;
-
-   ---------------------------------------------------------------------------
-   --
-   function Log_Gsl_Type
-     (Var : Gsl_Type) 
-      return String is
-
-      use Giant.Graph_Lib.Node_Id_Sets;
-      use Giant.Graph_Lib.Edge_Id_Sets;
-   begin
-      if Var = Gsl_Null then
-         return "Gsl_Null";
-
-      elsif Var'Tag = Gsl_Node_Id_Record'Tag then
-         return "Gsl_Node_Id - " &
-                Graph_Lib.Node_Id_Image (Get_Value (Gsl_Node_Id (Var)));
-
-      elsif Var'Tag = Gsl_Edge_Id_Record'Tag then
-         return "Gsl_Edge_Id";
-
-      elsif Var'Tag = Gsl_Node_Set_Record'Tag then
-         return "Gsl_Node_Set - Size: " &
-                Size (Get_Value (Gsl_Node_Set (Var)))'Img;
-
-      elsif Var'Tag = Gsl_Edge_Set_Record'Tag then
-         return "Gsl_Edge_Set - Size: " &
-                Size (Get_Value (Gsl_Edge_Set (Var)))'Img;
-
-      elsif Var'Tag = Gsl_String_Record'Tag then
-         return "Gsl_String - " & Get_Value (Gsl_String (Var));
-
-      elsif Var'Tag = Gsl_Boolean_Record'Tag then
-         return "Gsl_Boolean - " & Get_Value (Gsl_Boolean (Var))'Img;
-
-      elsif Var'Tag = Gsl_Natural_Record'Tag then
-         return "Gsl_Natural - " & Get_Value (Gsl_Natural (Var))'Img;
-
-      elsif Var'Tag = Gsl_List_Record'Tag then
-         return "Gsl_List";
-
-      elsif Var'Tag = Gsl_Var_Reference_Record'Tag then
-         return "Gsl_Var_Reference";
-
-      elsif Var'Tag = Gsl_Script_Reference_Record'Tag then
-         return "Gsl_Script_Reference";
-
-      else
-         return "Unknown Type";
-      end if;
-   end Log_Gsl_Type;
+   end Syntax_Node_Image;
 
 end Giant.Gsl;
