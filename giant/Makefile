@@ -70,3 +70,9 @@ fetch-iml :
 
 sloc :
 	PATH=/home/stsopra/giant/sloccount-2.22:$(PATH) sloccount src/
+
+marvin :
+	mkdir -p /tmp/$(USER)/GIANT/cvs
+	cd /tmp/$(USER)/GIANT/cvs;\
+        cvs -d droste.informatik.uni-stuttgart.de:/home/squig/cvsroot co .
+	echo "Please change to /tmp/$(USER)/GIANT/cvs"
