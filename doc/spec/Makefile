@@ -31,7 +31,7 @@ spec-pdf.pdf: step1
 ps: base_ps spec.ps
 pdf: spec-pdf.pdf
 
-step1: *.tex *.png
+step1: *.tex
 	rm -f spec.dvi spec.ps spec.pdf spec-pdf.pdf
 
 base_ps: step1 pics spec.ind
