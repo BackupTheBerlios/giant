@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/27 11:39:01 $
+-- $Date: 2003/08/27 16:38:30 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -601,7 +601,7 @@ package body Giant.Gsl.Runtime is
 
       Regexp  : Gsl_Type;
       Data    : Gsl_Type;
-      Res     : Gsl_Boolean;
+      Matches : Match_Array (0 .. 0);
    begin
       if Get_List_Size (Parameter) /= 2 then
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
@@ -611,13 +611,18 @@ package body Giant.Gsl.Runtime is
       Regexp := Get_Value_At (Parameter, 2);
 
       if Is_Gsl_String (Data) and Is_Gsl_String (Regexp) then
-         Res := Create_Gsl_Boolean (Match (Get_Value (Gsl_String (Regexp)),
-                                           Get_Value (Gsl_String (Data))));
-         if Match (Get_Value (Gsl_String (Regexp)),
-                   Get_Value (Gsl_String (Data))) then
-            Default_Logger.Debug ("RegExp matched");
+         Match
+           (Get_Value (Gsl_String (Regexp)),
+            Get_Value (Gsl_String (Data)),
+            Matches);
+
+         if (Matches (0).First = 1) and
+            (Matches (0).Last = Get_Value (Gsl_String (Data))'Length)
+         then
+            return Gsl_Type (Create_Gsl_Boolean (true));
+         else
+            return Gsl_Type (Create_Gsl_Boolean (false));
          end if;
-         return Gsl_Type (Res);
       else
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
            "Script 'in_regexp': Gsl_String expected.");
