@@ -267,9 +267,9 @@
     
   <!-- 1. OK -->  
   <edge_class_specific_setting
-    line_color = "#00FFFF"
-    text_color = "#00FFFF"
-    line_style = "continuous_line"
+    line_color = "#009090"
+    text_color = "#009090"
+    line_style = "dashed_line"
     show_label = "yes"> 
            
     <edge_class
@@ -277,9 +277,27 @@
       attribute_name   = "Parent" />           
     
   </edge_class_specific_setting>   
-  
-  
+
+
+  <!-- 2. OK -->
+  <edge_class_specific_setting
+    line_color = "#00FF00"
+    text_color = "#00FF00"
+    line_style = "continuous_line"
+    show_label = "no"> 
+           
+    <super_edge_class
+      super_start_node_class = "O_Node"
+      attribute_name         = "Parent" />                                  
       
+    <super_edge_class
+      super_start_node_class = "O_Node"
+      attribute_name         = "Its_Type" />   
+          
+  </edge_class_specific_setting> 
+
+     
+  <!-- 3. OK -->
   <edge_class_specific_setting
     line_color = "#FF0000"
     text_color = "#FF0000"
@@ -288,7 +306,33 @@
            
     <super_edge_class
       super_start_node_class = "Prog_Unit"
-      attribute_name         = "*" />                
+      attribute_name         = "*" />                                  
+    
+  </edge_class_specific_setting> 
+  
+  
+  <!-- 4. OK -->
+  <edge_class_specific_setting
+    line_color = "#FFFF00"
+    text_color = "#FFFF00"
+    line_style = "continuous_line"
+    show_label = "yes"> 
+           
+    <edge_class
+      start_node_class = "Entity_L_Value"
+      attribute_name   = "*" />  
+      
+      
+  <!-- 5. OK -->
+  <edge_class_specific_setting
+    line_color = "#909000"
+    text_color = "#909000"
+    line_style = "dashed_line"
+    show_label = "yes"> 
+           
+    <edge_class
+      start_node_class = "Entity_L_Value"
+      attribute_name   = "Parent" />                                 
     
   </edge_class_specific_setting> 
 
