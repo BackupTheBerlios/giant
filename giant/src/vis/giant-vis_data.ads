@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.7 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.8 $
 --  $Author: keulsn $
---  $Date: 2003/06/18 20:37:46 $
+--  $Date: 2003/06/23 01:11:07 $
 --
 ------------------------------------------------------------------------------
 --
@@ -44,6 +44,10 @@ with Giant.Merging_Iterators;
 with Giant.Vis;
 
 package Giant.Vis_Data is
+
+
+   --  To be removed when implementation is done.
+   Unimplemented : exception;
 
 
    ------------
@@ -130,6 +134,21 @@ package Giant.Vis_Data is
    --    Constraint_Error if Precondition not satisfied
    procedure Shrink_Pool
      (Pool : in out Layer_Pool);
+
+
+   ------------------
+   -- Highlighting --
+   ------------------
+
+   type Highlight_Type is
+     (Current_Local, First_Local, Second_Local, Third_Local,
+      First_Global, Second_Global, Third_Global);
+
+   subtype Local_Highlight_Type is
+     Highlight_Type range Current_Local .. Third_Local;
+
+   subtype Global_Highlight_Type is
+     Highlight_Type range First_Global .. Third_Global;
 
 
    -----------

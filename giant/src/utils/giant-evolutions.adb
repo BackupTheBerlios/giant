@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.15 $
 --  $Author: keulsn $
---  $Date: 2003/06/12 13:25:59 $
+--  $Date: 2003/06/23 01:11:07 $
 --
 ------------------------------------------------------------------------------
 
@@ -226,7 +226,7 @@ package body Giant.Evolutions is
    begin
       if Progress_Dialog."/=" (Dialog, null) then
          Progress_Dialog.Set_Lower (Dialog, 0.0);
-         Progress_Dialog.Set_Upper (Dialog, 0.0);
+         --  Progress_Dialog.Set_Upper (Dialog, 10_000.0);
          Progress_Dialog.Set_Activity_Mode (Dialog, True);
          Progress_Dialog.Set_Progress_Text
            (Dialog, Get_Progress_Text_Unknown_Complexity (Individual));

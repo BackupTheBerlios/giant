@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.4 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.5 $
 --  $Author: keulsn $
---  $Date: 2003/06/10 23:52:47 $
+--  $Date: 2003/06/23 01:11:07 $
 --
 ------------------------------------------------------------------------------
 --
@@ -61,6 +61,8 @@
 
 with Ada.Streams;
 
+with Gdk.Color;
+with Gdk.Pixmap;
 with Gtk.Widget;
 
 with Bauhaus_IO;
@@ -76,6 +78,11 @@ with Giant.Vis;
 with Giant.Vis_Data;
 
 package Giant.Graph_Widgets is
+
+
+   --  To be removed when implementation is done.
+   Unimplemented : exception;
+
 
    -------------------
    -- Graph Widgets --
@@ -150,6 +157,11 @@ package Giant.Graph_Widgets is
    --------------------------------------------
 
    ----------------------------------------------------------------------------
+   --  Describes a Lock that a Layouter must acquire before making changes
+   --  to the layout.
+   type Lock_Type is private;
+
+   ----------------------------------------------------------------------------
    --  Checks if an edge is contained in a graph widget
    --
    --  Note:
@@ -185,9 +197,21 @@ package Giant.Graph_Widgets is
    --  Inserts edges and nodes from 'Selection' into a 'Widget'. An edge
    --  is inserted only if its two incident nodes are contained in 'Widget'.
    --
+   --  This subprogram produces a lock for the inserted selection. The
+   --  inserted selection is locked until 'Lock' is release by a call
+   --  to 'Release_Lock' (see below). Until then the newly inserted selection
+   --  is not shown inside the graph widget.
+   --
+   --  Usually a layouter should be started on the selection and after that
+   --  layouter has finished the lock should be released.
+   --
+   --  Note:
+   --    The user probably cannot perform action on the graph widget until
+   --    the lock is released.
    --  Parameters:
    --    Widget    - The graph widget
    --    Selection - A collection of edges and nodes
+   --    Lock      - A lock for the inserted selection
    --  Postcondition:
    --    For all N: Node_Id in 'Selection': 'Contains (Widget, N)'
    --    For all E: Edge_Id in 'Selection': 'Contains (Widget, E)' if and only
@@ -195,14 +219,25 @@ package Giant.Graph_Widgets is
    --      'Selection' union {N: Node_Id | 'Contains (Widget, N)'}
    procedure Insert_Selection
      (Widget    : access Graph_Widget_Record'Class;
-      Selection : access Graph_Lib.Selections.Selection);
+      Selection : access Graph_Lib.Selections.Selection;
+      Lock      :    out Lock_Type);
 
    ----------------------------------------------------------------------------
    --  Removes all edges and all nodes from 'Selection' that 'Widget' contains
    --  already. Then, it inserts the remaining edges and nodes into 'Widget'.
    --
+   --  This subprogram produces a lock for the inserted selection. The
+   --  inserted selection is locked until 'Lock' is release by a call
+   --  to 'Release_Lock' (see below). Until then the newly inserted selection
+   --  is not shown inside the graph widget.
+   --
+   --  Usually a layouter should be started on the selection and after that
+   --  layouter has finished the lock should be released.
+   --
    --  Note:
-   --    The contents of 'Selection' are modified by this subprogram!
+   --    * The contents of 'Selection' are modified by this subprogram!
+   --    * The user probably cannot perform actions on the graph widget until
+   --      the lock is released.
    --  Parameters:
    --    Widget    - The graph widget
    --    Selection - Set of edges and nodes that should be inserted into
@@ -219,7 +254,8 @@ package Giant.Graph_Widgets is
    --          inserted into 'Widget' during the call}
    procedure Insert_Selection_Difference
      (Widget    : access Graph_Widget_Record'Class;
-      Selection : access Graph_Lib.Selections.Selection);
+      Selection : access Graph_Lib.Selections.Selection;
+      Lock      :    out Lock_Type);
 
    ----------------------------------------------------------------------------
    --  Removes all edges and nodes in 'Selection' from 'Widget'
@@ -268,11 +304,6 @@ package Giant.Graph_Widgets is
    ------------
    -- Layout --
    ------------
-
-   ----------------------------------------------------------------------------
-   --  Describes a Lock that a Layouter must acquire before making changes
-   --  to the layout.
-   type Lock_Type is private;
 
    ----------------------------------------------------------------------------
    --  Raised whenever a layout-modifying subprogram is called without the
@@ -331,7 +362,6 @@ package Giant.Graph_Widgets is
       Node      : in     Graph_Lib.Node_Id;
       Location  : in     Vis.Logic.Vector_2d;
       Lock      : in     Lock_Type);
-   pragma Inline (Set_Top_Middle);
 
    ----------------------------------------------------------------------------
    --  Gets the position of one node.
@@ -349,7 +379,6 @@ package Giant.Graph_Widgets is
      (Widget    : access Graph_Widget_Record'Class;
       Node      : in     Graph_Lib.Node_Id)
      return Vis.Logic.Vector_2d;
-   pragma Inline (Get_Top_Middle);
 
    ----------------------------------------------------------------------------
    --  Discards a lock previously acquired by 'Lock_All_Content' or
@@ -750,6 +779,16 @@ private                    -- private part --
    --  not yet implemented
    type Lock_Type is null record;
 
+
+
+   --------------
+   -- Settings --
+   --------------
+
+   type Setting_Type is
+      record
+         null;
+      end record;
 
 
    -------------------------

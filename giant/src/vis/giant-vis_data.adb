@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.5 $
 --  $Author: keulsn $
---  $Date: 2003/06/18 20:37:46 $
+--  $Date: 2003/06/23 01:11:07 $
 --
 ------------------------------------------------------------------------------
 
@@ -532,7 +532,7 @@ package body Giant.Vis_Data is
      (Manager : in out Region_Manager;
       Edge    : in     Vis_Edge_Id) is
    begin
-      null; -------------------------------------------------------------------
+      raise Unimplemented;
    end Insert_Edge;
 
    procedure Drop_Edge
