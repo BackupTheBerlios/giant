@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: afa.tex,v $, $Revision: 1.13 $
-%  $Date: 2003/04/05 11:08:45 $
+%  $RCSfile: afa.tex,v $, $Revision: 1.14 $
+%  $Date: 2003/04/05 21:08:37 $
 %  $Author: squig $
 %
 %  Description: Beschreibung allgemeiner funktionaler Anforderungen - UseCase
@@ -237,28 +237,26 @@ Hier werden grundlegende Konzepte der Bedienung von GIANT beschrieben.
   
   \end{enumerate}
   
-
+  \subsection{Standard-Selektion}
+  \label{Standard-Selektion}
+ 
+  Jedes Anzeigefenster hat genau eine Standard-Selektion. Diese
+  Selektion wird bei der Erzeugung des Fensters angelegt und ist zu
+  Anfang leer. Die Standard-Selektion kann nicht gelöscht
+  werden. Abgesehen davon verhält sich die Standard-Selektion wie vom
+  Benutzer angelegte Selektionen.
     
-  \subsection {Aktuelle Selektion vs.\ Selektionen} 
+  \subsection {Aktuelle Selektion} 
                \label{Aktuelle Selektion vs Selektionen}
 
-  \index{Selektionen!aktuelle Selektion}
-               
-  Abgesehen von den hier beschriebenen Punkten, verhält sich die aktuelle
-  Selektion wie jede andere Selektion. Falls nicht explizit anders 
-  spezifiziert, ist insbesondere jeder UseCase für Selektionen auch auf die 
-  aktuelle Selektion anwendbar.
+  \index{Aktuelle Selektion}
                
   \begin{enumerate}
   
-    \item
-    Neben den vom Benutzer erzeugten Selektionen
-    gibt es zu jedem Anzeigefenster standardmäßig immer eine aktuelle
-    Selektion, diese kann auch leer sein.
-  
   \item Es gibt zu jedem Anzeigefenster beliebig viele Selektionen,
-    davon ist maximal immer eine die aktuelle Selektion (siehe 
-    \ref{Selektieren von Fenster-Knoten und Fenster-Kanten in Anzeigefenstern}).
+    davon ist immer eine die aktuelle Selektion (siehe
+    \ref{Selektieren von Fenster-Knoten und Fenster-Kanten in
+      Anzeigefenstern}).
     
     \item 
     Das oben beschriebene Selektieren mittels linker Maustaste etc. betrifft
@@ -504,22 +502,3 @@ von GIANT diesbezüglich unterstützen.
   eingegeben werden) von dem Punkt weggeschoben.
  
 \end {enumerate}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

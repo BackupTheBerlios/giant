@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: query.tex,v $, $Revision: 1.11 $
-%  $Date: 2003/04/05 12:41:57 $
+%  $RCSfile: query.tex,v $, $Revision: 1.12 $
+%  $Date: 2003/04/05 21:08:37 $
 %  $Author: squig $
 %
 %  Description: UseCases für die Anfragen
@@ -130,7 +130,7 @@ einer Datei (siehe \ref {Config Anfrage-Dateien}) laden.
     
     \step[8]
     Der Benutzer startet die Berechnung des Skripts durch Betätigung
-    des \gq{Start Query} im Anfragedialog (siehe \ref{GUI Anfragedialog}).
+    des \gq{Start Query} im Skriptdialog (siehe \ref{GUI Anfragedialog}).
 
     \step[9]
     GIANT prüft das geladene und eventuell modifizierte GQSL Skript. 
@@ -149,7 +149,7 @@ einer Datei (siehe \ref {Config Anfrage-Dateien}) laden.
 
   \begin{aproc}
     \astep{3} Der Benutzer bricht den UseCase mit Cancel ab.
-    \astep{4} Der Benutzer bricht die Auswahl der Anfragedatei mit Cancel ab.
+    \astep{4} Der Benutzer bricht die Auswahl der Datei mit Cancel ab.
               Das System kehrt dann zu Schritt 2 bei der
               Abarbeitung des UseCase zurück.
     \astep{6} Der Benutzer bricht den UseCase mit Cancel ab.
@@ -161,7 +161,7 @@ einer Datei (siehe \ref {Config Anfrage-Dateien}) laden.
 \end{uc}
 
 % ==============================================================================
-\begin{uc}[Anfrage speichern]{UC: Anfrage speichern}
+\begin{uc}[Anfrage speichern]{UC: Skript speichern}
 \index{Anfragen!in eine Datei speichern}
 Mit diesem UseCase kann der Benutzer GQSL Skripte aus dem 
 Skriptdialog (siehe \ref{GUI Anfragedialog}) in Dateien 
@@ -176,9 +176,9 @@ Skriptdialog (siehe \ref{GUI Anfragedialog}) in Dateien
   \end{precond}
 
   \begin{postsuccess}
-    \cond Eine Anfragedatei, welche das GQSL Skript enthält, wurde
+    \cond Eine Datei, welche das GQSL Skript enthält, wurde
           angelegt.
-    \cond GIANT zeigt den Anfragedialog, das gespeicherte GQSL Skript
+    \cond GIANT zeigt den Skriptdialog, das gespeicherte GQSL Skript
           ist weiterhin in dem Textfeld vorhanden.
       
   \end{postsuccess}
@@ -196,11 +196,11 @@ Skriptdialog (siehe \ref{GUI Anfragedialog}) in Dateien
   \begin{proc}    
 
     \step[1]
-    Der Benutzer betätigt im Anfragedialog (siehe \ref{GUI Anfragedialog})
+    Der Benutzer betätigt im Skriptdialog (siehe \ref{GUI Anfragedialog})
     den Button \gq{Save As...}.
     
     \step[2]
-    GIANT prüft ob das GQSL Skript im Textfeld des Anfragedialoges den
+    GIANT prüft ob das GQSL Skript im Textfeld des Skriptdialogs den
     Vorgaben der Grammatik (siehe \ref {GIANT Query Skripting Language} 
     entspricht. Falls nicht, erscheint eine Fehlermeldung 
     (siehe \ref {afa Fehlerverhalten})
@@ -215,7 +215,7 @@ Skriptdialog (siehe \ref{GUI Anfragedialog}) in Dateien
     gespeichert werden soll, vor und bestätigt mit OK.
 
     \step[5]
-    GIANT speichert das GQSL Skript in der vorgegebenen Anfragedatei.
+    GIANT speichert das GQSL Skript in der vorgegebenen Datei.
 
   \end{proc}
 

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.67 $
-%  $Date: 2003/04/05 17:54:05 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.68 $
+%  $Date: 2003/04/05 21:08:37 $
 %  $Author: squig $
 %
 %  Description: 
@@ -62,7 +62,7 @@ SUBGRAPH\_LIST (4 Spalten).
       
      \subsubsection {Untermenü Tools}  \label{Main-Window-Tools}
        \begin{enumerate}
-          \item {Delete Annotations Having No Visible Node}
+          \item {Delete Unreferenced Annotations}
           \item {Execute GQSL Query}
         \end{enumerate}
         
@@ -75,10 +75,9 @@ SUBGRAPH\_LIST (4 Spalten).
 
   \subsection {Statuszeile}
   \label{Statuszeile}
-   Die Statuszeile befindet sich ganz unten im Fenster.
-   
-   Gegebenenfalls werden in der Statustzeile Informationen zum aktuellen
-   Zustand von GIANT dargestellt.
+  Die Statuszeile befindet sich ganz unten im Fenster. In der
+  Statustzeile Informationen zum aktuellen Zustand von GIANT
+  dargestellt.
 
    \subsection {Window List}
   
@@ -88,7 +87,7 @@ SUBGRAPH\_LIST (4 Spalten).
    \subsubsection {Inhalt Window List}
    \label{WINDOW-LIST}
    
-   WINDOW\_LIST hat die Spalten WINDOW\_NAME \gq{Visualisation Windows} und WINDOW\_OPEN \gq{Open}. In
+   WINDOW\_LIST hat die Spalten WINDOW\_NAME \gq{Name} und WINDOW\_OPEN \gq{Open}. In
    WINDOW\_NAME wird der Name aller Anzeigefenster dargestellt, in
    WINDOW\_OPEN befindet sich entweder ein Strich-Symbol (Fenster
    nicht geöffnet) oder ein Häkchensymbol (Fenster geöffnet).
@@ -116,10 +115,10 @@ SUBGRAPH\_LIST (4 Spalten).
     
       SUBGRAPH\_LIST hat die Spalten 
       \begin{enumerate}
-        \item Subgraph Name (SUBGRAPH\_NAME)
+        \item Name (SUBGRAPH\_NAME)
         \item Nodes (SUBGRAPH\_NODES)
         \item Edges (SUBGRAPH\_EDGES)
-        \item Highlight Color (SUBGRAPH\_HIGHLIGHT\_COL).
+        \item Highlighted (SUBGRAPH\_HIGHLIGHT\_COL).
       \end{enumerate}
     
       In Subgraph Name stehen die Namen der existierenden Subgraphen,
@@ -134,7 +133,12 @@ SUBGRAPH\_LIST (4 Spalten).
       sich ein Popup-Menü mit folgenden Menüpunkten:
         \label{SUBGRAPH-LIST-POPUP}
         \begin{enumerate}
-          \item Highlight  Color 1 / Color 2 / Color 3 (drei Untermenüs)
+          \item Highlight (Menü)
+            \begin{enumerate}
+              \item Color 1
+              \item Color 2
+              \item Color 3
+            \end{enumerate}
           \item Unhighlight In All Windows
           \item Copy IML Subgraph
           \item Create Window Selection % OK
@@ -154,30 +158,26 @@ SUBGRAPH\_LIST (4 Spalten).
 
   Im Programm kann es mehrere Anzeigefenster geben. Ein Anzeigefenster besteht
   aus folgenden Elementen:
-
-  In Anzeigefenstern (VISUALIZATION\_WINDOW) werden Graphen visualisiert.
-  Sie erscheinen im großen quadratischen rechten Teil (VIS\_PANE) 
-  des Fensters. Die VIS\_PANE enthält den Anzeigeinhalt des Fensters.
-  Im linken Viertel des Fensters, der Toolbar (VISUALIZATION\_WINDOW\_TOOLBAR)
-  befinden sich untereinander die MiniMap (MINIMAP), Pinliste (PIN\_LIST)
-  mit darunterliegenden Buttons, Selektionsliste (SELECTION\_LIST),
-  die Zoom-Kontrolle, 
-  die Stilauswahl-Combobox (STYLE\_COMBO)
+  
   \label{GUI Stilauswahl-Combobox} 
-  und  ein Button \gq{Hide} zum Ausblenden der Toolbar (TOOLBAR\_HIDE).
+  In Anzeigefenstern (VISUALIZATION\_WINDOW) werden Graphen
+  visualisiert.  Sie erscheinen im großen quadratischen rechten Teil
+  (VIS\_PANE) des Fensters. Die VIS\_PANE enthält den Anzeigeinhalt
+  des Fensters.  Im linken Viertel des Fensters, der Toolbar
+  (VISUALIZATION\_WINDOW\_TOOLBAR) befinden sich untereinander die
+  MiniMap (MINIMAP), Pinliste (PIN\_LIST), Selektionsliste
+  (SELECTION\_LIST), die Stilauswahl-Combobox (STYLE\_COMBO) und die
+  Zoom-Kontrolle.
 
  \subsection {MiniMap} \label{GUI Minimap}
-
-    In der MiniMap wird der gesamte IML-Teilgraph, der im Fenster
-    visualisiert ist, durch einen grauen Kasten repräsentiert.
-    Dabei repräsentiert der graue Kasten die Ausdehnung des gesamten
-    Graphen inklusive der z.Z.\ nicht im Fenster sichtbaren Bereiche.
-    Der im Fenster sichtbare Bereich wird in der MiniMap durch einen
-    Rahmen angezeigt. Je nach Zoomstufe ist der sichtbare Bereich
-    größer oder kleiner.
-    Durch Klicks in die Minimap kann die linke obere Ecke des
-    sichtbaren Bereiches versetzt werden, der im Anzeigeinhalt VIS\_PANE angezeigte
-    Bereich wird dann entsprechend angepasst.
+ 
+ In der MiniMap wird der Anzeigeinhalt verkleinert dargestellt. Die
+ MiniMap wird von einem Rahmen umschlossen. Der sichtbare
+ Anzeigeinhalt wird durch einen kleineren Rahmen repräsentiert, der
+ innerhalb der MiniMap durch Mausklicks versetzt werden kann. Je nach
+ Zoomstufe ist dieser Rahmen größer oder kleiner. Wird der Rahmen
+ versetzt, der sichtbare Anzeigeinhalt im VIS\_PANE entsprechend
+ angepasst.
 
   \subsection{Visualisierung der Knoten}
 
@@ -190,7 +190,12 @@ SUBGRAPH\_LIST (4 Spalten).
     \begin{enumerate}
       \item Show Node Info Window
       \item Show Corresponding Source Code
-      \item Annotation Add / Change / Delete (drei Untermenüs)
+      \item Annotation (Menü)
+        \begin{enumerate}
+          \item Add
+          \item Change 
+          \item Delete
+          \end{enumerate}
       \label{Change Node Annotation}
       \label{Delete Node Annotation}
       \item Show Node Annotation \label{Show Node Annotation}
@@ -220,9 +225,9 @@ SUBGRAPH\_LIST (4 Spalten).
     \end{enumerate}
 
   \subsection{Selektionsauswahlliste} \label{Selektionsauswahlliste}
-    Die Selektionsauswahlliste hat die Spalten Selection (mit dem Namen der
-    Selektion) und State (mit dem Status der Selektion, also z.B. farbig
-    hervorgehoben oder nicht).
+    Die Selektionsauswahlliste hat die Spalten \gq{Name} mit dem Namen der
+    Selektion, \gq{Color} mit der Farbe der Selektion und \gq{State}
+    mit dem Status der Selektion (hervorgehoben oder nicht hervorgehoben).
 
     Im Popup-Menü der Selektionsauswahlliste (SELECTION\_LIST)
     befinden sich folgende Einträge:
@@ -239,8 +244,13 @@ SUBGRAPH\_LIST (4 Spalten).
 
       \item Create New IML Subgraph From This Selection % 
       
-      \item Highlight Selection Color1 / Color 2 / Color 3 (drei Untermenüs) % OK
-      
+      \item Highlight Selection (Menü)
+        \begin{enumerate}
+        \item Color 1
+        \item Color 2
+        \item Color 3
+        \end{enumerate}
+        
       \item Zoom To Make Selection Fill Window % OK
      
       \item Copy Selection
@@ -255,36 +265,31 @@ SUBGRAPH\_LIST (4 Spalten).
       
     \end{enumerate}    
 
-
-  \subsection{Zoom-Kontrolle} \label{GUI Zoom-Kontrolle}  
-
-    Die Zoom-Kontrolle besteht aus folgenden Elementen:
-    
-  \begin{enumerate}
-      \item Combobox ZOOM\_CONTROL mit vorgefertigten Werten und Eingabemöglichkeit % OK
-      \item Button \gq{Display} (ZOOM\_DISPLAY) % OK
-      \item Button \gq{Zoom+} (ZOOM\_PLUS) % OK
-      \item Button \gq{Zoom-} (ZOOM\_MINUS) % OK
-      \item Button \gq{Fill Window} (ZOOM\_FILL) % OK
-      \item Button \gq{Zoom Edge} (ZOOM\_EDGE) % OK
-  \end{enumerate}    
      
   \subsection{Stilauswahl-Combobox}
 
     In der Stilauswahl-Combobox (STYLE\_CHOOSER) kann ein Anzeigestil
     festgelegt werden.
 
-  \subsection{Ein- und Ausklappbutton}
+  \subsection{Zoom-Kontrolle} \label{GUI Zoom-Kontrolle}  
 
-    Durch Klick auf den Ein- und Ausklappbutton (VIS\_PANE\_BUTTON) kann die VIS\_PANE
-    ein- und ausgeblendet werden.
+    Die Zoom-Kontrolle besteht aus folgenden Elementen:
     
-    \subsection{Bildlaufleisten}
+  \begin{enumerate}
+      \item Button \gq{-} (ZOOM\_MINUS) % OK
+      \item Combobox ZOOM\_CONTROL mit vorgefertigten Werten und Eingabemöglichkeit % OK
+      \item Button \gq{+} (ZOOM\_PLUS) % OK
+      \item Button \gq{Pick Edge} (ZOOM\_EDGE) % OK
+  \end{enumerate}    
+
+  In der ComboBox ist neben den vorgegebenen Zoom Stufen noch der
+  Eintrag \gq{Fit in Window}.
+
+    \subsection{Scrollbars}
     \label{Scrolleisten}
     
-    An den beiden Bildlaufleisten (links/rechts und oben/unten) in
-    jedem Anzeigefenster kann der im Fenster sichtbare Bereich des
-    Graphen verschoben werden.
+    Mit den beiden Scrollbars am unteren und rechten Rand des Anzeigefensters
+    kann der sichtbare Anzeigeinhalt des verändert werden.
 
 \section{Knoten-Informationsfenster} \label{Knoten-Informationsfenster}
 
@@ -296,22 +301,24 @@ SUBGRAPH\_LIST (4 Spalten).
 
     In Knoten-Informationsfenstern (NODE\_INFO) können nähere Informationen
     zu Knoten angezeigt werden.
-
-    Im Fenster wird die Knotentyp und Knoten-ID dargestellt
-    (TYPE und ID), Format: "Node: TYPE, ID: ID), darunter befinden sich
-    (jeweils untereinander) drei getrennt scrollbare Listen,
-    ATTRIBUTES, SUCCESSOR\_NODES und PREDECESSOR\_NODES.
+    
+    Im Fenster wird die ID und der Typ des Knotens dargestellt,
+    darunter befinden sich unteinander drei getrennt
+    scrollbare Listen, ATTRIBUTES, SUCCESSOR\_NODES und
+    PREDECESSOR\_NODES.
     
     Unter den drei Listen befinden sich nebeneinander mittig zwei Buttons
-    CLOSE und PICK (zum Auswählen eines anderen Knotens zur Anzeige).
+    PICK und CLOSE. PICK dient zum Auswählen eines anderen Knotens zur
+    Anzeige im dem Knoten-Informationsfenster.
     
     \subsection{Liste ATTRIBUTES}
-
-      Die Liste ATTRIBUTES enthält alle Attribute des Knotens und hat zwei Spalten:
+    
+    Die Liste ATTRIBUTES enthält die Attribute des Knotens und hat
+    zwei Spalten:
     
       \begin{enumerate}
-        \item ATTRIBUTE (Attribute Name)
-        \item VALUE (Attribute Value)
+        \item Name (ATTRIBUTE)
+        \item Value (VALUE)
       \end{enumerate}
     
     \subsection{Liste SUCCESSOR\_NODES}
@@ -320,8 +327,8 @@ SUBGRAPH\_LIST (4 Spalten).
       Kante mit zwei Spalten:
     
     \begin{enumerate}
-      \item EDGE\_TYPE (Typ der abgehenden Kante: Edge Type)
-      \item NODE\_ID (ID des Knotens, zu dem sie führt: Node ID)
+      \item ID (NODE\_ID, Typ der abgehenden Kante)
+      \item Type (EDGE\_TYPE, ID des Knotens, zu dem sie führt)
     \end{enumerate}    
 
     \subsection{Liste PREDECESSOR\_NODES}
@@ -330,11 +337,11 @@ SUBGRAPH\_LIST (4 Spalten).
       Kante mit zwei Spalten:
 
       \begin{enumerate}
-        \item EDGE\_TYPE (Typ der ankommenden Kante: Edge Type)
-        \item NODE\_ID (ID des Knotens, von dem sie kommt: Node ID)
+        \item ID (NODE\_ID, ID des Knotens, von dem sie kommt)
+        \item Type (EDGE\_TYPE, Typ der ankommenden Kante)
       \end{enumerate}
 
-\section{Anfragedialog} \label{GUI Anfragedialog}
+\section{Skriptdialog} \label{GUI Anfragedialog}
 
     \begin{figure}[!htbp]
        \centering
@@ -342,16 +349,16 @@ SUBGRAPH\_LIST (4 Spalten).
        \caption{Query-Dialog}
     \end{figure}
 
-Der Anfragedialog QUERY\_DIALOG hat zuoberst ein Textfeld QUERY\_TEXT,
-in dem der Text der Anfrage eingegeben werden kann.
+Der Skriptdialog QUERY\_DIALOG hat zuoberst ein Textfeld QUERY\_TEXT,
+in dem der Text des Skripts eingegeben werden kann.
 
-Unter QUERY\_TEXT befinden sich folgende Elemente:
+Unter QUERY\_TEXT befinden sich folgende Buttons:
 
       \begin{enumerate}
-        \item Button QUERY\_START (Start Query)
-        \item Button QUERY\_CANCEL (Cancel)
-        \item Button QUERY\_LOAD (Load Query)
-        \item Button QUERY\_SAVE (Save Query)
+        \item Open... (QUERY\_LOAD)
+        \item Save As... (QUERY\_SAVE)
+        \item OK (QUERY\_START)
+        \item Cancel (QUERY\_CANCEL)
       \end{enumerate}
 
 \section{Allgemeiner Texteingabedialog}
@@ -364,13 +371,11 @@ Unter QUERY\_TEXT befinden sich folgende Elemente:
     \end{figure}
 
 Ein allgemeiner Texteingabedialog ist ein Fenster DIALOG\_WINDOW mit dem
-Titel \gq{GIANT Dialog}. Im Fenster ist ein einzeiliges Textfeld TEXT\_FIELD
-mit einem Prompt-Text TEXT\_LABEL davor, zwei Buttons OK\_BUTTON und CANCEL\_BUTTON
+Titel \gq{Input}. Im Fenster ist ein einzeiliges Textfeld TEXT\_FIELD
+mit einem Prompt-Text TEXT\_LABEL, zwei Buttons OK\_BUTTON und CANCEL\_BUTTON
 mit den Beschriftungen \gq{OK} und \gq{Cancel}.
 
-
-
-\section{Common\_Set\_Operation\_Dialog}
+\section{Set Operation Dialog}
 \label{Common-Set-Operation-Dialog}
 
     \begin{figure}[!htbp]
@@ -422,7 +427,7 @@ Bestandteile des Dialoges sind:
 Der Dialog Layoutalgorithmen bietet folgende Möglichkeiten:
 
 \begin {enumerate}
- \item {Auswahl des Layoutalgorithmus}
+ \item Auswahl des Layoutalgorithmuses
  \item Eingabe der zu berücksichtigenden Kanten bei semantischen Layouts
  \item OK Button
  \item Cancel Button
@@ -468,7 +473,7 @@ Mit dem Button OK kann bestätigt werden, mit Button Cancel abgebrochen werden.
     \end{figure}
 
 Ein allgemeiner Fehlerdialog ist ein Fenster ERROR\_WINDOW mit dem
-Titel \gq{GIANT Error}. Im Fenster ist
+Titel \gq{Error}. Im Fenster ist
 ein Fehlertext Text ERROR\_LABEL und ein Button OK\_BUTTON mit der
 Beschriftung OK\_LABEL.
 Standardmäßig ist der Button mit \gq{OK} beschriftet.
@@ -483,7 +488,7 @@ Standardmäßig ist der Button mit \gq{OK} beschriftet.
     \end{figure}
     
 Eine allgemeine Sicherheitsabfrage ist ein Fenster CONFIRMATION\_WINDOW mit dem
-Titel \gq{GIANT Confirmation Prompt}. Im Fenster ist
+Titel \gq{Confirmation}. Im Fenster ist
 ein Fragetext Text CONFIRMATION\_LABEL und ein Button YES\_BUTTON mit der
 Beschriftung YES\_LABEL, sowie ein NO\_BUTTON mit der Beschriftung
 NO\_LABEL. In dem Fragetext steht jeweils kontextabhängig 
@@ -520,8 +525,9 @@ mit \gq{No}.
 \section{Fortschrittsanzeige}
 
 \label{Progressbar}
-Es gibt in GIANT zwei Möglichkeiten zur Fortschrittsanzeige während laufender Berechnungen.
-Jede Progressbar ist mit \gq{Working, please wait.} beschriftet.
+Es gibt in GIANT zwei Möglichkeiten zur Fortschrittsanzeige während
+laufender Berechnungen.  Jede Progressbar ist mit \gq{The system is
+  busy. Please be patient.} beschriftet.
 
 \subsection{Progressbar-Runs}
 \label{Progressbar-Runs}
@@ -529,7 +535,7 @@ Jede Progressbar ist mit \gq{Working, please wait.} beschriftet.
      Inhalt, so dass erkennbar ist, dass das System noch arbeitet.
      \begin{figure}[!htbp]
       \centering
-      \includegraphics{gui/progressbar_cancel}
+      \includegraphics{gui/progressbar_busy}
       \caption{Progressbar-Runs}
      \end{figure}
 
@@ -546,7 +552,7 @@ Jede Progressbar ist mit \gq{Working, please wait.} beschriftet.
      Berechnung abbricht.
      \begin{figure}[!htbp]
       \centering
-      \includegraphics{gui/progressbar_busy}
+      \includegraphics{gui/progressbar_cancel}
       \caption{Progressbar-Modal}
      \end{figure}
 
