@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.56 $
---  $Author: squig $
---  $Date: 2003/07/15 17:18:42 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.57 $
+--  $Author: keulsn $
+--  $Date: 2003/07/16 12:54:21 $
 --
 
 with Ada.Strings.Unbounded;
@@ -286,9 +286,14 @@ package body Giant.Controller is
       Logger.Info (-"Closing current project");
 
       Project_Loaded := False;
-      Current_Project := Projects.Null_Project;
+      --  FIX
+      --  Current_Project := Projects.Null_Project;
 
       Projects.Deallocate_Project_Deep (Current_Project);
+
+      --  FIX cont'd
+      Current_Project := Projects.Null_Project;
+
       Graph_Lib.Unload;
 
       return True;
