@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.18 $
+--  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.19 $
 --  $Author: koppor $
---  $Date: 2003/07/15 16:39:24 $
+--  $Date: 2003/08/25 10:19:31 $
 --
 ------------------------------------------------------------------------------
 --  Variables are named according to the paper
@@ -53,11 +53,9 @@ package body Giant.Tree_Layouts is
    is
       Res : Tree_Layout;
    begin
-      if not Graph_Lib.Node_Id_Sets.Is_Member
+      pragma Assert (Graph_Lib.Node_Id_Sets.Is_Member
         (Graph_Lib.Selections.Get_All_Nodes (Selection_To_Layout),
-         Root_Node) then
-         raise Root_Node_Not_In_Selection;
-      end if;
+         Root_Node));
 
       Res                 := new Tree_Layout_Record;
       Res.Widget          := Widget;
