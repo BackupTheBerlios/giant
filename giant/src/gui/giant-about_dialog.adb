@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-about_dialog.adb,v $, $Revision: 1.4 $
---  $Author: squig $
---  $Date: 2003/07/22 09:37:57 $
+--  $RCSfile: giant-about_dialog.adb,v $, $Revision: 1.5 $
+--  $Author: keulsn $
+--  $Date: 2003/08/01 13:31:18 $
 --
 
 with Ada.IO_Exceptions;
@@ -49,7 +49,6 @@ package body Giant.About_Dialog is
    procedure Initialize
      (Dialog : access About_Dialog_Record'class);
 
-   Dialog : About_Dialog_Access := null;
 
    ---------------------------------------------------------------------------
    --  File Operations
@@ -175,10 +174,9 @@ package body Giant.About_Dialog is
 
    procedure Show
    is
+      Dialog : About_Dialog_Access := null;
    begin
-      if (Dialog = null) then
-         Create (Dialog);
-      end if;
+      Create (Dialog);
       Show_All (Dialog);
    end;
 
