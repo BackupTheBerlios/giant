@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.43 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.44 $
 --  $Author: schwiemn $
---  $Date: 2003/07/08 13:41:31 $
+--  $Date: 2003/07/15 23:40:17 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -862,10 +862,14 @@ package body Giant.Projects is
      (Project_Name      : in String;
       Project_Directory : in String)
      return Project_Access is
+     
+      use Ada.Strings.Unbounded;
 
       New_Project_Access : Project_Access;
       Absolute_Project_File_Name : Ada.Strings.Unbounded.Unbounded_String;
-
+      
+      Abs_Node_Annotations_File : Ada.Strings.Unbounded.Unbounded_String;
+      
       Project_Tree_Reader  : Tree_Readers.Tree_Reader;
       Project_XML_Document : Dom.Core.Document;
 
@@ -954,12 +958,15 @@ package body Giant.Projects is
       -- calculate path relative to project directory if necessary
       New_Project_Access.Node_Annotations_File :=
         Ada.Strings.Unbounded.To_Unbounded_String
-        (File_Management.Get_Absolute_Path_To_File_From_Relative
-         (Ada.Strings.Unbounded.To_String
-          (New_Project_Access.Abs_Project_Directory),
           (DOM.Core.Elements.Get_Attribute
-           (Data_XML_Node, "node_annotations_file_name"))));
-
+           (Data_XML_Node, "node_annotations_file_name"));
+                     
+      Abs_Node_Annotations_File :=
+        File_Management.Append_Dir_Separator_If_Necessary
+        (Ada.Strings.Unbounded.To_String 
+          (New_Project_Access.Abs_Project_Directory))
+        & New_Project_Access.Node_Annotations_File;
+        
       DOM.Core.Free (XML_Nodes_List);
 
       -- Load all subgraphs into main memory
@@ -1070,7 +1077,7 @@ package body Giant.Projects is
       New_Project_Access.The_Node_Annotations :=
         Node_Annotations.Load_From_File
         (Ada.Strings.Unbounded.To_String
-         (New_Project_Access.Node_Annotations_File));
+         (Abs_Node_Annotations_File));
 
 
       --  deallocate storrage
@@ -1134,6 +1141,12 @@ package body Giant.Projects is
 
       --  build new project
       New_Project_Access := new Project_Element;
+      
+      -- for new projects this file is always located in the
+      -- project directory
+      New_Project_Access.Node_Annotations_File := 
+        Ada.Strings.Unbounded.To_Unbounded_String 
+          (Const_Node_Annotations_File_Name);
 
       New_Project_Access.Project_Name :=
         Ada.Strings.Unbounded.To_Unbounded_String (Project_Name);
@@ -1316,7 +1329,6 @@ package body Giant.Projects is
             P_Vis_Window_Data);
       end Process_Vis_Window;
 
-
       Abs_Node_Annotations_File : Ada.Strings.Unbounded.Unbounded_String;
 
       Known_Vis_Iter : Known_Vis_Windows_Hashs.Bindings_Iter;
@@ -1336,12 +1348,11 @@ package body Giant.Projects is
       ------------------------------------------------------------------
       if Change_Project_Files then
 
-         --  change the new node annoations file
-         Abs_Node_Annotations_File := New_Abs_Project_Directory
-           & Ada.Strings.Unbounded.To_Unbounded_String
-           (Const_Node_Annotations_File_Name);
-         Project.Node_Annotations_File := Abs_Node_Annotations_File;
-
+         -- after migration the node annotations file will always be
+         -- located in the project directory
+         Project.Node_Annotations_File := 
+           Ada.Strings.Unbounded.To_Unbounded_String
+             (Const_Node_Annotations_File_Name);
          --  "Migrate the project"
          --  (must be done before processing vis windows and subgraphs).
          Project.Project_Name :=
@@ -1484,13 +1495,6 @@ package body Giant.Projects is
               A_Subgraph_Data_Element.Existing_Subgraph_File;
          end if;
          
-         
-         
-         
-         Logger.Debug ("1450: Store Project: "
-           & Ada.Strings.Unbounded.To_String (A_Subgraph_File_Name));
-         
-
          Write_Sub_Graph_Data_To_File
            (Ada.Strings.Unbounded.To_String
             (A_Subgraph_File_Name),
@@ -1507,20 +1511,23 @@ package body Giant.Projects is
             A_Subgraph_Data_Element);
       end loop;
       
-      Logger.Debug ("1450: Store Project: Finished ");
-
       -- write dtd (overwritten if already exists)
       Write_DTD_To_Directory
         (Ada.Strings.Unbounded.To_String
          (Project.Abs_Project_Directory));
 
       -- Write Node_Annotations (file name has already be changed if project
-      -- is migrated).
-      -------------------------
+      -- is migrated). - expand toward project dir if necessary
+      --------------------------------------
+      Abs_Node_Annotations_File :=
+        File_Management.Append_Dir_Separator_If_Necessary
+        (Ada.Strings.Unbounded.To_String (Project.Abs_Project_Directory))
+        & Project.Node_Annotations_File;
+             
       Node_Annotations.Write_To_File
         (Project.The_Node_Annotations,
          Ada.Strings.Unbounded.To_String
-         (Project.Node_Annotations_File));
+         (Abs_Node_Annotations_File));
 
       -- Kill all Security save files (only if project is not migrated)
       --------------------------------------
