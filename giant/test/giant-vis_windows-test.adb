@@ -20,22 +20,25 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-vis_windows-test.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-vis_windows-test.adb,v $, $Revision: 1.7 $
 --  $Author: schwiemn $
---  $Date: 2003/07/08 14:50:40 $
+--  $Date: 2003/07/10 12:27:21 $
 --
+with Ada.Streams.Stream_IO;
+
 with AUnit.Assertions; use AUnit.Assertions;
 with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
 
 with Gtk.Main;
 
-
 with String_Lists;
+with Bauhaus_IO;
 
 with Giant.Logger;
 
 with Giant.Config;
 with Giant.Config.Vis_Styles;
+with Giant.Node_Annotations;
 
 with Giant.Vis_Windows;
 with Giant.Graph_Lib.Selections;
@@ -43,8 +46,81 @@ with Giant.Graph_Lib.Selections;
 package body Giant.Vis_Windows.Test is
 
    package Logger is new Giant.Logger("Giant.Vis_Windows.Test");
+   
+   
+   ---------------------------------------------------------------------------
+   -- Utilities
+   ---------------------------------------------------------------------------
+   
+   function Load_Vis_Window_Into_Main_Memory
+     (File_Path   : in String;
+      Annotations : in Node_Annotations.Node_Annotation_Access)
+     return Vis_Windows.Visual_Window_Access is
 
+      Stream_File       : Ada.Streams.Stream_IO.File_Type;
+      Ada_Stream        : Ada.Streams.Stream_IO.Stream_Access;
+      Bauhaus_In_Stream : Bauhaus_IO.In_Stream_Type;
+      New_Vis_Window    : Vis_Windows.Visual_Window_Access;
+   begin
 
+      Ada.Streams.Stream_IO.Open
+        (Stream_File,
+         Ada.Streams.Stream_IO.In_File,
+         File_Path);
+
+      Ada_Stream := Ada.Streams.Stream_IO.Stream (Stream_File);
+      Bauhaus_In_Stream := Bauhaus_IO.Make_Internal (Ada_Stream);
+
+      Vis_Windows.Visual_Window_Access_Read
+        (Bauhaus_In_Stream, New_Vis_Window, Annotations);
+
+      -- close resources
+      Bauhaus_IO.Release (Bauhaus_In_Stream);
+      Ada.Streams.Stream_IO.Close (Stream_File);
+
+      return New_Vis_Window;
+   end Load_Vis_Window_Into_Main_Memory;
+
+   ---------------------------------------------------------------------------
+   procedure Write_Vis_Window_To_File
+     (File_Path  : in String;
+      Vis_Window : in Vis_Windows.Visual_Window_Access) is
+
+      Stream_File        : Ada.Streams.Stream_IO.File_Type;
+      Ada_Stream         : Ada.Streams.Stream_IO.Stream_Access;
+      Bauhaus_Out_Stream : Bauhaus_IO.Out_Stream_Type;
+   begin
+
+      -- test if file exists, create new one if necessary      
+      begin 
+         Ada.Streams.Stream_IO.Open
+           (Stream_File,
+            Ada.Streams.Stream_IO.Out_File,
+            File_Path);
+      exception 
+         when Ada.Streams.Stream_IO.Name_Error =>
+         Ada.Streams.Stream_IO.Create
+           (Stream_File,
+            Ada.Streams.Stream_IO.Out_File,
+            File_Path);
+      end;
+
+      Ada_Stream := Ada.Streams.Stream_IO.Stream (Stream_File);
+      Bauhaus_Out_Stream := Bauhaus_IO.Make_Internal (Ada_Stream);
+
+      Vis_Windows.Visual_Window_Access_Write
+        (Bauhaus_Out_Stream, Vis_Window);
+
+      -- close resources
+      Bauhaus_IO.Release (Bauhaus_Out_Stream);
+      Ada.Streams.Stream_IO.Close (Stream_File);
+   end Write_Vis_Window_To_File;
+   
+   
+   ---------------------------------------------------------------------------
+   -- Tests
+   ---------------------------------------------------------------------------
+          
    ---------------------------------------------------------------------------
    function Set_Up_Vis_Window (Name : in String)
      return Visual_Window_Access is
@@ -174,23 +250,57 @@ package body Giant.Vis_Windows.Test is
         (Vis_Windows.Does_Pin_Exist (Test_Window, "Pin_3"),
          "Test whether ""Pin_3"" exists");
          
-
                                                
    end Check_Default_Win_Status;
+   
+   ---------------------------------------------------------------------------
+   procedure Leack_Test (R : in out AUnit.Test_Cases.Test_Case'Class) is
 
+      Test_Window : Vis_Windows.Visual_Window_Access;      
+   begin
+
+      for i in 1 .. 500_000_000 loop      
+         Test_Window := Set_Up_Vis_Window ("Test_Window_X");
+         Vis_Windows.Deallocate_Vis_Window_Deep (Test_Window);   
+      end loop;
+   end Leack_Test; 
+   
    ---------------------------------------------------------------------------
    procedure Test_Init (R : in out AUnit.Test_Cases.Test_Case'Class) is
 
-      Test_Window : Vis_Windows.Visual_Window_Access;
-      
-
+      Test_Window : Vis_Windows.Visual_Window_Access;      
    begin
 
       Test_Window := Set_Up_Vis_Window ("Test_Window_X");
-
-      Check_Default_Win_Status (Test_Window);
+      Check_Default_Win_Status (Test_Window);  
       
+      Vis_Windows.Deallocate_Vis_Window_Deep (Test_Window);   
    end Test_Init;
+   
+   ---------------------------------------------------------------------------
+   procedure Test_Streaming (R : in out AUnit.Test_Cases.Test_Case'Class) is
+
+      Test_Window : Vis_Windows.Visual_Window_Access;      
+   begin
+
+      Test_Window := Set_Up_Vis_Window ("Test_Window_X");
+      
+      Write_Vis_Window_To_File 
+        ("./resources/test_vis_window_stream_file.viswindow",
+         Test_Window);
+         
+      Vis_Windows.Deallocate_Vis_Window_Deep (Test_Window);    
+         
+      Test_Window := Load_Vis_Window_Into_Main_Memory
+        ("./resources/test_vis_window_stream_file.viswindow",
+         Node_Annotations.Create_Empty);
+         
+      Check_Default_Win_Status (Test_Window);
+         
+      Vis_Windows.Deallocate_Vis_Window_Deep (Test_Window);   
+   end Test_Streaming;
+
+
 
    ---------------------------------------------------------------------------
    procedure Test_Changing_Names
@@ -210,7 +320,10 @@ package body Giant.Vis_Windows.Test is
    ---------------------------------------------------------------------------
    procedure Register_Tests (T : in out Test_Case) is
    begin
+
+      Register_Routine (T, Leack_Test'Access, "Leack_Test");
       Register_Routine (T, Test_Init'Access, "Test_Init");
+      Register_Routine (T, Test_Streaming'Access, "Test_Streaming");
       
       null;
    end Register_Tests;

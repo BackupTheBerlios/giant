@@ -20,14 +20,16 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-config-vis_styles-test.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-config-vis_styles-test.adb,v $, $Revision: 1.6 $
 --  $Author: schwiemn $
---  $Date: 2003/06/26 15:06:07 $
+--  $Date: 2003/07/10 12:27:21 $
 --
+with Ada.Strings.Unbounded;
 
 with AUnit.Assertions; use AUnit.Assertions;
 with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
 
+with Giant.File_Management;
 with Giant.Config;
 with Giant.Config.Vis_Styles;
 with Giant.Graph_Lib;
@@ -37,8 +39,9 @@ with Giant.Logger;
 package body Giant.Config.Vis_Styles.Test is
 
    package Logger is new Giant.Logger("giant.config.vis_styles.test");
-
-   procedure Test_Initialisation
+   
+   ---------------------------------------------------------------------------
+   procedure Test_Leacks
      (R : in out AUnit.Test_Cases.Test_Case'Class) is
      
      Def_Vis_Style : Giant.Config.Vis_Styles.Visualisation_Style_Access;
@@ -61,9 +64,47 @@ package body Giant.Config.Vis_Styles.Test is
          Giant.Config.Vis_Styles.Clear_Config_Vis_Styles;
 
       end loop;
-   end Test_Initialisation;
+   end Test_Leacks;
+   
+   ---------------------------------------------------------------------------
+   procedure Test_Init_Test_Set_1
+     (R : in out AUnit.Test_Cases.Test_Case'Class) is
+     
+     Test_Vis_Style : Giant.Config.Vis_Styles.Visualisation_Style_Access;
+     All_Icons : Giant.Config.Vis_Styles.Node_Icons_Array_Access;
+     Node_Icon_Id : Positive;
+   begin
 
+      for i in 1 .. 1 loop
 
+        Giant.Config.Vis_Styles.Initialize_Config_Vis_Styles
+          ("",
+           "",
+           "",
+           "resources/vis_styles/vis_styles_test_set_1/"
+           & "test_vis_style_1_default.xml");
+      
+         Assert (Giant.Config.Vis_Styles.Get_Number_Of_Known_Vis_Styles = 1,
+           "Test whether ammount of loaded vis styles is correct");
+            
+         Test_Vis_Style := 
+           Giant.Config.Vis_Styles.Initialize_Vis_Style_By_Name
+             ("test_vis_style_1_default");
+             
+         All_Icons := Giant.Config.Vis_Styles.Get_All_Node_Icons;
+             
+         Node_Icon_Id := Giant.Config.Vis_Styles.Get_Node_Icon_Encoding
+             (Test_Vis_Style, 
+              Graph_Lib.Convert_Node_Class_Name_To_Id ("HPGNode"));
+              
+         Logger.Debug (Ada.Strings.Unbounded.To_String 
+           (All_Icons.all (Node_Icon_Id)));
+                         
+         Giant.Config.Vis_Styles.Clear_Config_Vis_Styles;
+      end loop;
+   end Test_Init_Test_Set_1;
+
+   ---------------------------------------------------------------------------
    function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is
    begin
       return new String'("Config.Vis_Styles.Test - Basic Tests");
@@ -71,14 +112,16 @@ package body Giant.Config.Vis_Styles.Test is
 
    procedure Register_Tests (T : in out Test_Case) is
    begin
-      Register_Routine (T, Test_Initialisation'Access, "Initialisation");
+      Register_Routine (T, Test_Leacks'Access, "Test_Leacks");
+      Register_Routine 
+        (T, Test_Init_Test_Set_1'Access, "Test_Init_Test_Set_1");
    end Register_Tests;
 
    procedure Set_Up (T : in out Test_Case) is
    begin
       Giant.Graph_Lib.Initialize;      
-      Giant.Graph_Lib.Load      
-        ("resources/rfg_examp.iml");
+--      Giant.Graph_Lib.Load      
+--        ("resources/rfg_examp.iml");
    end Set_Up;
 
    procedure Tear_Down (T : in out Test_Case) is
