@@ -6,14 +6,14 @@
 
   <!-- ................................................................. -->
   <global_settings
-    vis_window_background_color="RGB:FF/FF/FF"/> 
+    vis_window_background_color="#FFFFFF"/> 
 
   <!-- ................................................................. -->
   <default_node_setting
     icon         = "../icons/giant_icon.xpm"
-    text_color   = "black"
-    border_color = "black"
-    fill_color   = "RGB:C4/ED/ED"> 
+    text_color   = "#000000"
+    border_color = "#000000"
+    fill_color   = "#C4EDED"> 
      
     <node_attribute attribute_name  = "Parent"/>       
     <node_attribute attribute_name  = "SLoc"/>       
@@ -21,9 +21,9 @@
     
   <node_class_specific_setting 
     icon         = "../icons/IML_Root_icon_1.xpm"
-    text_color   = "black"
-    border_color = "black"
-    fill_color   = "RGB:50/FF/50"> 
+    text_color   = "#000000"
+    border_color = "#000000"
+    fill_color   = "#50FF50"> 
 
     <node_attribute attribute_name  = "Parent"/>       
     <node_attribute attribute_name  = "SLoc"/>   
@@ -35,9 +35,9 @@
   
   <node_class_specific_setting 
     icon         = "../icons/test_node_icon_red_1.xpm"
-    text_color   = "black"
-    border_color = "black"
-    fill_color   = "RGB:50/50/FF"> 
+    text_color   = "#000000"
+    border_color = "#000000"
+    fill_color   = "#5050FF"> 
     
     <node_attribute attribute_name  = "SLoc"/>   
     <node_attribute attribute_name  = "CF_Next"/>     
@@ -50,9 +50,9 @@
      
   <node_class_specific_setting 
     icon         = "../icons/T_Node_icon_1.xpm"
-    text_color   = "black"
-    border_color = "black"
-    fill_color   = "RGB:FF/D0/00"> 
+    text_color   = "#000000"
+    border_color = "#000000"
+    fill_color   = "#FFD000"> 
     
     <node_attribute attribute_name  = "SLoc"/>   
     <node_attribute attribute_name  = "Namespace_Name"/>     
@@ -63,9 +63,9 @@
   
   <node_class_specific_setting 
     icon         = "../icons/test_node_icon_blue_1.xpm"
-    text_color   = "black"
-    border_color = "black"
-    fill_color   = "RGB:60/FF/FF"> 
+    text_color   = "#000000"
+    border_color = "#000000"
+    fill_color   = "#60FFFF"> 
     
     <node_attribute attribute_name  = "Parent"/>   
     <node_attribute attribute_name  = "SLoc"/>     
@@ -76,14 +76,14 @@
 
   <!-- ................................................................. -->
   <default_edge_setting
-    line_color = "RGB:00/00/00"     
-    text_color = "RGB:00/00/00"     
+    line_color = "#000000"     
+    text_color = "#000000"     
     line_style = "dotted_line"      
     show_label = "no" />  
     
   <edge_class_specific_setting
-    line_color = "RGB:FF/D0/00"
-    text_color = "RGB:FF/D0/00"
+    line_color = "#FFD000"
+    text_color = "#FFD000"
     line_style = "dashed_line"
     show_label = "yes"> 
             
@@ -93,8 +93,8 @@
   </edge_class_specific_setting> 
        
   <edge_class_specific_setting
-    line_color = "red"
-    text_color = "red"
+    line_color = "#FF0000"
+    text_color = "#FF0000"
     line_style = "continuous_line"
     show_label = "yes"> 
             

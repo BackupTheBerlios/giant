@@ -6,14 +6,14 @@
 
   <!-- ................................................................. -->
   <global_settings
-    vis_window_background_color="white"/> 
+    vis_window_background_color="#FFFFFF"/> 
 
   <!-- ................................................................. -->
   <default_node_setting
     icon         = "test_node_icon_default_1.xpm"
-    text_color   = "RGB:AA/AA/AA"
-    border_color = "RGB:AA/AA/AA"
-    fill_color   = "white"> 
+    text_color   = "#CCCCCC"
+    border_color = "#CCCCCC"
+    fill_color   = "#FFFFFF"> 
      
     <node_attribute attribute_name = "SLoc"/>      
   </default_node_setting>
@@ -21,9 +21,9 @@
    
   <node_class_specific_setting 
     icon         = "test_node_icon_blue_1.xpm"
-    text_color   = "blue"
-    border_color = "blue"
-    fill_color   = "white"> 
+    text_color   = "#0000FF"
+    border_color = "#0000FF"
+    fill_color   = "#FFFFFF"> 
     
     <node_attribute attribute_name  = "SLoc"/>    
      
@@ -36,9 +36,9 @@
   
   <node_class_specific_setting 
     icon         = "test_node_icon_red_1.xpm"
-    text_color   = "red"
-    border_color = "red"
-    fill_color   = "white"> 
+    text_color   = "#FF0000"
+    border_color = "#FF0000"
+    fill_color   = "#FFFFFF"> 
     
     <node_attribute attribute_name  = "SLoc"/>    
     <node_attribute attribute_name  = "Type_Size"/>        
@@ -50,8 +50,8 @@
 
   <!-- ................................................................. -->
   <default_edge_setting
-    line_color = "green"     
-    text_color = "green"     
+    line_color = "#00FF00"     
+    text_color = "#00FF00"     
     line_style = "continuous_line"      
     show_label = "yes" />  
       
