@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.7 $
 --  $Author: koppor $
---  $Date: 2003/06/10 00:27:12 $
+--  $Date: 2003/06/10 07:34:20 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -329,6 +329,13 @@ package body Giant.Graph_Lib is
    -- Create the internal representation of the IML-Graph  --
    ----------------------------------------------------------
    procedure Create (Path_To_IML_File : in String) is
+
+      procedure Initialize_Node_Class_Id_Mapping is
+      begin
+         null;
+
+         -- TBD!!
+      end Initialize_Node_Class_Id_Mapping;
 
       -----------------------------------------------------------
       --  Data-Structore for temporary graph used for loading  --
@@ -721,7 +728,7 @@ package body Giant.Graph_Lib is
       --  Destroys the temporary structure,
       --  frees all memory
       --  Queue is deallocated, too
-      procedure DestroyTemporaryStructure
+      procedure DestroyTempStructure
         (Queue : in out Load_Nodes.Node_Queue) is
 
          procedure Dispose
@@ -735,7 +742,7 @@ package body Giant.Graph_Lib is
 
       begin
          DestroyDeep_Nodes (Queue);
-      end DestroyTemporaryStructure;
+      end DestroyTempStructure;
 
    begin
       --  Load Graph into memory
@@ -753,10 +760,12 @@ package body Giant.Graph_Lib is
       begin
          ConvertIMLGraphToTempStructure (Queue);
          ConvertTempStructureToUsedStructure (Queue);
-         DestroyTemporaryStructure (Queue);
+         DestroyTempStructure (Queue);
       end;
 
       Iml_Node_Mapper.Destroy;
+
+      Initialize_Node_Class_Id_Mapping;
 
    end Create;
 
@@ -797,13 +806,20 @@ package body Giant.Graph_Lib is
          IML_Node_ID_Hashed_Mappings.Destroy (IML_Node_ID_Mapping);
       end DestroyAllNodes;
 
+      procedure Destroy_Node_Class_Id_Mapping is
+      begin
+         null;
+         --  TBD
+      end Destroy_Node_Class_Id_Mapping;
+
    begin
+      Destroy_Node_Class_Id_Mapping;
+
       DestroyAllNodes;
 
       IML_Node_ID_Hashed_Mappings.Destroy (IML_Node_ID_Mapping);
 
       --  Unload IML_Graph - not supported by IML
-      null;
    end Destroy;
 
    ---------------------------------------------------------------------------
@@ -1147,23 +1163,71 @@ package body Giant.Graph_Lib is
    end Get_Incoming_Edges;
 
    ----------------------------------------------------------------------------
+   function Get_Outgoing_Edges
+     (Node : in Node_Id)
+      return Edge_Id_Set
+   is
+      Set : Edge_Id_Set;
+   begin
+      Set := Edge_Id_Sets.Empty_Set;
+
+      for I in Node.Outgoing_Edges'Range loop
+         Edge_Id_Sets.Insert (Set, Node.Incoming_Edges (I));
+      end loop;
+
+      return Set;
+   end Get_Outgoing_Edges;
+
+   ----------------------------------------------------------------------------
    function Get_Node_Attribute_Attribute_Node_Id_List_Value
      (Node      : in     Node_Id;
       Attribute : in     Node_Attribute_Id)
       return Node_Id_List
    is
+      List : Node_Id_List;
    begin
+      if Get_Node_Attribute_Class_Id (Attribute) /= Class_Node_Id_List then
+         raise Wrong_Attribute_Type;
+      end if;
 
-      return Get_Node_Attribute_Attribute_Node_Id_List_Value (Node, Attribute);
+      List := Node_Id_Lists.Create;
+
+      declare
+         IML_List: IML_Reflection.List_Field
+           := IML_Reflection.List_Field (Attribute.all);
+         Iter    : IML_Reflection.List_Iterator;
+         Target  : Storables.Storable;
+         ResNode : Node_Id;
+      begin
+         Iter     := IML_List.Make_Iterator (Node.IML_Node);
+
+         while IML_Reflection.More (Iter) loop
+            IML_Reflection.Next (Iter, Target);
+
+            ResNode := IML_Node_ID_Hashed_Mappings.Fetch
+              (IML_Node_ID_Mapping,
+               Storables.Get_Node_Id (Target) );
+
+            Node_Id_Lists.Attach (List, ResNode);
+         end loop;
+      end;
+
+      return List;
    end Get_Node_Attribute_Attribute_Node_Id_List_Value;
 
+   ----------------------------------------------------------------------------
    function Get_Node_Attribute_Boolean_Value
      (Node      : in     Node_Id;
       Attribute : in     Node_Attribute_Id)
       return Boolean
    is
    begin
-      return Get_Node_Attribute_Boolean_Value (Node, Attribute);
+      if Get_Node_Attribute_Class_Id (Attribute) /= Class_Boolean then
+         raise Wrong_Attribute_Type;
+      end if;
+
+      return IML_Reflection.Boolean_Field (Attribute.all).Get_Value
+        (Node.IML_Node);
    end Get_Node_Attribute_Boolean_Value;
 
    ----------------------------------------------------------------------------
@@ -1261,94 +1325,94 @@ package body Giant.Graph_Lib is
       end if;
 
       declare
-         IML_Edge : IML_Reflection.Edge_Field
-           := IML_Reflection.Edge_Field (Attribute.all);
-         Target   : Storables.Storable;
-      begin
-         Target   := IML_Edge.Get_Target
-           (IML_Roots.IML_Root (Node.IML_Node));
-         if Storables."/=" (Target, null) then
-            ResNode := IML_Node_ID_Hashed_Mappings.Fetch
-              (IML_Node_ID_Mapping,
-               Storables.Get_Node_Id (Target) );
-         else
-            My_Logger.Fatal ("Edge_Field with null target");
-            raise Node_Does_Not_Exist;
-         end if;
+          IML_Edge : IML_Reflection.Edge_Field
+            := IML_Reflection.Edge_Field (Attribute.all);
+          Target   : Storables.Storable;
+       begin
+          Target   := IML_Edge.Get_Target
+            (IML_Roots.IML_Root (Node.IML_Node));
+          if Storables."/=" (Target, null) then
+             ResNode := IML_Node_ID_Hashed_Mappings.Fetch
+               (IML_Node_ID_Mapping,
+                Storables.Get_Node_Id (Target) );
+          else
+             My_Logger.Fatal ("Edge_Field with null target");
+             raise Node_Does_Not_Exist;
+          end if;
       end;
 
       return ResNode;
    end Get_Node_Attribute_Node_Id_Value;
 
-   ------------------------------------------
-   -- Get_Node_Attribute_SLoc_Column_Value --
-   ------------------------------------------
+   ----------------------------------------------------------------------------
+   function Get_Node_Attribute_SLoc_Value
+     (Node      : in     Node_Id;
+      Attribute : in     Node_Attribute_Id)
+     return SLocs.Sloc
+   is
+   begin
+      if Get_Node_Attribute_Class_Id (Attribute) /= Class_SLoc then
+         raise Wrong_Attribute_Type;
+      end if;
 
+      return IML_Reflection.SLoc_Field (Attribute.all).Get_Value
+        (Node.IML_Node);
+   end Get_Node_Attribute_SLoc_Value;
+
+   ----------------------------------------------------------------------------
    function Get_Node_Attribute_SLoc_Column_Value
      (Node      : in     Node_Id;
       Attribute : in     Node_Attribute_Id)
       return Natural
    is
    begin
-      return Get_Node_Attribute_SLoc_Column_Value (Node, Attribute);
+      return SLocs.Get_Column
+        (Get_Node_Attribute_SLoc_Value (Node, Attribute));
    end Get_Node_Attribute_SLoc_Column_Value;
 
-   --------------------------------------------
-   -- Get_Node_Attribute_SLoc_Filename_Value --
-   --------------------------------------------
-
+   ----------------------------------------------------------------------------
    function Get_Node_Attribute_SLoc_Filename_Value
      (Node      : in     Node_Id;
       Attribute : in     Node_Attribute_Id)
-      return Natural
+      return String
    is
    begin
-      return Get_Node_Attribute_SLoc_Filename_Value (Node, Attribute);
+      return SLocs.Get_Filename
+        (Get_Node_Attribute_SLoc_Value (Node, Attribute));
    end Get_Node_Attribute_SLoc_Filename_Value;
 
-   ----------------------------------------
-   -- Get_Node_Attribute_SLoc_Line_Value --
-   ----------------------------------------
-
+   ----------------------------------------------------------------------------
    function Get_Node_Attribute_SLoc_Line_Value
      (Node      : in     Node_Id;
       Attribute : in     Node_Attribute_Id)
       return Natural
    is
    begin
-      return Get_Node_Attribute_SLoc_Line_Value (Node, Attribute);
+      return SLocs.Get_Line
+        (Get_Node_Attribute_SLoc_Value (Node, Attribute));
    end Get_Node_Attribute_SLoc_Line_Value;
 
-   ----------------------------------------
-   -- Get_Node_Attribute_SLoc_Path_Value --
-   ----------------------------------------
-
+   ----------------------------------------------------------------------------
    function Get_Node_Attribute_SLoc_Path_Value
      (Node      : in     Node_Id;
       Attribute : in     Node_Attribute_Id)
       return String
    is
    begin
-      return Get_Node_Attribute_SLoc_Path_Value (Node, Attribute);
+      return SLocs.Get_Path
+        (Get_Node_Attribute_SLoc_Value (Node, Attribute));
    end Get_Node_Attribute_SLoc_Path_Value;
 
-   -------------------------------------
-   -- Get_Node_Attribute_String_Value --
-   -------------------------------------
+   --  function Get_Node_Attribute_String_Value
+   --    (Node      : in     Node_Id;
+   --     Attribute : in     Node_Attribute_Id)
+   --     return String
+   --  is
+   --  begin
+   --     return Get_Node_Attribute_String_Value (Node, Attribute);
+   --  end Get_Node_Attribute_String_Value;
 
-   function Get_Node_Attribute_String_Value
-     (Node      : in     Node_Id;
-      Attribute : in     Node_Attribute_Id)
-      return String
-   is
-   begin
-      return Get_Node_Attribute_String_Value (Node, Attribute);
-   end Get_Node_Attribute_String_Value;
-
-   ----------------------------------------
-   -- Get_Node_Attribute_Value_As_String --
-   ----------------------------------------
-
+   ----------------------------------------------------------------------------
    function Get_Node_Attribute_Value_As_String
      (Node      : in     Node_Id;
       Attribute : in     Node_Attribute_Id)
@@ -1365,119 +1429,122 @@ package body Giant.Graph_Lib is
                SLoc := SLoc_StoredInIML.Get_Value (Node.Iml_Node);
                return SLocs.Plain_Image (SLoc);
             end;
+
+         when Class_Boolean =>
+            if Get_Node_Attribute_Boolean_Value (Node, Attribute) then
+               return "True";
+            else
+               return "False";
+            end if;
+
+         when Class_Natural =>
+            return Natural'Image (Get_Node_Attribute_Natural_Value
+                                  (Node, Attribute));
+         when Class_Node_Id =>
+            return Node_Id_Image (Get_Node_Attribute_Node_Id_Value
+                                  (Node, Attribute));
+
+         when Class_Node_Id_List =>
+            return "";
+
+         when Class_Node_Id_Set =>
+            return "";
+
          when others =>
+            My_Logger.Fatal ("Unknown Attribute-Class in " &
+                             "Get_Node_Attribute_Value_As_String");
             return "";
       end case;
    end Get_Node_Attribute_Value_As_String;
 
-   ------------------------
-   -- Get_Outgoing_Edges --
-   ------------------------
-
-   function Get_Outgoing_Edges
-     (Node : in Node_Id)
-      return Edge_Id_Set
-   is
-   begin
-      return Get_Outgoing_Edges (Node);
-   end Get_Outgoing_Edges;
-
-   -------------------
-   -- Get_Root_Node --
-   -------------------
-
+   ----------------------------------------------------------------------------
    function Get_Root_Node
       return Node_Id
    is
+      Root_Node : Storables.Storable;
+      ResNode   : Node_Id;
    begin
-      -- FIX: return the real root
-      return Get_Root_Node;
+      Root_Node := Storables.Storable
+        (IML_Graphs.Get_Raw_Graph (IML_Graph));
+
+      ResNode := IML_Node_ID_Hashed_Mappings.Fetch
+        (IML_Node_ID_Mapping,
+         Storables.Get_Node_Id (Root_Node) );
+
+      return ResNode;
    end Get_Root_Node;
 
-   ---------------------
-   -- Get_Source_Node --
-   ---------------------
-
+   ----------------------------------------------------------------------------
    function Get_Source_Node
      (Edge : in Edge_Id)
       return Node_Id
    is
    begin
-      return Get_Source_Node (Edge);
+      return Edge.Source_Node;
    end Get_Source_Node;
 
-   ---------------------
-   -- Get_Target_Node --
-   ---------------------
-
+   ----------------------------------------------------------------------------
    function Get_Target_Node
      (Edge : in Edge_Id)
       return Node_Id
    is
    begin
-      return Get_Target_Node (Edge);
+      return Edge.Target_Node;
    end Get_Target_Node;
 
-   ------------------------
-   -- Has_Node_Attribute --
-   ------------------------
-
-   function Has_Node_Attribute
-      (Node_Class_Name     : in String;
-       Node_Attribute_Name : in String)
-      return Boolean
-   is
-   begin
-      return Has_Node_Attribute (Node_Class_Name, Node_Attribute_Name);
-   end Has_Node_Attribute;
-
-   ------------------------
-   -- Hash_Edge_Class_Id --
-   ------------------------
-
+   ---------------------------------------------------------------------------
    function Hash_Edge_Class_Id (Key : in Edge_Class_Id) return Integer is
+
+      Edge_Class_Id_Hash_Range_Size : constant := 29;
+
+      package Edge_Class_Id_Hash_Functions is
+         new Ptr_Normal_Hashs
+        (T          => Edge_Class,
+         T_Ptr      => Edge_Class_Id,
+         Range_Size => Edge_Class_Id_Hash_Range_Size);
+
    begin
-      return Hash_Edge_Class_Id (Key);
+      return Edge_Class_Id_Hash_Functions.Integer_Hash (Key);
    end Hash_Edge_Class_Id;
 
-   ------------------
-   -- Hash_Edge_Id --
-   ------------------
-
+   ---------------------------------------------------------------------------
    function Hash_Edge_Id (Key : in Edge_Id) return Integer is
+
+      Edge_Id_Hash_Range_Size : constant := 1024047;
+
+      package Edge_Id_Hash_Functions is
+         new Ptr_Normal_Hashs
+        (T          => Edge_Record,
+         T_Ptr      => Edge_Id,
+         Range_Size => Edge_Id_Hash_Range_Size);
+
    begin
-      return Hash_Edge_Id (Key);
+      return Edge_Id_Hash_Functions.Integer_Hash (Key);
    end Hash_Edge_Id;
 
-   ------------------------
-   -- Hash_Node_Class_Id --
-   ------------------------
-
+   ---------------------------------------------------------------------------
    function Hash_Node_Class_Id (Key : in Node_Class_Id) return Integer is
    begin
-      return Hash_Node_Class_Id (Key);
+      return Node_Class_Id_Hash_Functions.Integer_Hash (Key);
    end Hash_Node_Class_Id;
 
+   ---------------------------------------------------------------------------
    function Hash_Node_Id (Key : in Node_Id) return Integer is
    begin
-      return Hash_Node_Id (Key);
+      return IML_Node_IDs.Hash
+        (Storables.Get_Node_ID (Key.IML_Node));
    end Hash_Node_Id;
 
-   procedure Make_Attribute_Iterator
-     (Node     : in     Node_Id;
-      Iterator :    out Node_Attribute_Iterator)
+   ---------------------------------------------------------------------------
+   function Make_Attribute_Iterator
+     (Node     : in     Node_Id)
+     return Node_Attribute_Iterator
    is
+      Iter : Node_Attribute_Iterator;
    begin
-      null;
+      Iter.Dummy := 0;
+      return Iter;
    end Make_Attribute_Iterator;
-
-   procedure Destroy_Attribute_Iterator
-      (Node     : in     Node_Id;
-       Iterator : in out Node_Attribute_Iterator)
-   is
-   begin
-      null;
-   end Destroy_Attribute_Iterator;
 
 end Giant.Graph_Lib;
 
