@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.37 $
---  $Author: squig $
---  $Date: 2003/08/05 22:10:10 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.38 $
+--  $Author: schwiemn $
+--  $Date: 2003/08/12 17:04:55 $
 --
 --
 ------------------------------------------------------------------------------
@@ -184,6 +184,11 @@ is
         null;
    end Open_Test_Project;
 
+    
+   type t_typ is range 0 .. 1_000_000_000;
+   
+   t : t_typ := 0;
+
 begin
    Default_Logger.Init ("debug.log");
 
@@ -193,7 +198,7 @@ begin
         ("dist/global_config.xml", Config_Filename);
 
       Config.Global_Data.Initialize_Config_Data;
-
+           
       Giant.Graph_Lib.Initialize;
 
       Logger.Debug ("reading configuration");

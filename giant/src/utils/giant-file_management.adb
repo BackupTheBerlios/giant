@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.22 $
--- $Author: squig $
--- $Date: 2003/07/18 16:40:08 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.23 $
+-- $Author: schwiemn $
+-- $Date: 2003/08/12 17:04:55 $
 --
 --
 
@@ -284,15 +284,21 @@ package body Giant.File_Management is
 
       GNAT.Directory_Operations.Change_Dir (Start_Dir);
 
-      ADA.Text_IO.Open
-        (File => ADA_Text_IO_File,
-         Mode => ADA.Text_IO.In_File,
-         Name => Relative_Path_To_File);
+      begin 
+         ADA.Text_IO.Open
+           (File => ADA_Text_IO_File,
+            Mode => ADA.Text_IO.In_File,
+            Name => Relative_Path_To_File);
 
-      Abs_Path := Ada.Strings.Unbounded.To_Unbounded_String
-        (ADA.Text_IO.Name(ADA_Text_IO_File));
+         Abs_Path := Ada.Strings.Unbounded.To_Unbounded_String
+           (ADA.Text_IO.Name(ADA_Text_IO_File));
 
-      ADA.Text_IO.Close(ADA_Text_IO_File);
+         ADA.Text_IO.Close(ADA_Text_IO_File);
+      exception
+      
+         when ADA.Text_IO.Name_Error =>
+           raise File_Does_Not_Exist_Exception;
+      end;
 
       -- check for a regular file
       if (GNAT.OS_Lib.Is_Regular_File
