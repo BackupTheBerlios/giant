@@ -1,6 +1,6 @@
 % ==============================================================================
 %  $RCSfile: nfa.tex,v $ 
-%  $Date: 2003/02/18 15:21:04 $
+%  $Date: 2003/02/18 17:05:37 $
 %  $Author: schwiemn $ 
 %
 %  Description: Nichtfunktionale Anforderungen
@@ -160,6 +160,15 @@ Layoutalgorithmen in verschiedenen Anzeigefenstern gleichzeitig laufen.
 \begin{enumerate}
 
    \item
+   Ein automatisches Schreiben von Änderungen etc. in die Projektdateien ist
+   nicht vorgesehen, der Benutzer muss dies explizit veranlassen.\\
+   Bevor Informationen verohren gehen (z.B. beim Beenden von GIANT) erscheint
+   aber eine Sicherheitsabfrage.
+   
+   \item
+   Muss GIANT aufgrund eines Fehlers beendet werden, so gehen alle bis dahin
+   nicht persistent für das Projekt gespeicherten Informationen
+   unwiederbringlich verlohren.
 
 
 \end{enumerate}

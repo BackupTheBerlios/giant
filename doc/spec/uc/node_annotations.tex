@@ -1,6 +1,6 @@
 % ==============================================================================
 %  $RCSfile: node_annotations.tex,v $
-%  $Date: 2003/02/18 15:21:04 $
+%  $Date: 2003/02/18 17:05:37 $
 %  $Author: schwiemn $
 %
 %  Description: Use-Cases zum Annotieren von Knoten
@@ -8,13 +8,7 @@
 % ==============================================================================
 
 \begin{uc}[Fenster-Knoten annotieren]{UC: Fenster-Knoten annotieren}
-  Dieser UseCase dient zum Erzeugen, Ändern und Anschauen 
-  von Knoten-Annotationen.
-  Er erstellt eine neue Annotation für einen Fenster-Knoten, falls dieser
-  noch nicht annotiert ist.\\
-  Ist der Fenster-Knoten schon annotiert, wird diese Annotation angezeigt 
-  und kann vom Benutzer geändert werden.
-  
+  Dieser UseCase dient zum Erzeugen von Knoten-Annotationen.
   
   \begin{precond}
     \cond Das Programm ist gestartet.
@@ -23,7 +17,7 @@
   \end{precond}
 
   \begin{postsuccess}
-    \cond Die neue Annotation oder die Änderungen sind noch nicht
+    \cond Die neue Annotation ist noch nicht
           in der Verwaltungsdatei für Knoten-Annotationen eingetragen.
     \cond Der annotierte Knoten wird in allen Anzeigefenstern als annotiert
           hervorgehoben (hat nun das entsprechende Icon).
@@ -40,39 +34,85 @@
     Der Benutzer wählt den Fenster-Knoten aus, der annotiert werden soll und
     öffnet das entsprechende POPUPMENÜ -> VERWEIS ZU GUI.
     \step[2]
-    GIANT zeigt nun den EINGABEDIALOG FÜR ANNOTATIONEN. Existiert bereits eine
-    Annotation so wird der entsprechende Text angezeigt, anderenfalls wird
-    nichts angezeigt.
+    GIANT zeigt nun den EINGABEDIALOG FÜR ANNOTATIONEN.
     
-    
-    \step[3a]
-    Falls ein Knoten neu annotiert werden soll oder falls die Annotation zu
-    einem bestehenden Knoten geändert werden soll, gibt der Benutzer
-    Im EINGABEDIALOG FÜR ANNOTATIONEN GIBT den entsprechenden Text ein.
-    \step[3b]
-    Will sich der Benutzer eine bestehende Knoten-Annotation nur auschauen,
-    so tut er dies jetzt, ändert aber den Text nicht. 
-
+    \step[3]
+    Der Benutzer gibt dort den entsprechenden Text für die Knoten-Annotation 
+    ein.
+  
     \step[4]
-    Nach Abschluss der Aufgabe betätigt der Benutzer den \gq{OK Button}
+    Nach Abschluss der Eingabe betätigt der Benutzer den \gq{OK Button}.
             
     \step[5]
-    GIANT übernimmt die vorgenommenen Änderungen. Hat der Benutzer allen Text
-    zu einer bestehenden Annotation entfernt, so wird die Knoten-Annotation
-    gelöscht. 
-    
-
+    GIANT übernimmt die vorgenommenen Änderungen. Die eingebegbene Annotation 
+    muss allerdings mindestens ein Zeichen haben, ansonsten erscheint eine
+    Fehlermeldung.
 
   \end{proc}
 
   \begin{aproc}
-    \astep{2} Der Benutzer bricht die Eingabe der Annotation mit Cancel ab.
+    \ageneral 
+    Der Benutzer kann die Eingabe der neuen Knoten-Annotation jeder Zeit 
+    mittels des \gq{Cancel Buttons} abbrechen.
+    
 
   \end{aproc}
 \end{uc}
 
 % ==============================================================================
 
+\begin{uc}[Fenster-Knoten annotieren]{UC: Knoten-Annotation ändern}
+  Dieser UseCase dient zum Erzeugen von Knoten-Annotationen.
+  
+  \begin{precond}
+    \cond Das Programm ist gestartet.
+    \cond Ein Projekt ist geladen.
+    \cond Es gibt mindestens ein Anzeigefenster mit Fenster-Knoten der
+          annotiert ist.
+  \end{precond}
+
+  \begin{postsuccess}
+    \cond Die Änderung an der Annotation ist noch nicht
+          in der Verwaltungsdatei für Knoten-Annotationen eingetragen.
+    \cond Die Änderung der Annotation ist dem System bekannt und wird
+          entsprechend angezeigt.
+	  
+  \end{postsuccess}
+
+  \begin{postfail}
+    \cond Das System und die Verwaltungsdatei für Knoten-Annotationen
+          bleiben im bisherigen Zustand.
+  \end{postfail}
+  
+  \begin{proc}
+    \step[1] 
+    Der Benutzer wählt den Fenster-Knoten aus, der annotiert werden soll und
+    öffnet das entsprechende POPUPMENÜ -> VERWEIS ZU GUI.
+    \step[2]
+    GIANT zeigt nun den EINGABEDIALOG FÜR ANNOTATIONEN.
+    
+    \step[3]
+    Der Benutzer gibt dort den entsprechenden Text für die Knoten-Annotation 
+    ein.
+  
+    \step[4]
+    Nach Abschluss der Eingabe betätigt der Benutzer den \gq{OK Button}.
+            
+    \step[5]
+    GIANT übernimmt die vorgenommenen Änderungen. Die eingebegbene Annotation 
+    muss allerdings mindestens ein Zeichen haben, ansonsten erscheint eine
+    Fehlermeldung.
+
+  \end{proc}
+
+  \begin{aproc}
+    \ageneral 
+    Der Benutzer kann die Eingabe der neuen Knoten-Annotation jeder Zeit 
+    mittels des \gq{Cancel Buttons} abbrechen.
+    
+
+  \end{aproc}
+\end{uc}
 
 % ==============================================================================
 
