@@ -20,14 +20,15 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.13 $
---  $Author: squig $
---  $Date: 2003/08/08 12:12:32 $
+--  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.14 $
+--  $Author: koppor $
+--  $Date: 2003/08/31 12:03:05 $
 --
 
 with Ada.IO_Exceptions;
 with Ada.Strings.Fixed;
 with Ada.Text_IO;
+with Calendar_Utilities;
 
 package body Giant.Default_Logger is
 
@@ -79,6 +80,9 @@ package body Giant.Default_Logger is
            & Message;
       begin
          if (Ada.Text_IO.Is_Open (Out_File)) then
+            --  put timestamp
+            Ada.Text_IO.Put (Out_File, Calendar_Utilities.Clock_String & " ");
+
             Ada.Text_IO.Put (Out_File, Composed_Message);
             Ada.Text_IO.New_Line (Out_File);
             Ada.Text_IO.Flush (Out_File);
