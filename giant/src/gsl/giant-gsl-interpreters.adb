@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/09 14:23:35 $
+-- $Date: 2003/06/10 11:59:44 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -44,6 +44,28 @@ package body Giant.Gsl.Interpreters is
 
    ---------------------------------------------------------------------------
    --
+   function Create_Activation_Record
+     (Parent : Activation_Record)
+      return Activation_Record is
+
+      AR : Activation_Record;
+   begin
+      AR := new Activation_Record_Record;
+      AR.Parent := Parent;
+      AR.Vars := Gsl_Var_Hashed_Mappings.Create;
+      return AR;
+   end Create_Activation_Record;
+
+   ---------------------------------------------------------------------------
+   --
+   procedure Destroy_Activation_Record
+     (AR : Activation_Record) is
+   begin
+      null;
+   end Destroy_Activation_Record;
+
+   ---------------------------------------------------------------------------
+   --
    procedure Execute_Script
      (Individual : Interpreter;
       Name       : String) is
@@ -57,7 +79,12 @@ package body Giant.Gsl.Interpreters is
         ("Interpreter: Initilize result stack.", "Giant.Gsl");
       Individual.Result_Stack := Result_Stacks.Create;
       Default_Logger.Debug
-        ("Interpreter: Initilize Evolution Object.", "Giant.Gsl");
+        ("Interpreter: Initilize activation records.", "Giant.Gsl");
+      Individual.Main_Activation_Record := Create_Activation_Record (null);
+      Individual.Current_Activation_Record := 
+        Individual.Main_Activation_Record;
+      Default_Logger.Debug
+        ("Interpreter: Initilize Evolution.", "Giant.Gsl");
       Initialize (Individual, 0);
    end Execute_Script;
 

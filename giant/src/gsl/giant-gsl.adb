@@ -22,13 +22,15 @@
 --
 -- $RCSfile: giant-gsl.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/09 14:17:15 $
+-- $Date: 2003/06/10 11:56:20 $
 --
 -- This package implements the datatypes used in GSL.
 --
 
 with Ada.Tags;
 use  Ada.Tags;
+
+with String_Hash;
 
 with Giant.Gsl.Types;
 use  Giant.Gsl.Types;
@@ -37,13 +39,20 @@ use  Giant.Gsl.Syntax_Tree;
 
 package body Giant.Gsl is
 
+   function Gsl_Var_Hash
+     (K : Unbounded_String)
+      return Integer is
+   begin
+      return String_Hash (To_String (K));
+   end Gsl_Var_Hash;
+
    procedure Log_Syntax_Node
      (Node : Syntax_Node) is
 
       L  : Gsl_Type;
-      --LS : Gsl_String;
-      --LN : Gsl_Natural;
-      --LR : Gsl_Var_Reference;
+      LS : Gsl_String;
+      LN : Gsl_Natural;
+      LR : Gsl_Var_Reference;
    begin
       if Node /= Null_Node then
          case Get_Node_Type (Node) is
@@ -59,19 +68,26 @@ package body Giant.Gsl is
                   elsif L'Tag = Gsl_String_Record'Tag then
                      Default_Logger.Debug
                        ("Syntax_Node LITERAL = String", "Giant.Gsl");
-                     --LS := Gsl_String (L);
-                     --Text_IO.Put_Line (Get_Value (LS));
+                     LS := Gsl_String (L);
+                     Default_Logger.Debug
+                       ("   String.Value = " & Get_Value (LS), "Giant.Gsl");
                   elsif L'Tag = Gsl_Natural_Record'Tag then
                      Default_Logger.Debug
                        ("Syntax_Node LITERAL = Natural", "Giant.Gsl");
-                     --LN := Gsl_Natural (L);
-                     --Text_IO.Put_Line (Get_Value (LN)'Img);
+                     LN := Gsl_Natural (L);
+                     Default_Logger.Debug
+                       ("   Natural.Value = " & Get_Value (LN)'Img, 
+                        "Giant.Gsl");
                   end if;
                end if;
 
             when Visible_Var =>
                Default_Logger.Debug
                  ("Syntax_Node VISIBLE_VAR", "Giant.Gsl");
+               LR := Gsl_Var_Reference (Get_Literal (Node));
+               Default_Logger.Debug
+                 ("   Visible_Var.Ref_Name = " & Get_Ref_Name (LR), 
+                  "Giant.Gsl");
 
             when Global_Var =>
                Default_Logger.Debug

@@ -22,14 +22,20 @@
 --
 -- $RCSfile: giant-gsl.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/09 14:17:15 $
+-- $Date: 2003/06/10 11:56:20 $
 --
 -- This package implements the datatypes used in GSL.
 --
 
+with Ada.Strings.Unbounded;
+use  Ada.Strings.Unbounded;
+
 -- from Bauhaus Reuse
 with Stacks_Unbounded;
 pragma Elaborate (Stacks_Unbounded);
+
+with Hashed_Mappings;
+pragma Elaborate (Hashed_Mappings);
 
 with Giant.Default_Logger;
 
@@ -64,6 +70,28 @@ package Giant.Gsl is
    package Result_Stacks is new Stacks_Unbounded
      (Elem_Type => Gsl_Type);
 
+   ---------------------------------------------------------------------------
+   -- 
+   type Gsl_Var_Record is private;
+   type Gsl_Var is access all Gsl_Var_Record;
+
+   ---------------------------------------------------------------------------
+   -- instantiation of Hashed_Mappings for GSL variables
+   -- the hash function Script_Hash uses String_Hash
+   function Gsl_Var_Hash
+     (K : Unbounded_String)
+      return Integer;
+
+   package Gsl_Var_Hashed_Mappings is new Hashed_Mappings
+     (Key_Type => Unbounded_String,
+      Value_Type => Gsl_Var,
+      Hash => Gsl_Var_Hash);
+
+   ---------------------------------------------------------------------------
+   -- Activation Record 
+   type Activation_Record_Record is private;
+   type Activation_Record is access all Activation_Record_Record;
+
 private 
 
    ---------------------------------------------------------------------------
@@ -88,5 +116,21 @@ private
      end record;
 
    Null_Node : constant Syntax_Node := null;
+
+   ---------------------------------------------------------------------------
+   --
+   type Gsl_Var_Record is
+      record
+         Name  : Unbounded_String;
+         Value : Gsl_Type;
+      end record;
+
+   ---------------------------------------------------------------------------
+   --
+   type Activation_Record_Record is
+      record
+         Parent : Activation_Record; 
+         Vars   : Gsl_Var_Hashed_Mappings.Mapping;
+      end record;
 
 end Giant.Gsl;

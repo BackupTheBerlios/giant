@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/06 20:02:22 $
+-- $Date: 2003/06/10 11:59:45 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -54,13 +54,22 @@ package Giant.Gsl.Interpreters is
 
 private 
 
+   function Create_Activation_Record
+     (Parent : Activation_Record)
+      return Activation_Record;
+   
+   procedure Destroy_Activation_Record
+     (AR : Activation_Record);
+
    ---------------------------------------------------------------------------
    -- the GSL interpreter, inherits Iterative_Evolution 
    type Interpreter_Record is new Giant.Evolutions.Iterative_Evolution with
       record
-         Execution_Stack : Execution_Stacks.Stack;
-         Result_Stack    : Result_Stacks.Stack;
-         Gsl_Compiler    : Giant.Gsl.Compilers.Compiler;
+         Execution_Stack           : Execution_Stacks.Stack;
+         Result_Stack              : Result_Stacks.Stack;
+         Main_Activation_Record    : Activation_Record;
+         Current_Activation_Record : Activation_Record;
+         Gsl_Compiler              : Giant.Gsl.Compilers.Compiler;
       end record;
 
 end Giant.Gsl.Interpreters;
