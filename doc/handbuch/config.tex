@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.6 $
-%  $Date: 2003/08/02 12:42:47 $
+%  $RCSfile: config.tex,v $, $Revision: 1.7 $
+%  $Date: 2003/08/04 10:00:28 $
 %  $Author: birdy $
 %
 %  Description:
@@ -438,13 +438,15 @@ Es gibt folgende Möglichkeiten, Kanten festzulegen:\\
 Das im o.G. Beispiel verwendete\\
 
 °<edge_class°\\
-°     start_node_class = °\\
-°     attribute_name   = />° 
+°     start_node_class = "Example1"°\\
+°     attribute_name   = "Example2" />° 
 
 Inkludiert alle Kanten, die von den genannten Knoten ausgehen
 und genanntes Attribut haben. Dabei ist bei einem der beiden
 Parameter auch das Zeichen * erlaubt, dies wählt damit alle
-Knotenklassen bzw. Kantennamen aus.
+Knotenklassen bzw. Kantennamen, die dieses Attribut besitzen
+bzw. von diesem Knoten ausgehen, aus.
+
 
 Beispiel 2:
 
