@@ -56,7 +56,7 @@
     show_label (yes|no)                                  #REQUIRED
   >
 
-  <!ELEMENT edge_class_specific_setting (edge_class)*, (super_edge_class)* >
+  <!ELEMENT edge_class_specific_setting ((edge_class)*, (super_edge_class)*)>
   <!ATTLIST edge_class_specific_setting
      line_color CDATA                                     #REQUIRED
      text_color CDATA                                     #REQUIRED
