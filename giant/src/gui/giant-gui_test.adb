@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_test.adb,v $, $Revision: 1.6 $
+-- $RCSfile: giant-gui_test.adb,v $, $Revision: 1.7 $
 -- $Author: squig $
--- $Date: 2003/06/03 13:35:43 $
+-- $Date: 2003/06/03 14:45:51 $
 --
 with Gtk.Main;
 
@@ -53,11 +53,16 @@ begin
 --       Gsl_Dialog.Create (My_Gsl_Dialog);
 --       Gsl_Dialog.Show_All (My_Gsl_Dialog);
 
-   Progress_Dialog.Create (My_Progress_Dialog, "Progress Test", "Message");
+--     Progress_Dialog.Create (My_Progress_Dialog, "Progress Test", "Message");
+--     Progress_Dialog.Show_All (My_Progress_Dialog);
+--     Progress_Dialog.Set_Value (My_Progress_Dialog, 50.0);
+--     Progress_Dialog.Set_Progress_Text (My_Progress_Dialog,
+--                                        "Value %v von %u = %p");
+
+   Progress_Dialog.Create (My_Progress_Dialog, "Activity Test", "Message");
+   Progress_Dialog.Set_Activity_Mode (My_Progress_Dialog, True);
+   Progress_Dialog.Set_Value (My_Progress_Dialog, 10.0);
    Progress_Dialog.Show_All (My_Progress_Dialog);
-   Progress_Dialog.Set_Value (My_Progress_Dialog, 50.0);
-   Progress_Dialog.Set_Progress_Text (My_Progress_Dialog,
-                                      "Value %v von %u = %p");
 
 --     Main_Window.Show;
 

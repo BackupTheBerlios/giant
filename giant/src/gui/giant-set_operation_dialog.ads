@@ -20,7 +20,7 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-progress_dialog.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-set_operation_dialog.ads,v $, $Revision: 1.1 $
 --  $Author: squig $
 --  $Date: 2003/06/03 14:45:52 $
 --
@@ -38,40 +38,40 @@ with Gtk.Window;
 
 with Giant.Default_Dialog;
 
-package Giant.Progress_Dialog is
+package Giant.Set_Operation_Dialog is
 
-   type Progress_Dialog_Record is
+   type Set_Operation_Dialog_Record is
      new Default_Dialog.Default_Dialog_Record with private;
 
-   type Progress_Dialog_Access is access all Progress_Dialog_Record'Class;
+   type Set_Operation_Dialog_Access is access all Set_Operation_Dialog_Record'Class;
 
    procedure Create
-     (Dialog  :    out Progress_Dialog_Access;
+     (Dialog  :    out Set_Operation_Dialog_Access;
       Title   : in     String;
       Message : in     String);
 
    procedure Initialize
-     (Dialog  : access Progress_Dialog_Record'Class;
+     (Dialog  : access Set_Operation_Dialog_Record'Class;
       Title   : in     String;
       Message : in     String);
 
    function Can_Hide
-     (Dialog : access Progress_Dialog_Record)
+     (Dialog : access Set_Operation_Dialog_Record)
      return Boolean;
 
    function Get_Activity_Mode
-     (Dialog : access Progress_Dialog_Record)
+     (Dialog : access Set_Operation_Dialog_Record)
      return Boolean;
 
    procedure Set_Activity_Mode
-     (Dialog        : access Progress_Dialog_Record;
+     (Dialog        : access Set_Operation_Dialog_Record;
       Activity_Mode : in     Boolean);
 
-   procedure Set_Lower (Dialog : access Progress_Dialog_Record;
+   procedure Set_Lower (Dialog : access Set_Operation_Dialog_Record;
                         Lower  : in     Float);
 
    procedure Set_Percentage
-     (Dialog     : access Progress_Dialog_Record;
+     (Dialog     : access Set_Operation_Dialog_Record;
       Percentage : in     Float);
 
    -------------------------------------------------------------------------
@@ -84,21 +84,21 @@ package Giant.Progress_Dialog is
    --  %u - the upper bound for the progress value.
    --  %p - the current progress percentage.
    procedure Set_Progress_Text
-     (Dialog : access Progress_Dialog_Record;
+     (Dialog : access Set_Operation_Dialog_Record;
       Text   : in     String);
 
-   procedure Set_Upper (Dialog : access Progress_Dialog_Record;
+   procedure Set_Upper (Dialog : access Set_Operation_Dialog_Record;
                         Upper  : in     Float);
 
-   procedure Set_Value (Dialog : access Progress_Dialog_Record;
+   procedure Set_Value (Dialog : access Set_Operation_Dialog_Record;
                         Value  : in     Float);
 
 private
-   type Progress_Dialog_Record is
+   type Set_Operation_Dialog_Record is
      new Default_Dialog.Default_Dialog_Record with record
         Progress_Bar : Gtk.Progress_Bar.Gtk_Progress_Bar;
         Progress_Bar_Adjustment : Gtk.Adjustment.Gtk_Adjustment;
         Progress_Label : Gtk.Label.Gtk_Label;
      end record;
 
-end Giant.Progress_Dialog;
+end Giant.Set_Operation_Dialog;
