@@ -22,8 +22,8 @@
   <!-- 1. OK-->
   <node_class_specific_setting 
     icon         = "../icons/vis_deluxe/Prog_Unit.xpm"
-    text_color   = "#00FFFF"
-    border_color = "#00FFFF"
+    text_color   = "#FFFFFF"
+    border_color = "#0000FF"
     fill_color   = "#FF0000"> 
     
     <node_attribute attribute_name  = "SLoc"/>   
@@ -38,7 +38,7 @@
   <node_class_specific_setting 
     icon         = "../icons/vis_deluxe/Routine.xpm"
     text_color   = "#FFFFFF"
-    border_color = "#00FFFF"
+    border_color = "#000000"
     fill_color   = "#920000"> 
     
     <node_attribute attribute_name  = "SLoc"/>   
@@ -65,6 +65,163 @@
   </node_class_specific_setting>
 
 
+  <!-- 4. OK -->  
+  <node_class_specific_setting 
+    icon         = "../icons/vis_deluxe/Sequence_Item.xpm"
+    text_color   = "#000000"
+    border_color = "#000000"
+    fill_color   = "#00FFFF"> 
+    
+    <node_attribute attribute_name  = "SLoc"/>   
+    <node_attribute attribute_name  = "Parent"/>     
+                
+    <super_node_class   super_node_class_name = "Sequence_Item"/> 
+  </node_class_specific_setting>
+
+
+  <!-- 5. OK -->  
+  <node_class_specific_setting 
+    icon         = "../icons/vis_deluxe/Literal.xpm"
+    text_color   = "#000000"
+    border_color = "#000000"
+    fill_color   = "#90FFFF"> 
+    
+    <node_attribute attribute_name  = "SLoc"/>    
+                
+    <super_node_class   super_node_class_name = "Literal"/> 
+  </node_class_specific_setting>
+
+
+  <!-- 6. OK -->  
+  <node_class_specific_setting 
+    icon         = "../icons/vis_deluxe/Operator.xpm"
+    text_color   = "#000000"
+    border_color = "#000000"
+    fill_color   = "#FF00FF"> 
+    
+    <node_attribute attribute_name  = "SLoc"/>  
+    <node_attribute attribute_name  = "CF_Next"/>      
+    <node_attribute attribute_name  = "CF_Previous"/>  
+    <node_attribute attribute_name  = "CF_Basic_Block"/>        
+                       
+    <super_node_class   super_node_class_name = "Operator"/> 
+  </node_class_specific_setting>
+
+
+  <!-- 7. OK -->  
+  <node_class_specific_setting 
+    icon         = "../icons/vis_deluxe/Unary_Operator.xpm"
+    text_color   = "#FFFFFF"
+    border_color = "#000000"
+    fill_color   = "#900090"> 
+    
+    <node_attribute attribute_name  = "SLoc"/>  
+    <node_attribute attribute_name  = "CF_Next"/>      
+    <node_attribute attribute_name  = "CF_Previous"/>  
+    <node_attribute attribute_name  = "CF_Basic_Block"/>        
+    <node_attribute attribute_name  = "Its_Type"/>      
+    <node_attribute attribute_name  = "Operand"/>  
+                 
+    <super_node_class   super_node_class_name = "Unary_Operator"/> 
+  </node_class_specific_setting>
+
+
+  <!-- 8. OK -->  
+  <node_class_specific_setting 
+    icon         = "../icons/vis_deluxe/Conditional.xpm"
+    text_color   = "#FFFFFF"
+    border_color = "#000000"
+    fill_color   = "#009090"> 
+    
+    <node_attribute attribute_name  = "SLoc"/>  
+                 
+    <super_node_class   super_node_class_name = "Conditional"/> 
+  </node_class_specific_setting>
+
+
+  <!-- 9. OK -->  
+  <node_class_specific_setting 
+    icon         = "../icons/vis_deluxe/Loop_Statement.xpm"
+    text_color   = "#000000"
+    border_color = "#000000"
+    fill_color   = "#9090FF"> 
+    
+    <node_attribute attribute_name  = "SLoc"/>  
+                 
+    <super_node_class   super_node_class_name = "Loop_Statement"/> 
+  </node_class_specific_setting>
+
+
+  <!-- 10. OK -->  
+  <node_class_specific_setting 
+    icon         = "../icons/vis_deluxe/O_Node.xpm"
+    text_color   = "#000000"
+    border_color = "#000000"
+    fill_color   = "#0000FF"> 
+    
+    <node_attribute attribute_name  = "SLoc"/>  
+                 
+    <super_node_class   super_node_class_name = "O_Node"/> 
+  </node_class_specific_setting>
+
+
+  <!-- 11. OK -->  
+  <node_class_specific_setting 
+    icon         = "../icons/vis_deluxe/OC_User_Type_Declaration.xpm"
+    text_color   = "#000000"
+    border_color = "#000000"
+    fill_color   = "#000090"> 
+    
+    <node_attribute attribute_name  = "Parent"/>
+    <node_attribute attribute_name  = "SLoc"/>    
+    <node_attribute attribute_name  = "Artificial"/>    
+    <node_attribute attribute_name  = "Is_Template"/>    
+    <node_attribute attribute_name  = "Mangled_Name"/>    
+    <node_attribute attribute_name  = "Unmangled_Name"/>
+    <node_attribute attribute_name  = "Namespace"/>        
+    <node_attribute attribute_name  = "Its_Type"/>            
+                 
+    <super_node_class   super_node_class_name = "OC_User_Type_Declaration"/> 
+  </node_class_specific_setting>
+
+
+  <!-- 12. OK -->  
+  <node_class_specific_setting 
+    icon         = "../icons/vis_deluxe/T_Node.xpm"
+    text_color   = "#000000"
+    border_color = "#000000"
+    fill_color   = "#FFFF00"> 
+    
+    <node_attribute attribute_name  = "Parent"/>
+    <node_attribute attribute_name  = "SLoc"/>  
+    <node_attribute attribute_name  = "Artificial"/>
+    <node_attribute attribute_name  = "Is_Template"/>  
+    <node_attribute attribute_name  = "Type_Size"/>
+                         
+    <super_node_class   super_node_class_name = "T_Node"/> 
+  </node_class_specific_setting>
+
+
+
+
+
+
+
+
+  <!-- 16. OK -->  
+  <node_class_specific_setting 
+    icon         = "../icons/vis_deluxe/Entity_L_Value.xpm"
+    text_color   = "#000000"
+    border_color = "#000000"
+    fill_color   = "#FFFF00"> 
+    
+    <node_attribute attribute_name  = "Parent"/>
+    <node_attribute attribute_name  = "SLoc"/>  
+    <node_attribute attribute_name  = "Artificial"/>
+    <node_attribute attribute_name  = "Its_Type"/>  
+                         
+    <super_node_class   super_node_class_name = "Entity_L_Value"/> 
+  </node_class_specific_setting>
 
 
   <!-- ................................................................. -->
