@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.15 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.16 $
 --  $Author: squig $
---  $Date: 2003/06/19 19:37:06 $
+--  $Date: 2003/06/20 00:37:03 $
 --
 
 with Ada.Strings.Unbounded;
@@ -52,6 +52,7 @@ with Giant.Clists;
 with Giant.Controller;
 with Giant.Default_Dialog;
 with Giant.Default_Logger;
+with Giant.Graph_Lib.Subgraphs;
 with Giant.Gsl_Dialog;
 with Giant.Gui_Manager;
 with Giant.Gui_Utils; use Giant.Gui_Utils;
@@ -531,11 +532,15 @@ package body Giant.Main_Window is
       Row  : in     Glib.Gint;
       Name : in     String)
    is
+      Subgraph : Graph_Lib.Subgraphs.Subgraph
+        := Projects.Get_Subgraph (Controller.Get_Project, Name);
    begin
       String_Clists.Set_Text (List, Row, 0, Name);
+      String_Clists.Set_Text (List, Row, 1,
+                              Natural'Image (Graph_Lib.Subgraphs.Get_Node_Count (Subgraph)));
+      String_Clists.Set_Text (List, Row, 2,
+                              Natural'Image (Graph_Lib.Subgraphs.Get_Edge_Count (Subgraph)));
       -- FIX: fill in missing values
-      String_Clists.Set_Text (List, Row, 1, "FIX");
-      String_Clists.Set_Text (List, Row, 2, "FIX");
       String_Clists.Set_Text (List, Row, 3, "FIX: Ask Martin");
    end Update_Subgraph;
 
