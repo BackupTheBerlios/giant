@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: hashed_mappings_test.adb,v $, $Revision: 1.2 $
---  $Author: squig $
---  $Date: 2003/07/02 19:30:15 $
+--  $RCSfile: hashed_mappings_test.adb,v $, $Revision: 1.3 $
+--  $Author: koppor $
+--  $Date: 2003/09/21 00:06:31 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -35,6 +35,7 @@ with Storables;
 
 with Giant.Graph_Lib; use Giant.Graph_Lib;
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 
 package body Hashed_Mappings_Test is
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory-test.adb,v $, $Revision: 1.4 $
---  $Author: squig $
---  $Date: 2003/07/14 14:13:53 $
+--  $RCSfile: giant-layout_factory-test.adb,v $, $Revision: 1.5 $
+--  $Author: koppor $
+--  $Date: 2003/09/21 00:06:31 $
 --
 
 with Ada.Text_IO;
@@ -32,6 +32,7 @@ with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
 
 with Giant.Graph_Lib; use Giant.Graph_Lib;
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 
 package body Giant.Layout_Factory.Test is
 

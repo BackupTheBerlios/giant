@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-matrix_layouts-test.adb,v $, $Revision: 1.4 $
---  $Author: squig $
---  $Date: 2003/07/15 08:50:59 $
+--  $RCSfile: giant-matrix_layouts-test.adb,v $, $Revision: 1.5 $
+--  $Author: koppor $
+--  $Date: 2003/09/21 00:06:31 $
 --
 
 with Ada.Text_IO;
@@ -37,6 +37,7 @@ with Giant.Graph_Widgets;
 with Giant.Graph_Lib; use Giant.Graph_Lib;
 with Giant.Graph_Lib.Selections;
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 
 with Gtk.Main;
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-file_management-test.adb,v $, $Revision: 1.6 $
---  $Author: schwiemn $
---  $Date: 2003/07/15 11:57:48 $
+--  $RCSfile: giant-file_management-test.adb,v $, $Revision: 1.7 $
+--  $Author: koppor $
+--  $Date: 2003/09/21 00:06:31 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -33,6 +33,7 @@ with GNAT.Directory_Operations;
 
 with Giant.Config;
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 
 package body Giant.File_Management.Test is
 

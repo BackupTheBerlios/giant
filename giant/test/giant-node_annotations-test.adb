@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-node_annotations-test.adb,v $, $Revision: 1.4 $
---  $Author: squig $
---  $Date: 2003/07/14 14:13:53 $
+--  $RCSfile: giant-node_annotations-test.adb,v $, $Revision: 1.5 $
+--  $Author: koppor $
+--  $Date: 2003/09/21 00:06:31 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -39,6 +39,7 @@ with Giant.Graph_Lib;
 with Giant.Node_Annotations;
 
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 
 package body Giant.Node_Annotations.Test is
 

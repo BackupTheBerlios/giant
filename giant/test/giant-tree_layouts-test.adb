@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts-test.adb,v $, $Revision: 1.3 $
+--  $RCSfile: giant-tree_layouts-test.adb,v $, $Revision: 1.4 $
 --  $Author: koppor $
---  $Date: 2003/07/14 19:49:03 $
+--  $Date: 2003/09/21 00:06:31 $
 --
 
 with Ada.Text_IO;
@@ -37,6 +37,7 @@ with Giant.Graph_Widgets;
 with Giant.Graph_Lib; use Giant.Graph_Lib;
 with Giant.Graph_Lib.Selections;
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 
 with Gtk.Main;
 

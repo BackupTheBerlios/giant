@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.17 $
+--  $RCSfile: giant-graph_lib-test.adb,v $, $Revision: 1.18 $
 --  $Author: koppor $
---  $Date: 2003/07/22 09:34:41 $
+--  $Date: 2003/09/21 00:06:31 $
 --
 
 with Ada.Text_IO;
@@ -34,6 +34,7 @@ with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
 with Giant.Graph_Lib; use Giant.Graph_Lib;
 with Giant.Graph_Lib.Selections;
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 
 package body Giant.Graph_Lib.Test is
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-xml_file_access-test.adb,v $, $Revision: 1.2 $
---  $Author: schwiemn $
---  $Date: 2003/06/30 20:33:19 $
+--  $RCSfile: giant-xml_file_access-test.adb,v $, $Revision: 1.3 $
+--  $Author: koppor $
+--  $Date: 2003/09/21 00:06:31 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -31,6 +31,7 @@ with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
 with Giant.XML_File_Access;
 
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 
 package body Giant.XML_File_Access.Test is
 
@@ -39,28 +40,28 @@ package body Giant.XML_File_Access.Test is
    ---------------------------------------------------------------------------
    procedure Test_Memory_Leacks
      (R : in out AUnit.Test_Cases.Test_Case'Class) is
-     
+
       My_XML_Document : Dom.Core.Document;
       My_Tree_Reader  : Tree_Readers.Tree_Reader;
    begin
-      
+
       for i in 1 .. 50000000 loop
          Giant.XML_File_Access.Load_XML_File_Validated
            ("./resources/node_annotations/node_annotations.xml",
             My_Tree_Reader,
             My_XML_Document);
-         
-         Assert (Giant.XML_File_Access.Does_XML_Document_Belong_To_Type 
-           ("giant_node_annotations_file", My_XML_Document), 
-            "Check whether detects correct file");   
-         Assert (not Giant.XML_File_Access.Does_XML_Document_Belong_To_Type 
-           ("irgendwas", My_XML_Document), 
-            "Check whether detects wrong file");   
-         
-         Tree_Readers.Free (My_Tree_Reader);      
+
+         Assert (Giant.XML_File_Access.Does_XML_Document_Belong_To_Type
+           ("giant_node_annotations_file", My_XML_Document),
+            "Check whether detects correct file");
+         Assert (not Giant.XML_File_Access.Does_XML_Document_Belong_To_Type
+           ("irgendwas", My_XML_Document),
+            "Check whether detects wrong file");
+
+         Tree_Readers.Free (My_Tree_Reader);
       end loop;
    end Test_Memory_Leacks;
-         
+
    ---------------------------------------------------------------------------
    function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is
    begin
