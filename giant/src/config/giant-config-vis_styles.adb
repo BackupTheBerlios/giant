@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.10 $
+-- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.11 $
 -- $Author: schwiemn $
--- $Date: 2003/06/25 16:53:18 $
+-- $Date: 2003/06/25 18:37:52 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -105,7 +105,7 @@ package body Giant.Config.Vis_Styles is
    -- holds all visualisation styles (incl. default vis style)
    All_Vis_Styles_Map : All_Vis_Styles_Hashed_Mappings.Mapping;
    -- The name of the default visualisation style
-   Default_Vis_Style_Name : Ada.Strings.Unbounded.Unbounded_String :=
+   Global_Default_Vis_Style_Name : Ada.Strings.Unbounded.Unbounded_String :=
      Ada.Strings.Unbounded.Null_Unbounded_String;
 
 
@@ -968,7 +968,6 @@ package body Giant.Config.Vis_Styles is
       -- default vis style
       Default_Vis_Style_Tree_Reader  : Tree_Readers.Tree_Reader;
       Default_Vis_Style_XML_Document : Dom.Core.Document;
-      Default_Vis_Style_Name         : Ada.Strings.Unbounded.Unbounded_String;
 
       -- Used to handle new vis styles - do not deallocate
       New_Vis_Style : Visualisation_Style_Access := null;
@@ -1040,11 +1039,15 @@ package body Giant.Config.Vis_Styles is
       -- file name: "\def_vis\my_def_vis.xml" -->
       -- name of default vis style: "my_def_vis";
 
-      -- INITIALIZE - The name of the default visualisation style
-      Default_Vis_Style_Name :=
+      -- INITIALIZE - The name of the default visualisation style      
+      Global_Default_Vis_Style_Name :=
         Ada.Strings.Unbounded.To_Unbounded_String
           (File_Management.Calculate_Name_For_File
             (Default_Vis_Style_File));
+      
+      -- FIX      
+     Logger.Debug (Ada.Strings.Unbounded.To_String 
+        (Global_Default_Vis_Style_Name));
 
       -------------------------------
       -- INITIALIZE internal data strucuture
@@ -1169,7 +1172,7 @@ package body Giant.Config.Vis_Styles is
             Resources_Root_Dir,
             File_management.Return_Dir_Path_For_File_Path
              (Default_Vis_Style_File),
-            Default_Vis_Style_Name);
+            Global_Default_Vis_Style_Name);
                               
       exception
          when others =>
@@ -1179,14 +1182,14 @@ package body Giant.Config.Vis_Styles is
 
       -- remove other vis style with same name if necessary
       if All_Vis_Styles_Hashed_Mappings.Is_Bound
-        (All_Vis_Styles_Map, Default_Vis_Style_Name) then
+        (All_Vis_Styles_Map, Global_Default_Vis_Style_Name) then
 
          Old_Vis_Style := All_Vis_Styles_Hashed_Mappings.Fetch
-           (All_Vis_Styles_Map, Default_Vis_Style_Name);
+           (All_Vis_Styles_Map, Global_Default_Vis_Style_Name);
 
          -- Remove old vis style from hash map
          All_Vis_Styles_Hashed_Mappings.Unbind
-           (All_Vis_Styles_Map, Default_Vis_Style_Name);
+           (All_Vis_Styles_Map, Global_Default_Vis_Style_Name);
 
          -- Deallocate old vis style
          Deallocate_Vis_Style_Access (Old_Vis_Style);
@@ -1194,7 +1197,11 @@ package body Giant.Config.Vis_Styles is
 
       -- add default vis style to hash map
       All_Vis_Styles_Hashed_Mappings.Bind
-        (All_Vis_Styles_Map, Default_Vis_Style_Name, New_Vis_Style);
+        (All_Vis_Styles_Map, Global_Default_Vis_Style_Name, New_Vis_Style);
+        
+    -- FIX      
+     Logger.Debug (Ada.Strings.Unbounded.To_String 
+        (Global_Default_Vis_Style_Name));
 
       -- deallocate DOM Tree for default visualisation style
       Tree_Readers.Free (Default_Vis_Style_Tree_Reader);
@@ -1233,7 +1240,7 @@ package body Giant.Config.Vis_Styles is
 
       -- "deinitialize" Default_Vis_Style_Name
       -----------------------------------------
-      Default_Vis_Style_Name :=
+      Global_Default_Vis_Style_Name :=
         Ada.Strings.Unbounded.Null_Unbounded_String;
 
       -- Deallocate all vis styles
@@ -1429,12 +1436,17 @@ package body Giant.Config.Vis_Styles is
    begin
 
       if (ADO_Initialized = False) then
---FIX:         raise Config_Vis_Styles_Not_Initialized_Exception;
+         raise Config_Vis_Styles_Not_Initialized_Exception;
          return null;
       end if;
+      
+      -- Fix
+     Logger.Debug (Ada.Strings.Unbounded.To_String 
+        (Global_Default_Vis_Style_Name));
+
 
       return Initialize_Vis_Style_By_Name
-        (Ada.Strings.Unbounded.To_String (Default_Vis_Style_Name));
+        (Ada.Strings.Unbounded.To_String (Global_Default_Vis_Style_Name));
    end Get_Default_Vis_Style;
 
 
@@ -1446,7 +1458,7 @@ package body Giant.Config.Vis_Styles is
    ---------------------------------------------------------------------------
    function Get_All_Colors return Color_Access_Array_Access is
    
-   begin
+   begin   
    
       if (ADO_Initialized = False) then
          raise Config_Vis_Styles_Not_Initialized_Exception;
