@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: functions.tex,v $, $Revision: 1.6 $
-%  $Date: 2003/07/03 16:52:36 $
+%  $RCSfile: functions.tex,v $, $Revision: 1.7 $
+%  $Date: 2003/07/04 19:46:42 $
 %  $Author: birdy $
 %
 %  Description: 
@@ -487,26 +487,178 @@ Subgraph List (4 Spalten).
 	   % ***** Evtl. geändert im Endprodukt
 	  \end{itemize}
       \item Create New IML Subgraph From This Selection\\
-      
+           Dieser Menüpunkt leitet einen neuen IML-Teilgraphen aus einer
+	   Quell-Selektion ab.
+	   \begin{itemize}
+	     \item{Der Benutzer führt einen Rechtsklick auf die Quell-Selektion in
+                   der Selektionsauswahlliste aus
+                   und wählt im Popup-Menü den Eintrag 
+                   \gq{Create New IML Subgraph from This Selection} aus.}
+	     \item{GIANT zeigt den allgemeinen Texteingabedialog
+                   an. Der Benutzer gibt einen Namen für den neu zu erstellenden IML-Teilgraphen
+                   ein und bestätigt mit OK.
+                   Gibt der Benutzer hier keinen Namen ein, so vergibt GIANT automatisch 
+                   einen Namen.}
+	   \end{itemize}
       \item Highlight Selection (Menü)\\
+        Diese Funktion dient zum Hervorheben von Selektionen innerhalb eines
+        Anzeigefensters.
+	War bereits eine andere Selektion mit der vom Benutzer gewählten
+        Farbe hervorgehoben (die Farbe, welche im Popup-Menü der
+        Selektionsauswahlliste unter \gq{Highlight Selection} gewählt wurde,
+	so ist diese Selektion nicht mehr hervorgehoben.
         \begin{enumerate}
-        \item Color 1
-        \item Color 2
-        \item Color 3
+         \item Color 1\\
+	  Hebt in der im Config-File definierten Farbe 1 hervor
+         \item Color 2\\
+	  Hebt in der im Config-File definierten Farbe 2 hervor
+         \item Color 3\\
+	  Hebt in der im Config-File definierten Farbe 3 hervor
         \end{enumerate}
-	
+	Der Benutzer startet die Funktion mit einem Rechtsklick 
+        auf die gewünschte Selektion in der Selektionsauswahlliste
+        und wählt im zugehörigen Popup-Menü das Untermenü
+        \gq{Highlight Selection} und dort die gewünschte Farbe aus.
+        GIANT hebt die Selektion mit der ausgewählten Farbe hervor.
       \item Unhighlight Selection\\
-        
+        Diese Funktion dient dazu, die Hervorhebung von Selektionen innerhalb eines 
+        Anzeigefensters aufzuheben.
+	Der Benutzer startet die Funktion mit einem Rechtsklick 
+        auf die gewünschte Selektion in der
+        Selektionsauswahlliste und wählt im zugehörigen Popup-Menü den Eintrag
+        \gq{Unhighlight Selection} aus.
       \item Zoom To Make Selection Fill Window\\
-     
+         Der im Fenster sichtbare Anzeigeinhalts wird durch automatisches Zoomen
+         und Scrollen so verändert, dass die ausgewählte Selektion vollständig
+	 sichtbar ist. Die Detailstufe (siehe \ref{Visualization Detailstufen})
+	 wurde ggf. automatisch angepasst.
       \item Copy Selection\\
-      
+          Diese Funktion dient zum Kopieren von Selektionen innerhalb eines Anzeigefensters.
+	  \begin{itemize}
+	   \item{Der Benutzer startet den UseCase durch Rechtsklick auf die zu kopierende
+            Quell-Selektion in der 
+            Selektionsauswahlliste (siehe \ref{Selektionsauswahlliste})
+            und wählt in dem Popup-Menü den Eintrag \gq{Copy Selection} aus.}
+	   \item{GIANT öffnet einen Texteingabedialog. Der Benutzer gibt dort einen
+	         zulässigen Namen für die neue Selektion 
+                 ein und bestätigt mit OK.}
+           \item{GIANT kopiert die Quell-Selektion und legt eine neue Selektion an.}
+	  \end{itemize}
       \item Copy Selection Keeping Existing Layout\\
+          Mit dieser Funktion kann eine Selektion aus dem Quell-Anzeigefenster in ein
+          anderes Anzeigefenster unter Beibehaltung des Layouts kopiert werden.\\
+	  Die Position von Fenster-Knoten, die vor dem Einfügen bereits im
+          Ziel-Anzeigefenster vorhanden waren, bleibt unverändert.
+	  Die kopierte Selektion existiert nach Ausführung der Funktion auch im
+	  Ziel-Anzeigefenster als Selektion, sie wird dort zur Standard-Selektion.
+	  Der alte Inhalt der Standard-Selektion wird überschrieben.
+          \begin{itemize}
+	    \item{Der Benutzer startet die Funktion über das Popup-Menü
+                  der Selektionsauswahlliste (siehe \ref{Selektionsauswahlliste}), 
+                  indem er dort den Menüeintrag \gq{Copy Selection Keeping Existing
+		  Layout} auswählt.}
+            \item{Der Benutzer wählt das gewünschte Ziel-Anzeigefenster aus.
+                  Das Ziel-Anzeigefenster kann nicht das Quell-Anzeigefenster sein.
+                  GIANT zeigt in der Statuszeile im Hauptfenster den Text
+                  \gq{Select Position in Display Window
+                  for Insertion of copied IML Subgraph} an.
+                  Der Benutzer gibt über das Fadenkreuz die Position vor, 
+                  an der die neuen Fenster-Knoten und Fenster-Kanten eingefügt werden 
+                  sollen (siehe auch \ref{Fadenkreuzcursor}).
+                  Die mit dem Fadenkreuzcursor vorgegebene Position entspricht hierbei
+                  in etwa dem Punkt, an dem der Mittelpunkt eines die eingefügte
+                  Selektion umspannenden Rechtecks dann im Ziel-Anzeigefenster liegt.}
+	    \item{GIANT kopiert die Fenster-Knoten und Fenster-Kanten der 
+                  Quell-Selektion in das Ziel-Anzeigefenster. Bei neu eingefügten 
+                  Fenster-Knoten bleibt das Layout, welches diese in der
+                  Quell-Selektion relativ zueinander haben, erhalten.\\
+		  Die Position der bereits im Ziel-Anzeigefenster vorhandenen 
+                  Fenster-Knoten der Selektion wird im Ziel-Anzeigefenster nicht
+                  verändert.}
+	  \end{itemize}
       \item Copy Selection Changing Existing Layout\\
+           Diese Funktion arbeitet genauso wie \gq{Copy Selection Keeping Existing
+	   Layout}, nur wird das Layout der im Ziel-Anzeigefenster bereits vorhandenen
+	   Fenster-Knoten gemäß dem ausgewählten Layout neu berechnet.
       \item Delete Selection\\
+           Diese Funktion dient zum Löschen von Selektionen innerhalb eines 
+           Anzeigefensters. Hierdurch bleiben die Fenster-Knoten und Fenster-Kanten
+           unverändert. Die Standard-Selektion (siehe \ref{Standard-Selektion}) kann
+           nicht gelöscht werden. Wurde die aktuelle Selektion gelöscht (siehe 
+           \ref{Aktuelle Selektion vs Selektionen}), so wird die
+           Standard-Selektion zur aktuellen Selektion. Die Fenster-Knoten und
+	   Fenster-Kanten,  die zur gelöschten Selektion gehören, werden nicht
+	   gelöscht. War die Selektion hervorgehoben, so wird die
+           Hervorhebung der Fenster-Knoten und Fenster-Kanten aufgehoben.
+	   Waren Fenster-Knoten und Fenster-Kanten der gelöschten Selektion
+           ausgeblendet (siehe UseCase \ref{Selektionen ausblenden}), so
+           werden diese Fenster-Knoten und Fenster-Kanten wieder eingeblendet.
+	   \begin{itemize}
+	    \item{Der Benutzer startet den UseCase durch Rechtsklick auf die zu
+	      löschende Selektion in der Selektionsauswahlliste (siehe 
+              \ref{Selektionsauswahlliste}) und wählt aus dem Popup-Menü den Eintrag
+	      \gq{Delete Selection} aus. Falls der Benutzer die Standard-Selektion 
+              (siehe \ref{Standard-Selektion}) ausgewählt hat, ist der Eintrag
+	      \gq{Delete Selection} deaktiviert.}
+             \item{GIANT löscht die entsprechende Selektion.}
+	   \end{itemize}
       \item Delete Nodes and Edges of Selection\\
+           Mittels dieser Funktion können alle Fenster-Knoten und Fenster-Kanten
+           einer Selektion aus einem Anzeigefenster gelöscht werden
+           (siehe auch \ref{Verhalten beim Entfernen von Fenster-Knoten und 
+           Fenster-Kanten}).\\
+	   Falls die gewählte Selektion nicht die Standard-Selektion war,
+           ist die Selektion jetzt aus dem Anzeigefenster gelöscht und taucht nicht
+           mehr in der Liste über die Selektionen auf.
+	   Wurde die Standard-Selektion (siehe \ref{Standard-Selektion}) 
+           gewählt, so wird diese nicht aus dem Anzeigefenster gelöscht, sondern
+           ist jetzt leer.
+	   \begin{itemize}
+	     \item{Der Benutzer führt einen Rechtsklick auf die entsprechende Selektion in der
+                   Selektionsauswahlliste durch (siehe \ref{Selektionsauswahlliste})
+                   und wählt im Popup-Menü den Eintrag \gq{Delete Nodes and Edges
+                   of Selection} aus.}
+	     \item{GIANT zeigt die Sicherheitsabfrage (siehe \ref{Sicherheitsabfrage}) 
+                   und fragt nach, ob es die Selektion samt ihrer Fenster-Knoten und 
+                   Fenster-Kanten wirklich löschen soll (\gq{Really delete Selection 
+                   from its window including Nodes and Edges?}).
+		   Der Benutzer bestätigt mit Yes.}
+             \item{GIANT löscht die Selektion samt allen zugehörigen Fenster-Knoten und
+                   Fenster-Kanten aus dem entsprechenden Anzeigefenster.
+                   Wurde die Funktion für die Standard-Selektion
+                   (siehe \ref{Standard-Selektion}) ausgeführt, so werden die
+                   Fenster-Knoten und Fenster-Kanten aus dem Anzeigeinhalt gelöscht, 
+                   die Standard-Selektion selbst wird geleert aber nicht gelöscht.} 
+	   \end{itemize}
       \item Selection Set Operation\\
-      
+            Zusätzlich zu den Möglichkeiten der Anfragesprache GSL (siehe Kapitel
+            \ref{GIANT Scripting Language}) kann der Benutzer
+            die gängigen Mengenoperationen, wie Mengenvereinigung, Schnitt und Differenz,
+            auch direkt über einen entsprechenden Dialog 
+            (siehe \ref{Common-Set-Operation-Dialog}) ausführen, welcher mit dieser
+	    Funktion aufgerufen werden kann.\\
+	    Im Falle einer Mengenvereinigung umfasst, die neue Selektion TARGET alle
+            Fenster-Knoten und Fenster-Kanten aus der LEFT\_SOURCE Selektion und der 
+            RIGHT\_SOURCE Selektion.\\
+	    Im Falle einer Mengendifferenz umfasst, die neue Selektion TARGET alle
+            Fenster-Knoten und Fenster-Kanten aus der LEFT\_SOURCE Selektion, 
+            die nicht Bestandteil der  RIGHT\_SOURCE Selektion sind.\\
+	    Im Falle eines Mengenschnitts umfasst, die neue Selektion TARGET alle
+            Fenster-Knoten und Fenster-Kanten, die der LEFT\_SOURCE Selektion und der 
+            RIGHT\_SOURCE Selektion gemeinsam angehören.\\
+	    \begin{itemize}
+	       \item{Der Benutzer startet die Funktion über durch Auswahl des
+                     Menüpunktes \gq{Selection Set Operation} 
+                     aus dem Popup-Menü in der Selektionsauswahlliste (siehe
+                     \ref{Selektionsauswahlliste}).
+		     GIANT öffnet den Set-Operation-Dialog.}
+	       \item{Der Benutzer wählt dort die beiden Quell-Selektionen (LEFT\_SOURCE und 
+                     RIGHT\_SOURCE) aus, bestimmt die durchzuführende Mengenoperation und
+		     gibt unter TARGET den Namen der neu zu erzeugenden Selektion 
+                     ein. Dann bestätigt er die Eingabe mit OK.}
+	       \item{GIANT führt die Mengenoperation aus.}
+	    \end{itemize}
+	    
     \end{enumerate}    
 
 
@@ -516,6 +668,7 @@ Subgraph List (4 Spalten).
     In der Stilauswahl-Combobox (\gq{Style Chooser}) kann ein 
     Visualisierungsstil (siehe auch \ref{Config Visualisierungsstile})
     ausgewählt werden.
+    **************
 
   \subsection{Zoom-Kontrolle} \label{GUI Zoom-Kontrolle}  
 
@@ -531,7 +684,11 @@ Subgraph List (4 Spalten).
   In der ComboBox zur Zoom-Kontrolle befindet sich
   neben den vorgegebenen Zoomstufen \index{Zoomstufe} noch der
   Eintrag \gq{Fit in Window}.
-
+  
+  Mittels der Buttons \gq{+}und \gq{-} kann die Zoomstufe nach oben bzw. unten
+  verändert werden, pro Klick verändert sie sich um einen bestimmten Betrag.
+  ******
+ 
     \subsection{Scrollbars}
     \label{Scrolleisten}
     
