@@ -1,6 +1,6 @@
 % =============================================================================
-%  $RCSfile: gsl.tex,v $ $Revision: 1.7 $
-%  $Date: 2003/04/28 00:06:21 $
+%  $RCSfile: gsl.tex,v $ $Revision: 1.8 $
+%  $Date: 2003/04/28 13:43:02 $
 %  $Author: keulsn $
 %
 %  Description: Spezifikation der GIANT Scripting Language
@@ -69,8 +69,8 @@ Studienprojekt A -- IML Browser\\
   \textsf{GIANT Scripting Language \\ Spezifikation}\\
   \vspace{.5cm}
   {\Large\version}\\
-%  \vspace{3cm}
-%  \includegraphics[scale=.78]{logo}
+  \vspace{3cm}
+  \includegraphics[scale=.78]{../logo}
 \end{center}
 \newpage
 
@@ -323,13 +323,7 @@ bestimmten Anzeigefensters zu wechseln.
 Der GSL Interpreter muss einen Ausdruck zurückweisen, falls eine
 Forderung der Sprachdefinition durch diesen Ausdruck verletzt
 wird. In diesem Fall muss der Interpreter dem Benutzer eine Fehlermeldung
-anzeigen, die folgende Anforderungen erfüllt:
-\begin{enumerate}
-\item Der Benutzer wird informiert, dass der Text des Ausdrucks fehlerhaft ist.
-\item Dem Benutzer wird die Art des Fehlers präzise erläutert.
-\item Dem Benutzer wird angezeigt an welcher Stelle im Quelltext
-der Fehler erkannt oder verursacht wurde.
-\end{enumerate}
+anzeigen.
 Andernfalls startet der GSL Interpreter die Auswertung des GSL Ausdrucks.
 
 \subsubsection{Laufzeitfehler}
@@ -342,18 +336,7 @@ wenn die Semantikdefinition es vorschreibt. Der GSL Interpreter
 darf die Ausführung bereits nach einem früheren Ausführungsschritt abbrechen,
 wenn sichergestellt ist, dass nach einem späteren Ausführungsschritt
 ein Laufzeitfehler auftreten wird.
-
-Der GSL Interpreter muss dem Benutzer unverzüglich eine
-Meldung anzeigen, die folgende Anforderungen erfüllt:
-\begin{enumerate}
-\item Der Benutzer muss informiert werden, dass ein Fehler aufgetreten ist
-bzw.\ auftreten wird.
-\item Dem Benutzer muss präzise und für ihn leicht verständlich erläutert
-werden, welcher Fehler aufgetreten ist bzw.\ auftreten wird.
-\item Dem Benutzer kann eine Möglichkeit aufgezeigt werden, wie er den
-Fehler beseitigen kann um eine fehlerfreie Ausführung des selben Ausdrucks zu
-ermöglichen.
-\end{enumerate}
+Der GSL Interpreter zeigt dem Benutzer eine Fehlermeldung an.
 
 Der GSL Interpreter muss nach einem Fehler entweder alle seit Beginn
 der Ausführung bereits ausgeführten Aktionen rückgängig machen, oder er
