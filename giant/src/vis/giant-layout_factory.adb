@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.22 $
+--  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.23 $
 --  $Author: koppor $
---  $Date: 2003/10/06 14:33:29 $
+--  $Date: 2003/10/06 18:23:11 $
 --
 
 with Ada.Exceptions;
@@ -171,6 +171,7 @@ package body Giant.Layout_Factory is
 
          --  needed by Get_Root_Node
          Meta_Class_Set    : Config.Class_Sets.Class_Set_Access;
+         Reverse_Edges     : Boolean;
 
          ----------------------------------------------------------------------
          --  Extracts Root_Node_Id out of given string
@@ -186,7 +187,7 @@ package body Giant.Layout_Factory is
             Node            : Graph_Lib.Node_Id;
 
             Current_Node    : Graph_Lib.Node_Id;
-            Incoming_Edges  : Graph_Lib.Edge_Id_Set;
+            Edges           : Graph_Lib.Edge_Id_Set;
 
             Nodes_To_Layout : Graph_Lib.Node_Id_Set;
             Node_Iterator   : Graph_Lib.Node_Id_Sets.Iterator;
@@ -223,10 +224,15 @@ package body Giant.Layout_Factory is
                Seen := Graph_Lib.Node_Id_Sets.Empty_Set;
 
                loop
-                  Incoming_Edges := Graph_Lib.Get_Incoming_Edges
-                    (Current_Node);
+                  if Reverse_Edges then
+                     Edges := Graph_Lib.Get_Outgoing_Edges
+                       (Current_Node);
+                  else
+                     Edges := Graph_Lib.Get_Incoming_Edges
+                       (Current_Node);
+                  end if;
                   Edge_Iterator := Graph_Lib.Edge_Id_Sets.Make_Iterator
-                    (Incoming_Edges);
+                    (Edges);
 
                   --  algorithm analogue to
                   --  Tree_Layouts.Init_Calculation_Part_One
@@ -243,7 +249,11 @@ package body Giant.Layout_Factory is
                        Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set
                        (Meta_Class_Set,
                         Graph_Lib.Get_Edge_Class_Id (Current_Edge)) then
-                        Node := Graph_Lib.Get_Source_Node (Current_Edge);
+                        if Reverse_Edges then
+                           Node := Graph_Lib.Get_Target_Node (Current_Edge);
+                        else
+                           Node := Graph_Lib.Get_Source_Node (Current_Edge);
+                        end if;
                         if Graph_Lib.Node_Id_Sets.Is_Member
                           (Graph_Lib.Selections.Get_All_Nodes
                            (Selection_To_Layout), Node) then
@@ -264,7 +274,7 @@ package body Giant.Layout_Factory is
                   end loop;
                   Graph_Lib.Edge_Id_Sets.Destroy (Edge_Iterator);
 
-                  Graph_Lib.Edge_Id_Sets.Destroy (Incoming_Edges);
+                  Graph_Lib.Edge_Id_Sets.Destroy (Edges);
 
                   exit when not Predecessor_Found or Root_Found;
                end loop;
@@ -300,9 +310,7 @@ package body Giant.Layout_Factory is
          Parameters := String_Split.Split_String (Data, ";");
 
          --  Check amount of parameters
-         if String_Lists.Length (Parameters) /= 2 then
-            --  /= 2 is possible, since the list of classes
-            --       is comma-separated and the parameter-list ";"-separated
+         if String_Lists.Length (Parameters) < 2 then
             Layout_Evolution := null;
             Ada.Exceptions.Raise_Exception (Invalid_Format'Identity,
                                             "Not enough parameters");
@@ -320,6 +328,16 @@ package body Giant.Layout_Factory is
          String_Lists.Next (Parameters_Iter, Current_Parameter);
          Meta_Class_Set := Convert_String_To_Meta_Class_Set
            (Ada.Strings.Unbounded.To_String (Current_Parameter));
+
+         --  Reverse_Edges?
+         if String_Lists.More (Parameters_Iter) then
+            String_Lists.Next (Parameters_Iter, Current_Parameter);
+            Reverse_Edges :=
+              (Ada.Strings.Unbounded.To_String (Current_Parameter) =
+               "Reverse_Edges");
+         else
+            Reverse_Edges := False;
+         end if;
 
          --  Class_Sets are initialized now,
          --    the Root-Node can be extracted now
@@ -344,7 +362,8 @@ package body Giant.Layout_Factory is
              Selection_To_Layout,
              Target_Position,
              Root_Node,
-             Meta_Class_Set));
+             Meta_Class_Set,
+             Reverse_Edges));
       end Parse_Tree_Parameters;
 
       Trimmed_Parameters : String :=
