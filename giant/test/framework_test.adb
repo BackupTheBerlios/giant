@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: framework_test.adb,v $, $Revision: 1.11 $
---  $Author: squig $
---  $Date: 2003/07/09 16:22:35 $
+--  $RCSfile: framework_test.adb,v $, $Revision: 1.12 $
+--  $Author: koppor $
+--  $Date: 2003/07/13 00:29:31 $
 --
 with AUnit.Test_Suites; use AUnit.Test_Suites;
 with AUnit.Test_Runner;
@@ -36,10 +36,12 @@ with Giant.Default_Logger.Test;
 with Giant.File_Management.Test;
 with Giant.Graph_Lib.Test;
 with Giant.Graph_Lib.Node_Attribute_Filters.Test;
+with Giant.Graph_Lib.Subgraphs.Atomic_Tests;
 with Giant.Graph_Lib.Subgraphs.Test;
 with Giant.Gsl_Support.Test;
 with Giant.Layout_Factory.Test;
 with Giant.Matrix_Layouts.Test;
+with Giant.Tree_Layouts.Test;
 with Giant.Node_Annotations.Test;
 with Giant.Projects.Test;
 with Giant.Valid_Names.Test;
@@ -58,11 +60,14 @@ procedure Framework_Test is
       Add_Test (Result, new Giant.Default_Logger.Test.Test_Case);
       Add_Test (Result, new Giant.File_Management.Test.Test_Case);
       Add_Test (Result, new Giant.Graph_Lib.Test.Test_Case);
-      Add_Test (Result, new Giant.Graph_Lib.Node_Attribute_Filters.Test.Test_Case);
+      Add_Test
+        (Result, new Giant.Graph_Lib.Node_Attribute_Filters.Test.Test_Case);
       Add_Test (Result, new Giant.Graph_Lib.Subgraphs.Test.Test_Case);
+      Add_Test (Result, new Giant.Graph_Lib.Subgraphs.Atomic_Tests.Test_Case);
       Add_Test (Result, new Giant.Gsl_Support.Test.Test_Case);
       Add_Test (Result, new Giant.Layout_Factory.Test.Test_Case);
       Add_Test (Result, new Giant.Matrix_Layouts.Test.Test_Case);
+      Add_Test (Result, new Giant.Tree_Layouts.Test.Test_Case);
       Add_Test (Result, new Giant.Node_Annotations.Test.Test_Case);
       Add_Test (Result, new Giant.Projects.Test.Test_Case);
       Add_Test (Result, new Giant.Valid_Names.Test.Test_Case);
