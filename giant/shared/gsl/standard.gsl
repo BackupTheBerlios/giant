@@ -1,7 +1,7 @@
 // ===========================================================================
-//  $RCSfile: standard.gsl,v $ $Revision: 1.8 $
-//  $Date: 2003/09/18 15:58:23 $
-//  $Author: koppor $
+//  $RCSfile: standard.gsl,v $ $Revision: 1.9 $
+//  $Date: 2003/09/21 22:12:55 $
+//  $Author: squig $
 //
 //  File:         GSL-Library standard.gsl
 //  Description:  Contains an GSL expression used to initialize the standard
@@ -75,7 +75,7 @@
         if
          (a,
           true,
-          b)
+          b);
       ]
     });
 
