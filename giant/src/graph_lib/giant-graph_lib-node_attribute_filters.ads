@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-node_attribute_filters.ads,v $, $Revision: 1.2 $
---  $Author: koppor $
---  $Date: 2003/06/13 01:25:54 $
+--  $RCSfile: giant-graph_lib-node_attribute_filters.ads,v $, $Revision: 1.3 $
+--  $Author: keulsn $
+--  $Date: 2003/06/13 11:19:53 $
 --
 ------------------------------------------------------------------------------
 --
@@ -95,10 +95,11 @@ private
 
    --  taken from mail from keulsn, 20030426
    --
-   --  type Zoom_Level is (Verbose, High, ...);
+   --  [...Zoom_Level... not to be implemented, 13-06-2003 keulsn]
    --  type Attribute_Filter_Type is array (Positive range <>) of Boolean;
    --  pragma Pack (Attribute_Filter_Type);
+   --  [Since there is a Node_Attribute_Id, implementation as makes far
+   --   more sense, 13-06-2003 keulsn]
    --  type Attribute_Filter_Access is access Attribute_Filter_Type;
-   --  type Filter_For_Zoom is array (Zoomlevel) of Attribute_Filter_Access;
-   --  hashtable mit mapping (Node_Id) --> (Filter_For_Zoom)
+   --  [...Filter_For_Zoom... not to be implemented, 13-06-2003 keulsn]
 end Giant.Graph_Lib.Node_Attribute_Filters;
