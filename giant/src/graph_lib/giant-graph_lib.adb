@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.50 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.51 $
 --  $Author: koppor $
---  $Date: 2003/07/09 16:39:42 $
+--  $Date: 2003/07/11 01:40:40 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -1851,11 +1851,8 @@ package body Giant.Graph_Lib is
             end;
 
          when Class_Boolean =>
-            if Get_Node_Attribute_Boolean_Value (Node, Attribute) then
-               return "True";
-            else
-               return "False";
-            end if;
+            return Boolean'Image (Get_Node_Attribute_Boolean_Value
+                                  (Node, Attribute));
 
          when Class_Natural =>
             return Natural'Image (Get_Node_Attribute_Natural_Value
