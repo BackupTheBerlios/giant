@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.33 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.34 $
 --  $Author: koppor $
---  $Date: 2003/07/11 10:51:23 $
+--  $Date: 2003/07/14 17:51:07 $
 --
 --  TBD:
 --    * Write into comment, when the routine may be used
@@ -420,7 +420,7 @@ package Giant.Graph_Lib is
    --    This set has to be destroyed - as usual - by the caller
    function Get_Inherited_Classes
      (Node_Class     : in Node_Class_Id;
-      Include_Parent : in Boolean := True)
+      Include_Parent : in Boolean)
      return Node_Class_Id_Set;
 
    -----------------------------------
@@ -549,6 +549,10 @@ package Giant.Graph_Lib is
      return Node_Id_Set;
 
    ---------------------------------------------------------------------------
+   --  This set needs to be constructed, therefore it may be slow
+   --    See global var All_Node_Classes and think about a speed up
+   --    returning an array
+   --
    --  Returns:
    --    All known node_class Ids
    function Get_All_Node_Class_Ids return Node_Class_Id_Set;
@@ -825,7 +829,11 @@ private
 
    ---------------------------------------------------------------------------
    --  Stores all edges of the graph
-   All_Edges : Edge_Id_Array_Access;
+   All_Edges        : Edge_Id_Array_Access;
+
+   ---------------------------------------------------------------------------
+   --  Stores all known Node_Classes
+   All_Node_Classes : IML_Reflection.Classes;
 
    ---------------------------------------------------------------------------
    --  This constant is needed to allow a direct mapping from
@@ -917,8 +925,13 @@ private
      return Boolean;
 
    ---------------------------------------------------------------------------
+   --  initialises public variable All_Node_Classes
+   procedure Initialize_All_Node_Classes;
+
+   ---------------------------------------------------------------------------
    --  Following could also be in .adb, but is listed here, since it is needed
    --    for testing
+   ---------------------------------------------------------------------------
 
    ---------------------------------------------------------------------------
    package IML_Node_ID_Hashed_Mappings is
@@ -929,5 +942,48 @@ private
 
    --  Contains all IML-nodes
    IML_Node_ID_Mapping : IML_Node_ID_Hashed_Mappings.Mapping;
+
+   --------------------------------------
+   --  Hashing for Node_Attribute_Ids  --
+   --------------------------------------
+
+   ---------------------------------------------------------------------------
+   package Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings is
+      new Hashed_Mappings
+     (Key_Type   => Node_Attribute_Id,
+      Value_Type => Edge_Class_Id,
+      Hash       => Node_Attribute_Id_Hash_Functions.Integer_Hash);
+
+   ----------------------------------
+   --  Hashing for Node_Class_Ids  --
+   ----------------------------------
+
+   ---------------------------------------------------------------------------
+   package Node_Class_Id_Hash_Functions is
+      new Constant_Ptr_Hashs
+     (T          => IML_Reflection.Abstract_Class'Class,
+      T_Ptr      => Node_Class_Id);
+
+   ---------------------------------------------------------------------------
+   type Node_Class_Id_Hash_Data is record
+      --  Hashtable hasing Node_Attribute_Ids to Edge_Class_Ids
+      Node_Attribute_Id_Mapping :
+        Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.Mapping;
+
+      --  further contents will surely come
+   end record;
+
+   ---------------------------------------------------------------------------
+   type Node_Class_Id_Hash_Data_Access is access Node_Class_Id_Hash_Data;
+
+   ---------------------------------------------------------------------------
+   package Node_Class_Id_Hashed_Mappings is
+      new Hashed_Mappings
+     (Key_Type   => Node_Class_Id,
+      Value_Type => Node_Class_Id_Hash_Data_Access,
+      Hash       => Node_Class_Id_Hash_Functions.Integer_Hash);
+
+   ---------------------------------------------------------------------------
+   Node_Class_Id_Mapping : Node_Class_Id_Hashed_Mappings.Mapping;
 
 end Giant.Graph_Lib;
