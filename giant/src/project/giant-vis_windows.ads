@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.7 $
+--  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.8 $
 --  $Author: schwiemn $
---  $Date: 2003/06/06 17:29:27 $
+--  $Date: 2003/06/10 12:34:47 $
 --
 --  ----------------
 --  This package realizes a container that administrates the components
@@ -70,7 +70,7 @@ package Giant.Vis_Windows is
 
   ----------------------------------------------------------------------------
    --  This exception is raised if a not initialized instance of the
-   --  ADT "Visual_Window_Data_Access" is passed as parameter to one
+   --  ADT "Visual_Window_Access" is passed as parameter to one
    --  of the subprograms in this package.
    Visual_Window_Access_Not_Initialized_Exception : exception;
 
@@ -374,7 +374,7 @@ package Giant.Vis_Windows is
    --      to remove the standard selection.
    --    Selection_With_Passed_Name_Not_Found_Exception - Raised if a
    --      selection with the name "Selection_Name" is not part of 
-   --      "Visual_Window_Data_Access".
+   --      "Visual_Window_Access".
    procedure Remove_Selection_From_Vis_Window
       (Vis_Window     : in Visual_Window_Access;
        Selection_Name : in Valid_Names.Standard_Name);
@@ -411,7 +411,7 @@ package Giant.Vis_Windows is
    --      as parameter.
    --    Selection_With_Passed_Name_Not_Found_Exception - Raised if a
    --      selection with the name "Selection_Name" is not part of 
-   --      "Visual_Window_Data_Access".
+   --      "Visual_Window_Access".
    --    Illegal_Current_Selection_Exception - Raised if a selection
    --      that is faded out should be made to the current selection.
    procedure Set_Current_Selection
@@ -450,7 +450,7 @@ package Giant.Vis_Windows is
    --      as parameter.
    --    Selection_With_Passed_Name_Not_Found_Exception - Raised if a
    --      selection with the name "Selection_Name" is not part of 
-   --      "Visual_Window_Data_Access"
+   --      "Visual_Window_Access"
    function Get_Highlight_Status
      (Vis_Window     : in Visual_Window_Access;
       Selection_Name : in Valid_Names.Standard_Name)
@@ -474,7 +474,7 @@ package Giant.Vis_Windows is
    --      as parameter.
    --    Selection_With_Passed_Name_Not_Found_Exception - Raised if a
    --      selection with the name "Selection_Name" is not part of 
-   --      "Visual_Window_Data_Access"
+   --      "Visual_Window_Access"
    function May_Highlight_Status_Be_Changed
      (Vis_Window     : in Visual_Window_Access;
       Selection_Name : in Valid_Names.Standard_Name) 
@@ -494,7 +494,7 @@ package Giant.Vis_Windows is
    --      as parameter.
    --    Selection_With_Passed_Name_Not_Found_Exception - Raised if a
    --      selection with the name "Selection_Name" is not part of 
-   --      "Visual_Window_Data_Access"
+   --      "Visual_Window_Access"
    --    Highlight_Status_Of_Selection_May_Not_Be_Changed_Exception - raised
    --      if it is not allowed to change the Highlight-Status of
    --      "Selection".   
@@ -536,7 +536,7 @@ package Giant.Vis_Windows is
    --      as parameter.
    --    Selection_With_Passed_Name_Not_Found_Exception - Raised if a
    --      selection with the name "Selection_Name" is not part of 
-   --      "Visual_Window_Data_Access"
+   --      "Visual_Window_Access"
    function May_Be_Faded_Out
      (Vis_Window     : in Visual_Window_Access;
       Selection_Name : in Valid_Names.Standard_Name)
@@ -556,7 +556,7 @@ package Giant.Vis_Windows is
    --     as parameter.
    --   Selection_With_Passed_Name_Not_Found_Exception - Raised if a
    --     selection with the name "Selection_Name" is not part of 
-   --     "Visual_Window_Data_Access"
+   --     "Visual_Window_Access"
    function Is_Faded_Out
      (Vis_Window     : in Visual_Window_Access;
       Selection_Name : in Valid_Names.Standard_Name)
@@ -578,7 +578,7 @@ package Giant.Vis_Windows is
    --      as parameter.
    --    Selection_With_Passed_Name_Not_Found_Exception - Raised if a
    --      selection with the name "Selection_Name" is not part of 
-   --      "Visual_Window_Data_Access"
+   --      "Visual_Window_Access"
    --    Selection_May_Not_Be_Faded_Out_Exception - Raised if the Selection
    --     may not be faded out.
    procedure Fade_Out_Selection
@@ -598,7 +598,7 @@ package Giant.Vis_Windows is
    --     as parameter.
    --   Selection_With_Passed_Name_Not_Found_Exception - Raised if a
    --     selection with the name "Selection_Name" is not part of 
-   --     "Visual_Window_Data_Access".
+   --     "Visual_Window_Access".
    --   Selection_Is_Not_Faded_Out_Exception - Raised if the Selection is
    --     currently not faded out.
    procedure Fade_In_Selection
@@ -727,7 +727,7 @@ package Giant.Vis_Windows is
    --     as parameter.
    --   Pin_With_Passed_Name_Not_Found_Exception - Raised if the
    --     pin "Pin_Name" is not found.
-   procedure Remove_Pin_From_Vis_Window
+   procedure Remove_Pin
       (Vis_Window : in Visual_Window_Access;
        Pin_Name   : in Valid_Names.Standard_Name);
 

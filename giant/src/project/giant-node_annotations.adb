@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-node_annotations.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-node_annotations.adb,v $, $Revision: 1.8 $
 --  $Author: schwiemn $
---  $Date: 2003/06/03 15:26:38 $
+--  $Date: 2003/06/10 12:34:46 $
 --
 with Ada.Text_IO;
 with Ada.Unchecked_Deallocation;
@@ -338,9 +338,9 @@ package body Giant.Node_Annotations is
    ---------------------------------------------------------------------------
    function Get_All_Annotated_Nodes 
      (Node_Annotations : in Node_Annotation_Access) 
-     return Graph_Lib.Node_Id_List_Package.List is
+     return Graph_Lib.Node_Id_Lists.List is
      
-      The_List : Graph_Lib.Node_Id_List_Package.List;       
+      The_List : Graph_Lib.Node_Id_Lists.List;       
       Iter : Node_ID_Iter;
       A_Node : Graph_Lib.Node_Id;
       
@@ -350,12 +350,12 @@ package body Giant.Node_Annotations is
          raise Node_Annotation_Access_Not_Initialized_Exception;
       end if; 
          
-      The_List := Graph_Lib.Node_Id_List_Package.Create;      
+      The_List := Graph_Lib.Node_Id_Lists.Create;      
       Iter := Make_Node_ID_Iter (Node_Annotations);
       
       while More (Iter) loop
          Next (Iter, A_Node);         
-         Graph_Lib.Node_Id_List_Package.Attach (The_List, A_Node);             
+         Graph_Lib.Node_Id_Lists.Attach (The_List, A_Node);             
       end loop;
       
       return The_List;

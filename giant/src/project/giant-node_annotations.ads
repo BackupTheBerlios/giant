@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-node_annotations.ads,v $, $Revision: 1.6 $
+--  $RCSfile: giant-node_annotations.ads,v $, $Revision: 1.7 $
 --  $Author: schwiemn $
---  $Date: 2003/06/03 15:26:38 $
+--  $Date: 2003/06/10 12:34:46 $
 ------------------------------------------------------------------------------
 --  This package overs the functionality needed to handle node annotations.
 --
@@ -203,7 +203,7 @@ package Giant.Node_Annotations is
    --      if the parameter "Node_Annotations" was not initialized.
    function Get_All_Annotated_Nodes 
      (Node_Annotations : in Node_Annotation_Access) 
-     return Graph_Lib.Node_Id_List_Package.List;
+     return Graph_Lib.Node_Id_Lists.List;
 
 
    ---------------------------------------------------------------------------
