@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.21 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.22 $
 --  $Author: squig $
---  $Date: 2003/06/30 12:08:09 $
+--  $Date: 2003/06/30 19:50:46 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -711,14 +711,15 @@ package body Giant.Graph_Window is
                           Expand => False, Fill => False, Padding => 0);
       Gtk.Combo.Set_Usize (Window.Zoom_Combo, 100, Glib.Gint (-1));
 
-      Widget_Callback.Object_Connect
-        (Gtk.Combo.Get_Entry (Window.Zoom_Combo), "activate",
-         Widget_Callback.To_Marshaller (On_Zoom_Level_Selected'Access),
-         Window);
+      --  connect zoom callbacks
       Widget_Callback.Object_Connect
         (Gtk.Combo.Get_List (Window.Zoom_Combo), "select_child",
          Widget_Callback.To_Marshaller (On_Zoom_Level_Selected'Access),
          Window);
+      Widget_Callback.Object_Connect
+           (Window.Zoom_Entry, "activate",
+            Widget_Callback.To_Marshaller (On_Zoom_Level_Selected'Access),
+            Window);
 
       Gtk.Box.Pack_Start (Hbox,
                           New_Button (" + ", On_Zoom_In_Clicked'Access,
