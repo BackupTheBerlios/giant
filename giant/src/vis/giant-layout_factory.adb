@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.9 $
 --  $Author: koppor $
---  $Date: 2003/07/08 11:57:31 $
+--  $Date: 2003/07/08 13:50:48 $
 --
 
 with Ada.Exceptions;
@@ -134,12 +134,8 @@ package body Giant.Layout_Factory is
                end;
             end loop;
 
-            if Config.Class_Sets.Class_Sets_Lists.IsEmpty
-              (Class_Sets_List) then
-               Res := Config.Class_Sets.Get_Class_Set_Access ("TBD: empty class set");
-            else
-               Res := Config.Class_Sets.Build (Class_Sets_List);
-            end if;
+            --  Build returns an empty class-set, if given list is empty
+            Res := Config.Class_Sets.Build (Class_Sets_List);
 
             Config.Class_Sets.Class_Sets_Lists.Destroy (Class_Sets_List);
             String_Lists.Destroy (Class_Sets_String_List);
