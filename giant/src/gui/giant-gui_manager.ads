@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.18 $
+--  $RCSfile: giant-gui_manager.ads,v $, $Revision: 1.19 $
 --  $Author: squig $
---  $Date: 2003/06/27 14:34:55 $
+--  $Date: 2003/06/27 16:58:06 $
 --
 --  Stores the window records. Handles the controller updates. Provides
 --  a facade for the gui.
@@ -124,6 +124,9 @@ package Giant.Gui_Manager is
    procedure For_Each
      (Call_Procedure : in For_Each_Graph_Window_Type);
 
+   ---------------------------------------------------------------------------
+   --  Returns the window with Name, if window is open; null, if
+   --  window is not open.
    function Get_Open_Window (Name : in String)
      return Graph_Window.Graph_Window_Access;
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.20 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.21 $
 --  $Author: squig $
---  $Date: 2003/06/27 14:34:55 $
+--  $Date: 2003/06/27 16:58:06 $
 --
 
 with Ada.Strings.Unbounded;
@@ -195,7 +195,7 @@ package body Giant.Gui_Manager is
       Window : Graph_Window.Graph_Window_Access
         := Get_Open_Window (Window_Name);
    begin
-      if (Window = Graph_Window.Null_Graph_Window) then
+      if (Window = null) then
          --  window is not shown
          return;
       end if;
@@ -212,7 +212,7 @@ package body Giant.Gui_Manager is
       Window : Graph_Window.Graph_Window_Access
         := Get_Open_Window (Window_Name);
    begin
-      if (Window = Graph_Window.Null_Graph_Window) then
+      if (Window = null) then
          --  window is not shown
          return True;
       end if;
@@ -229,7 +229,7 @@ package body Giant.Gui_Manager is
       Window : Graph_Window.Graph_Window_Access
         := Get_Open_Window (Window_Name);
    begin
-      if (Window = Graph_Window.Null_Graph_Window) then
+      if (Window = null) then
          --  window is not shown
          return;
       end if;
@@ -319,7 +319,7 @@ package body Giant.Gui_Manager is
       end if;
 
       Window := Get_Open_Window (Name);
-      if (Window = Graph_Window.Null_Graph_Window) then
+      if (Window = null) then
          --  window is not open
          return True;
       end if;
@@ -363,7 +363,7 @@ package body Giant.Gui_Manager is
       Window : Graph_Window.Graph_Window_Access;
    begin
       if (not Gui_Initialized) then
-         return Graph_Window.Null_Graph_Window;
+         return null;
       end if;
 
       Iterator := Graph_Window_Lists.MakeListIter (Open_Windows);
@@ -375,7 +375,7 @@ package body Giant.Gui_Manager is
          end if;
       end loop;
 
-      return Graph_Window.Null_Graph_Window;
+      return null;
    end Get_Open_Window;
 
    function Is_Window_Open
@@ -388,7 +388,7 @@ package body Giant.Gui_Manager is
          return False;
       end if;
 
-      return (Get_Open_Window (Name) /= Graph_Window.Null_Graph_Window);
+      return (Get_Open_Window (Name) /= null);
    end Is_Window_Open;
 
    procedure Open (Visual_Window : Vis_Windows.Visual_Window_Access)
@@ -402,7 +402,7 @@ package body Giant.Gui_Manager is
       end if;
 
       Window := Get_Open_Window (Vis_Windows.Get_Name (Visual_Window));
-      if (Window /= Graph_Window.Null_Graph_Window) then
+      if (Window /= null) then
          --  window is already open, focus
          Graph_Window.Grab_Focus (Window);
          return;
@@ -459,7 +459,9 @@ package body Giant.Gui_Manager is
       Main_Window.Add_Window (New_Name);
 
       Window := Get_Open_Window (New_Name);
-      Graph_Window.Update_Title (Window);
+      if (Window /= null) then
+         Graph_Window.Update_Title (Window);
+      end if;
    end Rename_Window;
 
    procedure Set_Action_Mode

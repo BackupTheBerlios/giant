@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.13 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.14 $
 --  $Author: squig $
---  $Date: 2003/06/27 14:34:55 $
+--  $Date: 2003/06/27 16:58:06 $
 --
 ------------------------------------------------------------------------------
 --
@@ -49,8 +49,6 @@ package Giant.Graph_Window is
      new Gtk.Window.Gtk_Window_Record with private;
 
    type Graph_Window_Access is access all Graph_Window_Record'Class;
-
-   Null_Graph_Window : Graph_Window_Access := null;
 
    ---------------------------------------------------------------------------
    --  Package: Actions

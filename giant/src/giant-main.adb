@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.21 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.22 $
 --  $Author: squig $
---  $Date: 2003/06/27 11:33:22 $
+--  $Date: 2003/06/27 16:58:06 $
 --
 --
 ------------------------------------------------------------------------------
@@ -30,6 +30,10 @@
 --  The GIANT main program.
 --
 
+with Ada.Strings.Unbounded;
+with Ada.Text_IO;
+
+with GNAT.Command_Line;
 with GNAT.OS_Lib;
 
 with Giant.Config_Settings;
@@ -45,8 +49,66 @@ procedure Giant.Main
 is
    package Logger is new Giant.Logger("giant.main");
 
-   Config_Filename : String
+   Version : constant String := "20030627";
+
+   Config_Filename : constant String
      := File_Management.Get_User_Config_Path & "settings.xml";
+
+   procedure Put_Help
+   is
+   begin
+      Ada.Text_IO.Put_Line
+        ("usage: giant [(-n project -g graph | -l project) -e script | -h | -v]");
+   end;
+
+   procedure Parse_Arguments
+   is
+      use Ada.Strings.Unbounded;
+
+      Project_Filename : String_Access := new String' ("");
+      Graph_Filename   : String_Access := new String' ("");
+      Script_Filename  : String_Access := new String' ("");
+   begin
+      GNAT.Command_Line.Initialize_Option_Scan;
+
+      loop
+         case GNAT.Command_Line.Getopt
+           ("-newproject: -graph: -loadproject: -execute: -version -help")
+         is
+           --  long option names
+           when '-' =>
+              case GNAT.Command_Line.Full_Switch
+                (GNAT.Command_Line.Full_Switch'First + 1) is
+                when 'n' =>
+                   --  "newproject"
+                   Free (Project_Filename);
+                   Project_Filename := new String'(GNAT.Command_Line.Parameter);
+                when 'e' =>
+                   --  "execute"
+                   Free (Script_Filename);
+                   Script_Filename := new String'(GNAT.Command_Line.Parameter);
+                when 'g' =>
+                   --  "graph"
+                   Free (Graph_Filename);
+                   Graph_Filename := new String'(GNAT.Command_Line.Parameter);
+                when 'h' =>
+                   --  "help"
+                   Put_Help;
+                   GNAT.OS_Lib.OS_Exit (0);
+                when 'v' =>
+                   --  "version"
+                   Ada.Text_IO.Put_Line ("version: " & Version);
+                   GNAT.OS_Lib.OS_Exit (0);
+               when others =>
+                  null;
+              end case;
+           when ASCII.Nul =>
+              exit;
+           when others =>
+              null;
+         end case;
+      end loop;
+   end Parse_Arguments;
 
    procedure New_Test_Project
    is
@@ -92,7 +154,10 @@ begin
       Default_Vis_Style_File =>
         "test/resources/vis_styles/only_defaults_giant_vis_style.xml");
 
-   Open_Test_Project;
+   Logger.Debug ("parsing command line arguments");
+   Parse_Arguments;
+
+   New_Test_Project;
 
    Logger.Debug ("starting giant");
 
