@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.19 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.20 $
 --  $Author: keulsn $
---  $Date: 2003/07/18 13:19:45 $
+--  $Date: 2003/07/18 16:00:46 $
 --
 ------------------------------------------------------------------------------
 
@@ -986,18 +986,18 @@ package body Giant.Graph_Widgets.Drawing is
             Gc        => Widget.Drawing.Background,
             Rectangle => Area,
             Origin    => Buffer_Origin);
-         Draw_Border
-           (Drawable  => Widget.Drawing.Buffer,
-            Gc        => Widget.Drawing.Debug_Gc,
-            Rectangle => Area,
-            Origin    => Buffer_Origin);
-         Draw_Text
-           (Buffer => Widget.Drawing.Buffer,
-            Font   => Settings.Get_Node_Font (Widget),
-            Gc     => Widget.Drawing.Debug_Gc,
-            Area   => Area,
-            Origin => Buffer_Origin,
-            Text   => Vis.Absolute.Image (Area));
+--           Draw_Border
+--             (Drawable  => Widget.Drawing.Buffer,
+--              Gc        => Widget.Drawing.Debug_Gc,
+--              Rectangle => Area,
+--              Origin    => Buffer_Origin);
+--           Draw_Text
+--             (Buffer => Widget.Drawing.Buffer,
+--              Font   => Settings.Get_Node_Font (Widget),
+--              Gc     => Widget.Drawing.Debug_Gc,
+--              Area   => Area,
+--              Origin => Buffer_Origin,
+--              Text   => Vis.Absolute.Image (Area));
       end loop;
 
       Drawing_Logger.Debug ("... Background done.");
