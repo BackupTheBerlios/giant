@@ -21,8 +21,8 @@
 -- First Author: Gerrit Schulz
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
--- $Author: squig $
--- $Date: 2003/08/15 16:37:18 $
+-- $Author: schulzgt $
+-- $Date: 2003/08/16 14:13:53 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -194,7 +194,7 @@ package body Giant.Gsl.Runtime is
       if Is_Gsl_Script_Reference (Script) then
          Loop_Cmd := Create_Node (Script_Loop,
            Get_Script_Node (Gsl_Script_Reference (Script)), Null_Node);
-         Execution_Stacks.Push (ES, Loop_cmd);
+         Execution_Stacks.Push (ES, Loop_Cmd);
 
          -- set the new activation record
          Set_Activation_Record (Create_Activation_Record
@@ -255,12 +255,12 @@ package body Giant.Gsl.Runtime is
       Name := Get_Value_At (Parameter, 1);
       if Is_Gsl_String (Name) then
          -- push the code of the library to the execution stack
-         Execution_Stacks.Push (ES, Get_Execution_Stack (Comp,
-           GSL_Support.Get_GSL_Include (Get_Value (Gsl_String (Name))
-                                                         & ".gsl")));
+         Execution_Stacks.Push (ES, Get_Execution_Stack
+           (Comp, GSL_Support.Get_GSL_Include
+             (Get_Value (Gsl_String (Name)) & ".gsl")));
          -- remove the Gsl_Null result from the result stack in the next step
-         Execution_Stacks.Push (ES, Get_Execution_Stack (Comp,
-           Create_Node (Result_Pop, Null_Node, Null_Node)));
+         Execution_Stacks.Push (ES, Get_Execution_Stack
+           (Comp, Create_Node (Result_Pop, Null_Node, Null_Node)));
          return Gsl_Null;
       else
          Ada.Exceptions.Raise_Exception

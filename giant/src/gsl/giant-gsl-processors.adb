@@ -22,13 +22,14 @@
 --
 -- $RCSfile: giant-gsl-processors.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/14 14:35:46 $
+-- $Date: 2003/08/16 14:13:53 $
 --
 
 with Ada.Exceptions;
 with Ada.Strings.Unbounded;
 
 with Giant.Controller;
+with Giant.Default_Logger;
 with Giant.Graph_Lib;
 with Giant.Graph_Lib.Selections;
 with Giant.Graph_Lib.Subgraphs;
@@ -66,6 +67,7 @@ package body Giant.Gsl.Processors is
          -- literal ::= boolean_literal | int_literal | string_literal |
          --             null_literal
          when Literal =>
+            Default_Logger.Debug ("=== GSL COMMAND: Literal");
             Lit := Get_Literal (Cmd);
             if Lit /= Gsl_Null then
                Result_Stacks.Push (Result_Stack, Copy (Lit));
@@ -76,6 +78,7 @@ package body Giant.Gsl.Processors is
          ---------------------------------------------------------------------
          -- inspection ::= visible_var | global_var
          when Visible_Var =>
+            Default_Logger.Debug ("=== GSL COMMAND: Visible_Var");
             Lit := Get_Literal (Cmd);
             -- get value from activation record
             Lit := Gsl.Interpreters.Get_Var
@@ -87,6 +90,7 @@ package body Giant.Gsl.Processors is
             end if;
 
          when Global_Var =>
+            Default_Logger.Debug ("=== GSL COMMAND: Global_Var");
             Lit := Get_Literal (Cmd);
             if Get_Ref_Type (Gsl_Var_Reference (Lit)) = Subgraph then
                Result_Stacks.Push (Result_Stack, Get_Subgraph (Get_Ref_Name
@@ -99,6 +103,7 @@ package body Giant.Gsl.Processors is
          ---------------------------------------------------------------------
          -- reference ::= visible_ref | var_creation | global_ref
          when Visible_Ref =>
+            Default_Logger.Debug ("=== GSL COMMAND: Visible_Ref");
             Lit := Copy (Get_Literal (Cmd));
             -- check wether the referenced variable exists
             Gsl.Interpreters.Exists_Var
@@ -106,12 +111,14 @@ package body Giant.Gsl.Processors is
             Result_Stacks.Push (Result_Stack, Lit);
 
          when Var_Creation =>
+            Default_Logger.Debug ("=== GSL COMMAND: Var_Creation");
             Lit := Copy (Get_Literal (Cmd));
             Gsl.Interpreters.Create_Var
               (Get_Ref_Name (Gsl_Var_Reference (Lit)));
             Result_Stacks.Push (Result_Stack, Lit);
 
          when Global_Ref =>
+            Default_Logger.Debug ("=== GSL COMMAND: Global_Ref");
             Lit := Copy (Get_Literal (Cmd));
             if Get_Ref_Type (Gsl_Var_Reference (Lit)) = Subgraph then
                Result_Stacks.Push (Result_Stack, 
@@ -124,6 +131,7 @@ package body Giant.Gsl.Processors is
          ---------------------------------------------------------------------
          -- script_decl ::= {list, expression}
          when Script_Decl =>
+            Default_Logger.Debug ("=== GSL COMMAND: Script_Decl");
             Lit := Copy (Get_Literal (Cmd));
             Set_Activation_Record (Gsl_Script_Reference (Lit),
             Gsl.Interpreters.Get_Current_Activation_Record);
@@ -132,6 +140,7 @@ package body Giant.Gsl.Processors is
          ---------------------------------------------------------------------
          -- list ::= (<expression<,expression>*>?)
          when List =>
+            Default_Logger.Debug ("=== GSL COMMAND: List");
             Res_List := Create_Gsl_List (Get_Size (Cmd));
             for i in reverse 1 .. Get_List_Size (Res_List) loop
                Result_Stacks.Pop (Result_Stack, Res1);
@@ -142,6 +151,7 @@ package body Giant.Gsl.Processors is
          ---------------------------------------------------------------------
          -- sequence ::= [<expression;>*]
          when Sequence =>
+            Default_Logger.Debug ("=== GSL COMMAND: Sequence");
             if Gsl.Syntax_Tree.Get_Size (Cmd) = 0 then
                Result_Stacks.Push (Result_Stack, Gsl_Null);
             else
@@ -156,20 +166,26 @@ package body Giant.Gsl.Processors is
 
          ---------------------------------------------------------------------
          -- script_activation ::= expression list
-         when Script_Activation => Script_Activation_Cmd;
+         when Script_Activation =>
+            Default_Logger.Debug ("=== GSL COMMAND: Script_Activation");
+            Script_Activation_Cmd;
 
          ---------------------------------------------------------------------
          --
-         when Script_Exec => Script_Exec_Cmd;
+         when Script_Exec =>
+            Default_Logger.Debug ("=== GSL COMMAND: Script_Exec");
+            Script_Exec_Cmd;
 
          ---------------------------------------------------------------------
          --
          when Script_Finish =>
+            Default_Logger.Debug ("=== GSL COMMAND: Script_Finish");
             Gsl.Interpreters.Restore_Activation_Record;
 
          ---------------------------------------------------------------------
          --
          when Script_Loop =>
+            Default_Logger.Debug ("=== GSL COMMAND: Loop");
             Result_Stacks.Pop (Result_Stack, Res1);
             if Is_Gsl_Boolean (Res1) then
                if Get_Value (Gsl_Boolean (Res1)) then
@@ -194,12 +210,14 @@ package body Giant.Gsl.Processors is
          ---------------------------------------------------------------------
          --
          when Result_Pop =>
+            Default_Logger.Debug ("=== GSL COMMAND: Result_Pop");
             Result_Stacks.Pop (Result_Stack, Res1);
             Destroy_Gsl_Type (Res1);
 
          ---------------------------------------------------------------------
          --
          when Param_Fetch =>
+            Default_Logger.Debug ("=== GSL COMMAND: Param_Fetch");
             Res_List := Gsl_List (Gsl.Interpreters.Get_Params);
             Result_Stacks.Push (Result_Stack, Gsl_Type (Res_List));
 

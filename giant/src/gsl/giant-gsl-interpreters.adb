@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/14 14:35:46 $
+-- $Date: 2003/08/16 14:13:53 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -277,7 +277,7 @@ package body Giant.Gsl.Interpreters is
 
    ---------------------------------------------------------------------------
    -- initilizes the gsl interpreter for evolution
-   procedure Execute_Script
+   procedure Execute_Gsl_File
      (Individual : Interpreter;
       Name       : String;
       Context    : String) is
@@ -304,7 +304,7 @@ package body Giant.Gsl.Interpreters is
          when Syntax_Error : Gsl_Syntax_Error =>
             Controller.Show_Error
               (Ada.Exceptions.Exception_Message (Syntax_Error));
-   end Execute_Script;
+   end Execute_Gsl_File;
 
    ---------------------------------------------------------------------------
    -- initilizes the gsl interpreter for evolution
@@ -339,6 +339,7 @@ package body Giant.Gsl.Interpreters is
       -- |                                                       |
       --
       -- execution stack
+      Default_Logger.Debug ("=== Building execution stack...");
       Individual.Execution_Stack := Execution_Stacks.Create;
       Execution_Stacks.Push (Individual.Execution_Stack, Get_Execution_Stack
         (Individual.Gsl_Compiler, Create_Node
@@ -349,13 +350,16 @@ package body Giant.Gsl.Interpreters is
       Execution_Stacks.Push (Individual.Execution_Stack, Get_Execution_Stack
         (Individual.Gsl_Compiler, Create_Node
           (Script_Activation, Null_Node, Null_Node)));
+      Log_Execution_Stack;
 
       -- result stack for the activation of "run"
+      Default_Logger.Debug ("=== Building result stack...");
       Script := Get_Var ("run");
       Param_Run := Create_Gsl_List (1);
       Set_Value_At (Param_Run, 1, Gsl_Type (Create_Gsl_String (Name)));
       Result_Stacks.Push (Individual.Result_Stack, Script);
       Result_Stacks.Push (Individual.Result_Stack, Gsl_Type (Param_Run));
+      Log_Result_Stack;
 
       -- set gsl time (used for performance measurement)
       Individual.Gsl_Time := Ada.Real_Time.Clock;
@@ -399,8 +403,10 @@ package body Giant.Gsl.Interpreters is
            -- set the next action for the evolution
            Next_Action := Evolutions.Run;
 
-           -- only for debug 
-           -- Log_Result_Stack;
+           -- only for debug
+           Log_Execution_Stack;
+           Log_Result_Stack;
+           Default_Logger.Debug ("________________________________________");
         end if;
         -- exit the processing if script execution is finished or
         -- if a given time limit is over
@@ -451,6 +457,24 @@ package body Giant.Gsl.Interpreters is
 
    ---------------------------------------------------------------------------
    --
+   procedure Log_Execution_Stack is
+
+      S : Execution_Stacks.Stack;
+      E : Syntax_Node;
+   begin
+      S := Execution_Stacks.Copy (Current_Interpreter.Execution_Stack);
+      Default_Logger.Debug ("", "Giant.Gsl");
+      Default_Logger.Debug ("-- Execution Stack --", "Giant.Gsl");
+      while Execution_Stacks.Is_Empty (S) = false loop
+         Execution_Stacks.Pop (S, E);
+         Default_Logger.Debug
+           ("Execution Stack: " & Log_Syntax_Node (E), "Giant.Gsl");
+      end loop;
+      Default_Logger.Debug ("", "Giant.Gsl");
+   end Log_Execution_Stack;
+   
+   ---------------------------------------------------------------------------
+   --
    procedure Log_Result_Stack is
 
       S : Result_Stacks.Stack;
@@ -464,6 +488,7 @@ package body Giant.Gsl.Interpreters is
          Default_Logger.Debug
            ("Result Stack: " & Log_Gsl_Type (E), "Giant.Gsl");
       end loop;
+      Default_Logger.Debug ("", "Giant.Gsl");
    end Log_Result_Stack;
 
 ------------------------------------------------------------------------------

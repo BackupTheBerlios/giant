@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/29 13:47:47 $
+-- $Date: 2003/08/16 14:13:53 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -132,6 +132,33 @@ package body Giant.Gsl is
       end if;
    end Log_Syntax_Node;
 
+   ---------------------------------------------------------------------------
+   --
+   function Log_Syntax_Node
+     (Node : Syntax_Node)
+      return String is
+
+   begin
+      if Node /= Null_Node then
+         case Get_Node_Type (Node) is
+            when Literal           => return "Literal";
+            when Visible_Var       => return "Visible_Var";
+            when Global_Var        => return "Global_Var";
+            when Visible_Ref       => return "Visible_Ref";
+            when Var_Creation      => return "Var_Creation";
+            when Global_Ref        => return "Global_Ref";
+            when Script_Decl       => return "Script_Decl";
+            when List              => return "List";
+            when Sequence          => return "Sequence";
+            when Script_Activation => return "Script_Activation";
+            when others            => return "Unknown";
+         end case;
+      end if;
+      return "Null_Node";
+   end Log_Syntax_Node;
+
+   ---------------------------------------------------------------------------
+   --
    function Log_Gsl_Type
      (Var : Gsl_Type) 
       return String is

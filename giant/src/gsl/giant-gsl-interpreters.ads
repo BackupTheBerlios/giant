@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/14 14:35:46 $
+-- $Date: 2003/08/16 14:13:53 $
 --
 -- This package implements the Gsl interpreter.
 --
@@ -124,7 +124,7 @@ package Giant.Gsl.Interpreters is
 
    ---------------------------------------------------------------------------
    --
-   procedure Execute_Script
+   procedure Execute_Gsl_File
      (Individual : Interpreter;
       Name       : String;
       Context    : String);
@@ -155,6 +155,12 @@ package Giant.Gsl.Interpreters is
      (Runtime    : Runtime_Function;
       Name       : String);
 
+   ---------------------------------------------------------------------------
+   --
+   procedure Log_Execution_Stack;
+
+   ---------------------------------------------------------------------------
+   --
    procedure Log_Result_Stack;
 
    ---------------------------------------------------------------------------

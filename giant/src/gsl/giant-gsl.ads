@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/12 10:03:20 $
+-- $Date: 2003/08/16 14:13:53 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -76,6 +76,10 @@ package Giant.Gsl is
 
    procedure Log_Syntax_Node
      (Node : Syntax_Node);
+
+   function Log_Syntax_Node
+     (Node : Syntax_Node)
+      return String;
 
    function Log_Gsl_Type
      (Var : Gsl_Type)
