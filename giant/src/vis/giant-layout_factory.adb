@@ -20,15 +20,16 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.5 $
---  $Author: koppor $
---  $Date: 2003/07/07 11:25:34 $
+--  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.6 $
+--  $Author: squig $
+--  $Date: 2003/07/07 12:10:32 $
 --
 
 with Ada.Exceptions;
 with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded;
 
+with Giant.Config;
 with Giant.Config.Class_Sets;
 with Giant.Matrix_Layouts;
 with Giant.Tree_Layouts;

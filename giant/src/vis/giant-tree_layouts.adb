@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.5 $
---  $Author: koppor $
---  $Date: 2003/07/07 11:23:54 $
+--  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.6 $
+--  $Author: squig $
+--  $Date: 2003/07/07 12:10:32 $
 --
 ------------------------------------------------------------------------------
 --  Variables are named according to the paper
@@ -31,6 +31,8 @@
 --      ?show=zaik2002-431&preprint_session=877c83a63d7134d8123dd3e6dd0ab004
 
 with Giant.Matrix_Layouts;
+
+with Giant.Config;
 
 package body Giant.Tree_Layouts is
 
