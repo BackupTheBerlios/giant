@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/25 16:10:25 $
+-- $Date: 2003/06/29 18:14:45 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -53,6 +53,34 @@ package body Giant.Gsl.Interpreters is
       Individual.Gsl_Compiler := Giant.Gsl.Compilers.Create_Compiler;
       return Individual;
    end Create_Interpreter;
+
+   -------------------------------------------------------------------------
+   --
+   function Get_Current_Interpreter return Interpreter is
+   begin
+      return Current_Interpreter;
+   end Get_Current_Interpreter;
+
+   -------------------------------------------------------------------------
+   --
+   function Get_Current_Execution_Stack return Execution_Stacks.Stack is
+   begin
+      return Current_Interpreter.Execution_Stack;
+   end Get_Current_Execution_Stack;
+
+   -------------------------------------------------------------------------
+   --
+   function Get_Current_Result_Stack return Result_Stacks.Stack is
+   begin
+      return Current_Interpreter.Result_Stack;
+   end Get_Current_Result_Stack;
+
+   -------------------------------------------------------------------------
+   --
+   function Get_Current_Compiler return Giant.Gsl.Compilers.Compiler is
+   begin
+      return Current_Interpreter.Gsl_Compiler;
+   end Get_Current_Compiler;
 
    --------------------------------------------------------------------------
    -- destroys a Gsl Interpreter
@@ -85,9 +113,28 @@ package body Giant.Gsl.Interpreters is
       
       Default_Logger.Debug
         ("Interpreter: Register runtime functions.", "Giant.Gsl");
-      Register_Runtime (Runtime_Set'Access, "set");
-      Register_Runtime (Runtime_If'Access, "if");
-      Register_Runtime (Runtime_Loop'Access, "loop");
+      Register_Runtime (Giant.Gsl.Runtime.Runtime_Set'Access, "set");
+      Register_Runtime (Giant.Gsl.Runtime.Runtime_If'Access, "if");
+      Register_Runtime (Giant.Gsl.Runtime.Runtime_Loop'Access, "loop");
+
+      -- arithmetic (ref. GIANT Scripting Language Specification 1.5.1.3)
+      Register_Runtime (Giant.Gsl.Runtime.Runtime_Add'Access, "add");
+      Register_Runtime (Giant.Gsl.Runtime.Runtime_Sub'Access, "sub");
+      Register_Runtime (Giant.Gsl.Runtime.Runtime_Cat'Access, "cat");
+
+      -- compare (ref. GIANT Scripting Language Specification 1.5.1.4)
+      Register_Runtime (Giant.Gsl.Runtime.Runtime_Less'Access, "less");
+      Register_Runtime (Giant.Gsl.Runtime.Runtime_Equal'Access, "equal");
+      Register_Runtime (Giant.Gsl.Runtime.Runtime_In_Regexp'Access, 
+                        "in_regexp");
+      Register_Runtime (Giant.Gsl.Runtime.Runtime_Type_In'Access, "type_in");
+
+      -- types (ref. GIANT Scripting Language Specification 1.5.1.6)
+      Register_Runtime (Giant.Gsl.Runtime.Runtime_Is_Nodeid'Access, 
+                        "is_nodeid");
+      Register_Runtime (Giant.Gsl.Runtime.Runtime_Is_Edgeid'Access, 
+                        "is_edgeid");
+
 
       Default_Logger.Debug
         ("Interpreter: Initilize Evolution.", "Giant.Gsl");
@@ -446,122 +493,5 @@ package body Giant.Gsl.Interpreters is
       -- variable was not found, raise Exception
       raise Var_Not_Found;
    end Set_Var;
-
------------------------------------------------------------------------------
--- some basic Runtime Functions
-
-   --------------------------------------------------------------------------
-   -- 
-   function Runtime_Set
-     (Parameter : Gsl_List)
-      return Gsl_Type is
-   
-      Var   : Gsl_Type;
-      Value : Gsl_Type;
-   begin
-      Default_Logger.Debug ("Interpreter: Runtime_Set called.", "Giant.Gsl");
-      if Get_List_Size (Parameter) /= 2 then
-         Ada.Exceptions.Raise_Exception
-           (Gsl_Runtime_Error'Identity, "Script 'set' requires " &
-             "2 Parameters");
-      end if;
-      Var := Get_Value_At (Parameter, 1);
-      if Var'Tag /= Gsl_Var_Reference_Record'Tag then
-         Ada.Exceptions.Raise_Exception
-           (Gsl_Runtime_Error'Identity, "Gsl_Var_Reference expected.");
-      else
-         Value := Get_Value_At (Parameter, 2);
-         Set_Var (Get_Ref_Name (Gsl_Var_Reference (Var)), Value);
-      end if;
-
-      return Gsl_Null;
-   end Runtime_Set;
-
-   ---------------------------------------------------------------------------
-   --
-   function Runtime_If
-     (Parameter : Gsl_List)
-      return Gsl_Type is
-
-      Cond         : Gsl_Type;
-      True_Branch  : Gsl_Type;
-      False_Branch : Gsl_Type;
-      Param        : Gsl_List;
-   begin
-      Default_Logger.Debug ("Interpreter: Runtime_If called.", "Giant.Gsl");
-      if Get_List_Size (Parameter) /= 3 then
-         Ada.Exceptions.Raise_Exception
-           (Gsl_Runtime_Error'Identity, "Script 'if' requires " &
-             "3 Parameters");
-      end if;
-      Cond := Get_Value_At (Parameter, 1);
-      True_Branch := Get_Value_At (Parameter, 2);
-      False_Branch := Get_Value_At (Parameter, 3);
-
-      if Cond'Tag = Gsl_Script_Reference_Record'Tag then
-         return Gsl_Null;
-      elsif Cond'Tag = Gsl_Boolean_Record'Tag then
-         if Get_Value (Gsl_Boolean (Cond)) = true then
-            if True_Branch'Tag = Gsl_Script_Reference_Record'Tag then
-
-               -- Script_Activation to Execution Stack
-               Execution_Stacks.Push (Current_Interpreter.Execution_Stack,
-                 Giant.Gsl.Compilers.Get_Execution_Stack
-                   (Current_Interpreter.Gsl_Compiler,
-                    Giant.Gsl.Syntax_Tree.Create_Node (Script_Activation, 
-                    Null_Node, Null_Node))); 
-
-               Result_Stacks.Push
-                 (Current_Interpreter.Result_Stack, True_Branch);
-               Param := Create_Gsl_List (0);
-               return Gsl_Type (Param);
-            else
-               return True_Branch;
-            end if;
-         else
-            if False_Branch'Tag = Gsl_Script_Reference_Record'Tag then
-
-               -- Script_Activation to Execution Stack
-               Execution_Stacks.Push (Current_Interpreter.Execution_Stack,
-                 Giant.Gsl.Compilers.Get_Execution_Stack
-                   (Current_Interpreter.Gsl_Compiler,
-                    Giant.Gsl.Syntax_Tree.Create_Node (Script_Activation, 
-                    Null_Node, Null_Node))); 
-
-               Result_Stacks.Push
-                 (Current_Interpreter.Result_Stack, True_Branch);
-               Param := Create_Gsl_List (0);
-               return Gsl_Type (Param);
-            else
-               return False_Branch;
-            end if;
-         end if;
-      else
-         Ada.Exceptions.Raise_Exception
-           (Gsl_Runtime_Error'Identity, "Gsl_Script_Reference or " &
-             "Gsl_Boolean expected.");
-      end if;
-   end Runtime_If;
-
-   ---------------------------------------------------------------------------
-   --
-   function Runtime_Loop
-     (Parameter : Gsl_List)
-      return Gsl_Type is
-   begin
-      Default_Logger.Debug ("Interpreter: Runtime_Loop called.", "Giant.Gsl");
-      return Gsl_Null;
-   end Runtime_Loop;
-
-   ---------------------------------------------------------------------------
-   --
-   function Runtime_Error
-     (Parameter : Gsl_List)
-      return Gsl_Type is
-   begin
-      Ada.Exceptions.Raise_Exception
-        (Gsl_Runtime_Error'Identity, "Runtime Error.");
-      return Gsl_Null;
-   end Runtime_Error;
 
 end Giant.Gsl.Interpreters;

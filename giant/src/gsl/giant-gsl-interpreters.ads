@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/06/22 22:57:18 $
+-- $Date: 2003/06/29 18:14:45 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -40,29 +40,72 @@ package Giant.Gsl.Interpreters is
 
    type Interpreter is access all Interpreter_Record'Class;
 
-   Current_Interpreter : Interpreter;
-
+   --------------------------------------------------------------------------
+   --
    function Create_Interpreter return Interpreter;
 
+   ---------------------------------------------------------------------------
+   --
+   function Get_Current_Interpreter return Interpreter;
+
+   ---------------------------------------------------------------------------
+   --
+   function Get_Current_Execution_Stack return Execution_Stacks.Stack;
+
+   ---------------------------------------------------------------------------
+   --
+   function Get_Current_Result_Stack return Result_Stacks.Stack;
+  
+   ---------------------------------------------------------------------------
+   --
+   function Get_Current_Compiler return Giant.Gsl.Compilers.Compiler;
+
+   ---------------------------------------------------------------------------
+   --
    procedure Execute_Script
      (Individual : Interpreter;
       Name       : String);
 
+   ---------------------------------------------------------------------------
+   --
    procedure Step
      (Individual  : access Interpreter_Record;
       Next_Action : out    Giant.Evolutions.Evolution_Action);
 
+   ---------------------------------------------------------------------------
+   --
    procedure Finish
      (Individual : access Interpreter_Record;
       Canceled   : in     Boolean); 
 
+   ---------------------------------------------------------------------------
+   --
    procedure Register_Runtime
      (Runtime    : Runtime_Function;
       Name       : String);
 
    procedure Log_Result_Stack;
 
+   ---------------------------------------------------------------------------
+   --
+   procedure Create_Var
+     (Name            : String);
+
+   ---------------------------------------------------------------------------
+   --
+   function Get_Var
+     (Name            : String)
+      return Gsl_Type;
+
+   ---------------------------------------------------------------------------
+   --
+   procedure Set_Var
+     (Name            : String;
+      Value           : Gsl_Type);
+
 private 
+
+   Current_Interpreter : Interpreter;
 
    procedure Script_Activation_Cmd;
    procedure Script_Exec_Cmd;
@@ -73,31 +116,6 @@ private
    
    procedure Destroy_Activation_Record
      (AR : Activation_Record);
-
-   procedure Create_Var
-     (Name            : String);
-
-   function Get_Var
-     (Name            : String)
-      return Gsl_Type;
-
-   procedure Set_Var
-     (Name            : String;
-      Value           : Gsl_Type);
-
-   ---------------------------------------------------------------------------
-   --
-   function Runtime_Set
-     (Parameter : Gsl_List)
-      return Gsl_Type; 
-
-   function Runtime_If
-     (Parameter : Gsl_List)
-      return Gsl_Type;
-
-   function Runtime_Loop
-     (Parameter : Gsl_List)
-      return Gsl_Type;
 
    ---------------------------------------------------------------------------
    -- the GSL interpreter, inherits Iterative_Evolution 
