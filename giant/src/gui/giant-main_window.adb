@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.54 $
---  $Author: squig $
---  $Date: 2003/08/15 16:37:18 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.55 $
+--  $Author: schulzgt $
+--  $Date: 2003/08/16 13:59:22 $
 --
 
 with Ada.Exceptions;
@@ -675,7 +675,7 @@ package body Giant.Main_Window is
       --  scripts menu
       Menu := New_Sub_Menu (Menu_Bar, -"Scripts");
       Giant.Menu_Factory.Generate
-        (Labels    => Config_Settings.Get_Setting_As_String ("Scripts.Main"),
+        (Labels    => Config_Settings.Get_Setting_As_String ("GSL.No_Param"),
          Separator => File_Management.Path_Separator,
          Menu      => Menu,
          Callback  => On_Script'Access,
