@@ -18,9 +18,12 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.9 $
 --  $Author: koppor $
---  $Date: 2003/06/24 18:52:31 $
+--  $Date: 2003/06/25 16:39:09 $
+
+with Untagged_Ptr_Ops;
+with Ada.Unchecked_Deallocation;
 
 package body Giant.Graph_Lib.Selections is
 
@@ -30,9 +33,13 @@ package body Giant.Graph_Lib.Selections is
       Right : in Selection)
       return Boolean
    is
+
+      package Compare is new Untagged_Ptr_Ops
+        (T     => Selection_Record,
+         T_Ptr => Selection);
+
    begin
-      --  TBD
-      return False;
+      return Compare.Less (Left, Right);
    end "<";
 
    ---------------------------------------------------------------------------
@@ -127,9 +134,15 @@ package body Giant.Graph_Lib.Selections is
    procedure Destroy
      (Selection_To_Destroy : in out Selection)
    is
+
+      procedure Free_Selection is new Ada.Unchecked_Deallocation
+        (Selection_Record, Selection);
+
    begin
-      --  TBD: Destroy_Deep
-      Selection_To_Destroy := null;
+      Edge_Id_Sets.Destroy (Selection_To_Destroy.Edges);
+      Node_Id_Sets.Destroy (Selection_To_Destroy.Nodes);
+
+      Free_Selection (Selection_To_Destroy);
    end Destroy;
 
    ---------------------------------------------------------------------------
@@ -259,22 +272,27 @@ package body Giant.Graph_Lib.Selections is
 
    ----------------------------------------------------------------------------
    procedure Selection_Read
-     (Stream            : in      Bauhaus_Io.In_Stream_Type;
-      Selection_To_Read :     out Selection)
+     (Stream : in      Bauhaus_Io.In_Stream_Type;
+      Sel    :     out Selection)
    is
+      Len    : Natural;
+
    begin
-      --  TBD
-      Selection_To_Read := new Selection_Record (Name_Length => 1);
+      Bauhaus_Io.Read_Natural (Stream, Len);
+      Sel := new Selection_Record (Name_Length => Len);
+      Bauhaus_Io.Read_String (Stream, Sel.Name);
+      --  Bauhaus_Io.Read_Natural (Stream, Len);
+      --  Bauhaus_Io.Read_String (
    end Selection_Read;
 
    ----------------------------------------------------------------------------
    procedure Selection_Write
-     (Stream             : in Bauhaus_Io.Out_Stream_Type;
-      Selection_To_Write : in Selection)
+     (Stream : in Bauhaus_Io.Out_Stream_Type;
+      Sel    : in Selection)
    is
    begin
-      --  TBD
-      null;
+      Bauhaus_Io.Write_Natural (Stream, Sel.Name'Length);
+      Bauhaus_Io.Write_String  (Stream, Sel.Name);
    end Selection_Write;
 
    ----------------------------------------------------------------------------
