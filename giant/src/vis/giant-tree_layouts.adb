@@ -20,15 +20,17 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.9 $
 --  $Author: koppor $
---  $Date: 2003/07/07 23:41:04 $
+--  $Date: 2003/07/08 10:16:20 $
 --
 ------------------------------------------------------------------------------
 --  Variables are named according to the paper
 --    http://citeseer.nj.nec.com/buchheim02improving.html
 --    Revised version at http://www.zaik.uni-koeln.de/~paper/preprints.html
 --      ?show=zaik2002-431&preprint_session=877c83a63d7134d8123dd3e6dd0ab004
+
+with Ada.Unchecked_Deallocation;
 
 with Giant.Matrix_Layouts;
 
@@ -81,26 +83,68 @@ package body Giant.Tree_Layouts is
       Canceled : in     Boolean)
    is
 
-      -----------------------------------------------------------------------
-      procedure Remove_Node_Layout_Data is
+      ----------------------------------------------------------------------
+      --  Cleans up stuff allocated in Init_Calculation_Start
+      procedure Clean_Everything_Up
+      is
+
+         ---------------------------------------------------------------------
+         procedure Remove_Node_Layout_Data is
+
+            -----------------------------------------------------------------
+            procedure Free_Node_Layout_Data is new Ada.Unchecked_Deallocation
+              (Node_Layout_Data_Record, Node_Layout_Data);
+
+         begin
+            --  TBD: recusively process Tree_Root and remove content
+            --  out of the memory
+            null;
+         end Remove_Node_Layout_Data;
+
       begin
-         --  TBD: recusively process Tree_Root and remove content
-         --  out of the memory
-         null;
-      end Remove_Node_Layout_Data;
+         Graph_Lib.Node_Id_Sets.Destroy (Layout.Nodes_To_Layout);
+
+         Remove_Node_Layout_Data;
+
+         Node_Layout_Data_Lists.Destroy (Layout.Queue);
+
+         Level_Mappings.Destroy (Layout.Level_Heights);
+
+         FirstWalk_Part_One_Stacks.Destroy (Layout.FirstWalk_Part_One_Stack);
+         FirstWalk_Part_Two_Stacks.Destroy (Layout.FirstWalk_Part_Two_Stack);
+
+         SecondWalk_Stacks.Destroy (Layout.SecondWalk_Stack);
+      end Clean_Everything_Up;
 
    begin
+      Graph_Widgets.Release_Lock (Layout.Widget, Layout.Widget_Lock);
+
       if Canceled then
          case Layout.State is
-            when others =>
-               --  TBD
+
+            when Init_Start =>
+               -- It was cancelled before Evolutions.Synchronized_Step
+               -- Therefore no memory was allocated --> nothing has to be freed
                null;
+
+            when Init_Run_Part_One | Init_Run_Part_Two=>
+               Clean_Everything_Up;
+
+            when
+              FirstWalk_Start |
+              FirstWalk_Run_Part_One | FirstWalk_Run_Part_Two =>
+               Clean_Everything_Up;
+
+            --  the layout is nearly finished, the remaining nodes could
+            --    be layouted
+            when
+              SecondWalk_Start | SecondWalk_Run | Matrix =>
+               Clean_Everything_Up;
+
          end case;
       else
-         Remove_Node_Layout_Data;
+         Clean_Everything_Up;
       end if;
-
-      Graph_Widgets.Release_Lock (Layout.Widget, Layout.Widget_Lock);
    end Finish;
 
    ---------------------------------------------------------------------------
