@@ -1,8 +1,10 @@
 debug.log
+dump_iml_data
 graphlib_test
 evolution
 framework_test
 graphlib_test
+graph_widget
 layout_factory_test
 martin_test
 matrix_layouts_test
