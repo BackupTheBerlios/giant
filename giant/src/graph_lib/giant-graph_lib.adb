@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.23 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.24 $
 --  $Author: koppor $
---  $Date: 2003/06/25 16:40:30 $
+--  $Date: 2003/06/25 18:52:42 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -40,11 +40,9 @@ with IML_Roots;
 with Lists;
 
 --  from Giant
-with Giant.Constant_Ptr_Hashs;
 with Giant.Ptr_Normal_Hashs;
 with Giant.Logger;
 
-pragma Elaborate_All (Giant.Constant_Ptr_Hashs);
 pragma Elaborate_All (Giant.Ptr_Normal_Hashs);
 pragma Elaborate_All (Tagged_Ptr_Hash);
 
@@ -63,18 +61,6 @@ package body Giant.Graph_Lib is
    --------------------------------------
    --  Hashing for Node_Attribute_Ids  --
    --------------------------------------
-
-   ---------------------------------------------------------------------------
-   --  Hashtable-size
-   --    Default of ptr_hashs: 17
-   Node_Attribute_Id_Hash_Range_Size : constant := 29;
-
-   ---------------------------------------------------------------------------
-   package Node_Attribute_Id_Hash_Functions is
-      new Constant_Ptr_Hashs
-     (T          => IML_Reflection.Field'Class,
-      T_Ptr      => Node_Attribute_Id,
-      Range_Size => Node_Attribute_Id_Hash_Range_Size);
 
    ---------------------------------------------------------------------------
    package Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings is
