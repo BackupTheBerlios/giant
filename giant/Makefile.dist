@@ -12,7 +12,7 @@ IMLLIB_PATH     = ../iml_browser_030825
 XMLADA_PATH     = ../xmlada-0.7.1
 
 CFLAGS          = -g -O2 -finline-functions
-GNAT_FLAGS      = -j2 -gnatX -gnatn
+GNAT_FLAGS      = -gnatX -gnatn
 
 AUNIT_INCLUDES  = -I$(AUNIT_PATH)/aunit/framework -I$(AUNIT_PATH)/aunit/text_reporter
 IMLLIB_INCLUDES = -I$(IMLLIB_PATH)/IML.generated -I$(IMLLIB_PATH)/IML.src -I$(IMLLIB_PATH)/Reuse.src -I$(IMLLIB_PATH)/usr.local.reuse
@@ -28,6 +28,12 @@ ALL_LFLAGS      = $(LFLAGS) $(TARGET_LFLAGS) $(LIBS)
 
 MAIN = src/giant-main.adb
 EXEC = giant-$(shell uname -s)
+
+# dynamic linking
+ifeq ($(shell uname -s),SunOS)
+  IMLLIB_INCLUDES += -I$(IMLLIB_PATH)/Reuse.obj -I$(IMLLIB_PATH)/IML.obj
+  IMLLIB_LIBS = -L$(IMLLIB_PATH)/lib -lReuse -lIML
+endif
 
 ifeq ($(shell test -r Makefile.local && echo "true"),true)
   include Makefile.local

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.93 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.94 $
 --  $Author: squig $
---  $Date: 2003/09/12 14:12:28 $
+--  $Date: 2003/09/12 15:06:44 $
 --
 
 with Ada.Strings.Unbounded;
@@ -1164,22 +1164,12 @@ package body Giant.Controller is
      (Name : in String)
    is
       Subgraph : Graph_Lib.Subgraphs.Subgraph;
-      Individual : Basic_Evolutions.Basic_Evolution_Access;
    begin
-      --  progress dialog
-      Individual := Basic_Evolutions.Create
-        (Gui_Manager.Create_Progress_Dialog
-         (-"Creating Subgraph", "Creating Structure"));
-      Basic_Evolutions.Set_Cancel_Enabled (Individual, False);
-
       Subgraph := Graph_Lib.Subgraphs.Create (Name);
       Graph_Lib.Subgraphs.Add_Node_Set (Subgraph, Graph_Lib.Get_All_Nodes);
       Graph_Lib.Subgraphs.Add_Edge_Set (Subgraph, Graph_Lib.Get_All_Edges);
 
       Add_Subgraph (Subgraph);
-
-      --  close progress dialog
-      Basic_Evolutions.Destroy (Individual);
    end Create_Subgraph;
 
    procedure Create_Subgraph_From_Selection
