@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-node_attribute_filters.ads,v $, $Revision: 1.4 $
+--  $RCSfile: giant-graph_lib-node_attribute_filters.ads,v $, $Revision: 1.5 $
 --  $Author: koppor $
---  $Date: 2003/06/13 13:19:29 $
+--  $Date: 2003/06/24 19:24:25 $
 --
 ------------------------------------------------------------------------------
 --
@@ -89,8 +89,14 @@ package Giant.Graph_Lib.Node_Attribute_Filters is
      (Iter : in out Filtered_Iterator);
 
 private
+   type Filter_Record
+     (Number_Of_Attributes : Positive) is
+   record
+      Attributes : Node_Attribute_Id_Array (1 .. Number_Of_Attributes);
+   end record;
 
-   type Filter is null record;
+   type Filter is access Filter_Record;
+
    type Filtered_Iterator is null record;
 
    --  taken from mail from keulsn, 20030426
