@@ -17,7 +17,7 @@
   <associated_edge_classes>
  
     <edge_class start_node_class="O_Node" attribute_name="*" />	
-    <edge_class start_node_class="*" attribute_name="SLoc" />	    
+    <edge_class start_node_class="*" attribute_name="Its_Type" />	    
     <edge_class start_node_class="T_Node" attribute_name="Parent" />	
 
   </associated_edge_classes>

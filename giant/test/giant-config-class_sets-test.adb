@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-config-class_sets-test.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-config-class_sets-test.adb,v $, $Revision: 1.2 $
 --  $Author: schwiemn $
---  $Date: 2003/07/10 21:14:12 $
+--  $Date: 2003/07/10 21:57:33 $
 --
 with Ada.Strings.Unbounded;
 
@@ -111,7 +111,7 @@ package body Giant.Config.Class_Sets.Test is
 
          A_Edge_Class := 
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
-             (Graph_Lib.Convert_Node_Class_Name_To_Id ("IML_Root"),
+             (Graph_Lib.Convert_Node_Class_Name_To_Id ("HPGNode"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id              
                ("HPGNode", "Parent"));
          Assert 
@@ -136,7 +136,7 @@ package body Giant.Config.Class_Sets.Test is
            
         A_Edge_Class := 
            GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
-             (Graph_Lib.Convert_Node_Class_Name_To_Id ("IML_Root"),
+             (Graph_Lib.Convert_Node_Class_Name_To_Id ("HPGNode"),
               Graph_Lib.Convert_Node_Attribute_Name_To_Id              
                ("HPGNode", "Parent"));
          Assert 
@@ -146,20 +146,68 @@ package body Giant.Config.Class_Sets.Test is
          
          -- class_set_4
           A_Node_Class := 
-           Graph_Lib.Convert_Node_Class_Name_To_Id ("SymNode");           
+           Graph_Lib.Convert_Node_Class_Name_To_Id ("T_Node");           
          Assert 
            (Config.Class_Sets.Is_Node_Class_Element_Of_Class_Set 
-             (Set_3, A_Node_Class),
-           "Test class_set_3 holds node class ""SymNode""");
+             (Set_4, A_Node_Class),
+           "Test class_set_4 holds node class ""T_Node""");
            
          A_Node_Class := 
-           Graph_Lib.Convert_Node_Class_Name_To_Id ("OC_Entity");        
+           Graph_Lib.Convert_Node_Class_Name_To_Id ("O_Node");        
          Assert 
            (Config.Class_Sets.Is_Node_Class_Element_Of_Class_Set 
-             (Set_3, A_Node_Class),
-           "Test class_set_3 holds node class ""OC_Entity""");
+             (Set_4, A_Node_Class),
+           "Test class_set_4 holds node class ""O_Node""");
+           
+         A_Edge_Class := 
+           GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+             (Graph_Lib.Convert_Node_Class_Name_To_Id ("T_Node"),
+              Graph_Lib.Convert_Node_Attribute_Name_To_Id              
+               ("T_Node", "Parent"));
+         Assert 
+           (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set 
+             (Set_4, A_Edge_Class),
+           "Test class_set_4 holds edge class ""T_Node.Parent"""); 
+           
+         A_Edge_Class := 
+           GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+             (Graph_Lib.Convert_Node_Class_Name_To_Id ("O_Node"),
+              Graph_Lib.Convert_Node_Attribute_Name_To_Id              
+               ("O_Node", "Parent"));
+         Assert 
+           (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set 
+             (Set_4, A_Edge_Class),
+           "Test class_set_4 holds edge class ""O_Node.Parent"""); 
+           
+         A_Edge_Class := 
+           GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+             (Graph_Lib.Convert_Node_Class_Name_To_Id ("OC_Component"),
+              Graph_Lib.Convert_Node_Attribute_Name_To_Id              
+               ("OC_Component", "Its_Type"));
+         Assert 
+           (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set 
+             (Set_4, A_Edge_Class),
+           "Test class_set_4 holds edge class ""OC_Component.Its_Type"""); 
+           
+         A_Edge_Class := 
+           GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+             (Graph_Lib.Convert_Node_Class_Name_To_Id ("OC_Enum"),
+              Graph_Lib.Convert_Node_Attribute_Name_To_Id              
+               ("OC_Enum", "Its_Type"));
+         Assert 
+           (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set 
+             (Set_4, A_Edge_Class),
+           "Test class_set_4 holds edge class ""OC_Enum.Its_Type"""); 
          
-                          
+         A_Edge_Class := 
+           GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+             (Graph_Lib.Convert_Node_Class_Name_To_Id ("OC_Enum"),
+              Graph_Lib.Convert_Node_Attribute_Name_To_Id              
+               ("OC_Enum", "Parent"));
+         Assert 
+           (not Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set 
+             (Set_4, A_Edge_Class),
+           "Test class_set_4 not holds edge class ""OC_Enum.Parent""");                  
                      
          -- deallocate                    
          Config.Class_Sets.Clear_Class_Sets;         
@@ -167,19 +215,202 @@ package body Giant.Config.Class_Sets.Test is
         
    end Test_Init_Class_Sets;
      
+   ---------------------------------------------------------------------------
+   procedure Test_Meta_Class_Set_Build
+     (R : in out AUnit.Test_Cases.Test_Case'Class) is
+     
+      All_Class_Sets_List : String_Lists.List; 
+      
+      S_Set_1 : Config.Class_Sets.Class_Set_Access;            
+      S_Set_2 : Config.Class_Sets.Class_Set_Access; 
+      S_Set_3 : Config.Class_Sets.Class_Set_Access; 
+      S_Set_4 : Config.Class_Sets.Class_Set_Access;   
+      
+      Meta_1  : Config.Class_Sets.Meta_Class_Set_Access;
+      Meta_E1 : Config.Class_Sets.Meta_Class_Set_Access;
+      Meta_E2 : Config.Class_Sets.Meta_Class_Set_Access;
+      
+      Empty_Class_Set_List : Class_Sets_Lists.List;
+      
+      A_Node_Class : Giant.Graph_Lib.Node_Class_id; 
+      A_Edge_Class : Giant.Graph_Lib.Edge_Class_Id;              
+   begin
+   
+      Config.Class_Sets.Initialize_Class_Sets 
+        ("resources/class_sets/test_class_sets_1/");
+                                
+      -- Test single class set status
+      S_Set_1 := Config.Class_Sets.Get_Class_Set_Access ("class_set_1");
+      S_Set_2 := Config.Class_Sets.Get_Class_Set_Access ("class_set_2");         
+      S_Set_3 := Config.Class_Sets.Get_Class_Set_Access ("class_set_3");
+      S_Set_4 := Config.Class_Sets.Get_Class_Set_Access ("class_set_4");  
 
+      Empty_Class_Set_List := Class_Sets_Lists.Create;
+      
+      for i in 1 .. 50_000_000 loop
+         
+         Meta_1 := Config.Class_Sets.Build 
+           (Elements => (S_Set_1, S_Set_2, S_Set_3, S_Set_4));
+           
+         Meta_E1 := Config.Class_Sets.Build 
+           (Elements => Class_Set_Array'(1 .. 1 => S_Set_1));  
+
+         Meta_E2 :=  Config.Class_Sets.Build (Empty_Class_Set_List);
+         
+        
+         -- Test empty meta class sets
+         -----------------------------
+          
+         Assert 
+           (Config.Class_Sets.Is_Empty (Meta_E1),
+            "Test whether Meta_E1 empty");
+            
+         Assert 
+           (Config.Class_Sets.Is_Empty (Meta_E2),
+            "Test whether Meta_E2 empty");         
+                  
+         -- Test Content of Meta_1
+         --------------------------                                                   
+         A_Node_Class := 
+           Graph_Lib.Convert_Node_Class_Name_To_Id ("IML_Root");           
+         Assert 
+           (Config.Class_Sets.Is_Node_Class_Element_Of_Class_Set 
+             (Meta_1, A_Node_Class),
+           "Test Meta_1 holds node class ""IML_Root""");
+           
+         A_Node_Class := 
+           Graph_Lib.Convert_Node_Class_Name_To_Id ("HPGNode");        
+         Assert 
+           (Config.Class_Sets.Is_Node_Class_Element_Of_Class_Set 
+             (Meta_1, A_Node_Class),
+           "Test Meta_1 holds node class ""HPGNode""");
+                         
+         A_Edge_Class := 
+           GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+             (Graph_Lib.Convert_Node_Class_Name_To_Id ("IML_Root"),
+              Graph_Lib.Convert_Node_Attribute_Name_To_Id              
+               ("IML_Root", "Parent"));
+         Assert 
+           (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set 
+             (Meta_1, A_Edge_Class),
+           "Test Meta_1 holds edge class ""IML_Root.Parent"""); 
+
+         A_Edge_Class := 
+           GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+             (Graph_Lib.Convert_Node_Class_Name_To_Id ("HPGNode"),
+              Graph_Lib.Convert_Node_Attribute_Name_To_Id              
+               ("HPGNode", "Parent"));
+         Assert 
+           (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set 
+             (Meta_1, A_Edge_Class),
+           "Test Meta_1 holds edge class ""HPGNode.Parent""");  
+                     
+         A_Node_Class := 
+           Graph_Lib.Convert_Node_Class_Name_To_Id ("SymNode");           
+         Assert 
+           (Config.Class_Sets.Is_Node_Class_Element_Of_Class_Set 
+             (Meta_1, A_Node_Class),
+           "Test Meta_1 holds node class ""SymNode""");
+           
+         A_Node_Class := 
+           Graph_Lib.Convert_Node_Class_Name_To_Id ("OC_Entity");        
+         Assert 
+           (Config.Class_Sets.Is_Node_Class_Element_Of_Class_Set 
+             (Meta_1, A_Node_Class),
+           "Test Meta_1 holds node class ""OC_Entity""");
+                    
+         A_Node_Class := 
+           Graph_Lib.Convert_Node_Class_Name_To_Id ("T_Node");           
+         Assert 
+           (Config.Class_Sets.Is_Node_Class_Element_Of_Class_Set 
+             (Meta_1, A_Node_Class),
+           "Test Meta_1 holds node class ""T_Node""");
+           
+         A_Node_Class := 
+           Graph_Lib.Convert_Node_Class_Name_To_Id ("O_Node");        
+         Assert 
+           (Config.Class_Sets.Is_Node_Class_Element_Of_Class_Set 
+             (Meta_1, A_Node_Class),
+           "Test Meta_1 holds node class ""O_Node""");
+           
+         A_Edge_Class := 
+           GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+             (Graph_Lib.Convert_Node_Class_Name_To_Id ("T_Node"),
+              Graph_Lib.Convert_Node_Attribute_Name_To_Id              
+               ("T_Node", "Parent"));
+         Assert 
+           (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set 
+             (Meta_1, A_Edge_Class),
+           "Test Meta_1 holds edge class ""T_Node.Parent"""); 
+           
+         A_Edge_Class := 
+           GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+             (Graph_Lib.Convert_Node_Class_Name_To_Id ("O_Node"),
+              Graph_Lib.Convert_Node_Attribute_Name_To_Id              
+               ("O_Node", "Parent"));
+         Assert 
+           (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set 
+             (Meta_1, A_Edge_Class),
+           "Test Meta_1 holds edge class ""O_Node.Parent"""); 
+           
+         A_Edge_Class := 
+           GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+             (Graph_Lib.Convert_Node_Class_Name_To_Id ("OC_Component"),
+              Graph_Lib.Convert_Node_Attribute_Name_To_Id              
+               ("OC_Component", "Its_Type"));
+         Assert 
+           (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set 
+             (Meta_1, A_Edge_Class),
+           "Test Meta_1 holds edge class ""OC_Component.Its_Type"""); 
+           
+         A_Edge_Class := 
+           GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+             (Graph_Lib.Convert_Node_Class_Name_To_Id ("OC_Enum"),
+              Graph_Lib.Convert_Node_Attribute_Name_To_Id              
+               ("OC_Enum", "Its_Type"));
+         Assert 
+           (Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set 
+             (Meta_1, A_Edge_Class),
+           "Test Meta_1 holds edge class ""OC_Enum.Its_Type"""); 
+         
+         A_Edge_Class := 
+           GIANT.Graph_Lib.Convert_Node_Class_Node_Attribute_To_Edge_Class_Id
+             (Graph_Lib.Convert_Node_Class_Name_To_Id ("OC_Enum"),
+              Graph_Lib.Convert_Node_Attribute_Name_To_Id              
+               ("OC_Enum", "Parent"));
+         Assert 
+           (not Config.Class_Sets.Is_Edge_Class_Element_Of_Class_Set 
+             (Meta_1, A_Edge_Class),
+           "Test Meta_1 not holds edge class ""OC_Enum.Parent"""); 
+           
+         A_Node_Class := 
+           Graph_Lib.Convert_Node_Class_Name_To_Id ("OC_Record");        
+         Assert 
+           (not Config.Class_Sets.Is_Node_Class_Element_Of_Class_Set 
+             (Meta_1, A_Node_Class),
+           "Test Meta_1 not holds node class ""OC_Record""");                 
+                     
+         Config.Class_Sets.Destroy (Meta_1);                      
+         Config.Class_Sets.Destroy (Meta_E1);   
+         Config.Class_Sets.Destroy (Meta_E2);   
+      end loop;        
+
+      Config.Class_Sets.Clear_Class_Sets; 
+      Class_Sets_Lists.Destroy (Empty_Class_Set_List);  
+   end Test_Meta_Class_Set_Build;
 
    ---------------------------------------------------------------------------
    function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is
    begin
-      return new String'("Config.Vis_Styles.Test - Basic Tests");
+      return new String'("Config.Class_Sets.Test - Basic Tests");
    end Name;
 
    procedure Register_Tests (T : in out Test_Case) is
    begin
       Register_Routine 
         (T, Test_Init_Class_Sets'Access, "Test_Init_Class_Sets");
-     
+      Register_Routine 
+        (T, Test_Meta_Class_Set_Build'Access, "Test_Meta_Class_Set_Build");              
    end Register_Tests;
 
    procedure Set_Up (T : in out Test_Case) is
