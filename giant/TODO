@@ -5,3 +5,5 @@ RELEASE
  * Select All
 
  * Select Nothing
+ 
+ * Catch exceptions when project is loaded via command line

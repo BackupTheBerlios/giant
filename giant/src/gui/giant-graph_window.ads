@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.23 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.24 $
 --  $Author: squig $
---  $Date: 2003/08/05 20:56:19 $
+--  $Date: 2003/08/05 21:12:44 $
 --
 ------------------------------------------------------------------------------
 --
@@ -98,6 +98,9 @@ package Giant.Graph_Window is
 
    procedure Initialize
      (Window : access Graph_Window_Record'Class);
+
+   procedure Post_Initialize
+     (Window : access Graph_Window_Record);
 
    function Get_Vis_Window
      (Window : access Graph_Window_Record)

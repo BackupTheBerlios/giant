@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-about_dialog.adb,v $, $Revision: 1.5 $
---  $Author: keulsn $
---  $Date: 2003/08/01 13:31:18 $
+--  $RCSfile: giant-about_dialog.adb,v $, $Revision: 1.6 $
+--  $Author: squig $
+--  $Date: 2003/08/05 21:12:44 $
 --
 
 with Ada.IO_Exceptions;
@@ -141,12 +141,12 @@ package body Giant.About_Dialog is
       Gtk.Text.Set_Editable (Text_Area, False);
       Gtk.Text.Set_Line_Wrap (Text_Area, False);
       Gtk.Text.Set_Word_Wrap (Text_Area, False);
-      Append_Author (Text_Area, "Steffen Keul (Visualisation and More)");
+      Append_Author (Text_Area, "Martin Schwienbacher (Config, Projects)");
+      Append_Author (Text_Area, "Gerrit Schulz (Gsl)");
+      Append_Author (Text_Area, "Steffen Pingel (Gui, Controller)");
       Append_Author (Text_Area, "Philipp Häuser (Handbook)");
       Append_Author (Text_Area, "Oliver Kopp (Graph_Lib, Layouts)");
-      Append_Author (Text_Area, "Steffen Pingel (Gui, Controller)");
-      Append_Author (Text_Area, "Gerrit Schulz (Gsl)");
-      Append_Author (Text_Area, "Martin Schwienbacher (Config, Projects)");
+      Append_Author (Text_Area, "Steffen Keul (Visualisation and More)");
 
       Gtk.Scrolled_Window.Gtk_New (Scrolled_Window);
       Gtk.Scrolled_Window.Set_Policy (Scrolled_Window, Policy_Automatic,

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.45 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.46 $
 --  $Author: squig $
---  $Date: 2003/08/05 20:56:19 $
+--  $Date: 2003/08/05 21:12:44 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -897,6 +897,14 @@ package body Giant.Graph_Window is
         (On_Can_Close_Project'Access, Window);
       Main_Window.Connect_Close_Project (On_Close_Project'Access, Window);
    end;
+
+   procedure Post_Initialize
+     (Window : access Graph_Window_Record)
+   is
+   begin
+      Update_Vis_Style (Window);
+      Update_Zoom_Level (Window);
+   end Post_Initialize;
 
    ---------------------------------------------------------------------------
    --  Public Methods

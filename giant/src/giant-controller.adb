@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.78 $
---  $Author: schulzgt $
---  $Date: 2003/08/04 16:10:00 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.79 $
+--  $Author: squig $
+--  $Date: 2003/08/05 21:12:43 $
 --
 
 with Ada.Strings.Unbounded;
@@ -1235,12 +1235,8 @@ package body Giant.Controller is
       Style : Config.Vis_Styles.Visualisation_Style_Access
         := Config.Vis_Styles.Initialize_Vis_Style_By_Name (Name);
    begin
-      --  FIX: 'if' necessary?
-      if Vis_Windows.Get_Vis_Style (Window) = Name then
-         Logger.Error ("tried to set vis style " & Name & " in window" &
-                       Window_Name & ", but style is already active. Ignored");
-      else
-         Logger.Debug ("setting vis style for " & Window_Name & ": "
+      if Vis_Windows.Get_Vis_Style (Window) /= Name then
+         Logger.Debug ("Setting vis style for " & Window_Name & ": "
                        & Name);
          Vis_Windows.Set_Vis_Style (Window, Name);
          Graph_Widgets.Set_Vis_Style (Vis_Windows.Get_Graph_Widget (Window),

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.32 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.33 $
 --  $Author: squig $
---  $Date: 2003/07/21 14:02:24 $
+--  $Date: 2003/08/05 21:12:44 $
 --
 
 with Ada.Strings.Unbounded;
@@ -122,6 +122,8 @@ package body Giant.Gui_Manager is
            (Window, Ada.Strings.Unbounded.To_String (Name));
       end loop;
       String_Lists.Destroy (List);
+
+      Graph_Window.Post_Initialize (Window);
    end;
 
    ---------------------------------------------------------------------------
