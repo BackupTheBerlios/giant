@@ -22,25 +22,24 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/29 13:48:29 $
+-- $Date: 2003/07/31 09:14:09 $
 --
 -- This package implements the datatypes used in GSL.
 --
 
 with Text_IO;
 
-with Ada.Strings.Unbounded;
 with Ada.Exceptions;
+with Ada.Real_Time;
 
 with Giant.Controller;
 with Giant.Default_Logger;
 with Giant.Graph_Lib.Subgraphs;
 with Giant.Graph_Lib.Selections;
 
-with Giant.Gsl.Types;
-use  Giant.Gsl.Types;
 with Giant.Gsl.Syntax_Tree;
 with Giant.Gsl.Runtime;
+with Giant.Gsl.Processors;
 
 package body Giant.Gsl.Interpreters is
 
@@ -54,37 +53,46 @@ package body Giant.Gsl.Interpreters is
       Individual := new Interpreter_Record;
       Individual.Main_Activation_Record := null;
       Individual.Current_Activation_Record := null;
-      Individual.Gsl_Compiler := Giant.Gsl.Compilers.Create_Compiler;
+      Individual.Gsl_Compiler := Gsl.Compilers.Create_Compiler;
       return Individual;
    end Create_Interpreter;
 
    -------------------------------------------------------------------------
    -- returns the current interpreter
-   function Get_Current_Interpreter return Interpreter is
+   function Get_Current_Interpreter
+      return Interpreter is
    begin
       return Current_Interpreter;
    end Get_Current_Interpreter;
 
    -------------------------------------------------------------------------
+   -- returns the current activation record
+   function Get_Current_Activation_Record
+      return Activation_Record is
+   begin
+      return Current_Interpreter.Current_Activation_Record;
+   end Get_Current_Activation_Record;
+
+   -------------------------------------------------------------------------
    -- returns the execution stack of the current interpreter
-   function Get_Current_Execution_Stack return Execution_Stacks.Stack is
+   function Get_Execution_Stack return Execution_Stacks.Stack is
    begin
       return Current_Interpreter.Execution_Stack;
-   end Get_Current_Execution_Stack;
+   end Get_Execution_Stack;
 
    -------------------------------------------------------------------------
    -- returns the result stack of the current interpreter
-   function Get_Current_Result_Stack return Result_Stacks.Stack is
+   function Get_Result_Stack return Result_Stacks.Stack is
    begin
       return Current_Interpreter.Result_Stack;
-   end Get_Current_Result_Stack;
+   end Get_Result_Stack;
 
    -------------------------------------------------------------------------
    -- returns the compiler of the current interpreter
-   function Get_Current_Compiler return Giant.Gsl.Compilers.Compiler is
+   function Get_Compiler return Gsl.Compilers.Compiler is
    begin
       return Current_Interpreter.Gsl_Compiler;
-   end Get_Current_Compiler;
+   end Get_Compiler;
 
    ---------------------------------------------------------------------------
    -- returns the context of the current interpreter
@@ -109,6 +117,10 @@ package body Giant.Gsl.Interpreters is
       null;
    end Destroy;
 
+   ------------------------------
+   -- evolution implementation --
+   ------------------------------
+
    ---------------------------------------------------------------------------
    -- initilizes the gsl interpreter for evolution
    procedure Execute_Script
@@ -116,7 +128,7 @@ package body Giant.Gsl.Interpreters is
       Name       : String;
       Context    : String) is
 
-      use Giant.Gsl.Runtime;
+      use Gsl.Runtime;
    begin
       -- set the current interpreter and initilize context and script
       Current_Interpreter := Individual;
@@ -198,6 +210,9 @@ package body Giant.Gsl.Interpreters is
       Register_Runtime (Runtime_Remove_From_Window'Access,
                         "remove_from_window");
 
+      -- set gsl time (used for performance measurement)
+      Individual.Gsl_Time := Ada.Real_Time.Clock;
+
       -- initilze the evolution object, comlexity is 0
       Default_Logger.Debug
         ("Interpreter: Initilize evolution.", "Giant.Gsl.Interpreter");
@@ -206,7 +221,7 @@ package body Giant.Gsl.Interpreters is
       -- handling of exceptions
       exception
          when Syntax_Error : Gsl_Syntax_Error =>
-            Giant.Controller.Show_Error
+            Controller.Show_Error
               (Ada.Exceptions.Exception_Message (Syntax_Error));
    end Execute_Script;
 
@@ -214,375 +229,69 @@ package body Giant.Gsl.Interpreters is
    -- this procedure is called during the evolution
    procedure Step
      (Individual  : access Interpreter_Record;
-      Next_Action : out    Giant.Evolutions.Evolution_Action) is
+      Next_Action : out    Evolutions.Evolution_Action) is
 
-      use Giant.Gsl.Syntax_Tree;
-      use Giant.Controller;
       Cmd      : Syntax_Node;
-      Res1     : Gsl_Type;
-      Res2     : Gsl_Type;
-      Lit      : Gsl_Type;
-      Res_List : Gsl_List;
-      Sub      : Giant.Graph_Lib.Subgraphs.Subgraph;
-      Sel      : Giant.Graph_Lib.Selections.Selection;
+      End_Time : Ada.Real_Time.Time := Ada.Real_Time."+"
+        (Ada.Real_Time.Clock, Ada.Real_Time.Milliseconds (100));
    begin
-      if Execution_Stacks.Is_Empty (Current_Interpreter.Execution_Stack) then
-         Next_Action := Giant.Evolutions.Finish;
-      elsif Interpreter (Individual) /= Current_Interpreter then
-         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
-           "Runtime error: Invalid interpreter.");
-      else
-         Execution_Stacks.Pop (Current_Interpreter.Execution_Stack, Cmd);
+      loop
+        if Execution_Stacks.Is_Empty (Current_Interpreter.Execution_Stack)
+        then
+           Next_Action := Evolutions.Finish;
+        elsif Interpreter (Individual) /= Current_Interpreter then
+           Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
+             "Runtime error: Invalid interpreter.");
+        else
+           -- get a gsl command from the execution stack
+           Execution_Stacks.Pop (Current_Interpreter.Execution_Stack, Cmd);
 
-         -- execute a Gsl command
-         case Get_Node_Type (Cmd) is
-            ------------------------------------------------------------------
-            -- literal ::= boolean_literal | int_literal | string_literal |
-            --             null_literal
-            when Literal =>
-               Lit := Get_Literal (Cmd);
-               if Lit /= Gsl_Null then
-                  Result_Stacks.Push
-                    (Current_Interpreter.Result_Stack, Copy (Lit));
-               else
-                  Result_Stacks.Push
-                    (Current_Interpreter.Result_Stack, Gsl_Null);
-               end if;
+           -- execute the gsl command calling the gsl processor
+           Gsl.Processors.Execute (Cmd);
 
-            ------------------------------------------------------------------
-            -- inspection ::= visible_var | global_var
-            when Visible_Var =>
-               Lit := Get_Literal (Cmd);
-               -- get value from activation record
-               Lit := Get_Var (Get_Ref_Name (Gsl_Var_Reference (Lit)));
-               if Lit /= Gsl_Null then
-                  Result_Stacks.Push
-                    (Current_Interpreter.Result_Stack, Copy (Lit));
-               else
-                  Result_Stacks.Push
-                    (Current_Interpreter.Result_Stack, Gsl_Null);
-               end if;
+           -- advance the evolution
+           Evolutions.Advance_Progress (Individual, 1);
 
-            when Global_Var =>
-               Lit := Get_Literal (Cmd);
-               if Get_Ref_Type (Gsl_Var_Reference (Lit)) = Subgraph then
-                  Result_Stacks.Push (Current_Interpreter.Result_Stack, 
-                    Get_Subgraph (Get_Ref_Name (Gsl_Var_Reference (Lit))));
-               elsif Get_Ref_Type (Gsl_Var_Reference (Lit)) = Selection then
-                  Result_Stacks.Push (Current_Interpreter.Result_Stack, 
-                    Get_Selection (Get_Ref_Name (Gsl_Var_Reference (Lit))));
-               end if;
+           -- destroy the gsl command, free memory
+           Gsl.Syntax_Tree.Destroy_Node (Cmd);
 
-            ------------------------------------------------------------------
-            -- reference ::= visible_ref | var_creation | global_ref
-            when Visible_Ref =>
-               Lit := Copy (Get_Literal (Cmd));
-               -- check wether the referenced variable exists
-               Exists_Var (Get_Ref_Name (Gsl_Var_Reference (Lit)));
-               Result_Stacks.Push (Current_Interpreter.Result_Stack, Lit);
+           -- set the next action for the evolution
+           Next_Action := Evolutions.Run;
 
-            when Var_Creation =>
-               Lit := Copy (Get_Literal (Cmd));
-               Create_Var (Get_Ref_Name (Gsl_Var_Reference (Lit)));
-               Result_Stacks.Push (Current_Interpreter.Result_Stack, Lit);
-
-            when Global_Ref =>
-               Lit := Copy (Get_Literal (Cmd));
-               if Get_Ref_Type (Gsl_Var_Reference (Lit)) = Subgraph then
-                  Result_Stacks.Push (Current_Interpreter.Result_Stack, 
-                    Get_Subgraph_Reference (Gsl_Var_Reference (Lit)));
-               elsif Get_Ref_Type (Gsl_Var_Reference (Lit)) = Selection then
-                  Result_Stacks.Push (Current_Interpreter.Result_Stack, 
-                    Get_Selection_Reference (Gsl_Var_Reference (Lit)));
-               end if;
-
-            ------------------------------------------------------------------
-            -- script_decl ::= {list, expression}
-            when Script_Decl =>
-               Lit := Copy (Get_Literal (Cmd));
-               Set_Activation_Record (Gsl_Script_Reference (Lit),
-                 Current_Interpreter.Current_Activation_Record);
-               Result_Stacks.Push (Current_Interpreter.Result_Stack, Lit);
-
-            ------------------------------------------------------------------
-            -- list ::= (<expression<,expression>*>?)
-            when List =>
-               Res_List := Create_Gsl_List (Get_Size (Cmd));
-               for i in reverse 1 .. Get_List_Size (Res_List) loop
-                  Result_Stacks.Pop (Current_Interpreter.Result_Stack, Res1);
-                  Set_Value_At (Res_List, i, Res1);
-               end loop;
-               Result_Stacks.Push
-                 (Current_Interpreter.Result_Stack, Gsl_Type (Res_List));
-
-            ------------------------------------------------------------------
-            -- sequence ::= [<expression;>*]
-            when Sequence =>
-               if Giant.Gsl.Syntax_Tree.Get_Size (Cmd) = 0 then
-                  Result_Stacks.Push
-                    (Current_Interpreter.Result_Stack, Gsl_Null);
-               else
-                  Result_Stacks.Pop (Current_Interpreter.Result_Stack, Res1);
-                  for i in 1 .. Get_Size (Cmd)-1 loop
-                     Result_Stacks.Pop
-                       (Current_Interpreter.Result_Stack, Res2);
-                     -- free the memory
-                     Destroy_Gsl_Type (Res2);
-                  end loop;
-                  Result_Stacks.Push
-                    (Current_Interpreter.Result_Stack, Res1);
-               end if;
-
-            ------------------------------------------------------------------
-            -- script_activation ::= expression list
-            when Script_Activation => Script_Activation_Cmd;
-
-            when Script_Exec => Script_Exec_Cmd;
-
-            when Script_Finish =>
-               Destroy_Activation_Record
-                 (Current_Interpreter.Current_Activation_Record);
-               Activation_Record_Stacks.Pop
-                 (Current_Interpreter.Activation_Records,
-                  Current_Interpreter.Current_Activation_Record);
-
-            when Script_Loop =>
-               Result_Stacks.Pop (Current_Interpreter.Result_Stack, Res1);
-               if Is_Gsl_Boolean (Res1) then
-                  if Get_Value (Gsl_Boolean (Res1)) then
-                  -- loop again
-                     Execution_Stacks.Push
-                       (Current_Interpreter.Execution_Stack,
-                        Copy_Node (Cmd));
-                  -- push the code of the script
-                     Execution_Stacks.Push
-                       (Current_Interpreter.Execution_Stack,
-                        Giant.Gsl.Compilers.Get_Execution_Stack
-                          (Current_Interpreter.Gsl_Compiler,
-                           Get_Child1 (Cmd)));
-                  else
-                  -- loop finished, restore the activation record
-                     Destroy_Activation_Record
-                       (Current_Interpreter.Current_Activation_Record);
-                     Activation_Record_Stacks.Pop
-                       (Current_Interpreter.Activation_Records,
-                        Current_Interpreter.Current_Activation_Record);
-                  end if;
-               else
-                  Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
-                    "Script 'loop': Gsl_Boolean expected.");
-               end if;
-
-            when Result_Pop =>
-               Result_Stacks.Pop (Current_Interpreter.Result_Stack, Res1);
-               Destroy_Gsl_Type (Res1);
-
-         end case;
-
-         --  advance
-         Evolutions.Advance_Progress (Individual, 1);
-
-         -- destroy the command, free memory
-         Giant.Gsl.Syntax_Tree.Destroy_Node (Cmd);
-         Next_Action := Giant.Evolutions.Run;
-         Log_Result_Stack;
-      end if;
+           -- only for debug 
+           -- Log_Result_Stack;
+        end if;
+        -- exit the processing if script execution is finished or
+        -- if a given time limit is over
+        exit when Evolutions."/=" (Next_Action, Evolutions.Run) or else
+          Ada.Real_Time.">=" (Ada.Real_Time.Clock, End_Time);
+      end loop;
 
       -- handling of exceptions
       exception
          when Syntax_Error : Gsl_Syntax_Error =>
-            Show_Error (Ada.Exceptions.Exception_Message (Syntax_Error));
-            Next_Action := Giant.Evolutions.Finish;
+            Controller.Show_Error
+              (Ada.Exceptions.Exception_Message (Syntax_Error));
+            Next_Action := Evolutions.Finish;
 
          when Runtime_Error : Gsl_Runtime_Error =>
-            Show_Error (Ada.Exceptions.Exception_Message (Runtime_Error));
-            Next_Action := Giant.Evolutions.Finish;
+            Controller.Show_Error
+              (Ada.Exceptions.Exception_Message (Runtime_Error));
+            Next_Action := Evolutions.Finish;
    end Step;
-
-   --------------------------------------------------------------------------
-   --
-   function Get_Subgraph
-     (Name : String)
-      return Gsl_Type is
-
-      use Giant.Controller;
-      use Giant.Graph_Lib.Subgraphs;
-      Sub      : Giant.Graph_Lib.Subgraphs.Subgraph;
-      Res_List : Gsl_List;
-   begin
-      if Exists_Subgraph (Name) then
-         Sub := Get_Subgraph (Name);
-         Res_List := Create_Gsl_List (2);
-         Set_Value_At (Res_List, 1, Gsl_Type
-           (Create_Gsl_Node_Set (Get_All_Nodes (Sub))));
-         Set_Value_At (Res_List, 2, Gsl_Type
-           (Create_Gsl_Edge_Set (Get_All_Edges (Sub))));
-         return Gsl_Type (Res_List);
-      else
-         return Gsl_Null;
-      end if; 
-   end Get_Subgraph;
-
-   --------------------------------------------------------------------------
-   --
-   function Get_Subgraph_Reference
-     (Ref : Gsl_Var_Reference)
-      return Gsl_Type is
-
-      use Giant.Controller;
-   begin
-      if not Exists_Subgraph (Get_Ref_Name (Ref)) then
-         Create_Subgraph (Get_Ref_Name (Ref));
-      end if;
-      return Gsl_Type (Copy (Ref));
-   end Get_Subgraph_Reference;
-
-   ---------------------------------------------------------------------------
-   --
-   function Get_Selection
-     (Name : String)
-      return Gsl_Type is
-
-      use Giant.Controller;
-      use Giant.Graph_Lib.Selections;
-      Sel      : Giant.Graph_Lib.Selections.Selection;
-      Res_List : Gsl_List;
-   begin
-      if Current_Interpreter.Context = "" then
-         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
-           "Runtime error: No context set.");
-      elsif Exists_Selection (To_String (Current_Interpreter.Context), Name)
-      then
-         Sel := Get_Selection (To_String (Current_Interpreter.Context), Name);
-         Res_List := Create_Gsl_List (2);
-         Set_Value_At (Res_List, 1, Gsl_Type
-           (Create_Gsl_Node_Set (Get_All_Nodes (Sel))));
-         Set_Value_At (Res_List, 2, Gsl_Type
-           (Create_Gsl_Edge_Set (Get_All_Edges (Sel))));
-         return Gsl_Type (Res_List);
-      else
-         return Gsl_Null;
-      end if;
-   end Get_Selection;
-
-   --------------------------------------------------------------------------
-   --
-   function Get_Selection_Reference
-     (Ref : Gsl_Var_Reference)
-      return Gsl_Type is
-
-      use Giant.Controller;
-   begin
-      if Current_Interpreter.Context = "" then
-         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
-           "Runtime error: No context set.");
-      elsif not Exists_Selection (To_String (Current_Interpreter.Context), 
-                                  Get_Ref_Name (Ref))
-      then
-         Create_Selection
-           (To_String (Current_Interpreter.Context), Get_Ref_Name (Ref));
-      end if;
-      return Gsl_Type (Copy (Ref));
-   end Get_Selection_Reference;
-
-   --------------------------------------------------------------------------
-   -- step 1 of a Gsl Script execution
-   procedure Script_Activation_Cmd is
-
-      use Giant.Gsl.Compilers;
-      Script : Gsl_Type;
-      Params : Gsl_Type;
-   begin
-      Result_Stacks.Pop (Current_Interpreter.Result_Stack, Params);
-      Result_Stacks.Pop (Current_Interpreter.Result_Stack, Script);
-      if Is_Gsl_Script_Reference (Script) and Is_Gsl_List (Params) then
-         case Get_Script_Type (Gsl_Script_Reference (Script)) is
-            when Giant.Gsl.Types.Gsl_Script =>
-               -- set the new activation record and push the old one
-               -- to the activation record stack
-               Set_Activation_Record (Create_Activation_Record
-                 (Get_Activation_Record (Gsl_Script_Reference (Script))));
-
-               Execution_Stacks.Push (Current_Interpreter.Execution_Stack,
-                 Get_Execution_Stack (Current_Interpreter.Gsl_Compiler,
-                   Giant.Gsl.Syntax_Tree.Create_Node (Script_Exec,
-                     Null_Node, Null_Node)));
-
-               -- push the code for the parameter list to the
-               -- execution stack
-               -- (get the Syntax_Node from the Gsl_Script_Reference)
-               Execution_Stacks.Push (Current_Interpreter.Execution_Stack,
-                 Get_Execution_Stack (Current_Interpreter.Gsl_Compiler,
-                    Get_Parameter_List (Gsl_Script_Reference (Script))));
-
-               Result_Stacks.Push (Current_Interpreter.Result_Stack, Script);
-               Result_Stacks.Push (Current_Interpreter.Result_Stack, Params);
-
-            when Giant.Gsl.Types.Gsl_Runtime =>
-               -- call runtime function, and push the result
-               Result_Stacks.Push (Current_Interpreter.Result_Stack,
-                 Get_Gsl_Runtime (Gsl_Script_Reference (Script))
-                 (Gsl_List (Params)));
-               -- free the parameter
-               -- Destroy_Gsl_Type (Params);
-         end case;
-      else
-         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
-           "Runtime error: Gsl_Script_Reference and Gsl_List expected.");
-      end if;
-   end Script_Activation_Cmd;
-
-   --------------------------------------------------------------------------
-   -- step 2 of a Gsl Script execution
-   procedure Script_Exec_Cmd is
-
-      use Giant.Gsl.Compilers;
-
-      Script : Gsl_Type;
-      Params : Gsl_Type;
-      Formal : Gsl_Type;
-      Ref    : Gsl_Type;
-   begin
-      Result_Stacks.Pop (Current_Interpreter.Result_Stack, Formal);
-      Result_Stacks.Pop (Current_Interpreter.Result_Stack, Params);
-      Result_Stacks.Pop (Current_Interpreter.Result_Stack, Script);
-      if Get_List_Size (Gsl_List (Formal)) /=
-         Get_List_size (Gsl_List (Params)) then
-         Ada.Exceptions.Raise_Exception
-           (Gsl_Runtime_Error'Identity, "Wrong number of parameters.");
-      else
-         -- process the parameter list
-         for i in 1 .. Get_List_Size (Gsl_List (Formal)) loop
-            Ref := Get_Value_At (Gsl_List (Formal), i);
-            if Is_Gsl_Var_Reference (Ref) then
-               Set_Var (Get_Ref_Name (Gsl_Var_Reference (Ref)),
-                  Get_Value_At (Gsl_List (Params), i));
-             else
-                Ada.Exceptions.Raise_Exception
-                  (Gsl_Runtime_Error'Identity, "Gsl_Var_Reference expected.");
-             end if;
-         end loop;
-         -- free the parameter
-         -- Destroy_Gsl_Type (Params); 
-         -- destroy Activation Record when Script completed
-         Execution_Stacks.Push (Current_Interpreter.Execution_Stack,
-           Get_Execution_Stack (Current_Interpreter.Gsl_Compiler,
-             Giant.Gsl.Syntax_Tree.Create_Node (Script_Finish,
-                                                Null_Node, Null_Node)));
-
-         -- push the code of the script
-         Execution_Stacks.Push (Current_Interpreter.Execution_Stack,
-           Get_Execution_Stack (Current_Interpreter.Gsl_Compiler,
-             Get_Script_Node (Gsl_Script_Reference (Script))));
-      end if;
-   end Script_Exec_Cmd;
 
    ---------------------------------------------------------------------------
    --
    procedure Finish
      (Individual : access Interpreter_Record;
       Canceled   : in     Boolean) is
+
+      Benchmark : Duration;
    begin
+      Benchmark := Ada.Real_Time.To_Duration
+        (Ada.Real_Time."-" (Ada.Real_Time.Clock, Individual.Gsl_Time));
+      Default_Logger.Debug
+        ("Gsl Script finished: Time " & Benchmark'Img);
       Destroy_Activation_Record (Individual.Main_Activation_Record);
    end Finish;
 
@@ -631,6 +340,17 @@ package body Giant.Gsl.Interpreters is
       -- set the current activation record
       Current_Interpreter.Current_Activation_Record := AR;
    end Set_Activation_Record;
+
+   ---------------------------------------------------------------------------
+   --
+   procedure Restore_Activation_Record is
+   begin
+      Destroy_Activation_Record
+        (Current_Interpreter.Current_Activation_Record);
+      Activation_Record_Stacks.Pop
+        (Current_Interpreter.Activation_Records,
+         Current_Interpreter.Current_Activation_Record);
+   end Restore_Activation_Record;
 
    ---------------------------------------------------------------------------
    -- creates a new Activation_Record with Parent as

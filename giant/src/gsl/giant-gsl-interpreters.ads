@@ -22,13 +22,14 @@
 --
 -- $RCSfile: giant-gsl-interpreters.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/23 13:46:33 $
+-- $Date: 2003/07/31 09:14:09 $
 --
 -- This package implements the Gsl interpreter.
 --
 
 with Ada.Strings.Unbounded;
 use  Ada.Strings.Unbounded;
+with Ada.Real_Time;
 
 with Giant.Evolutions;
 with Giant.Gsl.Compilers;
@@ -39,30 +40,40 @@ package Giant.Gsl.Interpreters is
 
    ---------------------------------------------------------------------------
    -- the GSL interpreter, inherits Iterative_Evolution 
-   type Interpreter_Record is new Giant.Evolutions.Iterative_Evolution
+   type Interpreter_Record is new Evolutions.Iterative_Evolution
      with private;
 
    type Interpreter is access all Interpreter_Record'Class;
 
    --------------------------------------------------------------------------
    --
-   function Create_Interpreter return Interpreter;
+   function Create_Interpreter
+      return Interpreter;
 
    ---------------------------------------------------------------------------
    --
-   function Get_Current_Interpreter return Interpreter;
+   function Get_Current_Interpreter
+      return Interpreter;
 
    ---------------------------------------------------------------------------
    --
-   function Get_Current_Execution_Stack return Execution_Stacks.Stack;
+   function Get_Current_Activation_Record
+      return Activation_Record;
 
    ---------------------------------------------------------------------------
    --
-   function Get_Current_Result_Stack return Result_Stacks.Stack;
+   function Get_Execution_Stack
+      return Execution_Stacks.Stack;
+
+   ---------------------------------------------------------------------------
+   --
+   function Get_Result_Stack
+      return Result_Stacks.Stack;
   
    ---------------------------------------------------------------------------
    --
-   function Get_Current_Compiler return Giant.Gsl.Compilers.Compiler;
+   function Get_Compiler
+      return Gsl.Compilers.Compiler;
 
    ---------------------------------------------------------------------------
    --
@@ -89,31 +100,7 @@ package Giant.Gsl.Interpreters is
    --
    procedure Step
      (Individual  : access Interpreter_Record;
-      Next_Action : out    Giant.Evolutions.Evolution_Action);
-
-   ---------------------------------------------------------------------------
-   --
-   function Get_Subgraph
-     (Name : String)
-      return Gsl_Type;
-   
-   ---------------------------------------------------------------------------
-   --
-   function Get_Subgraph_Reference
-     (Ref : Gsl_Var_Reference)
-      return Gsl_Type;
-
-   ---------------------------------------------------------------------------
-   --
-   function Get_Selection
-     (Name : String)
-      return Gsl_Type;
-
-   ---------------------------------------------------------------------------
-   --
-   function Get_Selection_Reference
-     (Ref : Gsl_Var_Reference)
-      return Gsl_Type;
+      Next_Action : out    Evolutions.Evolution_Action);
 
    ---------------------------------------------------------------------------
    --
@@ -158,6 +145,10 @@ package Giant.Gsl.Interpreters is
 
    ---------------------------------------------------------------------------
    --
+   procedure Restore_Activation_Record;
+
+   ---------------------------------------------------------------------------
+   --
    function Create_Activation_Record
      (Parent : Activation_Record)
       return Activation_Record;
@@ -170,20 +161,12 @@ private
 
    ---------------------------------------------------------------------------
    --
-   procedure Script_Activation_Cmd;
-   
-   ---------------------------------------------------------------------------
-   --
-   procedure Script_Exec_Cmd;
-
-   ---------------------------------------------------------------------------
-   --
    procedure Destroy_Activation_Record
      (AR : Activation_Record);
 
    ---------------------------------------------------------------------------
    -- the GSL interpreter, inherits Iterative_Evolution 
-   type Interpreter_Record is new Giant.Evolutions.Iterative_Evolution with
+   type Interpreter_Record is new Evolutions.Iterative_Evolution with
       record
          Context                   : Unbounded_String;
          Script                    : Unbounded_String;
@@ -192,7 +175,8 @@ private
          Main_Activation_Record    : Activation_Record;
          Current_Activation_Record : Activation_Record;
          Activation_Records        : Activation_Record_Stacks.Stack;
-         Gsl_Compiler              : Giant.Gsl.Compilers.Compiler;
+         Gsl_Compiler              : Gsl.Compilers.Compiler;
+         Gsl_Time                  : Ada.Real_Time.Time;
       end record;
 
 end Giant.Gsl.Interpreters;
