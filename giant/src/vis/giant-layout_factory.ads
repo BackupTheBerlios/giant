@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.ads,v $, $Revision: 1.8 $
---  $Author: squig $
---  $Date: 2003/07/15 11:50:26 $
+--  $RCSfile: giant-layout_factory.ads,v $, $Revision: 1.9 $
+--  $Author: koppor $
+--  $Date: 2003/08/25 10:27:46 $
 --
 ------------------------------------------------------------------------------
 --
@@ -98,13 +98,17 @@ package Giant.Layout_Factory is
    --     Target_Position: Position of the upper left corner
    --
    --  "tree":
-   --     Format:  <Root_Node_ID>; <List_Of_Class_Set_Names>
+   --     Format:  [<Root_Node_ID>]; <List_Of_Class_Set_Names>
    --     Example: "5; Aber, Hallo"
+   --              "; Ja, genau"
    --              It is not possible to use " or ; or , in a classsetname!
    --              Brackets are possible.
    --
    --     Meaning:
    --       Root_Node_Id    : The root-node of the tree to layout
+   --                         If not given, the root-node is searched
+   --                         If there's more than one possible root-node-id,
+   --                         the result is random.
    --       Class_Set_Names : Names of ClassSet containing node-classes
    --                           and edge-classes to layout
    --
