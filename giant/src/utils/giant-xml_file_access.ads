@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-xml_file_access.ads,v $, $Revision: 1.1 $
+-- $RCSfile: giant-xml_file_access.ads,v $, $Revision: 1.2 $
 -- $Author: schwiemn $
--- $Date: 2003/05/27 09:02:19 $
+-- $Date: 2003/06/20 13:45:48 $
 -- --------
 -- 
 -- This package offers basic functionality needed to handle xml files
@@ -72,6 +72,11 @@ package Giant.XML_File_Access is
    ---------------------------------------------------------------------------
    -- Reads an xml document from a file and returns the top level
    -- document node for that file.
+   --
+   -- A relative path for the position of the DTD file inside the xml file
+   -- (when using external DTD's) will be regarded as relative towards the
+   -- directory where the xml file is located.
+   --
    --
    -- Note
    --   After the call of this subprogram the xml tree will be completely 

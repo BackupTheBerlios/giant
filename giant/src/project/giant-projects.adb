@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.26 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.27 $
 --  $Author: schwiemn $
---  $Date: 2003/06/20 08:57:39 $
+--  $Date: 2003/06/20 13:45:48 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -135,22 +135,6 @@ package body Giant.Projects is
    end Is_Correct_IML_Graph_Loaded;
 
    ---------------------------------------------------------------------------
-   function Append_Dir_Separator_If_Necessary
-     (Directory : in String)
-     return String is
-      Dir_Separator : Character := GNAT.OS_Lib.Directory_Separator;
-   begin
-      -- append directory separator if necessary
-      if (Directory (Directory'Last) = Dir_Separator) then
-
-         return Directory;
-      else
-
-         return (Directory & Dir_Separator);
-      end if;
-   end Append_Dir_Separator_If_necessary;
-
-   ---------------------------------------------------------------------------
    --  Used to create absolute file names (with absolute path) for
    --  files regarding the name and the ending.
    function Create_Name_For_File
@@ -174,7 +158,7 @@ package body Giant.Projects is
 
       -- build file name for thefile
       return Ada.Strings.Unbounded.To_Unbounded_String
-        (Append_Dir_Separator_If_Necessary
+        (File_Management.Append_Dir_Separator_If_Necessary
           (Ada.Strings.Unbounded.To_String (Absolute_Dir_Path))
          & Name
          & Ending);
@@ -1036,13 +1020,14 @@ package body Giant.Projects is
 
       Abs_Project_Directory :=
         Ada.Strings.Unbounded.To_Unbounded_String
-          (Append_Dir_Separator_If_Necessary
+          (File_Management.Append_Dir_Separator_If_Necessary
             (Ada.Strings.Unbounded.To_String (Abs_Project_Directory)));
 
-      Abs_Node_Annotations_File := Append_Dir_Separator_If_Necessary
-        (Ada.Strings.Unbounded.To_String (Abs_Project_Directory))
-        & Ada.Strings.Unbounded.To_Unbounded_String
-          (Const_Node_Annotations_File_Name);
+      Abs_Node_Annotations_File := 
+        File_Management.Append_Dir_Separator_If_Necessary
+          (Ada.Strings.Unbounded.To_String (Abs_Project_Directory))
+           & Ada.Strings.Unbounded.To_Unbounded_String
+             (Const_Node_Annotations_File_Name);
 
       Abs_IML_Graph_File := Ada.Strings.Unbounded.To_Unbounded_String
         (File_Management.Get_Absolute_Path_To_File_From_Relative
@@ -1484,7 +1469,7 @@ package body Giant.Projects is
           (GNAT.Directory_Operations.Get_Current_Dir, New_Project_Directory));
 
       Abs_Project_Directory := Ada.Strings.Unbounded.To_Unbounded_String
-        (Append_Dir_Separator_If_Necessary
+        (File_Management.Append_Dir_Separator_If_Necessary
           (Ada.Strings.Unbounded.To_String (Abs_Project_Directory)));
 
       -- migrate

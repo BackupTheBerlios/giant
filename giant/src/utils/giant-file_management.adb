@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.6 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.7 $
 -- $Author: schwiemn $
--- $Date: 2003/06/18 14:39:43 $
+-- $Date: 2003/06/20 13:45:48 $
 --
 package body Giant.File_Management is
    ---------------------------------------------------------------------------
@@ -344,5 +344,21 @@ package body Giant.File_Management is
 
       return Ada.Strings.Unbounded.To_String (Name);
    end Calculate_Name_For_File;
+   
+   ---------------------------------------------------------------------------
+   function Append_Dir_Separator_If_Necessary
+     (Directory : in String)
+     return String is
+      Dir_Separator : Character := GNAT.OS_Lib.Directory_Separator;
+   begin
+      -- append directory separator if necessary
+      if (Directory (Directory'Last) = Dir_Separator) then
+
+         return Directory;
+      else
+
+         return (Directory & Dir_Separator);
+      end if;
+   end Append_Dir_Separator_If_necessary;
 
 end Giant.File_Management;

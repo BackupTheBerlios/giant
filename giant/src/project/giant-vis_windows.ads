@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.17 $
+--  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.18 $
 --  $Author: schwiemn $
---  $Date: 2003/06/18 19:17:08 $
+--  $Date: 2003/06/20 13:45:48 $
 --
 --  ----------------
 --  This package realizes a container that administrates the components
@@ -72,7 +72,6 @@ package Giant.Vis_Windows is
    --  ADT "Visual_Window_Access" is passed as parameter to one
    --  of the subprograms in this package.
    Visual_Window_Access_Not_Initialized_Exception : exception;
-
 
    ---------------------------------------------------------------------------
    --  A
@@ -192,7 +191,7 @@ package Giant.Vis_Windows is
    --  Raises:
    --    Visual_Window_Access_Not_Initialized_Exception - Raised if a not
    --      initialized instance of "Vis_Window_Data_Access" is passed
-   --      as parameter.               
+   --      as parameter.         
    procedure Change_Name
      (Vis_Window : in Visual_Window_Access;
       New_Name   : in String);
@@ -274,7 +273,7 @@ package Giant.Vis_Windows is
    --------------------------------------------------------------------------- 
    --  Raised on attempt to change a selection's name to a name that already
    --  exists.
-   New_Selection_Name_Already_Exists_Exception : exception;
+   New_Selection_Name_Does_Already_Exist_Exception : exception;
     
    ---------------------------------------------------------------------------
    --  Raised on attempt of changing the name of the standard selection.
@@ -365,7 +364,7 @@ package Giant.Vis_Windows is
    --    Selection_With_Passed_Name_Not_Found_Exception - Raised if a
    --      selection with the name "Selection_Name" is not part of
    --      "Visual_Window_Access"
-   --    New_Selection_Name_Already_Exists_Exception - Raised
+   --    New_Selection_Name_Does_Already_Exist_Exception - Raised
    --      if there is already a selection with the name 
    --      "New_Selection_Name".
    --    Standard_Selection_Name_May_Not_Be_Changed_Exception - Raised

@@ -20,13 +20,21 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-xml_file_access.adb,v $, $Revision: 1.1 $
+-- $RCSfile: giant-xml_file_access.adb,v $, $Revision: 1.2 $
 -- $Author: schwiemn $
--- $Date: 2003/05/27 09:02:19 $
+-- $Date: 2003/06/20 13:45:48 $
 --
+with GNAT.Directory_Operations; -- from GNAT
+
+with Giant.File_Management;
+
 package body Giant.XML_File_Access is
 
    ---------------------------------------------------------------------------
+   -- Note:
+   --  xmlada resolves relative paths towards the working directory of the 
+   --  current execution environment. By changing this directory we enforce
+   --  an interpretation relative to the position of the xml file.
    procedure Load_XML_File_Validated
      (File         : in String;
       Tree_Reader  : in out Tree_Readers.Tree_Reader;
@@ -34,6 +42,9 @@ package body Giant.XML_File_Access is
 
       -- The input file
       Input_File   : Input_Sources.File.File_Input;
+      
+      -- store "working directory for the execution environment"
+      Old_Exec_Dir : String := GNAT.Directory_Operations.Get_Current_Dir;
 
    begin
 
@@ -61,9 +72,17 @@ package body Giant.XML_File_Access is
       Tree_Readers.Set_Feature
         (Tree_Reader, Sax.Readers.Parameter_Entities_Feature, True);
 
+      -- change working directory to the dirctory where the xml file is
+      -- located
+      GNAT.Directory_Operations.Change_Dir 
+        (File_Management.Return_Dir_Path_For_File_Path (File));
+       
       -- read tree from file completely into main memory
-	  -- this may cause exceptions
+      -- this may cause exceptions
       Tree_Readers.Parse (Tree_Reader, Input_File);
+      
+      -- restore old position of working directory
+      GNAT.Directory_Operations.Change_Dir (Old_Exec_Dir);
 
       -- close input file
       Input_Sources.File.Close (Input_File);
@@ -78,6 +97,7 @@ package body Giant.XML_File_Access is
      when E : Sax.Readers.XML_Fatal_Error =>
           Input_Sources.File.Close (Input_File);
           Tree_Readers.Free (Tree_Reader);
+          GNAT.Directory_Operations.Change_Dir (Old_Exec_Dir);          
 		  
 		  raise XML_File_Parse_Fatal_Error_Exception;
    end Load_XML_File_Validated;

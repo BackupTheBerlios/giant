@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.ads,v $, $Revision: 1.5 $
+-- $RCSfile: giant-file_management.ads,v $, $Revision: 1.6 $
 -- $Author: schwiemn $
--- $Date: 2003/06/18 14:39:43 $
+-- $Date: 2003/06/20 13:45:48 $
 --
 -- -----------------------------------------------
 --
@@ -227,6 +227,23 @@ package Giant.File_Management is
    --   - "a.data"             --> "a"
    --   - "./../../data"       --> "data"
    function Calculate_Name_For_File (File_Name : in String)
+     return String;
+
+   ---------------------------------------------------------------------------
+   -- Appends a directory separator if 
+   -- necessary (the passed String should be a path).
+   --
+   -- Example:
+   -- "c:\my_dir" --> "c:\my_dir\" (for Windows Users)
+   -- "./dir"     --> "./dir/"
+   -- "/dir/"     --> "/dir/"
+   --
+   -- Parameters:
+   --   Directory - A String describing a directory.
+   -- Returns:
+   --   A path ending with a directory separator. 
+   function Append_Dir_Separator_If_Necessary
+     (Directory : in String)
      return String;
 
 end Giant.File_Management;
