@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.9 $
 --  $Author: keulsn $
---  $Date: 2003/06/08 16:24:55 $
+--  $Date: 2003/06/09 15:09:58 $
 --
 ------------------------------------------------------------------------------
 
@@ -32,7 +32,6 @@ with Ada.Tags;
 
 with Gdk.Main;
 with Gdk.Threads;
-with Gtk.Main;
 
 with Ptr_Ops;
 
@@ -904,6 +903,7 @@ package body Giant.Evolutions is
       loop
          Child := Get_Child (Driver_State.Individual);
          exit when Child = null;
+         pragma Assert (Get_Parent (Child) /= null);
          Driver_State.Individual := Child;
       end loop;
 
@@ -997,8 +997,6 @@ package body Giant.Evolutions is
      (Individual : access Iterative_Evolution'Class;
       Started    :    out Boolean;
       Dialog     : in     Progress_Dialog.Progress_Dialog_Access) is
-
-      Idle_Handler : Gtk.Main.Idle_Handler_Id;
    begin
       Started := Driver_State = No_Iterative_Driver_State;
       if Started then
@@ -1007,6 +1005,7 @@ package body Giant.Evolutions is
             Update_Time     => Ada.Real_Time.Clock,
             Cancel_Request  => False,
             Cancel_Handler  => 0,
+            Idle_Handler    => 0,
             Dialog          => Dialog);
 
          if Progress_Dialog."/=" (Driver_State.Dialog, null) then
@@ -1019,7 +1018,7 @@ package body Giant.Evolutions is
             Progress_Dialog.Set_Modal (Driver_State.Dialog);
             Init_Visuals (Driver_State.Individual, Driver_State.Dialog);
          end if;
-         Idle_Handler := Gtk.Main.Idle_Add
+         Driver_State.Idle_Handler := Gtk.Main.Idle_Add
            (Iterative_Driver_Callback'Access);
       end if;
    end Start_Iterative_Driver;
@@ -1033,6 +1032,7 @@ package body Giant.Evolutions is
          Progress_Dialog.Destroy (Driver_State.Dialog);
          Progress_Dialog.Unref (Driver_State.Dialog);
       end if;
+      Gtk.Main.Idle_Remove (Driver_State.Idle_Handler);
       Driver_State := No_Iterative_Driver_State;
    end Stop_Iterative_Driver;
 

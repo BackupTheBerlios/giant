@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.ads,v $, $Revision: 1.6 $
+--  $RCSfile: giant-evolutions.ads,v $, $Revision: 1.7 $
 --  $Author: keulsn $
---  $Date: 2003/06/04 13:25:38 $
+--  $Date: 2003/06/09 15:09:58 $
 --
 ------------------------------------------------------------------------------
 --
@@ -60,6 +60,7 @@
 with Ada.Real_Time;
 
 with Gtk.Handlers;
+with Gtk.Main;
 
 with Giant.Progress_Dialog;
 
@@ -459,10 +460,10 @@ package Giant.Evolutions is
 private                       -- Private Part --
                               ------------------
 
-   -----------------------------------
-   -- Private primitive subprograms --
-   -- for Evolution                 --
-   -----------------------------------
+   -------------------------
+   -- Private subprograms --
+   -- for Evolution       --
+   -------------------------
 
    function Logging_Name
      (Individual : access Evolution'Class)
@@ -524,10 +525,10 @@ private                       -- Private Part --
      return Boolean;
 
 
-   -----------------------------------
-   -- Private primitive subprograms --
-   -- for Concurrent_Evolution      --
-   -----------------------------------
+   ------------------------------
+   -- Private subprograms      --
+   -- for Concurrent_Evolution --
+   ------------------------------
 
    procedure Set_Concurrent_Child
      (Individual : access Concurrent_Evolution'Class;
@@ -544,6 +545,7 @@ private                       -- Private Part --
    function Get_Concurrent_Parent
      (Individual : access Concurrent_Evolution'Class)
      return Concurrent_Evolution_Class_Access;
+
 
    ---------------
    -- Framework --
@@ -629,6 +631,8 @@ private                       -- Private Part --
          Dialog          : Progress_Dialog.Progress_Dialog_Access;
          --  Callback-binding for 'Progress_Dialog'
          Cancel_Handler  : Gtk.Handlers.Handler_Id;
+         --  Handler id for the idle event
+         Idle_Handler    : Gtk.Main.Idle_Handler_Id;
       end record;
 
    No_Iterative_Driver_State : constant Iterative_Driver_State_Type :=
@@ -636,7 +640,8 @@ private                       -- Private Part --
       Update_Time     => Ada.Real_Time.Time_Last,
       Cancel_Request  => True,
       Dialog          => null,
-      Cancel_Handler  => 0);
+      Cancel_Handler  => 0,
+      Idle_Handler    => 0);
 
 
    ----------------------------------
