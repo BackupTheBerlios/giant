@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.73 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.74 $
 --  $Author: keulsn $
---  $Date: 2003/08/04 10:06:48 $
+--  $Date: 2003/08/04 10:23:23 $
 --
 
 with Ada.Strings.Unbounded;
@@ -176,8 +176,7 @@ package body Giant.Controller is
       Layout_Name           : in String;
       Position              : in Vis.Logic.Vector_2d              := Vis.Logic.Zero_2d;
       Additional_Parameters : in String;
-      Parent_Calculation    : in Evolutions.Iterative_Evolution_Class_Access :=
-        null)
+      Parent_Calculation    : in Evolutions.Iterative_Evolution_Class_Access)
    is
       Evolution : Evolutions.Evolution_Class_Access;
       Started : Boolean;
@@ -729,7 +728,7 @@ package body Giant.Controller is
       Gui_Manager.Add_Selection (Window_Name, Selection_Name);
       if (Layout_Name /= "") then
          Apply_Layout (Window, Selection, Lock, Layout_Name, Position,
-                       Additional_Parameters);
+                       Additional_Parameters, Parent_Evolution);
       end if;
    end Insert_Selection;
 
