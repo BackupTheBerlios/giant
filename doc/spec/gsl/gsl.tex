@@ -1,6 +1,6 @@
 % =============================================================================
-%  $RCSfile: gsl.tex,v $ $Revision: 1.12 $
-%  $Date: 2003/06/24 21:23:17 $
+%  $RCSfile: gsl.tex,v $ $Revision: 1.13 $
+%  $Date: 2003/07/02 13:08:26 $
 %  $Author: keulsn $
 %
 %  Description: Spezifikation der GIANT Scripting Language
@@ -1181,10 +1181,8 @@ könnte sonst eintreten nachdem eine Aktivierungsumgebung zerstört wurde.}
 
 %%% if
 \begin{scriptdef}{if}
-\sparam{condition}{\tboolean oder \tscriptreference}{Ein Wert vom Typ
-\tboolean oder die Aktivierungsinformation für ein parameterloses Script,
-dessen Ergebnis
-ein Wert vom Typ \tboolean oder \tscriptreference ist.}
+\sparam{condition}{\tboolean}{Ein Wert vom Typ
+\tboolean}
 \sparam{true\_branch}{jeder Typ}{Falls der Typ \tscriptreference ist, so muss
 true\_branch die Aktivierunginformation für ein parameterloses Script sein,
 dessen Ergebnis beliebigen Typs sein darf.}
@@ -1192,16 +1190,7 @@ dessen Ergebnis beliebigen Typs sein darf.}
 false\_branch die Aktivierunginformation für ein parameterloses Script sein,
 dessen Ergebnis beliebigen Typs sein darf.}
 \sresult{von Argumenten abhängig}{Siehe Beschreibung}
-\saction{Falls condition eine Aktivierungsinformation ist, so wird das
-entsprechende Script ohne Argumente aktiviert. Ist das Ergebnis wieder
-eine Aktivierungsinformation, so wird das so referenzierte Script
-aktiviert. Dieser Schritt wird iteriert solange bis das Ergebnis ein
-Wert $b$ vom Typ \tboolean ist.
-
- Falls condition vom Typ \tboolean ist, so ist
-$b =$ condition.
-
-Falls $b$ erfüllt ist, so ist $c = $ true\_branch, andernfalls
+\saction{Falls condition erfüllt ist, so ist $c = $ true\_branch, andernfalls
 $c = $ false\_branch.
 
 Falls $c$ eine Aktivierungsinformation ist, so wird das referenzierte
@@ -1210,7 +1199,7 @@ von $c$. Falls $c$ keine Aktivierungsinformation ist, so ist das Ergebnis
 des Scripts if der Wert von $c$. \textbf{Vorsicht:} falls der Ausdruck
 in true\_branch oder false\_branch Seiteneffekte hat, so ist ist die Übergabe
 einer Aktivierungsinformation geraten. Andernfalls würde der Ausdruck
-ausgewertet unabhängig davon, ob $b$ erfüllt ist, oder nicht.}
+ausgewertet unabhängig davon, ob condition erfüllt ist, oder nicht.}
 \end{scriptdef}
 
 %%% loop
