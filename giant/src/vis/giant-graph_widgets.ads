@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.25 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.26 $
 --  $Author: keulsn $
---  $Date: 2003/07/10 16:05:51 $
+--  $Date: 2003/07/11 16:09:07 $
 --
 ------------------------------------------------------------------------------
 --
@@ -921,6 +921,7 @@ private                    -- private part --
 
 
    package Vis_Edge_Sets renames Vis_Data.Vis_Edge_Sets;
+   package Vis_Edge_Lists renames Vis_Data.Vis_Edge_Lists;
 
    package Vis_Node_Sets renames Vis_Data.Vis_Node_Sets;
 
@@ -939,6 +940,26 @@ private                    -- private part --
    procedure Resize_Graph_Widget
      (Widget : access Graph_Widget_Record'Class;
       Size   : in     Vis.Absolute.Vector_2d);
+
+   ----------------------------------------------------------------------------
+   --  Drops 'Edge' from region manager and adds 'Edge' to the set of
+   --  locked edges
+   procedure Add_Edge_To_Locked
+     (Widget : access Graph_Widget_Record'Class;
+      Edge   : in     Vis_Data.Vis_Edge_Id);
+
+   --  Drops all edges in 'Edges' from the region manager and adds them to
+   --  the set of locked edges.
+   procedure Add_Edges_To_Locked
+     (Widget : access Graph_Widget_Record'Class;
+      Edges  : in     Vis_Edge_Lists.ListIter);
+
+   --  Drops 'Node' from the region manager and adds it to the set of locked
+   --  nodes. Calls 'Add_Edges_To_Locked' on all incident edges.
+   procedure Add_Node_To_Locked
+     (Widget : access Graph_Widget_Record'Class;
+      Node   : in     Vis_Data.Vis_Node_Id);
+
 
    --  looks up an existing edge or creates a new one if necessary.
    --  if the nodes incident cannot be looked up, then sets 'Edge' to null.

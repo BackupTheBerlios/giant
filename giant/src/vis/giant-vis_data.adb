@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.21 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.22 $
 --  $Author: keulsn $
---  $Date: 2003/07/10 23:36:39 $
+--  $Date: 2003/07/11 16:09:07 $
 --
 ------------------------------------------------------------------------------
 
@@ -957,6 +957,9 @@ package body Giant.Vis_Data is
       Y : Vis.Absolute_Int := Vis.Absolute.Get_Y
         (Vis.Absolute.Vector_2d (Position));
    begin
+      Vis_Data_Logger.Debug
+        ("Get_Region_Extent X =" & Integer'Image (X) & " Y =" &
+         Integer'Image (Y));
       return Vis.Absolute.Combine_Rectangle
         (X * Manager.Region_Width,
          Y * Manager.Region_Height,
@@ -1166,6 +1169,8 @@ package body Giant.Vis_Data is
       Pool     : Position_Pool;
       Iterator : Position_Iterator;
       Area     : Vis.Absolute.Rectangle_2d;
+      Min_X    : Vis.Absolute_Int;
+      Max_X    : Vis.Absolute_Int;
       Min_Y    : Vis.Absolute_Int;
       Max_Y    : Vis.Absolute_Int;
    begin
@@ -1182,27 +1187,40 @@ package body Giant.Vis_Data is
             Y_1 => Min_Y - (Thickness + 1) / 2,
             Y_2 => Max_Y + (Thickness + 1) / 2);
 
-         Pool := Create_Position_Pool_From_Area
-           (Manager,
-            Combine_Rectangle
-              (X_1 => Get_X (Start_Point),
-               Y_1 => Get_Y (Start_Point),
-               X_2 => Get_X (End_Point),
-               Y_2 => Get_Y (End_Point)));
+         Pool := Create_Position_Pool_From_Area (Manager, Area);
+         Make_Position_Iterator (Pool, Iterator);
+         while Has_More (Iterator) loop
+            Hit (Get_Current (Iterator));
+            Next (Iterator);
+         end loop;
+      elsif Vis.Absolute.Get_Y (Start_Point) = Vis.Absolute.Get_Y (End_Point)
+      then
+         --  Horizontal line can be treated as rectangle
+         Set_Min_Max
+           (Value_1 => Vis.Absolute.Get_X (Start_Point),
+            Value_2 => Vis.Absolute.Get_X (End_Point),
+            Min     => Min_X,
+            Max     => Max_X);
+         Area := Vis.Absolute.Combine_Rectangle
+           (X_1 => Min_X - (Thickness + 1) / 2,
+            X_2 => Max_X + (Thickness + 1) / 2,
+            Y_1 => Vis.Absolute.Get_Y (Start_Point) - (Thickness + 1) / 2,
+            Y_2 => Vis.Absolute.Get_Y (Start_Point) + (Thickness + 1) / 2);
+
+         Pool := Create_Position_Pool_From_Area (Manager, Area);
          Make_Position_Iterator (Pool, Iterator);
          while Has_More (Iterator) loop
             Hit (Get_Current (Iterator));
             Next (Iterator);
          end loop;
 
+      elsif Vis.Absolute.Get_Y (Start_Point) > Vis.Absolute.Get_Y (End_Point)
+      then
+         --  Ascending line
+         Add_Line_Bottom_To_Top (Start_Point, End_Point);
       else
-         if Vis.Absolute.Get_Y (Start_Point) >=
-           Vis.Absolute.Get_Y (End_Point) then
-
-            Add_Line_Bottom_To_Top (Start_Point, End_Point);
-         else
-            Add_Line_Bottom_To_Top (End_Point, Start_Point);
-         end if;
+         --  Descending line
+         Add_Line_Bottom_To_Top (End_Point, Start_Point);
       end if;
    end Add_Lines_Positions;
 

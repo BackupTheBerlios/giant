@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.22 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.23 $
 --  $Author: keulsn $
---  $Date: 2003/07/11 02:26:39 $
+--  $Date: 2003/07/11 16:09:07 $
 --
 ------------------------------------------------------------------------------
 
@@ -414,16 +414,7 @@ package body Giant.Graph_Widgets is
          pragma Assert (States.Is_Valid_Lock (Widget, Lock));
          Vis_Node := Look_Up (Widget, Node);
          if Vis_Node /= null then
-            if Vis_Data.Has_Manager (Vis_Node) then
-               Vis_Data.Drop_Node (Widget.Manager, Vis_Node);
-            end if;
-            if not Vis_Node_Sets.Is_Member
-              (Widget.Unsized_Nodes, Vis_Node) then
-
-               --  will not insert twice, even if already
-               --  'Is_Member (Widget.Locked_Nodes, Vis_Nodes)'
-               Vis_Node_Sets.Insert (Widget.Locked_Nodes, Vis_Node);
-            end if;
+            Add_Node_To_Locked (Widget, Vis_Node);
             Vis_Data.Set_Position (Vis_Node, Location);
          else
             Graph_Widget_Logger.Fatal
@@ -792,6 +783,58 @@ package body Giant.Graph_Widgets is
    -------------
    -- Helpers --
    -------------
+
+   procedure Add_Edge_To_Locked
+     (Widget : access Graph_Widget_Record'Class;
+      Edge   : in     Vis_Data.Vis_Edge_Id) is
+   begin
+      if Vis_Data.Has_Manager (Edge) then
+         Vis_Data.Drop_Edge (Widget.Manager, Edge);
+      end if;
+      if not Vis_Edge_Sets.Is_Member (Widget.Unsized_Edges, Edge) then
+
+         --  will not insert twice, even if already
+         --  'Is_Member (Widget.Locked_Nodes, Node)'
+         Vis_Edge_Sets.Insert (Widget.Locked_Edges, Edge);
+      end if;
+   end Add_Edge_To_Locked;
+
+   procedure Add_Edges_To_Locked
+     (Widget : access Graph_Widget_Record'Class;
+      Edges  : in     Vis_Edge_Lists.ListIter) is
+
+      Iterator : Vis_Edge_Lists.ListIter := Edges;
+      Edge     : Vis_Data.Vis_Edge_Id;
+   begin
+      while Vis_Edge_Lists.More (Iterator) loop
+         Vis_Edge_Lists.Next (Iterator, Edge);
+         Add_Edge_To_Locked (Widget, Edge);
+      end loop;
+   end Add_Edges_To_Locked;
+
+   procedure Add_Node_To_Locked
+     (Widget : access Graph_Widget_Record'Class;
+      Node   : in     Vis_Data.Vis_Node_Id) is
+
+      Edge_Iterator : Vis_Edge_Lists.ListIter;
+   begin
+      if Vis_Data.Has_Manager (Node) then
+         Vis_Data.Drop_Node (Widget.Manager, Node);
+      end if;
+      if not Vis_Node_Sets.Is_Member
+        (Widget.Unsized_Nodes, Node) then
+
+         --  will not insert twice, even if already
+         --  'Is_Member (Widget.Locked_Nodes, Node)'
+         Vis_Node_Sets.Insert (Widget.Locked_Nodes, Node);
+
+         --  add all incident
+         Vis_Data.Make_Outgoing_Iterator (Node, Edge_Iterator);
+         Add_Edges_To_Locked (Widget, Edge_Iterator);
+         Vis_Data.Make_Incoming_Iterator (Node, Edge_Iterator);
+         Add_Edges_To_Locked (Widget, Edge_Iterator);
+      end if;
+   end Add_Node_To_Locked;
 
    procedure Resize_Graph_Widget
      (Widget : access Graph_Widget_Record'Class;
