@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.99 $
---  $Author: koppor $
---  $Date: 2003/10/07 16:34:46 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.100 $
+--  $Author: squig $
+--  $Date: 2003/11/06 15:11:40 $
 --
 
 with Ada.Strings.Unbounded;
@@ -1561,7 +1561,13 @@ package body Giant.Controller is
             Projects.Free_Memory_For_Vis_Window (Current_Project, Name);
          end if;
 
-         Projects.Remove_Visualisation_Window (Current_Project, Name);
+         --  Need to check if window still exists in project, in case
+         --  it was never written to disk, Free_Memory_For_Vis_Window will
+         --  remove it right away
+         if (Exists_Window (Name)) then
+            Projects.Remove_Visualisation_Window (Current_Project, Name);
+         end if;
+
          return True;
       end if;
 

@@ -1,3 +1,8 @@
+2003-11-06  Steffen Pingel  <squig@users.sourceforge.net>
+
+	* src/giant-controller.adb: Fixed exception when a window is
+	removed that was never saved.
+
 2003-11-06  Oliver Kopp  <koppor@studi.informatik.uni-stuttgart.de>
 
 	* src/gsl/giant-gsl-runtime.adb: implemented
