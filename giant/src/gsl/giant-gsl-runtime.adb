@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/23 13:46:58 $
+-- $Date: 2003/07/24 14:42:46 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -32,9 +32,13 @@ with Ada.Exceptions;
 with GNAT.Regpat;
 
 with Giant.Controller;
+
 with Giant.Graph_Lib;
 use type Giant.Graph_Lib.Edge_Id;
 use type Giant.Graph_Lib.Node_Id;
+with Giant.Graph_Lib.Subgraphs;
+with Giant.Graph_Lib.Selections;
+
 with Giant.GSL_Support;
 
 ------------------------------------------------------------------------------
@@ -51,23 +55,35 @@ package body Giant.Gsl.Runtime is
      (Parameter : Gsl_List)
       return Gsl_Type is
 
+      use Giant.Graph_Lib.Subgraphs;
+      use Giant.Graph_Lib.Selections;
       use Giant.Gsl.Interpreters;
       Var   : Gsl_Type;
       Value : Gsl_Type;
+      Sub   : Giant.Graph_Lib.Subgraphs.Subgraph;
    begin
       if Get_List_Size (Parameter) /= 2 then
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
-           "Script 'set': Expecting 2 parameters");
+           "Script 'set': Expecting 2 parameters.");
       end if;
       Var := Get_Value_At (Parameter, 1);
-      if not Is_Gsl_Var_Reference (Var) then
+      Value := Get_Value_At (Parameter, 2);
+      if not (Is_Gsl_Var_Reference (Var) or Is_Gsl_Global_Reference (Var))
+      then
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
            "Script 'set': Gsl_Var_Reference expected.");
       elsif Get_Ref_Type (Gsl_Var_Reference (Var)) = Gsl.Types.Var then
-         Value := Get_Value_At (Parameter, 2);
          Set_Var (Get_Ref_Name (Gsl_Var_Reference (Var)), Value);
       elsif Get_Ref_Type (Gsl_Var_Reference (Var)) = Gsl.Types.Subgraph then
-         null;
+         if Is_Gsl_Object_Set (Value) then
+            Sub := Create (Get_Ref_Name (Gsl_Var_Reference (Var)));
+            Add_Node_Set (Sub, Get_Value (Gsl_Node_Set 
+              (Get_Value_At (Gsl_List (Value), 1))));
+            Add_Edge_Set (Sub, Get_Value (Gsl_Edge_Set
+              (Get_Value_At (Gsl_List (Value), 2))));
+            Giant.Controller.Add_Subgraph (Sub);
+         end if;
+
       elsif Get_Ref_Type (Gsl_Var_Reference (Var)) = Gsl.Types.Selection then
          null;
       end if;
@@ -181,9 +197,21 @@ package body Giant.Gsl.Runtime is
    function Runtime_Error
      (Parameter : Gsl_List)
       return Gsl_Type is
+
+      Message : Gsl_Type;
    begin
-      Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
-        "Runtime Error.");
+      if Get_List_Size (Parameter) /= 1 then
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
+           "Script 'error': Expecting 1 parameter.");
+      end if;
+      Message := Get_Value_At (Parameter, 1);
+      if Is_Gsl_String (Message) then
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           Get_Value (Gsl_String (Message)));
+      else
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
+           "Script 'error': Gsl_String expected.");
+      end if;
       return Gsl_Null;
    end Runtime_Error;
 
@@ -256,6 +284,7 @@ package body Giant.Gsl.Runtime is
                Node_Set := Get_Value (Gsl_Node_Set (Var));
                Giant.Graph_Lib.Node_Id_Sets.Insert
                  (Node_Set, Get_Value (Gsl_Node_Id (B)));
+               Set_Value (Gsl_Node_Set (Var), Node_Set);
                return Gsl_Null;
             else
                Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
@@ -268,6 +297,7 @@ package body Giant.Gsl.Runtime is
                Edge_Set := Get_Value (Gsl_Edge_Set (Var));
                Giant.Graph_Lib.Edge_Id_Sets.Insert
                  (Edge_Set, Get_Value (Gsl_Edge_Id (B)));
+               Set_Value (Gsl_Edge_Set (Var), Edge_Set);
                return Gsl_Null;
             else
                Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
@@ -283,7 +313,6 @@ package body Giant.Gsl.Runtime is
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
            "Script 'add': Gsl_Natural or Gsl_Var_Reference expected.");
       end if;
-      --return Gsl_Null;
    end Runtime_Add;
 
    ---------------------------------------------------------------------------
@@ -291,8 +320,61 @@ package body Giant.Gsl.Runtime is
    function Runtime_Sub
      (Parameter : Gsl_List)
       return Gsl_Type is
+
+      use Giant.Gsl.Interpreters;
+      A        : Gsl_Type;
+      B        : Gsl_Type;
+      Var      : Gsl_Type;
+      Node_Set : Giant.Graph_Lib.Node_Id_Sets.Set;
+      Edge_Set : Giant.Graph_Lib.Edge_Id_Sets.Set;
    begin
-      return Gsl_Null;
+      if Get_List_Size (Parameter) /= 2 then
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'sub': Expecting 2 parameters.");
+      end if;
+      A := Get_Value_At (Parameter, 1);
+      B := Get_Value_At (Parameter, 2);
+      if Is_Gsl_Natural (A) and Is_Gsl_Natural (B) then
+         -- Gsl_Natural, normal substraction
+         return Gsl_Type (Create_Gsl_Natural
+           (Get_Value (Gsl_Natural (A)) - Get_Value (Gsl_Natural (B))));
+
+      elsif Is_Gsl_Var_Reference (A) then
+         if Is_Gsl_Node_Id (B) then
+            Var := Get_Var (Get_Ref_Name (Gsl_Var_Reference (A)));
+            if Is_Gsl_Node_Set (Var) then
+               Node_Set := Get_Value (Gsl_Node_Set (Var));
+               Giant.Graph_Lib.Node_Id_Sets.Remove_If_Exists
+                 (Node_Set, Get_Value (Gsl_Node_Id (B)));
+               Set_Value (Gsl_Node_Set (Var), Node_Set);
+               return Gsl_Null;
+            else
+               Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+                 "Script 'sub': Gsl_Node_Set expected.");
+            end if;
+
+         elsif Is_Gsl_Edge_Id (B) then
+            Var := Get_Var (Get_Ref_Name (Gsl_Var_Reference (B)));
+            if Is_Gsl_Edge_Set (Var) then
+               Edge_Set := Get_Value (Gsl_Edge_Set (Var));
+               Giant.Graph_Lib.Edge_Id_Sets.Remove_If_Exists
+                 (Edge_Set, Get_Value (Gsl_Edge_Id (B)));
+               Set_Value (Gsl_Edge_Set (Var), Edge_Set);
+               return Gsl_Null;
+            else
+               Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+                 "Script 'sub': Gsl_Edge_Set expected.");
+            end if;
+
+         else
+            Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+              "Script 'sub': Gsl_Node_Id or Gsl_Edge_Id expected.");
+         end if;
+
+      else
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'sub': Gsl_Natural or Gsl_Var_Reference expected.");
+      end if;
    end Runtime_Sub;
 
    ---------------------------------------------------------------------------
