@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: product.tex,v $, $Revision: 1.19 $
-%  $Date: 2003/02/21 12:26:16 $
+%  $RCSfile: product.tex,v $, $Revision: 1.20 $
+%  $Date: 2003/02/21 12:51:36 $
 %  $Author: schwiemn $
 %
 %  Description: Beschreibung des Produktes. Übersicht über die Funktionen
@@ -482,7 +482,30 @@ in Anzeigefenster}
   \end {enumerate}
   
 
-
+\section {Verhalten beim Entfernen von Fenster-Knoten und Fenster-Kanten}
+  \label{Verhalten beim Entfernen von Fenster-Knoten und Fenster-Kanten}
+  
+  
+  \subsection {Entfernen aller Knoten und Kanten einer Selektionen}.
+    \label {Entfernen aller Knoten und Kanten einer Selektionen}
+  
+  \begin {enumerate}
+  
+    \item
+    Alle Fenster-Knoten und Fenster-Kanten der Selektion werden aus dem
+    Anzeigefenster entfernt.
+    
+    \item
+    Fenster-Kanten im Anzeigefenster, deren Start- oder Zielknoten
+    entfernt wird, werden ebenfalls entfernt (auch wenn sie nicht
+    zur entsprechenden Selektion gehören).
+    
+        
+    \item 
+    Andere anderen Selektionen des Anzeigefensters 
+    werden entsprechend aktualisiert.
+      
+  \end{enumerate}
 
 
 

@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.6 $
-%  $Date: 2003/02/21 12:26:16 $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.7 $
+%  $Date: 2003/02/21 12:51:36 $
 %  $Author: schwiemn $
 %
 %  Description: Use-Cases für die Fensterfunktionalität der GUI
@@ -279,7 +279,6 @@ insbesondere \ref{Einfügen von IML-Teilgraphen in Anzeigefenster}.
 
 
 
-
 \end{uc}
 
 % ==============================================================================
@@ -346,11 +345,71 @@ insbesondere \ref{Einfügen von Selektionen in Anzeigefenster}.
 \end{uc}
 
 % ==============================================================================
-\begin{uc}[Label]{UC: Selektion aus Anzeigefenster löschen}
-Objekte und Selektion werden gelöscht, andere Selektionen werden angepaßt
+\begin{uc}[Knoten und Kanten einer Selektion aus Anzeigefenster löschen]
+      {UC: Knoten und Kanten einer Selektion aus Anzeigefenster löschen}
+	  
+	  
+Die Selektion wird gelöscht, alle Fenster-Knoten und Fenster-Kanten
+der Selektion werden ebenfalls gelöscht. 
+Siehe auch 
+\ref{Verhalten beim Entfernen von Fenster-Knoten und Fenster-Kanten}.
 
+ 
+  \begin{precond}
+    \cond Ein Projekt mit mindestens einem geöffneten 
+          Anzeigefenster ist geladen.
+    
+    \cond Es gibt eine Selektion.
+    
+  \end{precond}
 
+  \begin{postsuccess}
+    
+    \cond
+    Die Selektion ist aus dem Anzeigefenster gelöscht.
+    
+    \cond 
+    Alle betroffenen Fenster-Knoten und Fenster-Kanten sind gemäß
+    der unter 
+    \ref{Verhalten beim Entfernen von Fenster-Knoten und Fenster-Kanten}
+    beschriebenen Konvention aus dem Anzeigefenster entfernt.
+    
+ 
+   
+  \end{postsuccess}
 
+  \begin{postfail}
+    \cond Hat der Benutzer den UseCase an irgendeinem Punkt abgebrochen,
+    kehrt das System zu dem Zustand zurück, in dem es vor Start des
+    UseCase war.
+  \end{postfail}
+  
+  \begin{proc}    
+  
+    \step[1]
+    Der UseCase führt einen Rechtsklick auf die entsprechende Selektion aus
+    <<<<VERWEIS GUI>>>>> und wählt im entsprechenden PopUp Menü den Eintrag
+    >>>>>>>>>>Verweis GUI   - Lösche Selektion - >>>>>>>>> aus.
+    
+    \step[2]
+    GIANT zeigt die Sicherheitsabfrage (siehe \ref{Sicherheitsabfrage}) 
+    und fragt nach, ob es die Selektion samt ihrer Knoten und Kanten
+    wirklich löschen soll.
+    
+    \step[3]
+    Der Benutzer bestätigt mit YES.
+    
+    \step[4]
+    GIANT löscht die Selektion samt allen zugehörigen Fenster-Knoten und
+    Fenster-Kanten aus dem entsprechenden Anzeigefenster.
+    
+   
+  
+  \end{proc}
+
+  \begin{aproc}
+    \astep{2} Der Benutzer bricht den UseCase mit NO ab.
+  \end{aproc}
 
 
 
