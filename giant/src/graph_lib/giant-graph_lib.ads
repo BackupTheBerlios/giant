@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.8 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.9 $
 --  $Author: koppor $
---  $Date: 2003/06/12 14:01:15 $
+--  $Date: 2003/06/12 14:42:38 $
 --
 
 --  Bauhaus / IML
@@ -655,6 +655,8 @@ package Giant.Graph_Lib is
 
    ---------------------------------------------------------------------------
    --  analogue to Bauhaus::Lists
+   --  Raises:
+   --    dont know yet - TBD!
    procedure Next
      (Iterator : in out Node_Attribute_Iterator;
       Info     :    out Node_Attribute_Id);
@@ -724,10 +726,11 @@ private
    Invalid_Attribute_Value_String : constant String  := "*INVALID*";
 
    ---------------------------------------------------------------------------
-   --  Dummy
    type Node_Attribute_Iterator is record
+      CurrentIndex : Integer;
 
-      Dummy : Integer;
+      --  The class of the node on which the iterator iterates on
+      Class        : IML_Reflection.Class_ID;
    end record;
 
    ---------------------------------------------------------------------------
