@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.37 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.38 $
 --  $Author: keulsn $
---  $Date: 2003/08/12 14:30:31 $
+--  $Date: 2003/08/17 00:34:24 $
 --
 ------------------------------------------------------------------------------
 
@@ -244,8 +244,8 @@ package body Giant.Vis_Data is
       while Streamed_Value /= 0 loop
          if Streamed_Value mod 2 /= 0 then
             Highlighting (Highlight_Type'Val (Current_Pos)) := True;
-            Streamed_Value := Streamed_Value / 2;
          end if;
+         Streamed_Value := Streamed_Value / 2;
          Current_Pos := Current_Pos + 1;
       end loop;
    end Read_Highlight_Array;
@@ -294,6 +294,7 @@ package body Giant.Vis_Data is
          Right_Arrow_Point => Vis.Absolute.Zero_2d,
          Regions           => Region_Lists.Create,
          Flags             => (Hidden => False,
+                               Obsolete => False,
                                Highlight_Type => False));
 
       Vis_Edge_Lists.Attach (Edge, Source.Outgoing_Edges);
@@ -311,6 +312,19 @@ package body Giant.Vis_Data is
       Region_Lists.Destroy (Edge.Regions);
       Free (Edge);
    end Destroy;
+
+   procedure Remove_From_Nodes
+     (Edge : in     Vis_Edge_Id) is
+   begin
+      if Edge.Source /= null then
+         Vis_Edge_Lists.DeleteItem (Edge.Source.Outgoing_Edges, Edge);
+         Edge.Source := null;
+      end if;
+      if Edge.Target /= null then
+         Vis_Edge_Lists.DeleteItem (Edge.Target.Incoming_Edges, Edge);
+         Edge.Target := null;
+      end if;
+   end Remove_From_Nodes;
 
    function Get_Graph_Edge
      (Edge : in     Vis_Edge_Id)
@@ -449,6 +463,13 @@ package body Giant.Vis_Data is
       return Found;
    end Intersects;
 
+   function Is_Obsolete
+     (Edge : in     Vis_Edge_Id)
+     return Boolean is
+   begin
+      return Edge.Flags (Obsolete);
+   end Is_Obsolete;
+
    function Is_Hidden
      (Edge : in     Vis_Edge_Id)
      return Boolean is
@@ -490,7 +511,8 @@ package body Giant.Vis_Data is
    begin
       Edge.Flags := Edge.Flags and
         (Highlight_Type'Range => False,
-         Hidden               => True);
+         Hidden               => True,
+         Obsolete             => True);
    end Remove_All_Highlight_Colors;
 
    procedure Set_Thickness
@@ -607,6 +629,13 @@ package body Giant.Vis_Data is
       Edge.Right_Arrow_Point := Point;
    end Set_Right_Arrow_Point;
 
+   procedure Set_Obsolete
+     (Edge  : in     Vis_Edge_Id;
+      State : in     Boolean) is
+   begin
+      Edge.Flags (Obsolete) := State;
+   end Set_Obsolete;
+
    procedure Set_Hidden
      (Edge  : in     Vis_Edge_Id;
       State : in     Boolean) is
@@ -655,7 +684,8 @@ package body Giant.Vis_Data is
          Incoming_Edges => Vis_Edge_Lists.Create,
          Outgoing_Edges => Vis_Edge_Lists.Create,
          Regions        => Region_Lists.Create,
-         Flags          => (Hidden => False, Annotated => False,
+         Flags          => (Hidden => False, Obsolete => False,
+                            Annotated => False,
                             Sized => False, Locked => False,
                             Incident_Visible => False,
                             Highlight_Type => False));
@@ -672,6 +702,23 @@ package body Giant.Vis_Data is
       Region_Lists.Destroy (Node.Regions);
       Free (Node);
    end Destroy;
+
+   procedure Remove_From_Edges
+     (Node  : in     Vis_Node_Id) is
+
+      Edge : Vis_Edge_Id;
+   begin
+      while not Vis_Edge_Lists.IsEmpty (Node.Outgoing_Edges) loop
+         Edge := Vis_Edge_Lists.FirstValue (Node.Outgoing_Edges);
+         Vis_Edge_Lists.DeleteHead (Node.Outgoing_Edges);
+         Edge.Source := null;
+      end loop;
+      while not Vis_Edge_Lists.IsEmpty (Node.Incoming_Edges) loop
+         Edge := Vis_Edge_Lists.FirstValue (Node.Incoming_Edges);
+         Vis_Edge_Lists.DeleteHead (Node.Incoming_Edges);
+         Edge.Target := null;
+      end loop;
+   end Remove_From_Edges;
 
    function Get_Layer
      (Node  : in     Vis_Node_Id)
@@ -746,6 +793,13 @@ package body Giant.Vis_Data is
    begin
       Outgoing_Edges := Vis_Edge_Lists.MakeListIter (Node.Outgoing_Edges);
    end Make_Outgoing_Iterator;
+
+   function Is_Obsolete
+     (Node : in    Vis_Node_Id)
+     return Boolean is
+   begin
+      return Node.Flags (Obsolete);
+   end Is_Obsolete;
 
    function Is_Hidden
      (Node : in     Vis_Node_Id)
@@ -839,6 +893,7 @@ package body Giant.Vis_Data is
       Node.Flags := Node.Flags and
         (Highlight_Type'Range => False,
          Hidden               => True,
+         Obsolete             => True,
          Annotated            => True,
          Sized                => True,
          Locked               => True,
@@ -858,6 +913,13 @@ package body Giant.Vis_Data is
    begin
       Node.Flags (Sized) := State;
    end Set_Sized;
+
+   procedure Set_Obsolete
+     (Node   : in     Vis_Node_Id;
+      State  : in     Boolean) is
+   begin
+      Node.Flags (Obsolete) := State;
+   end Set_Obsolete;
 
    procedure Set_Hidden
      (Node   : in     Vis_Node_Id;

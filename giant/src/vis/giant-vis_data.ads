@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.27 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.28 $
 --  $Author: keulsn $
---  $Date: 2003/08/12 14:30:31 $
+--  $Date: 2003/08/17 00:34:25 $
 --
 ------------------------------------------------------------------------------
 --
@@ -171,7 +171,7 @@ package Giant.Vis_Data is
    type Flags_Enumeration_Type is
      (Sized, Locked,                    --  only for nodes
       Incident_Visible, Annotated,
-      Hidden,                           --  for edges and nodes
+      Hidden, Obsolete,                 --  for edges and nodes
       Current_Local, First_Local, Second_Local, Third_Local,
       First_Global, Second_Global, Third_Global
                                         --  only for edges
@@ -252,6 +252,13 @@ package Giant.Vis_Data is
    procedure Destroy
      (Edge        : in out Vis_Edge_Id);
 
+   --  Removes 'Edge' from the lists of incoming and outgoing edges in
+   --  target and source node. Source and target may have been cleared
+   --  (see 'Remove_From_Edges').
+   --  No subprogram must be called on 'Edge' except 'Destroy' after this.
+   procedure Remove_From_Nodes
+     (Edge        : in     Vis_Edge_Id);
+
    ----------------------------------------------------------------------------
    --  Gets the edge for the visual representation
    function Get_Graph_Edge
@@ -325,6 +332,10 @@ package Giant.Vis_Data is
    function Intersects
      (Edge  : in     Vis_Edge_Id;
       Area  : in     Vis.Absolute.Rectangle_2d)
+     return Boolean;
+
+   function Is_Obsolete
+     (Edge : in     Vis_Edge_Id)
      return Boolean;
 
    function Is_Hidden
@@ -426,6 +437,10 @@ package Giant.Vis_Data is
      (Edge      : in     Vis_Edge_Id;
       Layer     : in     Layer_Type);
 
+   procedure Set_Obsolete
+     (Edge      : in     Vis_Edge_Id;
+      State     : in     Boolean);
+
    procedure Set_Hidden
      (Edge      : in     Vis_Edge_Id;
       State     : in     Boolean);
@@ -476,6 +491,12 @@ package Giant.Vis_Data is
    procedure Destroy
      (Node       : in out Vis_Node_Id);
 
+   --  Clears the lists of incoming and outgoing edges. Clears also the
+   --  target or source field in those edges. No subprogram except
+   --  'Clear_From_Nodes' and 'Destroy' may be called on such an edge.
+   procedure Remove_From_Edges
+     (Node       : in     Vis_Node_Id);
+
    ----------------------------------------------------------------------------
    --  Gets the node for the visual representation
    function Get_Graph_Node
@@ -523,6 +544,10 @@ package Giant.Vis_Data is
      (Node           : in     Vis_Node_Id;
       Outgoing_Edges :    out Vis_Edge_Lists.ListIter);
 
+   function Is_Obsolete
+     (Node : in     Vis_Node_Id)
+     return Boolean;
+
    function Is_Hidden
      (Node : in     Vis_Node_Id)
      return Boolean;
@@ -566,6 +591,10 @@ package Giant.Vis_Data is
    procedure Set_Layer
      (Node   : in     Vis_Node_Id;
       Layer  : in     Layer_Type);
+
+   procedure Set_Obsolete
+     (Node   : in     Vis_Node_Id;
+      State  : in     Boolean);
 
    procedure Set_Hidden
      (Node   : in     Vis_Node_Id;

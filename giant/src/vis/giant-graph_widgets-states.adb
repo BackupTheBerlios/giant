@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.11 $
+--  $RCSfile: giant-graph_widgets-states.adb,v $, $Revision: 1.12 $
 --  $Author: keulsn $
---  $Date: 2003/08/02 16:27:43 $
+--  $Date: 2003/08/17 00:34:24 $
 --
 ------------------------------------------------------------------------------
 
@@ -517,6 +517,14 @@ package body Giant.Graph_Widgets.States is
       return Widget.States.Drawing_Ready and then
         Gtk.Widget.Realized_Is_Set (Widget);
    end Can_Resize;
+
+   function Can_Move
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean is
+   begin
+      return Widget.States.Drawing_Ready and then
+        Gtk.Widget.Realized_Is_Set (Widget);
+   end Can_Move;
 
 
    Default_Default_Cursor : Gdk.Cursor.Gdk_Cursor := Gdk.Cursor.Null_Cursor;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-states.ads,v $, $Revision: 1.8 $
+--  $RCSfile: giant-graph_widgets-states.ads,v $, $Revision: 1.9 $
 --  $Author: keulsn $
---  $Date: 2003/08/02 16:27:43 $
+--  $Date: 2003/08/17 00:34:24 $
 --
 ------------------------------------------------------------------------------
 --
@@ -310,6 +310,13 @@ package Giant.Graph_Widgets.States is
    --  * check the size of the widget
    --  * allocate and destroy pixmaps
    function Can_Resize
+     (Widget : access Graph_Widget_Record'Class)
+     return Boolean;
+
+   --  Returns True if the widget's visible content might be moved:
+   --  * check the size of the widget
+   --  * allocate and destroy pixmaps
+   function Can_Move
      (Widget : access Graph_Widget_Record'Class)
      return Boolean;
 

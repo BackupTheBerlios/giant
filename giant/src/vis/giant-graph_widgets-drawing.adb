@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.27 $
+--  $RCSfile: giant-graph_widgets-drawing.adb,v $, $Revision: 1.28 $
 --  $Author: keulsn $
---  $Date: 2003/08/07 20:01:59 $
+--  $Date: 2003/08/17 00:34:24 $
 --
 ------------------------------------------------------------------------------
 
@@ -1192,6 +1192,9 @@ package body Giant.Graph_Widgets.Drawing is
       Copy_To          : Vis.Absolute.Vector_2d;
       Old_Ready_Buffer : Gdk.Pixmap.Gdk_Pixmap;
    begin
+      if not States.Can_Move (Widget) then
+         return;
+      end if;
       New_Visible := Widget.Drawing.Visible_Area;
       Set_Center (New_Visible, Point);
       Old_Buffer := Widget.Drawing.Buffer_Area;

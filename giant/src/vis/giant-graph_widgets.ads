@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.40 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.41 $
 --  $Author: keulsn $
---  $Date: 2003/08/12 14:30:31 $
+--  $Date: 2003/08/17 00:34:24 $
 --
 ------------------------------------------------------------------------------
 --
@@ -294,6 +294,24 @@ package Giant.Graph_Widgets is
      return Boolean;
 
    ----------------------------------------------------------------------------
+   --  Copies the all edges and all nodes contained in 'Widget' into a new
+   --  subgraph.
+   --
+   --  Note: The subgraph returned by this function must be destroyed as
+   --  described in package 'Graph_Lib.Subgraphs'
+   --
+   --  Parameters:
+   --    Widget - The graph widget
+   --    Name   - Name for the new subgraph
+   --  Returns:
+   --    A new subgraph covering all content of 'Widget'. May be modified
+   --    and must be destroyed.
+   function Get_Content
+     (Widget    : access Graph_Widget_Record'Class;
+      Name      : in     String := "")
+     return Graph_Lib.Subgraphs.Subgraph;
+
+   ----------------------------------------------------------------------------
    --  Inserts edges and nodes from 'Selection' into a 'Widget'. An edge
    --  is inserted only if its two incident nodes are contained in 'Widget'.
    --
@@ -348,27 +366,30 @@ package Giant.Graph_Widgets is
       Lock      :    out Lock_Type);
 
    ----------------------------------------------------------------------------
-   --  Removes all edges and nodes in 'Selection' from 'Widget'
+   --  Removes all edges and nodes in 'Selection' from 'Widget'. If there
+   --  is a lock held on 'Widget' then the removal is deferred until all
+   --  locks are released to allow a concurrently executed layouter to finish.
+   --
+   --  Note that all nodes in the graph widget that are incident to any
+   --  edge in 'Selection' are removed as well.
+   --
+   --  If edges or nodes that are contained in the current selection
+   --  are removed then a change signal will be emitted.
    --
    --  Parameters:
    --    Widget    - The graph widget
    --    Selection - Set of edges and nodes to be removed
-   --  Postcondition:
-   --    ( {E: Edge_Id | Contains (Widget, E)} union
-   --      {N: Node_Id | Contains (Widget, N)} ) intersection 'Selection'
-   --    = {}
    procedure Remove_Selection
      (Widget    : access Graph_Widget_Record'Class;
       Selection : in     Graph_Lib.Selections.Selection);
 
    ----------------------------------------------------------------------------
-   --  Removes all edges and nodes from 'Widget'
+   --  Removes all edges and nodes from 'Widget'. If there is a lock held
+   --  on 'Widget' then the removal is deferred until all locks are released
+   --  to allow a concurrently executed layouter to finish.
    --
    --  Parameters:
    --    Widget - The graph widget
-   --  Postcondition:
-   --    ( {E: Edge_Id | Contains (Widget, E)} union
-   --      {N: Node_Id | Contains (Widget, N)} )     = {}
    procedure Clear
      (Widget : access Graph_Widget_Record'Class);
 
@@ -1162,6 +1183,30 @@ private                    -- private part --
    -----------------------
 
    ----------------------------------------------------------------------------
+   --  Sets the obsolete flag on 'Edge' and moves 'Edge' to the unsized queue.
+   --  'Edge' will be destroyed on 'Flush_Locked'.
+   procedure Mark_Edge_Obsolete
+     (Widget : access Graph_Widget_Record'Class;
+      Edge   : in     Vis_Data.Vis_Edge_Id);
+
+   ----------------------------------------------------------------------------
+   --  Sets the obsolete flag on 'Node' and moves 'Node' to the unsized queue.
+   --  'Node' and all edges incident to 'Node' will be destroyed on
+   --  'Flush_Locked'. It is NOT necessary to mark edges incident to 'Node'.
+   --  This will be done by 'Flush_Locked', since more edges might be added
+   --  before the flush.
+   procedure Mark_Node_Obsolete
+     (Widget : access Graph_Widget_Record'Class;
+      Node   : in     Vis_Data.Vis_Node_Id);
+
+   ----------------------------------------------------------------------------
+   --  Sets the obsolete Flag on all edges incident to 'Node' and moves those
+   --  edges to the unsized queue. They will be destroyed on 'Flush_Locked'
+   procedure Mark_Incident_Obsolete
+     (Widget : access Graph_Widget_Record'Class;
+      Node   : in    Vis_Data.Vis_Node_Id);
+
+   ----------------------------------------------------------------------------
    --  Inserts those edges into the region manager that are incident to
    --  all nodes that were not in 'Old_Visible_Area' but are now in the
    --  visible area. Removes all edges that were in 'Old_Visible_Area' but
@@ -1311,6 +1356,19 @@ private                    -- private part --
       Graph_Node : in     Graph_Lib.Node_Id)
      return Vis_Data.Vis_Node_Id;
 
+   --  Destroys the visual representation of an edge. 'Edge' must not be
+   --  contained in the region manager or in any queue. It must not be
+   --  contained in the selection.
+   procedure Destroy_Edge
+     (Widget : access Graph_Widget_Record'Class;
+      Edge   : in out Vis_Data.Vis_Edge_Id);
+
+   --  Destroys the visual representation of a node. 'Node' must not be
+   --  containted in the region manager or in any queue. It must not be
+   --  contained in the selection.
+   procedure Destroy_Node
+     (Widget : access Graph_Widget_Record'Class;
+      Node   : in out Vis_Data.Vis_Node_Id);
 
    ----------------------------------------------------------------------------
    --  Default size of a graph widget
