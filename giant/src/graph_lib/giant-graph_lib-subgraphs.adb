@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-graph_lib-subgraphs.adb,v $, $Revision: 1.3 $
 --  $Author: koppor $
---  $Date: 2003/06/14 11:31:38 $
+--  $Date: 2003/06/17 13:08:26 $
 
 package body Giant.Graph_Lib.Subgraphs is
 
@@ -97,7 +97,7 @@ package body Giant.Graph_Lib.Subgraphs is
 
    ---------------------------------------------------------------------------
    function Create
-     (Name : in    Valid_Names.Standard_Name)
+     (Name : in    String)
       return Subgraph
    is
       Res : Subgraph := new Subgraph_Record;
@@ -108,13 +108,14 @@ package body Giant.Graph_Lib.Subgraphs is
 
    ---------------------------------------------------------------------------
    function Create
-     (Name                 : in Valid_Names.Standard_Name;
+     (Name                 : in String;
       Selection_To_Convert : in Graph_Lib.Selections.Selection)
       return Subgraph
    is
       Res : Subgraph := new Subgraph_Record;
    begin
       Res.Sel := Selections.Clone (Selection_To_Convert);
+      Rename (Res, Name);
       Ensure_Graph_Edge_Properties (Res);
       return Res;
    end Create;
@@ -199,7 +200,7 @@ package body Giant.Graph_Lib.Subgraphs is
    ---------------------------------------------------------------------------
    procedure Rename
      (SubGraph_To_Rename : in out Subgraph;
-      New_Name           : in     Valid_Names.Standard_Name)
+      New_Name           : in     String)
    is
    begin
       Selections.Rename (Subgraph_To_Rename.Sel, New_Name);
@@ -259,4 +260,3 @@ package body Giant.Graph_Lib.Subgraphs is
    end Ensure_Graph_Edge_Properties;
 
 end Giant.Graph_Lib.Subgraphs;
-

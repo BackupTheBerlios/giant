@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.5 $
+--  $RCSfile: giant-graph_lib-subgraphs.ads,v $, $Revision: 1.6 $
 --  $Author: koppor $
---  $Date: 2003/06/14 11:43:11 $
+--  $Date: 2003/06/17 13:08:36 $
 --
 ------------------------------------------------------------------------------
 --
@@ -38,7 +38,6 @@ with Lists;
 with Bauhaus_Io;
 
 --  from GIANT
-with Giant.Valid_Names;
 with Giant.Graph_Lib.Selections;
 
 package Giant.Graph_Lib.Subgraphs is
@@ -51,7 +50,7 @@ package Giant.Graph_Lib.Subgraphs is
    --  Creates a new subgraph,
    --    which has to be destroyed afterwards
    function Create
-      (Name : in    Valid_Names.Standard_Name)
+      (Name : in    String)
       return Subgraph;
 
    ---------------------------------------------------------------------------
@@ -63,7 +62,7 @@ package Giant.Graph_Lib.Subgraphs is
    --  Returns:
    --    Selection converted to a subgraph
    function Create
-     (Name : in Valid_Names.Standard_Name;
+     (Name : in String;
       Selection_To_Convert : in Graph_Lib.Selections.Selection)
      return Subgraph;
 
@@ -81,7 +80,7 @@ package Giant.Graph_Lib.Subgraphs is
    ---------------------------------------------------------------------------
    procedure Rename
       (SubGraph_To_Rename : in out Subgraph;
-       New_Name           : in     Valid_Names.Standard_Name);
+       New_Name           : in     String);
 
    ---------------------------------------------------------------------------
    function Get_Name
