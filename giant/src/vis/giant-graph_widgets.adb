@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.47 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.48 $
 --  $Author: keulsn $
---  $Date: 2003/09/02 04:49:38 $
+--  $Date: 2003/09/02 13:43:07 $
 --
 ------------------------------------------------------------------------------
 
@@ -1951,7 +1951,8 @@ package body Giant.Graph_Widgets is
       Actual_Zoom : Vis.Zoom_Level;
       Max_Zoom    : Vis.Zoom_Level := Get_Maximum_Zoom_Level (Widget);
    begin
-      Actual_Zoom := Vis.Zoom_Level'Min (Zoom, Max_Zoom);
+      Actual_Zoom := Vis.Zoom_Level'Max (0.0, Zoom);
+      Actual_Zoom := Vis.Zoom_Level'Min (Actual_Zoom, Max_Zoom);
       Lock_All_Content (Widget, Lock);
       Move_All_Nodes_To_Unsized (Widget);
       --  Move_All_Edges_To_Unsized (Widget);

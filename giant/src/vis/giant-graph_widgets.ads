@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.42 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.43 $
 --  $Author: keulsn $
---  $Date: 2003/09/02 04:49:38 $
+--  $Date: 2003/09/02 13:43:07 $
 --
 ------------------------------------------------------------------------------
 --
@@ -129,7 +129,7 @@ package Giant.Graph_Widgets is
    -------------------------------
 
    ----------------------------------------------------------------------------
-   --  Creates an emty graph widget.
+   --  Creates an empty graph widget.
    --
    --  Parameters:
    --    Widget       - Access to a new graph widget
@@ -150,7 +150,7 @@ package Giant.Graph_Widgets is
    --    Widget - Access to a new graph widget
    --    Pool   - Pool of node annotations
    --  Raises
-   --    ...
+   --    Any of Ada.Io_Exceptions
    procedure Read_Graph_Widget
      (Stream      : in     Bauhaus_IO.In_Stream_Type;
       Widget      :    out Graph_Widget;
@@ -159,13 +159,14 @@ package Giant.Graph_Widgets is
 
    ----------------------------------------------------------------------------
    --  Outputs a graph widget to 'Stream'. It can then be read into memory
-   --  again using 'Input'
+   --  again using 'Read_Graph_Widget'. The local highlight colors are stored,
+   --  global highlighting is not.
    --
    --  Parameters:
    --    Stream - The stream to output the state to
    --    Widget - The graph widget to output
    --  Raises
-   --    ...
+   --    Any of Ada.Io_Exceptions
    procedure Write_Graph_Widget
      (Stream : in     Bauhaus_IO.Out_Stream_Type;
       Widget : access Graph_Widget_Record);
@@ -318,7 +319,7 @@ package Giant.Graph_Widgets is
    --  is inserted only if its two incident nodes are contained in 'Widget'.
    --
    --  This subprogram produces a lock for the inserted selection. The
-   --  inserted selection is locked until 'Lock' is release by a call
+   --  inserted selection is locked until 'Lock' is released by a call
    --  to 'Release_Lock' (see below). Until then the newly inserted selection
    --  is not shown inside the graph widget.
    --
@@ -326,7 +327,7 @@ package Giant.Graph_Widgets is
    --  layouter has finished the lock should be released.
    --
    --  Note:
-   --    The user probably cannot perform action on the graph widget until
+   --    The user probably cannot perform any action on the graph widget until
    --    the lock is released.
    --  Parameters:
    --    Widget    - The graph widget
@@ -503,7 +504,8 @@ package Giant.Graph_Widgets is
    --  Returns:
    --    The top middle point of node in logical vector space
    --  Precondition:
-   --    'Contains (Widget, Node)'
+   --    'Contains (Widget, Node)' or 'Node' was removed and a lock was held
+   --    and not removed before the call to this function.
    --  Raises:
    --    Unknown_Node_Id if Precondition not satisfied
    function Get_Top_Middle
@@ -559,6 +561,11 @@ package Giant.Graph_Widgets is
    --    Node   - The node to be measured
    --  Returns:
    --    An estimate of the height that will be assigned to 'Node' in 'Widget'
+   --  Precondition:
+   --    'Contains (Widget, Node)' or 'Node' was removed while a lock was
+   --    held on 'Widget' and not released before the call to this function
+   --  Raises:
+   --    Unknown_Node_Id if precondition not satisfied
    function Get_Current_Node_Height
      (Widget    : access Graph_Widget_Record'Class;
       Node       : in     Graph_Lib.Node_Id)
