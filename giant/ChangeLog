@@ -1,7 +1,9 @@
 2003-09-10  Steffen Pingel  <squig@users.sourceforge.net>
 
-	* src/reuse/bauhaus-os.adb: Replaced pragma import realpath by
-	GNAT.OS_Lib.Normalize_Pathname call.
+	* src/reuse/bauhaus-os.adb: Removed realpath dependency. Would
+	prefer to replace pragma import realpath by
+	GNAT.OS_Lib.Normalize_Pathname call but that is still not
+	available on GNAT 3.14.	
 
 2003-09-09  Steffen Pingel  <squig@users.sourceforge.net>
 
