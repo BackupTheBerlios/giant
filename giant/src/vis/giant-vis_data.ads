@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.6 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.7 $
 --  $Author: keulsn $
---  $Date: 2003/06/16 15:34:09 $
+--  $Date: 2003/06/18 20:37:46 $
 --
 ------------------------------------------------------------------------------
 --
@@ -40,6 +40,7 @@ with Lists;
 pragma Elaborate_All (Lists);
 
 with Giant.Graph_Lib;
+with Giant.Merging_Iterators;
 with Giant.Vis;
 
 package Giant.Vis_Data is
@@ -161,6 +162,13 @@ package Giant.Vis_Data is
      (Item_Type  => Vis_Edge_Id,
       "<"        => Is_Edge_Below);
 
+   ----------------------------------------------------------------------------
+   --  Iterators over 'Vis_Edge_Id's in Layer-ascending order
+   package Edge_Update_Iterators is new Merging_Iterators
+     (Item_Type => Vis_Edge_Id,
+      "<"       => Is_Edge_Below,
+      Sets      => Vis_Edge_Sets);
+
    type Vis_Edge_Id_Array is array (Positive range <>) of Vis_Edge_Id;
    type Vis_Edge_Id_Array_Access is access Vis_Edge_Id_Array;
 
@@ -189,6 +197,13 @@ package Giant.Vis_Data is
    package Vis_Node_Sets is new Ordered_Sets
      (Item_Type  => Vis_Node_Id,
       "<"        => Is_Node_Below);
+
+   ----------------------------------------------------------------------------
+   --  Iterators over 'Vis_Node_Id's in Layer-ascending order
+   package Node_Update_Iterators is new Merging_Iterators
+     (Item_Type  => Vis_Node_Id,
+      "<"        => Is_Node_Below,
+      Sets       => Vis_Node_Sets);
 
    type Vis_Node_Id_Array is array (Positive range <>) of Vis_Node_Id;
    type Vis_Node_Id_Array_Access is access Vis_Node_Id_Array;
@@ -324,19 +339,20 @@ package Giant.Vis_Data is
    --  This might be smaller than or equal to the input area.
    --
    --  Parameters:
-   --    Manager      - The region manager
-   --    Display_Area - The area that will be drawn
-   --    Refresh_Area - The part of 'Display_Area' that needs to be refreshed
-   --    Refresh_Done - If set to True, then the pollution on the background
-   --                   of 'Display_Area' is cleaned.
+   --    Manager         - The region manager
+   --    Display_Area    - The area that will be drawn
+   --    Refresh_Area    - The part of 'Display_Area' that needs to be
+   --                      refreshed
+   --    Refresh_Pending - If set to True, then the pollution on the
+   --                      background of 'Display_Area' is cleaned.
    --  Notes:
    --    * The Area 'Display_Area' minus 'Refresh_Area' can be non-empty.
    --    * No point outside of 'Refresh_Area' must be modified.
    procedure Start_Refresh_Background
-     (Manager      : in out Region_Manager;
-      Display_Area : in     Vis.Absolute.Rectangle_2d;
-      Refresh_Area :    out Rectangle_2d_Lists.List;
-      Refresh_Done : in     Boolean := True);
+     (Manager         : in out Region_Manager;
+      Display_Area    : in     Vis.Absolute.Rectangle_2d;
+      Refresh_Area    :    out Rectangle_2d_Lists.List;
+      Refresh_Pending : in     Boolean);
 
    ----------------------------------------------------------------------------
    --  Deallocates the storage uses by 'Start_Refresh_Background'. This
@@ -360,16 +376,17 @@ package Giant.Vis_Data is
    --  need to be refreshed.
    --  This procedure produces as output the area that should be refreshed.
    --  This might be smaller than or equal to the input area. Produces also
-   --  an array of edges and an array of nodes to be drawn in that area.
+   --  an iterator of edges and an iterator of nodes to be drawn in that area.
    --
    --  Parameters:
-   --    Manager      - The region manager
-   --    Display_Area - The area that will be drawn
-   --    Refresh_Area - The part of 'Display_Area' that needs to be refreshed
-   --    Edges        - Access to an array of all edges that need to be drawn
-   --    Nodes        - Access to an array of all nodes that need to be drawn
-   --    Refresh_Done - If set to True, then all pollution is cleaned from
-   --                   Refresh_Area, else 'Manager' remains unchanged.
+   --    Manager         - The region manager
+   --    Display_Area    - The area that will be drawn
+   --    Refresh_Area    - The part of 'Display_Area' that needs to be
+   --                      refreshed
+   --    Edges           - Iterator of all edges that need to be drawn
+   --    Nodes           - Iterator of all nodes that need to be drawn
+   --    Refresh_Pending - If set to True, then all pollution is cleaned from
+   --                      Refresh_Area, else 'Manager' remains unchanged.
    --  Notes:
    --    * The Area 'Display_Area' minus 'Refresh_Area' can be non-empty.
    --      In that case the old content must be remembered. If the old
@@ -379,18 +396,15 @@ package Giant.Vis_Data is
    --      modified. GtkAda provides filters to ensure this.
    --    * Before drawing begins, the background must be refreshed according
    --      to the data provided by 'Start_Refresh_Background'
-   --    * The arrays 'Edges' and 'Nodes' are not sorted. Before drawing
-   --      begins they should be sorted with Layer ascending. Drawing should
-   --      begin with the lowest edge and end with the highest node.
    --    * 'End_Refresh_Operation' must be called after the refresh operation
    --      is done to deallocate storage.
    procedure Start_Refresh_Foreground
      (Manager         : in out Region_Manager;
       Display_Area    : in     Vis.Absolute.Rectangle_2d;
       Refresh_Area    :    out Rectangle_2d_Lists.List;
-      Edges           :    out Vis_Edge_Id_Array_Access;
-      Nodes           :    out Vis_Node_Id_Array_Access;
-      Refresh_Pending : in     Boolean                   := True);
+      Edges           :    out Edge_Update_Iterators.Merger_Access;
+      Nodes           :    out Node_Update_Iterators.Merger_Access;
+      Refresh_Pending : in     Boolean);
 
    ----------------------------------------------------------------------------
    --  Deallocates the storage used by 'Start_Refresh_Foreground'. This
@@ -409,8 +423,8 @@ package Giant.Vis_Data is
    --    'Edges' = null, 'Nodes' = null
    procedure End_Refresh_Foreground
      (Refresh_Area : in out Rectangle_2d_Lists.List;
-      Edges        : in out Vis_Edge_Id_Array_Access;
-      Nodes        : in out Vis_Node_Id_Array_Access);
+      Edges        : in out Edge_Update_Iterators.Merger_Access;
+      Nodes        : in out Node_Update_Iterators.Merger_Access);
 
 private
 
@@ -424,7 +438,7 @@ private
    type Layer_Pool is new Layer_Type;
 
    Bottom_Layer : constant Layer_Pool := Layer_Pool'First;
-   Top_Layer : constant Layer_Pool := Layer_Pool'Last;
+   Top_Layer    : constant Layer_Pool := Layer_Pool'Last;
 
 
    ----------------------------------------------------------------------------
@@ -440,12 +454,10 @@ private
    type Region_Position is new Vis.Absolute.Vector_2d;
 
    ----------------------------------------------------------------------------
-   --  Hash function on 'Region_Position's. 'Region_Position' models the top
-   --  left point of a region. Since regions are always disjunct, no two
-   --  regions can have the same top left point.
+   --  Hash function on 'Region_Position's.
    --
    --  Parameters:
-   --    Key - Top left point of a region
+   --    Key - position of a region
    --  Returns:
    --    Hash value
    --  Postcondition:
@@ -454,6 +466,53 @@ private
    function Hash_Region_Position
      (Key : in Region_Position)
      return Integer;
+
+   ----------------------------------------------------------------------------
+   --  A 'Position_Pool' represents a rectangle of 'Region_Position's
+   type Position_Pool is new Vis.Absolute.Rectangle_2d;
+
+   ----------------------------------------------------------------------------
+   --  Get the 'Position_Pool' so that the regions that correspond to
+   --  positions within the pool contain 'Area'.
+   function Create_Position_Pool_From_Area
+     (Manager      : in     Region_Manager;
+      Area         : in     Vis.Absolute.Rectangle_2d)
+     return Position_Pool;
+
+   function Create_Position_Pool
+     (Top_Left     : in     Region_Position;
+      Bottom_Right : in     Region_Position)
+     return Position_Pool;
+
+   --  Get the area actually covered by 'Pool'. This area might contain more
+   --  points than the 'Area' given into 'Create_Position_Pool_From_Area'
+   function Get_Position_Pool_Area
+     (Manager      : in     Region_Manager;
+      Pool         : in     Position_Pool)
+     return Vis.Absolute.Rectangle_2d;
+
+   ----------------------------------------------------------------------------
+   --  Allows iteration over all 'Region_Position's in a 'Position_Pool'
+   type Position_Iterator is
+      record
+         Current : Region_Position;
+         Pool    : Position_Pool;
+      end record;
+
+   procedure Make_Position_Iterator
+     (Pool     : in     Position_Pool;
+      Iterator :    out Position_Iterator);
+
+   function Has_More
+     (Iterator : in     Position_Iterator)
+     return Boolean;
+
+   function Get_Current
+     (Iterator : in     Position_Iterator)
+     return Region_Position;
+
+   procedure Next
+     (Iterator : in out Position_Iterator);
 
    ----------------------------------------------------------------------------
    --  Linear lists of 'Region_Id's

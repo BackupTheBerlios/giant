@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-merging_iterators.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-merging_iterators.ads,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/06/18 13:41:30 $
+--  $Date: 2003/06/18 20:37:46 $
 --
 ------------------------------------------------------------------------------
 --
@@ -43,6 +43,8 @@
 --  'Create' will figure out the correct size itself.
 --
 --  Complexity:
+--
+--  :: Time
 --  * Let n be the number of iterators a merging iterator is based on
 --  * Let sum be the number of items all those n iterators iterate over
 --  * By Sets.Destroy think of the overloaded
@@ -56,6 +58,13 @@
 --             + Complexity of Sets.Next
 --             + Complexity of Sets.Current
 --             + Complexity of Sets.Destroy))
+--
+--  :: Space
+--  O (n)
+--
+--  --> Copying in an array and sorting that array gives
+--  time in O (sum * log sum),
+--  space in O (sum)
 --
 
 
@@ -83,6 +92,8 @@ generic
       "<"       => "<");
 
 package Giant.Merging_Iterators is
+
+   pragma Elaborate_Body;
 
    ---------------------------------------------------------------------------
    --  List of Iterators
