@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.9 $
+--  $RCSfile: giant-evolutions.adb,v $, $Revision: 1.10 $
 --  $Author: keulsn $
---  $Date: 2003/06/09 15:09:58 $
+--  $Date: 2003/06/09 15:26:23 $
 --
 ------------------------------------------------------------------------------
 
@@ -895,7 +895,7 @@ package body Giant.Evolutions is
    begin
       if Driver_State.Individual = null then
          Evolution_Logger.Error ("Too many idle signals emitted.");
-         return False;
+         raise Gtk_Idle_Disconnect_Failed;
       end if;
 
       --  Individual might have produced sub-calculations. Continue with
@@ -903,7 +903,7 @@ package body Giant.Evolutions is
       loop
          Child := Get_Child (Driver_State.Individual);
          exit when Child = null;
-         pragma Assert (Get_Parent (Child) /= null);
+         pragma Assert (Get_Parent (Child) = Driver_State.Individual);
          Driver_State.Individual := Child;
       end loop;
 

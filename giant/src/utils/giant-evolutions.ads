@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-evolutions.ads,v $, $Revision: 1.7 $
+--  $RCSfile: giant-evolutions.ads,v $, $Revision: 1.8 $
 --  $Author: keulsn $
---  $Date: 2003/06/09 15:09:58 $
+--  $Date: 2003/06/09 15:26:23 $
 --
 ------------------------------------------------------------------------------
 --
@@ -77,6 +77,12 @@ package Giant.Evolutions is
    --  only one window will be updated, so each process has a delay time
    --  of this constant multiplyed by the number of running processes.
    Poll_Delay_Milli_Seconds : constant := 500;
+
+   ---------------------------------------------------------------------------
+   --  There seem to be some problems with idle signals emitted by GtkAda.
+   --  This exception is raised if the disconnection of a handler for such
+   --  a signal failed.
+   Gtk_Idle_Disconnect_Failed : exception;
 
    ---------------------------------------------------------------------------
    --  All types of atomic operations of an Evolution
