@@ -1,3 +1,9 @@
+2003-10-09  Oliver Kopp  <koppor@studi.informatik.uni-stuttgart.de>
+
+	* etc/global_config.xml: Added Create Complete Subgraph to Menu
+
+	* shared/gsl/Create Create Complete Subgraph.gsl: added
+
 2003-10-07  Oliver Kopp  <koppor@studi.informatik.uni-stuttgart.de>
 
 	* shared/class_sets/all_nodes.xml: added for generate_subgraph_dialog
