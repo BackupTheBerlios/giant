@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: dump_iml_data.adb,v $, $Revision: 1.1 $
+--  $RCSfile: dump_iml_data.adb,v $, $Revision: 1.2 $
 --  $Author: schwiemn $
---  $Date: 2003/07/07 06:23:13 $
+--  $Date: 2003/07/07 06:33:55 $
 --  
 -- -----
 -- Used to Dump the Content (Node Classes and attributes of an iml Graph
@@ -55,16 +55,17 @@ begin
    Giant.Graph_Lib.Initialize;
    
    Giant.Default_Logger.Init;
-   Giant.Default_Logger.Debug ("Starting Data Dump ...");
+   Giant.Default_Logger.Info ("Starting Data Dump ...");
          
    Node_Classes := Giant.Graph_Lib.Get_All_Node_Class_Ids;   
 
      
    -- All node classes
    -------------------
-   Logger.Debug ("");
-   Logger.Debug ("All Node Classes of the iml graph:");
-   Logger.Debug ("----------------------------------");
+   Logger.Info ("");
+   Logger.Info ("");
+   Logger.Info ("All Node Classes of the iml graph:");
+   Logger.Info ("----------------------------------");
  
    Node_Classes_Iter := 
      Giant.Graph_Lib.Node_Class_Id_Sets.Make_Iterator (Node_Classes);
@@ -88,9 +89,10 @@ begin
    
    -- All edge classes
    -------------------   
-   Logger.Debug ("");
-   Logger.Debug ("All Edge Classes of the iml graph:");
-   Logger.Debug ("----------------------------------");
+   Logger.Info ("");
+   Logger.Info ("");
+   Logger.Info ("All Edge Classes of the iml graph:");
+   Logger.Info ("----------------------------------");
    
    Edge_Attr_Set := 
      Giant.Graph_Lib.Get_All_Edge_Class_Ids;
@@ -118,9 +120,10 @@ begin
       
    -- Details for each node class
    ------------------------------   
-   Logger.Debug ("");
-   Logger.Debug ("Details about node classes of the iml graph:");
-   Logger.Debug ("--------------------------------------------");
+   Logger.Info ("");
+   Logger.Info ("");  
+   Logger.Info ("Details about node classes of the iml graph:");
+   Logger.Info ("--------------------------------------------");
    
    Node_Classes_Iter := 
      Giant.Graph_Lib.Node_Class_Id_Sets.Make_Iterator (Node_Classes);
@@ -131,12 +134,14 @@ begin
       Giant.Graph_Lib.Node_Class_Id_Sets.Next 
         (Node_Classes_Iter, A_Node_Class);
 
+      Logger.Info ("");  
       Logger.Info ("");      
       Logger.Info
         (Integer'Image (Node_Class_Counter) & ". " & "Node Class: """
          & Giant.Graph_Lib.Get_Node_Class_Tag (A_Node_Class)
          & """");
-                
+      Logger.Info ("");      
+            
       -- 1. Dump all attributes
       -------------------------
       Attributes_Iter := Giant.Graph_Lib.Make_Attribute_Iterator
@@ -148,12 +153,15 @@ begin
          Giant.Graph_Lib.Next (Attributes_Iter, A_Attribute);
          
          Logger.Info
-           ("  " & Integer'Image (Attr_Counter) & ". " & "Attr: """                 
+           ("  " & Integer'Image (Attr_Counter) & ". " & "Attribute: """                 
             & Giant.Graph_Lib.Convert_Node_Attribute_Id_To_Name
                 (A_Attribute)
             & """");     
-         Attr_Counter := Attr_Counter + 1;    
+         Attr_Counter := Attr_Counter + 1; 
+            
       end loop;
+     
+      Logger.Info ("");  
                    
       -- 2. Dump all edge attributes (subset of  1.)
       ----------------------------------------------      
@@ -163,16 +171,19 @@ begin
       Edge_Attr_Iter := 
         Giant.Graph_Lib.Edge_Class_Id_Sets.Make_Iterator (Edge_Attr_Set);
         
+      Edge_Class_Counter := 1;
       while Giant.Graph_Lib.Edge_Class_Id_Sets.More (Edge_Attr_Iter) loop
       
          Giant.Graph_Lib.Edge_Class_Id_Sets.Next 
            (Edge_Attr_Iter, A_Edge_Attr);
                       
          Logger.Info
-           ("  Edge_Attr: """                 
+           ("  " & Integer'Image (Edge_Class_Counter) & ". " & "Edge_Attr: """                
             & Giant.Graph_Lib.Get_Edge_Class_Tag 
                 (A_Edge_Attr)
-            & """");        
+            & """");
+            
+         Edge_Class_Counter := Edge_Class_Counter + 1;          
       end loop;
             
       Giant.Graph_Lib.Edge_Class_Id_Sets.Destroy (Edge_Attr_Set);
