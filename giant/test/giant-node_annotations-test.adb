@@ -1,0 +1,243 @@
+------------------------------------------------------------------------------
+--  GIANT - Graphical IML Analysis and Navigation Tool
+--
+--  Copyright (C) 2003 Philipp Haeuser, Steffen Keul, Oliver Kopp,
+--  Steffen Pingel, Gerrit Schulz and Martin Schwienbacher.
+--
+--  This program is free software; you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by
+--  the Free Software Foundation; either version 2 of the License, or
+--  (at your option) any later version.
+--
+--  This program is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+--  GNU General Public License for more details.
+--
+--  You should have received a copy of the GNU General Public License
+--  along with this program; if not, write to the Free Software
+--  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+--
+--  First Author: Martin Schwienbacher
+--
+--  $RCSfile: giant-node_annotations-test.adb,v $, $Revision: 1.1 $
+--  $Author: schwiemn $
+--  $Date: 2003/06/30 20:33:19 $
+--
+
+with AUnit.Assertions; use AUnit.Assertions;
+with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
+
+with Giant.XML_File_Access;
+with Dom.Core;
+with Dom.Core.Nodes;
+with Tree_Readers;
+with Dom.Core.Elements;
+
+with Giant.Graph_Lib;
+
+with Giant.Node_Annotations;
+
+with Giant.Logger;
+
+package body Giant.Node_Annotations.Test is
+
+   package Logger is new Giant.Logger("Giant.Node_Annotations.Test");
+         
+   ---------------------------------------------------------------------------
+   procedure Test_Memory_Leacks_XML
+     (R : in out AUnit.Test_Cases.Test_Case'Class) is
+     
+      My_XML_Document : Dom.Core.Document;
+      My_Tree_Reader  : Tree_Readers.Tree_Reader;
+      
+      My_Annotations : Giant.Node_Annotations.Node_Annotation_Access;
+   begin
+      
+      for i in 1 .. 50000000 loop
+  --       Giant.XML_File_Access.Load_XML_File_Validated
+  --         ("./resources/node_annotations/node_annotations.xml",
+  --          My_Tree_Reader,
+  --          My_XML_Document);
+         
+  --       Assert (Giant.XML_File_Access.Does_XML_Document_Belong_To_Type 
+  --         ("giant_node_annotations_file", My_XML_Document), 
+  --          "Check whether detects correct file");   
+   --      Assert (not Giant.XML_File_Access.Does_XML_Document_Belong_To_Type 
+   --        ("irgendwas", My_XML_Document), 
+   --         "Check whether detects wrong file");   
+         
+   --      Tree_Readers.Free (My_Tree_Reader);     
+   
+            My_Annotations := 
+           Node_Annotations.Load_From_File 
+             ("resources/node_annotations/node_annotations.xml");
+   
+   
+    
+      end loop;
+   end Test_Memory_Leacks_XML;         
+         
+         
+   ---------------------------------------------------------------------------
+   procedure Test_Memory_Leack
+     (R : in out AUnit.Test_Cases.Test_Case'Class) is
+                             
+      My_Annotations : Giant.Node_Annotations.Node_Annotation_Access;
+   begin
+                                                                                                                                                                             
+      for I in 1 .. 1 loop
+         My_Annotations := 
+           Node_Annotations.Load_From_File 
+             ("resources/node_annotations/node_annotations.xml");
+          
+         Node_Annotations.Write_To_File 
+           (My_Annotations,
+            "resources/node_annotations/node_annotations2.xml");   
+                                                  
+         Node_Annotations.Deallocate (My_Annotations);        
+         
+      end loop; 
+   end Test_Memory_Leack;
+   
+   ---------------------------------------------------------------------------
+   -- Used to figure out the existing node id's that are needed for the
+   -- cration of test data.
+   procedure Write_IML_Node_Ids_Into_Logger
+     (R : in out AUnit.Test_Cases.Test_Case'Class) is
+                         
+      All_Nodes : Graph_Lib.Node_Id_Set;     
+      Iter      : Graph_Lib.Node_Id_Sets.Iterator;
+   begin
+                  
+      All_Nodes := Graph_Lib.Get_All_Nodes;
+      Iter      := Graph_Lib.Node_Id_Sets.Make_Iterator (All_Nodes);
+
+      while Graph_Lib.Node_Id_Sets.More (Iter) loop
+
+         Logger.Debug 
+           ("Node Id Image from IML_Graph: """
+            & Graph_Lib.Node_Id_Image 
+              (Graph_Lib.Node_Id_Sets.Current (Iter))
+            & """");
+             
+         Graph_Lib.Node_Id_Sets.Next (Iter);      
+      end loop;   
+        
+      Graph_Lib.Node_Id_Sets.Destroy (Iter);         
+   end Write_IML_Node_Ids_Into_Logger;
+
+   ---------------------------------------------------------------------------
+   procedure Test_File_Loading
+     (R : in out AUnit.Test_Cases.Test_Case'Class) is
+           
+      My_Annotations : Giant.Node_Annotations.Node_Annotation_Access;
+   begin
+   
+      My_Annotations := 
+        Node_Annotations.Load_From_File 
+          ("resources/node_annotations/node_annotations.xml");
+          
+      Node_Annotations.Write_To_File 
+        (My_Annotations,
+         "resources/node_annotations/node_annotations2.xml");   
+                                                  
+      Node_Annotations.Deallocate (My_Annotations);                         
+   end Test_File_Loading;
+   
+   ---------------------------------------------------------------------------
+   procedure Test_Annotations_Status
+     (R : in out AUnit.Test_Cases.Test_Case'Class) is
+     
+     Node_Id_18 : Giant.Graph_Lib.Node_Id := Graph_Lib.Node_Id_Value ("18");
+     -- Node_Id_3 is already annotated (annotation loaded from file)
+     Node_Id_3 : Giant.Graph_Lib.Node_Id := Graph_Lib.Node_Id_Value ("3");                  
+
+     My_Annotations : Giant.Node_Annotations.Node_Annotation_Access;
+   begin
+    
+      My_Annotations := 
+        Node_Annotations.Load_From_File 
+          ("resources/node_annotations/node_annotations.xml");
+    
+      Assert 
+        (Node_Annotations.Is_Annotated (My_Annotations, Node_Id_3),
+         "Node with Id ""3"" is annotated.");
+         
+      Assert 
+        (Node_Annotations.Get_Annotation_Text (My_Annotations, Node_Id_3)
+         = "I am an existing Node.",       
+         "Node with Id ""3"" annotation text correct annotated.");
+                          
+      Assert 
+        (not Node_Annotations.Is_Annotated (My_Annotations, Node_Id_18),
+        "Node with Id ""18"" is not annotated.");
+  
+      Node_Annotations.Deallocate (My_Annotations); 
+   end Test_Annotations_Status;
+   
+   
+   ---------------------------------------------------------------------------
+   procedure Test_Editing_Annotations
+     (R : in out AUnit.Test_Cases.Test_Case'Class) is
+                    
+     Node_Id_18 : Giant.Graph_Lib.Node_Id := Graph_Lib.Node_Id_Value ("18");
+     -- Node_Id_3 is already annotated (annotation loaded from file
+     Node_Id_3 : Giant.Graph_Lib.Node_Id := Graph_Lib.Node_Id_Value ("3");     
+     Node_Id_4 : Giant.Graph_Lib.Node_Id := Graph_Lib.Node_Id_Value ("4");
+     Node_Id_7 : Giant.Graph_Lib.Node_Id := Graph_Lib.Node_Id_Value ("7");     
+
+     My_Annotations : Giant.Node_Annotations.Node_Annotation_Access;
+   begin
+      My_Annotations := 
+        Node_Annotations.Load_From_File 
+          ("resources/node_annotations/node_annotations.xml");
+
+      Node_Annotations.Deallocate (My_Annotations);       
+   end Test_Editing_Annotations;
+
+   ---------------------------------------------------------------------------
+   function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is
+   begin
+      return new String'("Giant.Node_Annotations.Test - Basic Tests");
+   end Name;
+
+   procedure Register_Tests (T : in out Test_Case) is
+   begin
+      
+      Register_Routine 
+        (T, Test_Memory_Leacks_XML'Access, "Test_Memory_Leacks_XML");
+      
+      
+  --    Register_Routine 
+  --      (T, Test_Memory_Leack'Access, "Test_Memory_Leack");
+           
+      --Register_Routine 
+      --  (T, Write_IML_Node_Ids_Into_Logger'Access, 
+      --   "Reading_Node_Id_Images_From_IML_Graph");  
+
+      Register_Routine 
+        (T, Test_File_Loading'Access, "Test_File_Loading");
+                       
+      Register_Routine 
+        (T, Test_Annotations_Status'Access, "Test_Annotations_Status");                     
+                        
+      Register_Routine 
+        (T, Test_Editing_Annotations'Access, "Test_Editing_Annotations");     
+                
+   end Register_Tests;
+
+   procedure Set_Up (T : in out Test_Case) is
+   begin
+      Giant.Graph_Lib.Initialize;      
+      Giant.Graph_Lib.Load      
+        ("/home/schwiemn/giant/schwiemn/CVS_Hpro/giant/test/resources/node_annotations/rfg_examp.iml");
+   end Set_Up;
+
+   procedure Tear_Down (T : in out Test_Case) is
+   begin
+      Giant.Graph_Lib.Unload;   
+      Giant.Graph_Lib.Destroy;
+   end Tear_Down;
+
+end Giant.Node_Annotations.Test;

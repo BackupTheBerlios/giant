@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-xml_file_access-test.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-xml_file_access-test.adb,v $, $Revision: 1.2 $
 --  $Author: schwiemn $
---  $Date: 2003/06/25 15:46:45 $
+--  $Date: 2003/06/30 20:33:19 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -36,21 +36,22 @@ package body Giant.XML_File_Access.Test is
 
    package Logger is new Giant.Logger("Giant.XML_File_Access.Test");
 
+   ---------------------------------------------------------------------------
    procedure Test_Memory_Leacks
      (R : in out AUnit.Test_Cases.Test_Case'Class) is
      
-     My_XML_Document : Dom.Core.Document;
-     My_Tree_Reader  : Tree_Readers.Tree_Reader;
+      My_XML_Document : Dom.Core.Document;
+      My_Tree_Reader  : Tree_Readers.Tree_Reader;
    begin
       
-      for i in 1 .. 500 loop
+      for i in 1 .. 50000000 loop
          Giant.XML_File_Access.Load_XML_File_Validated
-           ("./resources/xml_test_data/global_config.xml",
+           ("./resources/node_annotations/node_annotations.xml",
             My_Tree_Reader,
             My_XML_Document);
          
          Assert (Giant.XML_File_Access.Does_XML_Document_Belong_To_Type 
-           ("giant_config_file", My_XML_Document), 
+           ("giant_node_annotations_file", My_XML_Document), 
             "Check whether detects correct file");   
          Assert (not Giant.XML_File_Access.Does_XML_Document_Belong_To_Type 
            ("irgendwas", My_XML_Document), 
@@ -60,7 +61,7 @@ package body Giant.XML_File_Access.Test is
       end loop;
    end Test_Memory_Leacks;
          
-
+   ---------------------------------------------------------------------------
    function Name (T : Test_Case) return Ada.Strings.Unbounded.String_Access is
    begin
       return new String'("Giant.XML_File_Access.Test - Basic Tests");

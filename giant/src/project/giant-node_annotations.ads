@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-node_annotations.ads,v $, $Revision: 1.8 $
---  $Author: squig $
---  $Date: 2003/06/23 12:40:58 $
+--  $RCSfile: giant-node_annotations.ads,v $, $Revision: 1.9 $
+--  $Author: schwiemn $
+--  $Date: 2003/06/30 20:33:19 $
 ------------------------------------------------------------------------------
 --  This package overs the functionality needed to handle node annotations.
 --
@@ -30,7 +30,7 @@
 --  In order to avoid cyclic package dependencies the
 --  functionality of this package is not part of project_management.
 --
-with Ada.Strings.Unbounded;
+with Ada.Strings.Unbounded; 
 
 with Giant.Graph_Lib; -- from GIANT
 
@@ -341,7 +341,7 @@ private
    package Node_Annotation_Hashed_Mappings is new Hashed_Mappings
      (Key_Type   => Graph_Lib.Node_Id,
       Hash       => Graph_Lib.Hash_Node_Id,
-      Value_Type => Ada.Strings.Unbounded.Unbounded_String);
+      Value_Type => Ada.Strings.Unbounded.String_Access);
 
    --  Necessary to garantee that the pointer Node_Annotation_Access stays
    --  unchanged, because the pointer  Hashed_Mappings.Mapping may

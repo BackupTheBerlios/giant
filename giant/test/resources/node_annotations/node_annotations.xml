@@ -6,8 +6,8 @@
 
 <node_annotation node_id    = "3"
                  annotation = "I am an existing Node." />
-    
+                 
 <node_annotation node_id    = "1"
-                 annotation = "I am a not existing node." />
+                 annotation = "I am a not existing Node." />
   
 </giant_node_annotations_file>
