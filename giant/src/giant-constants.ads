@@ -20,24 +20,17 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant.ads,v $, $Revision: 1.5 $
+--  $RCSfile: giant-constants.ads,v $, $Revision: 1.1 $
 --  $Author: squig $
 --  $Date: 2003/09/09 20:22:24 $
 --
 ------------------------------------------------------------------------------
 --
---  Contains the almost empty root package.
---
---  Do not add any code.
+--  Defines global constants. Do not add any code.
 --
 
-package Giant is
+package Giant.Constants is
 
-   ---------------------------------------------------------------------------
-   --  Returns the localized value of S.
-   --
-   --  Returns:
-   --    The localized value if known; S, otherwise
-   function "-" (S : String) return String;
+   VERSION : constant String := "1.1.0";
 
-end Giant;
+end Giant.Constants;

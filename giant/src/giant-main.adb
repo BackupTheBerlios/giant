@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.42 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.43 $
 --  $Author: squig $
---  $Date: 2003/09/09 15:31:24 $
+--  $Date: 2003/09/09 20:22:24 $
 --
 --
 ------------------------------------------------------------------------------
@@ -45,6 +45,7 @@ with Giant.Config_Settings;
 with Giant.Config.Class_Sets;
 with Giant.Config.Global_Data;
 with Giant.Config.Vis_Styles;
+with Giant.Constants;
 with Giant.Controller;
 with Giant.Default_Logger;
 with Giant.File_Management;
@@ -141,7 +142,7 @@ is
               Start_Gui := False;
            when 'v' =>
               --  "version"
-              Ada.Text_IO.Put_Line ("version: " & Version);
+              Ada.Text_IO.Put_Line ("version: " & Constants.Version);
               GNAT.OS_Lib.OS_Exit (0);
            when others =>
               --  should not happen

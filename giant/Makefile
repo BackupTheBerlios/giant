@@ -55,7 +55,7 @@ HTML_PATH       = ../../html
 # filename of MAIN only
 HTML_MAIN       = $(shell namei $(MAIN) | xargs | sed s/.*\ -\ //)
 
-VERSION = $(shell grep VERSION src/giant.ads | sed -e 's/.* "//;s/".*//')
+VERSION = $(shell grep VERSION src/giant-constants.ads | sed -e 's/.* "//;s/".*//')
 SRCDIST = compile.bat.dist COPYING Makefile.dist src
 DIST = COPYING etc giant.sh Makefile README shared
 DIST_PATH = /projects/tmp/giant/releases/giant-$(VERSION)
@@ -125,9 +125,9 @@ gcov :
 	  --title "GIANT Test Coverage" $(GCOV_OUT_PATH)/giant.info
 
 release :
-#	rm -rf tmp
-#	mkdir tmp
-#	cd tmp; cvs -d `cat ../CVS/Root` export -r $(RELEASE_TAG) giant
+	rm -rf tmp
+	mkdir tmp
+	cd tmp; cvs -d `cat ../CVS/Root` export -r $(RELEASE_TAG) giant
 	mkdir -p $(DIST_PATH)
 	cd $(DIST_PATH)/../template; tar -cf - . \
 	  | (cd $(DIST_PATH); tar -xvf -)	
