@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.15 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.16 $
 -- $Author: schwiemn $
--- $Date: 2003/06/17 19:40:13 $
+-- $Date: 2003/06/18 10:40:08 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -202,6 +202,8 @@ package Giant.Projects is
    --
    -- Parameters:
    --   Project_Name - The name of a project.
+   --     This name must be a valid file name according
+   --     to your opperating system.
    --   Project_Directory - The project directory.
    --   Bauhaus_IML_Graph_File - The File holding the IML-Graph.
    --     This parameter will not be checked for correctness.
@@ -291,6 +293,8 @@ package Giant.Projects is
    --   Project - The instance of the ADT that should be written into
    --             new project files.
    --   New_Project_Name - The new name of the project.
+   --     This name must be a valid file name according
+   --     to your opperating system.
    --   New_Project_Directory - The new project directory.
    -- Raises:
    --   Project_Access_Not_Initialized_Exception - Raised if a not
@@ -405,6 +409,10 @@ package Giant.Projects is
    -- Raised if a visualisation window that should be added to the
    -- project already exists.
    Visualisation_Window_Is_Already_Part_Of_Project_Exception : Exception;
+   
+   ---------------------------------------------------------------------------
+   -- Raised on access on not memory loaded vis windows
+   Visualisation_Window_Is_Not_Memory_Loaded_Exception : Exception;
 
    ---------------------------------------------------------------------------
    -- Determines whether a given Visualisation Window is part of
@@ -542,9 +550,6 @@ package Giant.Projects is
    -- That should be done before the visualisation window is closed
    -- inside the project ("procedure Close_Window_In_Project").
    --
-   -- If the visualisation window "Vis_Window_Name" is not loaded into
-   -- the main memory nothing will happen.
-   --
    -- State Changes:
    --   Memory_Loaded_File_Linked  --> Memory_Loaded_File_Linked
    --   Memory_Loaded              --> Memory_Loaded_File_Linked
@@ -558,12 +563,14 @@ package Giant.Projects is
    --   Project_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Project_Access" is passed as
    --     parameter.
-   procedure Store_Single_Project_Visualisation_Window
+   --   Visualisation_Window_Is_Not_Memory_Loaded_Exception
+   --     Raised if "Vis_Window_Name" is not memory loaded.
+   procedure Store_Single_Visualisation_Window
      (Project         : in Project_Access;
       Vis_Window_Name : in String);
 
    ---------------------------------------------------------------------------
-   -- Changes the status of a visualisation window model to "File_Linked".
+   -- Frees the main memory needed for a memory loaded vis window.
    --
    -- This method does NOT write the data used for a visualisation
    -- window into the management file for that window.
@@ -576,9 +583,9 @@ package Giant.Projects is
    --   The heap memory needed for the visualisation window
    --   is DEALLOCATED. As Vis_Window_Management.Visual_Window_Data_Access
    --   is a Access Type, several pointers may reference the
-   --   same datastructure for a visualisation window model;
+   --   same datastructure for a visualisation window data model;
    --   i.e. all instances of Visual_Window_Data_Access returned by the
-   --   function call
+   --   function call.
    --
    --  >"Project_Management.Get_Visualisation_Window(Project_A, My_Window_X)"
    --
@@ -586,15 +593,10 @@ package Giant.Projects is
    --
    --  >"Close_Window_In_Project(Project_A, My_Window_X)"
    --
-   -- For a visualisation window that is not loaded into the
-   -- main memory (Status: File_Linked) nothing will happen.
-   --
    -- State Changes:
    --   Memory_Loaded_File_Linked  --> File_Linked
    --   Memory_Loaded              --> Visualisation Window is completely
-   --                                  REMOVED
-   --   File_Linked                --> File_Linked
-   --
+   --                                  REMOVED (except Security File)
    -- Parameters:
    --   Project - The instance of the ADT holding a project.
    --   Vis_Window_Name - The name of a visualisation window.
@@ -605,10 +607,11 @@ package Giant.Projects is
    --   Project_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Project_Access" is passed as
    --     parameter.
-   procedure Close_Window_In_Project
+   --   Visualisation_Window_Is_Not_Memory_Loaded_Exception
+   --     Raised if "Vis_Window_Name" is not memory loaded.
+   procedure Free_Memory_For_Vis_Window
      (Project         : in Project_Access;
       Vis_Window_Name : in String);
-
 
    ---------------------------------------------------------------------------
    -- Removes the visualisation window with the name "Vis_Window_Name"
@@ -616,24 +619,26 @@ package Giant.Projects is
    --
    -- Note
    --   The visualisation window is only removed from "Project"'s
-   --   internal data structure, but NOT deallocated.
+   --   internal data structure, but NOT DEALLOCATED.
+   --   I.E. If the vis window is memory loaded thos instance
+   --   will rest in the main memory.
    --
    --   Take care to avoid memory leaks as the corresponding instance
-   --   of Vis_Window_Management.Visual_Window_Data_Access has
+   --   of Vis_Windows.Visual_Window_Access has
    --   to be deallocated separately (if it exists).
    --
    --   After the call of this subprogram you may deallocate the cooreponding
    --   instance of the visualisation window
-   --   ("Vis_Window_Management.Visual_Window_Data_Access")
+   --   ("Vis_Windows.Visual_Window_Access")
    --   without affecting the internal datastructure of "Project".
    --
    -- Management Files:
    --   If it exists the management file for this visualisation window
-   --   is DELETED too.
+   --   is DELETED.
    --
    --   A "Security Save File" (describing the actual status of the window)
-   --   will be created (this file will be removed on execution of
-   --   Store_Whole_Project).
+   --   will be created if the vis window is memory loaded
+   --   (this file will be removed on execution of Store_Whole_Project).
    --
    -- Parameters:
    --   Project - The instance of the ADT holding a project.
@@ -888,12 +893,17 @@ private
 
    -- needed to describe the status of a visualistion window
    type Vis_Window_Data_Element is record
+      -- needed to track the name of not memory loaded vis windows
+      Vis_Window_Name          : Ada.Strings.Unbounded.Unbounded_String;
+
       Is_File_Linked           : Boolean;
-      Is_Memory_Loaded         : Boolean;
       -- the management file for the visualisation window
       -- null string ("") if such a file does not exist yet
       Existing_Vis_Window_File : Ada.Strings.Unbounded.Unbounded_String;
-      Vis_Window_Name          : Ada.Strings.Unbounded.Unbounded_String;
+      
+      Is_Memory_Loaded         : Boolean;
+      -- null pointer / not initialized if Is_Memory_Loaded = False
+      Vis_Window               : Vis_Windows.Visual_Window_Access;
    end record;
 
    package Known_Vis_Windows_Hashs is new Hashed_Mappings
@@ -901,12 +911,6 @@ private
       Equal      => Ada.Strings.Unbounded."=",
       Hash       => Unbounded_String_Hash,
       Value_Type => Vis_Window_Data_Element);
-
-   package Memory_Loaded_Vis_Window_Hashs is new Hashed_Mappings
-     (Key_Type   => Ada.Strings.Unbounded.Unbounded_String,
-      Equal      => Ada.Strings.Unbounded."=",
-      Hash       => Unbounded_String_Hash,
-      Value_Type => Vis_Windows.Visual_Window_Access);
 
    ---------------------------------------------------------------------------
    -- Management of Subgraphs
@@ -962,13 +966,7 @@ private
     Node_Annotations_File : Ada.Strings.Unbounded.Unbounded_String;
 
     -- All Vis Windows that are part of the project.
-    All_Project_Vis_Windows : Known_Vis_Windows_Hashs.Mapping;
-
-    -- Only Visualisation Windows that a loaded into the main
-    -- memory -> Heap is allocated for an Instance of
-    -- Visual_Window_Access.
-    -- A Management File in the project dirctory may exist or not
-    All_Memory_Loaded_Vis_Windows : Memory_Loaded_Vis_Window_Hashs.Mapping;
+    All_Vis_Windows : Known_Vis_Windows_Hashs.Mapping;
 
     All_Subgraphs : Subgraph_Data_Hashs.Mapping;
 

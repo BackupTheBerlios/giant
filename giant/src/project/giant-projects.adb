@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.15 $
 --  $Author: schwiemn $
---  $Date: 2003/06/17 19:40:13 $
+--  $Date: 2003/06/18 10:40:08 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -263,7 +263,7 @@ package body Giant.Projects is
 
    ---------------------------------------------------------------------------
    function Load_Sub_Graph_Data_Into_Main_Memory (File_Path : String)
-        return Subgraph_Data_Elemet is
+     return Subgraph_Data_Elemet is
 
       Stream_File        : Ada.Streams.Stream_IO.File_Type;
       Ada_Stream         : Ada.Streams.Stream_IO.Stream_Access;
@@ -489,7 +489,7 @@ package body Giant.Projects is
       --  iterate over all visualisation windows
       --  only writes windows that are FILE_Linked  !!!
       Vis_Window_Iter := Known_Vis_Windows_Hashs.Make_Values_Iter
-        (The_Project.All_Project_Vis_Windows);
+        (The_Project.All_Vis_Windows);
 
       while Known_Vis_Windows_Hashs.More (Vis_Window_Iter) loop
          Known_Vis_Windows_Hashs.Next
@@ -801,11 +801,8 @@ package body Giant.Projects is
          Ada.Strings.Unbounded.To_Unbounded_String
            (Const_Node_Annotations_File_Name);
 
-      New_Project_Access.All_Project_Vis_Windows :=
+      New_Project_Access.All_Vis_Windows :=
         Known_Vis_Windows_Hashs.Create;
-
-      New_Project_Access.All_Memory_Loaded_Vis_Windows :=
-        Memory_Loaded_Vis_Window_Hashs.Create;
 
       New_Project_Access.All_Subgraphs :=
         Subgraph_Data_Hashs.Create;
@@ -835,8 +832,8 @@ package body Giant.Projects is
    ----------------------------------------------------------------------------
    procedure Deallocate_Project_Deep (Project : in out Project_Access) is
 
-      Memory_Loeaded_Vis_Iter : Memory_Loaded_Vis_Window_Hashs.Values_Iter;
-      A_Vis_Window_Access : Vis_Windows.Visual_Window_Access;
+      Vis_Iter : Known_Vis_Windows_Hashs.Values_Iter;
+      A_Vis_Window_Data_Element : Vis_Window_Data_Element;
 
       Subgraphs_Iter : Subgraph_Data_Hashs.Values_Iter;
       A_Subgraph_Data_Elemet : Subgraph_Data_Elemet;
@@ -846,25 +843,29 @@ package body Giant.Projects is
          raise Project_Access_Not_Initialized_Exception;
       end if;
 
-      --  deallocate All_Project_Vis_Windows
-      --------------------------------------
-      Known_Vis_Windows_Hashs.Destroy (Project.All_Project_Vis_Windows);
-
       --  deep deallocation of all memory loaded visualisation windows
       ----------------------------------------------------------------
-      Memory_Loeaded_Vis_Iter :=
-        Memory_Loaded_Vis_Window_Hashs.Make_Values_Iter
-          (Project.All_Memory_Loaded_Vis_Windows);
+      Vis_Iter := Known_Vis_Windows_Hashs.Make_Values_Iter
+        (Project.All_Vis_Windows);
 
-      while Memory_Loaded_Vis_Window_Hashs.More (Memory_Loeaded_Vis_Iter) loop
+      while Known_Vis_Windows_Hashs.More (Vis_Iter) loop
 
-         Memory_Loaded_Vis_Window_Hashs.Next
-           (Memory_Loeaded_Vis_Iter, A_Vis_Window_Access);
-         Vis_Windows.Deallocate_Vis_Window_Deep (A_Vis_Window_Access);
+         Known_Vis_Windows_Hashs.Next
+           (Vis_Iter, A_Vis_Window_Data_Element);
+           
+         if Is_Vis_Window_Memory_Loaded 
+           (Project,
+            Ada.Strings.Unbounded.To_String
+              (A_Vis_Window_Data_Element.Vis_Window_Name)) then
+           
+            Vis_Windows.Deallocate_Vis_Window_Deep 
+             (A_Vis_Window_Data_Element.Vis_Window);
+         end if;
       end loop;
-
-      Memory_Loaded_Vis_Window_Hashs.Destroy
-        (Project.All_Memory_Loaded_Vis_Windows);
+      
+      --  deallocate All_Project_Vis_Windows
+      --------------------------------------
+      Known_Vis_Windows_Hashs.Destroy (Project.All_Vis_Windows);
 
       --  deep deallocation of subgraphs
       ----------------------------------
@@ -896,7 +897,8 @@ package body Giant.Projects is
    --   stored (False) or if the Project should be stored under a new name
    --   in a new directory (True)
    --
-   -- New_Project_Directory - An absolute Path is required !!!
+   -- New_Project_Directory - An absolute Path that ends with a
+   --   directory separator is required !!!
    procedure General_Store_Hole_Project
      (Project                   : in Project_Access;      
       Change_Project_Files      : in Boolean;
@@ -911,10 +913,10 @@ package body Giant.Projects is
       -- new prject name and path must already have been set.
       procedure Process_Vis_Window 
         (P_Project         : in     Project_Access;
-         P_Vis_Window      : in     Vis_Windows.Visual_Window_Access;
+         P_Vis_Window              : Vis_Windows.Visual_Window_Access;
          P_Vis_Window_Key  : in     Ada.Strings.Unbounded.Unbounded_String;
          P_Vis_Window_Data : in out Vis_Window_Data_Element) is
-         
+                  
          P_Vis_Window_File_Name : Ada.Strings.Unbounded.Unbounded_String;
       begin
       
@@ -937,24 +939,24 @@ package body Giant.Projects is
           P_Vis_Window_Data.Existing_Vis_Window_File :=
              P_Vis_Window_File_Name;
           Known_Vis_Windows_Hashs.Update_Value
-            (P_Project.All_Project_Vis_Windows,
+            (P_Project.All_Vis_Windows,
              P_Vis_Window_Key,
              P_Vis_Window_Data);                         
       end Process_Vis_Window;
       
+      
       Abs_Node_Annotations_File : Ada.Strings.Unbounded.Unbounded_String;
       
-      Known_Vis_Iter            : 
-        Known_Vis_Windows_Hashs.Bindings_Iter;
+      Known_Vis_Iter : Known_Vis_Windows_Hashs.Bindings_Iter;
       A_Vis_Window_Data_Element : Vis_Window_Data_Element;      
       A_Vis_Window              : Vis_Windows.Visual_Window_Access;
       A_Vis_Window_Key          : Ada.Strings.Unbounded.Unbounded_String;
       A_Vis_Window_File_Name    : Ada.Strings.Unbounded.Unbounded_String;
 
-      Subgraphs_Iter : Subgraph_Data_Hashs.Bindings_Iter;
-      A_Subgraph_Data_Elemet : Subgraph_Data_Elemet;
-      A_Subgraph_Key : Ada.Strings.Unbounded.Unbounded_String;
-      A_Subgraph_File_Name   : Ada.Strings.Unbounded.Unbounded_String;
+      Subgraphs_Iter            : Subgraph_Data_Hashs.Bindings_Iter;
+      A_Subgraph_Data_Elemet    : Subgraph_Data_Elemet;
+      A_Subgraph_Key            : Ada.Strings.Unbounded.Unbounded_String;
+      A_Subgraph_File_Name      : Ada.Strings.Unbounded.Unbounded_String;
       
    begin
 
@@ -969,7 +971,7 @@ package body Giant.Projects is
          Project.Node_Annotations_File := Abs_Node_Annotations_File;
 
          --  "Migrate the project"
-         --  (must be done befor processing vis windows and subgraphs).
+         --  (must be done before processing vis windows and subgraphs).
          Project.Project_Name := 
            Ada.Strings.Unbounded.To_Unbounded_String (New_Project_Name);
 
@@ -982,7 +984,7 @@ package body Giant.Projects is
       -----------------------------------------------
       Known_Vis_Iter :=
         Known_Vis_Windows_Hashs.Make_Bindings_Iter
-          (Project.All_Project_Vis_Windows);
+          (Project.All_Vis_Windows);
 
       while Known_Vis_Windows_Hashs.More (Known_Vis_Iter) loop
 
@@ -997,7 +999,7 @@ package body Giant.Projects is
             -- vis windows into main memory at once
             if not A_Vis_Window_Data_Element.Is_Memory_Loaded then
 
-               -- load window into memory
+               -- will load the window into the main memory
                A_Vis_Window := Get_Visualisation_Window
                  (Project,
                   Ada.Strings.Unbounded.To_String
@@ -1009,7 +1011,7 @@ package body Giant.Projects is
                   A_Vis_Window_Key, 
                   A_Vis_Window_Data_Element);
              
-               Close_Window_In_Project 
+               Free_Memory_For_Vis_Window 
                  (Project, 
                   Ada.Strings.Unbounded.To_String 
                     (A_Vis_Window_Data_Element.Vis_Window_Name));                 
@@ -1054,16 +1056,14 @@ package body Giant.Projects is
                Write_Vis_Window_To_File
                  (Ada.Strings.Unbounded.To_String 
                     (A_Vis_Window_File_Name),
-                  Memory_Loaded_Vis_Window_Hashs.Fetch 
-                    (Project.All_Memory_Loaded_Vis_Windows,
-                     A_Vis_Window_Data_Element.Vis_Window_Name));
+                  A_Vis_Window_Data_Element.Vis_Window);
 
                -- change vis window status
                A_Vis_Window_Data_Element.Is_File_Linked := True;  
                A_Vis_Window_Data_Element.Existing_Vis_Window_File :=
                   A_Vis_Window_File_Name;
                Known_Vis_Windows_Hashs.Update_Value
-                 (Project.All_Project_Vis_Windows,
+                 (Project.All_Vis_Windows,
                   A_Vis_Window_Key,
                   A_Vis_Window_Data_Element);
             end if;         
@@ -1256,7 +1256,7 @@ package body Giant.Projects is
       end if;
 
       return Known_Vis_Windows_Hashs.Is_Bound
-        (Project.All_Project_Vis_Windows,
+        (Project.All_Vis_Windows,
          Ada.Strings.Unbounded.To_Unbounded_String (Vis_Window_Name));
    end Does_Vis_Window_Exist;
 
@@ -1265,15 +1265,29 @@ package body Giant.Projects is
      (Project         : in Project_Access;
       Vis_Window_Name : in String)
      return Boolean is
+     
+     A_Vis_Window_Data_Element : Vis_Window_Data_Element;
+     
    begin
 
       if (Project = null) then
          raise Project_Access_Not_Initialized_Exception;
       end if;
 
-      return Memory_Loaded_Vis_Window_Hashs.Is_Bound
-        (Project.All_Memory_Loaded_Vis_Windows,
-         Ada.Strings.Unbounded.To_Unbounded_String (Vis_Window_Name));
+      if not Known_Vis_Windows_Hashs.Is_Bound
+        (Project.All_Vis_Windows,
+         Ada.Strings.Unbounded.To_Unbounded_String (Vis_Window_Name)) then
+         
+         return False;
+      else
+      
+         A_Vis_Window_Data_Element := Known_Vis_Windows_Hashs.Fetch
+           (Project.All_Vis_Windows,
+            Ada.Strings.Unbounded.To_Unbounded_String (Vis_Window_Name));
+            
+         return A_Vis_Window_Data_Element.Is_Memory_Loaded;
+      end if;
+      
    end Is_Vis_Window_Memory_Loaded;
 
    ---------------------------------------------------------------------------
@@ -1281,10 +1295,27 @@ package body Giant.Projects is
      (Project : in Project_Access)
      return String_Lists.List is
 
+     Names_List : String_Lists.List;
+     Vis_Iter   : Known_Vis_Windows_Hashs.Values_Iter;
+     A_Vis_Window_Data_Element : Vis_Window_Data_Element;
    begin
+   
+      if (Project = null) then
+         raise Project_Access_Not_Initialized_Exception;
+      end if;   
+            
+      Names_List := String_Lists.Create;
+      Vis_Iter := Known_Vis_Windows_Hashs.Make_Values_Iter
+          (Project.All_Vis_Windows);
 
-      -- Dummy
-      return String_Lists.Create;
+       while Known_Vis_Windows_Hashs.More (Vis_Iter) loop
+
+          Known_Vis_Windows_Hashs.Next (Vis_Iter, A_Vis_Window_Data_Element);     
+          String_Lists.Attach
+            (Names_List, A_Vis_Window_Data_Element.Vis_Window_Name);
+       end loop;
+       
+       return Names_List;
    end Get_All_Visualisation_Window_Names;
 
    ---------------------------------------------------------------------------
@@ -1310,15 +1341,15 @@ package body Giant.Projects is
       --  Check if already loaded and return the instance if that is the case
       if (Is_Vis_Window_Memory_Loaded (Project, Vis_Window_Name) = True) then
 
-         return Memory_Loaded_Vis_Window_Hashs.Fetch
-           (Project.All_Memory_Loaded_Vis_Windows,
+         return Known_Vis_Windows_Hashs.Fetch
+           (Project.All_Vis_Windows,
             Ada.Strings.Unbounded.To_Unbounded_String
-             (Vis_Window_Name));
+             (Vis_Window_Name)).Vis_Window;
       --  load vis window into main memory
       else
 
          Vis_Window_Data := Known_Vis_Windows_Hashs.Fetch
-           (Project.All_Project_Vis_Windows,
+           (Project.All_Vis_Windows,
             Ada.Strings.Unbounded.To_Unbounded_String
               (Vis_Window_Name));
 
@@ -1327,23 +1358,18 @@ package body Giant.Projects is
            Load_Vis_Window_Into_Main_Memory
              (Ada.Strings.Unbounded.To_String
                (Vis_Window_Data.Existing_Vis_Window_File));
-
-         -- insert into hash map
-         Memory_Loaded_Vis_Window_Hashs.Bind
-           (Project.All_Memory_Loaded_Vis_Windows,
-            Vis_Window_Data.Vis_Window_Name,
-            New_Vis_Window_Inst);
-
+               
          -- update data entry
-         Known_Vis_Windows_Hashs.Unbind
-           (Project.All_Project_Vis_Windows,
+         Vis_Window_Data := Known_Vis_Windows_Hashs.Fetch
+           (Project.All_Vis_Windows,
             Ada.Strings.Unbounded.To_Unbounded_String
               (Vis_Window_Name));
-
+     
+         Vis_Window_Data.Vis_Window := New_Vis_Window_Inst;
          Vis_Window_Data.Is_Memory_Loaded := True;
 
-         Known_Vis_Windows_Hashs.Bind
-           (Project.All_Project_Vis_Windows,
+         Known_Vis_Windows_Hashs.Update_Value
+           (Project.All_Vis_Windows,
             Ada.Strings.Unbounded.To_Unbounded_String (Vis_Window_Name),
             Vis_Window_Data);
 
@@ -1369,53 +1395,187 @@ package body Giant.Projects is
 
          raise Visualisation_Window_Is_Already_Part_Of_Project_Exception;
       end if;
-
-      New_Vis_Window_Data.Is_File_Linked := False;
-      New_Vis_Window_Data.Is_Memory_Loaded := True;
-      New_Vis_Window_Data.Existing_Vis_Window_File :=
-        Ada.Strings.Unbounded.Null_Unbounded_String;
+      
       New_Vis_Window_Data.Vis_Window_Name :=
         Ada.Strings.Unbounded.To_Unbounded_String
           (Vis_Windows.Get_Name (Vis_Window));
 
+      New_Vis_Window_Data.Is_File_Linked := False;
+      New_Vis_Window_Data.Existing_Vis_Window_File :=
+        Ada.Strings.Unbounded.Null_Unbounded_String;
+        
+      New_Vis_Window_Data.Is_Memory_Loaded := True;
+      New_Vis_Window_Data.Vis_Window := Vis_Window;
+
       Known_Vis_Windows_Hashs.Bind
-        (Project.All_Project_Vis_Windows,
+        (Project.All_Vis_Windows,
          New_Vis_Window_Data.Vis_Window_Name,
          New_Vis_Window_Data);
-
-      Memory_Loaded_Vis_Window_Hashs.Bind
-        (Project.All_Memory_Loaded_Vis_Windows,
-         New_Vis_Window_Data.Vis_Window_Name,
-         Vis_Window);
    end Add_Visualisation_Window;
 
    ---------------------------------------------------------------------------
-   procedure Store_Single_Project_Visualisation_Window
+   procedure Store_Single_Visualisation_Window
      (Project         : in Project_Access;
       Vis_Window_Name : in String) is
-
+      
+      A_Vis_Window_Data_Element : Vis_Window_Data_Element;
+      A_Vis_Window_File_Name : Ada.Strings.Unbounded.Unbounded_String;
+      
    begin
-  -- DUMMY
-      null;
-   end Store_Single_Project_Visualisation_Window;
+   
+      if (Project = null) then
+         raise Project_Access_Not_Initialized_Exception;
+      end if;
+
+      if not Does_Vis_Window_Exist
+        (Project, Vis_Window_Name) then
+         raise Visualisation_Window_Is_Not_Part_Of_Project_Exception;
+      end if;    
+      
+      A_Vis_Window_Data_Element := Known_Vis_Windows_Hashs.Fetch
+        (Project.All_Vis_Windows,
+         Ada.Strings.Unbounded.To_Unbounded_String (Vis_Window_Name));
+         
+      if not A_Vis_Window_Data_Element.Is_Memory_Loaded then
+         raise Visualisation_Window_Is_Not_Memory_Loaded_Exception;
+      end if;
+           
+      if A_Vis_Window_Data_Element.Is_File_Linked then          
+         A_Vis_Window_File_Name :=
+           A_Vis_Window_Data_Element.Existing_Vis_Window_File;
+      else
+         
+         -- calculate new file name if window if not file linked
+         A_Vis_Window_File_Name :=    
+           Create_Name_For_File
+             (Ada.Strings.Unbounded.To_String 
+                (Project.Abs_Project_Directory),
+              Ada.Strings.Unbounded.To_String
+                (A_Vis_Window_Data_Element.Vis_Window_Name),
+              Const_Vis_Window_File_Ending);  
+      end if;
+         
+      Write_Vis_Window_To_File
+        (Ada.Strings.Unbounded.To_String 
+           (A_Vis_Window_File_Name),
+         A_Vis_Window_Data_Element.Vis_Window);
+
+      A_Vis_Window_Data_Element.Is_File_Linked := True;  
+      A_Vis_Window_Data_Element.Existing_Vis_Window_File :=
+        A_Vis_Window_File_Name;
+      Known_Vis_Windows_Hashs.Update_Value
+        (Project.All_Vis_Windows,
+         A_Vis_Window_Data_Element.Vis_Window_Name,
+         A_Vis_Window_Data_Element);  
+   end Store_Single_Visualisation_Window;
 
    ---------------------------------------------------------------------------
-   procedure Close_Window_In_Project
+   procedure Free_Memory_For_Vis_Window
      (Project         : in Project_Access;
       Vis_Window_Name : in String) is
 
+      A_Vis_Window_Data_Element : Vis_Window_Data_Element;
+      Security_File_Name : Ada.Strings.Unbounded.Unbounded_String;
+            
    begin
-  -- DUMMY
-      null;
-   end Close_Window_In_Project;
+   
+      if (Project = null) then
+         raise Project_Access_Not_Initialized_Exception;
+      end if;
+
+      if not Does_Vis_Window_Exist
+        (Project, Vis_Window_Name) then
+         raise Visualisation_Window_Is_Not_Part_Of_Project_Exception;
+      end if;    
+      
+      A_Vis_Window_Data_Element := Known_Vis_Windows_Hashs.Fetch
+        (Project.All_Vis_Windows,
+         Ada.Strings.Unbounded.To_Unbounded_String (Vis_Window_Name));
+         
+      if not A_Vis_Window_Data_Element.Is_Memory_Loaded then
+         raise Visualisation_Window_Is_Not_Memory_Loaded_Exception;
+      end if;
+            
+      --  create security file (always in project directory)
+      ------------------------------------------------------
+      Security_File_Name := Create_Name_For_File
+        (Ada.Strings.Unbounded.To_String 
+           (Project.Abs_Project_Directory),
+         Ada.Strings.Unbounded.To_String 
+           (A_Vis_Window_Data_Element.Vis_Window_Name), 
+         Const_Vis_Window_Security_File_Ending);
+      
+      Write_Vis_Window_To_File
+        (Ada.Strings.Unbounded.To_String 
+           (Security_File_Name),
+         A_Vis_Window_Data_Element.Vis_Window);
+ 
+      --  deallocate memory needed for vis window
+      -------------------------------------------
+      Vis_Windows.Deallocate_Vis_Window_Deep
+        (A_Vis_Window_Data_Element.Vis_Window);
+     
+      --  change vis window status
+      ----------------------------
+      A_Vis_Window_Data_Element.Is_Memory_Loaded := False;
+ 
+      Known_Vis_Windows_Hashs.Update_Value
+        (Project.All_Vis_Windows,
+         A_Vis_Window_Data_Element.Vis_Window_Name,
+         A_Vis_Window_Data_Element); 
+   end Free_Memory_For_Vis_Window;
 
    ---------------------------------------------------------------------------
    procedure Remove_Visualisation_Window
      (Project         : in Project_Access;
       Vis_Window_Name : in String) is
+ 
+      A_Vis_Window_Data_Element : Vis_Window_Data_Element;
+      Security_File_Name : Ada.Strings.Unbounded.Unbounded_String;
+            
    begin
-   -- DUMMY
-      null;
+   
+      if (Project = null) then
+         raise Project_Access_Not_Initialized_Exception;
+      end if;
+
+      if not Does_Vis_Window_Exist
+        (Project, Vis_Window_Name) then
+         raise Visualisation_Window_Is_Not_Part_Of_Project_Exception;
+      end if;    
+      
+      A_Vis_Window_Data_Element := Known_Vis_Windows_Hashs.Fetch
+        (Project.All_Vis_Windows,
+         Ada.Strings.Unbounded.To_Unbounded_String (Vis_Window_Name));
+             
+      -- create security file for memory loaded windows
+      -------------------------------------------------
+      if A_Vis_Window_Data_Element.Is_Memory_Loaded then
+         Security_File_Name := Create_Name_For_File
+           (Ada.Strings.Unbounded.To_String 
+              (Project.Abs_Project_Directory),
+            Ada.Strings.Unbounded.To_String 
+              (A_Vis_Window_Data_Element.Vis_Window_Name), 
+            Const_Vis_Window_Security_File_Ending);
+      
+         Write_Vis_Window_To_File
+           (Ada.Strings.Unbounded.To_String 
+              (Security_File_Name),
+            A_Vis_Window_Data_Element.Vis_Window);
+      end if;   
+               
+      -- remove management file if exists
+      -----------------------------------
+      if A_Vis_Window_Data_Element.Is_File_Linked then
+      
+         File_Management.Delete_File (Ada.Strings.Unbounded.To_String
+           (A_Vis_Window_Data_Element.Existing_Vis_Window_File);
+      end if;
+      
+      -- remove vis window from project (no deallocation)
+      --------------------------------------------------- 
+      Known_Vis_Windows_Hashs.Unbind 
+        (A_Vis_Window_Data_Element.Vis_Window_Name);
    end Remove_Visualisation_Window;
 
 
