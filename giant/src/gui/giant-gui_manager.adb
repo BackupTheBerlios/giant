@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.29 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.30 $
 --  $Author: squig $
---  $Date: 2003/07/07 14:04:47 $
+--  $Date: 2003/07/10 20:17:45 $
 --
 
 with Ada.Strings.Unbounded;
@@ -143,6 +143,13 @@ package body Giant.Gui_Manager is
       end if;
       return False;
    end Hide;
+
+   function Is_Initialized
+     return Boolean
+   is
+   begin
+      return (Gui_Initialized);
+   end Is_Initialized;
 
    procedure Show
    is

@@ -20,14 +20,19 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-graph_window-callbacks.adb,v $, $Revision: 1.5 $
 --  $Author: squig $
---  $Date: 2003/07/10 16:26:35 $
+--  $Date: 2003/07/10 20:17:45 $
 --
 
+with Ada.Unchecked_Conversion;
+with System;
+
+with Giant.Controller;
 with Giant.Layout_Dialog;
 with Giant.Gui_Manager;
 with Giant.Gui_Manager.Actions;
+with Giant.Node_Info_Dialog;
 
 package body Giant.Graph_Window.Callbacks is
 
@@ -80,6 +85,38 @@ package body Giant.Graph_Window.Callbacks is
       end if;
    end On_Action_Mode_Button_Pressed;
 
+   procedure On_Background_Popup
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Event  : in     Graph_Widgets.Handlers.Button_Press_Action)
+   is
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
+   begin
+      Gtk.Menu.Show_All (Window.Background_Menu);
+      Gtk.Menu.Popup (Window.Background_Menu,
+                      Button => Gdk.Event.Get_Button (Event.Event),
+                      Activate_Time => Gdk.Event.Get_Time (Event.Event));
+   end On_Background_Popup;
+
+   procedure On_Background_Popup
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
+      Args   : in     Gtk.Arguments.Gtk_Args)
+   is
+      type Button_Press_Action_Access is
+        access constant Graph_Widgets.Handlers.Button_Press_Action;
+
+      function Convert is new Ada.Unchecked_Conversion
+        (Source => System.Address, Target => Button_Press_Action_Access);
+
+      Action : Button_Press_Action_Access;
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
+   begin
+      Action := Convert (Gtk.Arguments.Get_Nth (Args, 1));
+      Gtk.Menu.Show_All (Window.Background_Menu);
+      Gtk.Menu.Popup (Window.Background_Menu,
+                      Button => Gdk.Event.Get_Button (Action.Event),
+                      Activate_Time => Gdk.Event.Get_Time (Action.Event));
+   end On_Background_Popup;
+
    procedure On_Edge_Popup
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
       Event  : in     Graph_Widgets.Handlers.Edge_Popup_Action)
@@ -96,8 +133,13 @@ package body Giant.Graph_Window.Callbacks is
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class;
       Event  : in     Graph_Widgets.Handlers.Node_Popup_Action)
    is
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
    begin
-      null;
+      Window.Current_Node := Event.Node;
+      Gtk.Menu.Show_All (Window.Node_Menu);
+      Gtk.Menu.Popup (Window.Node_Menu,
+                      Button => Gdk.Event.Get_Button (Event.Event),
+                      Activate_Time => Gdk.Event.Get_Time (Event.Event));
    end On_Node_Popup;
 
    procedure On_Selection_Changed
@@ -116,15 +158,19 @@ package body Giant.Graph_Window.Callbacks is
    procedure On_Node_Show_Info
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
    begin
-      null;
+      Node_Info_Dialog.Show (Window.Current_Node);
    end;
 
    procedure On_Node_Show_Source
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
    begin
-      null;
+      if (not Controller.Show_Source (Window.Current_Node)) then
+         Controller.Show_Error (-"Node has no source information.");
+      end if;
    end;
 
    procedure On_Node_Annotate

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-node_info_dialog.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-node_info_dialog.adb,v $, $Revision: 1.7 $
 --  $Author: squig $
---  $Date: 2003/06/23 16:15:41 $
+--  $Date: 2003/07/10 20:17:45 $
 --
 
 with Interfaces.C.Strings;
@@ -189,4 +189,15 @@ package body Giant.Node_Info_Dialog is
       --  resize columns
       Width := Clists.Columns_Autosize (Dialog.Attribute_List);
    end Set_Node;
+
+   procedure Show
+     (Node : in Graph_Lib.Node_Id)
+   is
+      Dialog: Node_Info_Dialog_Access;
+   begin
+      Create (Dialog);
+      Set_Node (Dialog, Node);
+      Show_All (Dialog);
+   end Show;
+
 end Giant.Node_Info_Dialog;

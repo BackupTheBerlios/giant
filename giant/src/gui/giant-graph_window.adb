@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.31 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.32 $
 --  $Author: squig $
---  $Date: 2003/07/10 16:26:35 $
+--  $Date: 2003/07/10 20:17:45 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -701,13 +701,28 @@ package body Giant.Graph_Window is
 
       --  right box: graph widget (needs to be created prior to the minimap)
       Window.Graph := Vis_Windows.Get_Graph_Widget (Window.Visual_Window);
+      Gtk.Paned.Pack2 (Window.Split_Pane, Add_Scrollbars (Window.Graph),
+                       Resize => True, Shrink => False);
+
       Widget_Callback.Object_Connect
         (Window.Graph, "action_mode_button_press_event",
          Action_Mode_Marshallers.To_Marshaller
          (On_Action_Mode_Button_Pressed'Access), Window);
+      Widget_Callback.Object_Connect
+        (Window.Graph, "background_popup_event",
+         On_Background_Popup'Access, Window);
+      Widget_Callback.Object_Connect
+        (Window.Graph, "edge_popup_event",
+         Edge_Popup_Marshallers.To_Marshaller
+         (On_Edge_Popup'Access), Window);
+      Widget_Callback.Object_Connect
+        (Window.Graph, "node_popup_event",
+         Node_Popup_Marshallers.To_Marshaller
+         (On_Node_Popup'Access), Window);
 
-      Gtk.Paned.Pack2 (Window.Split_Pane, Add_Scrollbars (Window.Graph),
-                       Resize => True, Shrink => False);
+      Initialize_Background_Menu (Window);
+      Initialize_Edge_Menu (Window);
+      Initialize_Node_Menu (Window);
 
       --  left box
       Gtk.Box.Gtk_New_Vbox (Left_Box, Homogeneous => False,

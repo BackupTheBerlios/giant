@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.32 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.33 $
 --  $Author: squig $
---  $Date: 2003/07/10 16:26:35 $
+--  $Date: 2003/07/10 20:17:45 $
 --
 ------------------------------------------------------------------------------
 --
@@ -69,8 +69,26 @@ package Giant.Controller is
    procedure Exit_Application;
 
    ---------------------------------------------------------------------------
+   --  Shows an error dialog or error message, if gui is not
+   --  initialized.
+   --
+   --  Returns:
+   --    True, if editor was launched; False, if Node has no sloc
+   --    attribute.
+   --  See:
+   --    File_Management.Execute_External_Editor
+   function Show_Source
+     (Node : in Graph_Lib.Node_Id)
+     return Boolean;
+
+   ---------------------------------------------------------------------------
    --  GUI
    ---------------------------------------------------------------------------
+
+   ---------------------------------------------------------------------------
+   --  Shows an error dialog or error message, if gui is not initialized.
+   procedure Show_Error
+     (Message : in String);
 
    ---------------------------------------------------------------------------
    --  Shows the main window.

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.6 $
---  $Author: keulsn $
---  $Date: 2003/07/08 19:41:48 $
+--  $RCSfile: giant-graph_widgets-callbacks.adb,v $, $Revision: 1.7 $
+--  $Author: squig $
+--  $Date: 2003/07/10 20:17:45 $
 --
 ------------------------------------------------------------------------------
 
@@ -41,6 +41,7 @@ with Glib;
 
 with Giant.Graph_Widgets.Drawing;
 with Giant.Graph_Widgets.Handlers;
+with Giant.Graph_Widgets.Notifications;
 with Giant.Graph_Widgets.Settings;
 with Giant.Graph_Widgets.States;
 with Giant.Logger;
@@ -334,8 +335,17 @@ package body Giant.Graph_Widgets.Callbacks is
      (Widget : access Graph_Widget_Record'Class;
       Event  : in     Gdk.Event.Gdk_Event_Button)
      return Boolean is
+      use type Glib.Guint;
    begin
-      raise Unimplemented;
+      --  FIX: dummy implementation
+      if (Gdk.Event.Get_Button (Event) = 1) then
+         Notifications.Action_Mode_Button_Press_Event
+           (Widget, Event, Vis.Logic.Zero_2d);
+         return True;
+      elsif (Gdk.Event.Get_Button (Event) = 3) then
+         Notifications.Background_Popup (Widget, Event, Vis.Logic.Zero_2d);
+         return True;
+      end if;
       return False;
    end On_Button_Press_Event;
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.31 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.32 $
 --  $Author: squig $
---  $Date: 2003/07/10 16:26:35 $
+--  $Date: 2003/07/10 20:17:45 $
 --
 --
 ------------------------------------------------------------------------------

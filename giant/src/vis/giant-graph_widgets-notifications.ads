@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-notifications.ads,v $, $Revision: 1.5 $
---  $Author: keulsn $
---  $Date: 2003/06/29 13:56:08 $
+--  $RCSfile: giant-graph_widgets-notifications.ads,v $, $Revision: 1.6 $
+--  $Author: squig $
+--  $Date: 2003/07/10 20:17:45 $
 --
 ------------------------------------------------------------------------------
 --
@@ -43,13 +43,29 @@ package Giant.Graph_Widgets.Notifications is
 
    ----------------------------------------------------------------------------
    --  Informs the controller that the user has requested a PopUp Menu for
+   --  the background
+   --
+   --  Parameters:
+   --    Widget - The graph widget
+   --    Event - The gdk source event
+   --    Location - The location where the event happened in logical
+   --               coordinates.
+   procedure Background_Popup
+     (Widget   : access Graph_Widget_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event_Button;
+      Location : in     Vis.Logic.Vector_2d);
+
+   ----------------------------------------------------------------------------
+   --  Informs the controller that the user has requested a PopUp Menu for
    --  one specific edge.
    --
    --  Parameters:
    --    Widget - The graph widget
+   --    Event - The gdk source event
    --    Edge   - The edge, the PopUp Menu is requested for
    procedure Edge_Popup
      (Widget : access Graph_Widget_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event_Button;
       Edge   : in     Vis_Data.Vis_Edge_Id);
 
    ----------------------------------------------------------------------------
@@ -58,9 +74,11 @@ package Giant.Graph_Widgets.Notifications is
    --
    --  Parameters:
    --    Widget - The graph widget
+   --    Event - The gdk source event
    --    Node   - The node, the PopUp Menu is requested for
    procedure Node_Popup
      (Widget : access Graph_Widget_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event_Button;
       Node   : in     Vis_Data.Vis_Node_Id);
 
 

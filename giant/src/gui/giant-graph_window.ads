@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.19 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.20 $
 --  $Author: squig $
---  $Date: 2003/07/08 21:54:51 $
+--  $Date: 2003/07/10 20:17:45 $
 --
 ------------------------------------------------------------------------------
 --
@@ -40,6 +40,7 @@ with Gtk.Style;
 with Gtk.Widget;
 with Gtk.Window;
 
+with Giant.Graph_Lib;
 with Giant.Graph_Widgets;
 with Giant.Gui_Utils;
 with Giant.Mini_Maps;
@@ -217,6 +218,11 @@ private
 
         --  the selection highlight color cell styles
         Styles : Style_Array_Type := (others => null);
+
+        --  the currently selected node for menu callbacks
+        Current_Edge : Graph_Lib.Edge_Id;
+        Current_Node : Graph_Lib.Node_Id;
+        Current_Position : Vis.Logic.Vector_2d;
      end record;
 
 end Giant.Graph_Window;

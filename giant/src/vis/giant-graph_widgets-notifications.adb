@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-notifications.adb,v $, $Revision: 1.1 $
---  $Author: keulsn $
---  $Date: 2003/06/29 14:00:04 $
+--  $RCSfile: giant-graph_widgets-notifications.adb,v $, $Revision: 1.2 $
+--  $Author: squig $
+--  $Date: 2003/07/10 20:17:45 $
 --
 ------------------------------------------------------------------------------
 
@@ -35,18 +35,31 @@ package body Giant.Graph_Widgets.Notifications is
    package Notification_Logger is new Logger
      (Name => "Giant.Graph_Widgets.Notifications");
 
+   procedure Background_Popup
+     (Widget   : access Graph_Widget_Record'Class;
+      Event    : in     Gdk.Event.Gdk_Event_Button;
+      Location : in     Vis.Logic.Vector_2d) is
+   begin
+      Notification_Logger.Debug
+        ("User requested PopUp on background - Unimplemented.");
+      Handlers.Emit_Background_Popup_Event (Widget, Event, Location);
+   end Background_Popup;
+
    procedure Edge_Popup
      (Widget : access Graph_Widget_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event_Button;
       Edge   : in     Vis_Data.Vis_Edge_Id) is
 
       Graph_Edge : Graph_Lib.Edge_Id := Vis_Data.Get_Graph_Edge (Edge);
    begin
       Notification_Logger.Debug
         ("User requested PopUp on edge - Unimplemented.");
+      Handlers.Emit_Edge_Popup_Event (Widget, Event, Graph_Edge);
    end Edge_Popup;
 
    procedure Node_Popup
      (Widget : access Graph_Widget_Record'Class;
+      Event  : in     Gdk.Event.Gdk_Event_Button;
       Node   : in     Vis_Data.Vis_Node_Id) is
 
       Graph_Node : Graph_Lib.Node_Id := Vis_Data.Get_Graph_Node (Node);
@@ -54,6 +67,7 @@ package body Giant.Graph_Widgets.Notifications is
       Notification_Logger.Debug
         ("User requested PopUp on node "
          & Graph_Lib.Node_Id_Image (Graph_Node) & " - Unimplemented.");
+      Handlers.Emit_Node_Popup_Event (Widget, Event, Graph_Node);
    end Node_Popup;
 
    procedure Selection_Changed

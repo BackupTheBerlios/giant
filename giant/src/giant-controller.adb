@@ -20,15 +20,18 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.46 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.47 $
 --  $Author: squig $
---  $Date: 2003/07/10 16:26:35 $
+--  $Date: 2003/07/10 20:17:45 $
 --
 
 with Ada.Strings.Unbounded;
+with Ada.Text_IO;
 
 with String_Lists;
 
+with Giant.Config_Settings;
+with Giant.Dialogs;
 with Giant.Evolutions;
 with Giant.File_Management;
 with Giant.Graph_Lib;
@@ -64,6 +67,41 @@ package body Giant.Controller is
       end if;
    end Exit_Application;
 
+   function Show_Source
+     (Node : in Graph_Lib.Node_Id)
+     return Boolean
+   is
+      use type Graph_Lib.Node_Attribute_Class_Id;
+      Iterator : Graph_Lib.Node_Attribute_Iterator;
+      Attribute : Graph_Lib.Node_Attribute_Id := null;
+   begin
+      Iterator := Graph_Lib.Make_Attribute_Iterator (Node);
+      while (Graph_Lib.More (Iterator)) loop
+         Graph_Lib.Next (Iterator, Attribute);
+         if (Graph_Lib.Get_Node_Attribute_Class_Id (Attribute)
+             = Graph_Lib.Class_SLoc) then
+            --  launch editor
+            File_Management.Execute_External_Editor
+              (Command  =>
+                 Config_Settings.Get_Setting_As_String ("Editor.Source"),
+               Filename =>
+                 Graph_Lib.Get_Node_Attribute_SLoc_Path_Value
+               (Node, Attribute)
+               & Graph_Lib.Get_Node_Attribute_SLoc_Filename_Value
+               (Node, Attribute),
+               Line     =>
+                 Graph_Lib.Get_Node_Attribute_SLoc_Line_Value
+               (Node, Attribute),
+               Column   =>
+                 Graph_Lib.Get_Node_Attribute_SLoc_Column_Value
+               (Node, Attribute));
+            return True;
+         end if;
+      end loop;
+
+      return False;
+   end Show_Source;
+
    ---------------------------------------------------------------------------
    --  GUI
    ---------------------------------------------------------------------------
@@ -75,6 +113,17 @@ package body Giant.Controller is
    begin
       return Gui_Manager.Hide (Ask_For_Confirmation);
    end Hide_Gui;
+
+   procedure Show_Error
+     (Message : in String)
+   is
+   begin
+      if (Gui_Manager.Is_Initialized) then
+         Dialogs.Show_Error_Dialog (Message);
+      else
+         Ada.Text_IO.Put_Line (Ada.Text_IO.Standard_Error, Message);
+      end if;
+   end Show_Error;
 
    procedure Show_Gui
    is
