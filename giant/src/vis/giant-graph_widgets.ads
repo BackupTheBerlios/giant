@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.22 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.23 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 18:39:23 $
+--  $Date: 2003/07/08 09:42:13 $
 --
 ------------------------------------------------------------------------------
 --
@@ -130,9 +130,11 @@ package Giant.Graph_Widgets is
    --    Widget       - Access to a new graph widget
    --    Style        - The visualization style to be used for 'Widget'
    procedure Create
-     (Widget       :    out Graph_Widget;
-      Style        : in     Config.Vis_Styles.Visualisation_Style_Access :=
-        Config.Vis_Styles.Get_Default_Vis_Style);
+     (Widget      :    out Graph_Widget;
+      Style       : in     Config.Vis_Styles.Visualisation_Style_Access :=
+        Config.Vis_Styles.Get_Default_Vis_Style;
+      Annotations : in     Node_Annotations.Node_Annotation_Access     :=
+        Node_Annotations.Create_Empty);
 
    ----------------------------------------------------------------------------
    --  Creates a new Graph_Widget and sets its state to the state stored in
@@ -916,6 +918,12 @@ package Giant.Graph_Widgets is
 private                    -- private part --
                            ------------------
 
+
+   package Vis_Edge_Sets renames Vis_Data.Vis_Edge_Sets;
+
+   package Vis_Node_Sets renames Vis_Data.Vis_Node_Sets;
+
+
    -------------------------
    -- Private subprograms --
    -------------------------
@@ -1089,11 +1097,14 @@ private                    -- private part --
          States      : States_Type;
 
          --  The following must not be used by any subpackage
-         Edge_Map    : Edge_Id_Mappings.Mapping;
-         Edge_Layers : Vis_Data.Layer_Pool;
-         Node_Map    : Node_Id_Mappings.Mapping;
-         Node_Layers : Vis_Data.Layer_Pool;
-         Manager     : Vis_Data.Region_Manager;
+         Edge_Map     : Edge_Id_Mappings.Mapping;
+         Edge_Layers  : Vis_Data.Layer_Pool;
+         Node_Map     : Node_Id_Mappings.Mapping;
+         Node_Layers  : Vis_Data.Layer_Pool;
+         Manager      : Vis_Data.Region_Manager;
+
+         Locked_Edges : Vis_Edge_Sets.Set;
+         Locked_Nodes : Vis_Node_Sets.Set;
       end record;
 
 end Giant.Graph_Widgets;

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.13 $
+--  $RCSfile: giant-graph_widgets.adb,v $, $Revision: 1.14 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 18:39:23 $
+--  $Date: 2003/07/08 09:42:13 $
 --
 ------------------------------------------------------------------------------
 
@@ -68,7 +68,8 @@ package body Giant.Graph_Widgets is
    --  "realize" signal has been emitted on 'Widget'
    procedure Initialize
      (Widget       : access Graph_Widget_Record'Class;
-      Style        : in     Config.Vis_Styles.Visualisation_Style_Access) is
+      Style        : in     Config.Vis_Styles.Visualisation_Style_Access;
+      Pool         : in     Node_Annotations.Node_Annotation_Access) is
    begin
       Gtk.Widget.Initialize_Widget (Widget);
       Gtk.Object.Initialize_Class_Record
@@ -77,6 +78,9 @@ package body Giant.Graph_Widgets is
          Class_Record              => Class_Record,
          Parameters                => Handlers.Get_Signal_Parameters,
          Scroll_Adjustments_Signal => Handlers.Get_Scroll_Adjustments_Signal);
+
+      Widget.Locked_Edges := Vis_Edge_Sets.Empty_Set;
+      Widget.Locked_Nodes := Vis_Node_Sets.Empty_Set;
 
       Vis_Data.Set_Up (Widget.Manager);
       Widget.Edge_Map := Edge_Id_Mappings.Create;
@@ -88,17 +92,20 @@ package body Giant.Graph_Widgets is
 
       States.Set_Up (Widget);
       Positioning.Set_Up (Widget, Default_Zoom_Level);
-      --  Cannot set up yet, but must set visualization style.
+      --  Cannot set up yet, but must set values.
       Settings.Set_Style (Widget, Style);
+      Settings.Set_Annotation_Pool (Widget, Pool);
    end Initialize;
 
    procedure Create
-     (Widget       :    out Graph_Widget;
-      Style        : in     Config.Vis_Styles.Visualisation_Style_Access :=
-        Config.Vis_Styles.Get_Default_Vis_Style) is
+     (Widget      :    out Graph_Widget;
+      Style       : in     Config.Vis_Styles.Visualisation_Style_Access :=
+        Config.Vis_Styles.Get_Default_Vis_Style;
+      Annotations : in     Node_Annotations.Node_Annotation_Access      :=
+        Node_Annotations.Create_Empty) is
    begin
       Widget := new Graph_Widget_Record;
-      Initialize (Widget, Style);
+      Initialize (Widget, Style, Annotations);
    end Create;
 
    procedure Shut_Down_Graph_Widget
@@ -124,6 +131,9 @@ package body Giant.Graph_Widgets is
          Node_Id_Mappings.Next (Nodes, Node);
          Vis_Data.Destroy (Node);
       end loop;
+
+      Vis_Node_Sets.Destroy (Widget.Locked_Nodes);
+      Vis_Edge_Sets.Destroy (Widget.Locked_Edges);
    end Shut_Down_Graph_Widget;
 
    procedure Read_Graph_Widget
@@ -194,9 +204,12 @@ package body Giant.Graph_Widgets is
      (Widget    : access Graph_Widget_Record'Class;
       Selection : in     Graph_Lib.Selections.Selection;
       Lock      :    out Lock_Type) is
+
+
    begin
       States.Create_New_Lock (Widget, Lock);
       States.Changed_Visual (Widget);
+
 
    end Insert_Selection;
 
