@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/19 15:06:20 $
+-- $Date: 2003/07/23 13:46:33 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -157,7 +157,7 @@ package body Giant.Gsl.Interpreters is
       Register_Runtime (Runtime_Empty_Node_Set'Access, "empty_node_set");
       Register_Runtime (Runtime_Empty_Edge_Set'Access, "empty_edge_set");
       Register_Runtime (Runtime_Is_In'Access,          "is_in");
-      Register_Runtime (Runtime_For_Each'Access,       "for_each");
+      Register_Runtime (Runtime_Get_First'Access,      "get_first");
       Register_Runtime (Runtime_Size_Of'Access,        "size_of");
       Register_Runtime (Runtime_Get_Entry'Access,      "get_entry");
       -- types (ref. GIANT Scripting Language Specification 1.5.1.6)
@@ -233,76 +233,49 @@ package body Giant.Gsl.Interpreters is
 
          -- execute a Gsl command
          case Get_Node_Type (Cmd) is
+            ------------------------------------------------------------------
+            -- literal ::= boolean_literal | int_literal | string_literal |
+            --             null_literal
             when Literal =>
                Lit := Get_Literal (Cmd);
                if Lit /= Gsl_Null then
-                  Lit := Copy (Lit);
-                  Result_Stacks.Push (Current_Interpreter.Result_Stack, Lit);
+                  Result_Stacks.Push
+                    (Current_Interpreter.Result_Stack, Copy (Lit));
                else
-                  Result_Stacks.Push (Current_Interpreter.Result_Stack, 
-                                      Gsl_Null);
+                  Result_Stacks.Push
+                    (Current_Interpreter.Result_Stack, Gsl_Null);
                end if;
 
+            ------------------------------------------------------------------
+            -- inspection ::= visible_var | global_var
             when Visible_Var =>
                Lit := Get_Literal (Cmd);
                -- get value from activation record
                Lit := Get_Var (Get_Ref_Name (Gsl_Var_Reference (Lit)));
                if Lit /= Gsl_Null then
-                  Lit := Copy (Lit);
-                  Result_Stacks.Push (Current_Interpreter.Result_Stack, Lit);
+                  Result_Stacks.Push
+                    (Current_Interpreter.Result_Stack, Copy (Lit));
                else
-                  Result_Stacks.Push (Current_Interpreter.Result_Stack,
-                                      Gsl_Null);
+                  Result_Stacks.Push
+                    (Current_Interpreter.Result_Stack, Gsl_Null);
                end if;
 
             when Global_Var =>
-               -- controller interaction
-               Lit := Copy (Get_Literal (Cmd));
+               Lit := Get_Literal (Cmd);
                if Get_Ref_Type (Gsl_Var_Reference (Lit)) = Subgraph then
-                  if Exists_Subgraph (Get_Ref_Name (Gsl_Var_Reference (Lit)))
-                  then
-                     Default_Logger.Debug ("Subgraph found.");
-                     Sub := Get_Subgraph 
-                       (Get_Ref_Name (Gsl_Var_Reference (Lit)));
-                     Res_List := Create_Gsl_List (2);
-                     Set_Value_At (Res_List, 1, Gsl_Type (Create_Gsl_Node_Set
-                       (Giant.Graph_Lib.Subgraphs.Get_All_Nodes (Sub))));
-                     Set_Value_At (Res_List, 2, Gsl_Type (Create_Gsl_Edge_Set
-                       (Giant.Graph_Lib.Subgraphs.Get_All_Edges (Sub))));
-                     Result_Stacks.Push (Current_Interpreter.Result_Stack, 
-                       Gsl_Type (Res_List));
-                  else
-                     Ada.Exceptions.Raise_Exception
-                       (Gsl_Runtime_Error'Identity, 
-                        "Runtime error: Subgraph does not exist.");
-                  end if;
+                  Result_Stacks.Push (Current_Interpreter.Result_Stack, 
+                    Get_Subgraph (Get_Ref_Name (Gsl_Var_Reference (Lit))));
                elsif Get_Ref_Type (Gsl_Var_Reference (Lit)) = Selection then
-                  if Current_Interpreter.Context = "" then
-                     Ada.Exceptions.Raise_Exception
-                       (Gsl_Runtime_Error'Identity,
-                        "Runtime error: No context set.");
-                  elsif Exists_Selection
-                          (To_String (Current_Interpreter.Context),
-                           (Get_Ref_Name (Gsl_Var_Reference (Lit)))) then
-                     Sel := Get_Selection
-                       (To_String (Current_Interpreter.Context),
-                       (Get_Ref_Name (Gsl_Var_Reference (Lit))));
-                     Res_List := Create_Gsl_List (2);
-                     Set_Value_At (Res_List, 1, Gsl_Type (Create_Gsl_Node_Set
-                       (Giant.Graph_Lib.Selections.Get_All_Nodes (Sel))));
-                     Set_Value_At (Res_List, 2, Gsl_Type (Create_Gsl_Edge_Set
-                       (Giant.Graph_Lib.Selections.Get_All_Edges (Sel))));
-                     Result_Stacks.Push (Current_Interpreter.Result_Stack, 
-                       Gsl_Type (Res_List));
-                  else
-                     Ada.Exceptions.Raise_Exception
-                       (Gsl_Runtime_Error'Identity,
-                        "Gsl Interpreter: Selection does not exist.");
-                  end if;
+                  Result_Stacks.Push (Current_Interpreter.Result_Stack, 
+                    Get_Selection (Get_Ref_Name (Gsl_Var_Reference (Lit))));
                end if;
 
+            ------------------------------------------------------------------
+            -- reference ::= visible_ref | var_creation | global_ref
             when Visible_Ref =>
                Lit := Copy (Get_Literal (Cmd));
+               -- check wether the referenced variable exists
+               Exists_Var (Get_Ref_Name (Gsl_Var_Reference (Lit)));
                Result_Stacks.Push (Current_Interpreter.Result_Stack, Lit);
 
             when Var_Creation =>
@@ -312,14 +285,25 @@ package body Giant.Gsl.Interpreters is
 
             when Global_Ref =>
                Lit := Copy (Get_Literal (Cmd));
+               if Get_Ref_Type (Gsl_Var_Reference (Lit)) = Subgraph then
+                  Result_Stacks.Push (Current_Interpreter.Result_Stack, 
+                    Get_Subgraph_Reference (Gsl_Var_Reference (Lit)));
+               elsif Get_Ref_Type (Gsl_Var_Reference (Lit)) = Selection then
+                  Result_Stacks.Push (Current_Interpreter.Result_Stack, 
+                    Get_Selection_Reference (Gsl_Var_Reference (Lit)));
+               end if;
                Result_Stacks.Push (Current_Interpreter.Result_Stack, Lit);
 
+            ------------------------------------------------------------------
+            -- script_decl ::= {list, expression}
             when Script_Decl =>
                Lit := Copy (Get_Literal (Cmd));
                Set_Activation_Record (Gsl_Script_Reference (Lit),
                  Current_Interpreter.Current_Activation_Record);
                Result_Stacks.Push (Current_Interpreter.Result_Stack, Lit);
 
+            ------------------------------------------------------------------
+            -- list ::= (<expression<,expression>*>?)
             when List =>
                Res_List := Create_Gsl_List (Get_Size (Cmd));
                for i in reverse 1 .. Get_List_Size (Res_List) loop
@@ -329,6 +313,8 @@ package body Giant.Gsl.Interpreters is
                Result_Stacks.Push
                  (Current_Interpreter.Result_Stack, Gsl_Type (Res_List));
 
+            ------------------------------------------------------------------
+            -- sequence ::= [<expression;>*]
             when Sequence =>
                if Giant.Gsl.Syntax_Tree.Get_Size (Cmd) = 0 then
                   Result_Stacks.Push
@@ -345,6 +331,8 @@ package body Giant.Gsl.Interpreters is
                     (Current_Interpreter.Result_Stack, Res1);
                end if;
 
+            ------------------------------------------------------------------
+            -- script_activation ::= expression list
             when Script_Activation => Script_Activation_Cmd;
 
             when Script_Exec => Script_Exec_Cmd;
@@ -384,7 +372,6 @@ package body Giant.Gsl.Interpreters is
                Result_Stacks.Pop (Current_Interpreter.Result_Stack, Res1);
                Destroy_Gsl_Type (Res1);
 
-            when others => null;
          end case;
 
          --  advance
@@ -408,11 +395,96 @@ package body Giant.Gsl.Interpreters is
    end Step;
 
    --------------------------------------------------------------------------
+   --
+   function Get_Subgraph
+     (Name : String)
+      return Gsl_Type is
+
+      use Giant.Controller;
+      use Giant.Graph_Lib.Subgraphs;
+      Sub      : Giant.Graph_Lib.Subgraphs.Subgraph;
+      Res_List : Gsl_List;
+   begin
+      if Exists_Subgraph (Name) then
+         Sub := Get_Subgraph (Name);
+         Res_List := Create_Gsl_List (2);
+         Set_Value_At (Res_List, 1, Gsl_Type
+           (Create_Gsl_Node_Set (Get_All_Nodes (Sub))));
+         Set_Value_At (Res_List, 2, Gsl_Type
+           (Create_Gsl_Edge_Set (Get_All_Edges (Sub))));
+         return Gsl_Type (Res_List);
+      else
+         return Gsl_Null;
+      end if; 
+   end Get_Subgraph;
+
+   --------------------------------------------------------------------------
+   --
+   function Get_Subgraph_Reference
+     (Ref : Gsl_Var_Reference)
+      return Gsl_Type is
+
+      use Giant.Controller;
+   begin
+      if not Exists_Subgraph (Get_Ref_Name (Ref)) then
+         Create_Subgraph (Get_Ref_Name (Ref));
+      end if;
+      return Gsl_Type (Copy (Ref));
+   end Get_Subgraph_Reference;
+
+   ---------------------------------------------------------------------------
+   --
+   function Get_Selection
+     (Name : String)
+      return Gsl_Type is
+
+      use Giant.Controller;
+      use Giant.Graph_Lib.Selections;
+      Sel      : Giant.Graph_Lib.Selections.Selection;
+      Res_List : Gsl_List;
+   begin
+      if Current_Interpreter.Context = "" then
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Runtime error: No context set.");
+      elsif Exists_Selection (To_String (Current_Interpreter.Context), Name)
+      then
+         Sel := Get_Selection (To_String (Current_Interpreter.Context), Name);
+         Res_List := Create_Gsl_List (2);
+         Set_Value_At (Res_List, 1, Gsl_Type
+           (Create_Gsl_Node_Set (Get_All_Nodes (Sel))));
+         Set_Value_At (Res_List, 2, Gsl_Type
+           (Create_Gsl_Edge_Set (Get_All_Edges (Sel))));
+         return Gsl_Type (Res_List);
+      else
+         return Gsl_Null;
+      end if;
+   end Get_Selection;
+
+   --------------------------------------------------------------------------
+   --
+   function Get_Selection_Reference
+     (Ref : Gsl_Var_Reference)
+      return Gsl_Type is
+
+      use Giant.Controller;
+   begin
+      if Current_Interpreter.Context = "" then
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Runtime error: No context set.");
+      elsif not Exists_Selection (To_String (Current_Interpreter.Context), 
+                                  Get_Ref_Name (Ref))
+      then
+         Create_Selection
+           (To_String (Current_Interpreter.Context), Get_Ref_Name (Ref));
+      end if;
+      return Gsl_Type (Copy (Ref));
+   end Get_Selection_Reference;
+
+   --------------------------------------------------------------------------
    -- step 1 of a Gsl Script execution
    procedure Script_Activation_Cmd is
 
       use Giant.Gsl.Compilers;
-
       Script : Gsl_Type;
       Params : Gsl_Type;
    begin
@@ -599,12 +671,35 @@ package body Giant.Gsl.Interpreters is
       then
          -- variable already exists, raise Exception
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
-           "Runtime error: Variable " & Name & " already exists.");
+           "Runtime error: Variable '" & Name & "' already exists.");
       else
          Gsl_Var_Hashed_Mappings.Bind
            (AR.Vars, To_Unbounded_String (Name), Gsl_Null);
       end if;
    end Create_Var;
+
+   ---------------------------------------------------------------------------
+   --
+   procedure Exists_Var
+     (Name : String) is
+
+      use Ada.Strings.Unbounded;
+      AR : Activation_Record;
+   begin
+      -- start in the current Activation_Record
+      AR := Current_Interpreter.Current_Activation_Record;
+      while AR /= null loop
+         if Gsl_Var_Hashed_Mappings.Is_Bound
+           (AR.Vars, To_Unbounded_String (Name)) then
+            return; 
+         end if;
+         -- next iteration look in the parent Activation_Record
+         AR := AR.Parent;
+      end loop;
+      -- variable was not found, raise Exception
+      Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
+        "Runtime error: Variable '" & Name & "' was not found.");
+   end Exists_Var;
 
    ---------------------------------------------------------------------------
    --
@@ -628,7 +723,7 @@ package body Giant.Gsl.Interpreters is
       end loop;
       -- variable was not found, raise Exception
       Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
-        "Runtime error: Variable " & Name & " was not found.");
+        "Runtime error: Variable '" & Name & "' was not found.");
    end Get_Var;
 
    ---------------------------------------------------------------------------
@@ -657,7 +752,7 @@ package body Giant.Gsl.Interpreters is
       end loop;
       -- variable was not found, raise Exception
       Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity, 
-        "Runtime error: Variable " & Name & " was not found.");
+        "Runtime error: Variable '" & Name & "' was not found.");
    end Set_Var;
 
 end Giant.Gsl.Interpreters;

@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-interpreters.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/19 15:06:20 $
+-- $Date: 2003/07/23 13:46:33 $
 --
 -- This package implements the Gsl interpreter.
 --
@@ -93,6 +93,30 @@ package Giant.Gsl.Interpreters is
 
    ---------------------------------------------------------------------------
    --
+   function Get_Subgraph
+     (Name : String)
+      return Gsl_Type;
+   
+   ---------------------------------------------------------------------------
+   --
+   function Get_Subgraph_Reference
+     (Ref : Gsl_Var_Reference)
+      return Gsl_Type;
+
+   ---------------------------------------------------------------------------
+   --
+   function Get_Selection
+     (Name : String)
+      return Gsl_Type;
+
+   ---------------------------------------------------------------------------
+   --
+   function Get_Selection_Reference
+     (Ref : Gsl_Var_Reference)
+      return Gsl_Type;
+
+   ---------------------------------------------------------------------------
+   --
    procedure Finish
      (Individual : access Interpreter_Record;
       Canceled   : in     Boolean); 
@@ -108,6 +132,11 @@ package Giant.Gsl.Interpreters is
    ---------------------------------------------------------------------------
    --
    procedure Create_Var
+     (Name            : String);
+
+   ---------------------------------------------------------------------------
+   --
+   procedure Exists_Var
      (Name            : String);
 
    ---------------------------------------------------------------------------
