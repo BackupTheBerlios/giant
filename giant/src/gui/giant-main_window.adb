@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.69 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.70 $
 --  $Author: koppor $
---  $Date: 2003/10/07 14:38:08 $
+--  $Date: 2003/10/07 17:11:18 $
 --
 
 with Ada.Exceptions;
@@ -69,6 +69,7 @@ with Giant.Default_Logger;
 with Giant.Dialogs;
 with Giant.File_Management;
 with Giant.File_Selection;
+with Giant.Generate_Subgraph_Dialog;
 with Giant.Graph_Lib;
 with Giant.Graph_Lib.Subgraphs;
 with Giant.Gsl_Dialog;
@@ -511,10 +512,8 @@ package body Giant.Main_Window is
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
    begin
-      --  Fixme
-      On_Help_About (Source);
-
-      --  insert got subgraph into subgraph-list
+      Generate_Subgraph_Dialog.Show
+        (Controller.Get_Subgraph (Get_Selected_Subgraph));
    end On_Subgraph_Generate_New_Subgraph;
 
    procedure On_Subgraph_List_Highlight
@@ -528,7 +527,6 @@ package body Giant.Main_Window is
    procedure On_Subgraph_List_Create_Selection
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
-      Subgraph_Name : String := Get_Selected_Subgraph;
       Action : Actions.Create_Selection_Action_Access;
    begin
       Action := Actions.Create (Get_Selected_Subgraph);
