@@ -20,10 +20,10 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.ads,v $, $Revision: 1.13 $
+-- $RCSfile: giant-file_management.ads,v $, $Revision: 1.14 $
 
 -- $Author: schwiemn $
--- $Date: 2003/06/27 09:27:31 $
+-- $Date: 2003/06/27 19:44:01 $
 --
 -- -----------------------------------------------
 --
@@ -314,7 +314,18 @@ package Giant.File_Management is
      return String;              
             
 
-
+   ---------------------------------------------------------------------------
+   -- Calls an external editor.
+   -- Parameters are not checked for correctness.
+   -- 
+   -- Parameters:
+   --   Command - A command line call string for an 
+   --     editor holding vild cards for a filename ("%f"), 
+   --     a column ("%c") and a line indication ("%l").
+   --   Filename - An absolute path to a file thart should be opened
+   --     (replaces "%f" in the Command parameter.
+   --   Line - The line number where the cursor should be placed on.
+   --   Column - The Column there the cursor should be placed on.
    procedure Execute_External_Editor
      (Command  : in String;
       Filename : in String;

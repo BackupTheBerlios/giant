@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-projects-test.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-projects-test.adb,v $, $Revision: 1.9 $
 --  $Author: schwiemn $
---  $Date: 2003/06/27 15:25:44 $
+--  $Date: 2003/06/27 19:44:01 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -92,28 +92,28 @@ package body Giant.Projects.Test is
    begin
             
       -- remove all files in the project directory
-  --    Kill_Files_In_Dir ("resources/test_project_directory/");
+      Kill_Files_In_Dir ("resources/test_project_directory/");
    
       -- in the target dir for Save As
       Kill_Files_In_Dir ("resources/test_project_copy_dir");
       
       Kill_Files_In_Dir ("resources/test_project_copy_dir_2");
       
-  --    Test_Project_1 := Giant.Projects.Create_Empty_Project 
-  --      ("My_Test_Project",
-  --       "resources/test_project_directory/",
-  --       "resources/rfg_examp.iml",
-  --       Giant.Graph_Lib.Get_Graph_Hash);
+      Test_Project_1 := Giant.Projects.Create_Empty_Project 
+        ("My_Test_Project",
+         "resources/test_project_directory/",
+         "resources/rfg_examp.iml",
+         Giant.Graph_Lib.Get_Graph_Hash);
         
-  --    Assert (Projects.Does_Project_Exist_File
-  --      ("resources/test_project_directory/My_Test_Project.xml"),
-  --       "Does_Project_Exist");
+      Assert (Projects.Does_Project_Exist_File
+        ("resources/test_project_directory/My_Test_Project.xml"),
+         "Does_Project_Exist");
         
      
      -------
-  --    Projects.Store_Whole_Project (Test_Project_1);                         
+      Projects.Store_Whole_Project (Test_Project_1);                         
          
-  --    Projects.Deallocate_Project_Deep (Test_Project_1); 
+      Projects.Deallocate_Project_Deep (Test_Project_1); 
 
             
       Test_Project_1 := Projects.Load_Project_File 
