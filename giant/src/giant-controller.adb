@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.87 $
---  $Author: squig $
---  $Date: 2003/09/01 22:09:10 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.88 $
+--  $Author: koppor $
+--  $Date: 2003/09/02 13:57:04 $
 --
 
 with Ada.Strings.Unbounded;
@@ -292,14 +292,22 @@ package body Giant.Controller is
    begin
       Logger.Debug ("Applying layout: " & Layout_Name & "["
                     & Additional_Parameters & "]");
-      Layout_Factory.Create (Algorithm => Layout_Name,
-                             Selection_To_Layout => Selection,
-                             Widget => Vis_Windows.Get_Graph_Widget (Window),
-                             Widget_Lock => Lock,
-                             Target_Position => Position,
-                             Additional_Parameters =>
-                               Additional_Parameters,
-                             Layout_Evolution => Evolution);
+      begin
+         Layout_Factory.Create (Algorithm => Layout_Name,
+                                Selection_To_Layout => Selection,
+                                Widget => Vis_Windows.Get_Graph_Widget (Window),
+                                Widget_Lock => Lock,
+                                Target_Position => Position,
+                                Additional_Parameters =>
+                                  Additional_Parameters,
+                                Layout_Evolution => Evolution);
+      exception
+         --  "when others" to ALWAYS free lock
+         when others =>
+            Graph_Widgets.Release_Lock
+              (Vis_Windows.Get_Graph_Widget (Window), Lock);
+            raise;
+      end;
       if Evolutions."=" (Parent_Calculation, null) then
          Evolutions.Start_Calculation (Evolution,
                                        Gui_Manager.Create_Progress_Dialog
