@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: subgraph.tex,v $, $Revision: 1.4 $
-%  $Date: 2003/02/21 17:08:30 $
-%  $Author: schwiemn $
+%  $RCSfile: subgraph.tex,v $, $Revision: 1.5 $
+%  $Date: 2003/03/19 17:29:06 $
+%  $Author: stupro $
 %
 %  Description: Use-Cases für IML-Teilgraphen
 %
@@ -32,11 +32,8 @@ Anzeigefenster.
  
   \begin{proc}    
     \step[1]
-    Der Benutzer startet den UseCase über das PopUp Menü
-    >>> POP UP IN LISTE DER IML-TEILGRAPHEN<<<<<<
-    >>>    Dort gibt es drei Eintäge für jede definierbare Farbe
-    d.h. drei ver. Farben - für jede Farbe einen Menüeintrag
-     >>>>>>>>>>>>>>>>>>>
+    Der Benutzer startet den UseCase über das PopUp Menü der Selektionsauswahlliste
+    \ref{Selektionsauswahlliste} durch Auswahl von \gq{Highlight Selection Color 1 (2,3)}
             
     \step[2]
     GIANT hebt den IML-Teilgraphen in allen geöffneten Anzeigefenstern
@@ -64,7 +61,7 @@ aufgehoben werden.
 
   \begin{postsuccess}
     \cond 
-    Der IML-Teilgraph ist in den
+    Der IML-Teilgraph wird wieder in der normalen Darstellung angezeigt.
  
   \end{postsuccess}
 
@@ -72,10 +69,9 @@ aufgehoben werden.
   \begin{proc}    
     \step[1]
     Der Benutzer startet den UseCase durch Rechtklick auf den
-    entsprechenden IML-Teilgraphen in der Liste <<<< VERWEIS GUI>>>>
-    
-    über das PopUp Menü:
-    \\<<<<<<<<<VERWEIS   GUI  - Menüeintrag hervorhebung aufheben>>>>>>>>>>>>>>>>
+    entsprechenden IML-Teilgraphen in der Selektionsauwahlliste
+    \ref{Selektionsauswahlliste} und Auswahl des Menüpunktes
+    \gq{Unhighlight Selection}.
     
 
     \step[2]
@@ -88,7 +84,7 @@ aufgehoben werden.
 
 
 % ==============================================================================
-\begin{uc}[ML-Teilgraph aus einer Selektion erzeugen]
+\begin{uc}[IML-Teilgraph aus einer Selektion erzeugen]
       {UC: IML-Teilgraph aus einer Selektion erzeugen}
 
 Leitet einen neuen IML-Teilgraphen aus einer Quell-Selektion ab.

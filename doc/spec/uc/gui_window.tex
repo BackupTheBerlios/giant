@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui_window.tex,v $, $Revision: 1.17 $
-%  $Date: 2003/03/19 16:40:55 $
+%  $RCSfile: gui_window.tex,v $, $Revision: 1.18 $
+%  $Date: 2003/03/19 17:28:51 $
 %  $Author: stupro $
 %
 %  Description: Use-Cases für die Fensterfunktionalität der GUI
@@ -590,7 +590,7 @@ Wählt die Zoomstufe und Scrollt so, daß der gesamte Fensterinhalt im Fenster sic
 \begin{uc}[Zoomen auf eine Kante]{UC: Zoomen auf eine Kante}
 
 
-Wählt die Zoomstufe und Scrollt so, eine bestimmte Kante komplett im Fenster sichtbar ist
+Wählt die Zoomstufe und Scrollt so, daß eine bestimmte Kante komplett im Fenster sichtbar ist
 
   \begin{precond}
     \cond 
@@ -614,7 +614,14 @@ Wählt die Zoomstufe und Scrollt so, eine bestimmte Kante komplett im Fenster sic
     \step[1]
     \begin {enumerate}
       \item
-      XXXXXXX
+       Der Benutzer Klickt den Button \gq{Zoom Edge} in der Zoomkontrolle.
+       Daraufhin erscheint in der Statuszeile von GIANT im Hauptfenster
+       \gq{Select Edge in Window (Fenstername) to be zoomed onto} und
+       der Fadenkreuzcursor erscheint.
+       
+       \item
+       Der Benutzer klickt mit der Rechten Maustaste die gewünschte Kante
+       im Graphenfenster an
       
     \end {enumerate}
         
@@ -629,6 +636,41 @@ Kantenknickpunkte, Knoten, Selektionen (jeweils die aktuelle Selektion),
 Drag and Drop, Cut and Paste
 
 
+
+  \begin{precond}
+    \cond 
+    Ein Projekt mit mindestens einem geöffneten Anzeigefenster mit mindestens einer Kante
+    ist geladen.
+       
+  \end{precond}
+
+  \begin{postsuccess}
+    
+    \cond
+    Der angezeigte Bereich des sichtbaren Anzeigeinhalts wurde so
+    vergrößert oder verkleinert, daß die betreffende Kante komplett
+    sichtbar ist, ggf. wurde auch entsprechend gescrollt.
+    Der Detaillierungslevel wurde ggf. automatisch angepaßt.
+    
+  \end{postsuccess}
+
+  \begin{proc}    
+  
+    \step[1]
+    \begin {enumerate}
+      \item
+       Der Benutzer Klickt den Button \gq{Zoom Edge} in der Zoomkontrolle.
+       Daraufhin erscheint in der Statuszeile von GIANT im Hauptfenster
+       \gq{Select Edge in Window (Fenstername) to be zoomed onto} und
+       der Fadenkreuzcursor erscheint.
+       
+       \item
+       Der Benutzer klickt mit der Rechten Maustaste die gewünschte Kante
+       im Graphenfenster an
+      
+    \end {enumerate}
+        
+  \end{proc}
 
 
 
@@ -691,7 +733,7 @@ Siehe hierzu auch \ref{Auseinanderschieben von Fenster-Knoten}.
     Der Benutzer wählt einen geeigneten Betrag aus und bestätigt mit OK.
     
     \step[5]
-    GINAT schiebt die Knoten entsprechend auseinander
+    GIANT schiebt die Knoten entsprechend auseinander
     (siehe \ref{Auseinanderschieben von Fenster-Knoten}).
     
   \end{proc}
