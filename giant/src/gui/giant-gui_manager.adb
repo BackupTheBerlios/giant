@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.35 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.36 $
 --  $Author: squig $
---  $Date: 2003/08/19 10:54:46 $
+--  $Date: 2003/09/09 21:17:44 $
 --
 
 with Ada.Strings.Unbounded;
@@ -595,7 +595,7 @@ package body Giant.Gui_Manager is
       Window := Get_Open_Window (Vis_Windows.Get_Name (Visual_Window));
       if (Window /= null) then
          --  window is already open, focus
-         Graph_Window.Grab_Focus (Window);
+         Graph_Window.Present (Window);
          return;
       end if;
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-node_info_dialog.adb,v $, $Revision: 1.11 $
+--  $RCSfile: giant-node_info_dialog.adb,v $, $Revision: 1.12 $
 --  $Author: squig $
---  $Date: 2003/09/09 15:31:24 $
+--  $Date: 2003/09/09 21:17:45 $
 --
 
 with Interfaces.C.Strings;
@@ -60,8 +60,8 @@ package body Giant.Node_Info_Dialog is
       Dialog : Node_Info_Dialog_Access := Node_Info_Dialog_Access (Source);
       Action : Actions.Pick_Node_Action_Access := Actions.Create (Dialog);
    begin
-      Dialog.Pick_Action := Action;
       Gui_Manager.Actions.Set_Global_Action (Action);
+      Dialog.Pick_Action := Action;
    end On_Pick_Button_Clicked;
 
    procedure On_Update_Button_Clicked
@@ -194,6 +194,9 @@ package body Giant.Node_Info_Dialog is
 
       --  resize columns
       Width := Clists.Columns_Autosize (Dialog.Attribute_List);
+
+      --  bring dialog to front
+      Present (Dialog);
    end Set_Node;
 
    procedure Show

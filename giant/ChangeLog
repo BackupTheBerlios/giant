@@ -1,5 +1,14 @@
 2003-09-09  Steffen Pingel  <squig@users.sourceforge.net>
 
+	* src/gui/giant-gui_manager.adb: Fixed focus request when opening
+	already open window.
+
+	* src/gui/giant-node_info_dialog.adb: Fixed exception when dialog
+	was closed and pick action was still in progress.
+
+	* src/gui/giant-node_info_dialog-actions.adb: Moved package to
+	Node_Info_Dialog. 
+	
 	* src/giant-constants.ads: Moved constants to this package to
 	avoid recompile off all files on version change.
 

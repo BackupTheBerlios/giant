@@ -125,8 +125,8 @@ gcov :
 	  --title "GIANT Test Coverage" $(GCOV_OUT_PATH)/giant.info
 
 release :
-	rm -rf tmp
-	mkdir tmp
+	rm -rf tmp/giant
+	mkdir -p tmp
 	cd tmp; cvs -d `cat ../CVS/Root` export -r $(RELEASE_TAG) giant
 	mkdir -p $(DIST_PATH)
 	cd $(DIST_PATH)/../template; tar -cf - . \
@@ -140,4 +140,4 @@ release :
 	mv $(DIST_PATH)/src/giant/compile.bat.dist $(DIST_PATH)/src/compile.bat
 	mv $(DIST_PATH)/src/giant/Makefile.dist $(DIST_PATH)/src/Makefile
 	ssh zweig "cd $(DIST_PATH)/src && make && cp giant/giant-SunOS ../"
-	ssh schmidt "setenv PATH /usr/local/ada/bin:$PATH && cd $(DIST_PATH)/src && make && cp giant/giant-Linux ../"
+	ssh schmidt "setenv PATH /usr/local/ada/bin:$$PATH && cd $(DIST_PATH)/src && make && cp giant/giant-Linux ../"
