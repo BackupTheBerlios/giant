@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.36 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.37 $
 --  $Author: schwiemn $
---  $Date: 2003/06/26 13:45:02 $
+--  $Date: 2003/06/26 15:06:07 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -457,7 +457,7 @@ package body Giant.Projects is
       Subgraphs_Iter : Subgraph_Data_Hashs.Values_Iter;
       A_Subgraph_Data_Element : Subgraph_Data_Element;
       
-      Rel_Path : Ada.Strings.Unbounded.Unbounded_String;
+      Rel_File_Path : Ada.Strings.Unbounded.Unbounded_String;
 
    begin
 
@@ -492,20 +492,37 @@ package body Giant.Projects is
       ---------------------------------------
       Ada.Text_IO.Put_Line
         ("  <global_data");
+        
+      Rel_File_Path := Ada.Strings.Unbounded.To_Unbounded_String
+        (File_Management.Get_Relative_Path_From_Absolute
+          (Ada.Strings.Unbounded.To_String         
+            (The_Project.Abs_Project_Directory),
+           Ada.Strings.Unbounded.To_String 
+            (The_Project.Abs_Bauhaus_IML_Graph_File))); 
+                
       Ada.Text_IO.Put_Line
         ("    iml_graph_file_path = """
          & Ada.Strings.Unbounded.To_String
-         (The_Project.Abs_Bauhaus_IML_Graph_File)
+         (Rel_File_Path)
          & """");
       Ada.Text_IO.Put_Line
         ("    iml_graph_checksum = """
          & Integer'Image (The_Project.Bauhaus_IML_Graph_File_Checksum)
          & """") ;
       -- node annotations file
+      
+      -- Calculate relative path if possible 
+      Rel_File_Path := Ada.Strings.Unbounded.To_Unbounded_String
+        (File_Management.Get_Relative_Path_From_Absolute
+          (Ada.Strings.Unbounded.To_String         
+            (The_Project.Abs_Project_Directory),
+           Ada.Strings.Unbounded.To_String 
+            (The_Project.Node_Annotations_File)));
+           
       Ada.Text_IO.Put_Line
         ("    node_annotations_file_name = """
          & Ada.Strings.Unbounded.To_String
-         (The_Project.Node_Annotations_File)
+         (Rel_File_Path)
          & """ />");
 
       --  write entries for the files holding the
@@ -521,15 +538,24 @@ package body Giant.Projects is
         (The_Project.All_Vis_Windows);
 
       while Known_Vis_Windows_Hashs.More (Vis_Window_Iter) loop
+
          Known_Vis_Windows_Hashs.Next
            (Vis_Window_Iter, A_Vis_Window_Data_Element);
+         
+         -- Calculate relative path if possible 
+         Rel_File_Path := Ada.Strings.Unbounded.To_Unbounded_String
+           (File_Management.Get_Relative_Path_From_Absolute
+             (Ada.Strings.Unbounded.To_String         
+                (The_Project.Abs_Project_Directory),
+              Ada.Strings.Unbounded.To_String 
+                (A_Vis_Window_Data_Element.Existing_Vis_Window_File)));
 
          if (A_Vis_Window_Data_Element.Is_File_Linked = True) then
-
+           
             Ada.Text_IO.Put_Line
               ("    <a_vis_window_file file_path = """
                & Ada.Strings.Unbounded.To_String
-               (A_Vis_Window_Data_Element.Existing_Vis_Window_File)
+                   (Rel_File_Path)
                & """ />");
          end if;
       end loop;
@@ -548,15 +574,23 @@ package body Giant.Projects is
       -- only writes entries for subgraphs that have an management file
       -- (and are "file linked") !!!
       while Subgraph_Data_Hashs.More (Subgraphs_Iter) loop
+
          Subgraph_Data_Hashs.Next
            (Subgraphs_Iter, A_Subgraph_Data_Element);
+
+         Rel_File_Path := Ada.Strings.Unbounded.To_Unbounded_String
+           (File_Management.Get_Relative_Path_From_Absolute
+             (Ada.Strings.Unbounded.To_String         
+                (The_Project.Abs_Project_Directory),
+              Ada.Strings.Unbounded.To_String 
+                (A_Subgraph_Data_Element.Existing_Subgraph_File)));
 
          if (A_Subgraph_Data_Element.Is_File_Linked = True) then
 
             Ada.Text_IO.Put_Line
               ("    <a_subgraph_file file_path = """
                & Ada.Strings.Unbounded.To_String
-               (A_Subgraph_Data_Element.Existing_Subgraph_File)
+               (Rel_File_Path)
                & """ />");
          end if;
       end loop;

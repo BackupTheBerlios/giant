@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.13 $
--- $Author: squig $
--- $Date: 2003/06/26 13:47:23 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.14 $
+-- $Author: schwiemn $
+-- $Date: 2003/06/26 15:06:07 $
 --
 --
 with Ada.Streams;
@@ -255,7 +255,7 @@ package body Giant.File_Management is
 
 
    ---------------------------------------------------------------------------
-   function Get_Relative_Path_To_File_From_Absolute
+   function Get_Relative_Path_From_Absolute
      (Abs_Path_Root : in String;
       Abs_Path      : in String)
      return String is
@@ -292,7 +292,7 @@ package body Giant.File_Management is
          return Abs_Path;
       end if;
 
-   end Get_Relative_Path_To_File_From_Absolute;
+   end Get_Relative_Path_From_Absolute;
 
    ---------------------------------------------------------------------------
    function Get_Absolute_Path_To_Directory_From_Relative
@@ -460,62 +460,67 @@ package body Giant.File_Management is
       return Path;
    end Get_User_Config_Path;
 
+
+
    procedure Execute
      (Command : in String)
    is
-      Args   : GNAT.OS_Lib.Argument_List_Access;
-      Pid    : GNAT.OS_Lib.Process_Id;
-      Prog   : GNAT.OS_Lib.String_Access;
+--      Args   : GNAT.OS_Lib.Argument_List_Access;
+  --    Pid    : GNAT.OS_Lib.Process_Id;
+    --  Prog   : GNAT.OS_Lib.String_Access;
    begin
-      Args := Argument_String_To_List (Command);
-      Prog := Locate_Exec_On_Path (Args (Args'First).all);
+--      Args := Argument_String_To_List (Command);
+--      Prog := Locate_Exec_On_Path (Args (Args'First).all);
 
-      if Prog /= null then
-         Pid := GNAT.OS_Lib.Non_Blocking_Spawn
-           (Prog.all, Args (Args'First + 1 .. Args'Last));
-         Free (Prog);
-      end if;
+--      if Prog /= null then
+--         Pid := GNAT.OS_Lib.Non_Blocking_Spawn
+--           (Prog.all, Args (Args'First + 1 .. Args'Last));
+--         Free (Prog);
+--      end if;
+--
+--      if Args /= null then
+--         for J in Args'Range loop
+--            Free (Args (J));
+--         end loop;
+--
+--         Free (Args);
+--      end if;
 
-      if Args /= null then
-         for J in Args'Range loop
-            Free (Args (J));
-         end loop;
-
-         Free (Args);
-      end if;
+null;
    end Execute;
 
-   procedure Execute_External_Editor
+   ---------------------------------------------------------------------------
+  procedure Execute_External_Editor
      (Command  : in String;
-      Filename : in String;
+     Filename : in String;
       Line     : in Natural;
       Column   : in Natural)
    is
-            function Substitute
-        (Name : String; File : String; Line : Natural) return String
-      is
-         Index : Natural := Name'First;
-      begin
-         while Index < Name'Last loop
-            if Name (Index) = '%' and then Name (Index + 1) = 'f' then
-               return Name (Name'First .. Index - 1) &
-                 File & Substitute (Name (Index + 2 .. Name'Last), File, Line);
+--            function Substitute
+--        (Name : String; File : String; Line : Natural) return String
+--      is
+--         Index : Natural := Name'First;
+--      begin
+--         while Index < Name'Last loop
+--            if Name (Index) = '%' and then Name (Index + 1) = 'f' then
+--               return Name (Name'First .. Index - 1) &
+--                 File & Substitute (Name (Index + 2 .. Name'Last), File, Line);
 
-            elsif Name (Index) = '%' and then Name (Index + 1) = 'l' then
-               declare
-                  Img : constant String := Natural'Image (Line);
-               begin
-                  return Name (Name'First .. Index - 1) &
-                    Img (Img'First + 1 .. Img'Last) &
-                    Substitute (Name (Index + 2 .. Name'Last), File, Line);
-               end;
-            end if;
+--            elsif Name (Index) = '%' and then Name (Index + 1) = 'l' then
+--               declare
+--                  Img : constant String := Natural'Image (Line);
+--               begin
+--                  return Name (Name'First .. Index - 1) &
+--                    Img (Img'First + 1 .. Img'Last) &
+--                    Substitute (Name (Index + 2 .. Name'Last), File, Line);
+--               end;
+--            end if;
 
-            Index := Index + 1;
-         end loop;
+--            Index := Index + 1;
+--         end loop;
 
-         return Name;
-      end Substitute;
+--         return Name;
+--      end Substitute;
 
    begin
 

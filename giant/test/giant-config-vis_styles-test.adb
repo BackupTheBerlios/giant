@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-config-vis_styles-test.adb,v $, $Revision: 1.4 $
---  $Author: squig $
---  $Date: 2003/06/25 17:28:05 $
+--  $RCSfile: giant-config-vis_styles-test.adb,v $, $Revision: 1.5 $
+--  $Author: schwiemn $
+--  $Date: 2003/06/26 15:06:07 $
 --
 
 with AUnit.Assertions; use AUnit.Assertions;
@@ -40,7 +40,9 @@ package body Giant.Config.Vis_Styles.Test is
 
    procedure Test_Initialisation
      (R : in out AUnit.Test_Cases.Test_Case'Class) is
-
+     
+     Def_Vis_Style : Giant.Config.Vis_Styles.Visualisation_Style_Access;
+     
    begin
 
       for i in 1 .. 1 loop
@@ -50,12 +52,14 @@ package body Giant.Config.Vis_Styles.Test is
            "",
            "",
            "resources/vis_styles/only_defaults_giant_vis_style.xml");
+      
+         Assert (Giant.Config.Vis_Styles.Get_Number_Of_Known_Vis_Styles = 1,
+           "Test whether ammount of loaded vis styles is correct");
+            
+         Def_Vis_Style := Giant.Config.Vis_Styles.Get_Default_Vis_Style;
+                         
+         Giant.Config.Vis_Styles.Clear_Config_Vis_Styles;
 
-    --    Assert (Giant.Config.Vis_Styles.Get_Number_Of_Known_Vis_Styles = 1,
-      --          "Test whether ammount of loaded vis styles is correct");
-
-
-        Giant.Config.Vis_Styles.Clear_Config_Vis_Styles;
       end loop;
    end Test_Initialisation;
 
@@ -72,9 +76,9 @@ package body Giant.Config.Vis_Styles.Test is
 
    procedure Set_Up (T : in out Test_Case) is
    begin
-      Giant.Graph_Lib.Create
-      ("resources/"
-       & "rfg_examp.iml");
+      Giant.Graph_Lib.Initialize;      
+      Giant.Graph_Lib.Load      
+        ("resources/rfg_examp.iml");
    end Set_Up;
 
    procedure Tear_Down (T : in out Test_Case) is

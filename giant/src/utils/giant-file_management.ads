@@ -20,10 +20,10 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.ads,v $, $Revision: 1.11 $
+-- $RCSfile: giant-file_management.ads,v $, $Revision: 1.12 $
 
--- $Author: squig $
--- $Date: 2003/06/26 13:43:53 $
+-- $Author: schwiemn $
+-- $Date: 2003/06/26 15:06:07 $
 --
 -- -----------------------------------------------
 --
@@ -190,13 +190,10 @@ package Giant.File_Management is
    -- Returns:
    --   A String describing a relative path if such a path could be calculated,
    --   if not Abs_Path will be returned.
-   function Get_Relative_Path_To_File_From_Absolute
+   function Get_Relative_Path_From_Absolute
      (Abs_Path_Root : in String;
       Abs_Path      : in String)
      return String;
-
-
-
 
    ---------------------------------------------------------------------------
    --  Calculates an absolute path from an relative one for a directory.
