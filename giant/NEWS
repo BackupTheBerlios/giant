@@ -13,7 +13,6 @@ Version ?
        belonging to "parent_edge_class_set"
  * gsl:
      - speed up
-     - added instance_of for (edges X class_sets)
      - new script "generate_subgraph__only_parent_edges"
  * documentation:
      - added layoutparameters @ GSL-Documentation @ handbook

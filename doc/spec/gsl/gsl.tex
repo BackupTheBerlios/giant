@@ -1,6 +1,6 @@
 % =============================================================================
-%  $RCSfile: gsl.tex,v $ $Revision: 1.19 $
-%  $Date: 2003/10/06 17:29:49 $
+%  $RCSfile: gsl.tex,v $ $Revision: 1.20 $
+%  $Date: 2003/10/06 23:02:40 $
 %  $Author: koppor $
 %
 %  Description: Spezifikation der GIANT Scripting Language
@@ -1653,17 +1653,6 @@ Auf jeden Fall sollte deshalb das Ergebnis dieses Scripts beachtet werden.}
   (auch transitiv) beerbt. Falls class durch die Reflektion nicht als
   Name einer Klasse von IML-Knoten spezifiziert ist, so ist dies ein
   Laufzeitfehler.}
-\end{scriptdef}
-
-%%% instance_of
-\begin{scriptdef}{instance\_of}
-\sparam{e}{\tedgeid}{Eine IML-Kante}
-\sparam{class\_set}{\tstring}{Name einer Klassenmenge}
-\sresult{\tboolean}{\toktrue, falls die Klasse der IML-Kante e zu der
-  Klassenmenge class\_set gehört. \tokfalse sonst.}
-\saction{Prüft, ob eine bestimmte Kante zu einer Klassenmenge
-  gehört. Falls class\_set keine konfigurierte Klassenmenge ist, so
-  ist dies ein Laufzeitfehler.}
 \end{scriptdef}
 
 %%% has_attribute
