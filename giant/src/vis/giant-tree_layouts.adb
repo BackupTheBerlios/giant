@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.19 $
+--  $RCSfile: giant-tree_layouts.adb,v $, $Revision: 1.20 $
 --  $Author: koppor $
---  $Date: 2003/08/25 10:19:31 $
+--  $Date: 2003/08/31 12:03:47 $
 --
 ------------------------------------------------------------------------------
 --  Variables are named according to the paper
@@ -353,8 +353,6 @@ package body Giant.Tree_Layouts is
             Logger.Debug ("Level: " & Natural'Image (SecondWalk_Data.V.Level));
             Logger.Debug ("Y:     " & Float'Image (Y));
 
-            --  FIX
-            --  if False then
 
             New_Relative_Position := Vis.Logic.Combine_Vector
               (X => X,
@@ -376,7 +374,7 @@ package body Giant.Tree_Layouts is
                Vis.Logic."+" (New_Relative_Position,
                               Layout.Target_Position),
                Layout.Widget_Lock);
-            --  end if;
+
             W := SecondWalk_Data.V.Leftmost_Child;
             while W /= null loop
                New_SecondWalk_Data.V := W;
@@ -594,7 +592,8 @@ package body Giant.Tree_Layouts is
 
          --  we have to use 1+X_Distance, since the nodes have not 0 width
          Layout.X_Distance :=
-           Graph_Widgets.Get_Current_Maximum_Node_Width (Layout.Widget) * (1.0+X_Distance);
+           Graph_Widgets.Get_Current_Maximum_Node_Width (Layout.Widget) *
+           (1.0+X_Distance);
 
          --  next step is the "normal" initialize of the treelayout
          Layout.State := Init_Run_Part_One;
