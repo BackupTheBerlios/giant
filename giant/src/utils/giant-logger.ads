@@ -20,16 +20,30 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-logger.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-logger.ads,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/05/23 16:32:56 $
+--  $Date: 2003/05/23 17:13:22 $
 --
 ------------------------------------------------------------------------------
 --
 --  Contains the generic logging package.
 --
+--  To use this package, first create an instance of this package:
+--
+--    package My_Logger is new Logger("giant.mypackage");
+--
+--  Then call one of the methods depending on the severity:
+--
+--    My_Logger.Debug ("debug message");
+--
+--  See:
+--    Giant.Default_Logger
 
 generic
+
+   ---------------------------------------------------------------------------
+   --  The name of the logger. Use a hierarchial name like
+   --  giant.mypackage. Log messages can be filtered by this name.
    Name : String;
 
 package Giant.Logger is

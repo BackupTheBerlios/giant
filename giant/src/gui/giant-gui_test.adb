@@ -18,9 +18,9 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
--- $RCSfile: giant-gui_test.adb,v $, $Revision: 1.1 $
+-- $RCSfile: giant-gui_test.adb,v $, $Revision: 1.2 $
 -- $Author: squig $
--- $Date: 2003/05/23 16:32:56 $
+-- $Date: 2003/05/23 17:13:21 $
 --
 with Gtk.Main;
 
@@ -31,7 +31,6 @@ with Giant.Logger;
 
 procedure Giant.Gui_Test
 is
-   package Gui_Logger is new Logger("giant.gui");
 begin
    Default_Logger.Init;
    --Config.Initialize_Config_Data ("/etc/giant/giantrc", ".giantrc");

@@ -38,11 +38,14 @@ all:
 	cd $(OUT_PATH) && \
 	gnatmake -m $(ALL_CFLAGS) $(GIANT_PATH)/$(MAIN) -o $(GIANT_PATH)/$(EXEC) $(GNATMAKE_FLAGS) -bargs -static -E -largs $(ALL_LFLAGS)
 
-static:
+static :
 	make LIBS="$(shell gtkada --static)" all
 
-style:
+style :
 	make CFLAGS="-gnaty3abcefhiklmprt $(CFLAGS)" all
 
-clean:
+clean :
 	rm -rf $(OUT_PATH)/*
+
+tags :
+	find -name "*.ad[bs]" | xargs etags

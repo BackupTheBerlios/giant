@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.2 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.3 $
 --  $Author: squig $
---  $Date: 2003/05/23 16:32:56 $
+--  $Date: 2003/05/23 17:13:21 $
 --
 --
 ------------------------------------------------------------------------------
@@ -34,11 +34,16 @@ with Gdk.Threads;
 with Gtk.Main;
 
 with Giant.Default_Logger;
+with Giant.Logger;
 with Giant.Main_Window;
 
-procedure Giant.Main is
+procedure Giant.Main
+is
+   package Main_Logger is new Logger("giant.main");
 begin
    Giant.Default_Logger.Init;
+
+   Main_Logger.Debug ("initializing gtk");
 
    Gtk.Main.Set_Locale;
    Gtk.Main.Init;
@@ -48,6 +53,8 @@ begin
    Main_Window.Show;
    Gtk.Main.Main;
    Gdk.Threads.Leave;
+
+   Main_Logger.Debug ("closing giant");
 
    Giant.Default_Logger.Close;
 end Giant.Main;

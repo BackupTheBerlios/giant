@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-default_logger.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/05/23 15:31:19 $
+--  $Date: 2003/05/23 17:13:22 $
 --
 
 with Ada.IO_Exceptions;
@@ -61,10 +61,14 @@ package body Giant.Default_Logger is
       use Ada.Strings.Fixed;
    begin
       if (Ada.Text_IO.Is_Open (Out_File)) then
-         Ada.Text_IO.Put (Out_File, Head (Level_Type'Image (Level), 6));
+         Ada.Text_IO.Put (Out_File,
+                          Head (Tail (Level_Type'Image (Level), 5), 5));
+         Ada.Text_Io.Put (Out_File, " [");
          Ada.Text_IO.Put (Out_File, Head (Name, 15));
+         Ada.Text_Io.Put (Out_File, "] ");
          Ada.Text_IO.Put (Out_File, Message);
          Ada.Text_IO.New_Line (Out_File);
+         Ada.Text_Io.Flush (Out_File);
       end if;
    exception
       when others =>
