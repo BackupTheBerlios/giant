@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.9 $
+--  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.10 $
 --  $Author: koppor $
---  $Date: 2003/06/19 21:04:47 $
+--  $Date: 2003/06/23 18:07:39 $
 --
 ------------------------------------------------------------------------------
 --
@@ -54,8 +54,9 @@ package Giant.Graph_Lib.Selections is
    ---------------------------------------------------------------------------
    --  Creates a deep-copy of the selection
    function Clone
-      (Selection_To_Clone : in Selection)
-      return Selection;
+     (Selection_To_Clone : in Selection;
+      Name_Of_Result     : in String)
+     return Selection;
 
    ---------------------------------------------------------------------------
    procedure Rename
@@ -186,22 +187,25 @@ package Giant.Graph_Lib.Selections is
    ---------------------------------------------------------------------------
    --  Creates a new selection where the two given Selections are unified
    function Union
-      (Left  : in Selection;
-       Right : in Selection)
+      (Left           : in Selection;
+       Right          : in Selection;
+       Name_Of_Result : in String)
       return Selection;
 
    ---------------------------------------------------------------------------
    --  Creates a new selection
    function Symetric_Difference
-      (Left  : in Selection;
-       Right : in Selection)
+      (Left           : in Selection;
+       Right          : in Selection;
+       Name_Of_Result : in String)
       return Selection;
 
    ---------------------------------------------------------------------------
    --  Creates a new selection
    function Intersection
-      (Left  : in Selection;
-       Right : in Selection)
+      (Left           : in Selection;
+       Right          : in Selection;
+       Name_Of_Result : in String)
       return Selection;
 
 private

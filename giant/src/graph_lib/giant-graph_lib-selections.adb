@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.6 $
+--  $RCSfile: giant-graph_lib-selections.adb,v $, $Revision: 1.7 $
 --  $Author: koppor $
---  $Date: 2003/06/19 21:05:04 $
+--  $Date: 2003/06/23 18:07:26 $
 
 package body Giant.Graph_Lib.Selections is
 
@@ -86,14 +86,15 @@ package body Giant.Graph_Lib.Selections is
 
    ---------------------------------------------------------------------------
    function Clone
-     (Selection_To_Clone : in Selection)
+     (Selection_To_Clone : in Selection;
+      Name_Of_Result     : in String)
       return Selection
    is
       Res : Selection;
    begin
       Res := new Selection_Record
-        (Name_Length => Selection_To_Clone.Name'Length);
-      Res.Name  := Selection_To_Clone.Name;
+        (Name_Length => Name_Of_Result'Length);
+      Res.Name  := Name_Of_Result;
       Res.Edges := Edge_Id_Sets.Copy (Selection_To_Clone.Edges);
       Res.Nodes := Node_Id_Sets.Copy (Selection_To_Clone.Nodes);
       return Res;
@@ -151,15 +152,15 @@ package body Giant.Graph_Lib.Selections is
 
    ----------------------------------------------------------------------------
    function Intersection
-     (Left  : in Selection;
-      Right : in Selection)
+     (Left           : in Selection;
+      Right          : in Selection;
+      Name_Of_Result : in String)
       return Selection
    is
       Res      : Selection;
-      New_Name : String := Get_Name (Left) & " U " & Get_Name (Right);
    begin
-      Res := new Selection_Record (Name_Length => New_Name'Length);
-      Res.Name := New_Name;
+      Res       := new Selection_Record (Name_Length => Name_Of_Result'Length);
+      Res.Name  := Name_Of_Result;
       Res.Edges := Edge_Id_Sets."*" (Left.Edges, Right.Edges);
       Res.Nodes := Node_Id_Sets."*" (Left.Nodes, Right.Nodes);
       return Res;
@@ -269,15 +270,15 @@ package body Giant.Graph_Lib.Selections is
 
    ----------------------------------------------------------------------------
    function Symetric_Difference
-     (Left  : in Selection;
-      Right : in Selection)
+     (Left           : in Selection;
+      Right          : in Selection;
+      Name_Of_Result : in String)
       return Selection
    is
       Res      : Selection;
-      New_Name : String := Get_Name (Left) & " U " & Get_Name (Right);
    begin
-      Res := new Selection_Record (Name_Length => New_Name'Length);
-      Res.Name := New_Name;
+      Res       := new Selection_Record (Name_Length => Name_Of_Result'Length);
+      Res.Name  := Name_Of_Result;
       Res.Edges := Edge_Id_Sets.Symmetric_Difference (Left.Edges, Right.Edges);
       Res.Nodes := Node_Id_Sets.Symmetric_Difference (Left.Nodes, Right.Nodes);
       return Res;
@@ -285,15 +286,15 @@ package body Giant.Graph_Lib.Selections is
 
    ----------------------------------------------------------------------------
    function Union
-     (Left  : in Selection;
-      Right : in Selection)
+     (Left          : in Selection;
+      Right         : in Selection;
+      Name_Of_Result : in String)
       return Selection
    is
       Res      : Selection;
-      New_Name : String := Get_Name (Left) & " U " & Get_Name (Right);
    begin
-      Res := new Selection_Record (Name_Length => New_Name'Length);
-      Res.Name := New_Name;
+      Res       := new Selection_Record (Name_Length => Name_Of_Result'Length);
+      Res.Name  := Name_Of_Result;
       Res.Edges := Edge_Id_Sets."+" (Left.Edges, Right.Edges);
       Res.Nodes := Node_Id_Sets."+" (Left.Nodes, Right.Nodes);
       return Res;
