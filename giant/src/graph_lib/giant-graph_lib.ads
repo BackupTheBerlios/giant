@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.38 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.39 $
 --  $Author: koppor $
---  $Date: 2003/07/24 15:35:28 $
+--  $Date: 2003/07/30 07:39:43 $
 --
 --  TBD:
 --    * Write into comment, when the routine may be used
@@ -439,9 +439,22 @@ package Giant.Graph_Lib is
    --  Returns:
    --    A set including all children of given Node_Class
    --    This set has to be destroyed - as usual - by the caller
-   function Get_Inherited_Classes
+   function Get_Successors
      (Node_Class     : in Node_Class_Id;
       Include_Parent : in Boolean)
+     return Node_Class_Id_Set;
+
+   ---------------------------------------------------------------------------
+   --  Used to get all parents of given Node_Class
+   --
+   --  If Include_Child is true, the given Node_Class will be included, too
+   --
+   --  Returns:
+   --    A set including all parents of given Node_Class
+   --    This set has to be destroyed - as usual - by the caller
+   function Get_Predecessors
+     (Node_Class    : in Node_Class_Id;
+      Include_Child : in Boolean)
      return Node_Class_Id_Set;
 
    -----------------------------------

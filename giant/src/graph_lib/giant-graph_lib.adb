@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.58 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.59 $
 --  $Author: koppor $
---  $Date: 2003/07/24 15:35:50 $
+--  $Date: 2003/07/30 07:40:30 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -1141,42 +1141,6 @@ package body Giant.Graph_Lib is
    end Does_Node_Class_Exist;
 
    ---------------------------------------------------------------------------
-   function Get_Inherited_Classes
-     (Node_Class     : in Node_Class_Id;
-      Include_Parent : in Boolean)
-     return Node_Class_Id_Set
-   is
-
-      ------------------------------------------------------------------------
-      --  Recursivly implemented, since it doesn't need to be fast.
-      procedure Get_Inherited_Classes
-        (Node_Class : in     Node_Class_Id;
-         Res        : in out Node_Class_Id_Set)
-      is
-      begin
-         for I in All_Node_Classes'Range loop
-            if All_Node_Classes (I).Super = Node_Class then
-               Node_Class_Id_Sets.Insert (Res, All_Node_Classes (I));
-               Get_Inherited_Classes (All_Node_Classes (I), Res);
-            end if;
-         end loop;
-      end Get_Inherited_Classes;
-
-      Res : Node_Class_Id_Set;
-   begin
-      Res := Node_Class_Id_Sets.Empty_Set;
-
-      if Include_Parent then
-         Node_Class_Id_Sets.Insert (Res, Node_Class);
-      end if;
-
-      Get_Inherited_Classes (Node_Class, Res);
-
-      return Res;
-   end Get_Inherited_Classes;
-
-
-   ---------------------------------------------------------------------------
    --  Loops over the hashtables storing the Edgeclasses and returns all
    --    of them
    function Get_All_Edge_Class_Ids return Edge_Class_Id_Set is
@@ -1222,6 +1186,77 @@ package body Giant.Graph_Lib is
    begin
       return Node_Class.Name;
    end Get_Node_Class_Tag;
+
+   ---------------------------------------------------------------------------
+   --  implemented like Get_Successors
+   function Get_Predecessors
+     (Node_Class    : in Node_Class_Id;
+      Include_Child : in Boolean)
+     return Node_Class_Id_Set
+   is
+
+      ------------------------------------------------------------------------
+      --  Recursivly implemented, since it doesn't need to be fast.
+      procedure Get_Predecessors
+        (Node_Class : in     Node_Class_Id;
+         Res        : in out Node_Class_Id_Set)
+      is
+      begin
+         for I in All_Node_Classes'Range loop
+            if All_Node_Classes (I) = Node_Class.Super then
+               Node_Class_Id_Sets.Insert (Res, All_Node_Classes (I));
+               Get_Predecessors (All_Node_Classes (I), Res);
+            end if;
+         end loop;
+      end Get_Predecessors;
+
+      Res : Node_Class_Id_Set;
+   begin
+      Res := Node_Class_Id_Sets.Empty_Set;
+
+      if Include_Child then
+         Node_Class_Id_Sets.Insert (Res, Node_Class);
+      end if;
+
+      Get_Predecessors (Node_Class, Res);
+
+      return Res;
+   end Get_Predecessors;
+
+   ---------------------------------------------------------------------------
+   function Get_Successors
+     (Node_Class     : in Node_Class_Id;
+      Include_Parent : in Boolean)
+     return Node_Class_Id_Set
+   is
+
+      ------------------------------------------------------------------------
+      --  Recursivly implemented, since it doesn't need to be fast.
+      procedure Get_Successors
+        (Node_Class : in     Node_Class_Id;
+         Res        : in out Node_Class_Id_Set)
+      is
+      begin
+         for I in All_Node_Classes'Range loop
+            if All_Node_Classes (I).Super = Node_Class then
+               Node_Class_Id_Sets.Insert (Res, All_Node_Classes (I));
+               Get_Successors (All_Node_Classes (I), Res);
+            end if;
+         end loop;
+      end Get_Successors;
+
+      Res : Node_Class_Id_Set;
+   begin
+      Res := Node_Class_Id_Sets.Empty_Set;
+
+      if Include_Parent then
+         Node_Class_Id_Sets.Insert (Res, Node_Class);
+      end if;
+
+      Get_Successors (Node_Class, Res);
+
+      return Res;
+   end Get_Successors;
 
    ---------------------------------------------------------------------------
    function Node_Id_Image
