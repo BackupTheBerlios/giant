@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-config-class_sets-test.adb,v $, $Revision: 1.8 $
+--  $RCSfile: giant-config-class_sets-test.adb,v $, $Revision: 1.9 $
 --  $Author: koppor $
---  $Date: 2003/10/01 22:57:40 $
+--  $Date: 2003/10/01 23:47:27 $
 --
 with Ada.Strings.Unbounded;
 
@@ -47,29 +47,11 @@ package body Giant.Config.Class_Sets.Test is
       Parent_Edge_Set     : Config.Class_Sets.Class_Set_Access;
       An_Edge_Class       : Giant.Graph_Lib.Edge_Class_Id;
 
-      All_Class_Sets_List : String_Lists.List;
-      Iter                : String_Lists.ListIter;
-      S                   : Ada.Strings.Unbounded.Unbounded_String;
-
    begin
       Logger.Info ("Case: Parent_Edge");
 
       Config.Class_Sets.Initialize_Class_Sets
         ("resources/class_sets/");
-
-      All_Class_Sets_List :=
-        Config.Class_Sets.Get_All_Existing_Class_Sets;
-
-      Iter := String_Lists.MakeListIter (All_Class_Sets_List);
-      while String_Lists.More (Iter) loop
-         String_Lists.Next (Iter, S);
-         Logger.Info (Ada.Strings.Unbounded.To_String (S));
-      end loop;
-
-      Assert
-        (String_Lists.Length (All_Class_Sets_List) = 1,
-         "One class loaded");
-      String_Lists.Destroy (All_Class_Sets_List);
 
       Parent_Edge_Set :=
         Config.Class_Sets.Get_Class_Set_Access ("parent_edge_class_set");
@@ -88,6 +70,27 @@ package body Giant.Config.Class_Sets.Test is
 
       Logger.Info ("End of case: Parent_Edge");
    end Parent_Edge;
+
+   procedure All_Nodes
+     (R : in out AUnit.Test_Cases.Test_Case'Class) is
+
+      All_Nodes_Set : Config.Class_Sets.Class_Set_Access;
+      A_Node_Class  : Giant.Graph_Lib.Node_Class_Id;
+
+   begin
+      Config.Class_Sets.Initialize_Class_Sets
+        ("resources/class_sets/");
+
+      All_Nodes_Set :=
+        Config.Class_Sets.Get_Class_Set_Access ("all_nodes");
+
+      A_Node_Class := Graph_Lib.Convert_Node_Class_Name_To_Id ("IML_Root");
+      Assert
+        (Config.Class_Sets.Is_Node_Class_Element_Of_Class_Set
+         (All_Nodes_Set, A_Node_Class),
+         "All_Nodes contain node class ""IML_Root""");
+      Config.Class_Sets.Clear_Class_Sets;
+   end All_Nodes;
 
    ---------------------------------------------------------------------------
    procedure Test_Init_Class_Sets
@@ -648,6 +651,8 @@ package body Giant.Config.Class_Sets.Test is
 
    procedure Register_Tests (T : in out Test_Case) is
    begin
+      Register_Routine
+        (T, All_Nodes'Access, "All_Nodes");
       Register_Routine
         (T, Parent_Edge'Access, "Parent_Edge");
       Register_Routine
