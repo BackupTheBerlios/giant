@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.17 $
+--  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.18 $
 --  $Author: koppor $
---  $Date: 2003/07/04 16:18:54 $
+--  $Date: 2003/07/07 13:15:46 $
 --
 ------------------------------------------------------------------------------
 --
@@ -98,8 +98,14 @@ package Giant.Graph_Lib.Selections is
 
    ---------------------------------------------------------------------------
    --  RESULT MAY NOT BE MODIFIED
+   --
+   --  This routine was mainly created for subgraphs to be able to access
+   --    the data of a selection. Therefore a reference to the internal
+   --    structure is returned.
+   --
    --  Returns:
    --    All Nodes included in selection
+   --
    --  TBD: refactoring! - see below @ Get_All_Edges
    function Get_All_Nodes
      (Sel : in Selection)
@@ -107,8 +113,14 @@ package Giant.Graph_Lib.Selections is
 
    ---------------------------------------------------------------------------
    --  RESULT MAY NOT BE MODIFIED
+   --
+   --  This routine was mainly created for subgraphs to be able to access
+   --    the data of a selection. Therefore a reference to the internal
+   --    structure is returned.
+   --
    --  Returns:
    --    All Nodes included in selection
+   --
    --  TBD: refactoring! - subgraph should be a child of selections
    --       then this breaking of information hiding is not needed any more,
    --       since the routines of subgraphs can directly access the internal
