@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main_window.adb,v $, $Revision: 1.16 $
+--  $RCSfile: giant-main_window.adb,v $, $Revision: 1.17 $
 --  $Author: squig $
---  $Date: 2003/06/20 00:37:03 $
+--  $Date: 2003/06/20 00:54:45 $
 --
 
 with Ada.Strings.Unbounded;
@@ -56,10 +56,13 @@ with Giant.Graph_Lib.Subgraphs;
 with Giant.Gsl_Dialog;
 with Giant.Gui_Manager;
 with Giant.Gui_Utils; use Giant.Gui_Utils;
+with Giant.Logger;
 with Giant.Projects;
 with Giant.Set_Operation_Dialog;
 
 package body Giant.Main_Window is
+
+   package Logger is new Giant.Logger("giant.main_window");
 
    procedure Update_Subgraph
      (List : access String_Clists.Giant_Clist_Record;
@@ -194,6 +197,13 @@ package body Giant.Main_Window is
       end;
    end On_Project_Save_As;
 
+   procedure On_Project_Info
+     (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
+   is
+   begin
+      Logger.Info ("Nodes : " & Integer'Image (Graph_Lib.Node_Id_Sets.Size (Graph_Lib.Get_All_Nodes)));
+   end On_Project_Info;
+
    procedure On_Project_Quit
      (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
    is
@@ -225,6 +235,17 @@ package body Giant.Main_Window is
    begin
       Controller.Create_Window;
    end On_Window_New;
+
+   ---------------------------------------------------------------------------
+   --  Help Menu Callbacks
+   ---------------------------------------------------------------------------
+
+   procedure On_Help_About
+     (Source : access Gtk.Menu_Item.Gtk_Menu_Item_Record'Class)
+   is
+   begin
+      null;
+   end On_Help_About;
 
    ---------------------------------------------------------------------------
    --  Window Context Menu Callbacks
@@ -376,12 +397,15 @@ package body Giant.Main_Window is
       Gtk.Menu.Add (Menu, New_Menu_Item (-"Save As...",
                                          On_Project_Save_As'Access));
       Gtk.Menu.Add (Menu, New_Menu_Separator);
+      Gtk.Menu.Add (Menu, New_Menu_Item (-"Info...",
+                                         On_Project_Info'Access));
+      Gtk.Menu.Add (Menu, New_Menu_Separator);
       Project_Quit_Menu_Item := New_Menu_Item (-"Quit", On_Project_Quit'Access);
       Gtk.Menu.Add (Menu, Project_Quit_Menu_Item);
 
       Menu := New_Sub_Menu (Menu_Bar, -"Tools");
       Gtk.Menu.Add (Menu, New_TearOff_Menu_Item);
-      Gtk.Menu.Add (Menu, New_Menu_Item (-"Execute GSL Script..",
+      Gtk.Menu.Add (Menu, New_Menu_Item (-"Execute GSL Script...",
                                          On_Tools_Execute_GSL_Script'Access));
 
       Menu := New_Sub_Menu (Menu_Bar, -"Window");
@@ -395,6 +419,9 @@ package body Giant.Main_Window is
       Gtk.Menu.Add (Menu, New_Menu_Item (-"Set Operation...",
                                          On_Subgraph_Set_Operation'Access));
 
+      Menu := New_Sub_Menu (Menu_Bar, -"Help");
+      Gtk.Menu.Add (Menu, New_TearOff_Menu_Item);
+      Gtk.Menu.Add (Menu, New_Menu_Item (-"About...", On_Help_About'Access));
 
       return Menu_Bar;
    end Initialize_Menu;
