@@ -20,13 +20,15 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-progress_dialog.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-progress_dialog.adb,v $, $Revision: 1.2 $
 --  $Author: squig $
---  $Date: 2003/06/02 01:04:18 $
+--  $Date: 2003/06/03 13:35:43 $
 --
 
+with Glib;
 with Gtk.Box;
 with Gtk.Enums; use Gtk.Enums;
+with Gtk.Handlers;
 with Gtk.Progress_Bar;
 with Gtk.Window;
 
@@ -34,6 +36,46 @@ with Giant.Default_Dialog;
 with Giant.Gui_Utils; use Giant.Gui_Utils;
 
 package body Giant.Progress_Dialog is
+
+--     package Progress_Dialog_Callback is new
+--       Gtk.Handlers.Callback (Progress_Dialog.Progress_Dialog_Record);
+
+   procedure Create
+     (Dialog  :    out Progress_Dialog_Access;
+      Title   : in     String;
+      Message : in     String)
+
+   is
+   begin
+      Dialog := new Progress_Dialog_Record;
+      Initialize (Dialog, Title, Message);
+   end Create;
+
+   procedure Initialize
+     (Dialog  : access Progress_Dialog_Record'Class;
+      Title   : in     String;
+      Message : in     String)
+   is
+      Box : Gtk.Box.Gtk_Vbox;
+   begin
+      Default_Dialog.Initialize (Dialog, Title, Default_Dialog.Button_Cancel);
+
+      Box := Default_Dialog.Get_Center_Box (Dialog);
+
+      Gtk.Label.Gtk_New (Dialog.Progress_Label, Message);
+      Gtk.Box.Pack_Start (Box, Dialog.Progress_Label, Expand => False,
+                          Fill => False, Padding => DEFAULT_SPACING);
+
+      Gtk.Adjustment.Gtk_New (Dialog.Progress_Bar_Adjustment,
+                              Value => 0.0, Lower => 0.0,
+                              Upper => 100.0, Step_Increment => 1.0,
+                              Page_Increment => 1.0, Page_Size => 1.0);
+
+      Gtk.Progress_Bar.Gtk_New (Dialog.Progress_Bar,
+                                Dialog.Progress_Bar_Adjustment);
+      Gtk.Box.Pack_Start (Box, Dialog.Progress_Bar, Expand => False,
+                          Fill => False, Padding => DEFAULT_SPACING);
+   end;
 
    function Can_Hide
      (Dialog : access Progress_Dialog_Record)
@@ -47,39 +89,70 @@ package body Giant.Progress_Dialog is
 
       if (Default_Dialog.Get_Response (Dialog)
           = Default_Dialog.Response_Cancel) then
-		 -- the cancel button was pressed
-		 return True;
+         -- the cancel button was pressed
+         Progress_Dialog_Callback.Emit_By_Name (Dialog, "cancelled");
       end if;
 
       return False;
    end Can_Hide;
 
-   procedure Create
-     (Dialog :    out Progress_Dialog_Access;
-	  Title	 : in     String)
+   procedure Get_Activity_Mode
+     (Dialog        : access Progress_Dialog_Record)
+     return Boolean
    is
    begin
-      Dialog := new Progress_Dialog_Record;
-      Initialize (Dialog, Title);
-   end Create;
+      return Gtk.Progress_Bar.Get_Activity_Mode (Dialog.Progress_Bar);
+   end Set_Activity_Mode;
 
-   procedure Initialize
-     (Dialog : access Progress_Dialog_Record'Class;
-	  Title	 : in     String)
+   procedure Set_Activity_Mode
+     (Dialog        : access Progress_Dialog_Record;
+      Activity_Mode : in     Boolean)
    is
-      Box : Gtk.Box.Gtk_Vbox;
    begin
-      Default_Dialog.Initialize (Dialog, Title, Default_Dialog.Button_Cancel);
+      Gtk.Progress_Bar.Set_Activity_Mode (Dialog.Progress_Bar, Activity_Mode);
+   end Set_Activity_Mode;
 
-	  Box := Default_Dialog.Get_Center_Box (Dialog);
+   procedure Set_Lower
+     (Dialog : access Progress_Dialog_Record;
+      Lower  : in     Float)
+   is
+   begin
+      Gtk.Adjustment.Set_Lower (Dialog.Progress_Bar_Adjustment,
+                                Glib.Gfloat (Lower));
+   end Set_Lower;
 
-      Gtk.Label.Gtk_New (Dialog.Progress_Label, "Status");
-	  Gtk.Box.Pack_Start (Box, Dialog.Progress_Label, Expand => False, 
-						  Fill => False, Padding => DEFAULT_SPACING);
+   procedure Set_Percentage
+     (Dialog     : access Progress_Dialog_Record;
+      Percentage : in     Float)
+   is
+   begin
+      Gtk.Progress_Bar.Set_Percentage (Dialog.Progress_Bar,
+                                       Glib.Gfloat (Percentage));
+   end Set_Percentage;
 
-      Gtk.Progress_Bar.Gtk_New (Dialog.Progress_Bar);
-	  Gtk.Box.Pack_Start (Box, Dialog.Progress_Bar, Expand => False, 
-						  Fill => False, Padding => DEFAULT_SPACING);
-   end;
+   procedure Set_Progress_Text
+     (Dialog : access Progress_Dialog_Record;
+      Text   : in     String)
+   is
+   begin
+      Gtk.Progress_Bar.Set_Show_Text (Dialog.Progress_Bar, True);
+      Gtk.Progress_Bar.Set_Format_String (Dialog.Progress_Bar, Text);
+   end Set_Progress_Text;
+
+   procedure Set_Upper (Dialog : access Progress_Dialog_Record;
+                        Upper  : in     Float)
+   is
+   begin
+      Gtk.Adjustment.Set_Upper (Dialog.Progress_Bar_Adjustment,
+                                Glib.Gfloat (Upper));
+   end Set_Upper;
+
+   procedure Set_Value (Dialog : access Progress_Dialog_Record;
+                        Value  : in     Float)
+   is
+   begin
+      Gtk.Adjustment.Set_Value (Dialog.Progress_Bar_Adjustment,
+                                Glib.Gfloat (Value));
+   end Set_Value;
 
 end Giant.Progress_Dialog;
