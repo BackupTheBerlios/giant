@@ -3,11 +3,6 @@
 	* src/giant-controller.adb: Close progress dialog on exceptions
 	when creating or opening project.
 
-2003-09-14  Steffen Keul  <keulsn@gspc24.informatik.uni-stuttgart.de>
-
-	* src/: Changed elaboration pragmas so correct elaboration order
-	can be found by 3.15p as well.
-
 2003-09-12  Steffen Pingel  <squig@users.sourceforge.net>
 
 	* src/gui/giant-progress_dialog.ads: Added Set_Cancel_Enabled to
@@ -91,9 +86,6 @@
 
 	* src/giant-controller.adb: Removed Unique_Name mangling in
 	Create_Window and Create_Subgraph.
-
-	* src/gui/giant-graph_window.adb: Added Okay button to next to
-	style combo box. 
 
 	* src/gui/giant-layout_dialog.adb: Merged Actions package to
 	enable double referencing between action and dialog.
