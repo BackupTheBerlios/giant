@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.21 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.22 $
 --  $Author: koppor $
---  $Date: 2003/06/26 14:06:42 $
+--  $Date: 2003/06/26 14:38:13 $
 --
 
 with Giant.Constant_Ptr_Hashs;
@@ -717,17 +717,11 @@ package Giant.Graph_Lib is
    -------------
 
    ---------------------------------------------------------------------------
-   --  Will become the maximum size of the hashtable
-   Node_Attribute_Id_Hash_Range_Size : constant := 29;
-
-   ---------------------------------------------------------------------------
    --  used more than once, therefore it is included here
    package Node_Attribute_Id_Hash_Functions is
       new Constant_Ptr_Hashs
      (T          => IML_Reflection.Field'Class,
-      T_Ptr      => Node_Attribute_Id,
-      Range_Size => Node_Attribute_Id_Hash_Range_Size);
-
+      T_Ptr      => Node_Attribute_Id);
 
    ---------------------------------------------------------------------------
    --  Returns:
