@@ -1,7 +1,7 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.13 $
-%  $Date: 2003/02/18 14:11:09 $
-%  $Author: birdy $
+%  $RCSfile: gui.tex,v $, $Revision: 1.14 $
+%  $Date: 2003/02/18 18:20:48 $
+%  $Author: schwiemn $
 %
 %  Description: Bis zu Revision 1.6 sind UseCase-artige Beschreibungen enthalten,
 %  die für UseCases nützlich sein könnten. 
@@ -51,12 +51,25 @@ und darunter SUBGRAPH\_LIST (4 Spalten).
          \item Save Project
          \item New Project
          \item Quit
-      \end{enumerate}
+      \end{enumerate}    
+      
+     %Eingefügt von Martin Schwienbacher für Use Cases zur Annotation von 
+     %Knoten
+     \subsubsection {Untermenü  (Tools)}      
+       \begin{enumerate}
+          %Dient zum Filtern von Annotationen deren Knoten nicht mehr
+	  %visualisiert sind.
+          \item Delete annotations having no visible Node
+        \end{enumerate}
+	
 
     \subsubsection {Untermenü Info (Main Window)}      
        \begin{enumerate}
           \item About GIANT
         \end{enumerate}
+     
+     
+  
      
 
   \subsection {Statuszeile}
