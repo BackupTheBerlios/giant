@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_lib-subgraphs-test.adb,v $, $Revision: 1.4 $
+--  $RCSfile: giant-graph_lib-subgraphs-test.adb,v $, $Revision: 1.5 $
 --  $Author: koppor $
---  $Date: 2003/07/22 10:19:21 $
+--  $Date: 2003/10/01 21:52:09 $
 --
 
 with Ada.Text_IO;
@@ -31,7 +31,9 @@ with AUnit.Assertions; use AUnit.Assertions;
 with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
 
 with Giant.Graph_Lib; use Giant.Graph_Lib;
+
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 
 package body Giant.Graph_Lib.Subgraphs.Test is
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_lib-node_attribute_filters-test.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-graph_lib-node_attribute_filters-test.adb,v $, $Revision: 1.2 $
 --  $Author: koppor $
---  $Date: 2003/06/24 19:51:35 $
+--  $Date: 2003/10/01 21:52:21 $
 --
 
 with Ada.Text_IO;
@@ -32,7 +32,9 @@ with AUnit.Test_Cases.Registration; use AUnit.Test_Cases.Registration;
 
 with Giant.Graph_Lib.Node_Attribute_Filters;
 use Giant.Graph_Lib.Node_Attribute_Filters;
+
 with Giant.Logger;
+pragma Elaborate_All (Giant.Logger);
 
 package body Giant.Graph_Lib.Node_Attribute_Filters.Test is
 
