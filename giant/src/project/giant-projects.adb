@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.16 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.17 $
 --  $Author: schwiemn $
---  $Date: 2003/06/18 13:44:59 $
+--  $Date: 2003/06/18 13:50:29 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -1255,6 +1255,18 @@ package body Giant.Projects is
       return Ada.Strings.Unbounded.To_String
         (Project.Project_Name);
    end Get_Project_Name;
+   
+   --------------------------------------------------------------------------- 
+   function Get_Project_File
+     (Project : in Project_Access)
+     return String is
+     
+   begin
+   
+--    TODO
+   
+      return "";
+   end Get_Project_File;
 
    ---------------------------------------------------------------------------
    function Get_Project_Directory

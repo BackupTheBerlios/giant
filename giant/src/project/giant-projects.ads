@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.17 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.18 $
 -- $Author: schwiemn $
--- $Date: 2003/06/18 13:44:59 $
+-- $Date: 2003/06/18 13:50:29 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -343,9 +343,23 @@ package Giant.Projects is
    --     initialized instance of "Project_Access" is passed as
    --     parameter;
    function Get_Project_Name
-      (Project : in Project_Access)
-      return String;
-
+     (Project : in Project_Access)
+     return String;
+          
+   --------------------------------------------------------------------------- 
+   -- Returns the full file name (incl. absolute path) of the project file.
+   --
+   -- Parameters:
+   --   Project - A instance of the ADT that describes a project.
+   -- Retrurns:
+   --   File name of the project file that belongs to "Project";
+   -- Raises:
+   --   Project_Access_Not_Initialized_Exception - Raised if a not
+   --     initialized instance of "Project_Access" is passed as
+   --     parameter;
+   function Get_Project_File
+     (Project : in Project_Access)
+     return String;
 
    ---------------------------------------------------------------------------
    -- Returns the project directory (a path to that directory).
