@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.18 $
+-- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.19 $
 -- $Author: squig $
--- $Date: 2003/08/18 10:09:15 $
+-- $Date: 2003/09/02 20:11:08 $
 --
 -- -----
 -- This package holds the functionality needed to access and handle
@@ -102,25 +102,25 @@ package Giant.Config_Settings is
         To_UStr ("my_icon.xpm"), null),
 
        (To_UStr ("Current_Selection_Highlight_Color"),
-        To_UStr ("RGB:AA/AA/AA"), null),
+        To_UStr ("#AAAAAA"), null),
 
        (To_UStr ("Selection_Highlight_Color_1"),
-        To_UStr ("RGB:AA/AA/AA"), null),
+        To_UStr ("#AAAAAA"), null),
 
        (To_UStr ("Selection_Highlight_Color_2"),
-        To_UStr ("RGB:AA/AA/AA"), null),
+        To_UStr ("#AAAAAA"), null),
 
        (To_UStr ("Selection_Highlight_Color_3"),
-        To_UStr ("RGB:AA/AA/AA"), null),
+        To_UStr ("#AAAAAA"), null),
 
        (To_UStr ("IML_Subgraph_Highlight_Color_1"),
-        To_UStr ("RGB:AA/AA/AA"), null),
+        To_UStr ("#AAAAAA"), null),
 
        (To_UStr ("IML_Subgraph_Highlight_Color_2"),
-        To_UStr ("RGB:AA/AA/AA"), null),
+        To_UStr ("#AAAAAA"), null),
 
        (To_UStr ("IML_Subgraph_Highlight_Color_3"),
-        To_UStr ("RGB:AA/AA/AA"), null),
+        To_UStr ("#AAAAAA"), null),
 
        -- You may enter a sequence of paths separated by the OS'
        -- path separator for environment variables

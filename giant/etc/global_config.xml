@@ -12,7 +12,7 @@
   
   <setting name  = "Icon_For_Node_Annotations" value = "../shared/icons/document.xpm" />
   
-  <setting name="Actual_Selection_Highlight_Color" value="#000080" />
+  <setting name="Current_Selection_Highlight_Color" value="#000080" />
 					  
   <setting name="Selection_Highlight_Color_1" value="#FF0000" />
   <setting name="Selection_Highlight_Color_2" value="#00FF00"/>
