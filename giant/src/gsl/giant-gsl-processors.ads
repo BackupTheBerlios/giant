@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-processors.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/31 09:11:39 $
+-- $Date: 2003/08/26 15:10:38 $
 --
 -- This package implements the Gsl interpreter.
 --
@@ -36,16 +36,6 @@ package Giant.Gsl.Processors is
    --
    procedure Execute
      (Cmd : Syntax_Node);
-
-private
-
-   ---------------------------------------------------------------------------
-   --
-   procedure Script_Activation_Cmd;
-
-   ---------------------------------------------------------------------------
-   --
-   procedure Script_Exec_Cmd;
 
    ---------------------------------------------------------------------------
    --
@@ -62,13 +52,25 @@ private
    ---------------------------------------------------------------------------
    --
    function Get_Selection
-     (Name : String)
+     (Name    : in String;
+      Context : in String)
       return Gsl_Type;
 
    ---------------------------------------------------------------------------
    --
    function Get_Selection_Reference
-     (Ref : Gsl_Var_Reference)
+     (Ref     : in Gsl_Var_Reference;
+      Context : in String)
       return Gsl_Type;
+
+private
+
+   ---------------------------------------------------------------------------
+   --
+   procedure Script_Activation_Cmd;
+
+   ---------------------------------------------------------------------------
+   --
+   procedure Script_Exec_Cmd;
 
 end Giant.Gsl.Processors;

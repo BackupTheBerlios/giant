@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-processors.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/26 14:02:10 $
+-- $Date: 2003/08/26 15:10:38 $
 --
 
 with Ada.Exceptions;
@@ -96,8 +96,9 @@ package body Giant.Gsl.Processors is
                Result_Stacks.Push (Result_Stack, Get_Subgraph (Get_Ref_Name
                  (Gsl_Var_Reference (Lit))));
             elsif Get_Ref_Type (Gsl_Var_Reference (Lit)) = Selection then
-               Result_Stacks.Push (Result_Stack, Get_Selection (Get_Ref_Name
-                 (Gsl_Var_Reference (Lit))));
+               Result_Stacks.Push (Result_Stack, Get_Selection
+                 (Get_Ref_Name (Gsl_Var_Reference (Lit)),
+                  Gsl.Interpreters.Get_Current_Context));
             end if;
 
          ---------------------------------------------------------------------
@@ -125,7 +126,9 @@ package body Giant.Gsl.Processors is
                Get_Subgraph_Reference (Gsl_Var_Reference (Lit)));
             elsif Get_Ref_Type (Gsl_Var_Reference (Lit)) = Selection then
                Result_Stacks.Push (Result_Stack, 
-               Get_Selection_Reference (Gsl_Var_Reference (Lit)));
+               Get_Selection_Reference
+                 (Gsl_Var_Reference (Lit),
+                  Gsl.Interpreters.Get_Current_Context));
             end if;
 
          ---------------------------------------------------------------------
@@ -342,13 +345,12 @@ package body Giant.Gsl.Processors is
      (Name : String)
       return Gsl_Type is
 
-      use Controller;
       use Graph_Lib.Subgraphs;
       Sub      : Graph_Lib.Subgraphs.Subgraph;
       Res_List : Gsl_List;
    begin
-      if Exists_Subgraph (Name) then
-         Sub := Get_Subgraph (Name);
+      if Controller.Exists_Subgraph (Name) then
+         Sub := Controller.Get_Subgraph (Name);
          Res_List := Create_Gsl_List (2);
          Set_Value_At (Res_List, 1, Gsl_Type
            (Create_Gsl_Node_Set (Graph_Lib.Node_Id_Sets.Copy
@@ -367,11 +369,9 @@ package body Giant.Gsl.Processors is
    function Get_Subgraph_Reference
      (Ref : Gsl_Var_Reference)
       return Gsl_Type is
-
-      use Controller;
    begin
-      if not Exists_Subgraph (Get_Ref_Name (Ref)) then
-         Create_Subgraph (Get_Ref_Name (Ref));
+      if not Controller.Exists_Subgraph (Get_Ref_Name (Ref)) then
+         Controller.Create_Subgraph (Get_Ref_Name (Ref));
       end if;
       return Gsl_Type (Copy (Ref));
    end Get_Subgraph_Reference;
@@ -379,21 +379,20 @@ package body Giant.Gsl.Processors is
    ---------------------------------------------------------------------------
    --
    function Get_Selection
-     (Name : String)
+     (Name    : String;
+      Context : String)
       return Gsl_Type is
 
-      use Controller;
       use Graph_Lib.Selections;
-      use Gsl.Interpreters;
       Sel      : Graph_Lib.Selections.Selection;
       Res_List : Gsl_List;
    begin
-      if Get_Current_Context = "" then
+      if Context = "" then
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
            "Runtime error: No context set.");
-      elsif Exists_Selection (Get_Current_Context, Name)
+      elsif Controller.Exists_Selection (Context, Name)
       then
-         Sel := Get_Selection (Get_Current_Context, Name);
+         Sel := Controller.Get_Selection (Context, Name);
          Res_List := Create_Gsl_List (2);
          Set_Value_At (Res_List, 1, Gsl_Type
            (Create_Gsl_Node_Set (Graph_Lib.Node_Id_Sets.Copy
@@ -410,23 +409,19 @@ package body Giant.Gsl.Processors is
    --------------------------------------------------------------------------
    --
    function Get_Selection_Reference
-     (Ref : Gsl_Var_Reference)
+     (Ref     : Gsl_Var_Reference;
+      Context : String)
       return Gsl_Type is
-
-      use Ada.Strings.Unbounded;
-      use Controller;
-      use Gsl.Interpreters;
    begin
-      if Get_Current_Context = "" then
+      if Context = "" then
          Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
            "Runtime error: No context set.");
-      elsif not Exists_Selection (Get_Current_Context, Get_Ref_Name (Ref))
+      elsif not Controller.Exists_Selection (Context, Get_Ref_Name (Ref))
       then
-         Create_Selection (Get_Current_Context, Get_Ref_Name (Ref));
+         Controller.Create_Selection (Context, Get_Ref_Name (Ref));
       end if;
       return Gsl_Type (Create_Gsl_Var_Reference
-        (Selection, Get_Ref_Name (Ref), Get_Current_Context));
-      --return Gsl_Type (Copy (Ref));
+        (Selection, Get_Ref_Name (Ref), Context));
    end Get_Selection_Reference;
 
 end Giant.Gsl.Processors;
