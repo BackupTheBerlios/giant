@@ -20,52 +20,77 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.ads,v $, $Revision: 1.1 $
+--  $RCSfile: giant-vectors.ads,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/05/23 16:39:04 $
+--  $Date: 2003/06/07 12:47:19 $
 --
 ------------------------------------------------------------------------------
---
 
 
 generic
 
+   --  Field
    type Field_Type is private;
 
-   Field_Zero : Field_Type;
+   --  Injective monotonic function Natural --> Field_Type
+   with function To_Field_Type
+     (A : in Natural)
+     return Field_Type;
 
+   --  Addition in Field
    with function Field_Add
      (A, B : in Field_Type)
-      return Field_Type;
+     return Field_Type;
+   --  Subtraction in Field
    with function Field_Sub
      (A, B : in Field_Type)
-      return Field_Type;
+     return Field_Type;
 
+   --  Coordinate for vector space
    type Coordinate_Type is private;
 
+   --  Vector with all components = Coordinate_Zero is zero in vector space
    Coordinate_Zero : Coordinate_Type;
 
+   --  Width and Height of a point (should be 0.0 or 1) affects width and
+   --  height of rectangles
+   Point_Size : Coordinate_Type;
+
+   --  <= on Coordinate_Type
+   with function Coord_Less_Equal
+     (A : in Coordinate_Type; B : in Coordinate_Type)
+     return Boolean;
+
+   --  negation
    with function Coord_Negate
      (A : in Coordinate_Type)
-      return Coordinate_Type;
+     return Coordinate_Type;
+   --  addition
    with function Coord_Add
      (A, B : in Coordinate_Type)
-      return Coordinate_Type;
+     return Coordinate_Type;
+   --  subtraction
    with function Coord_Sub
      (A, B : in Coordinate_Type)
-      return Coordinate_Type;
+     return Coordinate_Type;
 
+   --  Scalar multiplication
    with function Scalar_Mult_Coord
      (A : in Field_Type; B : in Coordinate_Type)
-      return Coordinate_Type;
+     return Coordinate_Type;
+   --  Vector product for each coordinate
    with function Vector_Mult_Coord
      (A : in Coordinate_Type; B : in Coordinate_Type)
-      return Field_Type;
+     return Field_Type;
+
+   --  Scalar division for each coodinate
+   with function Scalar_Div_Coord
+     (A : in Coordinate_Type; B : in Field_Type)
+     return Coordinate_Type;
 
 package Giant.Vectors is
 
    pragma Elaborate_Body;
-
 
 
    ---------------
@@ -74,39 +99,56 @@ package Giant.Vectors is
 
    type Vector_2d is private;
 
+   --  Zero in vector space
    Zero_2d : constant Vector_2d;
 
+   --  Negation
    function "-"
      (Op : in Vector_2d)
-      return Vector_2d;
+     return Vector_2d;
 
+   --  Addition
    function "+"
      (Left  : in Vector_2d;
       Right : in Vector_2d)
-      return Vector_2d;
+     return Vector_2d;
 
+   --  Subtraction
    function "-"
      (Left  : in Vector_2d;
       Right : in Vector_2d)
-      return Vector_2d;
+     return Vector_2d;
 
+   --  Inner product
    function "*"
      (Left  : in Vector_2d;
       Right : in Vector_2d)
-      return Field_Type;
+     return Field_Type;
+
+   --  Scalar multiplication
+   function "*"
+     (Left  : in Field_Type;
+      Right : in Vector_2d)
+     return Vector_2d;
+
+   --  Scalar division
+   function "/"
+     (Left  : in Vector_2d;
+      Right : in Field_Type)
+     return Vector_2d;
 
    function Get_X
      (Vector : in Vector_2d)
-      return Coordinate_Type;
+     return Coordinate_Type;
 
    function Get_Y
      (Vector : in Vector_2d)
-      return Coordinate_Type;
+     return Coordinate_Type;
 
    function Combine_Vector
      (X      : in     Coordinate_Type;
       Y      : in     Coordinate_Type)
-      return Vector_2d;
+     return Vector_2d;
 
    procedure Set_X
      (Vector : in out Vector_2d;
@@ -128,52 +170,56 @@ package Giant.Vectors is
       Y_1 : in     Coordinate_Type;
       X_2 : in     Coordinate_Type;
       Y_2 : in     Coordinate_Type)
-      return Rectangle_2d;
+     return Rectangle_2d;
 
    function Combine_Rectangle
      (Top_Left     : in     Vector_2d;
       Bottom_Right : in     Vector_2d)
-      return Rectangle_2d;
+     return Rectangle_2d;
 
    function Get_Top
      (Rectangle : in     Rectangle_2d)
-      return Coordinate_Type;
+     return Coordinate_Type;
 
    function Get_Bottom
      (Rectangle : in     Rectangle_2d)
-      return Coordinate_Type;
+     return Coordinate_Type;
 
    function Get_Left
      (Rectangle : in     Rectangle_2d)
-      return Coordinate_Type;
+     return Coordinate_Type;
 
    function Get_Right
      (Rectangle : in     Rectangle_2d)
-      return Coordinate_Type;
+     return Coordinate_Type;
 
    function Get_Top_Left
      (Rectangle : in     Rectangle_2d)
-      return Vector_2d;
+     return Vector_2d;
 
    function Get_Top_Right
      (Rectangle : in     Rectangle_2d)
-      return Vector_2d;
+     return Vector_2d;
 
    function Get_Bottom_Left
      (Rectangle : in     Rectangle_2d)
-      return Vector_2d;
+     return Vector_2d;
 
    function Get_Bottom_Right
      (Rectangle : in     Rectangle_2d)
-      return Vector_2d;
+     return Vector_2d;
+
+   function Get_Center
+     (Rectangle : in     Rectangle_2d)
+     return Vector_2d;
 
    function Get_Width
      (Rectangle : in     Rectangle_2d)
-      return Coordinate_Type;
+     return Coordinate_Type;
 
    function Get_Height
      (Rectangle : in     Rectangle_2d)
-      return Coordinate_Type;
+     return Coordinate_Type;
 
 private
 

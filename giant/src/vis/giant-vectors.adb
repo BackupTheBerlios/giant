@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.adb,v $, $Revision: 1.1 $
+--  $RCSfile: giant-vectors.adb,v $, $Revision: 1.2 $
 --  $Author: keulsn $
---  $Date: 2003/05/23 16:39:04 $
+--  $Date: 2003/06/07 12:47:19 $
 --
 ------------------------------------------------------------------------------
 
@@ -62,6 +62,26 @@ package body Giant.Vectors is
          Vector_Mult_Coord (Left.Y, Right.Y));
    end "*";
 
+   function "*"
+     (Left  : in Field_Type;
+      Right : in Vector_2d)
+     return Vector_2d is
+   begin
+      return
+        (Scalar_Mult_Coord (Left, Right.X),
+         Scalar_Mult_Coord (Left, Right.Y));
+   end "*";
+
+   function "/"
+     (Left  : in Vector_2d;
+      Right : in Field_Type)
+     return Vector_2d is
+   begin
+      return
+        (Scalar_Div_Coord (Left.X, Right),
+         Scalar_Div_Coord (Left.Y, Right));
+   end "/";
+
    function Get_X
      (Vector : in Vector_2d)
       return Coordinate_Type is
@@ -98,5 +118,132 @@ package body Giant.Vectors is
       Vector.Y := Y;
    end Set_Y;
 
+
+   ----------------
+   -- Rectangles --
+   ----------------
+
+   function Combine_Rectangle
+     (X_1 : in     Coordinate_Type;
+      Y_1 : in     Coordinate_Type;
+      X_2 : in     Coordinate_Type;
+      Y_2 : in     Coordinate_Type)
+     return Rectangle_2d is
+
+      Result : Rectangle_2d;
+   begin
+      if Coord_Less_Equal (X_1, X_2) then
+         Result.Left  := X_1;
+         Result.Right := X_2;
+      else
+         Result.Right := X_1;
+         Result.Left  := X_2;
+      end if;
+      if Coord_Less_Equal (Y_1, Y_2) then
+         Result.Top    := Y_1;
+         Result.Bottom := Y_2;
+      else
+         Result.Bottom := Y_1;
+         Result.Top    := Y_2;
+      end if;
+      return Result;
+   end Combine_Rectangle;
+
+   function Combine_Rectangle
+     (Top_Left     : in     Vector_2d;
+      Bottom_Right : in     Vector_2d)
+     return Rectangle_2d is
+
+      Left   : Coordinate_Type := Get_X (Top_Left);
+      Right  : Coordinate_Type := Get_X (Bottom_Right);
+      Top    : Coordinate_Type := Get_Y (Top_Left);
+      Bottom : Coordinate_Type := Get_Y (Bottom_Right);
+   begin
+      pragma Assert (Coord_Less_Equal (Left, Right));
+      pragma Assert (Coord_Less_Equal (Top, Bottom));
+      return Combine_Rectangle (Left, Top, Right, Bottom);
+   end Combine_Rectangle;
+
+   function Get_Top
+     (Rectangle : in     Rectangle_2d)
+     return Coordinate_Type is
+   begin
+      return Rectangle.Top;
+   end Get_Top;
+
+   function Get_Bottom
+     (Rectangle : in     Rectangle_2d)
+     return Coordinate_Type is
+   begin
+      return Rectangle.Bottom;
+   end Get_Bottom;
+
+   function Get_Left
+     (Rectangle : in     Rectangle_2d)
+     return Coordinate_Type is
+   begin
+      return Rectangle.Left;
+   end Get_Left;
+
+   function Get_Right
+     (Rectangle : in     Rectangle_2d)
+     return Coordinate_Type is
+   begin
+      return Rectangle.Right;
+   end Get_Right;
+
+   function Get_Top_Left
+     (Rectangle : in     Rectangle_2d)
+     return Vector_2d is
+   begin
+      return Combine_Vector (Get_Left (Rectangle), Get_Top (Rectangle));
+   end Get_Top_Left;
+
+   function Get_Top_Right
+     (Rectangle : in     Rectangle_2d)
+     return Vector_2d is
+   begin
+      return Combine_Vector (Get_Right (Rectangle), Get_Top (Rectangle));
+   end Get_Top_Right;
+
+   function Get_Bottom_Left
+     (Rectangle : in     Rectangle_2d)
+     return Vector_2d is
+   begin
+      return Combine_Vector (Get_Left (Rectangle), Get_Bottom (Rectangle));
+   end Get_Bottom_Left;
+
+   function Get_Bottom_Right
+     (Rectangle : in     Rectangle_2d)
+     return Vector_2d is
+   begin
+      return Combine_Vector (Get_Right (Rectangle), Get_Bottom (Rectangle));
+   end Get_Bottom_Right;
+
+   function Get_Center
+     (Rectangle : in     Rectangle_2d)
+     return Vector_2d is
+   begin
+      return (Get_Top_Left (Rectangle) + Get_Bottom_Right (Rectangle))
+        / To_Field_Type (2);
+   end Get_Center;
+
+   function Get_Width
+     (Rectangle : in     Rectangle_2d)
+     return Coordinate_Type is
+   begin
+      return Coord_Add (Coord_Sub (Get_Right (Rectangle),
+                                   Get_Left (Rectangle)),
+                        Point_Size);
+   end Get_Width;
+
+   function Get_Height
+     (Rectangle : in     Rectangle_2d)
+     return Coordinate_Type is
+   begin
+      return Coord_Add (Coord_Sub (Get_Bottom (Rectangle),
+                                   Get_Top (Rectangle)),
+                        Point_Size);
+   end Get_Height;
 
 end Giant.Vectors;
