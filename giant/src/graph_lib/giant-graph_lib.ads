@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.7 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.8 $
 --  $Author: koppor $
---  $Date: 2003/06/12 13:33:54 $
+--  $Date: 2003/06/12 14:01:15 $
 --
 
 --  Bauhaus / IML
@@ -664,6 +664,11 @@ package Giant.Graph_Lib is
    -------------
 
    ---------------------------------------------------------------------------
+   --  Returns:
+   --    Hash of the loaded IML-Graph
+   function Get_Graph_Hash return Integer;
+
+   ---------------------------------------------------------------------------
    function Hash_Node_Id (Key : in Node_Id) return Integer;
 
    ---------------------------------------------------------------------------
@@ -721,6 +726,7 @@ private
    ---------------------------------------------------------------------------
    --  Dummy
    type Node_Attribute_Iterator is record
+
       Dummy : Integer;
    end record;
 
