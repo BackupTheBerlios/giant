@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.23 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.24 $
 --  $Author: squig $
---  $Date: 2003/06/29 21:23:23 $
+--  $Date: 2003/06/30 10:44:53 $
 --
 
 with Ada.Strings.Unbounded;
@@ -33,6 +33,8 @@ with Gtk.Main;
 with Lists;
 with String_Lists;
 
+with Giant.Config;
+with Giant.Config.Vis_Styles;
 with Giant.Controller;
 with Giant.Dialogs;
 with Giant.Main_Window;
@@ -105,6 +107,16 @@ package body Giant.Gui_Manager is
       while String_Lists.More (Iterator) loop
          String_Lists.Next (Iterator, Name);
          Graph_Window.Add_Selection
+           (Window, Ada.Strings.Unbounded.To_String (Name));
+      end loop;
+      String_Lists.Destroy (List);
+
+      --  add vis styles
+      List := Config.Vis_Styles.Get_All_Vis_Styles;
+      Iterator := String_Lists.MakeListIter (List);
+      while String_Lists.More (Iterator) loop
+         String_Lists.Next (Iterator, Name);
+         Graph_Window.Add_Vis_Style
            (Window, Ada.Strings.Unbounded.To_String (Name));
       end loop;
       String_Lists.Destroy (List);
@@ -393,6 +405,42 @@ package body Giant.Gui_Manager is
    begin
       Main_Window.Update_Subgraph (Name);
    end Update_Subgraph;
+
+   ---------------------------------------------------------------------------
+   --  Vis Styles
+   ---------------------------------------------------------------------------
+
+   procedure Update_Vis_Style
+     (Window_Name : in String)
+   is
+      Window : Graph_Window.Graph_Window_Access
+        := Get_Open_Window (Window_Name);
+   begin
+      if (Window = null) then
+         --  window is not shown
+         return;
+      end if;
+
+      Graph_Window.Update_Vis_Style (Window);
+   end Update_Vis_Style;
+
+   ---------------------------------------------------------------------------
+   --  Zoom
+   ---------------------------------------------------------------------------
+
+   procedure Update_Zoom_Level
+     (Window_Name : in String)
+   is
+      Window : Graph_Window.Graph_Window_Access
+        := Get_Open_Window (Window_Name);
+   begin
+      if (Window = null) then
+         --  window is not shown
+         return;
+      end if;
+
+      Graph_Window.Update_Zoom_Level (Window);
+   end Update_Zoom_Level;
 
    ---------------------------------------------------------------------------
    --  Windows

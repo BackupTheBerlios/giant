@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.20 $
+--  $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.21 $
 --  $Author: squig $
---  $Date: 2003/06/29 21:23:23 $
+--  $Date: 2003/06/30 10:44:53 $
 --
 --  ----------------
 --  This package realizes a container that administrates the components
@@ -52,7 +52,7 @@ with Ordered_Sets; -- from Bauhaus IML "Reuse.src"
 
 with Giant.Graph_Lib;            -- from GIANT
 with Giant.Graph_Lib.Selections; -- from GIANT
---FIX: with Giant.Graph_Widgets;        -- from GIANT
+with Giant.Graph_Widgets;        -- from GIANT
 with Giant.Vis;                  -- from GIANT
 
 package Giant.Vis_Windows is
@@ -909,7 +909,7 @@ private
       --  The Visualisation Style used for that window (only known by name)
       The_Visualisation_Style : Ada.Strings.Unbounded.Unbounded_String;
 
-      --FIX: The_Graph_Widget        : Graph_Widgets.Graph_Widget;
+      The_Graph_Widget        : Graph_Widgets.Graph_Widget;
 
       Set_Of_All_Pins         : Pin_Sets.Set;
 

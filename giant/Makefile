@@ -29,7 +29,7 @@ XMLADA_INCLUDES = -I$(XMLADA_PATH)/dom -I$(XMLADA_PATH)/input_sources -I$(XMLADA
 
 INCLUDES        = $(GIANT_INCLUDES) $(IMLLIB_INCLUDES) $(AUNIT_INCLUDES) $(XMLADA_INCLUDES)
 
-LIBS            = $(shell gtkada-config) -lgmem
+LIBS            = $(shell gtkada-config)
 
 CFLAGS          = -g -O2 -funroll-loops
 GNAT_FLAGS      = -j2 -gnatX -gnata -gnatf -gnatwl -gnato 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.22 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.23 $
 --  $Author: squig $
---  $Date: 2003/06/27 16:58:06 $
+--  $Date: 2003/06/30 10:44:52 $
 --
 --
 ------------------------------------------------------------------------------
@@ -152,7 +152,7 @@ begin
       GIANT_VIS_Directory    => "",
       User_Vis_Directory     => "",
       Default_Vis_Style_File =>
-        "test/resources/vis_styles/only_defaults_giant_vis_style.xml");
+        "/home/squig/projects/stupro/giant/test/resources/vis_styles/only_defaults_giant_vis_style.xml");
 
    Logger.Debug ("parsing command line arguments");
    Parse_Arguments;

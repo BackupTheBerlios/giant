@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.16 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.17 $
 --  $Author: squig $
---  $Date: 2003/06/29 21:23:23 $
+--  $Date: 2003/06/30 10:44:53 $
 --
 ------------------------------------------------------------------------------
 --
@@ -35,7 +35,6 @@ with Gtk.Combo;
 with Gtk.Gentry;
 with Gtk.Label;
 with Gtk.Menu;
-with Gtk.Option_Menu;
 with Gtk.Paned;
 with Gtk.Style;
 with Gtk.Window;
@@ -143,6 +142,24 @@ package Giant.Graph_Window is
      (Window : access Graph_Window_Record;
       Name   : in     String);
 
+   ---------------------------------------------------------------------------
+   --  Vis Styles
+   ---------------------------------------------------------------------------
+
+   procedure Add_Vis_Style
+     (Window : access Graph_Window_Record;
+      Name   : in     String);
+
+   procedure Update_Vis_Style
+     (Window     : access Graph_Window_Record);
+
+   ---------------------------------------------------------------------------
+   --  Zoom
+   ---------------------------------------------------------------------------
+
+   procedure Update_Zoom_Level
+     (Window     : access Graph_Window_Record);
+
 private
    type Style_Array_Type is array (Vis_Windows.Selection_Highlight_Status)
      of Gtk.Style.Gtk_Style;
@@ -154,9 +171,8 @@ private
         Pin_List_Menu : Gtk.Menu.Gtk_Menu;
         Selection_List : Gui_Utils.String_Clists.Giant_Data_Clist;
         Selection_List_Menu : Gtk.Menu.Gtk_Menu;
-        Vis_Style_Menu : Gtk.Option_Menu.Gtk_Option_Menu;
+        Vis_Style_Combo : Gtk.Combo.Gtk_Combo;
         Zoom_Combo : Gtk.Combo.Gtk_Combo;
-        Zoom_Entry : Gtk.Gentry.Gtk_Entry;
 
         Graph : Graph_Widgets.Graph_Widget;
         Mini_Map : Mini_Maps.Mini_Map;

@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.21 $
+--  $RCSfile: giant-vis_windows.adb,v $, $Revision: 1.22 $
 --  $Author: squig $
---  $Date: 2003/06/29 21:23:23 $
+--  $Date: 2003/06/30 10:44:53 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -143,7 +143,7 @@ package body Giant.Vis_Windows is
 
       New_Window_Ac     : Visual_Window_Access;
       New_Standard_Sel  : Graph_Lib.Selections.Selection;
---FIX:       New_Graph_Widget  : Graph_Widgets.Graph_Widget;
+      New_Graph_Widget  : Graph_Widgets.Graph_Widget;
       Standard_Sel_Data : Selection_Data_Elemet;
    begin
 
@@ -162,13 +162,13 @@ package body Giant.Vis_Windows is
       New_Window_Ac.All_Managed_Selections := Selection_Data_Sets.Empty_Set;
 
       --  Initialize new Graph_Widget
---FIX:       Graph_Widgets.Create (New_Graph_Widget);
+      Graph_Widgets.Create (New_Graph_Widget);
 
       --  Increases the GTK Reference Counter - needed to keep the graph
       --  widget persistent in this data structure
---FIX:       Graph_Widgets.Ref (New_Graph_Widget);
+      Graph_Widgets.Ref (New_Graph_Widget);
 
---FIX:       New_Window_Ac.The_Graph_Widget := New_Graph_Widget;
+      New_Window_Ac.The_Graph_Widget := New_Graph_Widget;
 
       --  Create empty standard selection and make it to the current selection
       --  -> this behaviour is demanded by the Specification
@@ -308,7 +308,7 @@ package body Giant.Vis_Windows is
       --  The Graph widget will be deallocated automatically
       --  (only if there are no other references that have
       --  increased the Reference Counter).
---FIX:       Graph_Widgets.Unref (Vis_Window.The_Graph_Widget);
+      Graph_Widgets.Unref (Vis_Window.The_Graph_Widget);
 
       Pin_Sets.Destroy (Vis_Window.Set_Of_All_Pins);
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.30 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.31 $
 --  $Author: squig $
---  $Date: 2003/06/29 21:23:23 $
+--  $Date: 2003/06/30 10:44:52 $
 --
 
 with Ada.Strings.Unbounded;
@@ -638,6 +638,24 @@ package body Giant.Controller is
    end;
 
    ---------------------------------------------------------------------------
+   --  Vis Styles
+   ---------------------------------------------------------------------------
+
+   procedure Set_Vis_Style
+     (Window_Name : in String;
+      Name        : in String)
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+   begin
+      Logger.Debug ("setting vis style for " & Window_Name & ": "
+                    & Name);
+
+      --Vis_Windows.Set_Vis_Style (Window, Name);
+      Gui_Manager.Update_Vis_Style (Window_Name);
+   end Set_Vis_Style;
+
+   ---------------------------------------------------------------------------
    --  Windows
    ---------------------------------------------------------------------------
 
@@ -729,6 +747,23 @@ package body Giant.Controller is
          Logger.Info ("Saved window " & Name);
       end if;
    end Save_Window;
+
+   ---------------------------------------------------------------------------
+   --  Zoom
+   ---------------------------------------------------------------------------
+
+   procedure Set_Zoom_Level
+     (Window_Name : in String;
+      Zoom_Level  : in Vis.Zoom_Level)
+   is
+      Window : Vis_Windows.Visual_Window_Access
+        := Projects.Get_Visualisation_Window (Current_Project, Window_Name);
+   begin
+      Logger.Debug ("setting zoom level for " & Window_Name & ": "
+                    & Vis.Zoom_Level'Image (Zoom_Level));
+      --Graph_Widgets.Set_Zoom_Level ();
+      Gui_Manager.Update_Zoom_Level (Window_Name);
+   end Set_Zoom_Level;
 
 end Giant.Controller;
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-set_operation_dialog.adb,v $, $Revision: 1.7 $
+--  $RCSfile: giant-set_operation_dialog.adb,v $, $Revision: 1.8 $
 --  $Author: squig $
---  $Date: 2003/06/23 12:40:58 $
+--  $Date: 2003/06/30 10:44:53 $
 --
 
 with Ada.Strings.Unbounded;
@@ -192,7 +192,7 @@ package body Giant.Set_Operation_Dialog is
 
       Gtk.Combo.Gtk_New (Dialog.Operation);
       Gtk.Combo.Set_Popdown_Strings (Dialog.Operation, Operations);
-      Gtk.Combo.Set_Value_In_List (Dialog.Operation, 0, Ok_If_Empty => False);
+       Gtk.Combo.Set_Value_In_List (Dialog.Operation, 0, Ok_If_Empty => False);
       Add_Row (Table, Row, New_Label (-"Operation"), Dialog.Operation);
 
       --  left source

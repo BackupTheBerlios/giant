@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.ads,v $, $Revision: 1.5 $
--- $Author: schwiemn $
--- $Date: 2003/06/27 15:34:02 $
+-- $RCSfile: giant-config-vis_styles.ads,v $, $Revision: 1.6 $
+-- $Author: squig $
+-- $Date: 2003/06/30 10:44:53 $
 --
 -- ----------------
 -- This package provides the functionality needed to manage
@@ -49,7 +49,7 @@
 -- "B - Mangement of Visualisation Styles".
 --
 -- 3. Before a variable of type Visualisation_Style may be used as
--- a parameter for the functions specified in part C.0, C.1, C.2 and C.3, 
+-- a parameter for the functions specified in part C.0, C.1, C.2 and C.3,
 -- the variable has to be initialized by calling
 -- -> function Initialize_Vis_Style_By_Name
 --
@@ -162,16 +162,16 @@ package Giant.Config.Vis_Styles is
    -- It does not matter if there are no vis-styles in "GIANT_Vis_Directory"
    -- and "User_Vis_Directory".
    -- ----
-   -- 
+   --
    -- This subrogram will try to expand relative paths inside a vis style
-   -- (e.g. the node class icons) this expansion is done the following 
+   -- (e.g. the node class icons) this expansion is done the following
    -- way:
    --
    --   1. Expand using the directory there the xml file for the
    --      visualisation style is located. If no file is found:
    --   2. Expand using "Root_Path" as root. If no file is found then:
    --   3. Try to ignore that setting.
-   --  
+   --
    -- Note
    --   All xml files in the directories passed by the parameters
    --   "GIANT_Vis_Directory" and "User_Vis_Directory" are regarded
@@ -185,8 +185,8 @@ package Giant.Config.Vis_Styles is
    -- Parameters:
    --   You should only pass ABSOLUTE PATHS for the following parameters.
    --
-   --   Resources_Root_Dir - The path to a directory towards that realtive 
-   --     paths should be expanded if expansion towards the directory there 
+   --   Resources_Root_Dir - The path to a directory towards that realtive
+   --     paths should be expanded if expansion towards the directory there
    --     the read xml file is stored fails.
    --   GIANT_Vis_Directory - A path to a directory there the visualisation
    --     styles for all users of an installation of GIANT are found.
@@ -206,7 +206,7 @@ package Giant.Config.Vis_Styles is
    --   Illegal_Default_Vis_Style_Exception - raised if the xml file for
    --     the default visualisation style does not correspond to the
    --     requirements for a xml file describing visualisation styles.
-   procedure Initialize_Config_Vis_Styles   
+   procedure Initialize_Config_Vis_Styles
      (Resources_Root_Dir     : in String;
       GIANT_Vis_Directory    : in String;
       User_Vis_Directory     : in String;
@@ -263,7 +263,7 @@ package Giant.Config.Vis_Styles is
    -- Raises:
    --   Config_Vis_Styles_Not_Initialized_Exception - raised if this
    --     subprogram is called before "Initialize_Config_Vis_Styles"
-   function Return_All_Known_Vis_Styles
+   function Get_All_Vis_Styles
      return String_Lists.List;
 
    ---------------------------------------------------------------------------
@@ -336,14 +336,14 @@ package Giant.Config.Vis_Styles is
    -- by using this id as index for an Color_Access_Array_Access
    -- you may retrieve an pointer to the string describing the color.
    ---------------------------------------------------------------------------
-   
+
    ---------------------------------------------------------------------------
    -- holds all colors
-   type Color_Access_Array is array (integer range <>) 
+   type Color_Access_Array is array (integer range <>)
      of Color_Access;
-   
+
    type Color_Access_Array_Access is access Color_Access_Array;
-   
+
    ---------------------------------------------------------------------------
    -- Returns an pointer to an array that holds all Colors used for
    -- the visualisation styles.
@@ -351,11 +351,11 @@ package Giant.Config.Vis_Styles is
    -- retrieving the real color e.g. used to draw the line of an edge.
    --
    -- The array holds pointers to string (in GIANT we use RGB Strings
-   -- to describe colores) but this is not checked at this point, 
+   -- to describe colores) but this is not checked at this point,
    -- therefore the array may hold strings that do not describe colors
    -- according to your color moddel.
    --
-   -- You may not deallocate the result.  
+   -- You may not deallocate the result.
    --
    -- Returns:
    --   A Pointer to an array holding all colors.
@@ -398,26 +398,26 @@ package Giant.Config.Vis_Styles is
    -- Access to visualisation data for node classes which is
    -- defined by a Visualisation Style
    ---------------------------------------------------------------------------
-            
+
    ---------------------------------------------------------------------------
    -- holds absolute paths for all icon files
-   type Node_Icons_Array is array (integer range <>) 
+   type Node_Icons_Array is array (integer range <>)
      of Ada.Strings.Unbounded.Unbounded_String;
-   
+
    type Node_Icons_Array_Access is access Node_Icons_Array;
-      
+
    ---------------------------------------------------------------------------
    -- Returns an pointer to an array that holds all absolute paths to
    -- files that describe icons (xpm). We only garantee that this file
    -- exists but not that it is a valid xpm file.
    --
-   -- Using the encoding integer returned for a Node_Class 
+   -- Using the encoding integer returned for a Node_Class
    -- as index you may retrieve the incon file for that node class.
    --
-   -- You may not deallocate the result.  
+   -- You may not deallocate the result.
    --
    -- Returns:
-   --   An Array holding absolute paths to files. 
+   --   An Array holding absolute paths to files.
    --   May return a pointer
    --   to an array with Length=0 if no icons files have been found.
    --   Bounds of Array: 1 .. Ammount of diffrent Icons

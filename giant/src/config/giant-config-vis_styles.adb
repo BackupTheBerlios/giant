@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.12 $
--- $Author: schwiemn $
--- $Date: 2003/06/26 13:23:55 $
+-- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.13 $
+-- $Author: squig $
+-- $Date: 2003/06/30 10:44:52 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -48,22 +48,22 @@ package body Giant.Config.Vis_Styles is
    ---------------------------------------------------------------------------
 
    -- needed to manage all  xpm files for icons - ensures that each
-   -- each file holding an icon is only registered once duiring 
+   -- each file holding an icon is only registered once duiring
    -- parsing of all visualisation styles.
    --
    -- As key the absolute path of a icon file is used.
-   -- Value: An integer that encodes an icon file 
+   -- Value: An integer that encodes an icon file
    -- (Range 1 .. Ammount of Icon Files).
    package Icons_Encoding_Mappings is new Hashed_Mappings
      (Key_Type   => Ada.Strings.Unbounded.Unbounded_String,
       Hash       => Unbounded_String_Hash,
       Value_Type => Integer);
-   
+
    type Color_Encoding_Data_Element is record
       Color    : Config.Color_Access;
       Encoding : Integer := 0;
    end record;
-   
+
    -- needed to manage the colors - ensures that for two equal colors
    -- the pointers "Config.Color_Access" are equal too.
    --
@@ -89,17 +89,17 @@ package body Giant.Config.Vis_Styles is
 
    -- Marks the ADO as initialized or not
    ADO_Initialized : Boolean := False;
-      
+
    -- needed to encode the icons
    Global_Icon_Counter : Integer := 1;
    -- holds all icons
-   Icons_Encoding_Map  : Icons_Encoding_Mappings.Mapping;   
-   -- holds the array that provides access to the files using the 
+   Icons_Encoding_Map  : Icons_Encoding_Mappings.Mapping;
+   -- holds the array that provides access to the files using the
    -- integer encoding as index
    Encoded_Icons_Array : Node_Icons_Array_Access;
 
    Global_Color_Counter : Integer := 1;
-   Colors_Encoding_Map  : Colors_Encoding_Hashed_Mappings.Mapping;   
+   Colors_Encoding_Map  : Colors_Encoding_Hashed_Mappings.Mapping;
    Encoded_Colors_Array : Color_Access_Array_Access;
 
    -- holds all visualisation styles (incl. default vis style)
@@ -117,39 +117,39 @@ package body Giant.Config.Vis_Styles is
    ---------------------------------------------------------------------------
    -- Builds the internal encoding array out of the hash map.
    procedure Build_Encoded_Icons_Array is
-   
+
       Iter : Icons_Encoding_Mappings.Bindings_Iter;
-      Size : Integer := 0;    
-      
+      Size : Integer := 0;
+
       Icon_File : Ada.Strings.Unbounded.Unbounded_String;
       Encoding  : Integer;
    begin
-      
+
       Iter := Icons_Encoding_Mappings.Make_Bindings_Iter (Icons_Encoding_Map);
-      
+
       -- determine Size
       -----------------
       Size := 0;
       while Icons_Encoding_Mappings.More (Iter) loop
-      
-         Icons_Encoding_Mappings.Next (Iter, Icon_File, Encoding);         
-         Size := Size + 1;            
-      end loop;
-   
-      Encoded_Icons_Array := new Node_Icons_Array' 
-        (1 .. Size => Ada.Strings.Unbounded.Null_Unbounded_String);
-   
-      -- isert entries
-      ---------------- 
-      Iter := Icons_Encoding_Mappings.Make_Bindings_Iter (Icons_Encoding_Map);
-      
-      while Icons_Encoding_Mappings.More (Iter) loop
-      
-         Icons_Encoding_Mappings.Next (Iter, Icon_File, Encoding);         
 
-         Encoded_Icons_Array (Encoding) := Icon_File;            
+         Icons_Encoding_Mappings.Next (Iter, Icon_File, Encoding);
+         Size := Size + 1;
       end loop;
-         
+
+      Encoded_Icons_Array := new Node_Icons_Array'
+        (1 .. Size => Ada.Strings.Unbounded.Null_Unbounded_String);
+
+      -- isert entries
+      ----------------
+      Iter := Icons_Encoding_Mappings.Make_Bindings_Iter (Icons_Encoding_Map);
+
+      while Icons_Encoding_Mappings.More (Iter) loop
+
+         Icons_Encoding_Mappings.Next (Iter, Icon_File, Encoding);
+
+         Encoded_Icons_Array (Encoding) := Icon_File;
+      end loop;
+
    end Build_Encoded_Icons_Array;
 
 
@@ -172,7 +172,7 @@ package body Giant.Config.Vis_Styles is
 
          -- return pointer to alrady loaded icon
          Encoded_Icon_Index :=
-           Icons_Encoding_Mappings.Fetch 
+           Icons_Encoding_Mappings.Fetch
              (Icons_Encoding_Map, The_Icon_File);
       else
 
@@ -191,43 +191,43 @@ package body Giant.Config.Vis_Styles is
 
    ---------------------------------------------------------------------------
    procedure Build_Encoded_Colors_Array is
-   
+
       Iter : Colors_Encoding_Hashed_Mappings.Bindings_Iter;
-      Size : Integer := 0;    
-      
+      Size : Integer := 0;
+
       Color_String : Ada.Strings.Unbounded.Unbounded_String;
       Data_Element : Color_Encoding_Data_Element;
    begin
-      
-      Iter := Colors_Encoding_Hashed_Mappings.Make_Bindings_Iter 
+
+      Iter := Colors_Encoding_Hashed_Mappings.Make_Bindings_Iter
         (Colors_Encoding_Map);
-      
+
       -- determine Size
       -----------------
       Size := 0;
       while Colors_Encoding_Hashed_Mappings.More (Iter) loop
-      
-         Colors_Encoding_Hashed_Mappings.Next 
-           (Iter, Color_String, Data_Element);         
-         Size := Size + 1;            
-      end loop;
-   
-      Encoded_Colors_Array := 
-        new Color_Access_Array'(1 .. Size => null);
-   
-      -- isert entries
-      ---------------- 
-      Iter := Colors_Encoding_Hashed_Mappings.Make_Bindings_Iter 
-        (Colors_Encoding_Map);
-      
-      while Colors_Encoding_Hashed_Mappings.More (Iter) loop
-      
-         Colors_Encoding_Hashed_Mappings.Next 
-           (Iter, Color_String, Data_Element);         
 
-         Encoded_Colors_Array (Data_Element.Encoding) := Data_Element.Color;            
+         Colors_Encoding_Hashed_Mappings.Next
+           (Iter, Color_String, Data_Element);
+         Size := Size + 1;
       end loop;
-         
+
+      Encoded_Colors_Array :=
+        new Color_Access_Array'(1 .. Size => null);
+
+      -- isert entries
+      ----------------
+      Iter := Colors_Encoding_Hashed_Mappings.Make_Bindings_Iter
+        (Colors_Encoding_Map);
+
+      while Colors_Encoding_Hashed_Mappings.More (Iter) loop
+
+         Colors_Encoding_Hashed_Mappings.Next
+           (Iter, Color_String, Data_Element);
+
+         Encoded_Colors_Array (Data_Element.Encoding) := Data_Element.Color;
+      end loop;
+
    end Build_Encoded_Colors_Array;
 
    ---------------------------------------------------------------------------
@@ -259,7 +259,7 @@ package body Giant.Config.Vis_Styles is
          New_Color_Access :=
            new Ada.Strings.Unbounded.Unbounded_String'(The_Color_String);
          New_Data.Color := New_Color_Access;
-  
+
          New_Data.Encoding := Global_Color_Counter;
          Global_Color_Counter := Global_Color_Counter + 1;
 
@@ -363,7 +363,7 @@ package body Giant.Config.Vis_Styles is
       -- needed for calculation of the position of the icon
       Node_Icon_Full_Path : Ada.Strings.Unbounded.Unbounded_String;
       Icon_Encoding : Integer := 0;
-      
+
       File_Found : Boolean := True;
 
    begin
@@ -380,28 +380,28 @@ package body Giant.Config.Vis_Styles is
          when File_Management.File_Does_Not_Exist_Exception =>
             File_Found := False;
       end;
-      
+
       if not File_Found then
          begin
-            -- try calculate file name based on Resources_Root_Dir               
+            -- try calculate file name based on Resources_Root_Dir
             Node_Icon_Full_Path := Ada.Strings.Unbounded.To_Unbounded_String
               (File_Management.Get_Absolute_Path_To_File_From_Relative
                 (Resources_Root_Dir,
-                 DOM.Core.Elements.Get_Attribute 
+                 DOM.Core.Elements.Get_Attribute
                   (XML_Node_Setting_Node, "icon")));
          exception
             when File_Management.File_Does_Not_Exist_Exception =>
                File_Found := False;
          end;
       end if;
-      
-      if File_Found then      
-         Register_Icon_File_Encoding (Node_Icon_Full_Path, Icon_Encoding);   
+
+      if File_Found then
+         Register_Icon_File_Encoding (Node_Icon_Full_Path, Icon_Encoding);
       else
          -- no icon file exists
          Icon_Encoding := 0;
       end if;
-      
+
       -- Icon
       Node_Vis_Data.Icon_Encoding := Icon_Encoding;
 
@@ -514,13 +514,13 @@ package body Giant.Config.Vis_Styles is
          procedure Process_Element (Item : in Graph_Lib.Edge_Class_Id) is
 
          begin
-           
+
             -- Unbind must always be possible as each edge class
             -- has a default setting that was already set
             Edge_Class_Id_Hashed_Mappings.Unbind
               (The_Vis_Style_Access.Edge_Class_Specific_Vis,
                Item);
-               
+
             -- insert new config setting for edge class
             Edge_Class_Id_Hashed_Mappings.Bind
               (The_Vis_Style_Access.Edge_Class_Specific_Vis,
@@ -946,7 +946,7 @@ package body Giant.Config.Vis_Styles is
 
    ---------------------------------------------------------------------------
    procedure Initialize_Config_Vis_Styles
-   
+
      (Resources_Root_Dir     : in String;
       GIANT_Vis_Directory    : in String;
       User_Vis_Directory     : in String;
@@ -974,11 +974,11 @@ package body Giant.Config.Vis_Styles is
       Old_Vis_Style : Visualisation_Style_Access := null;
 
    begin
-   
+
       -- reset counters:
       Global_Icon_Counter  := 1;
       Global_Color_Counter := 1;
-      
+
       -- get all xml files from GIANT_Vis_Directory and User_Vis_Directory
       -- (not the default vis style "Default_Vis_Style_File"
       begin
@@ -1039,14 +1039,14 @@ package body Giant.Config.Vis_Styles is
       -- file name: "\def_vis\my_def_vis.xml" -->
       -- name of default vis style: "my_def_vis";
 
-      -- INITIALIZE - The name of the default visualisation style      
+      -- INITIALIZE - The name of the default visualisation style
       Global_Default_Vis_Style_Name :=
         Ada.Strings.Unbounded.To_Unbounded_String
           (File_Management.Calculate_Name_For_File
             (Default_Vis_Style_File));
-      
-      -- FIX      
-     Logger.Debug (Ada.Strings.Unbounded.To_String 
+
+      -- FIX
+     Logger.Debug (Ada.Strings.Unbounded.To_String
         (Global_Default_Vis_Style_Name));
 
       -------------------------------
@@ -1086,7 +1086,7 @@ package body Giant.Config.Vis_Styles is
                Ignore_File := True;
             else
 
-               -- calculate name 
+               -- calculate name
                ------------------
                A_Vis_Style_Name :=
                  Ada.Strings.Unbounded.To_Unbounded_String
@@ -1163,8 +1163,8 @@ package body Giant.Config.Vis_Styles is
 
       -- build default vis style
       -- this style must be correct
-      
-      
+
+
       begin
 
          New_Vis_Style := Process_XML_Vis_Style
@@ -1173,7 +1173,7 @@ package body Giant.Config.Vis_Styles is
             File_management.Return_Dir_Path_For_File_Path
              (Default_Vis_Style_File),
             Global_Default_Vis_Style_Name);
-                              
+
       exception
          when others =>
 
@@ -1198,14 +1198,14 @@ package body Giant.Config.Vis_Styles is
       -- add default vis style to hash map
       All_Vis_Styles_Hashed_Mappings.Bind
         (All_Vis_Styles_Map, Global_Default_Vis_Style_Name, New_Vis_Style);
-        
-    -- FIX      
-     Logger.Debug (Ada.Strings.Unbounded.To_String 
+
+    -- FIX
+     Logger.Debug (Ada.Strings.Unbounded.To_String
         (Global_Default_Vis_Style_Name));
 
       -- deallocate DOM Tree for default visualisation style
       Tree_Readers.Free (Default_Vis_Style_Tree_Reader);
-                  
+
       -- build data arrays
       Build_Encoded_Icons_Array;
       Build_Encoded_Colors_Array;
@@ -1215,14 +1215,14 @@ package body Giant.Config.Vis_Styles is
    end Initialize_Config_Vis_Styles;
 
    ---------------------------------------------------------------------------
-   procedure Free_Node_Icons_Array_Access is new Ada.Unchecked_Deallocation 
+   procedure Free_Node_Icons_Array_Access is new Ada.Unchecked_Deallocation
      (Node_Icons_Array, Node_Icons_Array_Access);
-     
+
    ---------------------------------------------------------------------------
-   procedure Free_Color_Access_Array_Access is new Ada.Unchecked_Deallocation 
-     (Color_Access_Array, Color_Access_Array_Access);   
-   
-   
+   procedure Free_Color_Access_Array_Access is new Ada.Unchecked_Deallocation
+     (Color_Access_Array, Color_Access_Array_Access);
+
+
    procedure Clear_Config_Vis_Styles is
 
       All_Vis_Styles_Map_Iter  : All_Vis_Styles_Hashed_Mappings.Values_Iter;
@@ -1266,7 +1266,7 @@ package body Giant.Config.Vis_Styles is
 
 
       -- deallocates memory for all loaded icons file names
-      ----------------------------------   
+      ----------------------------------
       Icons_Encoding_Mappings.Destroy (Icons_Encoding_Map);
       Free_Node_Icons_Array_Access (Encoded_Icons_Array);
 
@@ -1290,7 +1290,7 @@ package body Giant.Config.Vis_Styles is
       end loop;
 
       -- deallocate global hash map
-      Colors_Encoding_Hashed_Mappings.Destroy (Colors_Encoding_Map);      
+      Colors_Encoding_Hashed_Mappings.Destroy (Colors_Encoding_Map);
       Free_Color_Access_Array_Access (Encoded_Colors_Array);
 
       -- mark ADO as not initialized
@@ -1338,7 +1338,7 @@ package body Giant.Config.Vis_Styles is
    end Get_Number_Of_Known_Vis_Styles;
 
    ---------------------------------------------------------------------------
-   function Return_All_Known_Vis_Styles return String_Lists.List is
+   function Get_All_Vis_Styles return String_Lists.List is
 
       -- holds the names of all known vis styles
       Names_List : String_Lists.List;
@@ -1372,7 +1372,7 @@ package body Giant.Config.Vis_Styles is
       end loop;
 
       return Names_List;
-   end Return_All_Known_Vis_Styles;
+   end Get_All_Vis_Styles;
 
    ---------------------------------------------------------------------------
    function Does_Vis_Style_Exist
@@ -1439,9 +1439,9 @@ package body Giant.Config.Vis_Styles is
          raise Config_Vis_Styles_Not_Initialized_Exception;
          return null;
       end if;
-      
+
       -- Fix
-     Logger.Debug (Ada.Strings.Unbounded.To_String 
+     Logger.Debug (Ada.Strings.Unbounded.To_String
         (Global_Default_Vis_Style_Name));
 
 
@@ -1454,17 +1454,17 @@ package body Giant.Config.Vis_Styles is
    -- C.0
    -- Encoded Colors
    ---------------------------------------------------------------------------
-   
+
    ---------------------------------------------------------------------------
    function Get_All_Colors return Color_Access_Array_Access is
-   
-   begin   
-   
+
+   begin
+
       if (ADO_Initialized = False) then
          raise Config_Vis_Styles_Not_Initialized_Exception;
       end if;
-         
-      return Encoded_Colors_Array;      
+
+      return Encoded_Colors_Array;
    end Get_All_Colors;
 
    ---------------------------------------------------------------------------
@@ -1499,14 +1499,14 @@ package body Giant.Config.Vis_Styles is
 
    ---------------------------------------------------------------------------
    function Get_All_Node_Icons return Node_Icons_Array_Access is
-   
+
    begin
-   
+
       if (ADO_Initialized = False) then
          raise Config_Vis_Styles_Not_Initialized_Exception;
       end if;
-         
-      return Encoded_Icons_Array;      
+
+      return Encoded_Icons_Array;
    end Get_All_Node_Icons;
 
    ---------------------------------------------------------------------------

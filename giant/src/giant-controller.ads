@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.ads,v $, $Revision: 1.23 $
+--  $RCSfile: giant-controller.ads,v $, $Revision: 1.24 $
 --  $Author: squig $
---  $Date: 2003/06/29 21:23:23 $
+--  $Date: 2003/06/30 10:44:52 $
 --
 ------------------------------------------------------------------------------
 --
@@ -304,6 +304,14 @@ package Giant.Controller is
       Target_Name : in String);
 
    ---------------------------------------------------------------------------
+   --  Vis Styles
+   ---------------------------------------------------------------------------
+
+   procedure Set_Vis_Style
+     (Window_Name : in String;
+      Name        : in String);
+
+   ---------------------------------------------------------------------------
    --  Windows
    ---------------------------------------------------------------------------
 
@@ -371,6 +379,14 @@ package Giant.Controller is
    --    Giant.Gui_Manager.Open
    procedure Save_Window
      (Name : in String);
+
+   ---------------------------------------------------------------------------
+   --  Zoom
+   ---------------------------------------------------------------------------
+
+   procedure Set_Zoom_Level
+     (Window_Name : in String;
+      Zoom_Level  : in Vis.Zoom_Level);
 
 private
 

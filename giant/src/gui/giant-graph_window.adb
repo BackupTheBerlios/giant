@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.19 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.20 $
 --  $Author: squig $
---  $Date: 2003/06/29 21:23:23 $
+--  $Date: 2003/06/30 10:44:53 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -34,6 +34,8 @@ with Gtk.Box;
 with Gtk.Button;
 with Gtk.Enums;
 with Gtk.Handlers;
+with Gtk.List;
+with Gtk.List_Item;
 with Gtk.Menu_Item;
 with Gtk.Widget;
 
@@ -394,6 +396,20 @@ package body Giant.Graph_Window is
    end On_Selection_List_Show_All;
 
    ---------------------------------------------------------------------------
+   --  Vis Style Callbacks
+   ---------------------------------------------------------------------------
+
+   procedure On_Vis_Style_Selected
+     (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
+   is
+      Window : Graph_Window_Access := Graph_Window_Access (Source);
+      Vis_Style_Name : String
+        := Gtk.Gentry.Get_Chars (Gtk.Combo.Get_Entry (Window.Zoom_Combo));
+   begin
+      Controller.Set_Vis_Style (Get_Window_Name (Window), Vis_Style_Name);
+   end On_Vis_Style_Selected;
+
+   ---------------------------------------------------------------------------
    --  Zoom Callbacks
    ---------------------------------------------------------------------------
 
@@ -401,16 +417,19 @@ package body Giant.Graph_Window is
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
       Window : Graph_Window_Access := Graph_Window_Access (Source);
+      Zoom_Level : Vis.Zoom_Level := Graph_Widgets.Get_Zoom_Level (Window.Graph);
    begin
       Controller.Create_Pin (Get_Window_Name (Window), "Test",
                              Vis.Logic.Zero_2d, 1.0);
+      Controller.Set_Zoom_Level (Get_Window_Name (Window), Zoom_Level + 0.2);
    end On_Zoom_In_Clicked;
 
    procedure On_Zoom_Level_Selected
      (Source : access Gtk.Widget.Gtk_Widget_Record'Class)
    is
       Window : Graph_Window_Access := Graph_Window_Access (Source);
-      Zoom_String : String := Gtk.Gentry.Get_Chars (Window.Zoom_Entry);
+      Zoom_String : String
+        := Gtk.Gentry.Get_Chars (Gtk.Combo.Get_Entry (Window.Zoom_Combo));
       Zoom_Level : Vis.Zoom_Level;
    begin
       if (Zoom_String = "") then
@@ -425,7 +444,8 @@ package body Giant.Graph_Window is
          else
             Zoom_Level := Vis.Zoom_Level'Value (Zoom_String);
          end if;
-         Zoom_Level := Zoom_Level / 100.0;
+         Controller.Set_Zoom_Level (Get_Window_Name (Window),
+                                    Zoom_Level / 100.0);
       end if;
    exception
       when Constraint_Error =>
@@ -512,13 +532,12 @@ package body Giant.Graph_Window is
    is
       use Giant.Gui_Utils;
 
-      Menu : Gtk.Menu.Gtk_Menu;
-      Menu_Item : Gtk.Menu_Item.Gtk_Menu_Item;
       Submenu : Gtk.Menu.Gtk_Menu;
       Left_Box : Gtk.Box.Gtk_Vbox;
       Left_Paned : Gtk.Paned.Gtk_Paned;
       Vbox : Gtk.Box.Gtk_Vbox;
       Hbox : Gtk.Box.Gtk_Hbox;
+      Vis_Styles : Gtk.Enums.String_List.Glist;
       Zoom_Levels : Gtk.Enums.String_List.Glist;
    begin
       Gtk.Window.Initialize (Window, Gtk.Enums.Window_Toplevel);
@@ -653,21 +672,16 @@ package body Giant.Graph_Window is
                       Add_Scrollbars (Window.Selection_List));
 
       --  visualization style
-      Gtk.Option_Menu.Gtk_New (Window.Vis_Style_Menu);
-      Gtk.Option_Menu.Set_Border_Width (Window.Vis_Style_Menu,
-                                        DEFAULT_SPACING);
-      Gtk.Menu.Gtk_New (Menu);
-      Gtk.Menu_Item.Gtk_New (Menu_Item, -"Default");
-      Gtk.Menu_Item.Show (Menu_Item);
-      Gtk.Menu.Append (Menu, Menu_Item);
-      Gtk.Menu_Item.Gtk_New (Menu_Item, -"Fancy");
-      Gtk.Menu.Append (Menu, Menu_Item);
-      Gtk.Menu_Item.Gtk_New (Menu_Item, -"Other");
-      Gtk.Menu.Append (Menu, Menu_Item);
-      Gtk.Option_Menu.Set_Menu(Window.Vis_Style_Menu, Menu);
+
+      Gtk.Combo.Gtk_New (Window.Vis_Style_Combo);
       Gtk.Box.Pack_Start (Left_Box,
-                          Add_Frame (Window.Vis_Style_Menu, -"Style"),
+                          Add_Frame (Window.Vis_Style_Combo, -"Style"),
                           Expand => False, Fill => False, Padding => 0);
+
+      Widget_Callback.Object_Connect
+        (Gtk.Combo.Get_List (Window.Vis_Style_Combo), "select_child",
+         Widget_Callback.To_Marshaller (On_Vis_Style_Selected'Access),
+         Window);
 
       --  zoom
       Gtk.Box.Gtk_New_Vbox (Vbox, Homogeneous => False, Spacing => 0);
@@ -694,8 +708,6 @@ package body Giant.Graph_Window is
       Gtk.Box.Pack_Start (Hbox, Window.Zoom_Combo,
                           Expand => False, Fill => False, Padding => 0);
       Gtk.Combo.Set_Usize (Window.Zoom_Combo, 100, Glib.Gint (-1));
-
-      Window.Zoom_Entry := Gtk.Combo.Get_Entry (Window.Zoom_Combo);
 
       Widget_Callback.Object_Connect
         (Gtk.Combo.Get_List (Window.Zoom_Combo), "select_child",
@@ -871,5 +883,43 @@ package body Giant.Graph_Window is
    begin
       Gui_Utils.String_Clists.Update (Window.Selection_List, Name);
    end Update_Selection;
+
+   ---------------------------------------------------------------------------
+   --  Vis Style Methods
+   ---------------------------------------------------------------------------
+
+   procedure Add_Vis_Style
+     (Window : access Graph_Window_Record;
+      Name   : in     String)
+   is
+      Item : Gtk.List_Item.Gtk_List_Item;
+   begin
+      Gtk.List_Item.Gtk_New (Item, Name);
+      Gtk.List.Add (Gtk.Combo.Get_List (Window.Vis_Style_Combo), Item);
+   end Add_Vis_Style;
+
+   procedure Update_Vis_Style
+     (Window     : access Graph_Window_Record)
+   is
+   begin
+      --Gtk.Combo.Set_Value_In_List (Dialog.Operation, 0, Ok_If_Empty
+      --=> False);
+      Gtk.Gentry.Set_Text (Gtk.Combo.Get_Entry (Window.Vis_Style_Combo),
+                           Vis_Windows.Get_Vis_Style (Window.Visual_Window));
+   end Update_Vis_Style;
+
+   ---------------------------------------------------------------------------
+   --  Zoom
+   ---------------------------------------------------------------------------
+
+   procedure Update_Zoom_Level
+     (Window     : access Graph_Window_Record)
+   is
+      Zoom_Level : Vis.Zoom_Level
+        := Graph_Widgets.Get_Zoom_Level (Window.Graph);
+   begin
+      Gtk.Gentry.Set_Text (Gtk.Combo.Get_Entry (Window.Zoom_Combo),
+                           Vis.Zoom_Level'Image (Zoom_Level * 100.0) & "%");
+   end Update_Zoom_Level;
 
 end Giant.Graph_Window;
