@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.ads,v $, $Revision: 1.6 $
+--  $RCSfile: giant-graph_widgets-settings.ads,v $, $Revision: 1.7 $
 --  $Author: keulsn $
---  $Date: 2003/07/07 18:39:23 $
+--  $Date: 2003/07/22 09:34:02 $
 --
 ------------------------------------------------------------------------------
 
@@ -204,5 +204,10 @@ package Giant.Graph_Widgets.Settings is
    function Get_Node_Width
      (Widget : access Graph_Widget_Record'Class)
      return Vis.Absolute_Natural;
+
+
+private
+
+   Default_Node_Width : constant := 150;
 
 end Giant.Graph_Widgets.Settings;

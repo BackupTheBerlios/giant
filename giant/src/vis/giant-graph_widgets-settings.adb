@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.15 $
+--  $RCSfile: giant-graph_widgets-settings.adb,v $, $Revision: 1.16 $
 --  $Author: keulsn $
---  $Date: 2003/07/11 19:39:15 $
+--  $Date: 2003/07/22 09:34:02 $
 --
 ------------------------------------------------------------------------------
 
@@ -458,7 +458,7 @@ package body Giant.Graph_Widgets.Settings is
      (Widget : access Graph_Widget_Record'Class)
      return Vis.Absolute_Natural is
    begin
-      return 100;
+      return Default_Node_Width;
    end Get_Node_Width;
 
 

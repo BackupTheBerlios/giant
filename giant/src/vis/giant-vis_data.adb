@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.30 $
+--  $RCSfile: giant-vis_data.adb,v $, $Revision: 1.31 $
 --  $Author: keulsn $
---  $Date: 2003/07/22 00:11:23 $
+--  $Date: 2003/07/22 09:34:02 $
 --
 ------------------------------------------------------------------------------
 
@@ -505,8 +505,8 @@ package body Giant.Vis_Data is
    procedure Remove_Text_Area
      (Edge      : in     Vis_Edge_Id) is
    begin
-      Vis.Absolute.Set_Top (Edge.Text_Area, 1);
       Vis.Absolute.Set_Bottom (Edge.Text_Area, Vis.Absolute_Int'Last);
+      Vis.Absolute.Set_Top (Edge.Text_Area, 1);
    end Remove_Text_Area;
 
    procedure Set_Point
