@@ -8,7 +8,6 @@
 \RequirePackage[latin1]{inputenc}
 \RequirePackage[T1]{fontenc}
 \RequirePackage{textcomp}   
-\RequirePackage{graphicx}
 \RequirePackage{eepic}
 \RequirePackage{url}                    % \url{} aktivieren
 \RequirePackage{fancyhdr}
@@ -18,6 +17,34 @@
 %\RequirePackage{footnote}
 \RequirePackage{a4wide}
 \RequirePackage{times}                  % font
+
+%%% check whether we are running pdflatex
+%%% from http://www.db.informatik.uni-bremen.de/~mr/pdflatex.html
+\newif\ifpdf 
+\ifx\pdfoutput\undefined 
+\pdffalse % we are not running pdflatex 
+\else 
+\pdfoutput=1 % we are running pdflatex 
+\pdfcompresslevel=9     % compression level for text and image;
+\pdftrue 
+\fi
+
+\ifpdf
+  %see http://scgwiki.iam.unibe.ch:8080/SCG/47
+  \usepackage[pdftex,
+              colorlinks=true,
+              linkcolor=blue,
+              citecolor=blue,
+              urlcolor=blue,
+              bookmarks=true,
+              pdfstartview=FitV,
+              backref,
+              pagebackref]{hyperref}
+  \usepackage{thumbpdf}
+  \RequirePackage[pdftex]{graphicx}
+\else
+  \RequirePackage[dvips]{graphicx}
+\fi
 
 % Euro symbol
 \newcommand\euro{{\sffamily C%
