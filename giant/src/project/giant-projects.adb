@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: giant-projects.adb,v $, $Revision: 1.20 $
+--  $RCSfile: giant-projects.adb,v $, $Revision: 1.21 $
 --  $Author: schwiemn $
---  $Date: 2003/06/18 16:49:10 $
+--  $Date: 2003/06/18 18:07:38 $
 --
 with Ada.Text_IO;
 with Ada.Streams.Stream_IO;
@@ -43,6 +43,13 @@ with Giant.File_Management; -- from GIANT
 with Giant.XML_File_Access; -- from GIANT
 
 package body Giant.Projects is
+
+   ---------------------------------------------------------------------------
+   -- Note:
+   --  The Management files for subgarphs, vis windows and projects
+   --  always are named this way:
+   --  "path" & "name of project /vis window / subgraph" & "ending"
+   -- You should not change this.
 
    ---------------------------------------------------------------------------
    --  Name used for the file holding the node annotations
@@ -229,18 +236,21 @@ package body Giant.Projects is
          Ada.Streams.Stream_IO.In_File,
          File_Path);
 
-      -- TODO NAME Consitency check
-
       Ada_Stream := Ada.Streams.Stream_IO.Stream (Stream_File);
       Bauhaus_In_Stream := Bauhaus_IO.Make_Internal (Ada_Stream);
 
       Vis_Windows.Visual_Window_Access_Read
         (Bauhaus_In_Stream, New_Vis_Window);
-
+        
       -- close resources
       Bauhaus_IO.Release (Bauhaus_In_Stream);
       Ada.Streams.Stream_IO.Close (Stream_File);
-
+      
+      -- ENFORCE Name consistency
+      Vis_Windows.Change_Name 
+        (New_Vis_Window, 
+         File_Management.Calculate_Name_For_File (File_Path));
+      
       return New_Vis_Window;
    end Load_Vis_Window_Into_Main_Memory;
 
@@ -306,8 +316,6 @@ package body Giant.Projects is
       Subgraph_Data_Element_Read
         (Bauhaus_In_Stream, New_Sub_Graph_Data);
         
-      -- TODO Name Consistency CHECK
-
       --  close resources
       Bauhaus_IO.Release (Bauhaus_In_Stream);
       Ada.Streams.Stream_IO.Close (Stream_File);
@@ -316,6 +324,11 @@ package body Giant.Projects is
       New_Sub_Graph_Data.Is_File_Linked := True;
       New_Sub_Graph_Data.Existing_Subgraph_File :=
         Ada.Strings.Unbounded.To_Unbounded_String (File_Path);
+        
+      -- ENFORCE Name consistency
+      Graph_Lib.Subgraphs.Rename 
+        (New_Sub_Graph_Data.Subgraph, 
+         File_Management.Calculate_Name_For_File (File_Path));
 
       return New_Sub_Graph_Data;
    end Load_Sub_Graph_Data_Into_Main_Memory;
@@ -1629,14 +1642,7 @@ package body Giant.Projects is
       --  load vis window into main memory
       else
 
-         Vis_Window_Data := Known_Vis_Windows_Hashs.Fetch
-           (Project.All_Vis_Windows,
-            Ada.Strings.Unbounded.To_Unbounded_String
-              (Vis_Window_Name));
-
-         -- change data entry
-         New_Vis_Window_Inst :=
-           Load_Vis_Window_Into_Main_Memory
+         New_Vis_Window_Inst := Load_Vis_Window_Into_Main_Memory
              (Ada.Strings.Unbounded.To_String
                (Vis_Window_Data.Existing_Vis_Window_File));
                
@@ -1657,6 +1663,83 @@ package body Giant.Projects is
          return New_Vis_Window_Inst;
       end if;
    end Get_Visualisation_Window;
+   
+   ---------------------------------------------------------------------------
+   procedure Change_Vis_Window_Name
+     (Project             : in Project_Access;
+      Vis_Window_Name     : in String;
+      New_Vis_Window_Name : in String) is
+   
+      A_Vis_Window_Data_Element : Vis_Window_Data_Element;
+      -- Keep track on status 
+      Was_File_Linked : Boolean := False;
+      
+   begin
+   
+      if (Project = null) then
+         raise Project_Access_Not_Initialized_Exception;
+      end if;
+
+      if not Does_Vis_Window_Exist
+        (Project, Vis_Window_Name) then
+         raise Visualisation_Window_Is_Not_Part_Of_Project_Exception;
+      end if;    
+      
+      if Does_Vis_Window_Exist
+        (Project, New_Vis_Window_Name) then
+         raise New_Vis_Window_Name_Does_Already_Exist_Exception;
+      end if;   
+      
+      A_Vis_Window_Data_Element := Known_Vis_Windows_Hashs.Fetch
+        (Project.All_Vis_Windows,
+         Ada.Strings.Unbounded.To_Unbounded_String (Vis_Window_Name));
+         
+      if not A_Vis_Window_Data_Element.Is_Memory_Loaded then
+         raise Visualisation_Window_Is_Not_Memory_Loaded_Exception;
+      end if;
+              
+      -- remove old management file if one exists
+      ---------------------------------------
+      if A_Vis_Window_Data_Element.Is_File_Linked then
+      
+         File_Management.Delete_File
+           (Ada.Strings.Unbounded.To_String
+             (A_Vis_Window_Data_Element.Existing_Vis_Window_File));
+         A_Vis_Window_Data_Element.Is_File_Linked := False;
+         A_Vis_Window_Data_Element.Existing_Vis_Window_File :=
+           Ada.Strings.Unbounded.Null_Unbounded_String;         
+         Was_File_Linked := True;
+      end if;
+      
+      -- change name of Vis_Window Access 
+      -----------------------------------
+      Vis_Windows.Change_Name 
+        (A_Vis_Window_Data_Element.Vis_Window,
+         New_Vis_Window_Name);
+            
+      -- update hash map and data model
+      ---------------------------------
+      A_Vis_Window_Data_Element.Vis_Window_Name :=
+        Ada.Strings.Unbounded.To_Unbounded_String (New_Vis_Window_Name); 
+      
+      Known_Vis_Windows_Hashs.Unbind
+        (Project.All_Vis_Windows,
+         Ada.Strings.Unbounded.To_Unbounded_String (Vis_Window_Name));
+         
+      Known_Vis_Windows_Hashs.Bind
+        (Project.All_Vis_Windows,
+         Ada.Strings.Unbounded.To_Unbounded_String (New_Vis_Window_Name),
+         A_Vis_Window_Data_Element);  
+            
+      -- write new management file if necessary
+      -----------------------------------------
+      if Was_File_Linked then
+      
+         Store_Single_Visualisation_Window 
+           (Project,
+            New_Vis_Window_Name);
+      end if;        
+   end Change_Vis_Window_Name;
 
    ---------------------------------------------------------------------------
    procedure Add_Visualisation_Window

@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.20 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.21 $
 -- $Author: schwiemn $
--- $Date: 2003/06/18 16:31:07 $
+-- $Date: 2003/06/18 18:07:38 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -456,6 +456,10 @@ package Giant.Projects is
    ---------------------------------------------------------------------------
    -- Raised on access on not memory loaded vis windows
    Visualisation_Window_Is_Not_Memory_Loaded_Exception : Exception;
+   
+   ---------------------------------------------------------------------------
+   -- Raised on attempt of changing a name to a name that already exists.
+   New_Vis_Window_Name_Does_Already_Exist_Exception : Exception;
 
    ---------------------------------------------------------------------------
    -- Determines whether a given Visualisation Window is part of
@@ -553,6 +557,45 @@ package Giant.Projects is
      (Project         : in Project_Access;
       Vis_Window_Name : in String)
      return Vis_Windows.Visual_Window_Access;
+     
+   ---------------------------------------------------------------------------
+   --  Changes the name of a visualisation window in a project.
+   --
+   --  If you change the name of a visualisation window while it is
+   --  part of a project you have to use this subprogramm.
+   --
+   --  If exists the old management file will be deleted. And a
+   --  new one (with a name corresponding to the new name) will be created
+   --  in the project directory.
+   --
+   --  You may only change the names of MEMORY LOADED vis_windows.
+   --
+   --  State Changes:
+   --   Memory_Loaded_File_Linked  --> Memory_Loaded_File_Linked
+   --   Memory_Loaded              --> Memory_Loaded
+   --
+   -- Parameters:
+   --   Project - The instance of the ADT holding a project.
+   --   Vis_Window_Name - The name (unique inside a project) of a
+   --     visualisation window of the project.
+   --   New_Vis_Window_Name - The new name for the window named
+   --     "Vis_Window_Name".
+   -- Raises:
+   --   Visualisation_Window_Is_Not_Part_Of_Project_Exception - raised
+   --     if no visualisation window with the name "Vis_Window_Name"
+   --     exists.
+   --   Project_Access_Not_Initialized_Exception - Raised if a not
+   --     initialized instance of "Project_Access" is passed as
+   --     parameter.
+   --   Visualisation_Window_Is_Not_Memory_Loaded_Exception
+   --     Raised if "Vis_Window_Name" is not memory loaded.
+   --   New_Vis_Window_Name_Does_Already_Exist_Exception
+   --     Raised if there is alread a vis window with 
+   --     "New_Vis_Window_Name". 
+   procedure Change_Vis_Window_Name
+     (Project             : in Project_Access;
+      Vis_Window_Name     : in String;
+      New_Vis_Window_Name : in String);
 
    ---------------------------------------------------------------------------
    -- Adds a visualisation window to the project.
