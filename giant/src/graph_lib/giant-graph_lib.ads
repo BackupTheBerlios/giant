@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.12 $
+--  $RCSfile: giant-graph_lib.ads,v $, $Revision: 1.13 $
 --  $Author: koppor $
---  $Date: 2003/06/22 12:19:57 $
+--  $Date: 2003/06/23 12:28:35 $
 --
 
 --  Bauhaus / IML
@@ -508,11 +508,11 @@ package Giant.Graph_Lib is
      return Boolean;
 
    ---------------------------------------------------------------------------
-   --  Returns unique ID of given Node_Class
-   function Node_Class_Id_Image
+   --  Returns a tag identifying the current node id
+   --    is unique for each Node_Class_Id
+   function Get_Node_Class_Tag
      (Node_Class : in Node_Class_Id)
      return String;
-
 
    ---------------------------
    -- Inspectors            --
