@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.11 $
+--  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.12 $
 --  $Author: koppor $
---  $Date: 2003/07/19 17:11:38 $
+--  $Date: 2003/08/25 10:19:46 $
 --
 
 with Ada.Exceptions;
@@ -199,6 +199,18 @@ package body Giant.Layout_Factory is
                Ada.Exceptions.Raise_Exception (Invalid_Format'Identity,
                                                "Invalid root node");
          end;
+
+         --  Assure that Root_Node is in Selection
+         if not Graph_Lib.Node_Id_Sets.Is_Member
+           (Graph_Lib.Selections.Get_All_Nodes (Selection_To_Layout),
+            Root_Node) then
+            Layout_Evolution := null;
+
+            --  this exception is chosen q&d
+            Ada.Exceptions.Raise_Exception (Invalid_Format'Identity,
+                                            "Invalid root node");
+         end if;
+
 
          --  Class_sets
          String_Lists.Next (Parameters_Iter, Current_Parameter);
