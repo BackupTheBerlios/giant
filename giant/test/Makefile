@@ -3,6 +3,9 @@ framework_test :
 
 martin_test :
 	make -C ../ MAIN=test/martin_test EXEC=test/martin_test
+        
+dump_iml_data:
+	make -C ../ MAIN=test/dump_iml_data EXEC=test/dump_iml_data
 
 graph_widget :
 	make -C ../ MAIN=test/giant_test-graph_widget EXEC=test/graph_widget all
@@ -30,4 +33,4 @@ layout_factory :
 all:
 	make -C ../ all
 
-.PHONY : framework_test martin_test mini_map graph_widget evolution
+.PHONY : framework_test martin_test mini_map graph_widget evolution dump_iml_data
