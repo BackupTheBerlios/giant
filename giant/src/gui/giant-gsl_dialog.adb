@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.15 $
+--  $RCSfile: giant-gsl_dialog.adb,v $, $Revision: 1.16 $
 --  $Author: squig $
---  $Date: 2003/08/15 16:37:18 $
+--  $Date: 2003/08/19 10:54:46 $
 --
 
 with Ada.Exceptions;
@@ -42,6 +42,7 @@ with Gtk.Widget;
 
 with Giant.Controller;
 with Giant.Dialogs;
+with Giant.File_Management;
 with Giant.Gui_Utils;
 with Giant.Logger;
 with Giant.Main_Window;
@@ -49,6 +50,9 @@ with Giant.Main_Window;
 package body Giant.Gsl_Dialog is
 
    package Logger is new Giant.Logger("giant.gsl_dialog");
+
+   Temp_Gsl_Filename : constant String
+     := File_Management.Get_User_Config_Path & "temp.gsl";
 
    ---------------------------------------------------------------------------
    --  File Operations
@@ -166,7 +170,7 @@ package body Giant.Gsl_Dialog is
    begin
       if (Dialog.Text_Has_Changed) then
          Response := Dialogs.Show_Confirmation_Dialog
-           (-"The script has changed. The saved script will be executed. Save changes?",
+           (-"The script has changed. Save changes?",
             Default_Dialog.Button_Yes_No_Cancel);
          if (Response = Default_Dialog.Response_Yes) then
             if (Dialog.Filename
@@ -225,9 +229,17 @@ package body Giant.Gsl_Dialog is
       use type Ada.Strings.Unbounded.Unbounded_String;
 
       Dialog : constant Gsl_Dialog_Access := Gsl_Dialog_Access (Source);
+      Success : Boolean;
    begin
-      if (Dialog.Filename
-          /= Ada.Strings.Unbounded.Null_Unbounded_String) then
+      if (Save_Changes (Dialog)) then
+         if (Dialog.Filename
+             = Ada.Strings.Unbounded.Null_Unbounded_String) then
+            --  write to a temporary file
+            Set_Filename (Dialog, Temp_Gsl_Filename);
+            Success := Write
+              (Dialog, Ada.Strings.Unbounded.To_String (Dialog.Filename));
+         end if;
+
          declare
             Filename : String
               := Ada.Strings.Unbounded.To_String (Dialog.Filename);

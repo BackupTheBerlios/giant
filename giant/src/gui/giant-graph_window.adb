@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.51 $
+--  $RCSfile: giant-graph_window.adb,v $, $Revision: 1.52 $
 --  $Author: squig $
---  $Date: 2003/08/18 10:09:15 $
+--  $Date: 2003/08/19 10:54:45 $
 --
 
 with Ada.Unchecked_Deallocation;
@@ -624,17 +624,17 @@ package body Giant.Graph_Window is
                         Highlight_Status_None.On_Highlight'Access,
                         Window));
       Gtk.Menu.Append (Window.Selection_List_Menu, New_Menu_Separator);
-      Gtk.Menu.Append (Window.Selection_List_Menu,
-                       New_Menu_Item (-"Show", On_Selection_List_Show'Access,
-                                      Window));
-      Gtk.Menu.Append (Window.Selection_List_Menu,
-                       New_Menu_Item (-"Hide", On_Selection_List_Hide'Access,
-                                      Window));
-      Gtk.Menu.Append (Window.Selection_List_Menu,
-                       New_Menu_Item (-"Show All",
-                                      On_Selection_List_Show_All'Access,
-                                      Window));
-      Gtk.Menu.Append (Window.Selection_List_Menu, New_Menu_Separator);
+--        Gtk.Menu.Append (Window.Selection_List_Menu,
+--                         New_Menu_Item (-"Show", On_Selection_List_Show'Access,
+--                                        Window));
+--        Gtk.Menu.Append (Window.Selection_List_Menu,
+--                         New_Menu_Item (-"Hide", On_Selection_List_Hide'Access,
+--                                        Window));
+--        Gtk.Menu.Append (Window.Selection_List_Menu,
+--                         New_Menu_Item (-"Show All",
+--                                        On_Selection_List_Show_All'Access,
+--                                        Window));
+--        Gtk.Menu.Append (Window.Selection_List_Menu, New_Menu_Separator);
       Gtk.Menu.Append (Window.Selection_List_Menu,
                        New_Menu_Item (-"Apply Layout",
                                       On_Apply_Layout'Access, Window));
@@ -653,7 +653,7 @@ package body Giant.Graph_Window is
                                       On_Selection_List_Rename'Access,
                                       Window));
       Gtk.Menu.Append (Window.Selection_List_Menu,
-                       New_Menu_Item (-"Dupliate...",
+                       New_Menu_Item (-"Duplicate...",
                                       On_Selection_List_Duplicate'Access,
                                       Window));
       Gtk.Menu.Append (Window.Selection_List_Menu, New_Menu_Separator);
@@ -781,7 +781,8 @@ package body Giant.Graph_Window is
 
       --  right box: graph widget (needs to be created prior to the minimap)
       Window.Graph := Vis_Windows.Get_Graph_Widget (Window.Visual_Window);
-      Gtk.Paned.Pack2 (Window.Split_Pane, Add_Scrollbars (Window.Graph),
+      Window.Graph_Scrolled_Window := Add_Scrollbars (Window.Graph);
+      Gtk.Paned.Pack2 (Window.Split_Pane, Window.Graph_Scrolled_Window,
                        Resize => True, Shrink => False);
 
       Widget_Callback.Object_Connect
@@ -1004,6 +1005,13 @@ package body Giant.Graph_Window is
    begin
       return Window.Visual_Window;
    end Get_Vis_Window;
+
+   procedure Remove_Graph_Widget
+     (Window : access Graph_Window_Record)
+   is
+   begin
+      Gtk.Scrolled_Window.Remove (Window.Graph_Scrolled_Window, Window.Graph);
+   end Remove_Graph_Widget;
 
    procedure Update_Title
      (Window : access Graph_Window_Record)

@@ -20,10 +20,10 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.ads,v $, $Revision: 1.19 $
+-- $RCSfile: giant-file_management.ads,v $, $Revision: 1.20 $
 
 -- $Author: squig $
--- $Date: 2003/08/15 16:37:18 $
+-- $Date: 2003/08/19 10:54:46 $
 --
 -- -----------------------------------------------
 --
@@ -38,6 +38,8 @@ with GNAT.Os_Lib;
 with String_Lists; -- from Bauhaus IML "Reuse.src"
 
 package Giant.File_Management is
+
+   pragma Elaborate_Body;
 
    ---------------------------------------------------------------------------
    -- The system path separator.

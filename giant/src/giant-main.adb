@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-main.adb,v $, $Revision: 1.39 $
+--  $RCSfile: giant-main.adb,v $, $Revision: 1.40 $
 --  $Author: squig $
---  $Date: 2003/08/15 16:37:18 $
+--  $Date: 2003/08/19 10:54:45 $
 --
 --
 ------------------------------------------------------------------------------
@@ -57,9 +57,6 @@ is
 
    Version : constant String := "20030627";
    Start_Gui : Boolean := True;
-
-   Config_Filename : constant String
-     := File_Management.Get_User_Config_Path & "settings.xml";
 
    procedure Put_Help
    is
@@ -182,42 +179,16 @@ is
         GNAT.OS_Lib.OS_Exit (1);
    end Parse_Arguments;
 
-
-
-   procedure New_Test_Project
-   is
-   begin
-      begin
-         File_Management.Delete_File ("test/resources/test.xml");
-      exception
-         when others =>
-            null;
-      end;
-      Controller.Create_Project ("test/resources/test.xml",
-                                 "test/resources/rfg_examp.iml");
-   exception
-      when others =>
-         null;
-   end New_Test_Project;
-
-   procedure Open_Test_Project
-   is
-   begin
-      Controller.Open_Project ("test/resources/test.xml");
-   exception
-     when others =>
-        null;
-   end Open_Test_Project;
-
-
-   type t_typ is range 0 .. 1_000_000_000;
-
-   t : t_typ := 0;
+   Config_Filename : constant String
+     := File_Management.Get_User_Config_Path & "settings.xml";
 
 begin
    Default_Logger.Init ("debug.log");
 
    begin
+      --  create user config path if not existant
+      File_Management.Create_Dir_Path (File_Management.Get_User_Config_Path);
+
       --  load config settings
       Config_Settings.Initialize_Config_Settings
         ("dist/global_config.xml", Config_Filename);
@@ -273,7 +244,6 @@ begin
    --  store config settings
    Logger.Debug ("storing config settings: " & Config_Filename);
    Config_Settings.Store_User_Config_File (Config_Filename);
-
 
    Giant.Default_Logger.Close;
 end Giant.Main;

@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.24 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.25 $
 -- $Author: squig $
--- $Date: 2003/08/15 11:42:17 $
+-- $Date: 2003/08/19 10:54:46 $
 --
 --
 
@@ -543,18 +543,16 @@ package body Giant.File_Management is
       end if;
    end Append_Dir_Separator_If_necessary;
 
+   User_Config_Path : constant String
+     := Append_Dir_Separator_If_Necessary (GNAT.OS_Lib.Getenv ("HOME").all)
+     & ".giant" & GNAT.OS_Lib.Directory_Separator;
+
    ---------------------------------------------------------------------------
    function Get_User_Config_Path
      return String
    is
-      Path : String := Append_Dir_Separator_If_Necessary
-        (GNAT.OS_Lib.Getenv ("HOME").all)
-        & ".giant" & GNAT.OS_Lib.Directory_Separator;
    begin
-      if (not GNAT.OS_Lib.Is_Directory (Path)) then
-         GNAT.Directory_Operations.Make_Dir (Path);
-      end if;
-      return Path;
+      return User_Config_Path;
    end Get_User_Config_Path;
 
    ---------------------------------------------------------------------------

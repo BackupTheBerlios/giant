@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.25 $
+--  $RCSfile: giant-graph_window.ads,v $, $Revision: 1.26 $
 --  $Author: squig $
---  $Date: 2003/08/12 13:14:05 $
+--  $Date: 2003/08/19 10:54:45 $
 --
 ------------------------------------------------------------------------------
 --
@@ -36,6 +36,7 @@ with Gtk.Gentry;
 with Gtk.Label;
 with Gtk.Menu;
 with Gtk.Paned;
+with Gtk.Scrolled_Window;
 with Gtk.Style;
 with Gtk.Widget;
 with Gtk.Window;
@@ -150,6 +151,14 @@ package Giant.Graph_Window is
      (Window : access Graph_Window_Record)
      return Vis_Windows.Visual_Window_Access;
 
+   ---------------------------------------------------------------------------
+   --  Deletes the graph from the screen but does not destroy it.
+   --
+   --  See:
+   --    Gui_Manager.Close
+   procedure Remove_Graph_Widget
+     (Window : access Graph_Window_Record);
+
    procedure Update_Title
      (Window : access Graph_Window_Record);
 
@@ -259,6 +268,7 @@ private
         Zoom_Combo : Gtk.Combo.Gtk_Combo;
 
         Graph : Graph_Widgets.Graph_Widget;
+        Graph_Scrolled_Window : Gtk.Scrolled_Window.Gtk_Scrolled_Window;
         Mini_Map : Mini_Maps.Mini_Map;
         Background_Menu : Gtk.Menu.Gtk_Menu;
         Edge_Menu : Gtk.Menu.Gtk_Menu;

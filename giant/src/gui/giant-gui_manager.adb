@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.34 $
+--  $RCSfile: giant-gui_manager.adb,v $, $Revision: 1.35 $
 --  $Author: squig $
---  $Date: 2003/08/05 22:10:10 $
+--  $Date: 2003/08/19 10:54:46 $
 --
 
 with Ada.Strings.Unbounded;
@@ -518,6 +518,9 @@ package body Giant.Gui_Manager is
       end if;
 
       Graph_Window_Lists.DeleteItem (Open_Windows, Window);
+
+      --  remove graph widget to avoid deallocation
+      Graph_Window.Remove_Graph_Widget (Window);
 
       --  deallocate
       Graph_Window.Destroy (Window);
