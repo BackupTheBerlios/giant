@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.14 $
+--  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.15 $
 --  $Author: koppor $
---  $Date: 2003/09/02 00:53:02 $
+--  $Date: 2003/09/02 09:40:26 $
 --
 
 with Ada.Exceptions;
@@ -191,7 +191,10 @@ package body Giant.Layout_Factory is
             Current_Edge    : Graph_Lib.Edge_Id;
             Edge_Iterator   : Graph_Lib.Edge_Id_Sets.Iterator;
 
-            Root_Found      : Boolean;
+            Predecessor_Found : Boolean;
+            Root_Found        : Boolean;
+
+            Seen            : Graph_Lib.Node_Id_Set;
          begin
             if Id'Length = 0 then
                --  no root was given --> search for root-node in tree
@@ -214,6 +217,8 @@ package body Giant.Layout_Factory is
                   return Graph_Lib.Invalid_Node_Id;
                end if;
 
+               Seen := Graph_Lib.Node_Id_Sets.Empty_Set;
+
                loop
                   Incoming_Edges := Graph_Lib.Get_Incoming_Edges
                     (Current_Node);
@@ -223,7 +228,11 @@ package body Giant.Layout_Factory is
                   --  algorithm analogue to
                   --  Tree_Layouts.Init_Calculation_Part_One
 
-                  while Graph_Lib.Edge_Id_Sets.More (Edge_Iterator) loop
+                  Root_Found := False;
+                  Predecessor_Found := False;
+
+                  while not Predecessor_Found
+                    and then Graph_Lib.Edge_Id_Sets.More (Edge_Iterator) loop
                      Graph_Lib.Edge_Id_Sets.Next (Edge_Iterator, Current_Edge);
 
                      if Config.Class_Sets.Is_Empty
@@ -239,25 +248,30 @@ package body Giant.Layout_Factory is
                            if Graph_Lib.Node_Id_Sets.Is_Member
                              (Graph_Lib.Selections.Get_All_Nodes
                               (Selection_To_Layout), Node) then
-                              --  predecessor found
+                              Predecessor_Found := True;
+
                               Current_Node := Node;
-                              exit;
+
+                              if Graph_Lib.Node_Id_Sets.Is_Member
+                                (Seen, Node) then
+                                 --  there is a circle in the graph.
+                                 Root_Found := True;
+                              else
+                                 Graph_Lib.Node_Id_Sets.Insert (Seen, Node);
+                                 Root_Found := False;
+                              end if;
                            end if;
                         end if;
                      end if;
                   end loop;
-
-                  --  we got the Root, if there are no more candidates to be
-                  --    predecessors
-                  Root_Found :=
-                    not Graph_Lib.Edge_Id_Sets.More (Edge_Iterator);
-
                   Graph_Lib.Edge_Id_Sets.Destroy (Edge_Iterator);
 
                   Graph_Lib.Edge_Id_Sets.Destroy (Incoming_Edges);
 
-                  exit when Root_Found;
+                  exit when not Predecessor_Found or Root_Found;
                end loop;
+
+               Graph_Lib.Node_Id_Sets.Destroy (Seen);
 
                --  current node is the root of the tree
                return Current_Node;
