@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-processors.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/16 14:13:53 $
+-- $Date: 2003/08/26 14:02:10 $
 --
 
 with Ada.Exceptions;
@@ -424,7 +424,9 @@ package body Giant.Gsl.Processors is
       then
          Create_Selection (Get_Current_Context, Get_Ref_Name (Ref));
       end if;
-      return Gsl_Type (Copy (Ref));
+      return Gsl_Type (Create_Gsl_Var_Reference
+        (Selection, Get_Ref_Name (Ref), Get_Current_Context));
+      --return Gsl_Type (Copy (Ref));
    end Get_Selection_Reference;
 
 end Giant.Gsl.Processors;
