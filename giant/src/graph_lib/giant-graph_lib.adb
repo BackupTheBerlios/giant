@@ -18,15 +18,13 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.47 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.48 $
 --  $Author: koppor $
---  $Date: 2003/07/07 11:28:31 $
-
---  TBD:
---    s/Program_Error/somethingofmyown
+--  $Date: 2003/07/08 13:47:26 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
+with Ada.Strings.Unbounded;
 
 --  from Bauhaus
 with Tagged_Ptr_Hash;
@@ -294,7 +292,8 @@ package body Giant.Graph_Lib is
            (Node_Class_Id_Mapping, Node_Class);
       exception
          when Node_Class_Id_Hashed_Mappings.Uninitialized_Mapping =>
-            raise Program_Error;
+            --  TBD: replace with own exception
+            raise Constraint_Error;
          when Node_Class_Id_Hashed_Mappings.Not_Bound =>
             raise Node_Class_Does_Not_Exist;
             --  return Invalid_Edge_Class_Id;
@@ -306,7 +305,8 @@ package body Giant.Graph_Lib is
       exception
          when Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.
            Uninitialized_Mapping =>
-            raise Program_Error;
+            --  TBD: replace with own exception
+            raise Constraint_Error;
          when Node_Attribute_Id_To_Edge_Class_Id_Hashed_Mappings.Not_Bound =>
             raise Node_Attribute_Does_Not_Exist;
       end;
@@ -627,8 +627,6 @@ package body Giant.Graph_Lib is
                Attribute : in IML_Reflection.Field_ID) is
             begin
                --  My_Logger.Debug ("Begin: Process_Attribute");
-
-               --  TBD: rewrite from here to fit to new IML_Root-structure
 
                if Attribute.all in IML_Reflection.Edge_Field'Class then
                   declare
@@ -1761,30 +1759,81 @@ package body Giant.Graph_Lib is
 
       ------------------------------------------------------------------------
       --  List is destroyed at the end of the function
+      --
+      --  Performance-Problem could be here
+      --    if it is a problem, then do it with a hashmap!
       function Convert_Node_Id_List_To_String
         (The_List : in Node_Id_List)
         return String
       is
          List : Node_Id_List := The_List;
+         Iter : Node_Id_Lists.ListIter;
+         Node : Node_Id;
+
+         Res  : Ada.Strings.Unbounded.Unbounded_String;
       begin
-         --  TBD
+         if Node_Id_Lists.IsEmpty (List) then
+            Res := Ada.Strings.Unbounded.To_Unbounded_String ("()");
+         else
+            Iter := Node_Id_Lists.MakeListIter (List);
+            Res  := Ada.Strings.Unbounded.To_Unbounded_String ("(");
+            Node_Id_Lists.Next (Iter, Node);
+            Ada.Strings.Unbounded.Append (Res, Node_Id_Image (Node));
+
+            while Node_Id_Lists.More (Iter) loop
+               Node_Id_Lists.Next (Iter, Node);
+               Ada.Strings.Unbounded.Append
+                 (Res, ", ");
+               Ada.Strings.Unbounded.Append
+                 (Res, Node_Id_Image (Node));
+            end loop;
+            Ada.Strings.Unbounded.Append (Res, ")");
+         end if;
 
          Node_Id_Lists.Destroy (List);
-         return "(""not"", ""yet"", implemented"")";
+
+         return Ada.Strings.Unbounded.To_String (Res);
       end Convert_Node_Id_List_To_String;
 
       ------------------------------------------------------------------------
       --  Set is destroyed at the end of the function
+      --
+      --  This function is implemented the same way as
+      --    Convert_Node_Id_List_To_String
+      --
+      --  Performance-Problem could be here
+      --    if it is a problem, then do it with a hashmap!
       function Convert_Node_Id_Set_To_String
         (The_Set : in Node_Id_Set)
         return String
       is
-         Set : Node_Id_Set := The_Set;
+         Set  : Node_Id_Set := The_Set;
+         Iter : Node_Id_Sets.Iterator;
+         Node : Node_Id;
+
+         Res  : Ada.Strings.Unbounded.Unbounded_String;
       begin
-         --  TBD
+         if Node_Id_Sets.Is_Empty (Set) then
+            Res := Ada.Strings.Unbounded.To_Unbounded_String ("{}");
+         else
+            Iter := Node_Id_Sets.Make_Iterator (Set);
+            Res  := Ada.Strings.Unbounded.To_Unbounded_String ("(");
+            Node_Id_Sets.Next (Iter, Node);
+            Ada.Strings.Unbounded.Append (Res, Node_Id_Image (Node));
+
+            while Node_Id_Sets.More (Iter) loop
+               Node_Id_Sets.Next (Iter, Node);
+               Ada.Strings.Unbounded.Append
+                 (Res, ", ");
+               Ada.Strings.Unbounded.Append
+                 (Res, Node_Id_Image (Node));
+            end loop;
+            Ada.Strings.Unbounded.Append (Res, "}");
+         end if;
 
          Node_Id_Sets.Destroy (Set);
-         return "{""not"", ""yet"", implemented""}";
+
+         return Ada.Strings.Unbounded.To_String (Res);
       end Convert_Node_Id_Set_To_String;
 
    begin
