@@ -9,7 +9,16 @@
   <setting name="Schlaue_Ente" value="Daniel Duesentrieb" />
   <setting name="Arme_Ente" value="Donald Duck" />
 			
-  <!-- Required Config Settings -->
+  <!-- Required Config Settings -->  
+  
+  <!-- This must be an absolute path -->
+  <setting name="Resources_Directory" value="./" />
+  
+  <!-- Relative Paths in all config files are regarded as relative -->
+  <!-- towards the "Resources_Directory" if you change the standard
+  <!-- Resource dirctory in a user defined config file then 
+  <!-- all relative paths in the standard config file of giant will
+  <!-- also be regarded as realtive towards this path -->
   <setting name="Icon_For_Node_Annotations" value="./test_bild.xpm" />
   
   <setting name="Actual_Selection_Highlight_Color" value="RGB:AA/AA/AA" />

@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.3 $
+-- $RCSfile: giant-config_settings.ads,v $, $Revision: 1.4 $
 -- $Author: schwiemn $
--- $Date: 2003/06/20 19:10:28 $
+-- $Date: 2003/06/20 20:33:57 $
 --
 -- -----
 -- This package holds the functionality needed to access and handle
@@ -263,8 +263,7 @@ package Giant.Config_Settings is
    --     value if the setting "Name_Of_Setting" is not an integer value.
    function Get_Setting_As_Integer (Name : in String)
      return Integer;
-     
-     
+                      
    ---------------------------------------------------------------------------
    -- Adds a new setting or changes the value of an existing setting.
    --
@@ -278,8 +277,7 @@ package Giant.Config_Settings is
    --     raised if this subprogram is called before "
    --     Initialize_Config_Settings".
    procedure Set_Setting (Name : in String; Value : in String);
-   
-   
+      
    ---------------------------------------------------------------------------
    -- Adds a new setting or changes the value of an existing setting.
    --
@@ -294,8 +292,7 @@ package Giant.Config_Settings is
    --     raised if this subprogram is called before "
    --     Initialize_Config_Settings".
    procedure Set_Setting (Name : in String; Value : in Integer);
-   
-   
+      
    ---------------------------------------------------------------------------
    -- Writes all config settings that have been read from "User_Config_File"
    -- or that have been added/changed by ("Set_Setting") into

@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config.ads,v $, $Revision: 1.6 $
+-- $RCSfile: giant-config.ads,v $, $Revision: 1.7 $
 -- $Author: schwiemn $
--- $Date: 2003/06/20 19:33:23 $
+-- $Date: 2003/06/20 20:33:57 $
 --
 -- -----
 -- This package holds the functionality needed to access the
@@ -133,13 +133,27 @@ package Giant.Config is
    -- Access to processed config data.
    ---------------------------------------------------------------------------
    
+   ---------------------------------------------------------------------------
+   -- Raised if the Resource Directory Could not be calculated.
+   Invalid_Resource_Directory_Exception : exception;
    
-   function Get_Resources_Directory return String;
+   ---------------------------------------------------------------------------
+   -- Returns an absolute path for the resources directory. If the
+   --   corresponding setting in  Giant.Config_Settings holds an
+   --   realtive path (that is NOT RECOMMENDED) this path will
+   --   be expanded using "Root_Path".
+   --
+   -- Returns:
+   --   An absolute path that ends with a directory separator
+   --   (e.g. "/home/donald/resources/").
 
-
-
-
-
+   -- Raises:
+   --   Config_ADO_Not_Initialized_Exception - raised if this subprogram
+   --     is called before "Initialize_Config_Data"
+   --   Invalid_Resource_Directory_Exception - raised if
+   --     if (e.g. due to an not correct path entry in the config file) 
+   --     such a path could not be calculated.
+   function Get_Resources_Directory (Root_Path : in String) return String;
 
    ---------------------------------------------------------------------------
    -- C
@@ -232,6 +246,10 @@ package Giant.Config is
    --   this ADO, you will have a dangling pointer.
    --
    --   You MAY NOT use the returned pointer for DEALLOCATION!
+   --
+   --   A relative path describing the position of the file (read from
+   --   the config files) will be expanded using the 
+   --   RESOURCES_DIRECTORY.
    --
    -- Returns:
    --   A pointer to an array of character pointers.

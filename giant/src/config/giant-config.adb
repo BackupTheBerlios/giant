@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config.adb,v $, $Revision: 1.4 $
+-- $RCSfile: giant-config.adb,v $, $Revision: 1.5 $
 -- $Author: schwiemn $
--- $Date: 2003/06/20 19:33:23 $
+-- $Date: 2003/06/20 20:33:57 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -126,11 +126,11 @@ package body Giant.Config is
    ---------------------------------------------------------------------------
 
    ---------------------------------------------------------------------------
-   function Get_Resources_Directory return String is
+   function Get_Resources_Directory (Root_Path : in String) return String is
    
    begin 
    
-   -- TODO
+   raise Invalid_Resource_Directory_Exception;
    return "!";
    
    end Get_Resources_Directory;
