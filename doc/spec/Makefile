@@ -1,9 +1,19 @@
-include ../Makefile.incl
+default: view
 
-view: full
-	xpdf spec.pdf
+include ../Makefile.incl
+include Makefile.pics
+
+ifeq ($(shell test -r ../Makefile.local && echo "true"),true)
+  include ../Makefile.local
+endif
+
+view: ps
+	gv spec.ps
+
+ps: base spec.ps
+pdf: base spec.pdf
 
 step1: *.tex
-	rm -f spec.ps spec.dvi spec.pdf
+	rm -f spec.dvi spec.ps spec.pdf
 
-full: step1 spec.ind spec.pdf
+base: step1 pics spec.ind
