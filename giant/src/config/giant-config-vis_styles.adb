@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.17 $
+-- $RCSfile: giant-config-vis_styles.adb,v $, $Revision: 1.18 $
 -- $Author: schwiemn $
--- $Date: 2003/07/10 15:03:47 $
+-- $Date: 2003/07/10 21:11:04 $
 --
 with Ada.Unchecked_Deallocation;
 
@@ -1066,6 +1066,7 @@ package body Giant.Config.Vis_Styles is
 
          -- ignore not readable xml files
          begin
+        
             XML_File_Access.Load_XML_File_Validated
               (Ada.Strings.Unbounded.To_String (A_Vis_Style_File_Name),
                A_Vis_Style_Tree_Reader,
@@ -1077,7 +1078,7 @@ package body Giant.Config.Vis_Styles is
                  A_Vis_Style_XML_Document) = False) then
 
                Tree_Readers.Free(A_Vis_Style_Tree_Reader);
-               Ignore_File := True;
+               Ignore_File := True;              
             else
 
                -- calculate name
@@ -1095,7 +1096,6 @@ package body Giant.Config.Vis_Styles is
             when XML_File_Access.XML_File_Parse_Fatal_Error_Exception =>
                Ignore_File := True;
          end;
-
 
          -- Insert Vis_Style into internal data structure
          ---------------------------------------------------------------------

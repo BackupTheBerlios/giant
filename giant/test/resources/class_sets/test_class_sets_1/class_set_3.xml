@@ -7,21 +7,15 @@
   <!-- All node classes being a member of the class set -->
   <associated_node_classes>
   
-    <node_class node_class_name="Donald" />
-    <node_class node_class_name="Dagobert" />
-    <node_class node_class_name="Daisy" />
+    <node_class node_class_name="SymNode" />
+    <node_class node_class_name="OC_Entity" />
 
   </associated_node_classes>
   
   <!-- All edge classes being a member of the class set -->
   <associated_edge_classes>
  
-    <edge_class start_node_class="Dagobert" attribute_name="Vermoegen" />	
-    <edge_class start_node_class="Donald" attribute_name="*" />	
-    <edge_class start_node_class="*" attribute_name="Anzahl_Federn" />	
-
   </associated_edge_classes>
  
-
 </giant_class_set_file>
 
