@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-matrix_layouts.ads,v $, $Revision: 1.4 $
+--  $RCSfile: giant-matrix_layouts.ads,v $, $Revision: 1.5 $
 --  $Author: koppor $
---  $Date: 2003/07/03 01:14:31 $
+--  $Date: 2003/07/03 15:06:58 $
 --
 ------------------------------------------------------------------------------
 --
@@ -30,6 +30,7 @@
 --
 
 with Giant.Evolutions;
+with Giant.Graph_Lib;
 with Giant.Graph_Lib.Selections;
 with Giant.Graph_Widgets;
 with Giant.Vis;
