@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.16 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.17 $
 -- $Author: schwiemn $
--- $Date: 2003/06/27 08:51:47 $
+-- $Date: 2003/06/27 09:27:31 $
 --
 --
 with Ada.Streams;
@@ -523,7 +523,10 @@ null;
          loop            
             exit when not (Pos <= (Source'Last));
                
-            if Source (Pos .. (Pos + Needle'Length - 1)) = Needle then         
+            if (Pos <= Source'Last - Needle'Length + 1)            
+              and then (Source (Pos .. (Pos + Needle'Length - 1)) = Needle) 
+              then         
+               
                -- Substitution
                Ada.Strings.Unbounded.Append (Result, Fork);
                Pos := Pos + Needle'Length;                                         

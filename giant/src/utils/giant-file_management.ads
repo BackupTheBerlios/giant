@@ -20,10 +20,10 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.ads,v $, $Revision: 1.12 $
+-- $RCSfile: giant-file_management.ads,v $, $Revision: 1.13 $
 
 -- $Author: schwiemn $
--- $Date: 2003/06/26 15:06:07 $
+-- $Date: 2003/06/27 09:27:31 $
 --
 -- -----------------------------------------------
 --
@@ -290,6 +290,30 @@ package Giant.File_Management is
    --
    function Get_User_Config_Path
      return String;
+
+   ---------------------------------------------------------------------------
+   -- Replaces Substrings in a String.
+   -- Source is evaluated from Left to right, everytime Needle is found
+   -- in Source it will be replaced by Fork.
+   --
+   --Example Source => "*A* is *A* ..."
+   --        Needle => "*A*"
+   --        Fork   => "Life"
+   --    --> Result : "Life is Life ..."     
+   -- 
+   -- Paramters:
+   --   Source - The String where Needle should be replaced.
+   --   Needle - The Substring in Fork that should be replaced.
+   --   Fork   - The String with that Needle should be replaced.
+   -- Returns:
+   --   A new String
+   function Substitute_Sub_Strings
+     (Source : in String;
+      Needle : in String;
+      Fork   : in String) 
+     return String;              
+            
+
 
    procedure Execute_External_Editor
      (Command  : in String;
