@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.3 $
-%  $Date: 2003/08/01 15:31:38 $
+%  $RCSfile: config.tex,v $, $Revision: 1.4 $
+%  $Date: 2003/08/01 18:09:05 $
 %  $Author: birdy $
 %
 %  Description:
@@ -175,14 +175,6 @@ Hier nun ein Beispiel-Configfile (global\_config.xml) :
           Hervorheben von IML-Teilgraphen.
   \end {enumerate}
 
-  \subsection {Editor zur Anzeige des Quellcodes}
-  \label{Konfig Editor zur Anzeige des Quellcodes}
-  \index{Editoren!Anzeige des Quellcodes}
-
-  Der Benutzer legt in der globalen Konfigurationsdatei fest, 
-  mit welchem Editor der zu IML-Knoten korrespondierende
-  Quellcode automatisch angezeigt wird (unterstützt werden Emacs und vi). 
-
 \section {Visualisierungsstile} \label{Config Visualisierungsstile}
 \index{Visualisierungsstile!Konfiguration}
 \index{Konfiguration!Visualisierungsstile}
@@ -246,16 +238,6 @@ Für die Visualisierungsstile gelten die folgenden Konventionen:
   \subsection {Einstellungen innerhalb des Visualisierungsstils}
     \begin{enumerate}
       \item Die Hintergrundfarbe im Anzeigefenster.
-
-     % \item Wann Kanten im sichtbaren Anzeigeinhalt angezeigt werden sollen.
- 
-     %  \subitem Nur falls Start- und Zielknoten ebenfalls im sichtbaren 
-     %           Anzeigeinhalt.
-     %  \subitem Auch anzeigen falls nur Startknoten im sichtbaren 
-     %           Anzeigeinhalt.
-     %  \subitem Auch anzeigen falls nur Zielknoten im sichtbaren Anzeigeinhalt.
-     %  \subitem Auch anzeigen falls weder Start- und Zielknoten im sichtbaren 
-     %           Anzeigeinhalt. 
     \end{enumerate}
 
 
@@ -321,6 +303,18 @@ Für die Visualisierungsstile gelten die folgenden Konventionen:
           vornehmen -- also \gq{*.Attributname}.
  
   \end{enumerate}
+
+\clearpage
+
+ \subsection {Config-Dateien für Visualisierungsstile}
+
+Jeder Visualisierungsstil wird durch eine XML-Datei beschrieben.
+Der Aufbau der XML-Dateien ist wie folgt durch die Datei
+giant\_vis\_style\_file.dtd spezifiziert:
+
+\verbatiminput{giant_vis_style_file.dtd}
+
+
 
   
 \section {Skript-Dateien} 
