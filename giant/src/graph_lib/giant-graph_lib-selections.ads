@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.1 $
---  $Author: koppor $
---  $Date: 2003/05/28 12:17:02 $
+--  $RCSfile: giant-graph_lib-selections.ads,v $, $Revision: 1.2 $
+--  $Author: schwiemn $
+--  $Date: 2003/06/04 13:43:03 $
 --
 ------------------------------------------------------------------------------
 --
@@ -51,7 +51,7 @@ package Giant.Graph_Lib.Selections is
       return Selection;
 
    ---------------------------------------------------------------------------
-   --  Removes given Selection from memory
+   --  Removes the given Selection from memory
    procedure Destroy
       (Selection_To_Destroy : in out Selection);
 

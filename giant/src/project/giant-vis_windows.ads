@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.3 $
+-- $RCSfile: giant-vis_windows.ads,v $, $Revision: 1.4 $
 -- $Author: schwiemn $
--- $Date: 2003/06/03 17:18:38 $
+-- $Date: 2003/06/04 13:43:03 $
 --
 -- ----------------
 -- This package realizes a container that administrates the components
@@ -45,6 +45,7 @@
 -- a visualisation window.
 --
 with String_Lists; -- from Bauhaus IML "Reuse.src"
+with Bauhaus_IO;   -- from Bauhaus IML "Reuse.src" 
 
 with Giant.Valid_Names;              -- from GIANT
 with Giant.Graph_Lib.Selections;     -- from GIANT
@@ -53,95 +54,110 @@ with Giant.Graph_Lib.Selection_Sets; -- from GIANT
 
 package Giant.Vis_Window_Management is
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!
    -- Dummy
    type Graph_Widget is Integer;
 
-   --------------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    -- The ADT offered by this package.
    -- A Pointer to a data object that describes a visual window
    type Visual_Window_Data_Access is private;
 
-   --------------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    -- This type describes the colors that may be used to highlight all
    -- selections except the current selection.
    type Selection_Highlight_Status is (None, Color_1, Color_2, Color_3);
 
-   --------------------------------------------------------------------------
+  ----------------------------------------------------------------------------
    -- This exception is raised if a not initialized instance of the
    -- ADT "Visual_Window_Data_Access" is passed as parameter to one
    -- of the subprograms in this package.
    Vis_Window_Data_Access_Not_Initialized_Exception : exception;
 
 
-   --------------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    -- A
    -- Initialisation, Finalisation and Persistence
-   --------------------------------------------------------------------------
+   ---------------------------------------------------------------------------
 
-   --------------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    -- This subprogram initializes the ADT Vis_Window_Data_Access
    -- by creating a new empty instance of the data model for
    -- visualisation windows.
    --
-   -- There is one empty standard selection, this is also
-   -- the current selection.
-   -- The name of the visualisation window is given as parameter.
+   -- An empty standard selection will be created too, this will also 
+   -- become the current selection.
    --
    -- Parameters:
    --   Vis_Window_Name - The name of the visualisation window.
    -- Returns:
    --   A pointer that points to a new data object describing a
    --   visualisation window
-   function Create_New_Empty_Vis_Window
-     (Vis_Window_Name : in Valid_Names.Standard_Name)
+   function Create_New
+     (Vis_Window_Name     : in Valid_Names.Standard_Name)
      return Vis_Window_Data_Access;
 
-   --------------------------------------------------------------------------
+   ---------------------------------------------------------------------------
    -- This subprogram initializes the ADT by creating a new instance
    -- based on the data read from the stream.
+   --
+   -- Uses platform independent streams from Bauhaus_IO;                               
    --
    -- Parameters:
    --   Stream - the stream where the data is read.
    --   Item - the new Instance of the ADT.
-   procedure Vis_Window_Data_Access'Read
-     (Stream : access Root_Stream_Type'Class;
-      Item   : out    Vis_Window_Data_Access);
-
-   -------------------------------------------------------------------------
-   -- This method writes the Container including all its components
+   procedure Vis_Window_Data_Access_Read
+     (Stream : in  Bauhaus_IO.In_Stream_Type;
+      Item   : out Vis_Window_Data_Access);
+      
+   ---------------------------------------------------------------------------
+   -- This subprogram writes the Container including all its components
    -- into a stream.
+   --
+   -- Uses platform independent streams from Bauhaus_IO;   
    --
    -- Parameters:
    --   Stream - the stream into that the data should be written.
-   --   Item - The Instance of the ADT that should be written into
+   --   Item - the Instance of the ADT that should be written into
    --     a stream.
    -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized - Raised if a not
+   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
-   procedure Vis_Window_Data_Access'Write
-     (Stream : access Root_Stream_Type'Class;
-      Item   : in     Vis_Window_Data_Access);
-
-   -------------------------------------------------------------------------
-   -- Deallocates the ADT.
+   procedure Vis_Window_Data_Access_Write
+     (Stream : in Bauhaus_IO.In_Stream_Type;
+      Item   : in Vis_Window_Data_Access);
+      
+   ---------------------------------------------------------------------------
+   --  Deallocates the ADT.
    --
-   -- Note:
-   --   This procedure performs a DEEP DEALLOCATIOMN,
-   --   i.e. all selections that belong to
-   --   that visualisation window are deallocated too.
-   --   As Selections are realized as pointers you should
-   --   beware of dangling pointers.
+   --  Note:
+   --    This procedure performs a DEEP DEALLOCATION,
+   --    i.e. all selections that belong to
+   --    that visualisation window are deallocated too.
+   --    As Selections are realized as pointers you should
+   --    beware of dangling pointers.
    --
-   -- Parameters:
-   --   Vis_Window - the instance of the ADT that should be deallocated.
-   -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized - Raised if a not
-   --     initialized instance of "Vis_Window_Data_Access" is passed
-   --     as parameter.
+   --    The Graph_Widget (a part of the ADT) will only be 
+   --    deallocated (automatically by GTK) if its
+   --    Reference Counter is set to 1 before this subprogram is
+   --    executed.
+   --
+   --  Parameters:
+   --    Vis_Window - the instance of the ADT that should be deallocated.
+   --  Raises:
+   --    Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
+   --      initialized instance of "Vis_Window_Data_Access" is passed
+   --      as parameter.
    procedure Deallocate_Vis_Window_Deep
-     (Vis_Window : in out Visual_Window_Accsess);
-
+     (Vis_Window : in out Visual_Window_Access);
+     
+     
+   ---------------------------------------------------------------------------
+   -- B
+   -- General access on Visual_Window_Access
+   ---------------------------------------------------------------------------     
+     
    ---------------------------------------------------------------------------
    -- Returns the name of a visualisation window.
    --
@@ -150,9 +166,8 @@ package Giant.Vis_Window_Management is
    --     be returned.
    -- Returns:
    --   The name of the visualisation window as a unbounded string.
-   --
    -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized - Raised if a not
+   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
    function Get_Vis_Window_Name
@@ -178,7 +193,7 @@ package Giant.Vis_Window_Management is
    -- Returns:
    --   True, if the two instances are equal; False, otherwise.
    -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized - Raised if a not
+   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
    function Equal
@@ -203,7 +218,7 @@ package Giant.Vis_Window_Management is
    -- Returns:
    --   True, if Left < Right; False, otherwise (Left >= Right);
    -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized - Raised if a not
+   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
    function Less_Than
@@ -213,7 +228,7 @@ package Giant.Vis_Window_Management is
 
 
    ---------------------------------------------------------------------------
-   -- B
+   -- C
    -- Management of the Selections that belong to a visualisation window
    ---------------------------------------------------------------------------
 
@@ -268,7 +283,7 @@ package Giant.Vis_Window_Management is
      return Boolean;
 
    ---------------------------------------------------------------------------
-   -- This function returns a selection.
+   -- This function returns a selection. 
    --
    -- Note
    --   As only a pointer to a "selection data object" is returned
@@ -286,7 +301,7 @@ package Giant.Vis_Window_Management is
    -- Returns:
    --   The selection with the given name.
    -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized - Raised if a not
+   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
    --   Selection_With_Passed_Name_Not_Found_Exception - Raise if
@@ -308,7 +323,7 @@ package Giant.Vis_Window_Management is
    -- Returns:
    --   A list holding the names of all known selctions.
    -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized - Raised if a not
+   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
    function Get_All_Selection_Names_Sorted
@@ -324,7 +339,7 @@ package Giant.Vis_Window_Management is
    -- Returns:
    --   A list about all selections.
    -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized - Raised if a not
+   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
    --   Selection_Is_Already_Part_Of_Window_Exception - Raised if there
@@ -346,7 +361,7 @@ package Giant.Vis_Window_Management is
    --   Vis_Window - The "model" for a visualisation window.
    --   Selection  - The selection that should be removed.
    -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized - Raised if a not
+   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
    --   Selection_With_Passed_Name_Not_Found_Exception - Raise if
@@ -360,7 +375,7 @@ package Giant.Vis_Window_Management is
        Selection  : in Graph_Lib.Selections.Selection_Access);
 
    ---------------------------------------------------------------------------
-   -- Returns the name of the current selection.
+   -- Returns the current selection.
    -- There is always an current selection.
    --
    -- Parameters:
@@ -369,7 +384,7 @@ package Giant.Vis_Window_Management is
    -- Returns:
    --   The current seclection.
    -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized - Raised if a not
+   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
    function Get_Current_Selection
@@ -385,7 +400,7 @@ package Giant.Vis_Window_Management is
    --     selection should be changed.
    --   Selection  - The selection that should be the new current selection.
    -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized - Raised if a not
+   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
    --   Selection_Not_Found_Exception - Raised if the selection "Selection"
@@ -404,7 +419,7 @@ package Giant.Vis_Window_Management is
    -- Returns:
    --   The standard selection.
    -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized - Raised if a not
+   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
    function Get_Standard_Selection
@@ -421,7 +436,7 @@ package Giant.Vis_Window_Management is
    -- Returns:
    --   The highlight status.
    -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized - Raised if a not
+   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
    --   Selection_Not_Found_Exceptionv - Raised if the passed selection
@@ -443,7 +458,7 @@ package Giant.Vis_Window_Management is
    -- Returns: 
    --   True, if the "Highlight-Status" may be changed; False, otherwise.
    -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized - Raised if a not
+   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
    --   Selection_Not_Found_Exceptionv - Raised if the passed selection
@@ -462,7 +477,7 @@ package Giant.Vis_Window_Management is
    --     changed.
    --   New_Highlight_Status - The new Highlight-Status for the "Selection".
    -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized - Raised if a not
+   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
    --   Selection_Not_Found_Exceptionv - Raised if the passed selection
@@ -477,7 +492,7 @@ package Giant.Vis_Window_Management is
 
 
    --------------------------------------------------------------------------
-   -- C
+   -- D
    -- Filters
    --------------------------------------------------------------------------
    
@@ -490,7 +505,7 @@ package Giant.Vis_Window_Management is
    -- Returns:
    --   True, if the selection may be faded out; False, otherwise.
    -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized - Raised if a not
+   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
    --   Selection_Not_Found_Exceptionv - Raised if the passed selection
@@ -509,7 +524,7 @@ package Giant.Vis_Window_Management is
    -- Returns:
    --   True, if the selection is faded out; False, otherwise. 
    -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized - Raised if a not
+   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
    --   Selection_Not_Found_Exception - Raised if the passed selection
@@ -526,7 +541,7 @@ package Giant.Vis_Window_Management is
    --   Vis_Window - The "model" for a visualisation window.
    --   Selection - A selection.
    -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized - Raised if a not
+   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
    --   Selection_Not_Found_Exception - Raised if the passed selection
@@ -544,7 +559,7 @@ package Giant.Vis_Window_Management is
    --   Vis_Window - The "model" for a visualisation window.
    --   Selection - A selection.
    -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized - Raised if a not
+   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
    --   Selection_Not_Found_Exception - Raised if the passed selection
@@ -557,7 +572,7 @@ package Giant.Vis_Window_Management is
 
 
    --------------------------------------------------------------------------
-   -- D
+   -- E
    -- Pin Management
    -- Provides functionality for the managent of pins.
    --------------------------------------------------------------------------
@@ -579,7 +594,7 @@ package Giant.Vis_Window_Management is
    -- Returns:
    --   True, if the pin exists; False, otherwise.
    -- Raises:
-   --   Vis_Window_Data_Access_Not_Initialized - Raised if a not
+   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
    function Does_Pin_Exist
@@ -597,7 +612,7 @@ package Giant.Vis_Window_Management is
    --   The Data for the position of the visual window content
    --   stored in a pin.
    -- Raises
-   --   Vis_Window_Data_Access_Not_Initialized - Raised if a not
+   --   Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Vis_Window_Data_Access" is passed
    --     as parameter.
    --   Pin_With_Passed_Name_Not_Found_Exception - Raised if the
@@ -612,13 +627,17 @@ package Giant.Vis_Window_Management is
    Vektortyp von Steffen K.
      
    --------------------------------------------------------------------------
-   -- Returns all Pins of a visualisation window.
+   --  Returns all Pins of a visualisation window.
    --
-   -- Parameters:
-   --   Vis_Window - The "model" for a visualisation window.
-   -- Returns:
-   --   The names of all pins sorted in ascending alphabetical
-   --   order.
+   --  Parameters:
+   --    Vis_Window - The "model" for a visualisation window.
+   --  Returns:
+   --    The names of all pins sorted in ascending alphabetical
+   --    order.
+   --  Raises:
+   --    Vis_Window_Data_Access_Not_Initialized_Exception - Raised if a not
+   --     initialized instance of "Vis_Window_Data_Access" is passed
+   --     as parameter.
    function Get_All_Pin_Names_Sorted
      (Vis_Window : in Visual_Window_Data_Access)
      return String_Lists.List;
@@ -662,7 +681,7 @@ package Giant.Vis_Window_Management is
 
 
    ---------------------------------------------------------------------------
-   -- E
+   -- F
    -- Visualisation Styles
    --
    -- Note a visualisation window knows only the name of its visualisation
@@ -719,10 +738,8 @@ private
    -- Management of the pins of a visualisation window.
    ---------------------------------------------------------------------------
    type Pin is record
-     Pin_Name : String;
-     Pin_Data : Vector;  --!!!!!!!!!!!!!!!!!!!!!     
-   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   Vektortyp von Steffen K.
+     Pin_Name : Ada.Strings.Unbounded_String;
+     Pin_Data : Vis.Logic.Vector_2d;
    end record
    
    
@@ -730,7 +747,7 @@ private
    
    Pin_Less_Than (Left : in Pin; Right : in Pin) return Boolean;
    
-   package pin_sets is new
+   package Pin_Sets is new
    Ordered_Sets (Item_Type => Pin;
                  "="       => Pin_Equal;
                  "<"       => Pin_Less_Than);
@@ -740,7 +757,7 @@ private
    ---------------------------------------------------------------------------
    
    type Selection_Data_Elemet is record
-     Selection : Graph_Lib.Selections.Selection_Access;
+     The_Selection : Graph_Lib.Selections.Selection;
      Selection_Highlight_Status : Highlight_Status;
      Is_Faded_Out : boolean;
      Is_Current_Selection : boolean;
@@ -757,6 +774,8 @@ private
       Right : in Selection_Data_Elemet)
      return Boolean;
 
+
+!!!!!!!!!!!!!!!!!
    -- needed for persistence
    procedure Selection_Data_Elemet'Write
      (Stream    : access Root_Stream_Type'Class;
@@ -768,13 +787,18 @@ private
       Selection : out Selection_Data_Elemet);
 
 
+
    package Selection_Data_Sets is new Ordered_Sets 
      (Item_Type => Selection_Data_Elemet,
       "="       => Selection_Data_Equal,
       "<"       => Selection_Data_Less_Than,
       Write     => Selection_Data_Elemet'Write,
       Read      => Selection_Data_Elemet'Read);
-
+      
+      
+   !!!!!!!!!!!!!!! STREAMING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+   generische Pakete instantiiren
+   
 
    ---------------------------------------------------------------------------
    -- The data model for a visualisation window
@@ -785,23 +809,24 @@ private
    type Visual_Window_Accsess is access Visual_Window_Element;
 
    type Visual_Window_Element is record
-   
-      
-      Vis_Window_Name        : Valid_Names.Standard_Name;
+        
+      Vis_Window_Name        : Ada.Strings.Unbounded.Unbounded_String;
 
-      The_Graph_Widget       : Graph_Widget;
+      The_Graph_Widget       : Graph_Widgets.Graph_Widget;
 
       Set_Of_All_Pins        : Pin_Sets.Set;
 
-      -- Aliases - also in the set All_Managed_Selections
-      Standard_Selection     : Selection_Data_Elemet;
+      -- The name of the "standard selection"
+      -- (See GIANT Specification 3.4.2. Standard-Selektion)
+      Standard_Selection     : Ada.Strings.Unbounded.Unbounded_String;
 
-      -- Aliases - also in the set All_Managed_Selections
-      Current_Selection      : Selection_Data_Elemet;
-
+      -- The name of the "current selection"
+      -- (See GIANT Specification 3.4.3. Aktuelle Selektion)
+      Current_Selection      : Ada.Strings.Unbounded.Unbounded_String;
+      
       -- A ordered set of all selections (including extra
       -- management data) that belong to this
-      -- visulalisation window;
+      -- visulalisation window.
       All_Managed_Selections : Selection_Data_Sets.Set;
 
    end record;
