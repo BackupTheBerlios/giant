@@ -20,25 +20,61 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant_test-file_management.adb,v $, $Revision: 1.1 $
+-- $RCSfile: giant_test-file_management.adb,v $, $Revision: 1.2 $
 -- $Author: schwiemn $
--- $Date: 2003/06/13 08:52:37 $
+-- $Date: 2003/06/13 17:12:55 $
 --
 -- ------
--- Used to test the package Giant.Config
+-- Used to test the package Giant.File_Management
 --
-with Giant.Config;
-
 with Ada.Text_IO;
 
+with GNAT.Directory_Operations;
 
-procedure Giant_Test.Config is
+with Giant.File_Management;
+
+procedure Giant_Test.File_Management is
 
 begin
 
    -- Phase 1
    -- Initialize the Config ADO
-   Ada.Text_IO.Put_Line (">>>>> Phase 1: Initializing the Config ADO");
+   Ada.Text_IO.New_Line;
+   Ada.Text_IO.Put_Line (">>>>>>>> PHASE 1: Teste Subprograms");
+         
+   --------------------
+   Ada.Text_IO.New_Line;
+   Ada.Text_IO.Put_Line 
+     (">>>> Teste: procedure Set_Currunt_Working_Dir_To_Exec_Dir");
+      
+   Ada.Text_IO.Put_Line ("Result - Old working dir:");
+   Ada.Text_IO.Put_Line  (GNAT.Directory_Operations.Get_Current_Dir);   
+   Giant.File_Management.Set_Currunt_Working_Dir_To_Exec_Dir; 
+   Ada.Text_IO.Put_Line ("Result - New working dir:");
+   Ada.Text_IO.Put_Line  (GNAT.Directory_Operations.Get_Current_Dir); 
+   
+   --------------------
+   Ada.Text_IO.New_Line;   
+   Ada.Text_IO.Put_Line 
+     (">>>> Teste: function Get_Absolute_Path_To_Directory_From_Relative");
+     
+   Ada.Text_IO.Put_Line ("Result - Abs Dir Path:");
+   Ada.Text_IO.Put_Line 
+     (Giant.File_Management.Get_Absolute_Path_To_Directory_From_Relative
+       (GNAT.Directory_Operations.Get_Current_Dir, 
+       "file_management_test_dir"));
+   
+   --------------------
+   Ada.Text_IO.New_Line;
+   Ada.Text_IO.Put_Line 
+     (">>>> Teste: function Get_Absolute_Path_To_File_From_Relative");
+     
+   Ada.Text_IO.Put_Line ("Result - Abs File Path:");
+   Ada.Text_IO.Put_Line 
+     (Giant.File_Management.Get_Absolute_Path_To_File_From_Relative
+       (GNAT.Directory_Operations.Get_Current_Dir, 
+       "file_management_test_dir"));
+     
+     
 
-
-end Giant_Test.Config;
+end Giant_Test.File_Management;

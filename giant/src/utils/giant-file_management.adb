@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.adb,v $, $Revision: 1.2 $
+-- $RCSfile: giant-file_management.adb,v $, $Revision: 1.3 $
 -- $Author: schwiemn $
--- $Date: 2003/06/11 16:46:18 $
+-- $Date: 2003/06/13 17:12:55 $
 --
 package body Giant.File_Management is
    ---------------------------------------------------------------------------
@@ -212,7 +212,14 @@ package body Giant.File_Management is
         (ADA.Text_IO.Name(ADA_Text_IO_File));
 
       ADA.Text_IO.Close(ADA_Text_IO_File);
-
+                  
+      -- check for a regular file
+      if (GNAT.OS_Lib.Is_Regular_File 
+        (Ada.Strings.Unbounded.To_String (Abs_Path)) = False) then
+        
+         raise File_Does_Not_Exist_Exception;
+      end if;
+      
       -- switch back to old
       -- "working directory for the execution environment"
       GNAT.Directory_Operations.Change_Dir (Old_Exec_Dir);
@@ -224,6 +231,31 @@ package body Giant.File_Management is
          GNAT.Directory_Operations.Change_Dir (Old_Exec_Dir);
          raise File_Does_Not_Exist_Exception;
    end Get_Absolute_Path_To_File_From_Relative;
+      
+   ---------------------------------------------------------------------------
+   function Get_Absolute_Path_To_Directory_From_Relative
+     (Start_Dir    : in String;
+      Rel_Dir_Path : in String)
+     return String is
+
+      Old_Exec_Dir : String := GNAT.Directory_Operations.Get_Current_Dir;
+      Abs_Dir_Path : Ada.Strings.Unbounded.Unbounded_String;
+   begin
+  
+      GNAT.Directory_Operations.Change_Dir (Start_Dir);
+      GNAT.Directory_Operations.Change_Dir (Rel_Dir_Path); 
+            
+      -- should return an absolute path
+      Abs_Dir_Path := Ada.Strings.Unbounded.To_Unbounded_String
+        (GNAT.Directory_Operations.Get_Current_Dir);    
+               
+      GNAT.Directory_Operations.Change_Dir (Old_Exec_Dir);
+            
+      return Ada.Strings.Unbounded.To_String (Abs_Dir_Path);
+   exception      
+      when GNAT.Directory_Operations.Directory_Error =>
+         raise Directory_Does_Not_Exist_Exception;
+   end Get_Absolute_Path_To_Directory_From_Relative;
 
    ---------------------------------------------------------------------------
    procedure Set_Currunt_Working_Dir_To_Exec_Dir is

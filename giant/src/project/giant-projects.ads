@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-projects.ads,v $, $Revision: 1.7 $
+-- $RCSfile: giant-projects.ads,v $, $Revision: 1.8 $
 -- $Author: schwiemn $
--- $Date: 2003/06/12 18:01:41 $
+-- $Date: 2003/06/13 17:12:55 $
 --
 -- --------------------
 -- This package provides an ADT which acts as a container for all
@@ -199,7 +199,7 @@ package Giant.Projects is
    -- Initializes a project.
    -- A new empty project is created.
    --
-   -- If necessary the project directory is created.
+   -- The project directory must have been created before.
    --
    -- Parameters:
    --   Project_Name - The name of a project.
@@ -268,6 +268,8 @@ package Giant.Projects is
    -- the according management files for visualisations windows,
    -- subgraphs and node-annotations).
    --
+   -- The project directory must have been created before.
+   --
    -- After the execution of this method the state of the project (loaded
    -- into the main memory) exactly corresponds to the state of
    -- the new project files.
@@ -275,12 +277,14 @@ package Giant.Projects is
    -- The data is written into the new project files, the old project
    -- files stay unchanged.
    --
+   -- All management files for the project will be placed in the
+   -- project directory "Project_Directory". This does not affect the
+   -- file holding the iml subgraph.
+   --
    -- The project directory of the instance of the ADT "Project_Access"
    -- is also changed, so the call of any subprogram changing the
    -- project files only changes the new project files in the new project
    -- directory.
-   --
-   -- If necessarry the new project directory is created.
    --
    -- Parameters:
    --   Project - The instance of the ADT that should be written into
@@ -291,6 +295,8 @@ package Giant.Projects is
    --   Project_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Project_Access" is passed as
    --     parameter;
+   --   Invalid_Project_Directory_Excpetion - Raised if the passed directory
+   --     "Project_Directory" is not found.
    --   Directory_Holds_Already_A_Project_File_Exception -- Raised if
    --     "Project_Directory" already holds a project file.
    procedure Store_Whole_Project_As
@@ -331,17 +337,9 @@ package Giant.Projects is
 
 
    ---------------------------------------------------------------------------
-   -- A.1
-   -- The Bauhaus IML Graph
-   ---------------------------------------------------------------------------
-
-
-
-
-   ---------------------------------------------------------------------------
    -- B
    -- Visualisation Windows
-   -- and  Storrage Status Management for Visualisation Windows
+   -- and Storage Status Management for Visualisation Windows
    --
    -- As a project is loaded due to avoid waste of main memory
    -- the data structures for the visualisation
@@ -364,7 +362,7 @@ package Giant.Projects is
    -- - There is no management file for the visualisation window.
    --
    -- - Heap is allocated for an Instance of
-   --   Vis_Window_Management.Visual_Window_Access
+   --   Vis_Windows.Visual_Window_Access
    --
    --
    -- 2. Memory_Loaded_File_Linked
@@ -374,7 +372,7 @@ package Giant.Projects is
    --   The Project (Project_Access) knows that file.
    --
    -- - Heap is allocated for an Instance of
-   --   Vis_Window_Management.Visual_Window_Access
+   --   Vis_Windows.Visual_Window_Access
    --
    --
    -- 3. File_Linked
@@ -385,7 +383,7 @@ package Giant.Projects is
    --   The Project (Project_Access) knows that file.
    --
    -- - NO Heap is allocated for an instance of
-   --   Vis_Window_Management.Visual_Window_Access. The project
+   --   Vis_Windows.Visual_Window_Access. The project
    --   only knows the name of the visualisation window and there
    --   to find the management file.
    --
@@ -430,7 +428,7 @@ package Giant.Projects is
    ---------------------------------------------------------------------------
    -- Returns the names of all visualisation windows of the project.
    --
-   -- The returned List is sorted in ascending alphabetical order
+   -- The returned List is not sorted in any way.
    -- If the project has no visualisation windows a empty list will
    -- be returned.
    --
@@ -442,7 +440,7 @@ package Giant.Projects is
    --   Project_Access_Not_Initialized_Exception - Raised if a not
    --     initialized instance of "Project_Access" is passed as
    --     parameter.
-   function Get_All_Visualisation_Window_Names_Sorted
+   function Get_All_Visualisation_Window_Names
       (Project : in Project_Access)
       return String_Lists.List;
 
@@ -511,7 +509,7 @@ package Giant.Projects is
    --   Vis_Window_Management.Vis_Window_Data_Access_
    --     Not_Initialized_Exception
    --     - Raised if "Vis_Window" is not initialized.
-   procedure Add_Visualisation_To_Project
+   procedure Add_Visualisation_Window
     (Project    : in Project_Access;
      Vis_Window : in Vis_Window_Management.Visual_Window_Access);
 
@@ -520,6 +518,9 @@ package Giant.Projects is
    -- the project file for that visualisation window.
    -- That should be done before the visualisation window is closed
    -- inside the project ("procedure Close_Window_In_Project").
+   --
+   -- If the visualisation window "Vis_Window_Name" is not loeaded into
+   -- the main memory nothing will happen.
    --
    -- State Changes:
    --   Memory_Loaded_File_Linked  --> Memory_Loaded_File_Linked
@@ -541,7 +542,7 @@ package Giant.Projects is
    ---------------------------------------------------------------------------
    -- Changes the status of a visualisation window model to "File_Linked".
    --
-   -- This method does not write the data used for a visualisation
+   -- This method does NOT write the data used for a visualisation
    -- window into the management file for that window.
    --
    -- Note !
@@ -593,14 +594,14 @@ package Giant.Projects is
    --
    --   Take care to avoid memory leaks as the corresponding instance
    --   of Vis_Window_Management.Visual_Window_Data_Access has
-   --   to be deallocated separately.
+   --   to be deallocated separately (if it exists).
    --
    --   After the call of this subprogram you may deallocate the cooreponding
    --   instance of the visualisation window
    --   ("Vis_Window_Management.Visual_Window_Data_Access")
    --   without affecting the internal datastructure of "Project".
    --
-   --
+   -- !!!
    -- If it exists the management file for this visualisation window
    -- is DELETED too.
    --
@@ -740,6 +741,9 @@ package Giant.Projects is
    --   deallocated).
    --   Beware of memory leacks!
    --
+   --   The management file for the subgraph is deallocated too 
+   --   (if one exists).
+   --
    --   After the call of that subprogram you may do what ever you want
    --   with the removed subgraph without affecting the internal
    --   datastructure of "Project".
@@ -839,7 +843,8 @@ private
      -- True if an management file for the iml subgraph already exists, False     
      -- otherwise.
      Is_File_Linked   : Boolean:
-     -- null string ("") if such a file does not exist yet
+     -- Null string ("") if such a file does not exist yet,
+     -- an absolute path if exists.
      Existing_Subgraph_File    : Ada.Strings.Unbounded.Unbounded_String;
    end record;
 
@@ -862,16 +867,18 @@ private
   type Project_Element is record
 
     -- The name of the project
+    -- Value not written to project xml file
     Project_Name     : Ada.Strings.Unbounded.Unbounded_String;
     
     -- The directory there all data (including management files
     -- for visualisation windows, Subgraphs and the
     -- management file for node annatations) describing the
     -- whole project has to be located.
-    Project_Dirctory : Ada.Strings.Unbounded.Unbounded_String;
+    -- Value not written to project xml file
+    Abs_Project_Dirctory : Ada.Strings.Unbounded.Unbounded_String;
 
     -- The file holding the Bauhaus IML-Graph
-    Bauhaus_IML_Graph_File : Ada.Strings.Unbounded.Unbounded_String;
+    Abs_Bauhaus_IML_Graph_File : Ada.Strings.Unbounded.Unbounded_String;
     
     -- Checksum of the Bauhaus IML Graph
     Bauhaus_IML_Graph_File_Checksum : Integer;

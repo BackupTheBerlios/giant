@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-file_management.ads,v $, $Revision: 1.1 $
+-- $RCSfile: giant-file_management.ads,v $, $Revision: 1.2 $
 -- $Author: schwiemn $
--- $Date: 2003/05/27 09:14:55 $
+-- $Date: 2003/06/13 17:12:55 $
 --
 -- -----------------------------------------------
 --
@@ -100,6 +100,10 @@ package Giant.File_Management is
    ---------------------------------------------------------------------------
    -- Raised if a file does not exist
    File_Does_Not_Exist_Exception : exception;
+   
+   ---------------------------------------------------------------------------
+   -- Raised if a directory does not exist
+   Directory_Does_Not_Exist_Exception : exception;
 
    ---------------------------------------------------------------------------
    -- Raised if an existing directory path could not be calculated out
@@ -162,6 +166,27 @@ package Giant.File_Management is
    function Get_Absolute_Path_To_File_From_Relative
      (Start_Dir             : in String;
       Relative_Path_To_File : in String)
+     return String;
+     
+   ---------------------------------------------------------------------------
+   --  Calculates an absolute path from an relative one for a directory.
+   --
+   --  Parameters:
+   --    Start_Dir - The directory there the relative path
+   --      "Rel_Dir_Path" begins. "Start_Dir" may also
+   --      be a relative path - then the absolute path will
+   --      be calculated based on the "current working directory
+   --      of the execution environment".
+   --    Rel_Dir_Path - A relative path to a directory. If an absolute path is
+   --      passed the path will not be changed.
+   --  Returns:
+   --    An absolute Path for the passed relative path.
+   --  Raises:
+   --    Directory_Does_Not_Exist_Exception - Raised if Start_Dir and
+   --      Rel_Dir_Path do not describe an existing directory. 
+   function Get_Absolute_Path_To_Directory_From_Relative
+     (Start_Dir    : in String;
+      Rel_Dir_Path : in String)
      return String;
 
    ---------------------------------------------------------------------------
