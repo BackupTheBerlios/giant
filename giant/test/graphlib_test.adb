@@ -18,11 +18,12 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  First Author: Steffen Pingel
+--  Based on framework of: Steffen Pingel
+--  First Author:          Oliver Kopp
 --
---  $RCSfile: graphlib_test.adb,v $, $Revision: 1.5 $
+--  $RCSfile: graphlib_test.adb,v $, $Revision: 1.6 $
 --  $Author: koppor $
---  $Date: 2003/06/27 16:51:08 $
+--  $Date: 2003/06/28 19:05:39 $
 --
 
 with AUnit.Test_Suites; use AUnit.Test_Suites;
