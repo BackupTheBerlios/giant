@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.6 $
---  $Author: squig $
---  $Date: 2003/07/07 12:10:32 $
+--  $RCSfile: giant-layout_factory.adb,v $, $Revision: 1.7 $
+--  $Author: koppor $
+--  $Date: 2003/07/08 10:15:43 $
 --
 
 with Ada.Exceptions;
@@ -31,13 +31,18 @@ with Ada.Strings.Unbounded;
 
 with Giant.Config;
 with Giant.Config.Class_Sets;
+with Giant.Logger;
 with Giant.Matrix_Layouts;
 with Giant.Tree_Layouts;
 with Giant.String_Split;
 
+with Lists;
 with String_Lists;
 
 package body Giant.Layout_Factory is
+
+   ---------------------------------------------------------------------------
+   package My_Logger is new Logger ("Layout_Factory");
 
    ---------------------------------------------------------------------------
    procedure Create
@@ -82,23 +87,86 @@ package body Giant.Layout_Factory is
          --
          --  Returns:
          --    A meta class set containing all class sets
+         --
+         --  Precondition:
+         --    Config.Class_Sets has to be initialized
+         --    (i.e. routines there don't raise
+         --     Class_Sets_ADO_Not_Initialized_Exception)
          function Convert_String_To_Meta_Class_Set
            (Data : in String)
            return Config.Class_Sets.Meta_Class_Set_Access
          is
-            Class_Sets_List : String_Lists.List;
+
+            ------------------------------------------------------------------
+            package Class_Sets_Lists is new
+              Lists (ItemType => Config.Class_Sets.Class_Set_Access);
+
+            ------------------------------------------------------------------
+            function Generate_Meta_Class_Set
+              (Class_Sets_List : in Class_Sets_Lists.List)
+              return Config.Class_Sets.Meta_Class_Set_Access
+            is
+               Class_Sets_Array : Config.Class_Sets.Class_Set_Array
+                 (1..Class_Sets_Lists.Length (Class_Sets_List));
+               Iter             : Class_Sets_Lists.ListIter;
+               Cur_Class_Set    : Config.Class_Sets.Class_Set_Access;
+            begin
+               Iter := Class_Sets_Lists.MakeListIter (Class_Sets_List);
+               for I in Class_Sets_Array'Range loop
+                  Class_Sets_Lists.Next (Iter, Cur_Class_Set);
+                  Class_Sets_Array (I) := Cur_Class_Set;
+               end loop;
+
+               return Config.Class_Sets.Build (Class_Sets_Array);
+            end Generate_Meta_Class_Set;
+
+            ------------------------------------------------------------------
+            Class_Sets_String_List : String_Lists.List;
+            String_Iter            : String_Lists.ListIter;
+
+            Cur_String             : Ada.Strings.Unbounded.Unbounded_String;
+            Cur_Class_Set          : Config.Class_Sets.Class_Set_Access;
+
+            Class_Sets_List        : Class_Sets_Lists.List;
+
+            Res                    : Config.Class_Sets.Meta_Class_Set_Access;
+
          begin
-            Class_Sets_List := String_Split.Split_String
+            Class_Sets_String_List := String_Split.Split_String
               (Source  => Data,
                Pattern => ",",
                Trim    => true);
 
-            --  convert each item into a list
-            --  if list.length = 0 return null
-            --  else return converted list (into array)
+            --  convert String_List into a list of Class_Set_Accesses
 
-            String_Lists.Destroy (Class_Sets_List);
-            return Config.Class_Sets.Get_Class_Set_Access ("TBD: Stub");
+            Class_Sets_List := Class_Sets_Lists.Create;
+
+            String_Iter := String_Lists.MakeListIter (Class_Sets_String_List);
+            while String_Lists.More (String_Iter) loop
+               String_Lists.Next (String_Iter, Cur_String);
+               declare
+                  Cur_Class_Set_Name : String :=
+                    Ada.Strings.Unbounded.To_String (Cur_String);
+               begin
+                  Cur_Class_Set := Config.Class_Sets.Get_Class_Set_Access
+                    (Cur_Class_Set_Name);
+               exception
+                  when Config.Class_Sets.Class_Set_Does_Not_Exist_Exception =>
+                     My_Logger.Error ("Class_Set " & Cur_Class_Set_Name &
+                                      " not found");
+               end;
+            end loop;
+
+            if Class_Sets_Lists.IsEmpty (Class_Sets_List) then
+               Res := Config.Class_Sets.Get_Class_Set_Access ("TBD: empty class set");
+            else
+               Res := Generate_Meta_Class_Set (Class_Sets_List);
+            end if;
+
+            Class_Sets_Lists.Destroy (Class_Sets_List);
+            String_Lists.Destroy (Class_Sets_String_List);
+
+            return Res;
          end Convert_String_To_Meta_Class_Set;
 
          Root_Node         : Giant.Graph_Lib.Node_Id;
