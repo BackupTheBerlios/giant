@@ -1,5 +1,6 @@
 Makefile.pics
 spec.pdf
+spec-pdf.pdf
 *.*~
 *.aux
 *.dvi
@@ -8,5 +9,7 @@ spec.pdf
 *.ind
 *.idx
 *.log
+*.out
 *.ps
 *.toc
+*.tpt
