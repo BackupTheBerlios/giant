@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-controller.adb,v $, $Revision: 1.25 $
+--  $RCSfile: giant-controller.adb,v $, $Revision: 1.26 $
 --  $Author: squig $
---  $Date: 2003/06/26 09:41:53 $
+--  $Date: 2003/06/26 13:05:16 $
 --
 
 with Ada.Strings.Unbounded;
@@ -545,7 +545,7 @@ package body Giant.Controller is
      return Boolean
    is
    begin
-      if (Gui_Manager.Remove_Window (Name)) then
+      if (Gui_Manager.Remove_Window (Name, Ask_For_Confirmation)) then
          Projects.Remove_Visualisation_Window
            (Current_Project, Name);
          return True;

@@ -20,14 +20,16 @@
 --
 --  First Author: Steffen Pingel
 --
---  $RCSfile: giant-dialogs.adb,v $, $Revision: 1.5 $
+--  $RCSfile: giant-dialogs.adb,v $, $Revision: 1.6 $
 --  $Author: squig $
---  $Date: 2003/06/25 18:59:59 $
+--  $Date: 2003/06/26 13:05:16 $
 --
 
 with Gtk.Box;
 with Gtk.Check_Button;
 with Gtkada.Pixmaps;
+
+with Giant.Config_Settings;
 
 package body Giant.Dialogs is
 
@@ -42,7 +44,10 @@ package body Giant.Dialogs is
       Check : Gtk.Check_Button.Gtk_Check_Button;
       Response : Default_Dialog.Response_Type;
    begin
-      if (False) then
+      --  FIX: query setting
+      if (Config_Settings.Boolean.Get
+          (Config_Settings.Get_Setting_As_String
+           ("Confirm.Delete")) = False) then
          return True;
       end if;
 
@@ -55,6 +60,10 @@ package body Giant.Dialogs is
       Gtk.Box.Add (Default_Dialog.Get_Center_Box (Dialog), Check);
 
       Default_Dialog.Show_Modal (Dialog);
+
+      Config_Settings.Set_Setting
+        ("Confirm.Delete",
+         Boolean'Image (not Gtk.Check_Button.Get_Active (Check)));
 
       Response := Default_Dialog.Get_Response (Dialog);
       Default_Dialog.Destroy (Dialog);

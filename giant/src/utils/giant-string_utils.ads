@@ -20,25 +20,17 @@
 --
 -- First Author: Steffen Pingel
 --
--- $RCSfile: giant-config_settings_validators.ads,v $, $Revision: 1.2 $
+-- $RCSfile: giant-string_utils.ads,v $, $Revision: 1.1 $
 -- $Author: squig $
 -- $Date: 2003/06/26 13:05:16 $
 --
 
-generic
-
-   type Data_Type is (<>);
-
-package Giant.Config_Settings_Validators is
-
-   pragma Elaborate_Body;
-
-   function Validate
-     (Value : in String)
-     return Boolean;
-
-   function Get
-     (Value : in String)
-     return Data_Type;
-
-end Giant.Config_Settings_Validators;
+package Giant.String_Utils is
+   
+   procedure Replace_All
+	 (Haystack	 : in String;
+	  Needle	 : in String;
+	  New_Needle : in String)
+	 return String;
+   
+end Giant.String_Utils;
