@@ -20,9 +20,9 @@
 --
 --  First Author: Martin Schwienbacher
 --
---  $RCSfile: dump_iml_data.adb,v $, $Revision: 1.6 $
+--  $RCSfile: dump_iml_data.adb,v $, $Revision: 1.7 $
 --  $Author: koppor $
---  $Date: 2003/07/24 15:36:13 $
+--  $Date: 2003/09/17 17:19:17 $
 --
 -- -----
 -- Used to Dump the Content (Node Classes and attributes of an iml Graph)
@@ -104,7 +104,8 @@ procedure dump_iml_data is
    is
    begin
       Graph_Lib.Load ("resources/rfg_examp.iml");
-      -- Graph_Lib.Load ("resources/graphs/concept_analysis.iml");
+      --  Graph_Lib.Load ("resources/graphs/concept_analysis.iml");
+      --  Graph_Lib.Load ("resources/graphs/httpd.iml");
       Output_All_Nodes;
       Graph_Lib.Unload;
    end Load_And_Dump_Graph;
