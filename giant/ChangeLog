@@ -3,11 +3,11 @@
 	* src/gui/giant-graph_window.adb: Trimmed zoom level.
 
 	* src/giant-controller.adb: Changed semantics of Create_Subgraph
-	to return an empty subgraph.
+	to return an empty subgraph (Bug #954).
 	Set minimum zoom level to 1%.
 
 	* src/gui/giant-main_window.adb: Made script menu
-	tear-off-able. Removed scripts menu.
+	tear-off-able (Bug #955). Removed scripts menu.
 
 2003-09-20  Steffen Pingel  <squig@users.sourceforge.net>
 
