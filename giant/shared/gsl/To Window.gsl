@@ -2,12 +2,18 @@
   (+s)
   [
     set (+window, input ("Window name:"));
-    create_window (window);
-    insert_into_window
-      (window,
-       window,
-       deref (s),
-       "matrix",
-       "");
+    if (equal (window, ""), null,
+      {
+         ()
+         [
+            create_window (window);
+            insert_into_window
+              (window,
+               window,
+               deref (s),
+               "matrix",
+               "");
+         ]
+      });
   ]
 }
