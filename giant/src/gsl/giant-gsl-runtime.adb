@@ -22,7 +22,7 @@
 --
 -- $RCSfile: giant-gsl-runtime.adb,v $
 -- $Author: schulzgt $
--- $Date: 2003/08/03 20:41:17 $
+-- $Date: 2003/08/04 10:29:27 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -38,6 +38,7 @@ use type Giant.Graph_Lib.Edge_Id;
 use type Giant.Graph_Lib.Node_Id;
 with Giant.Graph_Lib.Subgraphs;
 with Giant.Graph_Lib.Selections;
+with Giant.Evolutions;
 
 with Giant.GSL_Support;
 
@@ -1399,14 +1400,56 @@ package body Giant.Gsl.Runtime is
    function Runtime_Insert_Into_Window
       (Parameter : Gsl_List)
       return Gsl_Type is
+
+      use Graph_Lib.Selections;
+      Sel            : Graph_Lib.Selections.Selection;
+      Window_Name    : Gsl_Type;
+      Selection_Name : Gsl_Type;
+      Selection      : Gsl_Type;
+      Layout_Algo    : Gsl_Type;
+      Layout_Param   : Gsl_Type;
    begin
-      --procedure Insert_Selection
-      --  (Window_Name           : in String;
-      --   Selection_Name        : in String;
-      --   Selection             : in Graph_Lib.Selections.Selection;
-      --   Layout_Name           : in String;
-      --   Position              : in Vis.Logic.Vector_2d := Vis.Logic.Zero_2d;
-      --   Additional_Parameters : in String );
+      if Get_List_Size (Parameter) /= 5 then
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'insert_into_window': Expecting 5 parameters.");
+      end if;
+      Window_Name    := Get_Value_At (Parameter, 1);
+      Selection_Name := Get_Value_At (Parameter, 2);
+      Selection      := Get_Value_At (Parameter, 3);
+      Layout_Algo    := Get_Value_At (Parameter, 4);
+      Layout_Param   := Get_Value_At (Parameter, 5);
+      if Is_Gsl_String (Window_Name) and Is_Gsl_String (Selection_Name) and
+         Is_Gsl_Object_Set (Selection) and Is_Gsl_String (Layout_Algo) and
+         Is_Gsl_String (Layout_Param)
+      then
+         -- check if window exist
+         if not Controller.Exists_Window (Get_Value (Gsl_String (Window_Name)))
+         then
+            Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+              "Script 'insert_into_window': Window " & 
+              Get_Value (Gsl_String (Window_Name)) &  "does not exist.");
+         end if;
+
+         -- build the selection with graph_lib functions
+         Sel := Create (Get_Value (Gsl_String (Selection_Name)));
+         Add_Node_Set (Sel, Get_Value (Gsl_Node_Set 
+           (Get_Value_At (Gsl_List (Selection), 1))));
+         Add_Edge_Set (Sel, Get_Value (Gsl_Edge_Set
+           (Get_Value_At (Gsl_List (Selection), 2))));
+
+         -- use controller to insert the selection
+         Controller.Insert_Selection
+           (Window_Name => Get_Value (Gsl_String (Window_Name)),
+            Selection_Name => Get_Value (Gsl_String (Selection_Name)),
+            Selection => Sel,
+            Layout_Name => Get_Value (Gsl_String (Layout_Algo)),
+            Additional_Parameters => Get_Value (Gsl_String (Layout_Param)),
+            Parent_Evolution => Evolutions.Iterative_Evolution_Class_Access 
+              (Gsl.Interpreters.Get_Current_Interpreter));
+      else
+         Ada.Exceptions.Raise_Exception (Gsl_Runtime_Error'Identity,
+           "Script 'insert_into_window': Error. Check the parameters.");
+      end if;
       return Gsl_Null;
    end Runtime_Insert_Into_Window;
 
