@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-tree_layouts.ads,v $, $Revision: 1.12 $
+--  $RCSfile: giant-tree_layouts.ads,v $, $Revision: 1.13 $
 --  $Author: koppor $
---  $Date: 2003/07/11 01:47:36 $
+--  $Date: 2003/07/14 08:23:20 $
 --
 ------------------------------------------------------------------------------
 --
@@ -150,8 +150,7 @@ private
                          Init_Run_Part_One,
                          Init_Run_Part_Two,
                          FirstWalk_Start,
-                         FirstWalk_Run_Part_One,
-                         FirstWalk_Run_Part_Two,
+                         FirstWalk_Run,
                          SecondWalk_Start,
                          SecondWalk_Run,
                          Matrix);
@@ -201,18 +200,19 @@ private
      Lists (ItemType => Node_Layout_Data);
 
    ---------------------------------------------------------------------------
-   type FirstWalk_Part_Two_Data_Record is record
+   package Node_Layout_Data_Stacks is new
+     Stacks_Unbounded (Elem_Type => Node_Layout_Data);
+
+   ---------------------------------------------------------------------------
+   type FirstWalk_Data_Record is record
+      V               : Node_Layout_Data;
       W               : Node_Layout_Data;
       DefaultAncestor : Node_Layout_Data;
    end record;
 
    ---------------------------------------------------------------------------
-   package Node_Layout_Data_Stacks is new
-     Stacks_Unbounded (Elem_Type => Node_Layout_Data);
-
-   ---------------------------------------------------------------------------
-   package FirstWalk_Part_Two_Stacks is new
-     Stacks_Unbounded (Elem_Type => FirstWalk_Part_Two_Data_Record);
+   package FirstWalk_Stacks is new
+     Stacks_Unbounded (Elem_Type => FirstWalk_Data_Record);
 
    ---------------------------------------------------------------------------
    type SecondWalk_Data_Record is record
@@ -268,9 +268,7 @@ private
 
         Level_Heights              : Level_Mappings.Mapping;
 
-        FirstWalk_Part_One_Stack   : Node_Layout_Data_Stacks.Stack;
-        FirstWalk_Part_Two_Stack   : FirstWalk_Part_Two_Stacks.Stack;
-
+        FirstWalk_Stack            : FirstWalk_Stacks.Stack;
         SecondWalk_Stack           : SecondWalk_Stacks.Stack;
      end record;
 
@@ -279,5 +277,64 @@ private
      (First  : in Node_Layout_Data;
       Second : in Node_Layout_Data)
      return Boolean;
+
+   --------------------------------------------------------------------------
+   --  If a Node is seen at the first time, it has to be pushed with this
+   --  procedure. It sets the initial values correctly
+   --
+   --  Parameters:
+   --    Stack : Layout.FirstWalk_Stack - stack where to push to
+   --    V     : Node to be pushed
+   procedure FirstWalk_Stack_Initial_Push
+     (Stack : in out FirstWalk_Stacks.Stack;
+      V     : in     Node_Layout_Data);
+
+   ---------------------------------------------------------------
+   --  1:1 - Implementations of routines of Walker's algorithm  --
+   ---------------------------------------------------------------
+
+   ---------------------------------------------------------------------------
+   procedure ExecuteShifts (V : in Node_Layout_Data);
+
+   ------------------------------------------------------------------
+   function NextLeft
+     (V : in Node_Layout_Data)
+     return Node_Layout_Data;
+
+   ------------------------------------------------------------------
+   function NextRight
+     (V : in Node_Layout_Data)
+     return Node_Layout_Data;
+
+   ------------------------------------------------------------------
+   procedure MoveSubtree
+     (WM    : in Node_Layout_Data;
+      WP    : in Node_Layout_Data;
+      Shift : in Vis.Logic_Float);
+
+   ------------------------------------------------------------------
+   function Ancestor
+     (VIM             : in Node_Layout_Data;
+      V               : in Node_Layout_Data;
+      DefaultAncestor : in Node_Layout_Data)
+     return Node_Layout_Data;
+
+   ---------------------------------------------------------------------
+   --  Additional Parameters:
+   --    X_Distance   - Distance between two nodes
+   procedure Apportion
+     (V               : in     Node_Layout_Data;
+      DefaultAncestor : in out Node_Layout_Data;
+      X_Distance      : in     Vis.Logic_Float);
+
+   ---------------------------------------------------------------------
+   --  Represents the part after the "for all children"-loop
+   --    in FirstWalk(v) in the paper
+   --
+   --  Additional Parameters:
+   --    X_Distance   - Distance between two nodes
+   procedure FirstWalk_Visit_Self
+     (V          : in Node_Layout_Data;
+      X_Distance : in Vis.Logic_Float);
 
 end Giant.Tree_Layouts;
