@@ -22,7 +22,20 @@
           set (+routine, get_attribute (routine_decl, "HPG_Routine"));
           add ('nodes, routine);
           add ('edges, get_outgoing (routine));
-          
+ 
+          // make a real subgraph deleting some edges
+          for_each
+            (edges,
+            { (+e)
+            [
+              if (is_in (nodes, get_target (e)), null,
+                { ()
+                  [
+                    sub ('edges, e);
+                  ]
+                });
+            ]});
+ 
           set ('selection.Trace, (nodes, edges));
         ]
       },
