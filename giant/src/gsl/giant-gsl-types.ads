@@ -21,7 +21,7 @@
 --
 -- $RCSfile: giant-gsl-types.ads,v $
 -- $Author: schulzgt $
--- $Date: 2003/07/23 13:45:27 $
+-- $Date: 2003/07/24 14:29:37 $
 --
 -- This package implements the datatypes used in GSL.
 --
@@ -239,99 +239,148 @@ package Giant.Gsl.Types is
    procedure Destroy
      (Object : in out Gsl_Boolean);
 
-   ---------------------------------------------------------------------------
-   -- Gsl_Natural
+------------------------------------------------------------------------------
+-- Gsl_Natural
+
    type Gsl_Natural_Record is new Gsl_Type_Record with private;
    type Gsl_Natural is access all Gsl_Natural_Record;
 
+   ---------------------------------------------------------------------------
+   --
    function Create_Gsl_Natural return Gsl_Natural;
 
+   ---------------------------------------------------------------------------
+   --
    function Create_Gsl_Natural
      (Value : Natural)
       return Gsl_Natural;
 
+   ---------------------------------------------------------------------------
+   --
    function Is_Gsl_Natural
      (Var : Gsl_Type)
       return Boolean;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Value
      (Var : Gsl_Natural)
       return Natural;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Set_Value
      (Var   : Gsl_Natural;
       Value : Natural);
 
+   ---------------------------------------------------------------------------
+   --
    function Copy
      (Object : access Gsl_Natural_Record)
       return Gsl_Type;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Destroy
      (Object : in out Gsl_Natural);
 
-   ---------------------------------------------------------------------------
-   -- Gsl_List
+------------------------------------------------------------------------------
+-- Gsl_List
+
    type Gsl_List_Record (Size : Natural) is new Gsl_Type_Record with private;
    type Gsl_List is access all Gsl_List_Record;
 
+   ---------------------------------------------------------------------------
+   --
    function Create_Gsl_List
      (Size : Natural)
       return Gsl_List;
 
+   ---------------------------------------------------------------------------
+   --
    function Is_Gsl_List
      (Var : Gsl_Type)
       return Boolean;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_List_Size
      (Var      : Gsl_List)
       return Natural;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Value_At
      (Var      : Gsl_List;
       Position : Natural)
       return Gsl_Type;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Set_Value_At
      (Var      : Gsl_List;
       Position : Natural;
       Value    : Gsl_Type);
 
+   ---------------------------------------------------------------------------
+   --
    function Copy
      (Object : access Gsl_List_Record)
       return Gsl_Type;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Destroy
      (Object : in out Gsl_List);
 
-   ---------------------------------------------------------------------------
-   -- Gsl_Var_Reference 
-   -- ("local" Var or "global" Subgraph, Selection)
+------------------------------------------------------------------------------
+-- Gsl_Var_Reference
+-- ("local" Var or "global" Subgraph, Selection)
+
    type Reference_Type is (Var, Subgraph, Selection);
    type Gsl_Var_Reference_Record (Size : Natural) is new 
      Gsl_Type_Record with private;
    type Gsl_Var_Reference is access all Gsl_Var_Reference_Record;
 
+   ---------------------------------------------------------------------------
+   --
    function Create_Gsl_Var_Reference
      (Ref_Type : Reference_Type;
       Ref_Name : String) 
       return Gsl_Var_Reference;
 
+   ---------------------------------------------------------------------------
+   --
    function Is_Gsl_Var_Reference
      (Var : Gsl_Type)
       return Boolean;
 
+   ---------------------------------------------------------------------------
+   --
+   function Is_Gsl_Global_Reference
+     (Var : Gsl_Type)
+      return Boolean;
+
+   ---------------------------------------------------------------------------
+   --
    function Get_Ref_Type
      (Var : Gsl_Var_Reference)
       return Reference_Type;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Ref_Name
      (Var : Gsl_Var_Reference)
       return String;
 
+   ---------------------------------------------------------------------------
+   --
    function Copy
      (Object : access Gsl_Var_Reference_Record)
       return Gsl_Type;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Destroy
      (Object : in out Gsl_Var_Reference);
 

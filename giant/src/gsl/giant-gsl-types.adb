@@ -20,9 +20,9 @@
 --
 -- First Author: Gerrit Schulz
 --
--- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.12 $
+-- $RCSfile: giant-gsl-types.adb,v $, $Revision: 1.13 $
 -- $Author: schulzgt $
--- $Date: 2003/07/23 13:45:27 $
+-- $Date: 2003/07/24 14:29:37 $
 --
 with Ada.Unchecked_Deallocation;
 with Ada.Tags;
@@ -224,6 +224,9 @@ package body Giant.Gsl.Types is
 
 ------------------------------------------------------------------------------
 -- Gsl_Node_Set
+
+   ---------------------------------------------------------------------------
+   --
    function Create_Gsl_Node_Set
      (Value : Giant.Graph_Lib.Node_Id_Set)
       return Gsl_Node_Set is
@@ -235,6 +238,8 @@ package body Giant.Gsl.Types is
       return Var;
    end Create_Gsl_Node_Set;
 
+   ---------------------------------------------------------------------------
+   --
    function Is_Gsl_Node_Set
      (Var : Gsl_Type)
       return Boolean is
@@ -248,6 +253,8 @@ package body Giant.Gsl.Types is
       end if;
    end Is_Gsl_Node_Set;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Value
      (Var : Gsl_Node_Set)
       return Giant.Graph_Lib.Node_Id_Set is
@@ -255,6 +262,8 @@ package body Giant.Gsl.Types is
       return Var.Value;
    end Get_Value;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Set_Value
      (Var   : Gsl_Node_Set;
       Value : Giant.Graph_Lib.Node_Id_Set) is
@@ -262,13 +271,21 @@ package body Giant.Gsl.Types is
       Var.Value := Value;
    end Set_Value;
 
+   ---------------------------------------------------------------------------
+   --
    function Copy
      (Object : access Gsl_Node_Set_Record)
       return Gsl_Type is
+
+      Var : Gsl_Node_Set;
    begin
-      return Gsl_Null;
+      Var := new Gsl_Node_Set_Record;
+      Var.all := Object.all;
+      return Gsl_Type (Var);
    end Copy;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Destroy
      (Object : in out Gsl_Node_Set) is
 
@@ -279,8 +296,11 @@ package body Giant.Gsl.Types is
       Free (Object);
    end Destroy;
  
+------------------------------------------------------------------------------
+-- Gsl_Edge_Set
+
    ---------------------------------------------------------------------------
-   -- Gsl_Edge_Set
+   --
    function Create_Gsl_Edge_Set
      (Value : Giant.Graph_Lib.Edge_Id_Set) 
       return Gsl_Edge_Set is
@@ -292,6 +312,8 @@ package body Giant.Gsl.Types is
       return Var;
    end Create_Gsl_Edge_Set;
 
+   ---------------------------------------------------------------------------
+   --
    function Is_Gsl_Edge_Set
      (Var : Gsl_Type)
       return Boolean is
@@ -305,6 +327,8 @@ package body Giant.Gsl.Types is
       end if;
    end Is_Gsl_Edge_Set;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Value
      (Var : Gsl_Edge_Set)
       return Giant.Graph_Lib.Edge_Id_Set is
@@ -312,6 +336,8 @@ package body Giant.Gsl.Types is
       return Var.Value;
    end Get_Value;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Set_Value
      (Var   : Gsl_Edge_Set;
       Value : Giant.Graph_Lib.Edge_Id_Set) is
@@ -319,13 +345,21 @@ package body Giant.Gsl.Types is
       Var.Value := Value;
    end Set_Value;
 
+   ---------------------------------------------------------------------------
+   --
    function Copy
      (Object : access Gsl_Edge_Set_Record)
       return Gsl_Type is
+
+      Var : Gsl_Edge_Set;
    begin
-      return Gsl_Null;
+      Var := new Gsl_Edge_Set_Record;
+      Var.all := Object.all;
+      return Gsl_Type (Var);
    end Copy;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Destroy
      (Object : in out Gsl_Edge_Set) is
 
@@ -336,8 +370,11 @@ package body Giant.Gsl.Types is
       Free (Object);
    end Destroy;
 
+---------------------------------------------------------------------------
+-- Gsl_String
+
    ---------------------------------------------------------------------------
-   -- Gsl_String
+   --
    function Create_Gsl_String
      (Value : String)
       return Gsl_String is
@@ -349,6 +386,8 @@ package body Giant.Gsl.Types is
       return Var;
    end;
 
+   ---------------------------------------------------------------------------
+   --
    function Is_Gsl_String
      (Var : Gsl_Type)
       return Boolean is
@@ -362,6 +401,8 @@ package body Giant.Gsl.Types is
       end if;
    end Is_Gsl_String;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Value
      (Var : Gsl_String)
       return String is
@@ -369,6 +410,8 @@ package body Giant.Gsl.Types is
       return Var.Value;
    end Get_Value;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Set_Value
      (Var   : Gsl_String;
       Value : String) is
@@ -376,6 +419,8 @@ package body Giant.Gsl.Types is
       Var.Value := Value; 
    end Set_Value;
 
+   ---------------------------------------------------------------------------
+   --
    function Copy
      (Object : access Gsl_String_Record)
       return Gsl_Type is
@@ -387,6 +432,8 @@ package body Giant.Gsl.Types is
       return Gsl_Type (Var);
    end Copy;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Destroy
      (Object : in out Gsl_String) is
 
@@ -397,8 +444,11 @@ package body Giant.Gsl.Types is
       Free (Object);
    end Destroy;
 
+------------------------------------------------------------------------------
+-- Gsl_Boolean
+
    ---------------------------------------------------------------------------
-   -- Gsl_Boolean
+   --
    function Create_Gsl_Boolean (Value : Boolean) return Gsl_Boolean is
 
       Var : Gsl_Boolean;
@@ -408,6 +458,8 @@ package body Giant.Gsl.Types is
       return Var;
    end Create_Gsl_Boolean;
 
+   ---------------------------------------------------------------------------
+   --
    function Is_Gsl_Boolean
      (Var : Gsl_Type)
       return Boolean is
@@ -421,6 +473,8 @@ package body Giant.Gsl.Types is
       end if;
    end Is_Gsl_Boolean;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Value
      (Var : Gsl_Boolean)
       return Boolean is
@@ -428,6 +482,8 @@ package body Giant.Gsl.Types is
       return Var.Value;
    end Get_Value;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Set_Value
      (Var   : Gsl_Boolean;
       Value : Boolean) is
@@ -435,6 +491,8 @@ package body Giant.Gsl.Types is
       Var.Value := Value;
    end Set_Value;
 
+   ---------------------------------------------------------------------------
+   --
    function Copy
      (Object : access Gsl_Boolean_Record)
       return Gsl_Type is
@@ -446,6 +504,8 @@ package body Giant.Gsl.Types is
       return Gsl_Type (Var);
    end;
       
+   ---------------------------------------------------------------------------
+   --
    procedure Destroy
      (Object : in out Gsl_Boolean) is
 
@@ -456,13 +516,18 @@ package body Giant.Gsl.Types is
       Free (Object);
    end Destroy;
 
+------------------------------------------------------------------------------
+-- Gsl_Natural
+
    ---------------------------------------------------------------------------
-   -- Gsl_Natural
+   --
    function Create_Gsl_Natural return Gsl_Natural is
    begin
       return Create_Gsl_Natural (0);
    end Create_Gsl_Natural;
  
+   ---------------------------------------------------------------------------
+   --
    function Create_Gsl_Natural
      (Value : Natural)
       return Gsl_Natural is
@@ -474,6 +539,8 @@ package body Giant.Gsl.Types is
       return Var;
    end Create_Gsl_Natural;
  
+   ---------------------------------------------------------------------------
+   --
    function Is_Gsl_Natural
      (Var : Gsl_Type)
       return Boolean is
@@ -487,6 +554,8 @@ package body Giant.Gsl.Types is
       end if;
    end Is_Gsl_Natural;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Value
      (Var : Gsl_Natural)
       return Natural is
@@ -494,6 +563,8 @@ package body Giant.Gsl.Types is
       return Var.Value;
    end Get_Value;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Set_Value
      (Var   : Gsl_Natural;
       Value : Natural) is
@@ -501,6 +572,8 @@ package body Giant.Gsl.Types is
       Var.Value := Value;
    end Set_Value;
 
+   ---------------------------------------------------------------------------
+   --
    function Copy
      (Object : access Gsl_Natural_Record)
       return Gsl_Type is
@@ -512,6 +585,8 @@ package body Giant.Gsl.Types is
       return Gsl_Type (Var);
    end Copy;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Destroy
      (Object : in out Gsl_Natural) is
    
@@ -524,6 +599,9 @@ package body Giant.Gsl.Types is
 
 ------------------------------------------------------------------------------
 -- Gsl_List
+
+   ---------------------------------------------------------------------------
+   --
    function Create_Gsl_List
      (Size : Natural)
       return Gsl_List is
@@ -535,6 +613,8 @@ package body Giant.Gsl.Types is
       return Var;
    end Create_Gsl_List;
 
+   ---------------------------------------------------------------------------
+   --
    function Is_Gsl_List
      (Var : Gsl_Type)
       return Boolean is
@@ -548,6 +628,8 @@ package body Giant.Gsl.Types is
       end if;
    end Is_Gsl_List;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_List_Size
      (Var      : Gsl_List)
       return Natural is
@@ -555,6 +637,8 @@ package body Giant.Gsl.Types is
       return Var.List_Size;
    end Get_List_Size;
 	   
+   ---------------------------------------------------------------------------
+   --
    function Get_Value_At
      (Var      : Gsl_List;
       Position : Natural)
@@ -563,6 +647,8 @@ package body Giant.Gsl.Types is
       return Var.Value (Position);
    end Get_Value_At;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Set_Value_At
      (Var      : Gsl_List;
       Position : Natural;
@@ -571,13 +657,21 @@ package body Giant.Gsl.Types is
       Var.Value (Position) := Value;
    end Set_Value_At; 
 
+   ---------------------------------------------------------------------------
+   --
    function Copy
      (Object : access Gsl_List_Record)
       return Gsl_Type is
+
+      Var : Gsl_List;
    begin
-      return Gsl_Null;
+      Var := new Gsl_List_Record (Object.Size);
+      Var.all := Object.all;
+      return Gsl_Type (Var);
    end Copy;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Destroy
      (Object : in out Gsl_List) is
 
@@ -593,6 +687,9 @@ package body Giant.Gsl.Types is
 
 ------------------------------------------------------------------------------
 -- Gsl_Var_Reference
+
+   ---------------------------------------------------------------------------
+   --
    function Create_Gsl_Var_Reference
      (Ref_Type : Reference_Type;
       Ref_Name : String)
@@ -606,6 +703,8 @@ package body Giant.Gsl.Types is
       return Var;
    end;
 
+   ---------------------------------------------------------------------------
+   --
    function Is_Gsl_Var_Reference
      (Var : Gsl_Type)
       return Boolean is
@@ -613,12 +712,29 @@ package body Giant.Gsl.Types is
       if Var = Gsl_Null then
          return false;
       elsif Var'Tag = Gsl_Var_Reference_Record'Tag then
-         return true;
+         return Get_Ref_Type (Gsl_Var_Reference (Var)) = Gsl.Types.Var;
       else
          return false;
       end if;
    end Is_Gsl_Var_Reference;
 
+   ---------------------------------------------------------------------------
+   --
+   function Is_Gsl_Global_Reference
+     (Var : Gsl_Type)
+      return Boolean is
+   begin
+      if Var = Gsl_Null then
+         return false;
+      elsif Var'Tag = Gsl_Var_Reference_Record'Tag then
+         return Get_Ref_Type (Gsl_Var_Reference (Var)) /= Gsl.Types.Var;
+      else
+         return false;
+      end if;
+   end Is_Gsl_Global_Reference;
+
+   ---------------------------------------------------------------------------
+   --
    function Get_Ref_Type
      (Var : Gsl_Var_Reference)
       return Reference_Type is
@@ -626,6 +742,8 @@ package body Giant.Gsl.Types is
       return Var.Ref_Type;
    end;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Ref_Name
      (Var : Gsl_Var_Reference)
       return String is
@@ -633,6 +751,8 @@ package body Giant.Gsl.Types is
       return Var.Ref_Name;
    end; 
 
+   ---------------------------------------------------------------------------
+   --
    function Copy
      (Object : access Gsl_Var_Reference_Record)
       return Gsl_Type is
@@ -644,6 +764,8 @@ package body Giant.Gsl.Types is
       return Gsl_Type (Var);
    end Copy;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Destroy
      (Object : in out Gsl_Var_Reference) is
 
@@ -656,6 +778,9 @@ package body Giant.Gsl.Types is
 
 ------------------------------------------------------------------------------
 -- Gsl_Script_Reference
+
+   ---------------------------------------------------------------------------
+   --
    function Create_Gsl_Script_Reference
      (Parameter_List : Syntax_Node;
       Script_Node    : Syntax_Node)
@@ -671,6 +796,8 @@ package body Giant.Gsl.Types is
       return Var;
    end;
 
+   ---------------------------------------------------------------------------
+   --
    function Create_Gsl_Script_Reference
      (Runtime : Runtime_Function)
       return Gsl_Script_Reference is
@@ -683,6 +810,8 @@ package body Giant.Gsl.Types is
       return Var;
    end;
 
+   ---------------------------------------------------------------------------
+   --
    function Is_Gsl_Script_Reference
      (Var : Gsl_Type)
       return Boolean is
@@ -696,6 +825,8 @@ package body Giant.Gsl.Types is
       end if;
    end Is_Gsl_Script_Reference;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Script_Type
      (Object : Gsl_Script_Reference)
       return Gsl_Script_Type is
@@ -703,6 +834,8 @@ package body Giant.Gsl.Types is
       return Object.Script_Type;
    end Get_Script_Type;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Parameter_List
      (Object : Gsl_Script_Reference)
       return Syntax_Node is
@@ -710,6 +843,8 @@ package body Giant.Gsl.Types is
       return Object.Parameter_List;
    end Get_Parameter_List;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Script_Node
      (Object : Gsl_Script_Reference)
       return Syntax_Node is
@@ -717,6 +852,8 @@ package body Giant.Gsl.Types is
       return Object.Script_Node;
    end Get_Script_Node;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Activation_Record
      (Object : Gsl_Script_Reference)
       return Activation_Record is
@@ -724,6 +861,8 @@ package body Giant.Gsl.Types is
       return Object.Script_Activation_Record;
    end Get_Activation_Record;
 
+   ---------------------------------------------------------------------------
+   --
    procedure Set_Activation_Record
      (Object : Gsl_Script_Reference;
       AR     : Activation_Record) is
@@ -731,6 +870,8 @@ package body Giant.Gsl.Types is
       Object.Script_Activation_Record := AR;
    end Set_Activation_Record;
 
+   ---------------------------------------------------------------------------
+   --
    function Get_Gsl_Runtime
      (Object : Gsl_Script_Reference)
       return Runtime_Function is
@@ -738,6 +879,8 @@ package body Giant.Gsl.Types is
       return Object.Runtime;
    end Get_Gsl_Runtime;
 
+   ---------------------------------------------------------------------------
+   --
    function Copy
      (Object : access Gsl_Script_Reference_Record)
       return Gsl_Type is
@@ -749,6 +892,8 @@ package body Giant.Gsl.Types is
       return Gsl_Type (Var);
    end Copy;
    
+   ---------------------------------------------------------------------------
+   --
    procedure Destroy
      (Object : in out Gsl_Script_Reference) is
 
@@ -762,6 +907,8 @@ package body Giant.Gsl.Types is
 ------------------------------------------------------------------------------
 --
 
+   ---------------------------------------------------------------------------
+   --
    function Is_Gsl_Object_Set
      (Var : Gsl_Type)
       return Boolean is
