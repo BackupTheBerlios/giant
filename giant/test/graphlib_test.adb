@@ -21,9 +21,9 @@
 --  Based on framework of: Steffen Pingel
 --  First Author:          Oliver Kopp
 --
---  $RCSfile: graphlib_test.adb,v $, $Revision: 1.6 $
+--  $RCSfile: graphlib_test.adb,v $, $Revision: 1.7 $
 --  $Author: koppor $
---  $Date: 2003/06/28 19:05:39 $
+--  $Date: 2003/06/30 12:14:52 $
 --
 
 with AUnit.Test_Suites; use AUnit.Test_Suites;
@@ -32,6 +32,7 @@ with AUnit.Test_Runner;
 with Giant.Graph_Lib.Test;
 with Giant.Graph_Lib.Node_Attribute_Filters.Test;
 with Giant.Graph_Lib.Subgraphs.Test;
+with Giant.Graph_Lib.Subgraphs.Atomic_Tests;
 with Giant.Default_Logger;
 
 procedure Graphlib_Test is
@@ -58,6 +59,17 @@ procedure Graphlib_Test is
       new AUnit.Test_Runner (Node_Attribute_Filters_Suite);
 
    ---------------------------------------------------------------------------
+   function Subgraphs_Atomic_Suite return Access_Test_Suite is
+      Result : Access_Test_Suite := new Test_Suite;
+   begin
+      Add_Test (Result, new Giant.Graph_Lib.Subgraphs.Atomic_Tests.Test_Case);
+      return Result;
+   end Subgraphs_Atomic_Suite;
+
+   procedure Subgraphs_Atomic_Run is new AUnit.Test_Runner
+     (Subgraphs_Atomic_Suite);
+
+   ---------------------------------------------------------------------------
    function Subgraphs_Suite return Access_Test_Suite is
       Result : Access_Test_Suite := new Test_Suite;
    begin
@@ -74,6 +86,7 @@ begin
    Run;
    Node_Attribute_Filters_Run;
    Subgraphs_Run;
+   Subgraphs_Atomic_Run;
 
    Giant.Default_Logger.Close;
 end Graphlib_Test;
