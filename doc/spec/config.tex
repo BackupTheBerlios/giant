@@ -1,48 +1,85 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.1 $
-%  $Date: 2003/02/13 03:15:14 $
-%  $Author: schulzgt $
+%  $RCSfile: config.tex,v $, $Revision: 1.2 $
+%  $Date: 2003/02/13 18:40:27 $
+%  $Author: schwiemn $
 %
 %  Description:
 %
 % ==============================================================================
 
-\section{Menü-Makros}
-Es können sogenannte Menü-Makros definiert werden. 
-Jeder Makro erhält einen eindeutigen Namen und eine ``Anweisung''.
 
-\section{Visualisierungsstiele}
-Es können verschiedene Visualisierungsstiele angelegt werden. 
-Sie beschreiben die Art und Weise wie Knoten und Kanten in den Anzeigefenstern 
-dargestellt werden. Für jedes Anzeigefenster kann hierbei ein eigener 
-vordefinierter Visualisierungsstiel ausgewählt werden.\\
-Folgende Einstellungen können hierbei vorgenommen werden:
+\section {Allgemeines}
 
-\subsection{Global für jeden Visualisierungsstiel}
-\begin{itemize}
-  \item Die Hintergrundfarbe im Anzeigefenster.
-  \item Die Position der Kantenbeschriftung (immer im Sichtbaren Anzeigeinhalt,
-        pauschal in der Mitte der Kante, am Startknoten oder am Zielknoten).
-\end{itemize}
+Sämtliche konfigurierbaren Einstellungen werden in XML-Dateien vorgenommen.
+Es gibt genau eine\gq{globale Konfigurationsdatei}. Zudem kann es beliebig viele weitere 
+XML-Dateien zur Konfiguration der weiter unten beschriebenen Visualisierungsstiele
+geben.
 
-\subsection{Knoten}
-Folgende  Einstellungen können für jede Knotenklasse vorgenommen werden.
-Des weiteren muss eine DEFAULT-Einstellung erstellt werden, die für alle
-Knotenklassen angewendet wird, für die nichts anderes definiert ist.
-\begin{itemize}  
-  \item Ein Icon für die Knotenklasse (als Verweis auf ein entsprechendes Bild).  
-  \item Eine Liste der Attribute der Knotenklasse, welche dirket innerhalb des
-        Anzeigefensters dargestellt werden sollen.
-  \item Die Farbe des ``Vierecks'' in welchem die Attribute zu de
-  \item Ob die ID eines Knotens angezeigt werden soll oder nicht.
-\end{itemize}
+\section {Die globale Konfigurationsdatei}
+Diese Datei ist in XML verfasst und existiert genau ein mal. In ihr werden 
+die anschließend beschriebenen Einstellungen vorgenommen.
 
-\subsection{Kanten}
-Folgende Einstellungen können für jede Kantenklasse vorgenommen werden. 
-Des weiteren muss eine DEFAULT-Einstellung erstellt werden, die für alle
-Kantenklassen angewendet wird, für die nichts anderes definiert ist.
-\begin{itemize}
-  \item Die Farbe der Kante.
-  \item Die Art der Linie der Kante (normal, gestrichelt).
-  \item Ob die Kante mit ihrer Kantenklasse beschriftet werden soll oder nicht.
-\end{itemize}
+  \subsection {Verweise auf Menü-Makros}
+  Es können beliebig viele Menü-Makros definiert werden.
+  Jeder Makro wird durch einen eindeutigen Namen und durch einen Verweis
+  auf die Datei, welche den Makro enthält, spezifiziert.
+
+  \subsection {Weitere Einstellungen}
+  MÜSSEN WIR UNS NOCH AUSDENKEN.
+
+  \subsection {Verweise auf Visualisierungsstiele}
+  EVENTUELL -> KLÄREN OB DIE XML DATEI, DIE EINEN VISUALISIERUNGSTIEL ENTHÄLT HIER REFERENZIERT WERDEN
+  MUSS ODER OB MAN NICH PAUSCHAL ALLE XML-DATEIEN MIT VISUALISIERUNGSSTIELEN IN EIN 
+  VORGEGEBENES VERZEICHNIS KOPIEREN SOLL.
+
+\section {Visualisierungsstiele}
+Für jeden Visualisierungsstiel muss es eine entsprechende XML-Datei geben. Ein Visualisierungsstiel 
+beschreibt wie die Knoten und Kanten des IML-Graphen innerhalb eines Anzeigefensters grafisch dargestellt 
+werden können.\\
+In einem Visualisierungsstiel können klassenspezifische Einstellungen vorgenommen werden,
+die nur für Knoten und Kanten gelten, die zu den entsprechenden Klassen gehören. Bei jeder 
+klassenspezifischen Einstellung für Knoten und Kanten kann daher eine Liste der betroffenen
+Knoten- und Kantenklassen angegeben werden, für die diese Einstellungen gelten sollen.\\
+Wird eine Kanten- oder eine Knotenklasse innerhalb eines Visualisierungsstieles mehreren 
+klassenspezifischen Einstellungen zugeordnet, führt dies zu keinem Fehler, es bleibt aber
+unspezifiziert, welche Einstellung tatsächlich genommen wird.
+
+  \subsection {Name des Visualisierungsstiels}
+  Jeder Visualisierungsstiel erhält einen Namen. Unter diesem Namen ist der 
+  Visualisierungsstiel in der GUI (bei den Anzeigefenstern) auswählbar.
+  Der Name muss nicht eindeutig sein oder dem Namen der Datei, 
+  in der der Visualisierungssteil gespeichert ist, entsprechen.
+
+
+  \subsection {Einstellungen innerhalb des Visualisierungssteils}
+    \begin{itemize}
+      \item Die Hintergrundfarbe im Anzeigefenster.
+      \item Die Position der Kantenbeschriftung (immer im sichtbaren Anzeigeinhalt,
+            pauschal in der Mitte der Kante, am Startknoten oder am Zielknoten).
+    \end{itemize}
+
+
+  \subsection {Klassenspezifische Einstellungen für Knoten}
+  Folgende  Einstellungen können für Knotenklassen vorgenommen werden.
+  Des weiteren muss eine DEFAULT-Einstellung erstellt werden, die für alle
+  Knotenklassen angewendet wird, für die nichts anderes definiert ist.
+  \begin{itemize}  
+    \item Ein Icon für die Knotenklasse (Verweis auf eine entsprechende Bilddatei).  
+    \item Eine Liste der Attribute der Knotenklasse, welche dirket innerhalb des
+          Anzeigefensters in dem \gq(Viereck) für den Knoten dargestellt werden sollen.
+    \item Die Füllfarbe des \gq{Vierecks} in welchem die Attribute zu dem Knoten dargestellt werden.
+    \item Die Farbe des Rahmens für das \gq{Viereck} in welchem die Attribute zu dem Knoten dargestellt werden.
+    \item EVENTUELL MUSS DIE MAXIMALE GRÖSSE (Breite und Länge) DES VIERECKS AUCH DEFINIERT WERDEN KÖNNEN
+    \item Ob die ID eines Knotens im Anzeigefenster angezeigt werden soll oder nicht.
+  \end{itemize}
+
+  
+  \subsection {Klassenspezifische Einstellungen für Kanten}
+  Folgende Einstellungen können für Kantenklassen vorgenommen werden. 
+  Des weiteren muss eine DEFAULT-Einstellung erstellt werden, die für alle
+  Kantenklassen angewendet wird, für die nichts anderes definiert ist.
+  \begin{itemize}
+    \item Die Farbe der Kante.
+    \item Die Art der Linie der Kante (normal, gestrichelt).
+    \item Ob die Kante mit ihrer Kantenklasse beschriftet werden soll oder nicht.
+  \end{itemize}
