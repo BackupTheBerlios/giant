@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: gui.tex,v $, $Revision: 1.2 $
-%  $Date: 2003/02/16 13:25:39 $
+%  $RCSfile: gui.tex,v $, $Revision: 1.3 $
+%  $Date: 2003/02/16 19:18:33 $
 %  $Author: birdy $
 %
 %  Description:
@@ -28,16 +28,244 @@ Kill-Button, der automatisch alle
 
 \subsection{Hauptfenster}
 
-\subsection{Anzeigefenster}
-Zeigt zu jedem Knoten die Klasse, die ID und alle Attribute an.
-Es können auch alle Knoten, die auf diesen Knoten verweisen angeziegt 
-werden (DIES SOLLTE EVETUELL AUCH IN DIE ANFRAGESPRACHE). 
+Im Hauptfenster (MAIN\_WINDOW), das es nur einmal gleichzeitig
+gibt, werden vorhandene Anzeigefenster und vorhandene
+IML-Teilgraphen angezeigt. Über Popup-Menues können Teilgraphen
+und Anzeigefenster manipuliert werden.
+
+In der Kopfzeile des Hauptfensters steht GIANT : (Name der IML-Datei)
+oder GIANT : <Keine IML-Datei geladen>.
+Das Fenster hat eine Pulldown-Menüleiste ** (Menüs).
+
+Im Fenster befinden sich zwei Listen, zuoberst WINDOW\_LIST (2 Spalten),
+darunter eine dazugehörige Buttonleiste und
+wiederum darunter SUBGRAPH\_LIST (4 Spalten) mit dazugehöriger Buttonleiste.
+
+WINDOW\_LIST hat die Spalten WINDOW\_NAME und WINDOW\_OPEN. In WINDOW\_NAME
+wird der Name der Anzeigefenster dargestellt, in WINDOW\_OPEN befindet
+sich entweder ein Strich-Symbol (Fenster nicht geöffnet) oder ein Häkchensymbol
+(Fenster geöffnet). 
+
+\subsection{Buttons von WINDOW\_LIST}
+
+Die Buttonleiste von WINDOW\_LIST hat folgende Buttons:
+
+\subsubsection{Fenster öffnen}
+
+Fenster öffnen (dabei ist immer das Fenster gemeint dessen Eintrag
+in der Liste markiert ist), öffnet das betreffende Fenster
+auf dem Bildschirm. Ist es schon offen, so wird es in den Vordergund
+gebracht.
+
+\subsubsection{Fenster schließen}
+
+Fenster schließen (dabei ist immer das Fenster gemeint dessen Eintrag
+in der Liste markiert ist), schließt das betreffende Fenster
+auf dem Bildschirm. Ist es schon geschlossen, so passiert nichts.
+
+\subsubsection{Fenster löschen}
+
+Fenster löschen (dabei ist immer das Fenster gemeint dessen Eintrag
+in der Liste markiert ist), löscht nach einer Sicherheitsabfrage
+Fenster <Name> wirklich löschen? das Fenster aus dem Speicher.
+
+\subsubsection{Neues Fenster}
+
+Es wird ein neues leeres Fenster erstellt, ein Dialog
+NEW\_WINDOW\_NAME mit dem Text Fenstername eingeben und zwei
+Buttons Erstellen (NEW\_WINDOW\_CREATE) und Abbruch
+(NEW\_WINDOW\_CANCEL) erscheint, in dem der Fenstername eingegeben
+werden kann.
+Bei leerem, schon vorhandenem oder ungültigem Fensternamen 
+werden entsprechend drei verschiedene Fehlermeldungen Fenstername
+leer bzw. vorhanden bzw. ungültig ausgegeben, NEW_WINDOW_NAME
+bleibt offen.
+Beim Klicken auf Abbruch wird NEW_WINDOW_NAME geschlossen.
+
+\subsubsection{IML-Teilgraph einfügen}
+
+Mit diesem Button kann ein IML-Teilgraph in ein Fenster
+eingefügt werden. Dabei sind der IML-Teilgraph in der unteren
+Liste anzuwählen und das Fenster in der oberen Liste.
+Es erfolgt eine Sicherheitsabfrage INSERT\_WINDOW\_GRAPH in
+einem Fenster Wirklich Teilgraph <Teilgraph> in Fenster
+<Fenster> einfügen?.
+Bei Klicken von ja wird eingefügt, bei Klicken von nein passiert
+nichts.
+
+\subsubsection{Fenster exportieren}
+
+Das in WINDOW\_LIST selektierte Fenster wird in einem
+GIANT-Internen Dateiformat in eine Datei exportiert.
+Es erscheint ein Dateiauswahlfenster, in dem der Dateiname
+angegeben werden kann.
+Falls die angegeben Datei schon existiert, erscheint eine
+Sicherheitsabfrage Datei <Name> wirklich überschreiben?,
+und nur bei Ja wird die Datei überschrieben, bei
+Nein passiert nichts.
+
+\subsubsection{Fenster importieren}
+
+Es erscheint ein Dateiauswahlfenster, in dem der Dateiname
+angegeben werden kann.
+Die angegebene Datei wird gelesen und das darin
+gespeicherte Fenster in WINDOW\_LIST eingefügt.
+
+\subsection{Buttons von SUBGRAPH\_LIST}
+
+Die Menüleiste von SUBGRAPH\_LIST hat folgende Buttons:
+
+\subsubsection{hervorheben}
+
+Graphische Hervorhebung des in SUBGRAPH\_LIST angewählten
+Teilgraphen in allen Fenstern
+
+\subsubsection{hervorheben aufheben}
+
+Graphische Hervorhebung des in SUBGRAPH\_LIST angewählten
+Teilgraphen in allen Fenstern aufheben
+
+\subsubsection{Teilgraph kopieren}
+
+Diese Funktion kopiert den in SUBGRAPH\_LIST selektierten Teilgraphen.
+
+Ein Fenster SUBGRAPH\_COPY mit einem Textfeld
+SUBGRAPH\_COPY\_NEWNAME und dem Text
+Bitte Name der Kopie eingeben erscheint,
+der Teilgraph wird bei Klick auf Ja kopiert und
+erscheint unter dem Namen in SUBGRAPH\_COPY\_NEWNAME in der Liste.
+Bei Klick auf Abbruch passiert nichts.
+Im Falle eines schon vorhandenen, leeren oder ungültigen
+Namens wird eine Fehlermeldung ausgegeben,
+das SUBGRAPH\_COPY Fenster bleibt aber offen.
+
+\subsubsection{Teilgraph umbenennen}
+
+Diese Funktion benennt den in SUBGRAPH\_LIST selektierten
+Teilgraphen um.
+
+Ein Fenster SUBGRAPH\_RENAME mit einem Textfeld
+SUBGRAPH\_RENAME\_NEWNAME und dem Text
+Bitte neuen Namen für Graph <Altername> eingeben erscheint,
+der Teilgraph wird bei Klick auf Ja kopiert und
+erscheint unter dem Namen in SUBGRAPH\_RENAME\_NEWNAME in der Liste.
+Bei Klick auf Abbruch passiert nichts.
+Im Falle eines schon vorhandenen, leeren oder ungültigen
+Namens wird eine Fehlermeldung ausgegeben,
+das SUBGRAPH\_RENAME Fenster bleibt aber offen.
+
+\subsubsection{Teilgraph löschen}
+
+Diese Funktion löscht den in SUBGRAPH\_LIST selektierten
+Teilgraphen.
+Ein Fenster Teilgraph <Graphname> wirklich löschen?
+erscheint, bei Klick auf Ja wird der Graph aus der
+Liste entfernt. Bei Klick auf Nein passiert nichts.
+
+\subsubsection{Teilgraphen vereinigen}
+
+Diese Funktion fügt dem in SUBGRAPH\_LIST selektierten
+Teilgraphen einen weiteren der Teilgraphen in SUBGRAPH\_LIST
+hinzu, bildet also die Vereinigungsmenge beider
+Graphen.
+
+Bei Klick auf den Button Teilgraphen vereinigen erscheint ein
+Fenster SUBGRAPH_UNION_WINDOW , in dem sich der Text
+Teilgraph <Teilgraph> vereinigen mit und eine Combobox
+mit allen Subgraphen in SUBGRAPH\_LIST ohne den Subgraphen,
+der bei Auslösung des Buttons selektiert war, befindet.
+In ein Feld Name des neuen Teilgraphen (SUBGRAPH_UNION_NAME)
+kann der Name des neuen Teilgraphen eingetragen werden.
+Über zwei Buttons OK und Cancel kann die Funktion
+ausgelöst oder abgebrochen werden.
+Beim Klick auf OK wird der in der Combobox ausgewählte Teilgraph
+mit dem Teilgraphen in der Liste vereinigt und ein neuer
+Teilgraph, der die Vereinigung der beiden Teilgraphen ist,
+erstellt und der Liste SUBGRAPH\_LIST hinzugefügt.
+Falls SUBGRAPH_UNION_NAME leer ist oder einen schon vorhandenen
+oder ungültigen Namen enthält, wird eine entsprechende
+Fehlermeldung ausgegeben.
+
+\subsubsection{Teilgraphen Differenz}
+
+Diese Funktion bildet die Differenzmenge des in SUBGRAPH\_LIST
+selektierten Teilgraphen mit einem weiteren der Teilgraphen
+in SUBGRAPH\_LIST.
+
+Bei Klick auf den Button Teilgraphen Differenz erscheint ein
+Fenster SUBGRAPH_DIFF_WINDOW , in dem sich der Text
+Teilgraph Differenz <Teilgraph> und: und eine Combobox
+mit allen Subgraphen in SUBGRAPH\_LIST ohne den Subgraphen,
+der bei Auslösung des Buttons selektiert war, befindet.
+In ein Feld Name des neuen Teilgraphen (SUBGRAPH_DIFF_NAME)
+kann der Name des neuen Teilgraphen eingetragen werden.
+Über zwei Buttons OK und Cancel kann die Funktion
+ausgelöst oder abgebrochen werden.
+Beim Klick auf OK wird die Differenzmenge beider Teilgraphen
+gebildet, ein neuer Teilgraph mit Namen SUBGRAPH_DIFF_NAME
+erstellt und der Liste hinzugefügt.
+Falls SUBGRAPH_DIFF_NAME leer ist oder einen schon vorhandenen
+oder ungültigen Namen enthält, wird eine entsprechende
+Fehlermeldung ausgegeben.
+
+
+\subsubsection{Teilgraphen Schnitt}
+
+Diese Funktion bildet die Schnittmenge des in SUBGRAPH\_LIST
+selektierten Teilgraphen mit einem weiteren der Teilgraphen
+in SUBGRAPH\_LIST.
+
+Bei Klick auf den Button Teilgraphen Differenz erscheint ein
+Fenster SUBGRAPH_INTERSECTION_WINDOW , in dem sich der Text
+Teilgraph Schnittmenge <Teilgraph> und: und eine Combobox
+mit allen Subgraphen in SUBGRAPH\_LIST ohne den Subgraphen,
+der bei Auslösung des Buttons selektiert war, befindet.
+In ein Feld Name des neuen Teilgraphen (SUBGRAPH_INTERSECTION_NAME)
+kann der Name des neuen Teilgraphen eingetragen werden.
+Über zwei Buttons OK und Cancel kann die Funktion
+ausgelöst oder abgebrochen werden.
+Beim Klick auf OK wird die Schnittmenge beider Teilgraphen
+gebildet, ein neuer Teilgraph mit Namen SUBGRAPH_INTERSECTION_NAME
+erstellt und der Liste hinzugefügt.
+Falls SUBGRAPH_INTERSECTION_NAME leer ist oder einen schon vorhandenen
+oder ungültigen Namen enthält, wird eine entsprechende
+Fehlermeldung ausgegeben.
+
+\subsubsection{Teilgraphen exportieren}
+
+Mit dieser Funktion kann ein Teilgraph als Datei gespeichert werden.
+
+Bei Klick auf den Button Teilgraphen exportieren wird ein Dateifenster
+geöffnet, in dem ein Dateiname mit Pfad festgelegt werden kann, unter
+dem der Teilgraph gespeichert wird.
+Falls die Datei schon existiert, erscheint ein Dialog
+Datei existiert schon - überschreiben? Ja / Nein.
+Bei Klick auf Nein wird der Dialog geschlossen und nichts passiert,
+bei Klick auf Ja wird die vorhandene Datei mit dem neuen Teilgraph
+überschrieben. Der Teilgraph wird inklusive seinem Namen (aus
+SUBGRAPH\_LIST) abgespeichert.
+
+\subsubsection{Teilgraphen importieren}
+
+Bei Klick auf den Button Teilgraphen importieren wird ein Dateifenster
+geöffnet, in dem ein Dateiname mit Pfad festgelegt werden kann, unter
+dem der Teilgraph gespeichert wird.
+Falls der Name des Teilgraphen schon in der Liste existiert, erscheint
+ein Fenster SUBGRAPH_IMPORT_DUPNAME Name des Teilgraphen <Name>
+Existiert schon, bitte Ersatznamen angeben und OK klicken, oder Abbruch
+klicken, um nicht zu laden.
+Im Fenster SUBGRAPH_IMPORT_DUPNAME ist ein Textfeld SUBGRAPH_IMPORT_NEWNAME,
+in dem ein Ersatzname angegeben werden kann. Bei Klick auf OK
+wird der Teilgraph unter dem Namen SUBGRAPH_IMPORT_NEWNAME importiert,
+bei Abbruch passiert nichts und das Fenster wird geschlossen.
+Sollte auch SUBGRAPH_IMPORT_NEWNAME schon existieren, so wird
+ein zusätzliches fehlerfenster Fenster Dieser Name existiert schon angezeigt.
 
 \subsection{Knoten-Informationsfenster}
 
 In Knoten-Informationsfenstern (NODE\_INFO) können nähere Informationen
 zu Knoten angezeigt werden.
-Es kann beliebig viele Knoten-Informationsfenster geben, jedoch nur
+Es kann beliebig viele Knoten-Informationsfenster geben, jedoch maximal
 eines pro Knoten.
 
 Zuoberst im Fenster wird die Knotentyp und Knoten-ID dargestellt
@@ -74,7 +302,7 @@ ausgewählt werden.
 
 \subsection{Anfrage Dialog}
 
-Der Anfragedialog hat zuoberst ein Textfeld QUERY\_TEXT,
+Der Anfragedialog QUERY hat zuoberst ein Textfeld QUERY\_TEXT,
 in dem der Text der Anfrage eingegeben werden kann.
 Durch Klicken auf die darunterliegenden Listen kann
 Text in QUERY\_TEXT eingefügt werden.
@@ -171,11 +399,34 @@ Sicherheitsabfrage Alte Anfrage nicht gespeichert - Wollen
 Sie wirklich eine neue Anfrage laden? gestellt,
 wenn QUERY\_TEXT nicht leer ist.
 
-\subsection{Darstellung von Attributen}
-Bietet Übersicht über alle Knotenklassen (mit zugehörigen Attributen), alle Attribute und
-Kantenklassen. Auswahlmöglichkeit.
+Nach dem Klick auf QUERY\_START wird das Anfragefenster geschlossen,
+und die Anfrage ausgeführt. 
+Vor Start der Anfrage öffnet sich ein Fenster Anfrage in Bearbeitung,
+QUERY\_RUNNING.
+In diesem Fenster wird der Text Anfrage läuft und eine Progressbar,
+QUERY\_PROGRESS sowie ein Cancel-Button QUERY\_CANCEL angezeigt.
+Die Progressbar zeigt den ungefähren Verlauf der Berechnung an,
+mit QUERY\_CANCEL kann die Berechnung abgebrochen werden.
 
-\subsection{Dialog für Layoutalgorithmen}
+Nach Beendigung der Berechnung erscheint ein Fenster QUERY\_RESULT,
+in dem Anfrage beendet. Gefundene Knoten: QUERY\_FOUND_\NODES ,
+Gefundene Kanten: QUERY\_FOUND\_EDGES steht. Darunter befindet sich
+der Text übernehmen als IML-Teilgraph und eine Combo-Box IML_SUBGRAPHS,
+in der die bisher geladenen IML-Teilgraphen und eine Eingabemöglichkeit
+für einen neuen Namen sind.
+Darunter befinden sich zwei Buttons: Anfrage verwerfen und Anfrage
+übernehmen (QUERY\_USE , QUERY\_DISCARD) zum Verwerfen oder
+übernehmen als IML-Teilgraph. Bei Klick auf QUERY\_DISCARD wird
+das Fenster geschlossen und die Anfrageergebnisse verworfen.
+
+Wurde in der Combo-Box im Falle der Betätigung von QUERY\_USE
+ein schon existierender Teilgraph gewählt, so erscheint eine
+Sicherheitsabfrage QUERY\_OVERWRITE in einem Fenster:
+Teilgraph (Name) überschreiben? JA / NEIN.
+Bei NEIN wird das QUERY\_OVERWRITE Fenster wieder geschlossen,
+bei JA werden QUERY\_OVERWRITE und QUERY\_RESULT geschlossen
+und der bisherige Teilgraph mit dem neuen Ergebnis überschrieben.
+
 
 \subsection{Dialog für Mengenoperationen}
 
