@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.24 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.25 $
 --  $Author: koppor $
---  $Date: 2003/06/25 18:52:42 $
+--  $Date: 2003/06/26 13:56:36 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -57,6 +57,237 @@ package body Giant.Graph_Lib is
    --  Destroyed in "Destroy"
    IML_Graph : IML_Graphs.IML_Graph;
 
+   --------------------------------------------
+   --  Edge_Id_Locator                       --
+   --    Hashed mapping to speed up reading  --
+   --------------------------------------------
+
+   package Edge_Id_Locator is
+
+      ------------------------------------------------------------------------
+      --  Has to be called after Giant.Graph_Lib.Load
+      --    and before any use of Selection_Read
+      procedure Initialize;
+
+      ------------------------------------------------------------------------
+      --  Raises:
+      --    No_Edge_Found - if belonging edge can't be located
+      function Locate
+        (Source_Node              : in Node_Id;
+         Target_Node              : in Node_Id;
+         Attribute                : in Node_Attribute_Id;
+         Attribute_Element_Number : in Natural)
+        return Edge_Id;
+
+      ------------------------------------------------------------------------
+      --  Has to be called before Giant.Graph_Lib.Destroy
+      --    and after any use of Selection_Read
+      procedure Destroy;
+
+      ------------------------------------------------------------------------
+      --  Risen, if duplicate edges have to be inserted
+      Duplicate_Edge : exception;
+
+      No_Edge_Found  : exception;
+
+   end Edge_Id_Locator;
+
+   package body Edge_Id_Locator is
+
+      ------------------------------------------------------------------------
+      --  Natural'Identity doesn't exist - TBD: maybe there's one!
+      function Identity (N : Natural) return Natural
+      is
+      begin
+         return N;
+      end Identity;
+
+      ------------------------------------------------------------------------
+      --  don't know, how to create a dynamic array, therefore the hashtable
+      --    is used
+      package Attribute_Element_Number_Hashed_Mappings is
+         new Hashed_Mappings
+        (Key_Type   => Natural,
+         Value_Type => Edge_Id,    --  here is the edge_id, we search for
+         Hash       => Identity);
+
+      ------------------------------------------------------------------------
+      package Attribute_Hashed_Mappings is
+         new Hashed_Mappings
+        (Key_Type   => Node_Attribute_ID,
+         Value_Type => Attribute_Element_Number_Hashed_Mappings.Mapping,
+         Hash       => Node_Attribute_Id_Hash_Functions.Integer_Hash);
+
+      ------------------------------------------------------------------------
+      package Target_Node_Hashed_Mappings is
+         new Hashed_Mappings
+        (Key_Type   => Node_Id,
+         Value_Type => Attribute_Hashed_Mappings.Mapping,
+         Hash       => Hash_Node_Id);
+
+      ------------------------------------------------------------------------
+      package Source_Node_Hashed_Mappings is
+         new Hashed_Mappings
+        (Key_Type   => Node_Id,
+         Value_Type => Target_Node_Hashed_Mappings.Mapping,
+         Hash       => Hash_Node_Id);
+
+      Source_Node_Mapping : Source_Node_Hashed_Mappings.Mapping;
+
+      ------------------------------------------------------------------------
+      procedure Initialize
+      is
+         All_Edges    : Edge_Id_Set;
+         Iter         : Edge_Id_Sets.Iterator;
+         Current_Edge : Edge_Id;
+
+         Target_Node_Mapping  : Target_Node_Hashed_Mappings.Mapping;
+         Attribute_Mapping    : Attribute_Hashed_Mappings.Mapping;
+         Attribute_Element_Number_Mapping :
+           Attribute_Element_Number_Hashed_Mappings.Mapping;
+      begin
+         Source_Node_Mapping := Source_Node_Hashed_Mappings.Create;
+
+         All_Edges := Get_All_Edges;
+         Iter := Edge_Id_Sets.Make_Iterator (All_Edges);
+
+         while Edge_Id_Sets.More (Iter) loop
+            Edge_Id_Sets.Next (Iter, Current_Edge);
+
+            --  insert source node
+            if Source_Node_Hashed_Mappings.Is_Bound
+              (Source_Node_Mapping,
+               Current_Edge.Source_Node) then
+               Target_Node_Mapping := Source_Node_Hashed_Mappings.Fetch
+                 (Source_Node_Mapping,
+                  Current_Edge.Source_Node);
+            else
+               Target_Node_Mapping := Target_Node_Hashed_Mappings.Create;
+               Source_Node_Hashed_Mappings.Bind
+                 (Source_Node_Mapping,
+                  Current_Edge.Source_Node,
+                  Target_Node_Mapping);
+            end if;
+
+            --  insert target node
+            if Target_Node_Hashed_Mappings.Is_Bound
+              (Target_Node_Mapping,
+               Current_Edge.Target_Node) then
+               Attribute_Mapping := Target_Node_Hashed_Mappings.Fetch
+                 (Target_Node_Mapping,
+                  Current_Edge.Target_Node);
+            else
+               Attribute_Mapping := Attribute_Hashed_Mappings.Create;
+               Target_Node_Hashed_Mappings.Bind
+                 (Target_Node_Mapping,
+                  Current_Edge.Target_Node,
+                  Attribute_Mapping);
+            end if;
+
+            --  insert attribute
+            if Attribute_Hashed_Mappings.Is_Bound
+              (Attribute_Mapping,
+               Current_Edge.Attribute) then
+               Attribute_Element_Number_Mapping :=
+                 Attribute_Hashed_Mappings.Fetch
+                 (Attribute_Mapping,
+                  Current_Edge.Attribute);
+            else
+               Attribute_Element_Number_Mapping :=
+                 Attribute_Element_Number_Hashed_Mappings.Create;
+               Attribute_Hashed_Mappings.Bind
+                 (Attribute_Mapping,
+                  Current_Edge.Attribute,
+                  Attribute_Element_Number_Mapping);
+            end if;
+
+            --  insert edge_id
+            if Attribute_Element_Number_Hashed_Mappings.Is_Bound
+              (Attribute_Element_Number_Mapping,
+               Current_Edge.Attribute_Element_Number) then
+               raise Duplicate_Edge;
+            else
+               Attribute_Element_Number_Hashed_Mappings.Bind
+                 (Attribute_Element_Number_Mapping,
+                  Current_Edge.Attribute_Element_Number,
+                  Current_Edge);
+            end if;
+
+         end loop;
+
+         Edge_Id_Sets.Destroy (All_Edges);
+
+         Edge_Id_Sets.Destroy (All_Edges);
+      end Initialize;
+
+      ------------------------------------------------------------------------
+      function Locate
+        (Source_Node              : in Node_Id;
+         Target_Node              : in Node_Id;
+         Attribute                : in Node_Attribute_Id;
+         Attribute_Element_Number : in Natural)
+        return Edge_Id
+      is
+         Target_Node_Mapping  : Target_Node_Hashed_Mappings.Mapping;
+         Attribute_Mapping    : Attribute_Hashed_Mappings.Mapping;
+         Attribute_Element_Number_Mapping :
+           Attribute_Element_Number_Hashed_Mappings.Mapping;
+      begin
+         --  look for source node
+         if Source_Node_Hashed_Mappings.Is_Bound
+           (Source_Node_Mapping,
+            Source_Node) then
+            Target_Node_Mapping := Source_Node_Hashed_Mappings.Fetch
+              (Source_Node_Mapping,
+               Source_Node);
+         else
+            raise No_Edge_Found;
+         end if;
+
+         --  look for target node
+         if Target_Node_Hashed_Mappings.Is_Bound
+           (Target_Node_Mapping,
+            Target_Node) then
+            Attribute_Mapping := Target_Node_Hashed_Mappings.Fetch
+              (Target_Node_Mapping,
+               Target_Node);
+         else
+            raise No_Edge_Found;
+         end if;
+
+         --  look for attribute
+         if Attribute_Hashed_Mappings.Is_Bound
+           (Attribute_Mapping,
+            Attribute) then
+            Attribute_Element_Number_Mapping :=
+              Attribute_Hashed_Mappings.Fetch
+              (Attribute_Mapping,
+               Attribute);
+         else
+            raise No_Edge_Found;
+         end if;
+
+         --  look for edge_id
+         if Attribute_Element_Number_Hashed_Mappings.Is_Bound
+           (Attribute_Element_Number_Mapping,
+            Attribute_Element_Number) then
+            return Attribute_Element_Number_Hashed_Mappings.Fetch
+              (Attribute_Element_Number_Mapping,
+               Attribute_Element_Number);
+         else
+            raise No_Edge_Found;
+         end if;
+      end Locate;
+
+      ------------------------------------------------------------------------
+      procedure Destroy
+      is
+      begin
+         --  TBD: Deep-destroy
+         null;
+      end Destroy;
+
+   end Edge_Id_Locator;
 
    --------------------------------------
    --  Hashing for Node_Attribute_Ids  --
@@ -361,6 +592,8 @@ package body Giant.Graph_Lib is
          end loop;
 
       end loop;
+
+      Edge_Id_Locator.Initialize;
    end Initialize;
 
    ---------------------------------------------------------------------------
@@ -370,6 +603,7 @@ package body Giant.Graph_Lib is
       --  Destroy_Node_Class_Id_Mapping
       --  TBD: deep-destroy!
       null;
+      Edge_Id_Locator.Destroy;
    end Destroy;
 
    -----------------------------------------------------------
