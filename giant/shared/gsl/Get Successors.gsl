@@ -1,7 +1,7 @@
 {
   (+Selection)
   [
-    run ("for_each");
+    run ("standard");
     set (+nodes, get_entry (deref (Selection), 1));
     set (+edges, empty_edge_set ());
     set (+add_edge, { (+e) add ('edges, e) });

@@ -1,6 +1,6 @@
 // ===========================================================================
-//  $RCSfile: standard.gsl,v $ $Revision: 1.1 $
-//  $Date: 2003/09/02 13:56:04 $
+//  $RCSfile: standard.gsl,v $ $Revision: 1.2 $
+//  $Date: 2003/09/02 14:17:06 $
 //  $Author: squig $
 //
 //  File:         GSL-Library standard.gsl
@@ -185,7 +185,7 @@
            { ()
              [
                set (+copy, a_set);
-	       +item;
+               +item;
                loop
                 ({ ()
                    [
@@ -199,5 +199,5 @@
              ]
            });
       ]
-    })
+    });
 ]

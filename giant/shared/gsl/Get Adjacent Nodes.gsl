@@ -1,7 +1,7 @@
 {
   (+node)
   [
-    run ("for_each");
+    run ("standard");
     set (+nodes, empty_node_set ());
     set (+edges, empty_edge_set ());
     add ('nodes, node);
