@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-graph_widgets.ads,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/06/10 13:10:42 $
+--  $Date: 2003/06/10 15:43:34 $
 --
 ------------------------------------------------------------------------------
 --
@@ -126,8 +126,8 @@ package Giant.Graph_Widgets is
    --    Widget - Access to a new graph widget
    --  Raises
    --    ...
-   procedure Input
-     (Stream : access Ada.Streams.Root_Stream_Type'Class;
+   procedure Read_Graph_Widget
+     (Stream : in     Bauhaus_IO.In_Stream_Type;
       Widget :    out Graph_Widget);
 
    ----------------------------------------------------------------------------
@@ -139,24 +139,9 @@ package Giant.Graph_Widgets is
    --    Widget - The graph widget to output
    --  Raises
    --    ...
-   procedure Output
-     (Stream : access Ada.Streams.Root_Stream_Type'Class;
+   procedure Write_Graph_Widget
+     (Stream : in     Bauhaus_IO.Out_Stream_Type;
       Widget : access Graph_Widget_Record);
-
-   ----------------------------------------------------------------------------
-   --  To be used for Attribute Graph_Widget_Record'Input
-   function Input_Graph_Widget
-     (Stream : access Ada.Streams.Root_Stream_Type'Class)
-     return Graph_Widget_Record;
-
-   ----------------------------------------------------------------------------
-   --  To be used for Attribute Graph_Widget_Record'Output
-   procedure Output_Graph_Widget
-     (Stream : access Ada.Streams.Root_Stream_Type'Class;
-      Widget : in     Graph_Widget_Record);
-
-   --  'Read and 'Write do not handle Tags and therefore are not supported
-   --  for 'Graph_Widget_Record'
 
 
    --------------------------------------------

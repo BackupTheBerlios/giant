@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vectors.ads,v $, $Revision: 1.3 $
+--  $RCSfile: giant-vectors.ads,v $, $Revision: 1.4 $
 --  $Author: keulsn $
---  $Date: 2003/06/09 01:13:39 $
+--  $Date: 2003/06/10 15:43:34 $
 --
 ------------------------------------------------------------------------------
 
@@ -92,6 +92,16 @@ generic
    with function Scalar_Div_Coord
      (A : in Coordinate_Type; B : in Field_Type)
      return Coordinate_Type;
+
+   --  Read from Stream
+   procedure Read_Coordinate
+     (Stream     : in     Bauhaus_IO.In_Stream_Type;
+      Coordinate :    out Coordinate_Type);
+
+   --  Write to Stream
+   with procedure Write_Coordinate
+     (Stream     : in     Bauhaus_IO.Out_Stream_Type;
+      Coordinate : in     Coordinate_Type);
 
 package Giant.Vectors is
 
@@ -166,6 +176,18 @@ package Giant.Vectors is
    function Image
      (Vector : in     Vector_2d)
      return String;
+
+   --  Read from Stream
+   procedure Read_Vector
+     (Stream : in     Bauhaus_IO.In_Stream_Type;
+      Vector :    out Vector_2d);
+
+   --  Write to Stream
+   with procedure Write_Coordinate
+     (Stream : in     Bauhaus_IO.Out_Stream_Type;
+      Vector : in     Vector_2d);
+
+
 
    ------------------
    -- Rectangle_2d --
@@ -272,6 +294,16 @@ package Giant.Vectors is
    function Image
      (Rectangle : in     Rectangle_2d)
      return String;
+
+   --  Read from Stream
+   procedure Read_Rectangle
+     (Stream    : in     Bauhaus_IO.In_Stream_Type;
+      Rectangle :    out Rectangle_2d);
+
+   --  Write to Stream
+   with procedure Write_Coordinate
+     (Stream    : in     Bauhaus_IO.Out_Stream_Type;
+      Rectangle : in     Rectangle_2d);
 
 private
 

@@ -20,9 +20,9 @@
 --
 --  First Author: Steffen Keul
 --
---  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-vis_data.ads,v $, $Revision: 1.3 $
 --  $Author: keulsn $
---  $Date: 2003/06/10 13:10:42 $
+--  $Date: 2003/06/10 15:43:34 $
 --
 ------------------------------------------------------------------------------
 --
@@ -170,6 +170,8 @@ package Giant.Vis_Data is
    --  Type used to manage a graph within a two dimensional embedding
    --  provides functionality to add edges and nodes, to remove them and
    --  to find intersection among them.
+   --  Should be limited type, but is not to allow objects of this type
+   --  to be fields in gtk-widget-types (which are not limited)
    type Region_Manager is new Ada.Finalization.Controlled with private;
 
    package Rectangle_2d_Lists is new Lists
