@@ -1,6 +1,6 @@
 % ==============================================================================
-%  $RCSfile: config.tex,v $, $Revision: 1.1 $
-%  $Date: 2003/06/30 15:22:06 $
+%  $RCSfile: config.tex,v $, $Revision: 1.2 $
+%  $Date: 2003/08/01 12:32:20 $
 %  $Author: birdy $
 %
 %  Description:
@@ -8,6 +8,7 @@
 %  Last-Ispelled-Revision: 1.19
 %
 % ==============================================================================
+
 
 
 \section {Allgemeines} \index{Konfiguration}
@@ -39,6 +40,71 @@
 \section {Die globale Konfigurationsdatei} \index{Konfigurationsdatei}
 Diese Datei ist in XML verfasst. In Ihr können die anschließend beschriebenen
 Einstellungen vorgenommen werden.
+Die Datei heisst global\_config.xml und befindet sich direkt im GIANT Verzeichnis.
+
+
+Hier das File giant\_config\_file.dtd:
+
+\verbatiminput{giant_config_file.dtd}
+
+
+
+      (To\_UStr ("Resources\_Directory"),
+        To\_Ustr ("."), null),
+
+       (To\_UStr ("Icon\_For\_Node\_Annotations"),
+        To\_UStr ("my\_icon.xpm"), null),
+
+       (To\_UStr ("Current\_Selection\_Highlight\_Color"),
+        To\_UStr ("RGB:AA/AA/AA"), null),
+
+       (To\_UStr ("Selection\_Highlight\_Color\_1"),
+        To\_UStr ("RGB:AA/AA/AA"), null),
+
+       (To\_UStr ("Selection\_Highlight\_Color\_2"),
+        To\_UStr ("RGB:AA/AA/AA"), null),
+
+       (To\_UStr ("Selection\_Highlight\_Color\_3"),
+        To\_UStr ("RGB:AA/AA/AA"), null),
+
+       (To\_UStr ("IML\_Subgraph\_Highlight\_Color\_1"),
+        To\_UStr ("RGB:AA/AA/AA"), null),
+
+       (To\_UStr ("IML\_Subgraph\_Highlight\_Color\_2"),
+        To\_UStr ("RGB:AA/AA/AA"), null),
+
+       (To\_UStr ("IML\_Subgraph\_Highlight\_Color\_3"),
+        To\_UStr ("RGB:AA/AA/AA"), null),
+        
+       -- You may enter a sequence of paths separated by the OS' 
+       -- path separator for environment variables
+       (To\_UStr ("GSL.Include\_Paths"),
+        To\_UStr ("."), null),        
+                
+       (To\_UStr ("Main\_Window.Height"),
+        To\_UStr ("400"),
+        Validate\_Integer'Access),
+
+       (To\_UStr ("Main\_Window.Width"),
+        To\_UStr ("200"),
+        Validate\_Integer'Access),
+
+       (To\_UStr ("Main\_Window.Separator"),
+        To\_UStr ("230"),
+        Validate\_Integer'Access),
+
+       (To\_UStr ("Confirm.Delete"),
+        To\_UStr ("True"),
+        null),
+
+       (To\_UStr ("Editor.Source"),
+        To\_UStr ("/usr/bin/emacs +%l:%c %f"),
+
+
+
+
+
+
 
   \subsection {Verweise auf GSL-Skripte} 
   \index{Makros}
