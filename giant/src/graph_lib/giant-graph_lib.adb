@@ -18,9 +18,9 @@
 --  along with this program; if not, write to the Free Software
 --  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 --
---  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.37 $
+--  $RCSfile: giant-graph_lib.adb,v $, $Revision: 1.38 $
 --  $Author: koppor $
---  $Date: 2003/06/30 18:55:37 $
+--  $Date: 2003/07/01 13:51:32 $
 
 --  from ADA
 with Ada.Unchecked_Deallocation;
@@ -644,6 +644,8 @@ package body Giant.Graph_Lib is
 
                         Process_Edge (Node, Target, Attribute, I);
                      end loop;
+
+                     IML_Reflection.Destroy (Iter);
                   end;
                elsif Attribute.all in IML_Reflection.Set_Field'Class then
                   declare
@@ -661,6 +663,8 @@ package body Giant.Graph_Lib is
 
                         Process_Edge (Node, Target, Attribute, I);
                      end loop;
+
+                     IML_Reflection.Destroy (Iter);
                   end;
                elsif
                  (Attribute.all in
@@ -1015,11 +1019,11 @@ package body Giant.Graph_Lib is
 
       procedure Destroy_Internal_Graph is
 
-         procedure FreeEdgeId is new Ada.Unchecked_Deallocation
+         procedure Free_Edge_Id is new Ada.Unchecked_Deallocation
            (Edge_Record,
             Edge_Id);
 
-         procedure FreeNodeId is new Ada.Unchecked_Deallocation
+         procedure Free_Node_Id is new Ada.Unchecked_Deallocation
            (Node_Record,
             Node_Id);
 
@@ -1037,20 +1041,24 @@ package body Giant.Graph_Lib is
 
             --  remove all the edges out of the memory
             for I in Cur_Node.Outgoing_Edges'Range loop
-               FreeEdgeId (Cur_Node.Outgoing_Edges (I));
+               Free_Edge_Id (Cur_Node.Outgoing_Edges (I));
             end loop;
 
-            FreeNodeId (Cur_Node);
+            Free_Node_Id (Cur_Node);
 
          end loop;
 
+         --  The mapping was created at
+         --    Convert_Temp_Structure_To_Used_Structure
          IML_Node_ID_Hashed_Mappings.Destroy (IML_Node_ID_Mapping);
       end Destroy_Internal_Graph;
 
    begin
       Destroy_Internal_Graph;
 
-      --  TBD: Unload IML_Graph - not supported by IML
+      --  Unload IML_Graph from memory
+      --  FIXME:  IML_Graphs.Destroy (IML_Graph);
+      --          crashes if used
    end Unload;
 
    ---------------------------------------------------------------------------
