@@ -20,9 +20,9 @@
 --
 -- First Author: Martin Schwienbacher
 --
--- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.10 $
+-- $RCSfile: giant-config-class_sets.adb,v $, $Revision: 1.11 $
 -- $Author: schwiemn $
--- $Date: 2003/07/11 15:05:28 $
+-- $Date: 2003/09/23 20:54:31 $
 --
 with Giant.File_Management;             -- from GIANT
 with Giant.XML_File_Access;             -- from GIANT
@@ -38,7 +38,11 @@ with DOM.Core.Documents; -- from xmlada
 with DOM.Core.Nodes;     -- from xmlada
 with DOM.Core.Elements;  -- from xmlada
 
+with GIANT.Logger;
+
 package body Giant.Config.Class_Sets is
+
+   package Logger is new Giant.Logger("Giant.Config.Class_Sets");
 
    ---------------------------------------------------------------------------
    -- 0.1
@@ -266,6 +270,12 @@ package body Giant.Config.Class_Sets is
                XML_Node := DOM.Core.Nodes.Item (XML_Nodes_List, I);
 
                -- IGNORE node classes not known by the IML Reflection
+               Logger.Debug ("Actual Node: "
+                 & """" 
+                 & DOM.Core.Elements.Get_Attribute
+                     (XML_Node, "node_class_name")
+                 & """");
+               
                if Graph_Lib.Does_Node_Class_Exist
                  (DOM.Core.Elements.Get_Attribute
                   (XML_Node, "node_class_name")) then
