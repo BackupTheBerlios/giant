@@ -20,9 +20,9 @@
 --
 --  First Author: Oliver Kopp
 --
---  $RCSfile: giant-layout_factory.ads,v $, $Revision: 1.2 $
+--  $RCSfile: giant-layout_factory.ads,v $, $Revision: 1.3 $
 --  $Author: koppor $
---  $Date: 2003/07/01 23:17:05 $
+--  $Date: 2003/07/02 12:01:19 $
 --
 ------------------------------------------------------------------------------
 --
@@ -57,9 +57,7 @@ package Giant.Layout_Factory is
    --
    --    Selection_To_Layout:
    --      Selection containing the nodes to be layouted
-   --      There will be no copy made. The
-   --      caller has to assure that the selection is
-   --      available and unmodified during the whole run
+   --      The selection will not be modified during the run
    --
    --    Widget:
    --      Graph_Widget where the nodes to layout reside
